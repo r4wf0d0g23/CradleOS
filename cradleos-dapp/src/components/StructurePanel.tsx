@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { StructureKindIcon } from "./StructureIcon";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { useSponsoredTransaction, SponsoredTransactionActions, WalletSponsoredTransactionNotSupportedError } from "@evefrontier/dapp-kit";
+import { useSponsoredTransaction, SponsoredTransactionActions } from "@evefrontier/dapp-kit";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -187,20 +187,17 @@ function StructureRow({
       setSettingUrl(false);
       setUrlInput("");
     } catch (e) {
-      if (e instanceof WalletSponsoredTransactionNotSupportedError) {
-        // Fallback: regular gas tx
-        try {
-          const tx = buildSetUrlTransaction(structure, characterId, url);
-          const signer = new CurrentAccountSigner(dAppKit);
-          const result = await signer.signAndExecuteTransaction({ transaction: tx });
-          setSettingUrl(false);
-          setUrlInput("");
-          onTxSuccess?.(readDigest(result));
-        } catch (e2) {
-          setErr(e2 instanceof Error ? e2.message : String(e2));
-        }
-      } else {
-        setErr(e instanceof Error ? e.message : String(e));
+      // Fall through to regular gas tx on any sponsored tx failure
+      // (WalletSponsoredTransactionNotSupportedError, network errors, fetch failures, etc.)
+      try {
+        const tx = buildSetUrlTransaction(structure, characterId, url);
+        const signer = new CurrentAccountSigner(dAppKit);
+        const result = await signer.signAndExecuteTransaction({ transaction: tx });
+        setSettingUrl(false);
+        setUrlInput("");
+        onTxSuccess?.(readDigest(result));
+      } catch (e2) {
+        setErr(e2 instanceof Error ? e2.message : String(e2));
       }
     } finally { setBusy(false); }
   };
