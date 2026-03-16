@@ -19,21 +19,21 @@ const DAPP_PRESETS: Record<string, Array<{ label: string; url: string; desc: str
     { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Tribe defense policy + passage intel" },
   ],
   Gate: [
-    { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Tribe defense policy + gate rules" },
-    { label: "🗺 Intel",   url: `${DAPP_BASE}/#/intel`,   desc: "Intel dashboard — kill feed + infra" },
+    { label: "🔀 Gates",  url: `${DAPP_BASE}/#/gates`,   desc: "Gate policy + tribe access rules" },
+    { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Tribe defense policy" },
   ],
   StorageUnit: [
-    { label: "📦 Storage",  url: `${DAPP_BASE}/#/storage`,    desc: "SSU inventory viewer" },
-    { label: "📊 Assets",   url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
-    { label: "💱 Bounties", url: `${DAPP_BASE}/#/bounties`,   desc: "Kill bounty board" },
+    { label: "📦 Inventory", url: `${DAPP_BASE}/#/inventory`, desc: "SSU inventory viewer" },
+    { label: "📊 Assets",    url: `${DAPP_BASE}/#/assets`,    desc: "Tribe asset ledger" },
+    { label: "💱 Bounties",  url: `${DAPP_BASE}/#/bounties`,  desc: "Kill bounty board" },
   ],
   NetworkNode: [
     { label: "🏗 Structures", url: `${DAPP_BASE}/#/structures`, desc: "Structure manager" },
     { label: "📊 Assets",     url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
   ],
   Assembly: [
-    { label: "📦 Storage",  url: `${DAPP_BASE}/#/storage`,    desc: "SSU inventory viewer" },
-    { label: "📊 Assets",   url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
+    { label: "📦 Inventory", url: `${DAPP_BASE}/#/inventory`, desc: "SSU inventory viewer" },
+    { label: "📊 Assets",    url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
   ],
 };
 import {
