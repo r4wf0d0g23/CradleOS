@@ -28,7 +28,7 @@ import {
   type OrderFilledEvent,
   type TribeVaultState,
 } from "../lib";
-import { SUI_TESTNET_RPC } from "../constants";
+import { SUI_TESTNET_RPC, CRDL_COIN_TYPE } from "../constants";
 
 function shortAddr(a: string | undefined | null) {
   if (!a) return "—";
@@ -330,6 +330,28 @@ function DexDashboard({
           value={crdlBalance.toLocaleString()}
           sub="CradleCoin"
         />
+      </div>
+
+      {/* CRDL token address */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: "8px",
+        background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.08)",
+        borderRadius: "0", padding: "8px 12px", marginBottom: "16px", flexWrap: "wrap",
+      }}>
+        <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.08em" }}>CRDL TOKEN</span>
+        <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#888", flex: 1, wordBreak: "break-all" }}>
+          {CRDL_COIN_TYPE}
+        </span>
+        <button
+          onClick={() => { try { navigator.clipboard.writeText(CRDL_COIN_TYPE); } catch {} }}
+          style={{
+            background: "none", border: "1px solid rgba(255,71,0,0.3)", borderRadius: "0",
+            color: "#FF4700", fontSize: "10px", padding: "2px 8px", cursor: "pointer",
+            fontFamily: "monospace", letterSpacing: "0.06em", flexShrink: 0,
+          }}
+        >
+          copy
+        </button>
       </div>
 
       {/* Post sell order */}
