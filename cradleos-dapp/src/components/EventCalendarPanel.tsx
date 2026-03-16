@@ -104,6 +104,12 @@ function uid(): string {
 
 // ── calendar helpers ──────────────────────────────────────────────────────────
 
+/** Parse a "YYYY-MM-DD" string as LOCAL time (not UTC) to avoid timezone day-shift. */
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 /** Returns an array of date strings ("YYYY-MM-DD") for a given year+month. */
 function getDaysInMonth(year: number, month: number): string[] {
   const days: string[] = [];
@@ -226,8 +232,8 @@ function MonthGrid({
           const evs = eventsByDate.get(cell.date) ?? [];
           const isToday = cell.date === today;
           const isSelected = cell.date === selectedDate;
-          const dayNum = new Date(cell.date).getDate();
-          const isWeekend = new Date(cell.date).getDay() === 0 || new Date(cell.date).getDay() === 6;
+          const dayNum = parseLocalDate(cell.date).getDate();
+          const isWeekend = parseLocalDate(cell.date).getDay() === 0 || parseLocalDate(cell.date).getDay() === 6;
 
           return (
             <button
