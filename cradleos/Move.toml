@@ -4,6 +4,7 @@ edition = "2024.beta"
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+World = { local = "../world-contracts/contracts/world" }
 
 [addresses]
 cradleos = "0x0" # Set to 0x0 for local build; actual deployed V7 address: 0x036c2c0db070507940bd49d86e91f357f68ae94c3c33375c0ebc75044aeafade

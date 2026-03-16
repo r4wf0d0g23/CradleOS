@@ -20,6 +20,9 @@ module cradleos::bounty_contract {
     use sui::event;
     use std::string::{Self, String};
     use cradleos::cradle_coin::CRADLE_COIN;
+    use world::killmail::Killmail;
+    use world::character::Character;
+    use world::in_game_id;
 
     // ── Error codes ───────────────────────────────────────────────────────────
 
@@ -30,7 +33,13 @@ module cradleos::bounty_contract {
     /// Bounty is not in the OPEN state.
     const ENotOpen:      u64 = 2;
     /// Reward coin has zero value.
-    const EZeroReward:   u64 = 3;
+    const EZeroReward:        u64 = 3;
+    /// Killmail victim does not match the bounty target.
+    const EVictimMismatch:    u64 = 4;
+    /// Killmail killer does not match the provided killer character.
+    const EKillerMismatch:    u64 = 5;
+    /// Bounty has expired.
+    const EExpired:           u64 = 6;
 
     // ── Status constants ──────────────────────────────────────────────────────
 
@@ -184,6 +193,61 @@ module cradleos::bounty_contract {
             killer: killer_address,
             reward_amount,
             killmail_object_id: option::some(killmail_object_id),
+        });
+    }
+
+    /// Trustless kill claim.  Anyone may submit a Killmail object whose victim
+    /// and killer fields match this bounty.  No attestor is required.
+    ///
+    /// Verifications:
+    ///   1. Bounty must be OPEN.
+    ///   2. Bounty must not be expired (wall-clock ms < expires_ms).
+    ///   3. killmail.victim_id.item_id() == bounty.target_char_id.
+    ///   4. killmail.killer_id.item_id() == killer_char.key().item_id().
+    ///
+    /// Pays the escrowed CRDL to the killer's on-chain wallet address.
+    entry fun claim_bounty_trustless_entry(
+        bounty: &mut Bounty,
+        killmail: &Killmail,
+        killer_char: &Character,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        // 1. Bounty must be OPEN
+        assert!(bounty.status == STATUS_OPEN, ENotOpen);
+
+        // 2. Must not be expired
+        let now = clock.timestamp_ms();
+        assert!(now < bounty.expires_ms, EExpired);
+
+        // 3. Killmail victim must match bounty target
+        let victim_key = world::killmail::victim_id(killmail);
+        assert!(victim_key.item_id() == bounty.target_char_id, EVictimMismatch);
+
+        // 4. Killmail killer must match the provided killer character
+        let killmail_killer_key = world::killmail::killer_id(killmail);
+        let char_key = killer_char.key();
+        assert!(killmail_killer_key.item_id() == char_key.item_id(), EKillerMismatch);
+
+        // Resolve killer's wallet address from Character object
+        let killer_address = killer_char.character_address();
+
+        // Mark claimed
+        bounty.status = STATUS_CLAIMED;
+        bounty.killer = option::some(killer_address);
+        let killmail_obj_addr = object::id_address(killmail);
+        bounty.killmail_object_id = option::some(killmail_obj_addr);
+
+        // Pay out reward
+        let reward_amount = balance::value(&bounty.reward);
+        let payout = coin::from_balance(balance::split(&mut bounty.reward, reward_amount), ctx);
+        transfer::public_transfer(payout, killer_address);
+
+        event::emit(BountyClaimed {
+            bounty_id: object::uid_to_inner(&bounty.id),
+            killer: killer_address,
+            reward_amount,
+            killmail_object_id: option::some(killmail_obj_addr),
         });
     }
 

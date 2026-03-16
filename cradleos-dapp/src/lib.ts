@@ -2335,3 +2335,31 @@ export async function fetchTribeMembersByTribeId(tribeId: number): Promise<Chara
       }));
   } catch { return []; }
 }
+
+// ── Bounty Contract Tx Builders ───────────────────────────────────────────────
+
+/**
+ * Build a trustless bounty claim transaction.
+ * Calls cradleos::bounty_contract::claim_bounty_trustless_entry.
+ *
+ * @param bountyId       - Object ID of the shared Bounty
+ * @param killmailId     - Object ID of the shared Killmail (world::killmail::Killmail)
+ * @param killerCharId   - Object ID of the killer's Character (world::character::Character)
+ */
+export function buildClaimBountyTrustlessTransaction(
+  bountyId: string,
+  killmailId: string,
+  killerCharId: string,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::bounty_contract::claim_bounty_trustless_entry`,
+    arguments: [
+      tx.object(bountyId),
+      tx.object(killmailId),
+      tx.object(killerCharId),
+      tx.object(CLOCK),
+    ],
+  });
+  return tx;
+}
