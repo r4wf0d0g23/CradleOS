@@ -785,6 +785,11 @@ export function StructurePanel({ onTxSuccess }: Props) {
 
       {/* Structure List */}
       <div>
+        {!characterId && (
+          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", padding: "8px 0", fontFamily: "monospace" }}>
+            Resolving character… structure actions will be available shortly.
+          </div>
+        )}
         {activeGroup.structures.map((s) => (
           <StructureRow
             key={s.objectId}

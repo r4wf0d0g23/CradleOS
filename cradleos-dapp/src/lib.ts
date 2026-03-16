@@ -604,6 +604,9 @@ export function buildBatchOnlineTransaction(
   structures: PlayerStructure[],
   characterId: string,
 ): Transaction {
+  if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+    throw new Error("Character ID not yet resolved — please wait a moment and try again.");
+  }
   const tx = new Transaction();
   for (const s of structures) {
     const [cap, receipt] = tx.moveCall({
@@ -653,6 +656,9 @@ export async function buildBatchOfflineTransaction(
   structures: PlayerStructure[],
   characterId: string,
 ): Promise<Transaction> {
+  if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+    throw new Error("Character ID not yet resolved — please wait a moment and try again.");
+  }
   const tx = new Transaction();
 
   for (const s of structures) {
@@ -731,6 +737,9 @@ export function buildStructureOnlineTransaction(
   structure: PlayerStructure,
   characterId: string,
 ): Transaction {
+  if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+    throw new Error("Character ID not yet resolved — please wait a moment and try again.");
+  }
   const tx = new Transaction();
 
   const [cap, receipt] = tx.moveCall({
@@ -779,6 +788,9 @@ export async function buildStructureOfflineTransaction(
   structure: PlayerStructure,
   characterId: string,
 ): Promise<Transaction> {
+  if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+    throw new Error("Character ID not yet resolved — please wait a moment and try again.");
+  }
   const tx = new Transaction();
 
   const [cap, receipt] = tx.moveCall({
