@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/index.ts"],
+  "sourcesContent": ["// Copyright (c) Mysten Labs, Inc.\n// SPDX-License-Identifier: Apache-2.0\n\nexport * from '@wallet-standard/core';\n\nexport { type Wallet, signAndExecuteTransaction, signTransaction } from './wallet.js';\nexport * from './features/index.js';\nexport * from './detect.js';\nexport * from './chains.js';\nexport * from './types.js';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,0BAAc,kCAHd;AAKA,oBAAwE;AACxE,0BAAc,gCANd;AAOA,0BAAc,wBAPd;AAQA,0BAAc,wBARd;AASA,0BAAc,uBATd;",
+  "names": []
+}

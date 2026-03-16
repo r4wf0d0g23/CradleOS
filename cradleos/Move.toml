@@ -1,0 +1,12 @@
+[package]
+name = "cradleos"
+edition = "2024.beta"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+
+[addresses]
+cradleos = "0x0"
+
+[environments]
+testnet_utopia = "4c78adac"

@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap');
+
+/* ── CCP / EVE Frontier Design System ───────────────────────────────────── */
+:root {
+  --ccp-red:       #FF4700;
+  --ccp-red-dim:   rgba(255, 71, 0, 0.18);
+  --ccp-red-line:  rgba(255, 71, 0, 0.25);
+  --ccp-secondary: #6B6B5E;
+  --ccp-fg:        #FAFAE5;
+  --ccp-fg-muted:  rgba(250, 250, 229, 0.45);
+  --ccp-bg:        rgba(5,3,2,0.82);
+  --ccp-surface:   rgba(8,5,2,0.84);
+  --ccp-surface2:  rgba(12,7,3,0.88);
+
+  /* legacy alias → CCP tokens */
+  --hud-bg:       var(--ccp-bg);
+  --hud-panel:    rgba(8,5,2,0.88);
+  --hud-border:   var(--ccp-red-line);
+  --hud-accent:   var(--ccp-red);
+  --hud-accent-2: #ff6a33;
+  --hud-text:     var(--ccp-fg);
+  --hud-muted:    var(--ccp-secondary);
+  --hud-good:     #5dff9a;
+  --hud-warn:     #FF4700;
+  --hud-danger:   #ff3838;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  margin: 0;
+  min-height: 100%;
+  background: url(/lineagewar-corridor.jpg) center 30% / cover fixed #0a0704;
+}
+
+html, body, #root { margin: 0; min-height: 100%; }
+
+body {
+  min-height: 100vh;
+  font-family: "Disket Mono", "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  background: transparent;
+  color: var(--ccp-fg);
+}
+
+button { font: inherit; cursor: pointer; }
+code { display: block; overflow-wrap: anywhere; color: var(--ccp-red); }
+h1, h2, h3, p { margin: 0; }
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+.app-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Faint EVE Frontier banner texture — 5% opacity, fixed, doesn't compete with content */
+.app-shell > * { position: relative; z-index: 1; }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  background: transparent;
+}
+
+/* ── Panels ────────────────────────────────────────────────────────────── */
+.hud-panel {
+  border: 1px solid var(--ccp-red-line);
+  background: var(--ccp-surface);
+  border-radius: 0;                     /* CCP: sharp rectangles */
+  padding: 20px;
+  box-shadow: 0 0 0 1px rgba(255,71,0,0.04) inset, 0 16px 48px rgba(0,0,0,0.6);
+}
+
+/* ── Topbar & hero wrappers ─────────────────────────────────────────────── */
+.topbar, .hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.hero { align-items: flex-start; }
+
+.wallet-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ── Wallet readout / stat cards ─────────────────────────────────────────── */
+.wallet-readout, .stat-card {
+  border: 1px solid var(--ccp-red-line);
+  background: rgba(8,5,2,0.82);
+  border-radius: 0;
+  padding: 12px 16px;
+}
+
+/* ── Text roles ──────────────────────────────────────────────────────────── */
+.eyebrow, .stat-label {
+  color: var(--ccp-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.muted-text { color: var(--ccp-fg-muted); }
+
+/* ── Panel structure ────────────────────────────────────────────────────── */
+.panel-header, .panel-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.panel-footer { margin-top: 18px; }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  background: transparent;
+  margin-top: 18px;
+}
+
+.hero-list { margin: 0; padding-left: 18px; color: var(--ccp-fg); }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.accent-button, .ghost-button {
+  border-radius: 0;                     /* CCP: no border-radius */
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  transition: 100ms ease;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.accent-button {
+  background: var(--ccp-red);
+  color: #0B0B0B;
+  border-color: var(--ccp-red);
+}
+
+.accent-button:hover {
+  background: #ff5c1a;
+  border-color: #ff5c1a;
+}
+
+.ghost-button {
+  background: rgba(107,107,94,0.15);
+  color: var(--ccp-fg);
+  border-color: var(--ccp-secondary);
+}
+
+.ghost-button:hover {
+  background: rgba(107,107,94,0.28);
+}
+
+.accent-button:disabled, .ghost-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* ── Fuel bar ────────────────────────────────────────────────────────────── */
+.fuel-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 0;
+  background: rgba(255,255,255,0.06);
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.fuel-fill {
+  height: 100%;
+  background: var(--ccp-red);
+}
+
+/* ── State text ──────────────────────────────────────────────────────────── */
+.success-text { color: var(--hud-good); }
+.error-text   { color: var(--hud-danger); margin-top: 14px; }
+
+.empty-state {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid var(--ccp-red-line);
+  border-radius: 0;
+  text-align: center;
+  color: var(--ccp-fg-muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── Global dividers ────────────────────────────────────────────────────── */
+hr {
+  border: none;
+  border-top: 1px solid var(--ccp-red-line);
+  margin: 16px 0;
+}
+
+/* ── Scrollbars ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--ccp-bg); }
+::-webkit-scrollbar-thumb { background: rgba(255,71,0,0.35); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,71,0,0.6); }
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .topbar, .hero, .panel-header, .panel-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wallet-cluster { justify-content: flex-start; }
+}
+
+/* Override Radix UI Theme background — must be transparent to show corridor */
+.radix-themes {
+  background: transparent !important;
+}
+
+/* Global panel opacity — all dark card-like containers get semi-transparent treatment */
+.card, [class*="card"], [class*="panel"], [class*="Panel"] {
+  background: rgba(8,5,2,0.84) !important;
+}
+
+/* Darken background image slightly */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(2,1,0,0.35);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Tab content area — ensure panels inside each tab have background */
+.app-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Inline-styled content wrappers (TribeVault, Gates, Hierarchy, Query etc) */
+div[style*="maxWidth"][style*="margin"],
+div[style*="padding: \"20px\""][style*="flexDirection"],
+div[style*="padding: 20px"][style*="flex-direction"] {
+  background: rgba(8,5,2,0.84) !important;
+}
+
+/* Darken corridor image slightly */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(2,1,0,0.30);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-shell > * { position: relative; z-index: 1; }
+
+/* Tab content panels — transparent panels inside tabs get background */
+.content-panel > * {
+  background: rgba(8,5,2,0.84) !important;
+}
+
+/* ── In-game browser responsive fixes ──────────────────────────────────── */
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 8px;
+  }
+
+  /* Compress tab text */
+  .app-shell nav button,
+  .app-shell > div button[style] {
+    padding: 6px 8px 7px !important;
+    font-size: 9px !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  /* Header tighter */
+  header.hud-panel {
+    padding: 14px 12px 12px !important;
+  }
+
+  /* Era/cycle moniker smaller */
+  header.hud-panel > div:first-child {
+    font-size: 7px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell nav button,
+  .app-shell > div button[style] {
+    padding: 5px 6px 6px !important;
+    font-size: 8px !important;
+    letter-spacing: 0.05em !important;
+  }
+}

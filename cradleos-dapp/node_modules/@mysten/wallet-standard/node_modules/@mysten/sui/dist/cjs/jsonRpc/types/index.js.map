@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/jsonRpc/types/index.ts"],
+  "sourcesContent": ["// Copyright (c) Mysten Labs, Inc.\n// SPDX-License-Identifier: Apache-2.0\n\nexport type * from './chain.js';\nexport type * from './coins.js';\nexport type * from './common.js';\nexport type * from './changes.js';\nexport type * from './generated.js';\nexport type * from './params.js';\n"],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

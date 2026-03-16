@@ -1,0 +1,28 @@
+import type { IdentifierRecord, StandardConnectFeature, StandardDisconnectFeature, StandardEventsFeature, WalletWithFeatures } from '@wallet-standard/core';
+import type { SuiReportTransactionEffectsFeature } from './suiReportTransactionEffects.js';
+import type { SuiSignAndExecuteTransactionFeature } from './suiSignAndExecuteTransaction.js';
+import type { SuiSignAndExecuteTransactionBlockFeature } from './suiSignAndExecuteTransactionBlock.js';
+import type { SuiSignMessageFeature } from './suiSignMessage.js';
+import type { SuiSignPersonalMessageFeature } from './suiSignPersonalMessage.js';
+import type { SuiSignTransactionFeature } from './suiSignTransaction.js';
+import type { SuiSignTransactionBlockFeature } from './suiSignTransactionBlock.js';
+import type { SuiGetCapabilitiesFeature } from './suiGetCapabilities.js';
+/**
+ * Wallet Standard features that are unique to Sui, and that all Sui wallets are expected to implement.
+ */
+export type SuiFeatures = Partial<SuiSignTransactionBlockFeature> & Partial<SuiSignAndExecuteTransactionBlockFeature> & SuiSignPersonalMessageFeature & SuiSignAndExecuteTransactionFeature & SuiSignTransactionFeature & Partial<SuiSignMessageFeature> & Partial<SuiReportTransactionEffectsFeature> & Partial<SuiGetCapabilitiesFeature>;
+export type SuiWalletFeatures = StandardConnectFeature & StandardEventsFeature & SuiFeatures & Partial<StandardDisconnectFeature>;
+export type WalletWithSuiFeatures = WalletWithFeatures<SuiWalletFeatures>;
+/**
+ * Represents a wallet with the absolute minimum feature set required to function in the Sui ecosystem.
+ */
+export type WalletWithRequiredFeatures = WalletWithFeatures<MinimallyRequiredFeatures & Partial<SuiFeatures> & Partial<StandardDisconnectFeature> & IdentifierRecord<unknown>>;
+export type MinimallyRequiredFeatures = StandardConnectFeature & StandardEventsFeature;
+export * from './suiSignMessage.js';
+export * from './suiSignTransactionBlock.js';
+export * from './suiSignTransaction.js';
+export * from './suiSignAndExecuteTransactionBlock.js';
+export * from './suiSignAndExecuteTransaction.js';
+export * from './suiSignPersonalMessage.js';
+export * from './suiReportTransactionEffects.js';
+export * from './suiGetCapabilities.js';

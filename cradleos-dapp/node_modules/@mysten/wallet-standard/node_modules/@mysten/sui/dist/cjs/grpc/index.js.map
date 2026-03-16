@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/grpc/index.ts"],
+  "sourcesContent": ["// Copyright (c) Mysten Labs, Inc.\n// SPDX-License-Identifier: Apache-2.0\n\nexport { SuiGrpcClient } from './client.js';\nexport { GrpcCoreClient } from './core.js';\nexport type { SuiGrpcClientOptions } from './client.js';\nexport type { GrpcCoreClientOptions } from './core.js';\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,oBAA8B;AAC9B,kBAA+B;",
+  "names": []
+}
