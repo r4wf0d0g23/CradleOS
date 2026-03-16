@@ -24,6 +24,46 @@ import { ShipFittingPanel } from "./components/ShipFittingPanel";
 import { QueryPanel } from "./components/QueryPanel";
 import { SRPPanel } from "./components/SRPPanel";
 
+// ── Server status dots ────────────────────────────────────────────────────────
+const SERVERS = [
+  { label: "STILLNESS", url: "https://world-api-stillness.live.tech.evefrontier.com/v2/tribes?limit=1" },
+  { label: "UTOPIA",    url: "https://world-api-utopia.uat.pub.evefrontier.com/v2/tribes?limit=1"    },
+];
+type ServerStatus = "checking" | "online" | "offline";
+
+function ServerStatusDots({ compact }: { compact: boolean }) {
+  const [statuses, setStatuses] = useState<ServerStatus[]>(SERVERS.map(() => "checking"));
+  useEffect(() => {
+    SERVERS.forEach((s, i) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 6000);
+      fetch(s.url, { method: "HEAD", signal: controller.signal })
+        .then(r => setStatuses(prev => { const n = [...prev]; n[i] = r.ok ? "online" : "offline"; return n; }))
+        .catch(() => setStatuses(prev => { const n = [...prev]; n[i] = "offline"; return n; }))
+        .finally(() => clearTimeout(timer));
+    });
+  }, []);
+  return (
+    <div style={{ display: "flex", gap: compact ? "6px" : "10px", alignItems: "center" }}>
+      {SERVERS.map((s, i) => {
+        const st = statuses[i];
+        const color = st === "online" ? "#00ff96" : st === "offline" ? "#ff4444" : "rgba(180,160,140,0.4)";
+        return (
+          <div key={s.label} style={{ display: "flex", alignItems: "center", gap: "4px" }}
+               title={`${s.label}: ${st.toUpperCase()}`}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: color,
+                          boxShadow: st === "online" ? `0 0 4px ${color}` : "none" }} />
+            {!compact && <span style={{ fontSize: "9px", fontFamily: "monospace",
+                                        color: "rgba(180,160,140,0.5)", letterSpacing: "0.06em" }}>
+              {s.label}
+            </span>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 type Tab = "structures" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query";
 
 function AppInner() {
@@ -266,6 +306,7 @@ function AppInner() {
         <div style={{ display: "flex", gap: compact ? "8px" : "16px", alignItems: "center" }}>
           <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,71,0,0.8)" }}>ERA 6: AWAKENING</span>
           <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(180,160,140,0.45)" }}>CYCLE 5: SHROUD OF FEAR</span>
+          <ServerStatusDots compact={compact} />
           {import.meta.env.DEV && <span style={{ fontSize: "7px", fontFamily: "monospace", color: "#00ff96", border: "1px solid rgba(0,255,150,0.25)", padding: "0 4px" }}>DEV</span>}
         </div>
         {/* Wallet */}
