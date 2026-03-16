@@ -71,6 +71,7 @@ export const CRADLEOS_PKG_V5 = "0x934b4838bc94dfd551e57e261c0906b374e100751848a6
 // CradleMintController and CoinMetadata are shared objects from v4 init — same IDs across upgrades
 export const CRADLE_MINT_CONTROLLER = "0x50a5c166ee46cd9a48b49649b6ac0b6cb01090470c96317bd9d69d7e50e19a50";
 export const CRDL_COIN_TYPE = `${CRADLEOS_PKG}::cradle_coin::CRADLE_COIN`;
+// Developer testnet objects — real users connect their own wallet
 export const RAW_CHARACTER_ID = "0x5ef314c39748d5027fe4aef711f92497a4ea9618886f107916f2df0f16034c1c";
 export const RAW_NETWORK_NODE_ID = "0xbce555aedb0c1322232c4243ce62cfc6210293cb69be6b4fe212ab9b4ba49fd7";
 export const RAW_NODE_OWNER_CAP = "0x1e69832d1977a6963ea93b4cf2feeb7e432cde4ae463ff2989f35de3c78765f2";
@@ -94,8 +95,9 @@ export const ASSEMBLY_TYPE = `${WORLD_PKG}::assembly::Assembly`;
 export const TURRET_TYPE = `${WORLD_PKG}::turret::Turret`;
 export const STORAGE_UNIT_TYPE = `${WORLD_PKG}::storage_unit::StorageUnit`;
 export const CHARACTER_TYPE = `${WORLD_PKG}::character::Character`;
+// Legacy on-chain module names from V7 deploy — displayed as 'tribe' in UI
 export const CORP_REGISTRY_TYPE = `${CRADLEOS_PKG}::corp_registry::CorpRegistry`;
-export const CORP_TYPE       = `${CRADLEOS_PKG}::corp::Corp`;
+export const CORP_TYPE       = `${CRADLEOS_PKG}::corp::Corp`; // on-chain name; UI displays as 'Tribe'
 export const MEMBER_CAP_TYPE = `${CRADLEOS_PKG}::corp::MemberCap`;
 export const TREASURY_TYPE   = `${CRADLEOS_PKG}::treasury::Treasury`;
 export const REGISTRY_TYPE   = `${CRADLEOS_PKG}::registry::Registry`;

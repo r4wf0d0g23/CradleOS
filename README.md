@@ -37,7 +37,7 @@ CradleOS is an on-chain tribe economy and command infrastructure for EVE Frontie
 ## Repository Structure
 
 ```
-frontier/
+.
 ├── cradleos/                   # Sui Move contracts (V7–V14)
 │   └── sources/
 │       ├── tribe_vault.move    # Core tribe token + treasury

@@ -38,7 +38,7 @@ VITE_BASE=/CradleOS/ VITE_SERVER_ENV=stillness npx vite build --base=/CradleOS/
 | `src/moduleStats.ts` | Module CPU/PG data |
 | `src/moduleAttributes.ts` | Module attributes from game screenshots |
 | `src/munitionStats.ts` | Ammo/charge damage values |
-| `public/lineagewar-corridor.jpg` | Background (corridorofsaddness) |
+| `public/lineagewar-corridor.jpg` | Background (EVE Frontier station corridor scene) |
 | `public/ef-*.svg` | Launcher UI SVGs extracted from app.asar |
 | `public/game-*.png` | Structure/ship icons from game ResFiles |
 

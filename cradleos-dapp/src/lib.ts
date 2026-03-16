@@ -31,7 +31,7 @@ export type NodeDashboardData = {
   raw: Record<string, unknown> | null;
 };
 
-export type CorpOverviewData = {
+export type TribeOverviewData = {
   objectId: string;
   name: string;
   tribeId: string;
@@ -154,7 +154,7 @@ function decodeMaybeAscii(value: unknown): string {
   return "Unknown Tribe";
 }
 
-function extractCorpMetrics(fields: Record<string, unknown>, objectId: string): CorpOverviewData {
+function extractCorpMetrics(fields: Record<string, unknown>, objectId: string): TribeOverviewData {
   const membersValue = readPath(fields, "members") ?? readPath(fields, "member_table");
   const memberCount =
     numish(readPath(fields, "member_count")) ??
@@ -179,7 +179,7 @@ export async function fetchNodeDashboard(_client: CoreLikeClient): Promise<NodeD
 }
 
 /** @deprecated — orphan component removed, kept for historical reference */
-export async function fetchCorpOverview(_client: CoreLikeClient): Promise<CorpOverviewData | null> {
+export async function fetchCorpOverview(_client: CoreLikeClient): Promise<TribeOverviewData | null> {
   const results = await rpcGetOwnedObjects(
     RAW_CHARACTER_ID,
     `${CRADLEOS_PKG}::corp_registry::CorpRegistry`,
