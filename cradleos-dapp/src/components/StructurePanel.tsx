@@ -7,7 +7,35 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { WORLD_PKG, CRADLEOS_PKG_V10, CLOCK, SUI_TESTNET_RPC } from "../constants";
+import { WORLD_PKG, CRADLEOS_PKG_V10, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
+
+// ── Preset dApp URLs per structure type ──────────────────────────────────────
+const DAPP_BASE = SERVER_ENV === "stillness"
+  ? "https://r4wf0d0g23.github.io/CradleOS"
+  : "https://r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026";
+
+const DAPP_PRESETS: Record<string, Array<{ label: string; url: string; desc: string }>> = {
+  Turret: [
+    { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Tribe defense policy + passage intel" },
+  ],
+  Gate: [
+    { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Tribe defense policy + gate rules" },
+    { label: "🗺 Intel",   url: `${DAPP_BASE}/#/intel`,   desc: "Intel dashboard — kill feed + infra" },
+  ],
+  StorageUnit: [
+    { label: "📦 Storage",  url: `${DAPP_BASE}/#/storage`,    desc: "SSU inventory viewer" },
+    { label: "📊 Assets",   url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
+    { label: "💱 Bounties", url: `${DAPP_BASE}/#/bounties`,   desc: "Kill bounty board" },
+  ],
+  NetworkNode: [
+    { label: "🏗 Structures", url: `${DAPP_BASE}/#/structures`, desc: "Structure manager" },
+    { label: "📊 Assets",     url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
+  ],
+  Assembly: [
+    { label: "📦 Storage",  url: `${DAPP_BASE}/#/storage`,    desc: "SSU inventory viewer" },
+    { label: "📊 Assets",   url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
+  ],
+};
 import {
   fetchPlayerStructures,
   parseAvailableEnergy,
@@ -349,22 +377,65 @@ function StructureRow({
 
         {/* Inline URL setter */}
         {settingUrl && (
-          <div style={{ display: "flex", gap: "6px", alignItems: "center", marginTop: 6, flexWrap: "wrap" }}>
-            <input
-              ref={urlInputRef}
-              value={urlInput}
-              onChange={e => setUrlInput(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleSetUrl(); if (e.key === "Escape") setSettingUrl(false); }}
-              placeholder="https://r4wf0d0g23.github.io/CradleOS/"
-              style={{
-                flex: 1, minWidth: 240, background: "#161616",
-                border: "1px solid rgba(255,71,0,0.4)", borderRadius: "0",
-                color: "#FF4700", fontSize: "11px", padding: "3px 8px",
-                outline: "none", fontFamily: "monospace",
-              }}
-            />
-            <button className="accent-button" onClick={handleSetUrl} disabled={busy} style={{ padding: "3px 10px", fontSize: "12px" }}>Set URL</button>
-            <button className="ghost-button" onClick={() => setSettingUrl(false)} style={{ padding: "3px 10px", fontSize: "12px" }}>Cancel</button>
+          <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+            {/* Preset quick-assign buttons */}
+            {(DAPP_PRESETS[structure.kind] ?? []).length > 0 && (
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: "10px", color: "rgba(107,107,94,0.5)", letterSpacing: "0.06em", minWidth: 50 }}>QUICK</span>
+                {(DAPP_PRESETS[structure.kind] ?? []).map(preset => (
+                  <button
+                    key={preset.url}
+                    title={preset.desc}
+                    onClick={() => {
+                      setUrlInput(preset.url);
+                      // auto-submit after setting
+                      setTimeout(() => {
+                        // use the value directly since state may not have updated yet
+                        const url = preset.url;
+                        setBusy(true); setErr(null);
+                        (async () => {
+                          try {
+                            const tx = buildSetUrlTransaction(structure, characterId, url);
+                            const signer = new CurrentAccountSigner(dAppKit);
+                            const result = await signer.signAndExecuteTransaction({ transaction: tx });
+                            setSettingUrl(false);
+                            setUrlInput("");
+                            onTxSuccess?.(readDigest(result));
+                          } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+                          finally { setBusy(false); }
+                        })();
+                      }, 0);
+                    }}
+                    disabled={busy}
+                    style={{
+                      background: "rgba(255,71,0,0.1)", border: "1px solid rgba(255,71,0,0.35)",
+                      color: "#FF4700", borderRadius: "0", fontSize: "11px", fontWeight: 600,
+                      padding: "3px 10px", cursor: "pointer", letterSpacing: "0.04em",
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {/* Manual input */}
+            <div style={{ display: "flex", gap: "6px", alignItems: "center", flexWrap: "wrap" }}>
+              <input
+                ref={urlInputRef}
+                value={urlInput}
+                onChange={e => setUrlInput(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") handleSetUrl(); if (e.key === "Escape") setSettingUrl(false); }}
+                placeholder={`${DAPP_BASE}/#/defense`}
+                style={{
+                  flex: 1, minWidth: 240, background: "#161616",
+                  border: "1px solid rgba(255,71,0,0.4)", borderRadius: "0",
+                  color: "#FF4700", fontSize: "11px", padding: "3px 8px",
+                  outline: "none", fontFamily: "monospace",
+                }}
+              />
+              <button className="accent-button" onClick={handleSetUrl} disabled={busy} style={{ padding: "3px 10px", fontSize: "12px" }}>Set URL</button>
+              <button className="ghost-button" onClick={() => setSettingUrl(false)} style={{ padding: "3px 10px", fontSize: "12px" }}>Cancel</button>
+            </div>
           </div>
         )}
 
