@@ -69,6 +69,37 @@ function ServerStatusDots({ compact }: { compact: boolean }) {
 
 type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query";
 
+// ── Hash routing ───────────────────────────────────────────────────────────────
+// Defined at module level so they are stable references (no re-creation per render).
+const ROUTE_MAP: Record<string, Tab> = {
+  "defense":       "defense",
+  "storage":       "inventory",
+  "inventory":     "inventory",
+  "structures":    "structures",
+  "bounties":      "bounties",
+  "srp":           "srp",
+  "cargo":         "cargo",
+  "gates":         "gates",
+  "tribe":         "tribe",
+  "registry":      "registry",
+  "intel":         "intel",
+  "succession":    "succession",
+  "wiki":          "wiki",
+  "fitting":       "fitting",
+  "map":           "map",
+  "query":         "query",
+  "announcements": "announcements",
+  "recruiting":    "recruiting",
+  "hierarchy":     "hierarchy",
+  "assets":        "assets",
+  "calendar":      "calendar",
+};
+
+function getHashTab(): Tab | null {
+  const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase().trim();
+  return ROUTE_MAP[hash] ?? null;
+}
+
 function AppInner() {
   const [winWidth, setWinWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
   useEffect(() => {
@@ -85,8 +116,9 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel"]);
-  const [activeTab, setActiveTab] = useState<Tab>("fitting"); // default to fitting — visible without wallet
+  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "fitting"); // default to fitting — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
+  const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
 
   const TAB_BRIEF: Record<Tab, { title: string; steps: string[] }> = {
     map: {
@@ -284,6 +316,36 @@ function AppInner() {
 
   const brief = TAB_BRIEF[activeTab];
 
+  // Sync tab → hash and handle browser back/forward
+  useEffect(() => {
+    const reverseMap: Record<Tab, string> = {
+      defense: "defense", inventory: "storage", structures: "structures",
+      bounties: "bounties", srp: "srp", cargo: "cargo", gates: "gates",
+      tribe: "tribe", registry: "registry", intel: "intel",
+      succession: "succession", wiki: "wiki", fitting: "fitting",
+      map: "map", query: "query", announcements: "announcements",
+      recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
+      calendar: "calendar",
+    };
+    const slug = reverseMap[activeTab] ?? activeTab;
+    // Only push hash if we're in kiosk mode or if a hash is already present
+    if (kioskMode || window.location.hash) {
+      window.location.hash = `/${slug}`;
+    }
+  }, [activeTab, kioskMode]);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const tab = getHashTab();
+      if (tab) {
+        setActiveTab(tab);
+        setKioskMode(true);
+      }
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
   const handleTabChange = useCallback((tab: Tab) => {
     setActiveTab(tab);
     setBriefOpen(true);
@@ -306,7 +368,7 @@ function AppInner() {
   return (
     <main className="app-shell">
       {/* ── Topbar: era/cycle left, wallet right ── */}
-      <div style={{
+      {!kioskMode && <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: compact ? "4px 10px" : "6px 20px",
         background: "rgba(3,2,1,0.92)",
@@ -375,10 +437,10 @@ function AppInner() {
             </button>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* ── Title panel ── */}
-      <header className="hud-panel" style={{
+      {!kioskMode && <header className="hud-panel" style={{
         display: "flex", flexDirection: "column", alignItems: "center",
         textAlign: "center", position: "relative", padding: compact ? "10px 12px 8px" : "22px 24px 18px",
         marginBottom: "0",
@@ -421,10 +483,10 @@ function AppInner() {
           <img src="ef-wordmark.svg" alt="EVE FRONTIER"
             style={{ height: 20, width: "auto", opacity: 0.3 }} />
         </div>
-      </header>
+      </header>}
 
       {/* Collapsible context brief */}
-      <div style={{
+      {!kioskMode && <div style={{
         marginBottom: "12px",
         border: "1px solid rgba(255,71,0,0.15)",
         borderRadius: "2px",
@@ -462,10 +524,10 @@ function AppInner() {
             )}
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Main nav tabs — CCP design system: sharp, uppercase, red active indicator */}
-      <div style={{
+      {!kioskMode && <div style={{
         display: "flex", flexWrap: "wrap", gap: "0", marginBottom: "20px",
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
@@ -543,7 +605,7 @@ function AppInner() {
             </button>
           );
         })}
-      </div>
+      </div>}
 
       <ServerMismatchBanner />
 
