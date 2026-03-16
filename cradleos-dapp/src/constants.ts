@@ -70,7 +70,9 @@ export function eventType(module: string, event: string): string {
 export const CRADLEOS_PKG_V5 = "0x934b4838bc94dfd551e57e261c0906b374e100751848a61d0d87b73047ba5be5";
 // CradleMintController and CoinMetadata are shared objects from v4 init — same IDs across upgrades
 export const CRADLE_MINT_CONTROLLER = "0x50a5c166ee46cd9a48b49649b6ac0b6cb01090470c96317bd9d69d7e50e19a50";
-export const CRDL_COIN_TYPE = `${CRADLEOS_PKG}::cradle_coin::CRADLE_COIN`;
+// cradle_coin was first introduced in the v8 deployment (0xee8cd44d…), not v7.
+// Using MODULE_ORIGIN_PKG ensures the coin type resolves to the correct originating package.
+export const CRDL_COIN_TYPE = `${MODULE_ORIGIN_PKG["cradle_coin"]}::cradle_coin::CRADLE_COIN`;
 // Developer testnet objects — real users connect their own wallet
 export const RAW_CHARACTER_ID = "0x5ef314c39748d5027fe4aef711f92497a4ea9618886f107916f2df0f16034c1c";
 export const RAW_NETWORK_NODE_ID = "0xbce555aedb0c1322232c4243ce62cfc6210293cb69be6b4fe212ab9b4ba49fd7";
