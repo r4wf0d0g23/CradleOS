@@ -1,18 +1,37 @@
-data/wiki_munitions/
-wiki_attributes/
-app.asar
-app-patched.asar
-app-surgical.asar
-app-extracted/
-app.asar.backup
-*.asar.bak*
+# Dependencies
 node_modules/
-dist/
 cradleos-dapp/node_modules/
-cradleos-dapp/dist/
 cradleos-agent-proxy/node_modules/
-cradleos-agent-proxy/training_logs/
+
+# Build outputs
+cradleos-dapp/dist/
+cradleos-dapp/.vite/
+
+# Sensitive / personal files
+raw-soul.md
+MEMORY.md
+memory/
+TOOLS.md
+AGENTS.md
+SOUL.md
+*.env
+.env*
+
+# Runtime / internal
+api.py
+intel-api/
+training_logs/
 __pycache__/
 *.pyc
-.env
 *.log
+*.asar
+*.asar.*
+app-extracted/
+
+# Large game data files
+resfileindex.txt
+data/wiki_munitions/
+wiki_attributes/
+
+# Misc
+.DS_Store
