@@ -23,6 +23,7 @@ import { LoreWikiPanel } from "./components/LoreWikiPanel";
 import { ShipFittingPanel } from "./components/ShipFittingPanel";
 import { QueryPanel } from "./components/QueryPanel";
 import { SRPPanel } from "./components/SRPPanel";
+import { InventoryPanel } from "./components/InventoryPanel";
 
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
@@ -37,8 +38,10 @@ function ServerStatusDots({ compact }: { compact: boolean }) {
     SERVERS.forEach((s, i) => {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 6000);
-      fetch(s.url, { method: "HEAD", signal: controller.signal })
-        .then(r => setStatuses(prev => { const n = [...prev]; n[i] = r.ok ? "online" : "offline"; return n; }))
+      // mode: 'no-cors' returns an opaque response — we can't read status,
+      // but the promise resolves if the server is reachable and rejects if not.
+      fetch(s.url, { method: "HEAD", mode: "no-cors", signal: controller.signal })
+        .then(() => setStatuses(prev => { const n = [...prev]; n[i] = "online"; return n; }))
         .catch(() => setStatuses(prev => { const n = [...prev]; n[i] = "offline"; return n; }))
         .finally(() => clearTimeout(timer));
     });
@@ -64,7 +67,7 @@ function ServerStatusDots({ compact }: { compact: boolean }) {
   );
 }
 
-type Tab = "structures" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query";
 
 function AppInner() {
   const [winWidth, setWinWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
@@ -105,6 +108,14 @@ function AppInner() {
         "Register structures to mint CRDL infra credits to your tribe vault",
         "Rename any structure with the ✎ button — writes on-chain",
         "Turrets and gates: use Apply Tribe Policy to delegate defense to your tribe",
+      ],
+    },
+    inventory: {
+      title: "SSU inventory browser — view all items across your storage units",
+      steps: [
+        "All your online and offline SSUs shown",
+        "Items resolved to names via World API",
+        "Quantities summed across all inventory slots",
       ],
     },
     tribe: {
@@ -459,7 +470,7 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["structures", "tribe", "defense", "registry", "bounties", "srp", "cargo", "gates", "succession", "intel", "announcements", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query"] as Tab[]).filter(tab => {
+        {(["structures", "inventory", "tribe", "defense", "registry", "bounties", "srp", "cargo", "gates", "succession", "intel", "announcements", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
           const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel"]);
           return account || PUBLIC_TABS.has(tab);
@@ -490,6 +501,7 @@ function AppInner() {
             >
               {compact
                 ? (tab === "structures" ? "Structs"
+                  : tab === "inventory"  ? "Inv"
                   : tab === "tribe"      ? "Tribe"
                   : tab === "defense"    ? "Defense"
                   : tab === "registry"   ? "Registry"
@@ -509,6 +521,7 @@ function AppInner() {
                   : tab === "query"      ? "Query"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
+                  : tab === "inventory"  ? "Inventory"
                   : tab === "tribe"      ? "Tribe Vault"
                   : tab === "defense"    ? "Defense"
                   : tab === "registry"   ? "Registry"
@@ -556,6 +569,7 @@ function AppInner() {
       {(account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && (
         <div style={{ background: "transparent", padding: "0" }}>
           {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel    onTxSuccess={setLastDigest} /></div>}
+          {activeTab === "inventory"  && <div style={{ background: "transparent" }} className="content-panel"><InventoryPanel /></div>}
           {activeTab === "tribe"      && <div style={{ background: "transparent" }} className="content-panel"><TribeVaultPanel   onTxSuccess={setLastDigest} /></div>}
           {activeTab === "defense"    && <div style={{ background: "transparent" }} className="content-panel"><TurretPolicyPanel /></div>}
           {activeTab === "registry"   && <div style={{ background: "transparent" }} className="content-panel"><RegistryPanel /></div>}
