@@ -54,7 +54,7 @@ const BLOCKED_PATTERNS: RegExp[] = [
 ];
 
 const MAX_MESSAGE_LENGTH = 2000;
-const KEEPER_API_URL = "https://spark-27c6.tail587192.ts.net/v1/chat/completions";
+const KEEPER_API_URL = "https://keeper.reapers.shop/v1/chat/completions";
 const KEEPER_MODEL = "nemotron3-super";
 
 // ── Utility: message sanitization ────────────────────────────────────────────
@@ -477,10 +477,11 @@ No pilot context is available — wallet not connected.`;
         content,
         timestamp: Date.now(),
       }]);
-    } catch {
+    } catch (err) {
+      console.error("[Keeper] API error:", err);
       setMessages(prev => [...prev, {
         role: "keeper",
-        content: "Signal lost. Retry.",
+        content: `Signal lost. Retry. (${err instanceof Error ? err.message : String(err)})`,
         timestamp: Date.now(),
       }]);
     } finally {
