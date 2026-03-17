@@ -132,8 +132,18 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
     ]);
 
     if (charInfo.status === "fulfilled" && charInfo.value) {
-      base.characterName = charInfo.value.characterId ?? null;
       base.tribeId = charInfo.value.tribeId ?? null;
+      // Fetch character name from the Character object's metadata
+      try {
+        const res = await fetch("https://fullnode.testnet.sui.io:443", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject",
+            params: [charInfo.value.characterId, { showContent: true }] }),
+        });
+        const j = await res.json() as { result?: { data?: { content?: { fields?: { metadata?: { fields?: { name?: string } } } } } } };
+        const name = j.result?.data?.content?.fields?.metadata?.fields?.name?.trim();
+        base.characterName = (name && name.length > 0) ? name : null;
+      } catch { base.characterName = null; }
     }
 
     if (crdlResult.status === "fulfilled") {
