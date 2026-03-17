@@ -472,8 +472,14 @@ CRITICAL: Respond ONLY with your final answer. Never show reasoning, thinking st
       };
 
       const raw = data.choices?.[0]?.message?.content ?? "";
-      // Strip chain-of-thought reasoning blocks before displaying
-      const content = raw.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+      // Strip chain-of-thought reasoning — handles both <think>...</think> tags
+      // and models that emit reasoning as plain prose ending with </think>
+      let content = raw;
+      if (content.includes("</think>")) {
+        // Take everything after the last </think>
+        content = content.split("</think>").pop() ?? content;
+      }
+      content = content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
       if (!content) throw new Error("Empty response");
 
       setMessages(prev => [...prev, {
