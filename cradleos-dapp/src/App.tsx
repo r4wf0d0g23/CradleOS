@@ -24,6 +24,7 @@ import { ShipFittingPanel } from "./components/ShipFittingPanel";
 import { QueryPanel } from "./components/QueryPanel";
 import { SRPPanel } from "./components/SRPPanel";
 import { InventoryPanel } from "./components/InventoryPanel";
+import { KeeperPanel } from "./components/KeeperPanel";
 
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
@@ -67,7 +68,7 @@ function ServerStatusDots({ compact }: { compact: boolean }) {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -93,6 +94,7 @@ const ROUTE_MAP: Record<string, Tab> = {
   "hierarchy":     "hierarchy",
   "assets":        "assets",
   "calendar":      "calendar",
+  "keeper":        "keeper",
 };
 
 function getHashTab(): Tab | null {
@@ -115,7 +117,7 @@ function AppInner() {
   const { isVerified, isVerifying, verificationError } = useVerifiedAccountContext();
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel"]);
+  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "keeper"]);
   const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "fitting"); // default to fitting — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
@@ -312,6 +314,14 @@ function AppInner() {
         "Tribe view shows all on-chain members, token info, and description",
       ],
     },
+    keeper: {
+      title: "Keeper — on-board tactical AI for EVE Frontier",
+      steps: [
+        "Ask about game mechanics, blueprints, chain data",
+        "Context auto-loaded from your connected wallet",
+        "Your data stays on Sui — Keeper only reads public chain state",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -325,7 +335,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar",
+      calendar: "calendar", keeper: "keeper",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -532,9 +542,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["structures", "inventory", "tribe", "defense", "registry", "bounties", "srp", "cargo", "gates", "succession", "intel", "announcements", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query"] as Tab[]).filter(tab => {
+        {(["structures", "inventory", "tribe", "defense", "registry", "bounties", "srp", "cargo", "gates", "succession", "intel", "announcements", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query", "keeper"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel"]);
+          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "keeper"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -581,6 +591,7 @@ function AppInner() {
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
+                  : tab === "keeper"     ? "◆"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
                   : tab === "inventory"  ? "Inventory"
@@ -601,6 +612,7 @@ function AppInner() {
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
+                  : tab === "keeper"        ? "◆ Keeper"
                   :                          "Starmap")}
             </button>
           );
@@ -649,6 +661,7 @@ function AppInner() {
           {activeTab === "wiki"          && <div style={{ background: "transparent", height: "calc(100vh - 260px)", minHeight: 500, display: "flex", flexDirection: "column" }}><LoreWikiPanel /></div>}
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
+          {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
         </div>
       )}
       {/* DEV-only role toggle bar — fixed bottom bar, production builds strip this */}
