@@ -315,11 +315,11 @@ function AppInner() {
       ],
     },
     keeper: {
-      title: "Keeper — on-board tactical AI for EVE Frontier",
+      title: "Keeper — ancient intelligence beyond known space",
       steps: [
-        "Ask about game mechanics, blueprints, chain data",
-        "Context auto-loaded from your connected wallet",
-        "Your data stays on Sui — Keeper only reads public chain state",
+        "Ask about the world chain, structures, blueprints, tribal economies",
+        "The Keeper perceives your wallet, tribe, and on-chain state",
+        "Your data stays on Sui — the Keeper reads only what the lattice reveals",
       ],
     },
   };

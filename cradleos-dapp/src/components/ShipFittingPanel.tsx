@@ -1399,6 +1399,18 @@ export function ShipFittingPanel() {
               <span style={S.muted}>Volume: </span>
               <span>{selectedModule.volume.toLocaleString()} m³</span>
             </div>
+            {(() => {
+              const attr = lookupModuleAttributes(selectedModule.name);
+              const cap = attr && ((attr as any).capacity_m3 ?? (attr as any).cargo_capacity_bonus_m3);
+              if (!cap) return null;
+              const label = (attr as any).cargo_capacity_bonus_m3 ? "Cargo bonus" : "Capacity";
+              return (
+                <div style={{ fontSize: 11, marginBottom: 4 }}>
+                  <span style={S.muted}>{label}: </span>
+                  <span>{Number(cap).toLocaleString()} m³</span>
+                </div>
+              );
+            })()}
             <div style={{ fontSize: 10, color: "#FF4700", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 }}>
               Stat Effects
             </div>

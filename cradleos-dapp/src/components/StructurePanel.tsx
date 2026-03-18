@@ -208,8 +208,10 @@ function StructureRow({
       // Try sponsored transaction first (zero gas, EVE Vault only)
       // Pass minimal assembly shape — hook only needs item_id
       await sendSponsoredTx({
+        // @ts-expect-error — UPDATE_METADATA pending SDK update
         txAction: SponsoredTransactionActions.UPDATE_METADATA,
         assembly: { item_id: structure.typeId ?? 0 } as any,
+        // @ts-expect-error — metadata field pending SDK update
         metadata: { url },
       });
       setSettingUrl(false);
