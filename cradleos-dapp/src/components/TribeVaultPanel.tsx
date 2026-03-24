@@ -89,7 +89,8 @@ async function fetchCreatedSharedFromDigest(digest: string): Promise<string | nu
 }
 
 /** Discover an existing TribeVault for a wallet by querying CoinLaunched events. */
-async function discoverVaultIdFromChain(walletAddress: string): Promise<string | null> {
+/** Discover the canonical vault for a tribe by tribeId. Prefers vaults with non-empty name. */
+async function discoverVaultIdFromChain(tribeId: number): Promise<string | null> {
   try {
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
@@ -103,12 +104,14 @@ async function discoverVaultIdFromChain(walletAddress: string): Promise<string |
         ],
       }),
     });
-    const json = await res.json() as { result?: { data?: Array<{ parsedJson?: { vault_id?: string; founder?: string }; sender?: string }> } };
+    const json = await res.json() as { result?: { data?: Array<{ parsedJson?: { vault_id?: string; tribe_id?: string | number; coin_name?: string; founder?: string } }> } };
     const events = json.result?.data ?? [];
-    const mine = events.find(e =>
-      e.parsedJson?.founder === walletAddress || e.sender === walletAddress
-    );
-    return mine?.parsedJson?.vault_id ?? null;
+    // Filter to matching tribe
+    const tribeVaults = events.filter(e => Number(e.parsedJson?.tribe_id) === tribeId);
+    // Prefer vault with a non-empty coin name (the "real" launch), fall back to first
+    const named = tribeVaults.find(e => (e.parsedJson?.coin_name ?? "").length > 0);
+    const best = named ?? tribeVaults[0];
+    return best?.parsedJson?.vault_id ?? null;
   } catch { return null; }
 }
 
@@ -231,7 +234,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
         // Show paste prompt so user can recover; also retry discovery in background
         setTxSent(true);
         setTimeout(async () => {
-          const discovered = await discoverVaultIdFromChain(account.address);
+          const discovered = await discoverVaultIdFromChain(tribeId);
           if (discovered && tribeId) {
             setCachedVaultId(tribeId, discovered);
             onSuccess();
@@ -948,7 +951,7 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
       let vaultId = manualVaultId ?? getCachedVaultId(tribeId);
       // Auto-discover from chain if not cached
       if (!vaultId) {
-        vaultId = await discoverVaultIdFromChain(account.address);
+        vaultId = await discoverVaultIdFromChain(tribeId);
         if (vaultId) setCachedVaultId(tribeId, vaultId);
       }
       if (!vaultId) return null;
