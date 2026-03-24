@@ -2272,37 +2272,25 @@ export function buildRevokeRoleTx(rolesId: string, vaultId: string, revokee: str
 export type PlayerRelation = { player: string; value: number }; // 0=hostile 1=friendly
 
 /** Build set_player_relation transaction. */
-export async function buildSetPlayerRelationTx(
+export function buildSetPlayerRelationTx(
   policyId: string, vaultId: string, player: string, value: number,
-): Promise<Transaction> {
-  const [policyISV, vaultISV] = await Promise.all([
-    fetchInitialSharedVersion(policyId),
-    fetchInitialSharedVersion(vaultId),
-  ]);
+): Transaction {
   const tx = new Transaction();
-  const pRef = policyISV ? sharedRef(tx, policyId, policyISV) : tx.object(policyId);
-  const vRef = vaultISV ? sharedRef(tx, vaultId, vaultISV, false) : tx.object(vaultId);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::defense_policy::set_player_relation_entry`,
-    arguments: [pRef, vRef, tx.pure.address(player), tx.pure.u8(value)],
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.address(player), tx.pure.u8(value)],
   });
   return tx;
 }
 
 /** Build remove_player_relation transaction. */
-export async function buildRemovePlayerRelationTx(
+export function buildRemovePlayerRelationTx(
   policyId: string, vaultId: string, player: string,
-): Promise<Transaction> {
-  const [policyISV, vaultISV] = await Promise.all([
-    fetchInitialSharedVersion(policyId),
-    fetchInitialSharedVersion(vaultId),
-  ]);
+): Transaction {
   const tx = new Transaction();
-  const pRef = policyISV ? sharedRef(tx, policyId, policyISV) : tx.object(policyId);
-  const vRef = vaultISV ? sharedRef(tx, vaultId, vaultISV, false) : tx.object(vaultId);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::defense_policy::remove_player_relation_entry`,
-    arguments: [pRef, vRef, tx.pure.address(player)],
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.address(player)],
   });
   return tx;
 }
