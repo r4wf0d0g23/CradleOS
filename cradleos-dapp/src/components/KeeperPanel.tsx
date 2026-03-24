@@ -181,15 +181,29 @@ async function fetchRagContext(query: string): Promise<{ contextText: string; ra
 // ── Utility: message sanitization ────────────────────────────────────────────
 
 function parseKeeperAction(content: string): { text: string; action: KeeperAction | null } {
-  const match = content.match(/%%ACTION%%([\s\S]*?)%%END_ACTION%%/);
-  if (!match) return { text: content, action: null };
-  const text = content.replace(/%%ACTION%%[\s\S]*?%%END_ACTION%%/, "").trim();
-  try {
-    const action = JSON.parse(match[1]) as KeeperAction;
-    return { text, action };
-  } catch {
-    return { text, action: null };
+  // Find ALL action blocks (Keeper may emit multiple)
+  const allMatches = [...content.matchAll(/%%ACTION%%([\s\S]*?)%%END_ACTION%%/g)];
+  // Strip ALL action blocks from display text
+  const text = content.replace(/%%ACTION%%[\s\S]*?%%END_ACTION%%/g, "").trim();
+  if (allMatches.length === 0) return { text: content, action: null };
+  // Try to parse the LAST action block (most specific/relevant)
+  for (let i = allMatches.length - 1; i >= 0; i--) {
+    try {
+      const rawJson = allMatches[i][1].trim().replace(/\n\s*/g, " ");
+      const action = JSON.parse(rawJson) as KeeperAction;
+      return { text, action };
+    } catch {
+      // Try extracting JSON object
+      try {
+        const jsonMatch = allMatches[i][1].match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const action = JSON.parse(jsonMatch[0].replace(/\n\s*/g, " ")) as KeeperAction;
+          return { text, action };
+        }
+      } catch { /* try next */ }
+    }
   }
+  return { text, action: null };
 }
 
 function sanitizeMessage(text: string): { sanitized: string; wasBlocked: boolean } {
