@@ -55,6 +55,18 @@ type SystemDetail = {
 };
 
 // ── Planet type → color mapping ────────────────────────────────────────────────
+// Short codes used in planet-index.json (compact static asset)
+const PLANET_SHORT: Record<string, { full: string; color: string }> = {
+  L: { full: "Lava",       color: "#ff3300" },
+  B: { full: "Barren",     color: "#8b7355" },
+  I: { full: "Ice",        color: "#44ccff" },
+  G: { full: "Gas",        color: "#cc88ff" },
+  O: { full: "Oceanic",    color: "#0066ff" },
+  S: { full: "Storm",      color: "#ffaa00" },
+  T: { full: "Temperate",  color: "#22cc44" },
+  P: { full: "Plasma",     color: "#ff44ff" },
+  X: { full: "Shattered",  color: "#888888" },
+};
 const PLANET_COLOR: Record<string, string> = {
   "Planet (Lava)": "#ff3300",
   "Planet (Barren)": "#8b7355",
@@ -68,6 +80,18 @@ const PLANET_COLOR: Record<string, string> = {
 };
 function planetDot(typeName: string): string {
   return PLANET_COLOR[typeName] ?? "#555";
+}
+// Planet index: systemId → [[shortCode, count], ...]
+type PlanetIndex = Record<string, Array<[string, number]>>;
+let _planetIndex: PlanetIndex | null = null;
+async function loadPlanetIndex(): Promise<PlanetIndex> {
+  if (_planetIndex) return _planetIndex;
+  try {
+    const base = import.meta.env.BASE_URL ?? "/";
+    const r = await fetch(`${base}data/planet-index.json`);
+    _planetIndex = await r.json() as PlanetIndex;
+  } catch { _planetIndex = {}; }
+  return _planetIndex!;
 }
 
 // ── Ship / Fuel tables ─────────────────────────────────────────────────────────
@@ -252,6 +276,7 @@ export function MapPanel() {
   const [currentSys,  setCurrentSys]  = useState<SolarSystem | null>(null);
   const [locationSrc, setLocationSrc] = useState<string>("");
   const [locating,    setLocating]    = useState(false);
+  const [planetIdx,   setPlanetIdx]   = useState<PlanetIndex>({});
   const [manualSearchQ, setManualSearchQ] = useState("");
   const [manualResults, setManualResults] = useState<SolarSystem[]>([]);
 
@@ -295,6 +320,9 @@ export function MapPanel() {
   }, [reachableSystems, sidebarSearch, sortKey]);
 
   // ── Three.js init ──────────────────────────────────────────────────────────
+  // Load planet index once on mount
+  useEffect(() => { loadPlanetIndex().then(setPlanetIdx); }, []);
+
   useEffect(() => {
     const mount = mountRef.current; if (!mount) return;
     const scene = new THREE.Scene();
@@ -910,18 +938,20 @@ export function MapPanel() {
                       </span>
                     </div>
                   </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:"3px", marginTop:"2px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:"3px", marginTop:"2px", flexWrap:"wrap" }}>
                     {s.regionName && (
-                      <span style={{ color:"#2a3545", fontSize:"10px" }}>{s.regionName}</span>
+                      <span style={{ color:"#2a3545", fontSize:"10px", marginRight:2 }}>{s.regionName}</span>
                     )}
-                    {/* Planet type dots (from cache) */}
-                    {detailCache.get(s.id)?.planets?.map((p, i) => (
-                      <span key={i} title={`${p.typeName} ×${p.count ?? 1}`} style={{
-                        display:"inline-block", width:6, height:6, borderRadius:"50%",
-                        background: planetDot(p.typeName), marginLeft: i === 0 && s.regionName ? 4 : 0,
-                        opacity: 0.85,
-                      }} />
-                    ))}
+                    {/* Planet type dots from static index */}
+                    {(planetIdx[String(s.id)] ?? []).map(([code, cnt], i) => {
+                      const info = PLANET_SHORT[code];
+                      return info ? (
+                        <span key={i} title={`${info.full} ×${cnt}`} style={{
+                          display:"inline-block", width:6, height:6, borderRadius:"50%",
+                          background: info.color, opacity: 0.85,
+                        }} />
+                      ) : null;
+                    })}
                   </div>
                 </div>
               );
