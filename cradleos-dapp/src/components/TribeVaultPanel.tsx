@@ -299,8 +299,8 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
     <div className="card" style={{ maxWidth: "460px" }}>
       <h3 style={{ color: "#FF4700", marginBottom: "4px" }}>LAUNCH TRIBE TOKEN</h3>
       <p style={{ color: "#888", fontSize: "13px", marginBottom: "18px" }}>
-        Create an on-chain cryptocurrency for your tribe. Register a claim first, then launch.
-        The claim proves tribe membership and prevents vault squatting.
+        Create an on-chain cryptocurrency for your tribe. Your wallet's in-game character
+        determines your tribe — enter a name and symbol, then launch.
       </p>
 
       {/* Tribe ID display */}
@@ -361,48 +361,19 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
           marginBottom: "14px", padding: "12px 14px",
           background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "0",
         }}>
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "6px" }}>
-            CLAIM STATUS
+          <div style={{ color: "#00ff96", fontSize: "12px" }}>
+            ✓ Tribe #{tribeId} detected — ready to launch
           </div>
-          {claimLoading ? (
-            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>Checking registry…</div>
-          ) : !claim ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div style={{ color: "#ff6432", fontSize: "12px", flex: 1 }}>
-                ✗ No claim for tribe #{tribeId} — register to prove membership
-              </div>
-              <button
-                onClick={handleRegisterClaim}
-                disabled={claimBusy || !characterId}
-                style={{
-                  background: "rgba(255,71,0,0.1)", border: "1px solid rgba(255,71,0,0.3)",
-                  color: "#FF4700", borderRadius: "0", fontSize: "11px", padding: "5px 12px", cursor: "pointer",
-                  flexShrink: 0,
-                }}
-              >
-                {claimBusy ? "…" : "Register Claim"}
-              </button>
-            </div>
-          ) : myClaimActive ? (
-            <div style={{ color: "#00ff96", fontSize: "12px" }}>
-              ✓ Claim active — you hold tribe #{tribeId} (epoch {claim.claimEpoch})
-              {claim.vaultCreated && " · vault already created"}
-            </div>
-          ) : (
-            <div style={{ color: "#ff6432", fontSize: "12px" }}>
-              ⚠ Tribe #{tribeId} claimed by another wallet. See Registry tab to challenge.
-            </div>
-          )}
         </div>
       )}
 
       <button
         className="accent-button"
         onClick={handleLaunch}
-        disabled={busy || txSent || !tribeId || !coinName.trim() || !coinSymbol.trim() || !account || claimConflict || claim?.vaultCreated === true}
+        disabled={busy || txSent || !tribeId || !coinName.trim() || !coinSymbol.trim() || !account}
         style={{ width: "100%", padding: "11px", marginTop: "4px" }}
       >
-        {busy ? "Launching…" : `Launch ${coinSymbol.trim() || "COIN"} for Tribe ${tribeId ?? "…"}`}
+        {busy ? "Launching…" : `🚀 Launch ${coinSymbol.trim() || "COIN"} for Tribe ${tribeId ?? "…"}`}
       </button>
       {err && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "8px" }}>⚠ {err}</div>}
 
