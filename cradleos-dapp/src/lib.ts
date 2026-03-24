@@ -1542,6 +1542,23 @@ export function buildBurnCoinTransaction(
 }
 
 /** Cache vault ID by tribeId. */
+// ── Cache-buster: clear stale vault IDs when package changes ──────────────────
+const CACHE_PKG_KEY = "cradleos:pkg";
+try {
+  const cachedPkg = localStorage.getItem(CACHE_PKG_KEY);
+  if (cachedPkg && cachedPkg !== CRADLEOS_PKG) {
+    // Package changed — wipe all cached vault/policy IDs
+    const toRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.startsWith("cradleos:vault:") || k.startsWith("cradleos:policy:"))) toRemove.push(k);
+    }
+    toRemove.forEach(k => localStorage.removeItem(k));
+    console.log(`[CradleOS] Package changed → cleared ${toRemove.length} cached IDs`);
+  }
+  localStorage.setItem(CACHE_PKG_KEY, CRADLEOS_PKG);
+} catch { /* */ }
+
 export function getCachedVaultId(tribeId: number): string | null {
   try { return localStorage.getItem(`cradleos:vault:${tribeId}`); } catch { return null; }
 }
