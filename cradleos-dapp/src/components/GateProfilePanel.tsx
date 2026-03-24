@@ -23,7 +23,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG_V8, SUI_TESTNET_RPC, eventType } from "../constants";
+import { CRADLEOS_PKG, SUI_TESTNET_RPC, eventType } from "../constants";
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId,
@@ -195,7 +195,7 @@ async function fetchAllGateProfiles(): Promise<GateProfileFeedEntry[]> {
 function buildCreateProfileTransaction(vaultId: string, notes: string, clockId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::gate_profile::create_profile_entry`,
+    target: `${CRADLEOS_PKG}::gate_profile::create_profile_entry`,
     arguments: [
       tx.object(vaultId),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(notes))),
@@ -215,7 +215,7 @@ function buildSetAccessPolicyTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::gate_profile::set_access_policy_entry`,
+    target: `${CRADLEOS_PKG}::gate_profile::set_access_policy_entry`,
     arguments: [
       tx.object(profileId),
       tx.object(vaultId),
@@ -231,7 +231,7 @@ function buildSetAccessPolicyTransaction(
 function buildAddToWhitelistTransaction(profileId: string, vaultId: string, tribeId: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::gate_profile::add_to_whitelist_entry`,
+    target: `${CRADLEOS_PKG}::gate_profile::add_to_whitelist_entry`,
     arguments: [
       tx.object(profileId),
       tx.object(vaultId),
@@ -244,7 +244,7 @@ function buildAddToWhitelistTransaction(profileId: string, vaultId: string, trib
 function buildRemoveFromWhitelistTransaction(profileId: string, vaultId: string, tribeId: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::gate_profile::remove_from_whitelist_entry`,
+    target: `${CRADLEOS_PKG}::gate_profile::remove_from_whitelist_entry`,
     arguments: [
       tx.object(profileId),
       tx.object(vaultId),

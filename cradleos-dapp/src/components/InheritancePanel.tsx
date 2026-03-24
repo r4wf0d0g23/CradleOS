@@ -22,7 +22,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG_V8, SUI_TESTNET_RPC, CLOCK, eventType } from "../constants";
+import { CRADLEOS_PKG, SUI_TESTNET_RPC, CLOCK, eventType } from "../constants";
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId,
@@ -181,7 +181,7 @@ function buildCreateWillTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::inheritance::create_will_entry`,
+    target: `${CRADLEOS_PKG}::inheritance::create_will_entry`,
     arguments: [
       tx.object(vaultId),
       tx.pure.address(heir),
@@ -196,7 +196,7 @@ function buildCreateWillTransaction(
 function buildCheckInTransaction(deedId: string, vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::inheritance::check_in_entry`,
+    target: `${CRADLEOS_PKG}::inheritance::check_in_entry`,
     arguments: [tx.object(deedId), tx.object(vaultId), tx.object(CLOCK)],
   });
   return tx;
@@ -209,7 +209,7 @@ function buildUpdateHeirTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::inheritance::update_heir_entry`,
+    target: `${CRADLEOS_PKG}::inheritance::update_heir_entry`,
     arguments: [
       tx.object(deedId),
       tx.object(vaultId),
@@ -223,7 +223,7 @@ function buildUpdateHeirTransaction(
 function buildRevokeWillTransaction(deedId: string, vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::inheritance::revoke_will_entry`,
+    target: `${CRADLEOS_PKG}::inheritance::revoke_will_entry`,
     arguments: [tx.object(deedId), tx.object(vaultId), tx.object(CLOCK)],
   });
   return tx;
@@ -232,7 +232,7 @@ function buildRevokeWillTransaction(deedId: string, vaultId: string): Transactio
 function buildExecuteSuccessionTransaction(deedId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::inheritance::execute_succession_entry`,
+    target: `${CRADLEOS_PKG}::inheritance::execute_succession_entry`,
     arguments: [tx.object(deedId), tx.object(CLOCK)],
   });
   return tx;

@@ -7,7 +7,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { WORLD_PKG, CRADLEOS_PKG_V10, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
+import { WORLD_PKG, CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
 
 // ── Preset dApp URLs per structure type ──────────────────────────────────────
 const DAPP_BASE = SERVER_ENV === "stillness"
@@ -128,7 +128,7 @@ function StructureRow({
     try {
       const tx = new Transaction();
       tx.moveCall({
-        target: `${CRADLEOS_PKG_V10}::turret_delegation::delegate_to_tribe`,
+        target: `${CRADLEOS_PKG}::turret_delegation::delegate_to_tribe`,
         arguments: [
           tx.pure.address(structure.objectId),  // structure_id
           tx.pure.address(tribeVaultId),         // tribe_vault_id
@@ -143,7 +143,7 @@ function StructureRow({
         const ownedRes = await fetch(SUI_TESTNET_RPC, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getOwnedObjects",
-            params: [account.address, { filter: { StructType: `${CRADLEOS_PKG_V10}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
+            params: [account.address, { filter: { StructType: `${CRADLEOS_PKG}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
         });
         const ownedJson = await ownedRes.json() as { result: { data: Array<{ data: { objectId: string; content: { fields: { structure_id: string } } } }> } };
         const match = ownedJson.result?.data?.find(o => o.data?.content?.fields?.structure_id === structure.objectId);
@@ -169,7 +169,7 @@ function StructureRow({
     try {
       const tx = new Transaction();
       tx.moveCall({
-        target: `${CRADLEOS_PKG_V10}::turret_delegation::revoke_delegation`,
+        target: `${CRADLEOS_PKG}::turret_delegation::revoke_delegation`,
         arguments: [
           tx.object(delegationObjId),  // delegation object (owned)
           tx.object(CLOCK),
@@ -232,10 +232,25 @@ function StructureRow({
     } finally { setBusy(false); }
   };
 
+  const handleRemoveUrl = async () => {
+    if (!confirm("Remove the dApp/protocol from this structure? This clears the metadata URL on-chain.")) return;
+    setBusy(true); setErr(null);
+    try {
+      const tx = buildSetUrlTransaction(structure, characterId, "");
+      const signer = new CurrentAccountSigner(dAppKit);
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      setSettingUrl(false);
+      setUrlInput("");
+      onTxSuccess?.(readDigest(result));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally { setBusy(false); }
+  };
+
   const handleOnline = async () => {
     setBusy(true); setErr(null);
     try {
-      const tx = buildStructureOnlineTransaction(structure, characterId);
+      const tx = await buildStructureOnlineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
       onTxSuccess?.(readDigest(result));
@@ -437,6 +452,18 @@ function StructureRow({
               />
               <button className="accent-button" onClick={handleSetUrl} disabled={busy} style={{ padding: "3px 10px", fontSize: "12px" }}>Set URL</button>
               <button className="ghost-button" onClick={() => setSettingUrl(false)} style={{ padding: "3px 10px", fontSize: "12px" }}>Cancel</button>
+              <button
+                onClick={handleRemoveUrl}
+                disabled={busy}
+                title="Remove dApp / clear protocol URL from this structure"
+                style={{
+                  background: "rgba(255,50,50,0.08)", border: "1px solid rgba(255,50,50,0.3)",
+                  color: "#ff5555", borderRadius: "0", fontSize: "11px", fontWeight: 600,
+                  padding: "3px 10px", cursor: "pointer", letterSpacing: "0.04em",
+                }}
+              >
+                ✕ Remove dApp
+              </button>
             </div>
           </div>
         )}

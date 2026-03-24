@@ -25,6 +25,11 @@ import { QueryPanel } from "./components/QueryPanel";
 import { SRPPanel } from "./components/SRPPanel";
 import { InventoryPanel } from "./components/InventoryPanel";
 import { KeeperPanel } from "./components/KeeperPanel";
+import { UpgradePanel } from "./components/UpgradePanel";
+import { DashboardPanel } from "./components/DashboardPanel";
+import { LineageWarPanel } from "./components/LineageWarPanel";
+import { LinksPanel } from "./components/LinksPanel";
+import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
@@ -68,7 +73,119 @@ function ServerStatusDots({ compact }: { compact: boolean }) {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper";
+// ── Chain Health Strip ────────────────────────────────────────────────────────
+
+interface ChainMetrics {
+  checkpoint: number | null;
+  checkpointAgeMs: number | null;
+  epoch: number | null;
+  validators: number | null;
+  gasPrice: number | null;
+  latencyMs: number | null;
+}
+
+function ChainHealth() {
+  const [metrics, setMetrics] = useState<ChainMetrics>({
+    checkpoint: null, checkpointAgeMs: null, epoch: null,
+    validators: null, gasPrice: null, latencyMs: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    const RPC = "https://fullnode.testnet.sui.io:443";
+    const post = async (method: string, params: unknown[] = []) => {
+      const r = await fetch(RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+      });
+      return (await r.json()).result;
+    };
+
+    const load = async () => {
+      try {
+        const t0 = Date.now();
+        const seqStr = await post("sui_getLatestCheckpointSequenceNumber");
+        const latencyMs = Date.now() - t0;
+        const seq = parseInt(seqStr, 10);
+
+        const [cp, committee, gasStr] = await Promise.all([
+          post("sui_getCheckpoint", [String(seq)]),
+          post("suix_getCommitteeInfo"),
+          post("suix_getReferenceGasPrice"),
+        ]);
+
+        if (cancelled) return;
+        setMetrics({
+          checkpoint: seq,
+          checkpointAgeMs: cp?.timestampMs ? Date.now() - parseInt(cp.timestampMs, 10) : null,
+          epoch: committee?.epoch ? parseInt(committee.epoch, 10) : null,
+          validators: committee?.validators?.length ?? null,
+          gasPrice: gasStr ? parseInt(gasStr, 10) : null,
+          latencyMs,
+        });
+      } catch { /* silent — chain unreachable */ }
+    };
+
+    load();
+    const id = setInterval(load, 30_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
+  const ageColor = metrics.checkpointAgeMs === null ? "rgba(180,160,140,0.4)"
+    : metrics.checkpointAgeMs < 5_000 ? "#00ff96"
+    : metrics.checkpointAgeMs < 15_000 ? "#ffcc00"
+    : "#ff4444";
+
+  const latColor = metrics.latencyMs === null ? "rgba(180,160,140,0.4)"
+    : metrics.latencyMs < 400 ? "#00ff96"
+    : metrics.latencyMs < 1000 ? "#ffcc00"
+    : "#ff4444";
+
+  const fmt = (n: number | null, suffix = "") =>
+    n === null ? <span style={{ color: "rgba(180,160,140,0.3)" }}>—</span>
+    : <span>{n.toLocaleString()}{suffix}</span>;
+
+  const fmtAge = (ms: number | null) => {
+    if (ms === null) return <span style={{ color: "rgba(180,160,140,0.3)" }}>—</span>;
+    if (ms < 1000) return <span>{ms}ms ago</span>;
+    return <span>{(ms / 1000).toFixed(1)}s ago</span>;
+  };
+
+  const dot = (color: string) => (
+    <span style={{ display: "inline-block", width: 5, height: 5, borderRadius: "50%",
+      background: color, boxShadow: color !== "rgba(180,160,140,0.4)" ? `0 0 4px ${color}` : "none",
+      marginRight: 4, verticalAlign: "middle" }} />
+  );
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "center",
+      gap: "16px", flexWrap: "wrap",
+      fontFamily: "IBM Plex Mono, monospace", fontSize: "8px",
+      letterSpacing: "0.08em", color: "rgba(180,160,140,0.55)",
+      padding: "5px 12px",
+      borderTop: "1px solid rgba(255,71,0,0.08)",
+      background: "rgba(3,2,1,0.4)",
+    }}>
+      <span title="Sui testnet chain">SUI TESTNET</span>
+      <span title="Latest checkpoint sequence number">
+        {dot(ageColor)}CP #{fmt(metrics.checkpoint)}
+      </span>
+      <span title="Time since last checkpoint" style={{ color: ageColor }}>
+        {fmtAge(metrics.checkpointAgeMs)}
+      </span>
+      <span title="Current epoch">EPOCH {fmt(metrics.epoch)}</span>
+      <span title="Active validators">{fmt(metrics.validators)} VALIDATORS</span>
+      <span title="Reference gas price in MIST">GAS {fmt(metrics.gasPrice)} MIST</span>
+      <span title="RPC round-trip latency" style={{ color: latColor }}>
+        {metrics.latencyMs !== null ? `${metrics.latencyMs}ms` : "—"} RPC
+      </span>
+    </div>
+  );
+}
+
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "links";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -77,6 +194,9 @@ const ROUTE_MAP: Record<string, Tab> = {
   "storage":       "inventory",
   "inventory":     "inventory",
   "structures":    "structures",
+  "dashboard":     "dashboard",
+  "war":           "war",
+  "links":         "links",
   "bounties":      "bounties",
   "srp":           "srp",
   "cargo":         "cargo",
@@ -117,10 +237,14 @@ function AppInner() {
   const { isVerified, isVerifying, verificationError } = useVerifiedAccountContext();
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "keeper"]);
+  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war"]);
   const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "fitting"); // default to fitting — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
+  // Dev env toggle — only shown in dev mode
+  const isDev = import.meta.env.DEV;
+  const [currentEnv, setCurrentEnv] = useState<ServerEnv>(getServerEnv());
+  useEffect(() => onServerEnvChange(() => setCurrentEnv(getServerEnv())), []);
 
   const TAB_BRIEF: Record<Tab, { title: string; steps: string[] }> = {
     map: {
@@ -133,8 +257,20 @@ function AppInner() {
         "Hit ⊡ Fit to reset the view",
       ],
     },
+    dashboard: {
+      title: "My Structures — command and control for all your owned structures",
+      steps: [
+        "Connect EVE Vault — your wallet address must own the structures",
+        "All your Network Nodes, Gates, Turrets, SSUs, and Assemblies are listed",
+        "Green dot = online, red = offline, yellow = anchored",
+        "Bring Online / Take Offline with a single click — direct on-chain tx",
+        "Edit name and description for any structure",
+        "Open in dApp opens the official EVE Frontier UI for that structure",
+        "Hit Refresh to re-scan after an in-game change",
+      ],
+    },
     structures: {
-      title: "Bring structures online via your Network Node",
+      title: "Dashboard — topology view of your structures, nodes, and tribe policies",
       steps: [
         "Connect EVE Vault — your wallet address must own the structures",
         "Structures are grouped by solar system (tab per location)",
@@ -145,7 +281,7 @@ function AppInner() {
       ],
     },
     inventory: {
-      title: "SSU inventory browser — view all items across your storage units",
+      title: "SSU inventory browser — view items across your storage units (withdraw disabled)",
       steps: [
         "All your online and offline SSUs shown",
         "Items resolved to names via World API",
@@ -174,7 +310,7 @@ function AppInner() {
       ],
     },
     registry: {
-      title: "Proof-based tribe vault ownership — prevent squatting",
+      title: "Contest tribe ownership — challenge and claim vaults with proof",
       steps: [
         "Register a claim for your tribe ID before creating a vault",
         "Claims are epoch-stamped — first on-chain claim wins",
@@ -222,7 +358,7 @@ function AppInner() {
       ],
     },
     succession: {
-      title: "Secure tribe leadership succession with a time-locked testament",
+      title: "Will & Testament — secure tribe leadership succession with time-locked deeds",
       steps: [
         "Create a testament naming your heir and an inactivity timeout",
         "Check in periodically to keep the deed locked",
@@ -240,7 +376,7 @@ function AppInner() {
       ],
     },
     announcements: {
-      title: "Tribe announcement board — broadcast to your members",
+      title: "Announcements — tribe broadcast board (coming soon)",
       steps: [
         "Founder creates an announcement board linked to the tribe vault",
         "Post, edit, pin, and delete announcements on-chain",
@@ -322,6 +458,26 @@ function AppInner() {
         "Your data stays on Sui — the Keeper reads only what the lattice reveals",
       ],
     },
+    war: {
+      title: "The Genesis War — live territory control",
+      steps: [
+        "Live countdown to next tick (60-minute intervals on live chain)",
+        "Scoreboard tracks control points per tribe in real time from on-chain data",
+        "Active systems shown by name — deploy a Network Node (type 88092) to contest",
+        "Commitment ledger shows every on-chain tick result with snapshot hashes",
+        "Data sourced directly from lineagewar.xyz verifier — refreshes every 30 seconds",
+      ],
+    },
+    links: {
+      title: "Structure Links — attach services to your infrastructure",
+      steps: [
+        "Select any of your deployed structures to attach a CradleOS service",
+        "Links are stored on-chain in the structure's metadata URL field",
+        "Linked services are visible to anyone who queries the structure",
+        "Detach at any time — no cooldown, just a transaction",
+        "Some attachments unlock additional capabilities",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -330,12 +486,13 @@ function AppInner() {
   useEffect(() => {
     const reverseMap: Record<Tab, string> = {
       defense: "defense", inventory: "storage", structures: "structures",
+      dashboard: "dashboard",
       bounties: "bounties", srp: "srp", cargo: "cargo", gates: "gates",
       tribe: "tribe", registry: "registry", intel: "intel",
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper",
+      calendar: "calendar", keeper: "keeper", war: "war", links: "links",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -492,6 +649,40 @@ function AppInner() {
           {/* EVE FRONTIER wordmark — official launcher asset */}
           <img src="ef-wordmark.svg" alt="EVE FRONTIER"
             style={{ height: 20, width: "auto", opacity: 0.3 }} />
+          <div style={{ marginTop: 10 }}>
+            <ChainHealth />
+          </div>
+          {isDev && (
+            <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>ENV</span>
+              <div
+                style={{
+                  display: "flex", borderRadius: 0, overflow: "hidden",
+                  border: "1px solid rgba(255,71,0,0.3)",
+                }}
+              >
+                {(["stillness", "utopia"] as ServerEnv[]).map(env => (
+                  <button
+                    key={env}
+                    onClick={() => {
+                      if (import.meta.env.DEV) localStorage.setItem("cradleos_dev_env", env);
+                      window.location.reload();
+                    }}
+                    style={{
+                      padding: "3px 12px", fontSize: 10, fontWeight: 700,
+                      letterSpacing: "0.08em", textTransform: "uppercase",
+                      border: "none", cursor: "pointer", fontFamily: "inherit",
+                      background: currentEnv === env ? "#FF4700" : "rgba(5,3,2,0.9)",
+                      color: currentEnv === env ? "#000" : "rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    {env}
+                  </button>
+                ))}
+              </div>
+              <span style={{ fontSize: 9, color: "rgba(255,71,0,0.4)" }}>⟳ reloads · active: {SERVER_ENV}</span>
+            </div>
+          )}
         </div>
       </header>}
 
@@ -542,9 +733,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["structures", "inventory", "tribe", "defense", "registry", "bounties", "srp", "cargo", "gates", "succession", "intel", "announcements", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query", "keeper"] as Tab[]).filter(tab => {
+        {(["war", "dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "keeper"]);
+          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "war"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -576,7 +767,7 @@ function AppInner() {
                   : tab === "inventory"  ? "Inv"
                   : tab === "tribe"      ? "Tribe"
                   : tab === "defense"    ? "Defense"
-                  : tab === "registry"   ? "Registry"
+                  : tab === "registry"   ? "Contest"
                   : tab === "bounties"   ? "Bounties"
                   : tab === "srp"        ? "SRP"
                   : tab === "cargo"      ? "Cargo"
@@ -591,20 +782,21 @@ function AppInner() {
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
+                  : tab === "links"      ? "🔗"
+                  : tab === "war"        ? "⚔"
                   : tab === "keeper"     ? "◆"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
                   : tab === "inventory"  ? "Inventory"
                   : tab === "tribe"      ? "Tribe Vault"
                   : tab === "defense"    ? "Defense"
-                  : tab === "registry"   ? "Registry"
+                  : tab === "registry"   ? "Contest"
                   : tab === "bounties"   ? "Bounties"
                   : tab === "srp"        ? "Insurance & SRP"
                   : tab === "cargo"      ? "Cargo"
                   : tab === "gates"      ? "Gates"
-                  : tab === "succession"    ? "Succession"
+                  : tab === "succession"    ? "Will & Testament"
                   : tab === "intel"         ? "Intel"
-                  : tab === "announcements" ? "Announcements"
                   : tab === "recruiting"    ? "Recruiting"
                   : tab === "hierarchy"     ? "Hierarchy"
                   : tab === "assets"        ? "Assets"
@@ -612,7 +804,10 @@ function AppInner() {
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
+                  : tab === "links"         ? "🔗 Links"
+                  : tab === "war"           ? "⚔ War"
                   : tab === "keeper"        ? "◆ Keeper"
+                  : tab === "dashboard"     ? "Dashboard"
                   :                          "Starmap")}
             </button>
           );
@@ -643,6 +838,7 @@ function AppInner() {
       {(account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && (
         <div style={{ background: "transparent", padding: "0" }}>
           {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel    onTxSuccess={setLastDigest} /></div>}
+          {activeTab === "dashboard"  && <div style={{ background: "transparent" }} className="content-panel"><DashboardPanel onNavigate={(tab) => setActiveTab(tab as Tab)} /></div>}
           {activeTab === "inventory"  && <div style={{ background: "transparent" }} className="content-panel"><InventoryPanel /></div>}
           {activeTab === "tribe"      && <div style={{ background: "transparent" }} className="content-panel"><TribeVaultPanel   onTxSuccess={setLastDigest} /></div>}
           {activeTab === "defense"    && <div style={{ background: "transparent" }} className="content-panel"><TurretPolicyPanel /></div>}
@@ -662,8 +858,12 @@ function AppInner() {
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
+          {activeTab === "war"           && <div style={{ background: "transparent" }} className="content-panel"><LineageWarPanel /></div>}
+          {activeTab === "links"         && <div style={{ background: "transparent" }} className="content-panel"><LinksPanel /></div>}
         </div>
       )}
+      {/* Hidden upgrade panel — access via #upgrade */}
+      {window.location.hash === "#upgrade" && <UpgradePanel />}
       {/* DEV-only role toggle bar — fixed bottom bar, production builds strip this */}
       <DevRoleToggle />
     </main>

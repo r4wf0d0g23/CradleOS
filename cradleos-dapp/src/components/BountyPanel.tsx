@@ -21,7 +21,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG_V8, CRDL_COIN_TYPE, SUI_TESTNET_RPC, BOUNTY_BOARD, CLOCK, eventType } from "../constants";
+import { CRADLEOS_PKG, CRDL_COIN_TYPE, SUI_TESTNET_RPC, BOUNTY_BOARD, CLOCK, eventType } from "../constants";
 import { rpcGetObject, numish } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -214,7 +214,7 @@ async function buildPostBountyTx(
   const [reward] = tx.splitCoins(tx.object(sourceCoin.coinObjectId), [tx.pure.u64(mistAmount)]);
 
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::bounty_contract::post_bounty_entry`,
+    target: `${CRADLEOS_PKG}::bounty_contract::post_bounty_entry`,
     arguments: [
       tx.object(BOUNTY_BOARD),
       tx.pure.u64(BigInt(targetCharId)),
@@ -231,7 +231,7 @@ async function buildPostBountyTx(
 function buildConfirmKillTx(bountyId: string, killerAddress: string, killmailObjectId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::bounty_contract::confirm_kill_entry`,
+    target: `${CRADLEOS_PKG}::bounty_contract::confirm_kill_entry`,
     arguments: [
       tx.object(bountyId),
       tx.pure.address(killerAddress),
@@ -245,7 +245,7 @@ function buildConfirmKillTx(bountyId: string, killerAddress: string, killmailObj
 function buildCancelBountyTx(bountyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::bounty_contract::cancel_bounty_entry`,
+    target: `${CRADLEOS_PKG}::bounty_contract::cancel_bounty_entry`,
     arguments: [
       tx.object(bountyId),
       tx.object(CLOCK),

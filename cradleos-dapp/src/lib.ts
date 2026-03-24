@@ -3,13 +3,14 @@ import { SUI_GRAPHQL } from "./graphql";
 import {
   CLOCK,
   CRADLEOS_PKG,
-  CRADLEOS_EVENTS_PKG,
+  CRADLEOS_PKG,
   TRIBE_ROLES_PKG,
-  CRADLEOS_PKG_V14,
+  CRADLEOS_PKG,
   GATE_POLICY_PKG,
   CRADLE_MINT_CONTROLLER,
   CRDL_COIN_TYPE,
   ENERGY_CONFIG,
+  ENERGY_CONFIG_INITIAL_SHARED_VERSION,
   FUEL_CONFIG,
   NETWORK_NODE_TYPE,
   RAW_CHARACTER_ID,
@@ -189,6 +190,19 @@ export async function fetchCorpOverview(_client: CoreLikeClient): Promise<TribeO
   return extractCorpMetrics(fields, objectId);
 }
 
+/**
+ * EnergyConfig is a shared object but functions accept it as &EnergyConfig (immutable).
+ * tx.object() defaults to mutable for shared objects causing TypeMismatch.
+ * Use this helper to pass it as an immutable shared object ref.
+ */
+function energyConfigRef(tx: Transaction) {
+  return tx.sharedObjectRef({
+    objectId: ENERGY_CONFIG,
+    initialSharedVersion: ENERGY_CONFIG_INITIAL_SHARED_VERSION,
+    mutable: false,
+  });
+}
+
 export function buildBringOnlineTransaction() {
   const tx = new Transaction();
 
@@ -251,12 +265,12 @@ export async function buildBringOfflineTransaction(): Promise<Transaction> {
     if (type === GATE_TYPE_FULL) {
       offlineHotPotato = tx.moveCall({
         target: `${WORLD_PKG}::gate::offline_connected_gate`,
-        arguments: [tx.object(id), offlineHotPotato, tx.object(RAW_NETWORK_NODE_ID), tx.object(ENERGY_CONFIG)],
+        arguments: [tx.object(id), offlineHotPotato, tx.object(RAW_NETWORK_NODE_ID), energyConfigRef(tx)],
       })[0];
     } else if (type === ASSEMBLY_TYPE_FULL) {
       offlineHotPotato = tx.moveCall({
         target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
-        arguments: [tx.object(id), offlineHotPotato, tx.object(RAW_NETWORK_NODE_ID), tx.object(ENERGY_CONFIG)],
+        arguments: [tx.object(id), offlineHotPotato, tx.object(RAW_NETWORK_NODE_ID), energyConfigRef(tx)],
       })[0];
     }
     // other assembly types (turret, storage_unit) can be added here
@@ -284,7 +298,9 @@ export type PlayerStructure = {
   kind: StructureKind;
   typeFull: string;
   label: string;        // kind label (e.g. "Network Node")
-  displayName: string;  // metadata.name if set, else label
+  displayName: string;  // metadata.name if set, else typeName if resolved, else label
+  typeName?: string;    // resolved from World API /v2/types (e.g. "Mini Turret", "Heavy Storage")
+  hasCustomName: boolean; // true if user set a custom metadata.name
   isOnline: boolean;
   locationHash: string;
   solarSystemId?: number;
@@ -293,7 +309,37 @@ export type PlayerStructure = {
   runtimeHoursRemaining?: number;
   typeId?: number;      // on-chain type_id for energy cost lookup
   energyCost?: number;  // energy units required to bring online
+  gameItemId?: string;  // key.item_id — the numeric game ID used by uat.dapps.evefrontier.com
+  linkedGateId?: string; // linked_gate_id if this is a Gate — the Sui object ID of the paired gate
+  metadataUrl?: string;  // metadata.url — used for kiosk/link attachment
+  initialSharedVersion?: number;            // for shared objects — needed for explicit shared object refs
+  energySourceInitialSharedVersion?: number; // initialSharedVersion of the energy source (node/gate)
 };
+
+// Cache for type names from World API
+let _typeNameCache: Map<number, string> | null = null;
+
+export async function fetchTypeNames(): Promise<Map<number, string>> {
+  if (_typeNameCache) return _typeNameCache;
+  const m = new Map<number, string>();
+  try {
+    // Fetch all types (deployables + structures)
+    const url = `${WORLD_API}/v2/types?limit=500`;
+    console.log("[fetchTypeNames] Fetching from:", url);
+    const res = await fetch(url);
+    const data = await res.json() as { data: Array<{ id: number; name: string; categoryName: string }> };
+    for (const t of data.data ?? []) {
+      if (t.categoryName === "Deployable" || t.categoryName === "Structure") {
+        m.set(t.id, t.name);
+      }
+    }
+    console.log(`[fetchTypeNames] Loaded ${m.size} type names`);
+  } catch (e) {
+    console.error("[fetchTypeNames] Failed:", e);
+  }
+  _typeNameCache = m;
+  return m;
+}
 
 /** Fetch the EnergyConfig table and return a map: typeId -> energyCost */
 export async function fetchEnergyCostMap(): Promise<Map<number, number>> {
@@ -528,8 +574,9 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
         const esRaw = fields["energy_source_id"];
         const energySourceId = typeof esRaw === "string" ? esRaw : undefined;
 
-        // Display name: metadata.name if set, else kind label
+        // Display name: metadata.name if set by user, else kind label (type name resolved later)
         const metaName = stringish(readPath(fields, "metadata", "fields", "name")).trim();
+        const hasCustomName = metaName.length > 0;
         const displayName = metaName || label;
 
         // Fuel (NetworkNode only)
@@ -548,14 +595,36 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
         // type_id for energy cost lookup
         const typeId = numish(fields["type_id"]) ?? undefined;
 
-        return { objectId: structureId, ownerCapId: capId, kind, typeFull, label, displayName, isOnline, locationHash, energySourceId, fuelLevelPct, runtimeHoursRemaining, typeId } as PlayerStructure;
+        // game item_id (key.item_id) — needed for uat.dapps.evefrontier.com links
+        const keyFields = asRecord(readPath(fields, "key", "fields")) ?? {};
+        const gameItemId = stringish(keyFields["item_id"]) || undefined;
+
+        // linked gate id (Gate only)
+        const linkedGateIdRaw = fields["linked_gate_id"];
+        const linkedGateId = typeof linkedGateIdRaw === "string" && linkedGateIdRaw.length > 0 ? linkedGateIdRaw : undefined;
+
+        const metaUrl = stringish(readPath(fields, "metadata", "fields", "url"))?.trim() ?? "";
+        return { objectId: structureId, ownerCapId: capId, kind, typeFull, label, displayName, hasCustomName, isOnline, locationHash, energySourceId, fuelLevelPct, runtimeHoursRemaining, typeId, gameItemId, linkedGateId, metadataUrl: metaUrl || undefined } as PlayerStructure;
       })
     ),
   ]);
 
-  // Filter out deleted objects (dismantled), then attach energy costs
+  // Filter out deleted objects (dismantled), then resolve type names + energy costs
   const validStructures = structureObjects.filter((s): s is PlayerStructure => s !== null);
-  const energyCostMap = await fetchEnergyCostMap();
+  const [energyCostMap, typeNameMap] = await Promise.all([fetchEnergyCostMap(), fetchTypeNames()]);
+
+  // Resolve type names for structures without custom names
+  let typeResolved = 0;
+  for (const s of validStructures) {
+    if (s.typeId !== undefined && typeNameMap.has(s.typeId)) {
+      s.typeName = typeNameMap.get(s.typeId);
+      if (!s.hasCustomName && s.typeName) {
+        s.displayName = s.typeName;
+        typeResolved++;
+      }
+    }
+  }
+  console.log(`[fetchPlayerStructures] Type names resolved: ${typeResolved}/${validStructures.length} (typeNameMap size: ${typeNameMap.size})`);
   const structuresWithCost = validStructures.map(s => ({
     ...s,
     energyCost: s.typeId !== undefined ? (energyCostMap.get(s.typeId) ?? 0) : 0,
@@ -623,22 +692,22 @@ export function buildBatchOnlineTransaction(
     } else if (s.kind === "Gate") {
       tx.moveCall({
         target: `${WORLD_PKG}::gate::online`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Assembly") {
       tx.moveCall({
         target: `${WORLD_PKG}::assembly::online`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Turret") {
       tx.moveCall({
         target: `${WORLD_PKG}::turret::online`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "StorageUnit") {
       tx.moveCall({
         target: `${WORLD_PKG}::storage_unit::online`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     }
 
@@ -689,12 +758,12 @@ export async function buildBatchOfflineTransaction(
         if (type === GATE_TYPE_FULL) {
           hotPotato = tx.moveCall({
             target: `${WORLD_PKG}::gate::offline_connected_gate`,
-            arguments: [tx.object(id), hotPotato, tx.object(s.objectId), tx.object(ENERGY_CONFIG)],
+            arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
           })[0];
         } else if (type === ASSEMBLY_TYPE_FULL) {
           hotPotato = tx.moveCall({
             target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
-            arguments: [tx.object(id), hotPotato, tx.object(s.objectId), tx.object(ENERGY_CONFIG)],
+            arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
           })[0];
         }
       }
@@ -702,22 +771,22 @@ export async function buildBatchOfflineTransaction(
     } else if (s.kind === "Gate") {
       tx.moveCall({
         target: `${WORLD_PKG}::gate::offline`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Assembly") {
       tx.moveCall({
         target: `${WORLD_PKG}::assembly::offline`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Turret") {
       tx.moveCall({
         target: `${WORLD_PKG}::turret::offline`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "StorageUnit") {
       tx.moveCall({
         target: `${WORLD_PKG}::storage_unit::offline`,
-        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     }
 
@@ -733,13 +802,38 @@ export async function buildBatchOfflineTransaction(
 
 // ─── Generic Structure Tx Builders ───────────────────────────────────────────
 
-export function buildStructureOnlineTransaction(
+/** Fetch initialSharedVersion for a Sui object (needed for explicit shared object refs) */
+export async function fetchInitialSharedVersion(objectId: string): Promise<number | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [objectId, { showOwner: true }] }),
+    });
+    const d = await res.json() as { result?: { data?: { owner?: { Shared?: { initial_shared_version?: number } } } } };
+    return d?.result?.data?.owner?.Shared?.initial_shared_version ?? null;
+  } catch { return null; }
+}
+
+/** Build a shared object ref — mutable by default (most structures take &mut) */
+export function sharedRef(tx: Transaction, objectId: string, initialSharedVersion: number, mutable = true) {
+  return tx.sharedObjectRef({ objectId, initialSharedVersion, mutable });
+}
+
+export async function buildStructureOnlineTransaction(
   structure: PlayerStructure,
   characterId: string,
-): Transaction {
+): Promise<Transaction> {
   if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
     throw new Error("Character ID not yet resolved — please wait a moment and try again.");
   }
+
+  // Fetch shared versions if not already on the structure
+  const structureISV = structure.initialSharedVersion
+    ?? (await fetchInitialSharedVersion(structure.objectId));
+  const energyISV = structure.energySourceInitialSharedVersion
+    ?? (structure.energySourceId ? await fetchInitialSharedVersion(structure.energySourceId) : null);
+
   const tx = new Transaction();
 
   const [cap, receipt] = tx.moveCall({
@@ -748,30 +842,38 @@ export function buildStructureOnlineTransaction(
     arguments: [tx.object(characterId), tx.object(structure.ownerCapId)],
   });
 
+  // Helper: get object ref — use sharedRef if we have an ISV, otherwise fall back to tx.object
+  const structRef = structureISV
+    ? sharedRef(tx, structure.objectId, structureISV)
+    : tx.object(structure.objectId);
+  const energyRef = (energyISV && structure.energySourceId)
+    ? sharedRef(tx, structure.energySourceId, energyISV)
+    : structure.energySourceId ? tx.object(structure.energySourceId) : null;
+
   if (structure.kind === "NetworkNode") {
     tx.moveCall({
       target: `${WORLD_PKG}::network_node::online`,
-      arguments: [tx.object(structure.objectId), cap, tx.object(CLOCK)],
+      arguments: [structRef, cap, tx.object(CLOCK)],
     });
   } else if (structure.kind === "Gate") {
     tx.moveCall({
       target: `${WORLD_PKG}::gate::online`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Assembly") {
     tx.moveCall({
       target: `${WORLD_PKG}::assembly::online`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Turret") {
     tx.moveCall({
       target: `${WORLD_PKG}::turret::online`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "StorageUnit") {
     tx.moveCall({
       target: `${WORLD_PKG}::storage_unit::online`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   }
 
@@ -822,12 +924,12 @@ export async function buildStructureOfflineTransaction(
       if (type === GATE_TYPE_FULL) {
         hotPotato = tx.moveCall({
           target: `${WORLD_PKG}::gate::offline_connected_gate`,
-          arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), tx.object(ENERGY_CONFIG)],
+          arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), energyConfigRef(tx)],
         })[0];
       } else if (type === ASSEMBLY_TYPE_FULL) {
         hotPotato = tx.moveCall({
           target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
-          arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), tx.object(ENERGY_CONFIG)],
+          arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), energyConfigRef(tx)],
         })[0];
       }
     }
@@ -835,22 +937,22 @@ export async function buildStructureOfflineTransaction(
   } else if (structure.kind === "Gate") {
     tx.moveCall({
       target: `${WORLD_PKG}::gate::offline`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Assembly") {
     tx.moveCall({
       target: `${WORLD_PKG}::assembly::offline`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Turret") {
     tx.moveCall({
       target: `${WORLD_PKG}::turret::offline`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "StorageUnit") {
     tx.moveCall({
       target: `${WORLD_PKG}::storage_unit::offline`,
-      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), tx.object(ENERGY_CONFIG), cap],
+      arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   }
 
@@ -1043,7 +1145,7 @@ export async function fetchTreasuryActivity(treasuryId: string): Promise<Treasur
         body: JSON.stringify({
           jsonrpc: "2.0", id: 1,
           method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_EVENTS_PKG}::treasury::${eventType}` }, null, 20, false],
+          params: [{ MoveEventType: `${CRADLEOS_PKG}::treasury::${eventType}` }, null, 20, false],
         }),
       });
       const json = await res.json() as { result: { data: Array<{ parsedJson: Record<string, unknown>; timestampMs: number }> } };
@@ -1079,7 +1181,7 @@ export function buildInitializeCorpTransaction(corpName: string, senderAddress: 
   });
 
   const treasury = tx.moveCall({
-    target: `${CRADLEOS_EVENTS_PKG}::treasury::create_treasury`,
+    target: `${CRADLEOS_PKG}::treasury::create_treasury`,
     arguments: [corp],
   });
 
@@ -1116,7 +1218,7 @@ export function buildDepositTransaction(
   const amountMist = BigInt(Math.floor(amountSui * 1e9));
   const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(amountMist)]);
   tx.moveCall({
-    target: `${CRADLEOS_EVENTS_PKG}::treasury::deposit`,
+    target: `${CRADLEOS_PKG}::treasury::deposit`,
     arguments: [tx.object(treasuryId), tx.object(corpId), coin],
   });
   return tx;
@@ -1133,7 +1235,7 @@ export function buildWithdrawTransaction(
   const tx = new Transaction();
   const amountMist = BigInt(Math.floor(amountSui * 1e9));
   const [coin] = tx.moveCall({
-    target: `${CRADLEOS_EVENTS_PKG}::treasury::withdraw`,
+    target: `${CRADLEOS_PKG}::treasury::withdraw`,
     arguments: [
       tx.object(treasuryId),
       tx.object(corpId),
@@ -1307,7 +1409,7 @@ export async function fetchCoinIssuedEvents(vaultId: string): Promise<CoinIssued
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_vault::CoinIssued` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinIssued` }, null, 50, false],
       }),
     });
     const json = await res.json() as { result: { data: Array<{ parsedJson: Record<string, unknown>; timestampMs: number }> } };
@@ -1559,7 +1661,7 @@ export async function fetchOrderFilledEvents(dexId: string): Promise<OrderFilled
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_dex::OrderFilled` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_dex::OrderFilled` }, null, 50, false],
       }),
     });
     const j = await res.json() as {
@@ -1681,7 +1783,7 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_dex::DexCreated` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_dex::DexCreated` }, null, 50, false],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson?: { dex_id?: string; vault_id?: string } }> } };
@@ -1921,17 +2023,18 @@ export async function fetchSecurityConfig(policyId: string): Promise<SecurityCon
 }
 
 /** Build set_security_level_entry transaction. */
-export function buildSetSecurityLevelTransaction(
+export async function buildSetSecurityLevelTransaction(
   policyId: string,
   vaultId: string,
   level: number,
-): Transaction {
+): Promise<Transaction> {
+  const [pISV, vISV] = await Promise.all([fetchInitialSharedVersion(policyId), fetchInitialSharedVersion(vaultId)]);
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::defense_policy::set_security_level_entry`,
     arguments: [
-      tx.object(policyId),
-      tx.object(vaultId),
+      pISV ? sharedRef(tx, policyId, pISV) : tx.object(policyId),
+      vISV ? sharedRef(tx, vaultId, vISV, false) : tx.object(vaultId),
       tx.pure.u8(level),
     ],
   });
@@ -1939,17 +2042,18 @@ export function buildSetSecurityLevelTransaction(
 }
 
 /** Build set_aggression_mode_entry transaction. */
-export function buildSetAggressionModeTransaction(
+export async function buildSetAggressionModeTransaction(
   policyId: string,
   vaultId: string,
   enabled: boolean,
-): Transaction {
+): Promise<Transaction> {
+  const [pISV, vISV] = await Promise.all([fetchInitialSharedVersion(policyId), fetchInitialSharedVersion(vaultId)]);
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::defense_policy::set_aggression_mode_entry`,
     arguments: [
-      tx.object(policyId),
-      tx.object(vaultId),
+      pISV ? sharedRef(tx, policyId, pISV) : tx.object(policyId),
+      vISV ? sharedRef(tx, vaultId, vISV, false) : tx.object(vaultId),
       tx.pure.bool(enabled),
     ],
   });
@@ -1977,7 +2081,7 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_vault::CoinLaunched` },
+          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
           null, 50, true,
         ],
       }),
@@ -2006,7 +2110,7 @@ export async function fetchAllRegisteredTribes(): Promise<RegisteredTribe[]> {
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_vault::CoinLaunched` },
+          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
           null, 200, true, // descending=true → newest first
         ],
       }),
@@ -2148,25 +2252,37 @@ export function buildRevokeRoleTx(rolesId: string, revokee: string, role: number
 export type PlayerRelation = { player: string; value: number }; // 0=hostile 1=friendly
 
 /** Build set_player_relation transaction. */
-export function buildSetPlayerRelationTx(
+export async function buildSetPlayerRelationTx(
   policyId: string, vaultId: string, player: string, value: number,
-): Transaction {
+): Promise<Transaction> {
+  const [policyISV, vaultISV] = await Promise.all([
+    fetchInitialSharedVersion(policyId),
+    fetchInitialSharedVersion(vaultId),
+  ]);
   const tx = new Transaction();
+  const pRef = policyISV ? sharedRef(tx, policyId, policyISV) : tx.object(policyId);
+  const vRef = vaultISV ? sharedRef(tx, vaultId, vaultISV, false) : tx.object(vaultId);
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V14}::defense_policy::set_player_relation_entry`,
-    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.address(player), tx.pure.u8(value)],
+    target: `${CRADLEOS_PKG}::defense_policy::set_player_relation_entry`,
+    arguments: [pRef, vRef, tx.pure.address(player), tx.pure.u8(value)],
   });
   return tx;
 }
 
 /** Build remove_player_relation transaction. */
-export function buildRemovePlayerRelationTx(
+export async function buildRemovePlayerRelationTx(
   policyId: string, vaultId: string, player: string,
-): Transaction {
+): Promise<Transaction> {
+  const [policyISV, vaultISV] = await Promise.all([
+    fetchInitialSharedVersion(policyId),
+    fetchInitialSharedVersion(vaultId),
+  ]);
   const tx = new Transaction();
+  const pRef = policyISV ? sharedRef(tx, policyId, policyISV) : tx.object(policyId);
+  const vRef = vaultISV ? sharedRef(tx, vaultId, vaultISV, false) : tx.object(vaultId);
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V14}::defense_policy::remove_player_relation_entry`,
-    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.address(player)],
+    target: `${CRADLEOS_PKG}::defense_policy::remove_player_relation_entry`,
+    arguments: [pRef, vRef, tx.pure.address(player)],
   });
   return tx;
 }
@@ -2177,10 +2293,10 @@ export async function fetchPlayerRelations(vaultId: string): Promise<PlayerRelat
     const [setRes, rmRes] = await Promise.all([
       fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG_V14}::defense_policy::PlayerRelationSet` }, null, 200, true] }) }).then(r => r.json()),
+          params: [{ MoveEventType: `${CRADLEOS_PKG}::defense_policy::PlayerRelationSet` }, null, 200, true] }) }).then(r => r.json()),
       fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG_V14}::defense_policy::PlayerRelationRemoved` }, null, 200, true] }) }).then(r => r.json()),
+          params: [{ MoveEventType: `${CRADLEOS_PKG}::defense_policy::PlayerRelationRemoved` }, null, 200, true] }) }).then(r => r.json()),
     ]);
     // Latest-first: build map from events
     const map = new Map<string, number>();
@@ -2321,34 +2437,174 @@ export type CharacterMember = {
   tribeId: number;
 };
 
-/** Query all Character objects for a tribe using Sui GraphQL. */
+/** Query all Character objects for a tribe using Sui GraphQL — paginated. */
 export async function fetchTribeMembersByTribeId(tribeId: number): Promise<CharacterMember[]> {
-  try {
-    const query = `{
-      objects(filter: { type: "${WORLD_PKG}::character::Character" }, first: 200) {
-        nodes {
-          address
-          asMoveObject { contents { json } }
+  const results: CharacterMember[] = [];
+  let cursor: string | null = null;
+  // Paginate through ALL characters and filter by tribe_id
+  // GraphQL doesn't support field-level filtering on MoveObject contents directly
+  do {
+    try {
+      const afterClause = cursor ? `, after: "${cursor}"` : "";
+      const query = `{
+        objects(filter: { type: "${WORLD_PKG}::character::Character" }, first: 50${afterClause}) {
+          pageInfo { hasNextPage endCursor }
+          nodes {
+            address
+            asMoveObject { contents { json } }
+          }
+        }
+      }`;
+      const res = await fetch(SUI_GRAPHQL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      const json = await res.json() as { data?: { objects?: { pageInfo?: { hasNextPage?: boolean; endCursor?: string }; nodes?: Array<{ address: string; asMoveObject?: { contents?: { json?: Record<string, unknown> } } }> } } };
+      const page = json.data?.objects;
+      for (const n of page?.nodes ?? []) {
+        if (Number(n.asMoveObject?.contents?.json?.tribe_id) === tribeId) {
+          results.push({
+            characterId: String(n.address),
+            characterAddress: String(n.asMoveObject?.contents?.json?.character_address ?? ""),
+            tribeId,
+          });
         }
       }
-    }`;
-    const res = await fetch(SUI_GRAPHQL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
-    const json = await res.json() as { data?: { objects?: { nodes?: Array<{ address: string; asMoveObject?: { contents?: { json?: Record<string, unknown> } } }> } } };
-    return (json.data?.objects?.nodes ?? [])
-      .filter(n => Number(n.asMoveObject?.contents?.json?.tribe_id) === tribeId)
-      .map(n => ({
-        characterId: String(n.address),
-        characterAddress: String(n.asMoveObject?.contents?.json?.character_address ?? ""),
-        tribeId,
-      }));
-  } catch { return []; }
+      cursor = page?.pageInfo?.hasNextPage ? (page?.pageInfo?.endCursor ?? null) : null;
+    } catch { break; }
+  } while (cursor);
+  return results;
 }
 
 // ── Bounty Contract Tx Builders ───────────────────────────────────────────────
+
+// ── Personal Vault & Policy Discovery ────────────────────────────────────────
+
+/** Find a vault where this wallet is the founder (personal vault).
+ *  Queries CoinLaunched events; falls back to fetching vault objects to check founder field.
+ */
+export async function fetchPersonalVaultForWallet(walletAddress: string): Promise<{ objectId: string; tribeId: number } | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [
+          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
+          null, 200, true,
+        ],
+      }),
+    });
+    const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
+    const events = json.result?.data ?? [];
+
+    // Fast path: some event versions embed founder field directly
+    for (const e of events) {
+      if (String(e.parsedJson?.founder ?? "").toLowerCase() === walletAddress.toLowerCase()) {
+        const vaultId = String(e.parsedJson?.vault_id ?? "");
+        const tribeId = Number(e.parsedJson?.tribe_id ?? 0);
+        if (vaultId) return { objectId: vaultId, tribeId };
+      }
+    }
+
+    // Slow path: personal vaults have empty coin name/symbol — filter candidates and verify founder
+    const candidates = events
+      .filter(e => String(e.parsedJson?.coin_name ?? "").length === 0 || String(e.parsedJson?.coin_symbol ?? "").length === 0)
+      .slice(0, 30);
+
+    for (const e of candidates) {
+      const vaultId = String(e.parsedJson?.vault_id ?? "");
+      if (!vaultId) continue;
+      try {
+        const fields = await rpcGetObject(vaultId);
+        if (String(fields["founder"] ?? "").toLowerCase() === walletAddress.toLowerCase()) {
+          return { objectId: vaultId, tribeId: numish(fields["tribe_id"]) ?? 0 };
+        }
+      } catch { /* */ }
+    }
+    return null;
+  } catch { return null; }
+}
+
+/** Find defense policy object ID for a vault by querying PolicyCreated events. */
+export async function fetchDefensePolicyForVault(vaultId: string): Promise<string | null> {
+  const DEFENSE_POLICY_ORIGIN = CRADLEOS_PKG;
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [{ MoveEventType: `${DEFENSE_POLICY_ORIGIN}::defense_policy::PolicyCreated` }, null, 50, true],
+      }),
+    });
+    const j = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
+    const match = (j.result?.data ?? []).find(e => String(e.parsedJson?.vault_id) === vaultId);
+    return match ? (String(match.parsedJson?.policy_id ?? "") || null) : null;
+  } catch { return null; }
+}
+
+/** Find gate policy object ID for a vault by querying GatePolicyCreated events. */
+export async function fetchGatePolicyForVault(vaultId: string): Promise<string | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [{ MoveEventType: `${GATE_POLICY_PKG}::gate_policy::GatePolicyCreated` }, null, 50, false],
+      }),
+    });
+    const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
+    const match = (json.result?.data ?? []).find(e => String(e.parsedJson?.vault_id) === vaultId);
+    return match ? (String(match.parsedJson?.policy_id ?? "") || null) : null;
+  } catch { return null; }
+}
+
+/** Create a personal vault tx (uses player's tribeId, empty coin name/symbol). */
+export function buildCreatePersonalVaultTx(tribeId: number): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::tribe_vault::create_vault`,
+    arguments: [
+      tx.pure.u32(tribeId >>> 0),
+      tx.pure.vector("u8", []),
+      tx.pure.vector("u8", []),
+    ],
+  });
+  return tx;
+}
+
+/** Create defense policy for a vault. Vault is passed as immutable sharedRef. */
+export async function buildCreatePersonalDefensePolicyTx(vaultId: string): Promise<Transaction> {
+  const DEFENSE_POLICY_ORIGIN = CRADLEOS_PKG;
+  const vISV = await fetchInitialSharedVersion(vaultId);
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${DEFENSE_POLICY_ORIGIN}::defense_policy::create_policy_entry`,
+    arguments: [vISV ? sharedRef(tx, vaultId, vISV, false) : tx.object(vaultId)],
+  });
+  return tx;
+}
+
+/** Create gate policy for a vault.
+ *  The standalone gate_policy package uses vault_id as a plain address (no TribeVault type dep).
+ */
+export async function buildCreatePersonalGatePolicyTx(vaultId: string): Promise<Transaction> {
+  const fields = await rpcGetObject(vaultId);
+  const tribeId = numish(fields["tribe_id"]) ?? 0;
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${GATE_POLICY_PKG}::gate_policy::create_gate_policy`,
+    arguments: [tx.pure.address(vaultId), tx.pure.u32(tribeId >>> 0)],
+  });
+  return tx;
+}
 
 /**
  * Build a trustless bounty claim transaction.

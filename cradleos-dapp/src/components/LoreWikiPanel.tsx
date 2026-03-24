@@ -16,7 +16,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG_V8, SUI_TESTNET_RPC, CLOCK, WIKI_BOARD, WIKI_MOD_CAP, eventType } from "../constants";
+import { CRADLEOS_PKG, SUI_TESTNET_RPC, CLOCK, WIKI_BOARD, WIKI_MOD_CAP, eventType } from "../constants";
 
 // Moderator address — holder of WikiModCap at deploy time
 const WIKI_MOD_ADDRESS: string = ""; // populated after contract deploy
@@ -58,7 +58,7 @@ type StillnessType = {
   mass?: number | string | null;
 };
 
-const CATEGORIES = ["Lore", "Mechanics", "Locations", "Factions", "Ships", "History"] as const;
+const CATEGORIES = ["Lore", "Mechanics", "Locations", "Factions", "Ships", "Assets", "History"] as const;
 type Category = typeof CATEGORIES[number];
 
 const STILLNESS_API = "https://world-api-stillness.live.tech.evefrontier.com";
@@ -216,7 +216,7 @@ const MECHANICS_ARTICLES: BuiltinArticle[] = [
     title: "CradleOS — Tribe Command Stack",
     category: "Mechanics",
     tags: ["cradleos", "crdl", "tribe", "sui", "hackathon"],
-    content: `CradleOS is a wallet-native tribe command stack built on Sui Move for EVE Frontier.\n\nCORE MODULES (on-chain, Sui testnet)\n  - cradle_coin    — CRDL token (infra-backed tribe currency)\n  - tribe_vault    — tribal treasury with DEX/registry/defense\n  - defense_policy — smart gate access control via on-chain policy\n  - bounty_contract — trustless kill bounties with attestor model\n  - cargo_contract  — escrow cargo delivery contracts\n  - gate_profile    — on-chain gate access/toll configuration\n  - inheritance     — succession planning (testament deeds)\n  - announcement_board — on-chain tribe announcements\n  - recruiting_terminal — on-chain application/review system\n  - lore_wiki       — decentralised knowledge base (this wiki)\n\nPACKAGE\n  Deployed on Sui Testnet\n  Package ID: 0x036c2c0db070507940bd49d86e91f357f68ae94c3c33375c0ebc75044aeafade\n\nDEVELOPMENT\n  CradleOS is actively developed for the EVE Frontier Hackathon 2026.\n  Source: github.com/r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026`,
+    content: `CradleOS is a wallet-native tribe command stack built on Sui Move for EVE Frontier.\n\nCORE MODULES (on-chain, Sui testnet)\n  - cradle_coin    — CRDL token (infra-backed tribe currency)\n  - tribe_vault    — tribal treasury with DEX/registry/defense\n  - defense_policy — smart gate access control via on-chain policy\n  - bounty_contract — trustless kill bounties with attestor model\n  - cargo_contract  — escrow cargo delivery contracts\n  - gate_profile    — on-chain gate access/toll configuration\n  - inheritance     — succession planning (testament deeds)\n  - announcement_board — on-chain tribe announcements\n  - recruiting_terminal — on-chain application/review system\n  - lore_wiki       — decentralised knowledge base (this wiki)\n\nPACKAGE\n  Deployed on Sui Testnet\n  Package ID: 0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4\n\nDEVELOPMENT\n  CradleOS is actively developed for the EVE Frontier Hackathon 2026.\n  Source: github.com/r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026`,
     isBuiltin: true,
   },
 ];
@@ -349,6 +349,149 @@ const TRIBE_ARTICLES: BuiltinArticle[] = [
     category: "Mechanics",
     tags: ["tribe", "registry", "claim", "id", "vault", "creation"],
     content: `The CradleOS Registry is the on-chain system for establishing a tribe's official identity and creating its vault.\n\nCLAIM REGISTRATION\nTo register a tribe in CradleOS:\n  1. The founder submits a claim to the registry module with the tribe's in-game short name and tribe ID\n  2. The registry verifies the tribe ID against the live Stillness world API\n  3. If valid and unclaimed, the registration proceeds\n  4. A unique tribe record is created in the registry\n\nTRIBE ID\nEvery tribe has a numeric Tribe ID assigned by the EVE Frontier game servers. This ID is the canonical identifier used throughout CradleOS contracts. All vaults, defense policies, and gate profiles reference the tribe ID.\n\nVAULT CREATION FLOW\n  1. Complete claim registration (above)\n  2. Call create_vault() on the tribe_vault module, passing the registered tribe ID\n  3. A new TribeVault object is created on Sui with the caller as founder\n  4. Optionally: initialize the role system via initialize_roles()\n  5. Optionally: fund the vault with initial CRDL tokens and infra credits\n\nON-CHAIN IDENTITY\nOnce registered, the tribe's vault address is its permanent on-chain identity. All CradleOS modules (bounty contracts, gate profiles, recruiting terminal, lore wiki) reference the tribe via this vault ID.\n\nVERIFICATION\nThe CradleOS registry maintains a mapping of tribe ID → vault address, ensuring each EVE Frontier tribe has at most one registered vault.`,
+    isBuiltin: true,
+  },
+];
+
+// ── Asset Registry Articles ──────────────────────────────────────────────────
+// 3D model availability tags for ships/structures
+const HAS_3D_MODEL = new Set([
+  "wend","usv","lai","haf","carom","lorha","reflex","tades","maul",
+  "gate","turret","hangar","refinery","assembly","printer","shipyard","silo","tether",
+  "asteroid","asteroid2",
+]);
+
+const ASSET_ARTICLES: BuiltinArticle[] = [
+  {
+    id: "builtin-asset-registry",
+    title: "Asset Registry — 3D Model Database",
+    category: "Assets",
+    tags: ["assets", "3d", "models", "ships", "structures", "registry"],
+    content: `CradleOS maintains an extracted asset registry of EVE Frontier game models, converted from the client's ResFiles (.gr2 format) into web-ready glTF/GLB for the Keeper viewport.
+
+CONVERSION PIPELINE
+  ResFiles (.gr2) → evegr2toobj.exe → OBJ → sequential face gen → obj2gltf → GLB
+  Note: Face topology is approximate (sequential triangulation). Real index buffers pending.
+
+AVAILABLE 3D MODELS (20 total)
+
+SHIPS (9 of 14 playable)
+  ✅ LAI        — Dataist frigate, light combat (1.8 MB)
+  ✅ HAF        — Dataist frigate, heavy combat (2.4 MB)
+  ✅ Carom      — Dataist frigate, assassination (3.0 MB)
+  ✅ Lorha      — Dataist frigate, hauling (2.2 MB)
+  ✅ Reflex     — Synod frigate, light combat (4.5 MB)
+  ✅ TADES      — Dataist destroyer, heavy combat (4.7 MB)
+  ✅ Maul       — Dataist destroyer, light combat (6.1 MB)
+  ✅ Wend       — Dataist shuttle, transport (4.9 MB)
+  ✅ USV        — Synod shuttle, cargo transport (6.6 MB)
+  ⬜ MCF, Recurve, Stride, Reiver, Chumaq — pending decimation
+
+STRUCTURES (9 deployable types)
+  ✅ Smart Gate     — dep_stargate_s_01v01 (4.9 MB)
+  ✅ Smart Turret   — smart_turret_01 (6.6 MB)
+  ✅ Smart Hangar   — dep_smart_hangar_01 (5.5 MB)
+  ✅ Refinery       — dep_refinery_s_01v01 (6.1 MB)
+  ✅ Assembly Line  — dep_assembly_line_s_01v01 (4.2 MB)
+  ✅ Printer        — dep_printer_s_01v01 (4.6 MB)
+  ✅ Shipyard       — dep_shipyard_s_01v01 (1.9 MB)
+  ✅ Crude Silo     — dep_crude_silo_s_01v01 (3.9 MB)
+  ✅ Smart Tether   — dep_smart_tether_01 (0.6 MB)
+  ⬜ SSU            — too large at any LOD (30 MB+), uses procedural geometry
+
+CELESTIALS (2)
+  ✅ Mineable Asteroid      — as_mine_gen_01 (0.4 MB)
+  ✅ Mineable Asteroid v2   — as_mine_gen_02 (0.2 MB)
+
+KNOWN UNCONVERTED (in ResFiles)
+  • 5 NPC stargate variants (st_gen_01–05)
+  • 6 wreck models (ship + structure debris)
+  • 172 asteroid variants (generic, arctic, inferno, debris)
+  • 38 weapon turret models (S/M/L energy, projectile, plasma)
+  • 100s of kitbash megastructure parts
+  • Corvettes, battleships, battlecruiser hulls (not yet playable)
+  • Capsule (escape pod)
+  • Additional deployables: base core, clone facility, nursery, lens
+
+SOURCE
+  EVE Frontier ResFiles (stillness client), 47,514 entries
+  Factions: Dataist, Synod, Traditionalist, Concord, NPC, NPE`,
+    isBuiltin: true,
+  },
+  {
+    id: "builtin-asset-factions",
+    title: "Factions — Ship Design Origins",
+    category: "Assets",
+    tags: ["factions", "dataist", "synod", "ships", "design"],
+    content: `Ships in EVE Frontier are manufactured by two major factions, each with distinct design philosophies.
+
+DATAIST FACTION
+  Design language: Angular, modular, utilitarian
+  Ships: LAI, HAF, Carom, Lorha, MCF, TADES, Maul, Wend, Stride, Reiver, Chumaq
+  Coverage: Frigates (6), destroyers (2), cruisers (3), shuttle (1)
+  Notes: Dominates the playable roster. All advanced-fuel ships except Wend (basic).
+
+SYNOD FACTION
+  Design language: Curved, organic, flowing
+  Ships: Reflex, Recurve, USV
+  Coverage: Frigates (2), shuttle (1)
+  Notes: Smaller roster. USV is the premier mining/industrial frigate.
+
+GAME FILE FACTIONS (from ResFiles)
+  • dataist    — 24 ship models (incl. corvette, longbow, shortbow, kayak variants)
+  • synod      — 6 ship models (incl. corvette mine/navy variants)
+  • concord    — 2 frigate models (conf2, conf4)
+  • npc        — 1 prototype ship
+  • npe        — 2 newbie tutorial ships
+  • generic    — capsule + wreck models
+
+UNRELEASED HULL CLASSES (models exist in files)
+  • Corvette   — data_corv_01, syn_corv_mine_01, syn_corv_navy_01
+  • Battlecruiser — data_bcr_heavy_01
+  • Battleship — data_bs_assa_01, data_bs_mine_01
+  • Kayak/Longbow/Shortbow — dataist-exclusive light classes`,
+    isBuiltin: true,
+  },
+  {
+    id: "builtin-asset-deployables",
+    title: "Deployable Structures — Full Catalog",
+    category: "Assets",
+    tags: ["structures", "deployables", "ssu", "gate", "turret", "industry"],
+    content: `EVE Frontier deployables are player-built structures that form the backbone of tribe infrastructure.
+
+SMART STRUCTURES (player-programmable)
+  Smart Storage Unit (SSU) — inventory container
+    Heavy: 2,600,000,000 m³  |  Standard: 20,000,000 m³  |  Mini: 2,000,000 m³
+  Smart Gate — jump gate with access policies and toll configuration
+  Smart Turret — automated defense with configurable targeting
+  Smart Hangar — ship docking and storage
+  Smart Tether — tractor beam for pulling objects
+  Smart Printer — blueprint-driven 3D manufacturing
+  Smart Refinery — ore → refined material processing
+  Smart Crude Silo — bulk raw material storage
+
+PRODUCTION CHAIN
+  Mining → Refinery → Silo (storage) → Assembly Line → Printer → Shipyard
+  Each step requires an active Network Node for power.
+
+SIZES (from ResFiles)
+  Most structures come in S (small), M (medium), B (big/battle) variants.
+  Smart structures are typically S-class. Industrial variants span all sizes.
+  Turrets: dep_turret_s/m/b, smart_turret_01
+  Hangars: dep_hangar_s/m/b, dep_smart_hangar_01
+  Refineries: dep_refinery_s/m/b, dep_smart_refinery_s_01
+  Printers: dep_printer_s/m/b, dep_smart_printer_s_01
+  Shipyards: dep_shipyard_s/m/b
+
+ADDITIONAL STRUCTURES (from ResFiles)
+  Base Core — central installation core
+  Clone Facility / Clone Hangar — respawn infrastructure
+  Nursery — unknown function (crew/population?)
+  Lens — unknown function (scanning/observation?)
+  No-Service — placeholder/disabled structure
+  Crude Lift — material transport between levels
+
+DEPLOYABLE COUNT IN RESFILES: 94 unique models`,
     isBuiltin: true,
   },
 ];
@@ -565,7 +708,7 @@ function buildPublishTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::lore_wiki::publish_article_entry`,
+    target: `${CRADLEOS_PKG}::lore_wiki::publish_article_entry`,
     arguments: [
       tx.object(boardId),
       tx.pure.vector("u8", enc(title)),
@@ -591,7 +734,7 @@ function buildEditTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::lore_wiki::edit_article_entry`,
+    target: `${CRADLEOS_PKG}::lore_wiki::edit_article_entry`,
     arguments: [
       tx.object(boardId),
       tx.pure.u64(BigInt(articleId)),
@@ -607,7 +750,7 @@ function buildEditTransaction(
 function buildUpvoteTransaction(boardId: string, articleId: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::lore_wiki::upvote_article_entry`,
+    target: `${CRADLEOS_PKG}::lore_wiki::upvote_article_entry`,
     arguments: [
       tx.object(boardId),
       tx.pure.u64(BigInt(articleId)),
@@ -619,7 +762,7 @@ function buildUpvoteTransaction(boardId: string, articleId: number): Transaction
 function buildDeleteTransaction(boardId: string, articleId: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::lore_wiki::delete_article_entry`,
+    target: `${CRADLEOS_PKG}::lore_wiki::delete_article_entry`,
     arguments: [
       tx.object(boardId),
       tx.pure.u64(BigInt(articleId)),
@@ -631,7 +774,7 @@ function buildDeleteTransaction(boardId: string, articleId: number): Transaction
 async function buildDownvoteArticleTx(boardId: string, articleId: number): Promise<Transaction> {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::lore_wiki::downvote_article_entry`,
+    target: `${CRADLEOS_PKG}::lore_wiki::downvote_article_entry`,
     arguments: [tx.object(boardId), tx.pure.u64(articleId)],
   });
   return tx;
@@ -640,7 +783,7 @@ async function buildDownvoteArticleTx(boardId: string, articleId: number): Promi
 async function buildModDeleteTx(boardId: string, articleId: number, modCapId: string): Promise<Transaction> {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::lore_wiki::mod_delete_entry`,
+    target: `${CRADLEOS_PKG}::lore_wiki::mod_delete_entry`,
     arguments: [tx.object(boardId), tx.object(modCapId), tx.pure.u64(articleId)],
   });
   return tx;
@@ -740,7 +883,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [view, setView] = useState<PanelView>("list");
-  const [builtinArticles, setBuiltinArticles] = useState<BuiltinArticle[]>([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES]);
+  const [builtinArticles, setBuiltinArticles] = useState<BuiltinArticle[]>([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES, ...ASSET_ARTICLES]);
 
   const [newTitle, setNewTitle] = useState("");
   const [newCategory, setNewCategory] = useState<Category>("Lore");
@@ -778,11 +921,11 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
         const types = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
         const moduleArticles = buildModuleGroupArticles(types);
         if (!cancelled) {
-          setBuiltinArticles([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES, ...moduleArticles]);
+          setBuiltinArticles([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES, ...ASSET_ARTICLES, ...moduleArticles]);
         }
       } catch {
         if (!cancelled) {
-          setBuiltinArticles([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES]);
+          setBuiltinArticles([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES, ...ASSET_ARTICLES]);
         }
       }
     };
@@ -1205,8 +1348,11 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
               transition: "background 0.1s",
             }}
           >
-            <div style={{ fontWeight: 600, fontSize: "13px", color: "#ddd", marginBottom: "4px", lineHeight: "1.3" }}>
+            <div style={{ fontWeight: 600, fontSize: "13px", color: "#ddd", marginBottom: "4px", lineHeight: "1.3", display: "flex", alignItems: "center", gap: "6px" }}>
               {a.title}
+              {a.tags?.some(t => HAS_3D_MODEL.has(t)) && (
+                <span style={{ fontSize: "9px", color: "rgba(0,200,255,0.7)", border: "1px solid rgba(0,200,255,0.3)", padding: "0 3px", borderRadius: "2px", letterSpacing: "0.08em", flexShrink: 0 }}>3D</span>
+              )}
             </div>
             <div style={{ display: "flex", gap: "6px", alignItems: "center", flexWrap: "wrap" }}>
               <CategoryBadge cat={a.category} />

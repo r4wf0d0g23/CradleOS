@@ -35,7 +35,7 @@ import {
   type CoinIssuedEvent,
   type PlayerStructure,
 } from "../lib";
-import { SUI_TESTNET_RPC, CRADLEOS_EVENTS_PKG } from "../constants";
+import { SUI_TESTNET_RPC, CRADLEOS_PKG } from "../constants";
 import { TribeDexPanel } from "./TribeDexPanel";
 
 // ── Error boundary ────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ async function discoverVaultIdFromChain(walletAddress: string): Promise<string |
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_vault::CoinLaunched` },
+          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
           null, 50, true,  // descending=true → newest vault first
         ],
       }),

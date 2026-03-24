@@ -1,7 +1,67 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { WORLD_API, SERVER_ENV } from "../constants";
+import { bcs } from "@mysten/sui/bcs";
+import { deriveDynamicFieldID } from "@mysten/sui/utils";
 
 const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
+const SUI_RPC = "https://fullnode.testnet.sui.io:443";
 const WORLD_PKG = "0x28b497559d65ab320d9da4613bf2498d5946b2c0ae3597ccfda3072ce127448c";
+const OBJECT_REGISTRY = "0x454a9aa3d37e1d08d3c9181239c1b683781e4087fbbbd48c935d54b6736fd05c";
+
+// ── Targeted character resolution via address derivation ──────────────────────
+// Instead of fetching all 3000+ characters, derive Sui addresses from item_ids
+// and batch-fetch only the ones we need.
+
+function deriveCharacterAddress(itemId: string, tenant: string): string {
+  const bcsType = bcs.struct("TenantItemId", { id: bcs.u64(), tenant: bcs.string() });
+  const key = bcsType.serialize({ id: BigInt(itemId), tenant }).toBytes();
+  const typeTag = `0x2::derived_object::DerivedObjectKey<${WORLD_PKG}::in_game_id::TenantItemId>`;
+  return deriveDynamicFieldID(OBJECT_REGISTRY, typeTag, key);
+}
+
+async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): Promise<Map<string, string>> {
+  // Try both tenants if not specified — covers cross-env edge cases
+  const tenantToUse = tenant ?? SERVER_ENV;
+  const result = new Map<string, string>();
+  if (!itemIds.length) return result;
+
+  // Derive Sui addresses
+  const idToAddr = new Map<string, string>();
+  const addrToId = new Map<string, string>();
+  for (const id of itemIds) {
+    try {
+      const addr = deriveCharacterAddress(id, tenantToUse);
+      idToAddr.set(id, addr);
+      addrToId.set(addr, id);
+    } catch (e) {
+      console.warn(`[IntelDashboard] Failed to derive address for ${id}:`, e);
+    }
+  }
+  console.log(`[IntelDashboard] Derived ${idToAddr.size} addresses for tenant="${tenantToUse}"`);
+
+  // Batch fetch in groups of 10 (Sui GraphQL has a 50KB payload limit)
+  const addrs = [...idToAddr.values()];
+  for (let i = 0; i < addrs.length; i += 10) {
+    const batch = addrs.slice(i, i + 10);
+    const fragments = batch.map((addr, idx) =>
+      `obj${idx}: object(address: "${addr}") { address asMoveObject { contents { json } } }`
+    ).join("\n");
+    console.log(`[IntelDashboard] Batch ${Math.floor(i/50)+1}: fetching ${batch.length} objects`);
+    const data = await gql(`{ ${fragments} }`);
+    if (!data) { console.warn("[IntelDashboard] Batch query returned null"); continue; }
+    for (let j = 0; j < batch.length; j++) {
+      const obj = data[`obj${j}`];
+      if (!obj?.asMoveObject?.contents?.json) continue;
+      const json = obj.asMoveObject.contents.json;
+      const itemId = json.key?.item_id;
+      const name = json.metadata?.name?.trim();
+      if (itemId && name) result.set(itemId, name);
+    }
+  }
+
+  console.log(`[IntelDashboard] Resolved ${result.size}/${itemIds.length} character names via targeted derivation`);
+  return result;
+}
 
 async function gql(query: string): Promise<any> {
   try {
@@ -19,11 +79,11 @@ async function gql(query: string): Promise<any> {
   }
 }
 
-async function fetchAllObjects(type: string, limit = 50): Promise<any[]> {
+async function fetchAllObjects(type: string, limit = 50, maxTotal = 500): Promise<any[]> {
   const results: any[] = [];
   let after: string | null = null;
   let hasNext = true;
-  while (hasNext && results.length < 500) {
+  while (hasNext && results.length < maxTotal) {
     const afterClause = after ? `, after: "${after}"` : "";
     const data = await gql(`{
       objects(filter: { type: "${type}" }, first: ${limit}${afterClause}) {
@@ -45,6 +105,9 @@ async function fetchAllObjects(type: string, limit = 50): Promise<any[]> {
   return results;
 }
 
+// Resolve character names for specific item_ids not in an existing map
+/* resolveCharacterNames: kept as reference for targeted resolution if 5000 cap isn't enough */
+
 function formatTimestamp(ts: string): string {
   const ms = parseInt(ts, 10) * 1000;
   const d = new Date(ms);
@@ -55,6 +118,33 @@ function formatTimestamp(ts: string): string {
 function truncateAddr(addr: string, front = 6, back = 4): string {
   if (!addr || addr.length <= front + back + 2) return addr;
   return `${addr.slice(0, front)}...${addr.slice(-back)}`;
+}
+
+// Solar system name cache (shared across component lifetime)
+const sysNameCache = new Map<string, string>();
+
+async function resolveSolarSystemNames(sysIds: string[]): Promise<Map<string, string>> {
+  const missing = sysIds.filter(id => id && !sysNameCache.has(id));
+  // Fetch in parallel, max 20 concurrent
+  const batches: string[][] = [];
+  for (let i = 0; i < missing.length; i += 20) {
+    batches.push(missing.slice(i, i + 20));
+  }
+  for (const batch of batches) {
+    const results = await Promise.allSettled(
+      batch.map(id =>
+        fetch(`${WORLD_API}/v2/solarsystems/${id}`)
+          .then(r => r.json())
+          .then((d: { id: number; name?: string }) => ({ id, name: d.name ?? null }))
+      )
+    );
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value.name) {
+        sysNameCache.set(r.value.id, r.value.name);
+      }
+    }
+  }
+  return sysNameCache;
 }
 
 const TABS = ["KILL FEED", "INFRASTRUCTURE", "CHARACTERS", "SECURITY"] as const;
@@ -166,22 +256,36 @@ type KillFilter = "ALL" | "SHIP" | "STRUCTURE";
 function KillFeedTab({
   kills,
   charMap,
+  sysMap,
   loading,
 }: {
   kills: any[];
   charMap: Map<string, string>;
+  sysMap: Map<string, string>;
   loading: boolean;
 }) {
   const [filter, setFilter] = useState<KillFilter>("ALL");
+  const [nameSearch, setNameSearch] = useState("");
 
   const filtered = useMemo(() => {
     const sorted = [...kills].sort(
       (a, b) =>
         parseInt(b.kill_timestamp, 10) - parseInt(a.kill_timestamp, 10)
     );
-    if (filter === "ALL") return sorted;
-    return sorted.filter((k) => k.loss_type?.["@variant"] === filter);
-  }, [kills, filter]);
+    let list = filter === "ALL" ? sorted : sorted.filter((k) => k.loss_type?.["@variant"] === filter);
+    if (nameSearch.trim()) {
+      const q = nameSearch.toLowerCase();
+      list = list.filter(k => {
+        const killer = (charMap.get(k.killer_id?.item_id ?? "") ?? "").toLowerCase();
+        const victim = (charMap.get(k.victim_id?.item_id ?? "") ?? "").toLowerCase();
+        const sys = (sysMap.get(k.solar_system_id?.item_id ?? "") ?? "").toLowerCase();
+        return killer.includes(q) || victim.includes(q) || sys.includes(q)
+          || (k.killer_id?.item_id ?? "").includes(q)
+          || (k.victim_id?.item_id ?? "").includes(q);
+      });
+    }
+    return list;
+  }, [kills, filter, nameSearch, charMap, sysMap]);
 
   const shipCount = useMemo(
     () => kills.filter((k) => k.loss_type?.["@variant"] === "SHIP").length,
@@ -210,7 +314,7 @@ function KillFeedTab({
           <span style={S.statVal}>{structCount}</span> structure
         </span>
       </div>
-      <div style={{ marginBottom: 10 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
         {(["ALL", "SHIP", "STRUCTURE"] as KillFilter[]).map((f) => (
           <button
             key={f}
@@ -220,6 +324,12 @@ function KillFeedTab({
             {f}
           </button>
         ))}
+        <input
+          style={{ ...S.input, flex: 1, minWidth: 140, marginBottom: 0 }}
+          placeholder="Filter by name, system, or ID..."
+          value={nameSearch}
+          onChange={e => setNameSearch(e.target.value)}
+        />
       </div>
       {filtered.length === 0 ? (
         <div style={S.empty}>No kills recorded on-chain yet</div>
@@ -242,7 +352,7 @@ function KillFeedTab({
                 <span style={{ color: "#ff4444" }}>
                   {resolveName(victimId)}
                 </span>
-                <span style={S.muted}>sys-{sysId}</span>
+                <span style={{ color: "rgba(100,180,255,0.7)", fontSize: "12px" }}>{sysMap.get(sysId) || `sys-${sysId}`}</span>
                 <span
                   style={{
                     ...S.muted,
@@ -268,148 +378,562 @@ function KillFeedTab({
   );
 }
 
-// ── INFRASTRUCTURE TAB ────────────────────────────────────────────────────────
+// ── INFRASTRUCTURE TAB (aggregate dashboard) ─────────────────────────────────
 
-type NodeFilter = "ALL" | "ONLINE" | "OFFLINE" | "LOW FUEL";
+// ── Fetch all LocationRevealedEvents — gives us every publicly exposed assembly + system ──────────
 
-function InfraTab({ nodes, loading }: { nodes: any[]; loading: boolean }) {
-  const [filter, setFilter] = useState<NodeFilter>("ALL");
+interface ExposedAssembly {
+  assemblyId: string;   // Sui object ID of the assembly
+  solarSystemId: number;
+  solarSystemName?: string;
+  // Enriched from node list
+  nodeData?: any;
+  ownerCharId?: string;
+  ownerName?: string;
+  // Direct on-chain status (resolved during fetch)
+  isOnlineChain?: boolean | null;
+  assemblyTypeId?: string;
+  assemblyItemId?: string;  // key.item_id from the assembly object
+}
 
-  const isOnline = (n: any) => n.status?.status?.["@variant"] === "ONLINE";
-  const fuelQty = (n: any) => parseInt(n.fuel?.quantity ?? "0", 10);
-  const fuelMax = (n: any) => parseInt(n.fuel?.max_capacity ?? "100000", 10);
-
-  const onlineCount = useMemo(() => nodes.filter(isOnline).length, [nodes]);
-  const offlineCount = nodes.length - onlineCount;
-  const criticalCount = useMemo(
-    () => nodes.filter((n) => fuelMax(n) > 0 && fuelQty(n) / fuelMax(n) < 0.02).length,
-    [nodes]
-  );
-
-  const filtered = useMemo(() => {
-    let list = [...nodes];
-    if (filter === "ONLINE") list = list.filter(isOnline);
-    else if (filter === "OFFLINE") list = list.filter((n) => !isOnline(n));
-    else if (filter === "LOW FUEL") list = list.filter((n) => fuelMax(n) > 0 && fuelQty(n) / fuelMax(n) < 0.05);
-    // sort: ONLINE first, then fuel ascending within group
-    list.sort((a, b) => {
-      const ao = isOnline(a) ? 0 : 1;
-      const bo = isOnline(b) ? 0 : 1;
-      if (ao !== bo) return ao - bo;
-      return fuelQty(a) - fuelQty(b);
+async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
+  // Step 1: collect all LocationRevealedEvents
+  const results: ExposedAssembly[] = [];
+  const seen = new Set<string>();
+  let cursor: string | null = null;
+  do {
+    const res = await fetch(SUI_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [{ MoveEventType: `${WORLD_PKG}::location::LocationRevealedEvent` }, cursor, 100, false],
+      }),
     });
-    return list;
-  }, [nodes, filter]);
+    const json = await res.json() as {
+      result: { data: Array<{ parsedJson: { assembly_id: string; solarsystem: string | number } }>; hasNextPage: boolean; nextCursor: string | null; };
+    };
+    for (const e of json.result.data) {
+      const aId = e.parsedJson.assembly_id;
+      const sysId = Number(e.parsedJson.solarsystem);
+      if (aId && sysId && !isNaN(sysId) && !seen.has(aId)) {
+        seen.add(aId);
+        results.push({ assemblyId: aId, solarSystemId: sysId });
+      }
+    }
+    cursor = json.result.hasNextPage ? json.result.nextCursor : null;
+  } while (cursor);
 
-  if (loading) return <div style={S.loading}>[ fetching infrastructure... ]</div>;
+  // Step 2: fetch each assembly object individually (Sui RPC doesn't support batch)
+  const ownerCapMap = new Map<string, string>(); // assemblyId → owner_cap_id
+  await Promise.all(results.map(async (entry) => {
+    try {
+      const res = await fetch(SUI_RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [entry.assemblyId, { showContent: true }] }),
+      });
+      const json = await res.json() as { result: { data?: { content?: { fields?: { owner_cap_id?: string; type_id?: string; status?: any } } } } };
+      const fields = json?.result?.data?.content?.fields as any;
+      const capId = fields?.owner_cap_id;
+      if (capId) { ownerCapMap.set(entry.assemblyId, capId); }
+      if (fields?.type_id) entry.assemblyTypeId = fields.type_id;
+      // Get the assembly's own item_id for the dApp link
+      const itemId = fields?.key?.fields?.item_id ?? fields?.key?.item_id;
+      if (itemId) entry.assemblyItemId = String(itemId);
+      const sf = fields?.status as any;
+      const variant =
+        sf?.fields?.status?.variant ??     // StorageUnit/Assembly format
+        sf?.status?.["@variant"] ??          // NetworkNode format
+        null;
+      entry.isOnlineChain = variant !== null ? variant === "ONLINE" : null;
+    } catch { /* skip */ }
+  }));
+
+  // Step 3: fetch each OwnerCap individually to find its owner
+  const capIds = [...ownerCapMap.values()];
+  const capOwnerMap = new Map<string, string>();
+  await Promise.all(capIds.map(async (capId) => {
+    try {
+      const res = await fetch(SUI_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"sui_getObject", params:[capId, {showOwner:true}] }),
+      });
+      const json = await res.json() as { result: { data?: { owner?: { AddressOwner?: string } } } };
+      const owner = json?.result?.data?.owner?.AddressOwner;
+      if (owner) capOwnerMap.set(capId, owner);
+    } catch { /* skip */ }
+  }));
+
+  // Step 4: fetch Character objects individually to get key.item_id
+  const charAddresses = [...new Set(capOwnerMap.values())];
+  const charItemIdMap = new Map<string, string>();
+  await Promise.all(charAddresses.map(async (addr) => {
+    try {
+      const res = await fetch(SUI_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"sui_getObject", params:[addr, {showContent:true}] }),
+      });
+      const json = await res.json() as { result: { data?: { content?: { fields?: { key?: { fields?: { item_id?: string } } } } } } };
+      const itemId = json?.result?.data?.content?.fields?.key?.fields?.item_id;
+      if (itemId) charItemIdMap.set(addr, itemId);
+    } catch { /* skip */ }
+  }));
+
+  // Enrich results with ownerCharId
+  for (const r of results) {
+    const capId = ownerCapMap.get(r.assemblyId);
+    if (capId) {
+      const charAddr = capOwnerMap.get(capId);
+      if (charAddr) {
+        r.ownerCharId = charItemIdMap.get(charAddr) ?? charAddr;
+      }
+    }
+  }
+
+  return results;
+}
+
+type InfraView = "OVERVIEW" | "OWNERS" | "ALERTS" | "NODES" | "EXPOSED";
+
+const isOnline = (n: any) => n.status?.status?.["@variant"] === "ONLINE";
+const fuelQty = (n: any) => parseInt(n.fuel?.quantity ?? "0", 10);
+const fuelMax = (n: any) => parseInt(n.fuel?.max_capacity ?? "100000", 10);
+const fuelPct = (n: any) => { const m = fuelMax(n); return m > 0 ? fuelQty(n) / m : 0; };
+const connCount = (n: any) => Array.isArray(n.connected_assembly_ids) ? n.connected_assembly_ids.length : 0;
+const nodeName = (n: any) => (n.metadata?.name && n.metadata.name !== "") ? n.metadata.name : `Node #${n.key?.item_id ?? n.objectId}`;
+
+function FuelBar({ pct, size = 60 }: { pct: number; size?: number }) {
+  const color = pct >= 0.5 ? "#00ff96" : pct >= 0.1 ? "#ffd700" : "#ff4444";
+  return (
+    <div style={{ width: size, height: 5, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+      <div style={{ width: `${Math.min(100, pct * 100)}%`, height: "100%", background: color }} />
+    </div>
+  );
+}
+
+function StatCard({ label, value, color, sub }: { label: string; value: string | number; color?: string; sub?: string }) {
+  return (
+    <div style={{ flex: 1, minWidth: 100, padding: "8px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: color ?? "#ddd", fontFamily: "monospace" }}>{value}</div>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
+      {sub && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; charMap: Map<string, string>; kills: any[]; sysMap: Map<string, string>; loading: boolean }) {
+  const [exposed, setExposed] = React.useState<ExposedAssembly[]>([]);
+  const [exposedLoading, setExposedLoading] = React.useState(false);
+
+  // Build a quick lookup: assemblyId → node data from our node list
+  const nodeByObjId = React.useMemo(() => {
+    const m = new Map<string, any>();
+    for (const n of nodes) m.set(n.objectId, n);
+    return m;
+  }, [nodes]);
+  const [view, setView] = useState<InfraView>("OVERVIEW");
+  const [expandedOwner, setExpandedOwner] = useState<string | null>(null);
+
+  // ── Aggregate stats ──
+  // Cross-reference node item_ids against killmail solar_system_ids for location intel
+  const nodeSystemMap = useMemo(() => {
+    const m = new Map<string, string>(); // item_id → system item_id
+    for (const k of kills) {
+      const sysId = k.solar_system_id?.item_id ?? "";
+      const victimId = k.victim_id?.item_id ?? "";
+      if (sysId && victimId) m.set(victimId, sysId);
+      // Also check if killer's structure is associated
+    }
+    return m;
+  }, [kills]);
+
+  const stats = useMemo(() => {
+    const online = nodes.filter(isOnline).length;
+    const offline = nodes.length - online;
+    const critical = nodes.filter(n => fuelPct(n) < 0.02 && fuelMax(n) > 0).length;
+    const lowFuel = nodes.filter(n => fuelPct(n) < 0.1 && fuelPct(n) >= 0.02 && fuelMax(n) > 0).length;
+    const totalFuel = nodes.reduce((s, n) => s + fuelQty(n), 0);
+    const totalFuelMax = nodes.reduce((s, n) => s + fuelMax(n), 0);
+    const totalConns = nodes.reduce((s, n) => s + connCount(n), 0);
+    const totalEnergy = nodes.reduce((s, n) => s + parseInt(n.energy_source?.current_energy_production ?? "0", 10), 0);
+    const burning = nodes.filter(n => n.fuel?.is_burning).length;
+    // Unique owners
+    const owners = new Set(nodes.map(n => n.owner_character_id?.item_id ?? "unknown"));
+    return { online, offline, critical, lowFuel, totalFuel, totalFuelMax, totalConns, totalEnergy, burning, ownerCount: owners.size };
+  }, [nodes]);
+
+  // ── Owner grouping ──
+  const ownerGroups = useMemo(() => {
+    const groups = new Map<string, { charId: string; nodes: any[] }>();
+    for (const n of nodes) {
+      const ownerId = n.owner_character_id?.item_id ?? "unknown";
+      if (!groups.has(ownerId)) groups.set(ownerId, { charId: ownerId, nodes: [] });
+      groups.get(ownerId)!.nodes.push(n);
+    }
+    return [...groups.values()].sort((a, b) => b.nodes.length - a.nodes.length);
+  }, [nodes]);
+
+  // ── Alert items ──
+  const alerts = useMemo(() => {
+    const items: Array<{ severity: "critical" | "warning" | "info"; text: string; nodeId?: string }> = [];
+    for (const n of nodes) {
+      const pct = fuelPct(n);
+      const name = nodeName(n);
+      if (fuelMax(n) > 0 && pct < 0.01) {
+        items.push({ severity: "critical", text: `${name} — FUEL EMPTY (${fuelQty(n)}/${fuelMax(n)})`, nodeId: n.objectId });
+      } else if (fuelMax(n) > 0 && pct < 0.05) {
+        items.push({ severity: "critical", text: `${name} — fuel critical (${(pct * 100).toFixed(1)}%)`, nodeId: n.objectId });
+      } else if (fuelMax(n) > 0 && pct < 0.1) {
+        items.push({ severity: "warning", text: `${name} — fuel low (${(pct * 100).toFixed(1)}%)`, nodeId: n.objectId });
+      }
+      if (!isOnline(n) && connCount(n) > 0) {
+        items.push({ severity: "warning", text: `${name} — OFFLINE with ${connCount(n)} connected structures`, nodeId: n.objectId });
+      }
+    }
+    // Owner-level alerts
+    for (const g of ownerGroups) {
+      const offlineNodes = g.nodes.filter(n => !isOnline(n));
+      if (offlineNodes.length >= 3) {
+        items.push({ severity: "info", text: `Owner ${g.charId} has ${offlineNodes.length} offline nodes` });
+      }
+    }
+    items.sort((a, b) => { const p = { critical: 0, warning: 1, info: 2 }; return p[a.severity] - p[b.severity]; });
+    return items;
+  }, [nodes, ownerGroups]);
+
+  if (loading) return <div style={S.loading}>[ scanning infrastructure lattice... ]</div>;
+
+  const sevColor = { critical: "#ff4444", warning: "#ffd700", info: "rgba(100,180,255,0.7)" };
 
   return (
     <div>
-      {criticalCount > 0 && (
-        <div style={S.warn}>
-          !! {criticalCount} nodes critically low on fuel
-        </div>
-      )}
-      <div style={S.statRow}>
-        <span>
-          <span style={{ ...S.statVal, color: "#00ff96" }}>{onlineCount}</span>{" "}
-          online
-        </span>
-        <span>
-          <span style={{ ...S.statVal, color: "#ff4444" }}>{offlineCount}</span>{" "}
-          offline
-        </span>
-        <span>
-          <span style={S.statVal}>{nodes.length}</span> total nodes
-        </span>
-      </div>
+      {/* ── View tabs ── */}
       <div style={{ marginBottom: 10 }}>
-        {(["ALL", "ONLINE", "OFFLINE", "LOW FUEL"] as NodeFilter[]).map((f) => (
-          <button
-            key={f}
-            style={S.pill(filter === f)}
-            onClick={() => setFilter(f)}
-          >
-            {f}
-          </button>
+        {(["OVERVIEW", "OWNERS", "ALERTS", "NODES", "EXPOSED"] as InfraView[]).map(v => (
+          <button key={v} style={S.pill(view === v)} onClick={() => setView(v)}>{v}</button>
         ))}
       </div>
-      {filtered.length === 0 ? (
-        <div style={S.empty}>No nodes match filter</div>
-      ) : (
+
+      {view === "OVERVIEW" && (
         <div>
-          {filtered.map((n) => {
-            const online = isOnline(n);
-            const qty = fuelQty(n);
-            const max = fuelMax(n);
-            const pct = max > 0 ? Math.min(100, (qty / max) * 100) : 0;
-            const fuelColor =
-              pct >= 50 ? "#00ff96" : pct >= 10 ? "#ffd700" : "#ff4444";
-            const name =
-              n.metadata?.name && n.metadata.name !== ""
-                ? n.metadata.name
-                : `Node #${n.key?.item_id ?? n.objectId}`;
-            const curEnergy = n.energy_source?.current_energy_production ?? "0";
-            const maxEnergy = n.energy_source?.max_energy_production ?? "0";
-            const connCount = Array.isArray(n.connected_assembly_ids)
-              ? n.connected_assembly_ids.length
-              : 0;
-            return (
-              <div key={n.objectId} style={S.row}>
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: online ? "#00ff96" : "#ff4444",
-                    flexShrink: 0,
-                    display: "inline-block",
-                  }}
-                />
-                <span style={{ minWidth: 100, fontWeight: 600 }}>{name}</span>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    flex: 1,
-                    minWidth: 120,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div
-                      style={{
-                        width: 80,
-                        height: 6,
-                        background: "rgba(255,255,255,0.1)",
-                        borderRadius: 0,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${pct}%`,
-                          height: "100%",
-                          background: fuelColor,
-                          transition: "width 0.3s",
-                        }}
-                      />
+          {stats.critical > 0 && <div style={S.warn}>⚠ {stats.critical} nodes critically low on fuel</div>}
+          {/* Stat cards */}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+            <StatCard label="Online" value={stats.online} color="#00ff96" />
+            <StatCard label="Offline" value={stats.offline} color={stats.offline > 0 ? "#ff4444" : "#666"} />
+            <StatCard label="Total Nodes" value={nodes.length} />
+            <StatCard label="Owners" value={stats.ownerCount} color="rgba(100,180,255,0.8)" />
+          </div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+            <StatCard label="Structures Connected" value={stats.totalConns.toLocaleString()} sub={`across ${nodes.length} nodes`} />
+            <StatCard label="Total Energy" value={`${stats.totalEnergy.toLocaleString()} EP`} />
+            <StatCard label="Fuel Burning" value={stats.burning} color={stats.burning > 0 ? "#FF4700" : "#666"} />
+            <StatCard label="Global Fuel" value={stats.totalFuelMax > 0 ? `${((stats.totalFuel / stats.totalFuelMax) * 100).toFixed(1)}%` : "—"} color={stats.totalFuel / (stats.totalFuelMax || 1) > 0.3 ? "#00ff96" : "#ffd700"} sub={`${stats.totalFuel.toLocaleString()} / ${stats.totalFuelMax.toLocaleString()}`} />
+          </div>
+          {/* Fuel distribution histogram */}
+          <div style={{ marginBottom: 12, padding: "8px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Fuel Distribution</div>
+            {(() => {
+              const buckets = [
+                { label: "Empty (0-2%)", min: 0, max: 0.02, color: "#ff4444" },
+                { label: "Critical (2-10%)", min: 0.02, max: 0.1, color: "#ff6644" },
+                { label: "Low (10-30%)", min: 0.1, max: 0.3, color: "#ffd700" },
+                { label: "Moderate (30-70%)", min: 0.3, max: 0.7, color: "#88cc44" },
+                { label: "Healthy (70-100%)", min: 0.7, max: 1.01, color: "#00ff96" },
+              ];
+              const maxCount = Math.max(1, ...buckets.map(b => nodes.filter(n => { const p = fuelPct(n); return p >= b.min && p < b.max; }).length));
+              return buckets.map(b => {
+                const count = nodes.filter(n => { const p = fuelPct(n); return p >= b.min && p < b.max; }).length;
+                return (
+                  <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                    <span style={{ width: 120, fontSize: 10, color: b.color }}>{b.label}</span>
+                    <div style={{ flex: 1, height: 8, background: "rgba(255,255,255,0.05)", overflow: "hidden" }}>
+                      <div style={{ width: `${(count / maxCount) * 100}%`, height: "100%", background: b.color, opacity: 0.7 }} />
                     </div>
-                    <span style={{ color: fuelColor, fontSize: 10 }}>
-                      {qty}/{max}
-                    </span>
+                    <span style={{ width: 30, fontSize: 10, color: "rgba(255,255,255,0.5)", textAlign: "right" }}>{count}</span>
                   </div>
+                );
+              });
+            })()}
+          </div>
+          {/* Top alerts preview */}
+          {alerts.length > 0 && (
+            <div style={{ padding: "8px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Top Alerts ({alerts.length})</div>
+              {alerts.slice(0, 5).map((a, i) => (
+                <div key={i} style={{ fontSize: 11, color: sevColor[a.severity], marginBottom: 2 }}>
+                  {a.severity === "critical" ? "●" : a.severity === "warning" ? "▲" : "◆"} {a.text}
                 </div>
-                {n.fuel?.is_burning && (
-                  <span style={S.badge("#FF4700")}>burning</span>
+              ))}
+              {alerts.length > 5 && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>+ {alerts.length - 5} more — switch to ALERTS view</div>}
+            </div>
+          )}
+        </div>
+      )}
+
+      {view === "OWNERS" && (
+        <div>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>{ownerGroups.length} infrastructure operators</div>
+          {ownerGroups.map(g => {
+            const online = g.nodes.filter(isOnline).length;
+            const offline = g.nodes.length - online;
+            const totalFuelG = g.nodes.reduce((s, n) => s + fuelQty(n), 0);
+            const totalMaxG = g.nodes.reduce((s, n) => s + fuelMax(n), 0);
+            const avgPct = totalMaxG > 0 ? totalFuelG / totalMaxG : 0;
+            const conns = g.nodes.reduce((s, n) => s + connCount(n), 0);
+            const expanded = expandedOwner === g.charId;
+            return (
+              <div key={g.charId} style={{ marginBottom: 4 }}>
+                <div
+                  style={{ ...S.row, cursor: "pointer", background: expanded ? "rgba(255,71,0,0.05)" : undefined }}
+                  onClick={() => setExpandedOwner(expanded ? null : g.charId)}
+                >
+                  <span style={{ fontWeight: 600, minWidth: 80 }}>{g.charId === "unknown" ? "Unknown" : (charMap.get(g.charId) ?? `#${g.charId}`)}</span>
+                  <span style={{ color: "#00ff96", fontSize: 11 }}>{online}↑</span>
+                  {offline > 0 && <span style={{ color: "#ff4444", fontSize: 11 }}>{offline}↓</span>}
+                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{g.nodes.length} nodes</span>
+                  <FuelBar pct={avgPct} size={50} />
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{(avgPct * 100).toFixed(0)}% fuel</span>
+                  <span style={S.muted}>{conns} conn</span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>{expanded ? "▾" : "▸"}</span>
+                </div>
+                {expanded && (
+                  <div style={{ paddingLeft: 16, borderLeft: "1px solid rgba(255,71,0,0.15)" }}>
+                    {g.nodes.sort((a, b) => fuelQty(a) - fuelQty(b)).map(n => {
+                      const pct = fuelPct(n);
+                      return (
+                        <div key={n.objectId} style={{ ...S.row, fontSize: 11 }}>
+                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: isOnline(n) ? "#00ff96" : "#ff4444", flexShrink: 0 }} />
+                          <span style={{ minWidth: 80 }}>{nodeName(n)}</span>
+                          <FuelBar pct={pct} size={40} />
+                          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)" }}>{fuelQty(n)}/{fuelMax(n)}</span>
+                          <span style={S.muted}>{connCount(n)} conn</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
-                <span style={S.muted}>{connCount} connections</span>
-                <span style={S.muted}>
-                  {curEnergy}/{maxEnergy} EP
-                </span>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {view === "ALERTS" && (
+        <div>
+          {alerts.length === 0 ? (
+            <div style={S.empty}>No active alerts — infrastructure nominal</div>
+          ) : (
+            <div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>{alerts.length} alerts</div>
+              {alerts.map((a, i) => (
+                <div key={i} style={{ padding: "4px 8px", marginBottom: 2, fontSize: 12, color: sevColor[a.severity], background: "rgba(255,255,255,0.015)", borderLeft: `2px solid ${sevColor[a.severity]}` }}>
+                  {a.severity === "critical" ? "● CRITICAL" : a.severity === "warning" ? "▲ WARNING" : "◆ INFO"}: {a.text}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {view === "NODES" && (
+        <div>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
+            {nodes.length} nodes — {nodes.filter(isOnline).length} online · {nodes.filter(n => !isOnline(n)).length} offline
+          </div>
+          {/* Column headers */}
+          <div style={{ display: "grid", gridTemplateColumns: "8px 1fr 120px 90px 70px 80px 60px", gap: "0 8px", padding: "4px 6px", fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 2 }}>
+            <div />
+            <div>NAME / ITEM ID</div>
+            <div>OWNER</div>
+            <div>SYSTEM</div>
+            <div>FUEL</div>
+            <div>CONNECTED</div>
+            <div>STATUS</div>
+          </div>
+          {[...nodes].sort((a, b) => {
+            // Online first, then by fuel %
+            const aOn = isOnline(a) ? 0 : 1;
+            const bOn = isOnline(b) ? 0 : 1;
+            if (aOn !== bOn) return aOn - bOn;
+            return fuelPct(a) - fuelPct(b);
+          }).map(n => {
+            const pct = fuelPct(n);
+            const online = isOnline(n);
+            const itemId = n.key?.item_id ?? "";
+            const ownerId = n.owner_character_id?.item_id ?? "";
+            const ownerName = ownerId ? (charMap.get(ownerId) ?? `#${ownerId}`) : "—";
+            // System from killmail cross-ref
+            const sysItemId = nodeSystemMap.get(itemId) ?? "";
+            const sysName = sysItemId ? (sysMap.get(sysItemId) ?? `sys-${sysItemId}`) : "—";
+            const fuelColor = pct === 0 ? "#ff4444" : pct < 0.02 ? "#ff4444" : pct < 0.1 ? "#ffd700" : pct < 0.3 ? "#ffaa00" : "#00ff96";
+            const dappUrl = itemId ? `https://${SERVER_ENV === 'stillness' ? 'dapps' : 'uat.dapps'}.evefrontier.com/?itemId=${itemId}&tenant=${SERVER_ENV}` : null;
+            return (
+              <div key={n.objectId} style={{
+                display: "grid", gridTemplateColumns: "8px 1fr 120px 90px 70px 80px 60px",
+                gap: "0 8px", padding: "5px 6px", fontSize: 11,
+                borderBottom: "1px solid rgba(255,255,255,0.04)",
+                alignItems: "center",
+                background: online ? "transparent" : "rgba(255,68,68,0.02)",
+              }}>
+                {/* Status dot */}
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: online ? "#00ff96" : "#ff4444", boxShadow: online ? "0 0 4px #00ff9660" : "none" }} />
+                {/* Name + item id */}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={n.objectId}>
+                    {nodeName(n)}
+                  </div>
+                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
+                    {dappUrl
+                      ? <a href={dappUrl} target="_blank" rel="noopener noreferrer" style={{ color: "rgba(100,180,255,0.6)", textDecoration: "none" }}>#{itemId}</a>
+                      : `#${itemId}`
+                    }
+                  </div>
+                </div>
+                {/* Owner */}
+                <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 10, color: "rgba(200,200,184,0.8)" }} title={ownerId}>
+                  {ownerName}
+                </div>
+                {/* System */}
+                <div style={{ fontSize: 10, color: sysName === "—" ? "rgba(255,255,255,0.2)" : "rgba(100,180,255,0.8)" }}>
+                  {sysName}
+                </div>
+                {/* Fuel */}
+                <div style={{ fontSize: 10, color: fuelColor }}>
+                  {fuelMax(n) > 0 ? `${(pct * 100).toFixed(0)}%` : "—"}
+                </div>
+                {/* Connected structures */}
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>
+                  {connCount(n)} structures
+                </div>
+                {/* Status badge */}
+                <div>
+                  <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 2, background: online ? "rgba(0,255,150,0.12)" : "rgba(255,68,68,0.12)", color: online ? "#00ff96" : "#ff6666", letterSpacing: "0.06em" }}>
+                    {online ? "ONLINE" : "OFFLINE"}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+          {nodes.length === 0 && <div style={S.muted}>No node data</div>}
+          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 8 }}>
+            System location derived from killmail records — nodes never killed show "—"
+          </div>
+        </div>
+      )}
+
+      {view === "EXPOSED" && (
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>
+              Structures that have revealed their location on-chain via LocationRevealedEvent
+            </div>
+            <button
+              onClick={async () => {
+                setExposedLoading(true);
+                try {
+                  const raw = await fetchExposedAssemblies();
+                  // Resolve system names + cross-reference with node data
+                  const sysIds = [...new Set(raw.map(e => String(e.solarSystemId)))];
+                  const sysNames = await resolveSolarSystemNames(sysIds);
+                  const enriched = raw.map(e => {
+                    // Owner from NetworkNode cross-ref (fast path)
+                    const nodeCharId = nodeByObjId.get(e.assemblyId)?.owner_character_id?.item_id;
+                    // Owner from assembled chain walk (ownerCharId set during fetchExposedAssemblies)
+                    const resolvedCharId = nodeCharId ?? e.ownerCharId ?? null;
+                    return {
+                      ...e,
+                      solarSystemName: sysNames.get(String(e.solarSystemId)) ?? `sys-${e.solarSystemId}`,
+                      nodeData: nodeByObjId.get(e.assemblyId),
+                      ownerCharId: resolvedCharId ?? undefined,
+                      ownerName: resolvedCharId
+                        ? (charMap.get(resolvedCharId) ?? `#${resolvedCharId}`)
+                        : "—",
+                    };
+                  });
+                  enriched.sort((a, b) => a.solarSystemId - b.solarSystemId);
+                  setExposed(enriched);
+                } catch { /* silent */ }
+                setExposedLoading(false);
+              }}
+              style={{ padding: "3px 10px", fontSize: 10, fontWeight: 700, fontFamily: "inherit", letterSpacing: "0.08em", background: "rgba(100,180,255,0.08)", border: "1px solid rgba(100,180,255,0.25)", color: "rgba(100,180,255,0.8)", cursor: "pointer", borderRadius: 2, whiteSpace: "nowrap" }}
+            >
+              {exposedLoading ? "LOADING…" : "↻ FETCH EXPOSED"}
+            </button>
+          </div>
+
+          {exposed.length > 0 && (() => {
+            // Group by system
+            const bySystem = new Map<string, ExposedAssembly[]>();
+            for (const e of exposed) {
+              const key = e.solarSystemName ?? `sys-${e.solarSystemId}`;
+              if (!bySystem.has(key)) bySystem.set(key, []);
+              bySystem.get(key)!.push(e);
+            }
+            const systems = [...bySystem.entries()].sort((a, b) => b[1].length - a[1].length);
+            return (
+              <>
+                <div style={{ fontSize: 10, color: "rgba(100,180,255,0.6)", marginBottom: 6 }}>
+                  {exposed.length} structures across {systems.length} systems
+                </div>
+                <div style={{ overflowY: "auto", maxHeight: "60vh" }}>
+                  {systems.map(([sysName, entries]) => {
+                    const onlineCount = entries.filter(e => {
+                      const n = e.nodeData;
+                      if (n) return n.status?.status?.["@variant"] === "ONLINE";
+                      return e.isOnlineChain === true;
+                    }).length;
+                    return (
+                      <div key={sysName} style={{ marginBottom: 10 }}>
+                        {/* System header */}
+                        <div style={{ padding: "4px 8px", background: "rgba(100,180,255,0.07)", borderLeft: "2px solid rgba(100,180,255,0.4)", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 2 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(100,180,255,0.9)", letterSpacing: "0.06em" }}>{sysName}</span>
+                          <span style={{ fontSize: 10, color: "rgba(100,180,255,0.5)" }}>
+                            {entries.length} · <span style={{ color: "#00ff96" }}>{onlineCount} online</span>
+                          </span>
+                        </div>
+                        {entries.map(e => {
+                          const n = e.nodeData;
+                          // Use nodeData status (NetworkNode) or direct chain status (Assembly/SSU)
+                          const online: boolean | null = n
+                            ? n.status?.status?.["@variant"] === "ONLINE"
+                            : e.isOnlineChain ?? null;
+                          const name = n?.metadata?.name && n.metadata.name !== "" ? n.metadata.name : null;
+                          // Use the assembly's own item_id (fetched during EXPOSED load), not the nodeData's key
+                          const itemId = e.assemblyItemId ?? n?.key?.item_id;
+                          const dappUrl = itemId ? `https://${SERVER_ENV === 'stillness' ? 'dapps' : 'uat.dapps'}.evefrontier.com/?itemId=${itemId}&tenant=${SERVER_ENV}` : null;
+                          return (
+                            <div key={e.assemblyId} style={{ display: "grid", gridTemplateColumns: "6px minmax(0,1fr) minmax(0,1fr) 58px", gap: "0 6px", padding: "4px 8px 4px 18px", fontSize: 11, borderBottom: "1px solid rgba(255,255,255,0.03)", alignItems: "center" }}>
+                              <span style={{ width: 6, height: 6, borderRadius: "50%", background: online === true ? "#00ff96" : online === false ? "#ff4444" : "rgba(255,255,255,0.15)" }} />
+                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: name ? 600 : 400, color: name ? "inherit" : "rgba(255,255,255,0.35)" }}>
+                                {name ?? "unnamed"}
+                                {dappUrl && <a href={dappUrl} target="_blank" rel="noopener noreferrer" style={{ color: "rgba(100,180,255,0.4)", textDecoration: "none", fontSize: 9, marginLeft: 5 }}>#{itemId}</a>}
+                              </div>
+                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 10, color: e.ownerName && e.ownerName !== "—" ? "rgba(255,200,0,0.8)" : "rgba(255,255,255,0.2)" }}>
+                                {e.ownerName && e.ownerName !== "—" ? e.ownerName : "—"}
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                {online !== null && (
+                                  <span style={{ fontSize: 9, padding: "1px 4px", borderRadius: 2, background: online ? "rgba(0,255,150,0.1)" : "rgba(255,68,68,0.1)", color: online ? "#00ff96" : "#ff6666" }}>
+                                    {online ? "ON" : "OFF"}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })()}
+          {!exposedLoading && exposed.length === 0 && (
+            <div style={S.muted}>Click FETCH EXPOSED to load on-chain location data</div>
+          )}
         </div>
       )}
     </div>
@@ -418,28 +942,44 @@ function InfraTab({ nodes, loading }: { nodes: any[]; loading: boolean }) {
 
 // ── CHARACTERS TAB ────────────────────────────────────────────────────────────
 
+type CharSort = "NAME" | "TRIBE";
+
 function CharactersTab({
   characters,
+  tribeMap,
   loading,
 }: {
   characters: any[];
+  tribeMap: Map<string, string>;
   loading: boolean;
 }) {
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<CharSort>("TRIBE");
+  const [expandedTribes, setExpandedTribes] = useState<Set<string>>(new Set());
+
+  /* tribe name resolution placeholder — could fetch from WORLD_API/v2/tribes */
 
   const sorted = useMemo(() => {
-    const named: any[] = [];
-    const unnamed: any[] = [];
-    for (const c of characters) {
-      const hasName = c.metadata?.name && c.metadata.name.trim() !== "";
-      if (hasName) named.push(c);
-      else unnamed.push(c);
+    const list = [...characters];
+    if (sortBy === "TRIBE") {
+      list.sort((a, b) => {
+        const tA = a.tribe_id ?? 9999999;
+        const tB = b.tribe_id ?? 9999999;
+        if (tA !== tB) return tA - tB;
+        return (a.metadata?.name || "zzz").localeCompare(b.metadata?.name || "zzz");
+      });
+    } else {
+      const named: any[] = [];
+      const unnamed: any[] = [];
+      for (const c of list) {
+        if (c.metadata?.name?.trim()) named.push(c);
+        else unnamed.push(c);
+      }
+      named.sort((a, b) => (a.metadata.name || "").localeCompare(b.metadata.name || ""));
+      return [...named, ...unnamed];
     }
-    named.sort((a, b) =>
-      (a.metadata.name || "").localeCompare(b.metadata.name || "")
-    );
-    return [...named, ...unnamed];
-  }, [characters]);
+    return list;
+  }, [characters, sortBy]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return sorted;
@@ -447,44 +987,103 @@ function CharactersTab({
     return sorted.filter(
       (c) =>
         (c.metadata?.name || "").toLowerCase().includes(q) ||
-        (c.key?.item_id || "").includes(q)
+        (c.key?.item_id || "").includes(q) ||
+        String(c.tribe_id ?? "").includes(q)
     );
   }, [sorted, search]);
+
+  // Group by tribe for tribe view
+  const tribeGroups = useMemo(() => {
+    if (sortBy !== "TRIBE") return null;
+    const groups = new Map<string, any[]>();
+    for (const c of filtered) {
+      const tid = String(c.tribe_id ?? "tribeless");
+      if (!groups.has(tid)) groups.set(tid, []);
+      groups.get(tid)!.push(c);
+    }
+    return groups;
+  }, [filtered, sortBy]);
+
+  // Tribe stats
+  const tribeStats = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of characters) {
+      const tid = String(c.tribe_id ?? "tribeless");
+      counts.set(tid, (counts.get(tid) ?? 0) + 1);
+    }
+    return counts;
+  }, [characters]);
 
   if (loading) return <div style={S.loading}>[ fetching riders... ]</div>;
 
   return (
     <div>
       <div style={S.statRow}>
-        <span>
-          <span style={S.statVal}>{characters.length}</span> riders indexed
-        </span>
+        <span><span style={S.statVal}>{characters.length}</span> riders</span>
+        <span><span style={S.statVal}>{tribeStats.size}</span> tribes</span>
       </div>
-      <input
-        style={S.input}
-        placeholder="Search by name or character ID..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center" }}>
+        <input
+          style={{ ...S.input, flex: 1, marginBottom: 0 }}
+          placeholder="Search name, ID, or tribe..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {(["TRIBE", "NAME"] as CharSort[]).map(s => (
+          <button key={s} style={S.pill(sortBy === s)} onClick={() => setSortBy(s)}>{s}</button>
+        ))}
+      </div>
+
       {filtered.length === 0 ? (
         <div style={S.empty}>No characters found</div>
+      ) : sortBy === "TRIBE" && tribeGroups ? (
+        <div>
+          {[...tribeGroups.entries()].map(([tid, members]) => {
+            const expanded = expandedTribes.has(tid);
+            return (
+              <div key={tid} style={{ marginBottom: 4 }}>
+                <div
+                  style={{ padding: "4px 8px", background: "rgba(255,71,0,0.08)", borderLeft: "2px solid #FF4700", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, userSelect: "none" }}
+                  onClick={() => setExpandedTribes(prev => {
+                    const next = new Set(prev);
+                    if (next.has(tid)) next.delete(tid); else next.add(tid);
+                    return next;
+                  })}
+                >
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", width: 12 }}>{expanded ? "▾" : "▸"}</span>
+                  <span style={{ fontWeight: 700, color: "#FF4700", fontSize: 12 }}>
+                    {tid === "tribeless" ? "TRIBELESS" : (tribeMap.get(tid) ?? `TRIBE ${tid}`)}
+                  </span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{members.length} members</span>
+                </div>
+                {expanded && members.map(c => {
+                  const charId = c.key?.item_id ?? c.objectId;
+                  const name = c.metadata?.name?.trim() || `Unnamed #${charId}`;
+                  const wallet = c.character_address ?? "";
+                  return (
+                    <div key={c.objectId} style={{ ...S.row, paddingLeft: 24, borderLeft: "1px solid rgba(255,71,0,0.1)" }}>
+                      <span style={{ fontWeight: 600, minWidth: 120 }}>{name}</span>
+                      <span style={S.muted}>#{charId}</span>
+                      <span style={S.muted}>{truncateAddr(wallet, 8, 6)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div>
           {filtered.map((c) => {
             const charId = c.key?.item_id ?? c.objectId;
-            const name =
-              c.metadata?.name && c.metadata.name.trim() !== ""
-                ? c.metadata.name
-                : `Unnamed #${charId}`;
+            const name = c.metadata?.name?.trim() || `Unnamed #${charId}`;
             const tribeId = c.tribe_id ?? "—";
             const wallet = c.character_address ?? "";
             return (
               <div key={c.objectId} style={S.row}>
                 <span style={{ fontWeight: 600, minWidth: 120 }}>{name}</span>
                 <span style={S.muted}>#{charId}</span>
-                <span style={S.badge("rgba(255,71,0,0.5)")}>
-                  tribe {tribeId}
-                </span>
+                <span style={S.badge("rgba(255,71,0,0.5)")}>{tribeMap.get(String(tribeId)) ?? `tribe ${tribeId}`}</span>
                 <span style={S.muted}>{truncateAddr(wallet, 8, 6)}</span>
               </div>
             );
@@ -501,11 +1100,13 @@ function SecurityTab({
   kills,
   nodes,
   charMap,
+  sysMap,
   loading,
 }: {
   kills: any[];
   nodes: any[];
   charMap: Map<string, string>;
+  sysMap: Map<string, string>;
   loading: boolean;
 }) {
   const topKillers = useMemo(() => {
@@ -530,18 +1131,108 @@ function SecurityTab({
       .slice(0, 5);
   }, [kills]);
 
-  const topSystems = useMemo(() => {
-    const counts = new Map<string, number>();
+  // System activity heatmap: top systems × recent days
+  const heatmapData = useMemo(() => {
+    // Count kills per system
+    const sysCounts = new Map<string, number>();
     for (const k of kills) {
       const id = k.solar_system_id?.item_id ?? "";
-      if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+      if (id) sysCounts.set(id, (sysCounts.get(id) ?? 0) + 1);
     }
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+    // Top 10 systems
+    const topSysIds = [...sysCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(e => e[0]);
+
+    // Determine date range from kills
+    let minTs = Infinity, maxTs = 0;
+    for (const k of kills) {
+      const ts = parseInt(k.kill_timestamp, 10);
+      if (!isNaN(ts) && ts > 0) {
+        if (ts < minTs) minTs = ts;
+        if (ts > maxTs) maxTs = ts;
+      }
+    }
+    // Build day columns — last 14 days or full range, whichever is smaller
+    const now = Math.floor(Date.now() / 1000);
+    const dayLen = 86400;
+    const endDay = Math.floor(now / dayLen);
+    const startDay = Math.max(Math.floor(minTs / dayLen), endDay - 29); // max 30 days
+    const numDays = endDay - startDay + 1;
+    const dayLabels: string[] = [];
+    for (let d = startDay; d <= endDay; d++) {
+      const date = new Date(d * dayLen * 1000);
+      dayLabels.push(`${date.getUTCDate()}`);
+    }
+
+    // Build grid: system → dayIndex → count
+    const grid = new Map<string, number[]>();
+    for (const sysId of topSysIds) {
+      grid.set(sysId, new Array(numDays).fill(0));
+    }
+    for (const k of kills) {
+      const sysId = k.solar_system_id?.item_id ?? "";
+      const row = grid.get(sysId);
+      if (!row) continue;
+      const ts = parseInt(k.kill_timestamp, 10);
+      if (isNaN(ts)) continue;
+      const dayIdx = Math.floor(ts / dayLen) - startDay;
+      if (dayIdx >= 0 && dayIdx < numDays) row[dayIdx]++;
+    }
+    // Find max cell for color scaling
+    let maxCell = 1;
+    for (const row of grid.values()) {
+      for (const v of row) if (v > maxCell) maxCell = v;
+    }
+    return { topSysIds, grid, maxCell, sysCounts, dayLabels, numDays };
   }, [kills]);
 
-  const maxSysCount = topSystems[0]?.[1] ?? 1;
+  // 24h heatmap — top systems by hour in last 24 hours
+  const heatmap24hData = useMemo(() => {
+    const now = Math.floor(Date.now() / 1000);
+    const hourLen = 3600;
+    const windowStart = now - 24 * hourLen;
+
+    // Filter kills to last 24h
+    const recentKills = kills.filter(k => {
+      const ts = parseInt(k.kill_timestamp, 10);
+      return !isNaN(ts) && ts >= windowStart;
+    });
+
+    if (recentKills.length === 0) return null;
+
+    // Count per system in last 24h
+    const sysCounts = new Map<string, number>();
+    for (const k of recentKills) {
+      const id = k.solar_system_id?.item_id ?? "";
+      if (id) sysCounts.set(id, (sysCounts.get(id) ?? 0) + 1);
+    }
+    const topSysIds = [...sysCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(e => e[0]);
+
+    // 24 hour columns
+    const numHours = 24;
+    const startHour = Math.floor(windowStart / hourLen);
+    const hourLabels: string[] = [];
+    for (let h = 0; h < numHours; h++) {
+      const hourOfDay = (startHour + h) % 24;
+      hourLabels.push(hourOfDay % 6 === 0 ? `${hourOfDay}` : "");
+    }
+
+    // Build grid
+    const grid = new Map<string, number[]>();
+    for (const sysId of topSysIds) grid.set(sysId, new Array(numHours).fill(0));
+    for (const k of recentKills) {
+      const sysId = k.solar_system_id?.item_id ?? "";
+      const row = grid.get(sysId);
+      if (!row) continue;
+      const ts = parseInt(k.kill_timestamp, 10);
+      if (isNaN(ts)) continue;
+      const hourIdx = Math.floor(ts / hourLen) - startHour;
+      if (hourIdx >= 0 && hourIdx < numHours) row[hourIdx]++;
+    }
+    let maxCell = 1;
+    for (const row of grid.values()) for (const v of row) if (v > maxCell) maxCell = v;
+
+    return { topSysIds, grid, maxCell, sysCounts, hourLabels, totalKills: recentKills.length };
+  }, [kills]);
 
   const isOnline = (n: any) => n.status?.status?.["@variant"] === "ONLINE";
   const onlinePct =
@@ -592,44 +1283,86 @@ function SecurityTab({
         </div>
       </div>
 
-      {/* System Activity */}
-      <div style={S.sectionHead}>SYSTEM ACTIVITY</div>
-      {topSystems.length === 0 ? (
-        <div style={S.muted}>No data</div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {topSystems.map(([sysId, count]) => (
-            <div
-              key={sysId}
-              style={{ display: "flex", alignItems: "center", gap: 10 }}
-            >
-              <span style={{ minWidth: 110, color: "#c8c8b4" }}>
-                sys-{sysId}
-              </span>
-              <div
-                style={{
-                  flex: 1,
-                  height: 10,
-                  background: "rgba(255,255,255,0.08)",
-                  borderRadius: 0,
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${(count / maxSysCount) * 100}%`,
-                    height: "100%",
-                    background: "#FF4700",
-                  }}
-                />
+      {/* System Activity Heatmaps — side by side */}
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+
+        {/* 30-day heatmap */}
+        <div style={{ flex: "1 1 400px", minWidth: 0 }}>
+          <div style={S.sectionHead}>SYSTEM ACTIVITY — 30-DAY</div>
+          {heatmapData.topSysIds.length === 0 ? (
+            <div style={S.muted}>No data</div>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <div style={{ display: "flex", marginLeft: 80, marginBottom: 2 }}>
+                {heatmapData.dayLabels.map((label, i) => (
+                  <div key={i} style={{ width: 14, fontSize: 8, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>{label}</div>
+                ))}
+                <div style={{ width: 32, fontSize: 9, color: "rgba(255,255,255,0.4)", textAlign: "right", paddingLeft: 4 }}>tot</div>
               </div>
-              <span style={{ ...S.muted, minWidth: 20, textAlign: "right" }}>
-                {count}
-              </span>
+              {heatmapData.topSysIds.map(sysId => {
+                const row = heatmapData.grid.get(sysId) ?? [];
+                const total = heatmapData.sysCounts.get(sysId) ?? 0;
+                const name = sysMap.get(sysId) ?? `sys-${sysId}`;
+                return (
+                  <div key={sysId} style={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
+                    <span style={{ width: 80, fontSize: 10, color: "rgba(100,180,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flexShrink: 0 }} title={`${name} (${sysId})`}>{name}</span>
+                    {row.map((count, d) => {
+                      const bg = count === 0 ? "rgba(255,255,255,0.03)" : `rgba(255,71,0,${0.15 + (count / heatmapData.maxCell) * 0.85})`;
+                      return <div key={d} title={`${name} on ${heatmapData.dayLabels[d]} — ${count} kills`} style={{ width: 14, height: 13, background: bg, border: "1px solid rgba(0,0,0,0.2)" }} />;
+                    })}
+                    <span style={{ width: 32, fontSize: 10, color: "#FF4700", textAlign: "right", fontWeight: 600, paddingLeft: 4 }}>{total}</span>
+                  </div>
+                );
+              })}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, marginLeft: 80 }}>
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>0</span>
+                {[0.15, 0.35, 0.55, 0.75, 1.0].map((v, i) => <div key={i} style={{ width: 12, height: 7, background: `rgba(255,71,0,${0.15 + v * 0.85})` }} />)}
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{heatmapData.maxCell}</span>
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginLeft: 6 }}>kills/day</span>
+              </div>
             </div>
-          ))}
+          )}
         </div>
-      )}
+
+        {/* 24h heatmap */}
+        <div style={{ flex: "1 1 300px", minWidth: 0 }}>
+          <div style={S.sectionHead}>LAST 24H — BY HOUR{heatmap24hData ? ` (${heatmap24hData.totalKills} kills)` : ""}</div>
+          {!heatmap24hData ? (
+            <div style={S.muted}>No kills in last 24h</div>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <div style={{ display: "flex", marginLeft: 80, marginBottom: 2 }}>
+                {heatmap24hData.hourLabels.map((label, i) => (
+                  <div key={i} style={{ width: 10, fontSize: 7, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>{label}</div>
+                ))}
+                <div style={{ width: 28, fontSize: 9, color: "rgba(255,255,255,0.4)", textAlign: "right", paddingLeft: 4 }}>24h</div>
+              </div>
+              {heatmap24hData.topSysIds.map(sysId => {
+                const row = heatmap24hData.grid.get(sysId) ?? [];
+                const total = heatmap24hData.sysCounts.get(sysId) ?? 0;
+                const name = sysMap.get(sysId) ?? `sys-${sysId}`;
+                return (
+                  <div key={sysId} style={{ display: "flex", alignItems: "center", marginBottom: 1 }}>
+                    <span style={{ width: 80, fontSize: 10, color: "rgba(100,180,255,0.8)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flexShrink: 0 }} title={`${name} (${sysId})`}>{name}</span>
+                    {row.map((count, h) => {
+                      const bg = count === 0 ? "rgba(255,255,255,0.03)" : `rgba(0,255,150,${0.15 + (count / heatmap24hData.maxCell) * 0.85})`;
+                      return <div key={h} title={`${name} at hour ${h} — ${count} kills`} style={{ width: 10, height: 13, background: bg, border: "1px solid rgba(0,0,0,0.2)" }} />;
+                    })}
+                    <span style={{ width: 28, fontSize: 10, color: "#00ff96", textAlign: "right", fontWeight: 600, paddingLeft: 4 }}>{total}</span>
+                  </div>
+                );
+              })}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, marginLeft: 80 }}>
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>0</span>
+                {[0.15, 0.35, 0.55, 0.75, 1.0].map((v, i) => <div key={i} style={{ width: 10, height: 7, background: `rgba(0,255,150,${0.15 + v * 0.85})` }} />)}
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>{heatmap24hData.maxCell}</span>
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginLeft: 6 }}>kills/hr</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
 
       {/* Node Health */}
       <div style={S.sectionHead}>NODE HEALTH</div>
@@ -677,6 +1410,8 @@ export function IntelDashboardPanel() {
   const [characters, setCharacters] = useState<any[]>([]);
   const [nodes, setNodes] = useState<any[]>([]);
 
+  const [sysMap, setSysMap] = useState<Map<string, string>>(new Map());
+  const [tribeMap, setTribeMap] = useState<Map<string, string>>(new Map());
   const [killsLoading, setKillsLoading] = useState(false);
   const [charsLoading, setCharsLoading] = useState(false);
   const [nodesLoading, setNodesLoading] = useState(false);
@@ -684,6 +1419,24 @@ export function IntelDashboardPanel() {
   const loadedKillFeed = useRef(false);
   const loadedInfra = useRef(false);
   const loadedChars = useRef(false);
+  const loadedTribes = useRef(false);
+
+  // Fetch tribe names once on mount
+  useEffect(() => {
+    if (loadedTribes.current) return;
+    loadedTribes.current = true;
+    fetch(`${WORLD_API}/v2/tribes?limit=200`)
+      .then(r => r.json())
+      .then((d: { data: Array<{ id: number; name: string; nameShort: string }> }) => {
+        const m = new Map<string, string>();
+        for (const t of d.data ?? []) {
+          m.set(String(t.id), `${t.name} [${t.nameShort}]`);
+        }
+        m.set("1000167", "Default Spawn");
+        setTribeMap(m);
+      })
+      .catch(() => {});
+  }, []);
 
   const charMap = useMemo(() => {
     const m = new Map<string, string>();
@@ -695,20 +1448,58 @@ export function IntelDashboardPanel() {
     return m;
   }, [characters]);
 
-  // Load kill feed + characters together (kill feed needs char names)
+  // Load kill feed + resolve character names via targeted derivation
   useEffect(() => {
     if (activeTab === "KILL FEED" && !loadedKillFeed.current) {
       loadedKillFeed.current = true;
       setKillsLoading(true);
       setCharsLoading(true);
-      Promise.all([
-        fetchAllObjects(WORLD_PKG + "::killmail::Killmail"),
-        fetchAllObjects(WORLD_PKG + "::character::Character"),
-      ]).then(([k, c]) => {
+
+      // Phase 1: load kills only (no more brute-force character fetch)
+      fetchAllObjects(WORLD_PKG + "::killmail::Killmail").then(async (k) => {
         setKills(k);
-        setCharacters(c);
         setKillsLoading(false);
+
+        // Phase 2: collect unique character IDs from kills and resolve via address derivation
+        const allCharIds = new Set<string>();
+        let detectedTenant: string | undefined;
+        for (const kill of k) {
+          if (kill.killer_id?.item_id) allCharIds.add(kill.killer_id.item_id);
+          if (kill.victim_id?.item_id) allCharIds.add(kill.victim_id.item_id);
+          if (!detectedTenant && kill.killer_id?.tenant) detectedTenant = kill.killer_id.tenant;
+        }
+
+        // Targeted resolution — derive addresses, batch-fetch only needed characters
+        let resolvedMap = await resolveCharactersByItemIds([...allCharIds], detectedTenant);
+
+        // Fallback: if targeted resolution fails (0 results), use brute-force fetch
+        if (resolvedMap.size === 0 && allCharIds.size > 0) {
+          console.log("[IntelDashboard] Targeted resolution returned 0 — falling back to full character fetch");
+          const allChars = await fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000);
+          const fallbackMap = new Map<string, string>();
+          for (const c of allChars) {
+            const id = c.key?.item_id;
+            const name = c.metadata?.name?.trim();
+            if (id && name) fallbackMap.set(id, name);
+          }
+          resolvedMap = fallbackMap;
+        }
+
+        // Build character objects for charMap useMemo compatibility
+        const charObjects = [...resolvedMap.entries()].map(([itemId, name]) => ({
+          key: { item_id: itemId },
+          metadata: { name },
+        }));
+        setCharacters(charObjects);
         setCharsLoading(false);
+
+        // Phase 3: resolve solar system names from World API
+        const sysIds = [...new Set(k.map((kill: any) => kill.solar_system_id?.item_id).filter(Boolean))];
+        if (sysIds.length > 0) {
+          resolveSolarSystemNames(sysIds).then(cache => {
+            setSysMap(new Map(cache));
+          });
+        }
       });
     }
   }, [activeTab]);
@@ -718,7 +1509,7 @@ export function IntelDashboardPanel() {
     if (activeTab === "INFRASTRUCTURE" && !loadedInfra.current) {
       loadedInfra.current = true;
       setNodesLoading(true);
-      fetchAllObjects(WORLD_PKG + "::network_node::NetworkNode").then((n) => {
+      fetchAllObjects(WORLD_PKG + "::network_node::NetworkNode", 50, 5000).then((n) => {
         setNodes(n);
         setNodesLoading(false);
       });
@@ -729,10 +1520,10 @@ export function IntelDashboardPanel() {
   useEffect(() => {
     if (activeTab === "CHARACTERS" && !loadedChars.current) {
       loadedChars.current = true;
-      // If we already loaded chars via kill feed, skip refetch
+      // Characters tab: fetch all characters for the roster view
       if (characters.length === 0) {
         setCharsLoading(true);
-        fetchAllObjects(WORLD_PKG + "::character::Character").then((c) => {
+        fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000).then((c) => {
           setCharacters(c);
           setCharsLoading(false);
         });
@@ -747,20 +1538,31 @@ export function IntelDashboardPanel() {
         loadedKillFeed.current = true;
         setKillsLoading(true);
         setCharsLoading(true);
-        Promise.all([
-          fetchAllObjects(WORLD_PKG + "::killmail::Killmail"),
-          fetchAllObjects(WORLD_PKG + "::character::Character"),
-        ]).then(([k, c]) => {
+        // Fetch kills, then resolve character names via targeted derivation
+        fetchAllObjects(WORLD_PKG + "::killmail::Killmail").then(async (k) => {
           setKills(k);
-          setCharacters(c);
           setKillsLoading(false);
+          const allCharIds2 = new Set<string>();
+          let detectedTenant2: string | undefined;
+          for (const kill of k) {
+            if (kill.killer_id?.item_id) allCharIds2.add(kill.killer_id.item_id);
+            if (kill.victim_id?.item_id) allCharIds2.add(kill.victim_id.item_id);
+            if (!detectedTenant2 && kill.killer_id?.tenant) detectedTenant2 = kill.killer_id.tenant;
+          }
+          const resolvedMap = await resolveCharactersByItemIds([...allCharIds2], detectedTenant2);
+          const charObjects = [...resolvedMap.entries()].map(([itemId, name]) => ({
+            key: { item_id: itemId }, metadata: { name },
+          }));
+          setCharacters(prev => prev.length > 0 ? prev : charObjects);
           setCharsLoading(false);
+          const sysIds = [...new Set(k.map((kill: any) => kill.solar_system_id?.item_id).filter(Boolean))];
+          if (sysIds.length > 0) resolveSolarSystemNames(sysIds).then(cache => setSysMap(new Map(cache)));
         });
       }
       if (!loadedInfra.current) {
         loadedInfra.current = true;
         setNodesLoading(true);
-        fetchAllObjects(WORLD_PKG + "::network_node::NetworkNode").then((n) => {
+        fetchAllObjects(WORLD_PKG + "::network_node::NetworkNode", 50, 5000).then((n) => {
           setNodes(n);
           setNodesLoading(false);
         });
@@ -784,20 +1586,22 @@ export function IntelDashboardPanel() {
         <KillFeedTab
           kills={kills}
           charMap={charMap}
+          sysMap={sysMap}
           loading={killsLoading}
         />
       )}
       {activeTab === "INFRASTRUCTURE" && (
-        <InfraTab nodes={nodes} loading={nodesLoading} />
+        <InfraTab nodes={nodes} charMap={charMap} kills={kills} sysMap={sysMap} loading={nodesLoading} />
       )}
       {activeTab === "CHARACTERS" && (
-        <CharactersTab characters={characters} loading={charsLoading} />
+        <CharactersTab characters={characters} tribeMap={tribeMap} loading={charsLoading} />
       )}
       {activeTab === "SECURITY" && (
         <SecurityTab
           kills={kills}
           nodes={nodes}
           charMap={charMap}
+          sysMap={sysMap}
           loading={securityLoading}
         />
       )}

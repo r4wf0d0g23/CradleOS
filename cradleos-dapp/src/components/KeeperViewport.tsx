@@ -11,9 +11,10 @@
  * All effects are CSS overlays or simple shaders — no heavy post-processing libs.
  */
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState, useMemo } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
 
 // ── Ship model mapping ────────────────────────────────────────────────────────
 // Maps ship names (lowercase) to glb files in /models/
@@ -22,6 +23,26 @@ const SHIP_MODELS: Record<string, string> = {
   haf: "haf.glb",
   carom: "carom.glb",
   lorha: "lorha.glb",
+  tades: "tades.glb",
+  maul: "maul.glb",
+  wend: "wend.glb",
+  usv: "usv.glb",
+  reflex: "reflex.glb",
+};
+
+// Structure/object models for Keeper's "mind" visualization
+const STRUCTURE_MODELS: Record<string, string> = {
+  gate: "gate.glb",
+  turret: "turret.glb",
+  hangar: "hangar.glb",
+  asteroid: "asteroid.glb",
+  asteroid2: "asteroid2.glb",
+  refinery: "refinery.glb",
+  assembly: "assembly.glb",
+  printer: "printer.glb",
+  shipyard: "shipyard.glb",
+  silo: "silo.glb",
+  tether: "tether.glb",
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -34,7 +55,7 @@ export interface KeeperViewportProps {
   shipClass?: "frigate" | "destroyer" | "hauler" | "shuttle" | "cruiser";
   shipName?: string; // lowercase ship name for model lookup (e.g. "lai", "haf")
   // Structure mode
-  structureType?: "ssu" | "gate" | "turret" | "node";
+  structureType?: "ssu" | "gate" | "turret" | "node" | "hangar" | "refinery" | "assembly" | "printer" | "shipyard" | "silo" | "tether" | "asteroid" | "asteroid2";
   capacityPercent?: number;
   // Map mode
   points?: Array<{ name: string; x: number; y: number; z: number }>;
@@ -54,11 +75,22 @@ const BG = "rgba(3,2,1,0.95)";
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function makeMaterial(color: number, opacity: number, wireframe = false) {
+  if (wireframe) {
+    return new THREE.MeshBasicMaterial({
+      color,
+      opacity,
+      transparent: true,
+      wireframe: true,
+      side: THREE.DoubleSide,
+    });
+  }
+  // Additive emissive fill — glows from within, edges show through
   return new THREE.MeshBasicMaterial({
     color,
     opacity,
     transparent: true,
-    wireframe,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
     side: THREE.DoubleSide,
   });
 }
@@ -206,13 +238,15 @@ export default function KeeperViewport({
   shipClass = "cruiser",
   shipName,
   structureType = "ssu",
-  capacityPercent = 0,
+  capacityPercent,
   points,
   routes,
   height = 200,
 }: KeeperViewportProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const noiseCanvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
+  const [noisePhase, setNoisePhase] = useState(0); // increments on mode change to trigger noise
 
   // Stable refs for animatable state
   const scanLineRef = useRef<number>(0);
@@ -221,8 +255,8 @@ export default function KeeperViewport({
     const mount = mountRef.current;
     if (!mount) return () => {};
 
-    const w = mount.clientWidth;
-    const h = height;
+    const w = mount.clientWidth || 260;
+    const h = height ?? (mount.clientHeight > 0 ? mount.clientHeight : 400);
 
     // ── Renderer ──────────────────────────────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -237,8 +271,8 @@ export default function KeeperViewport({
     camera.position.set(0, 1.2, 4);
     camera.lookAt(0, 0, 0);
 
-    // ── Ambient light ─────────────────────────────────────────────────────────
-    const ambLight = new THREE.AmbientLight(PRIMARY, 0.3);
+    // ── Minimal ambient — edge lines carry the form, not lighting ────────────
+    const ambLight = new THREE.AmbientLight(0xffffff, 0.12);
     scene.add(ambLight);
 
     // ── Grid (all modes) ──────────────────────────────────────────────────────
@@ -251,7 +285,7 @@ export default function KeeperViewport({
     // ── Mode-specific scene setup ─────────────────────────────────────────────
     let mainMesh: THREE.Object3D | null = null;
     let particles: THREE.Points | null = null;
-    let energyRing: THREE.Mesh | null = null;
+    const edgeMaterials: THREE.LineBasicMaterial[] = []; // pulsed in animate loop
     let capacityRing: THREE.Object3D | null = null;
     let connectionLines: THREE.LineSegments | null = null;
     let starPoints: THREE.Points | null = null;
@@ -278,9 +312,9 @@ export default function KeeperViewport({
       scene.add(particles);
 
     } else if (mode === "ship") {
-      // ── Ship: try real glTF model, fall back to procedural wireframe ──────
-      const wireMat = makeMaterial(PRIMARY, 0.45, true);
-      const solidMat = makeMaterial(PRIMARY, 0.04, false);
+      // ── Ship: additive glow fill + structural edge lines ─────────────────────
+      const wireMat = makeMaterial(PRIMARY, 0.08, true);    // fallback only
+      const solidMat = makeMaterial(PRIMARY, 0.10, false);  // additive glow — barely visible volume
       disposables.push(wireMat, solidMat);
 
       const ship = new THREE.Group();
@@ -308,17 +342,32 @@ export default function KeeperViewport({
             // Center
             const center = box.getCenter(new THREE.Vector3()).multiplyScalar(scale);
             model.position.sub(center);
-            // Replace all materials with holographic wireframe
+            // Point cloud — per-mesh, inherits each mesh's local transform
             model.traverse((child) => {
               if (child instanceof THREE.Mesh) {
-                const wireClone = child.geometry.clone();
-                disposables.push(wireClone);
-                const wireChild = new THREE.Mesh(wireClone, wireMat);
-                wireChild.position.copy(child.position);
-                wireChild.rotation.copy(child.rotation);
-                wireChild.scale.copy(child.scale);
-                child.material = solidMat;
-                child.parent?.add(wireChild);
+                child.visible = false;
+                const pos = child.geometry.attributes.position;
+                if (!pos) return;
+                const step = Math.max(1, Math.floor(pos.count / 5000));
+                const localPts: number[] = [];
+                for (let i = 0; i < pos.count; i += step) {
+                  localPts.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+                }
+                if (localPts.length === 0) return;
+                const ptGeo = new THREE.BufferGeometry();
+                ptGeo.setAttribute("position", new THREE.Float32BufferAttribute(localPts, 3));
+                disposables.push(ptGeo);
+                const ptMat = new THREE.PointsMaterial({
+                  color: PRIMARY, size: 0.045, opacity: 0.9, transparent: true,
+                  sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+                });
+                edgeMaterials.push(ptMat as unknown as THREE.LineBasicMaterial);
+                // Add as sibling with same local transform — inherits model scale/position
+                const pts = new THREE.Points(ptGeo, ptMat);
+                pts.position.copy(child.position);
+                pts.rotation.copy(child.rotation);
+                pts.scale.copy(child.scale);
+                child.parent?.add(pts);
               }
             });
             ship.add(model);
@@ -338,45 +387,83 @@ export default function KeeperViewport({
       disposables.push(particles.geometry, particles.material as THREE.Material);
       scene.add(particles);
 
-      // Glow sphere around ship
-      const glowGeo = new THREE.SphereGeometry(1.1, 12, 12);
-      const glowMat = new THREE.MeshBasicMaterial({
-        color: PRIMARY,
-        opacity: 0.04,
-        transparent: true,
-        side: THREE.BackSide,
-      });
-      disposables.push(glowGeo, glowMat);
-      scene.add(new THREE.Mesh(glowGeo, glowMat));
+      // (glow sphere removed — keep model visible without occlusion)
 
     } else if (mode === "structure") {
-      // ── Structure: primitive + energy ring ────────────────────────────────
-      const geo = buildStructureGeometry(structureType);
-      const wireMat = makeMaterial(AMBER, 0.6, true);
-      const solidMat = makeMaterial(AMBER, 0.05, false);
-      disposables.push(geo, wireMat, solidMat);
-
-      const solid = new THREE.Mesh(geo, solidMat);
-      const wireClone = geo.clone();
-      disposables.push(wireClone);
-      const wire = new THREE.Mesh(wireClone, wireMat);
+      // ── Structure: additive glow fill + structural edge lines ────────────────
+      const wireMat = makeMaterial(AMBER, 0.08, true);    // fallback only
+      const solidMat = makeMaterial(AMBER, 0.10, false);  // additive glow — barely visible volume
+      disposables.push(wireMat, solidMat);
 
       const struct = new THREE.Group();
-      struct.add(solid, wire);
       scene.add(struct);
       mainMesh = struct;
 
-      // Energy ring (pulsing sphere)
-      const ringGeo = new THREE.SphereGeometry(1.3, 16, 16);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: PRIMARY,
-        opacity: 0.07,
-        transparent: true,
-        wireframe: true,
-      });
-      disposables.push(ringGeo, ringMat);
-      energyRing = new THREE.Mesh(ringGeo, ringMat);
-      scene.add(energyRing);
+      const modelFile = structureType ? STRUCTURE_MODELS[structureType] : undefined;
+      if (modelFile) {
+        const loader = new GLTFLoader();
+        const base = import.meta.env.BASE_URL || "/";
+        loader.load(
+          `${base}models/${modelFile}`,
+          (gltf) => {
+            const model = gltf.scene;
+            const box = new THREE.Box3().setFromObject(model);
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 2.0 / maxDim;
+            model.scale.setScalar(scale);
+            const center = box.getCenter(new THREE.Vector3()).multiplyScalar(scale);
+            model.position.sub(center);
+            // Point cloud — per-mesh, inherits transform
+            model.traverse((child) => {
+              if (child instanceof THREE.Mesh) {
+                child.visible = false;
+                const pos = child.geometry.attributes.position;
+                if (!pos) return;
+                const step = Math.max(1, Math.floor(pos.count / 5000));
+                const localPts: number[] = [];
+                for (let i = 0; i < pos.count; i += step) {
+                  localPts.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+                }
+                if (localPts.length === 0) return;
+                const ptGeo = new THREE.BufferGeometry();
+                ptGeo.setAttribute("position", new THREE.Float32BufferAttribute(localPts, 3));
+                disposables.push(ptGeo);
+                const ptMat = new THREE.PointsMaterial({
+                  color: AMBER, size: 0.045, opacity: 0.9, transparent: true,
+                  sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+                });
+                edgeMaterials.push(ptMat as unknown as THREE.LineBasicMaterial);
+                const pts = new THREE.Points(ptGeo, ptMat);
+                pts.position.copy(child.position);
+                pts.rotation.copy(child.rotation);
+                pts.scale.copy(child.scale);
+                child.parent?.add(pts);
+              }
+            });
+            struct.add(model);
+          },
+          undefined,
+          () => {
+            // Fallback to procedural
+            const geo = buildStructureGeometry(structureType);
+            disposables.push(geo);
+            const solid = new THREE.Mesh(geo, solidMat);
+            const wc = geo.clone();
+            disposables.push(wc);
+            struct.add(solid, new THREE.Mesh(wc, wireMat));
+          }
+        );
+      } else {
+        const geo = buildStructureGeometry(structureType);
+        disposables.push(geo);
+        const solid = new THREE.Mesh(geo, solidMat);
+        const wc = geo.clone();
+        disposables.push(wc);
+        struct.add(solid, new THREE.Mesh(wc, wireMat));
+      }
+
+      // (energy ring sphere removed — keep model visible without occlusion)
 
       // Capacity ring
       if (capacityPercent !== undefined) {
@@ -499,22 +586,26 @@ export default function KeeperViewport({
       }
 
       if (mode === "ship" && mainMesh) {
-        mainMesh.rotation.y = t * 0.25;
+        // Slow rotation + subtle drift — "data assembling in space"
+        mainMesh.rotation.y = t * 0.2;
+        mainMesh.rotation.x = Math.sin(t * 0.17) * 0.06;
+        mainMesh.position.y = Math.sin(t * 0.3) * 0.04;
       }
 
       if (mode === "structure" && mainMesh) {
-        mainMesh.rotation.y = t * 0.3;
-        if (energyRing) {
-          const pulse = 0.07 + Math.sin(t * 2) * 0.025;
-          (energyRing.material as THREE.MeshBasicMaterial).opacity = pulse;
-          const sc = 1 + Math.sin(t * 1.5) * 0.03;
-          energyRing.scale.setScalar(sc);
-        }
+        mainMesh.rotation.y = t * 0.22;
+        mainMesh.rotation.z = Math.sin(t * 0.13) * 0.03;
+        mainMesh.position.y = Math.sin(t * 0.25) * 0.05;
         if (connectionLines) {
           const lineMat = connectionLines.material as THREE.LineBasicMaterial;
           lineMat.opacity = 0.3 + Math.sin(t * 2.5) * 0.2;
         }
       }
+
+      // Pulse edge lines — slow breath, offset by sin phase
+      edgeMaterials.forEach((m, i) => {
+        m.opacity = 0.55 + Math.sin(t * 1.2 + i * 0.4) * 0.25;
+      });
 
       if (mode === "map") {
         if (starPoints) starPoints.rotation.y = t * 0.08;
@@ -534,10 +625,11 @@ export default function KeeperViewport({
     // ── Resize handler ────────────────────────────────────────────────────────
     const onResize = () => {
       if (!mount) return;
-      const newW = mount.clientWidth;
-      camera.aspect = newW / h;
+      const newW = mount.clientWidth || 260;
+      const newH = height ?? (mount.clientHeight > 0 ? mount.clientHeight : h);
+      camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
-      renderer.setSize(newW, h);
+      renderer.setSize(newW, newH);
     };
     const resizeObserver = new ResizeObserver(onResize);
     resizeObserver.observe(mount);
@@ -555,6 +647,87 @@ export default function KeeperViewport({
       }
     };
   }, [mode, shipClass, shipName, structureType, capacityPercent, points, routes, height]);
+
+  // ── Trigger noise burst on mode change ───────────────────────────────────
+  const prevModeRef = useRef(mode);
+  useEffect(() => {
+    if (prevModeRef.current !== mode) {
+      prevModeRef.current = mode;
+      setNoisePhase(p => p + 1);
+    }
+  }, [mode]);
+
+  // ── Noise canvas animation ────────────────────────────────────────────────
+  useEffect(() => {
+    if (noisePhase === 0) return;
+    const canvas = noiseCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let raf = 0;
+    let elapsed = 0;
+    const DURATION = 600; // ms total
+    let last = performance.now();
+
+    const frame = (now: number) => {
+      const dt = now - last;
+      last = now;
+      elapsed += dt;
+      const t = Math.min(elapsed / DURATION, 1);
+
+      const { width, height: h } = canvas;
+      ctx.clearRect(0, 0, width, h);
+
+      if (t < 1) {
+        // Intensity curve: peaks at t=0.15, fades to 0 by t=1
+        const intensity = t < 0.15
+          ? t / 0.15
+          : 1 - ((t - 0.15) / 0.85);
+
+        const alpha = intensity * 0.85;
+        const blockSize = Math.max(2, Math.floor(4 * (1 - t)));
+
+        // Digital noise blocks
+        for (let y = 0; y < h; y += blockSize) {
+          for (let x = 0; x < width; x += blockSize) {
+            if (Math.random() > 0.45) continue;
+            const bright = Math.random();
+            // Mix between orange (keeper color) and white
+            const r = Math.floor(255);
+            const g = Math.floor(bright > 0.7 ? 71 + (bright - 0.7) * 600 : 71 * bright);
+            const b = Math.floor(bright > 0.85 ? 200 * (bright - 0.85) / 0.15 : 0);
+            ctx.fillStyle = `rgba(${r},${g},${b},${alpha * bright})`;
+            ctx.fillRect(x, y, blockSize, blockSize);
+          }
+        }
+
+        // Horizontal glitch lines
+        const numLines = Math.floor(intensity * 6);
+        for (let i = 0; i < numLines; i++) {
+          const ly = Math.floor(Math.random() * h);
+          const lh = Math.floor(Math.random() * 3) + 1;
+          const shift = (Math.random() - 0.5) * 20;
+          ctx.drawImage(canvas, shift, ly, width, lh, 0, ly, width, lh);
+          ctx.fillStyle = `rgba(255,71,0,${alpha * 0.4})`;
+          ctx.fillRect(0, ly, width, lh);
+        }
+
+        raf = requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [noisePhase]);
+
+  // Memoize stable canvas size to avoid re-creating on every render
+  const noiseStyle = useMemo<React.CSSProperties>(() => ({
+    position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+    pointerEvents: "none", zIndex: 10,
+  }), []);
 
   useEffect(() => {
     const cleanup = initScene();
@@ -702,7 +875,7 @@ export default function KeeperViewport({
           pointerEvents: "none",
         }}
       >
-        {capacityPercent !== undefined ? `CAP ${capacityPercent.toFixed(0)}%` : ""}
+        {mode === "structure" && capacityPercent !== undefined ? `CAP ${capacityPercent.toFixed(0)}%` : ""}
       </div>
     );
   };
@@ -729,15 +902,19 @@ export default function KeeperViewport({
         style={{
           position: "relative",
           width: "100%",
-          height: `${height}px`,
+          height: height !== undefined ? `${height}px` : "100%",
+          flex: height !== undefined ? undefined : 1,
           background: BG,
           border: "1px solid rgba(255,71,0,0.25)",
           overflow: "hidden",
-          flexShrink: 0,
+          flexShrink: height !== undefined ? 0 : 1,
         }}
       >
         {/* Three.js mount target */}
         <div ref={mountRef} style={{ width: "100%", height: "100%" }} />
+
+        {/* Digital noise transition canvas — fires on mode change */}
+        <canvas ref={noiseCanvasRef} width={260} height={420} style={noiseStyle} />
 
         {/* Scanline overlay */}
         <div
@@ -805,7 +982,7 @@ export default function KeeperViewport({
             textTransform: "uppercase",
           }}
         >
-          {mode === "idle" ? "◆ KEEPER INTERFACE" : `◆ ${mode.toUpperCase()} SCAN`}
+          {mode === "idle" ? "◆ KEEPER INTERFACE" : mode === "ship" ? `◆ SHIP SCAN${entityName ? ` — ${entityName}` : ""}` : `◆ ${mode.toUpperCase()} SCAN`}
         </div>
 
         {/* Content overlays — above vignette */}

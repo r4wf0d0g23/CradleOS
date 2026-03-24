@@ -10,21 +10,25 @@
  *   - Assign their gate SSU IDs to follow the tribe policy (creates GateDelegation)
  *   - Revoke delegation
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
+import { useSponsoredTransaction, SponsoredTransactionActions, Assemblies } from "@evefrontier/dapp-kit";
+import type { AssemblyType } from "@evefrontier/dapp-kit";
 import {
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe,
   fetchGatePolicy, fetchGateDelegations, fetchTribeClaim,
   buildCreateGatePolicyTx, buildSetGateAccessLevelTx,
   buildSetGateTribeOverrideTx, buildSetGatePlayerOverrideTx,
   buildDelegateGateTx, buildRevokeGateDelegationTx,
-  fetchAllRegisteredTribes,
+  fetchAllRegisteredTribes, fetchPlayerStructures,
   GATE_ACCESS_LABELS,
   type TribeVaultState, type GatePolicyState, type GateDelegationObj, type RegisteredTribe,
+  type PlayerStructure,
 } from "../lib";
 import { CLOCK } from "../constants";
 
@@ -42,6 +46,65 @@ export function GatePolicyPanel() {
   const { account: _acct } = useVerifiedAccountContext();
   const { overrideAccount, overrideTribeId } = useDevOverrides();
   const account = overrideAccount(_acct);
+  const rawAccount = useCurrentAccount();
+
+  // ── Gate Linking ───────────────────────────────────────────────────────────
+  const { mutateAsync: sendSponsoredTx } = useSponsoredTransaction();
+  const [myGates, setMyGates] = useState<PlayerStructure[]>([]);
+  const [gateActionState, setGateActionState] = useState<{ gateId: string; status: string } | null>(null);
+
+  useEffect(() => {
+    const addr = rawAccount?.address;
+    if (!addr) return;
+    fetchPlayerStructures(addr).then(groups => {
+      const gates = groups.flatMap(g => g.structures).filter(s => s.kind === "Gate");
+      setMyGates(gates);
+      setGateActionState(null); // clear any stale error on refresh
+    }).catch(() => {});
+  }, [rawAccount?.address]);
+
+  const sponsoredGateAction = async (gate: PlayerStructure, action: SponsoredTransactionActions.LINK_SMART_GATE | SponsoredTransactionActions.UNLINK_SMART_GATE) => {
+    if (!gate.gameItemId) { setGateActionState({ gateId: gate.objectId, status: "✗ No game item ID" }); return; }
+    const isLink = action === SponsoredTransactionActions.LINK_SMART_GATE;
+    setGateActionState({ gateId: gate.objectId, status: `${isLink ? "Linking" : "Unlinking"} via EVE Vault…` });
+
+    const makeAssembly = () => ({
+      item_id: Number(gate.gameItemId),
+      type: Assemblies.SmartGate, id: gate.objectId, dappURL: undefined,
+      name: gate.displayName, state: gate.isOnline ? "online" : "anchored",
+      ownerId: rawAccount?.address ?? "",
+      gate: { linked: !!gate.linkedGateId, destinationId: gate.linkedGateId, inRange: [], isParentNodeOnline: gate.isOnline },
+    } as unknown as AssemblyType<Assemblies.SmartGate>);
+
+    const onSuccess = (digest?: string) => {
+      setGateActionState({ gateId: gate.objectId, status: `✓ Done${digest ? ` — tx: ${digest.slice(0, 12)}…` : ""}` });
+      setTimeout(() => {
+        setGateActionState(null);
+        fetchPlayerStructures(rawAccount?.address ?? "").then(gs => setMyGates(gs.flatMap(g => g.structures).filter(s => s.kind === "Gate")));
+      }, 3000);
+    };
+
+    const onError = (e: unknown) => {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[GateLink] Error:", msg, e);
+      setGateActionState({ gateId: gate.objectId, status: `✗ ${msg.slice(0, 120)}` });
+      setTimeout(() => setGateActionState(null), 10000);
+    };
+
+    try {
+      // Try to get EVE Vault JWT from sessionStorage for direct API call
+      // EVE Vault's txb endpoint has CORS restrictions — must go through extension background.js
+      // The useSponsoredTransaction hook routes through EVE Vault's message passing system
+      console.log("[GateLink] Sending LINK_SMART_GATE via EVE Vault, assembly:", gate.gameItemId, "tenant: utopia");
+
+      // Fallback: EVE Vault hook handles everything
+      // Note: requires wallet to be fully connected (not just installed) on this page
+      const result = await sendSponsoredTx({ txAction: action, assembly: makeAssembly(), chain: "sui:testnet" as `sui:${string}`, tenant: "utopia" });
+      onSuccess(result.digest);
+    } catch (e) {
+      onError(e);
+    }
+  };
 
   const { data: _rawTribeId } = useQuery<number | null>({
     queryKey: ["characterTribeId", account?.address],
@@ -105,8 +168,96 @@ export function GatePolicyPanel() {
   const isFounder = account.address.toLowerCase() === vault.founder.toLowerCase() ||
     (registryClaim?.claimer != null && registryClaim.claimer.toLowerCase() === account.address.toLowerCase());
 
+  const unlinkedGates = myGates.filter(g => !g.linkedGateId);
+  const linkedGates = myGates.filter(g => !!g.linkedGateId);
+
   return (
     <div style={{ padding: "20px", maxWidth: 900, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+
+      {/* ── Gate Linking Section ── */}
+      {myGates.length > 0 && (
+        <div style={{ border: "1px solid rgba(0,200,255,0.2)", background: "rgba(0,200,255,0.03)", padding: 16 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#00ccff", letterSpacing: "0.08em", marginBottom: 12 }}>⛩ GATE LINKING</div>
+
+          {/* Linked pairs */}
+          {linkedGates.length > 0 && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", marginBottom: 6 }}>LINKED</div>
+              {linkedGates.map(g => {
+                const gState = gateActionState?.gateId === g.objectId ? gateActionState.status : null;
+                return (
+                  <div key={g.objectId} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 10px", marginBottom: 4, background: "rgba(0,255,150,0.04)", border: "1px solid rgba(0,255,150,0.15)" }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: g.isOnline ? "#00ff96" : "#ff4444", flexShrink: 0 }} />
+                    <span style={{ fontWeight: 600, fontSize: 13, color: "#ddd", flex: 1 }}>{g.displayName}</span>
+                    <span style={{ fontSize: 10, color: "#00ff96" }}>⛩ linked</span>
+                    {gState ? (
+                      <span style={{ fontSize: 10, color: gState.startsWith("✓") ? "#00ff96" : gState.startsWith("✗") ? "#ff4444" : "#00ccff", fontStyle: "italic" }}>{gState}</span>
+                    ) : (
+                      <button
+                        onClick={() => sponsoredGateAction(g, SponsoredTransactionActions.UNLINK_SMART_GATE)}
+                        style={{ background: "rgba(255,68,68,0.12)", color: "#ff6644", border: "none", padding: "3px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+                      >
+                        UNLINK
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Unlinked gates — link pairing UI */}
+          {unlinkedGates.length > 0 && (
+            <div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", marginBottom: 6 }}>UNLINKED — SELECT PAIR TO LINK</div>
+              {unlinkedGates.map(g => {
+                const gState = gateActionState?.gateId === g.objectId ? gateActionState.status : null;
+                return (
+                  <div key={g.objectId} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 10px", marginBottom: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: g.isOnline ? "#00ff96" : "#ff4444", flexShrink: 0 }} />
+                    <span style={{ fontWeight: 600, fontSize: 13, color: "#ddd", minWidth: 120 }}>{g.displayName}</span>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>#{g.gameItemId}</span>
+                    <span style={{ flex: 1 }} />
+                    {gState ? (
+                      <span style={{ fontSize: 10, color: gState.startsWith("✓") ? "#00ff96" : gState.startsWith("✗") ? "#ff4444" : "#00ccff", fontStyle: "italic" }}>{gState}</span>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>link to:</span>
+                        <select
+                          style={{ background: "rgba(0,0,0,0.5)", color: "#ddd", border: "1px solid rgba(0,200,255,0.3)", padding: "3px 6px", fontSize: 11, fontFamily: "inherit", cursor: "pointer" }}
+                          defaultValue=""
+                          onChange={e => {
+                            const destId = e.target.value;
+                            if (destId) sponsoredGateAction(g, SponsoredTransactionActions.LINK_SMART_GATE);
+                            e.target.value = "";
+                          }}
+                        >
+                          <option value="" disabled>select gate…</option>
+                          {unlinkedGates
+                            .filter(dest => dest.objectId !== g.objectId)
+                            .map(dest => (
+                              <option key={dest.objectId} value={dest.objectId}>
+                                {dest.displayName} (#{dest.gameItemId})
+                              </option>
+                            ))}
+                        </select>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {myGates.length === 0 && (
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontStyle: "italic" }}>No gates found on this account.</div>
+          )}
+
+          <div style={{ marginTop: 8, fontSize: 9, color: "rgba(255,255,255,0.3)" }}>
+            Linking submits a sponsored transaction via EVE Vault — both gates must be in range and owned by you.
+          </div>
+        </div>
+      )}
 
       {/* Policy overview */}
       <PolicyCard

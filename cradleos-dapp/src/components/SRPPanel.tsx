@@ -14,7 +14,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG_V12, CRDL_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
+import { CRADLEOS_PKG, CRDL_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
 import { numish } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -28,8 +28,8 @@ const CLAIM_DISPUTED  = 2;
 const POLICY_ACTIVE   = 0;
 // const POLICY_DRAINED  = 1;
 
-const SRP_POLICY_TYPE = `${CRADLEOS_PKG_V12}::ship_reimbursement::SRPPolicy`;
-const SRP_CLAIM_TYPE  = `${CRADLEOS_PKG_V12}::ship_reimbursement::SRPClaim`;
+const SRP_POLICY_TYPE = `${CRADLEOS_PKG}::ship_reimbursement::SRPPolicy`;
+const SRP_CLAIM_TYPE  = `${CRADLEOS_PKG}::ship_reimbursement::SRPClaim`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -222,7 +222,7 @@ async function buildCreatePolicyTx(
   const tx = new Transaction();
   const [coin] = tx.splitCoins(tx.object(sourceCoinId), [tx.pure.u64(initialFund)]);
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V12}::ship_reimbursement::create_policy_entry`,
+    target: `${CRADLEOS_PKG}::ship_reimbursement::create_policy_entry`,
     arguments: [
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(description))),
       tx.pure.u64(payoutPerLoss),
@@ -242,7 +242,7 @@ async function buildTopUpTx(policyId: string, amount: bigint, senderAddress: str
   const tx = new Transaction();
   const [coin] = tx.splitCoins(tx.object(sourceCoinId), [tx.pure.u64(amount)]);
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V12}::ship_reimbursement::top_up_policy_entry`,
+    target: `${CRADLEOS_PKG}::ship_reimbursement::top_up_policy_entry`,
     arguments: [
       tx.object(policyId),
       coin,
@@ -254,7 +254,7 @@ async function buildTopUpTx(policyId: string, amount: bigint, senderAddress: str
 function buildSubmitClaimTx(policyId: string, killmailObjectId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V12}::ship_reimbursement::submit_claim_entry`,
+    target: `${CRADLEOS_PKG}::ship_reimbursement::submit_claim_entry`,
     arguments: [
       tx.object(policyId),
       tx.pure.address(killmailObjectId),
@@ -267,7 +267,7 @@ function buildSubmitClaimTx(policyId: string, killmailObjectId: string): Transac
 function buildDisputeClaimTx(claimId: string, policyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V12}::ship_reimbursement::dispute_claim_entry`,
+    target: `${CRADLEOS_PKG}::ship_reimbursement::dispute_claim_entry`,
     arguments: [
       tx.object(claimId),
       tx.object(policyId),
@@ -280,7 +280,7 @@ function buildDisputeClaimTx(claimId: string, policyId: string): Transaction {
 function buildFinalizeClaimTx(claimId: string, policyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V12}::ship_reimbursement::finalize_claim_entry`,
+    target: `${CRADLEOS_PKG}::ship_reimbursement::finalize_claim_entry`,
     arguments: [
       tx.object(claimId),
       tx.object(policyId),
@@ -293,7 +293,7 @@ function buildFinalizeClaimTx(claimId: string, policyId: string): Transaction {
 function buildDrainPolicyTx(policyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V12}::ship_reimbursement::drain_policy_entry`,
+    target: `${CRADLEOS_PKG}::ship_reimbursement::drain_policy_entry`,
     arguments: [
       tx.object(policyId),
       tx.object(CLOCK),
@@ -873,4 +873,6 @@ const greyBtn: React.CSSProperties = {
   padding: "4px 14px",
   cursor: "pointer",
   fontFamily: "monospace",
+};
+
 };

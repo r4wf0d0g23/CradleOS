@@ -21,7 +21,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import {
-  CRADLEOS_PKG_V8, SUI_TESTNET_RPC, CLOCK, eventType,
+  CRADLEOS_PKG, SUI_TESTNET_RPC, CLOCK, eventType,
 } from "../constants";
 import {
   rpcGetObject, numish,
@@ -174,7 +174,7 @@ async function fetchAnnouncements(boardId: string, vaultId: string): Promise<Ann
 function buildCreateBoardTransaction(vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::announcement_board::create_board_entry`,
+    target: `${CRADLEOS_PKG}::announcement_board::create_board_entry`,
     arguments: [tx.object(vaultId)],
   });
   return tx;
@@ -189,7 +189,7 @@ function buildPostAnnouncementTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::announcement_board::post_announcement_entry`,
+    target: `${CRADLEOS_PKG}::announcement_board::post_announcement_entry`,
     arguments: [
       tx.object(boardId),
       tx.object(vaultId),
@@ -211,7 +211,7 @@ function buildEditAnnouncementTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::announcement_board::edit_announcement_entry`,
+    target: `${CRADLEOS_PKG}::announcement_board::edit_announcement_entry`,
     arguments: [
       tx.object(boardId),
       tx.object(vaultId),
@@ -231,7 +231,7 @@ function buildDeleteAnnouncementTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::announcement_board::delete_announcement_entry`,
+    target: `${CRADLEOS_PKG}::announcement_board::delete_announcement_entry`,
     arguments: [
       tx.object(boardId),
       tx.object(vaultId),
@@ -249,7 +249,7 @@ function buildPinAnnouncementTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::announcement_board::pin_announcement_entry`,
+    target: `${CRADLEOS_PKG}::announcement_board::pin_announcement_entry`,
     arguments: [
       tx.object(boardId),
       tx.object(vaultId),

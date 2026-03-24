@@ -8,7 +8,7 @@ import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CLOCK,
-  CRADLEOS_PKG_V11,
+  CRADLEOS_PKG,
   CRDL_COIN_TYPE,
   SUI_TESTNET_RPC,
   SUI_GRAPHQL,
@@ -238,7 +238,7 @@ async function buildCreateContractTransaction(args: {
 
   const splitCoins = tx.splitCoins(tx.object(source.coinObjectId), [tx.pure.u64(args.reward)]);
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V11}::cargo_contract::create_contract_entry`,
+    target: `${CRADLEOS_PKG}::cargo_contract::create_contract_entry`,
     arguments: [
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(args.description))),
       tx.pure.address(args.destinationSsuId),
@@ -257,7 +257,7 @@ async function buildCreateContractTransaction(args: {
 function buildSubmitDeliveryClaimTransaction(contractId: string, txDigestString: string) {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V11}::cargo_contract::submit_delivery_claim_entry`,
+    target: `${CRADLEOS_PKG}::cargo_contract::submit_delivery_claim_entry`,
     arguments: [
       tx.object(contractId),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(txDigestString))),
@@ -270,7 +270,7 @@ function buildSubmitDeliveryClaimTransaction(contractId: string, txDigestString:
 function buildDisputeDeliveryTransaction(contractId: string) {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V11}::cargo_contract::dispute_delivery_entry`,
+    target: `${CRADLEOS_PKG}::cargo_contract::dispute_delivery_entry`,
     arguments: [tx.object(contractId), tx.object(CLOCK)],
   });
   return tx;
@@ -279,7 +279,7 @@ function buildDisputeDeliveryTransaction(contractId: string) {
 function buildFinalizeDeliveryTransaction(contractId: string) {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V11}::cargo_contract::finalize_delivery_entry`,
+    target: `${CRADLEOS_PKG}::cargo_contract::finalize_delivery_entry`,
     arguments: [tx.object(contractId), tx.object(CLOCK)],
   });
   return tx;
@@ -288,7 +288,7 @@ function buildFinalizeDeliveryTransaction(contractId: string) {
 function buildCancelContractTransaction(contractId: string) {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V11}::cargo_contract::cancel_contract_entry`,
+    target: `${CRADLEOS_PKG}::cargo_contract::cancel_contract_entry`,
     arguments: [tx.object(contractId), tx.object(CLOCK)],
   });
   return tx;

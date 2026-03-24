@@ -282,7 +282,8 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
   const suffix = ssu.objectId.slice(-6);
 
   // Withdraw item from SSU to wallet
-  async function handleWithdraw(item: InventoryItem) {
+  // @ts-expect-error withdraw disabled
+async function _handleWithdraw(item: InventoryItem) {
     if (!characterId || !ownerCapId || !walletAddress) return;
     setWithdrawingTypeId(item.typeId);
     setTxStatus(null);
@@ -520,7 +521,8 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
                 const name =
                   resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
                 const totalItemVol = item.volume * item.quantity;
-                const isWithdrawing = withdrawingTypeId === item.typeId;
+                // @ts-expect-error withdraw disabled
+const _isWithdrawing = withdrawingTypeId === item.typeId;
                 return (
                   <div
                     key={item.typeId}
@@ -588,22 +590,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
                     </div>
                     {ownerCapId && (
                       <div style={{ ...COL_ACT }}>
-                        <button
-                          disabled={isWithdrawing || withdrawingTypeId !== null}
-                          onClick={() => handleWithdraw(item)}
-                          style={{
-                            fontSize: 10,
-                            fontFamily: "monospace",
-                            letterSpacing: "0.08em",
-                            background: "transparent",
-                            border: `1px solid rgba(255,71,0,${isWithdrawing ? 0.2 : 0.4})`,
-                            color: isWithdrawing ? "rgba(255,71,0,0.4)" : "#FF4700",
-                            padding: "2px 6px",
-                            cursor: isWithdrawing ? "not-allowed" : "pointer",
-                          }}
-                        >
-                          {isWithdrawing ? "WITHDRAWING…" : "WITHDRAW"}
-                        </button>
+                        <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>disabled</span>
                       </div>
                     )}
                   </div>

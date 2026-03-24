@@ -27,7 +27,8 @@ import {
   CHARACTER_REGISTRY_ID, rpcGetObject, discoverVaultIdForTribe,
   type TribeClaim,
 } from "../lib";
-import { CRADLEOS_PKG as _CRADLEOS_PKG } from "../constants";
+import { CRADLEOS_PKG } from "../constants";
+import { Transaction } from "@mysten/sui/transactions";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -66,6 +67,14 @@ export function RegistryPanel() {
   const [challengeVaultId, setChallengeVaultId] = useState("");
   const [challengeBusy, setChallengeBusy] = useState(false);
   const [challengeErr, setChallengeErr] = useState<string | null>(null);
+
+  // ── Launch flow — create vault on the new chain ──────────────────────────
+  const [launchName, setLaunchName] = useState("");
+  const [launchTicker, setLaunchTicker] = useState("");
+  const [launchBusy, setLaunchBusy] = useState(false);
+  const [launchErr, setLaunchErr] = useState<string | null>(null);
+  const [launchStep, setLaunchStep] = useState<"idle" | "vault_done" | "policy_done">("idle");
+  const [launchVaultId, setLaunchVaultId] = useState<string | null>(null);
 
   const invalidate = () => setTimeout(() => {
     queryClient.invalidateQueries({ queryKey: ["registryMeta"] });
@@ -132,6 +141,60 @@ export function RegistryPanel() {
   const myClaimActive = claim?.claimer.toLowerCase() === account.address.toLowerCase();
   const claimExists = !!claim;
   const claimConflict = claimExists && !myClaimActive;
+
+  const handleLaunchVault = async () => {
+    if (!tribeId || !launchName.trim() || !launchTicker.trim()) {
+      setLaunchErr("Enter a tribe name and ticker."); return;
+    }
+    setLaunchBusy(true); setLaunchErr(null);
+    try {
+      const signer = new CurrentAccountSigner(dAppKit);
+      // Step 1: create vault
+      const vaultTx = new Transaction();
+      vaultTx.moveCall({
+        target: `${CRADLEOS_PKG}::tribe_vault::create_vault_entry`,
+        arguments: [
+          vaultTx.pure.u32(tribeId >>> 0),
+          vaultTx.pure.vector("u8", Array.from(new TextEncoder().encode(launchName.trim()))),
+          vaultTx.pure.vector("u8", Array.from(new TextEncoder().encode(launchTicker.trim()))),
+        ],
+      });
+      const vaultResult = await signer.signAndExecuteTransaction({ transaction: vaultTx });
+      const vaultDigest = (vaultResult as Record<string, unknown>)["digest"] as string | undefined;
+
+      // Extract new vault ID from effects
+      let newVaultId: string | null = null;
+      if (vaultDigest) {
+        try {
+          const res = await fetch("https://fullnode.testnet.sui.io:443", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getTransactionBlock", params: [vaultDigest, { showEffects: true }] }),
+          });
+          const j = await res.json() as { result?: { effects?: { created?: Array<{ owner: unknown; reference: { objectId: string } }> } } };
+          const shared = (j.result?.effects?.created ?? []).filter(c => typeof c.owner === "object" && c.owner !== null && "Shared" in (c.owner as object));
+          if (shared.length > 0) newVaultId = shared[0].reference.objectId;
+        } catch { /* fall through */ }
+      }
+
+      setLaunchVaultId(newVaultId);
+      setLaunchStep("vault_done");
+      invalidate();
+
+      if (newVaultId) {
+        // Brief pause for indexer, then create defense policy
+        await new Promise(r => setTimeout(r, 2000));
+        const policyTx = new Transaction();
+        policyTx.moveCall({
+          target: `${CRADLEOS_PKG}::defense_policy::create_policy_entry`,
+          arguments: [policyTx.object(newVaultId)],
+        });
+        await signer.signAndExecuteTransaction({ transaction: policyTx });
+        setLaunchStep("policy_done");
+        invalidate();
+      }
+    } catch (e) { setLaunchErr(e instanceof Error ? e.message : String(e)); }
+    finally { setLaunchBusy(false); }
+  };
 
   const handleRegisterClaim = async () => {
     if (!tribeId || !characterId) return;
@@ -211,6 +274,79 @@ export function RegistryPanel() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
+      {/* ── New Chain Launch Banner ── */}
+      <div className="card" style={{ border: "1px solid rgba(0,255,150,0.25)", background: "rgba(0,255,150,0.03)" }}>
+        <div style={{ color: "#00ff96", fontWeight: 700, fontSize: "15px", marginBottom: "6px" }}>
+          🚀 New CradleOS Chain — March 24, 2026
+        </div>
+        <p style={{ color: "rgba(200,220,200,0.75)", fontSize: "12px", marginBottom: "14px", lineHeight: 1.6 }}>
+          All tribes start fresh on the unified package. Founders: press <strong>Found My Tribe</strong> to create your tribe vault and defense policy on the new chain in a single flow.
+        </p>
+
+        {launchStep === "policy_done" ? (
+          <div style={{ padding: "10px 14px", background: "rgba(0,255,150,0.08)", border: "1px solid rgba(0,255,150,0.3)", color: "#00ff96", fontSize: "13px", fontWeight: 600, borderRadius: 2 }}>
+            ✓ Tribe vault and defense policy created!
+            {launchVaultId && (
+              <div style={{ fontSize: "11px", fontWeight: 400, color: "rgba(0,255,150,0.7)", marginTop: 4, fontFamily: "monospace" }}>
+                Vault: {launchVaultId.slice(0, 14)}…{launchVaultId.slice(-6)}
+              </div>
+            )}
+            <div style={{ fontSize: "11px", fontWeight: 400, marginTop: 4 }}>
+              Head to the Tribe Token tab to mint your CRDL coin. Defense policy is ready in the Defense tab.
+            </div>
+          </div>
+        ) : launchStep === "vault_done" ? (
+          <div style={{ padding: "10px 14px", background: "rgba(0,200,255,0.06)", border: "1px solid rgba(0,200,255,0.2)", color: "#00ccff", fontSize: "12px", borderRadius: 2 }}>
+            ✓ Vault created{launchVaultId ? ` (${launchVaultId.slice(0, 10)}…)` : ""}. Creating defense policy…
+          </div>
+        ) : account && tribeId ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "flex-end" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>TRIBE NAME</span>
+                <input
+                  value={launchName}
+                  onChange={e => setLaunchName(e.target.value)}
+                  placeholder={`Tribe ${tribeId}`}
+                  style={{ ...inputStyle, width: "180px" }}
+                />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>TICKER (3-5 chars)</span>
+                <input
+                  value={launchTicker}
+                  onChange={e => setLaunchTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5))}
+                  placeholder="CRDL"
+                  style={{ ...inputStyle, width: "90px", fontFamily: "monospace" }}
+                />
+              </div>
+              <button
+                onClick={handleLaunchVault}
+                disabled={launchBusy || !launchName.trim() || !launchTicker.trim()}
+                style={{
+                  background: launchBusy ? "rgba(0,255,150,0.05)" : "rgba(0,255,150,0.12)",
+                  border: "1px solid rgba(0,255,150,0.4)",
+                  color: launchBusy ? "rgba(0,255,150,0.4)" : "#00ff96",
+                  borderRadius: 2, fontSize: "13px", fontWeight: 700,
+                  padding: "7px 20px", cursor: launchBusy ? "default" : "pointer",
+                  fontFamily: "inherit", letterSpacing: "0.05em",
+                }}
+              >
+                {launchBusy ? "Launching…" : "🚀 Found My Tribe"}
+              </button>
+            </div>
+            {launchErr && <div style={{ color: "#ff6432", fontSize: "11px" }}>⚠ {launchErr}</div>}
+            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+              Creates vault for Tribe #{tribeId} + a defense policy in two sequential transactions.
+            </div>
+          </div>
+        ) : !account ? (
+          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>Connect EVE Vault to launch your tribe.</div>
+        ) : (
+          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>Loading tribe info…</div>
+        )}
+      </div>
 
       {/* ── Membership status (always visible) ── */}
       <div className="card">

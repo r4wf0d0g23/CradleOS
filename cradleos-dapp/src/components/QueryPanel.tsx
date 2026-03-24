@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_EVENTS_PKG, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
+import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_PKG, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
 import { numish } from "../lib";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ async function fetchCradleOSVaults(): Promise<CradleOSVault[]> {
   const res = await fetch(SUI_TESTNET_RPC, {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-      params: [{ MoveEventType: `${CRADLEOS_EVENTS_PKG}::tribe_vault::CoinLaunched` }, null, 200, true] }),
+      params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` }, null, 200, true] }),
   });
   const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
   const seen = new Set<number>();
@@ -118,11 +118,35 @@ function short(addr: string, n = 10) {
   return addr ? `${addr.slice(0, n)}…${addr.slice(-6)}` : "—";
 }
 
+function copyToClipboard(value: string): boolean {
+  // Try modern Clipboard API first
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(value).catch(() => {});
+    return true;
+  }
+  // Fallback: create a temp textarea and execCommand (works in CEF/older browsers)
+  try {
+    const el = document.createElement("textarea");
+    el.value = value;
+    el.style.position = "fixed";
+    el.style.opacity = "0";
+    el.style.pointerEvents = "none";
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(el);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
-      onClick={() => { navigator.clipboard?.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+      onClick={() => { copyToClipboard(value); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
       style={{ background: "none", border: "none", color: copied ? "#00ff96" : "rgba(107,107,94,0.5)", cursor: "pointer", fontSize: 10, padding: "0 4px" }}
     >{copied ? "✓" : "⎘"}</button>
   );

@@ -26,7 +26,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import {
-  CRADLEOS_PKG_V8, SUI_TESTNET_RPC, CLOCK, eventType,
+  CRADLEOS_PKG, SUI_TESTNET_RPC, CLOCK,
 } from "../constants";
 import {
   rpcGetObject, numish,
@@ -121,7 +121,7 @@ async function fetchTerminalIdForVault(vaultId: string): Promise<string | null> 
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: eventType("recruiting_terminal", "TerminalCreated") }, null, 100, true],
+        params: [{ MoveEventType: `${CRADLEOS_PKG}::recruiting_terminal::TerminalCreated` }, null, 100, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
@@ -143,7 +143,7 @@ async function fetchBoardEntries(): Promise<BoardEntry[]> {
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: eventType("recruiting_terminal", "TerminalCreated") }, null, 100, true],
+        params: [{ MoveEventType: `${CRADLEOS_PKG}::recruiting_terminal::TerminalCreated` }, null, 100, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
@@ -249,7 +249,7 @@ async function fetchOwnApplicationEvents(walletAddress: string): Promise<Array<{
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: eventType("recruiting_terminal", "ApplicationSubmitted") }, null, 200, true],
+        params: [{ MoveEventType: `${CRADLEOS_PKG}::recruiting_terminal::ApplicationSubmitted` }, null, 200, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
@@ -268,10 +268,11 @@ async function fetchOwnApplicationEvents(walletAddress: string): Promise<Array<{
 
 function buildCreateTerminalTransaction(vaultId: string, requirements: string, minInfraCount: number): Transaction {
   const tx = new Transaction();
+  // New standalone package: vault_id passed as address, no &TribeVault ref needed
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::recruiting_terminal::create_terminal_entry`,
+    target: `${CRADLEOS_PKG}::recruiting_terminal::create_terminal_entry`,
     arguments: [
-      tx.object(vaultId),
+      tx.pure.address(vaultId),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(requirements))),
       tx.pure.u64(BigInt(minInfraCount)),
     ],
@@ -279,27 +280,27 @@ function buildCreateTerminalTransaction(vaultId: string, requirements: string, m
   return tx;
 }
 
-function buildSetOpenTransaction(terminalId: string, vaultId: string, open: boolean): Transaction {
+function buildSetOpenTransaction(terminalId: string, _vaultId: string, open: boolean): Transaction {
   const tx = new Transaction();
+  // New: no vault arg — founder verified from terminal state
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::recruiting_terminal::set_open_entry`,
-    arguments: [tx.object(terminalId), tx.object(vaultId), tx.pure.bool(open)],
+    target: `${CRADLEOS_PKG}::recruiting_terminal::set_open_entry`,
+    arguments: [tx.object(terminalId), tx.pure.bool(open)],
   });
   return tx;
 }
 
 function buildUpdateRequirementsTransaction(
   terminalId: string,
-  vaultId: string,
+  _vaultId: string,
   requirements: string,
   minInfraCount: number,
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::recruiting_terminal::update_requirements_entry`,
+    target: `${CRADLEOS_PKG}::recruiting_terminal::update_requirements_entry`,
     arguments: [
       tx.object(terminalId),
-      tx.object(vaultId),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(requirements))),
       tx.pure.u64(BigInt(minInfraCount)),
     ],
@@ -315,7 +316,7 @@ function buildApplyTransaction(
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::recruiting_terminal::apply_entry`,
+    target: `${CRADLEOS_PKG}::recruiting_terminal::apply_entry`,
     arguments: [
       tx.object(terminalId),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(characterName))),
@@ -329,16 +330,15 @@ function buildApplyTransaction(
 
 function buildReviewApplicationTransaction(
   terminalId: string,
-  vaultId: string,
+  _vaultId: string,
   applicationId: number,
   accept: boolean,
 ): Transaction {
   const tx = new Transaction();
   tx.moveCall({
-    target: `${CRADLEOS_PKG_V8}::recruiting_terminal::review_application_entry`,
+    target: `${CRADLEOS_PKG}::recruiting_terminal::review_application_entry`,
     arguments: [
       tx.object(terminalId),
-      tx.object(vaultId),
       tx.pure.u64(BigInt(applicationId)),
       tx.pure.bool(accept),
     ],
@@ -1054,7 +1054,7 @@ export function RecruitingPanel() {
     if (!account || !vault) return;
     setCreateBusy(true); setCreateErr(null);
     try {
-      const tx = buildCreateTerminalTransaction(vault.objectId, "", 0);
+      const tx = buildCreateTerminalTransaction(vault!.objectId, "", 0);
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
 
@@ -1077,7 +1077,7 @@ export function RecruitingPanel() {
             .filter(c => c.owner && typeof c.owner === "object" && "Shared" in (c.owner as object))
             .map(c => c.reference.objectId);
           if (created.length > 0) {
-            try { localStorage.setItem(`cradleos:terminal:${vault.objectId}`, created[0]); } catch { /* */ }
+            try { localStorage.setItem(`cradleos:terminal:${vault!.objectId}`, created[0]); } catch { /* */ }
           }
         } catch { /* fall through to event discovery */ }
       }
