@@ -220,25 +220,38 @@ async function fetchSystemDetail(id: number): Promise<SystemDetail | null> {
     if (!r.ok) return null;
     const d = await r.json() as {
       id?: number; name?: string;
-      planets?: Array<{ typeName?: string; typeId?: number }>;
-      connections?: Array<{ id?: number; name?: string }>;
+      gateLinks?: number[];
       securityClass?: string;
       regionId?: number;
       region?: { name?: string };
+      constellationId?: number;
     };
-    // Aggregate planet types
-    const planetMap = new Map<string, number>();
-    for (const p of (d.planets ?? [])) {
-      const t = p.typeName ?? "Unknown";
-      planetMap.set(t, (planetMap.get(t) ?? 0) + 1);
+    // Planet data from static index (World API doesn't include planets)
+    const pidx = await loadPlanetIndex();
+    const rawPlanets = pidx[String(id)] ?? [];
+    const planets = rawPlanets.map(([code, count]) => ({
+      typeName: `Planet (${PLANET_SHORT[code]?.full ?? code})`,
+      count,
+    }));
+    const planetCount = rawPlanets.reduce((sum, [, c]) => sum + c, 0);
+    // Gate connections
+    const gateLinks = d.gateLinks ?? [];
+    const connections: Array<{ id: number; name: string }> = [];
+    for (const gid of gateLinks.slice(0, 20)) {
+      try {
+        const gr = await fetch(`${WORLD_API}/v2/solarsystems/${gid}`);
+        if (gr.ok) {
+          const gd = await gr.json() as { id?: number; name?: string };
+          connections.push({ id: gd.id ?? gid, name: gd.name ?? `System ${gid}` });
+        }
+      } catch { /* skip */ }
     }
-    const planets = Array.from(planetMap.entries()).map(([typeName, count]) => ({ typeName, count }));
     return {
       id: d.id ?? id,
       name: d.name ?? `System ${id}`,
       planets,
-      planetCount: d.planets?.length ?? 0,
-      connections: (d.connections ?? []).map((c) => ({ id: c.id ?? 0, name: c.name ?? "" })),
+      planetCount,
+      connections,
       securityClass: d.securityClass,
       region: d.region?.name,
     };
@@ -350,7 +363,7 @@ export function MapPanel() {
       // Subtle glimmer on current system marker (slightly larger, gentle opacity shimmer)
       if (currentMarkerRef.current) {
         pulseRef.current += 0.02;
-        currentMarkerRef.current.scale.setScalar(1.6);  // fixed 1.6× size (slightly larger than normal)
+        currentMarkerRef.current.scale.setScalar(1.0);  // no scale change, just opacity glimmer
         const mat = currentMarkerRef.current.material as THREE.MeshBasicMaterial;
         mat.opacity = 0.75 + 0.15 * Math.sin(pulseRef.current);  // gentle shimmer: 0.60–0.90
       }
@@ -584,7 +597,7 @@ export function MapPanel() {
       const geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.BufferAttribute(pos,3));
       geo.setAttribute("color", new THREE.BufferAttribute(col,3));
-      const mat = new THREE.PointsMaterial({ size:3, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:0.9 });
+      const mat = new THREE.PointsMaterial({ size:5, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:0.9 });
       const pts = new THREE.Points(geo, mat);
       scene.add(pts);
       reachPointsRef.current = pts;
@@ -616,8 +629,8 @@ export function MapPanel() {
       scene.add(gateLineRef.current);
     }
 
-    // Current system marker — bright cyan pulsing sphere
-    const sg = new THREE.SphereGeometry(4, 8, 8);
+    // Current system marker — small bright cyan sphere with gentle glimmer
+    const sg = new THREE.SphereGeometry(0.8, 8, 8);
     const sm = new THREE.MeshBasicMaterial({ color:0x00e8ff, transparent:true, opacity:0.9 });
     const marker = new THREE.Mesh(sg, sm);
     marker.position.set(origin.x*SCALE, origin.z*SCALE, -origin.y*SCALE);
@@ -990,8 +1003,17 @@ export function MapPanel() {
                 <span style={{ color:"#333" }}>0 → {maxRangeLY.toFixed(0)} LY</span>
               </div>
               <div style={{ marginTop:"4px", display:"flex", alignItems:"center", gap:"6px" }}>
-                <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#00e8ff" }} />
+                <div style={{ width:"8px", height:"8px", borderRadius:"50%", background:"#00e8ff" }} />
                 <span style={{ color:"#336" }}>Current position</span>
+              </div>
+              <div style={{ color:"#444", marginTop:"8px", marginBottom:"4px", letterSpacing:"0.06em" }}>PLANETS</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 8px" }}>
+                {Object.entries(PLANET_SHORT).map(([code, info]) => (
+                  <div key={code} style={{ display:"flex", alignItems:"center", gap:"3px" }}>
+                    <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background: info.color }} />
+                    <span style={{ color:"#336", fontSize:"9px" }}>{info.full}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
