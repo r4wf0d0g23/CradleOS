@@ -831,6 +831,40 @@ export function MapPanel() {
     marker.position.set(origin.x*SCALE, origin.z*SCALE, -origin.y*SCALE);
     scene.add(marker);
     currentMarkerRef.current = marker;
+
+    // ── Range shells: concentric wireframe spheres at 25/50/75/100% of range ──
+    const ox = origin.x*SCALE, oy = origin.z*SCALE, oz = -origin.y*SCALE;
+    const rangeMetre = rangeLY * LY_M;
+    const shellAlphas = [0.12, 0.10, 0.08, 0.06]; // inner→outer
+    const shellColors = [0x00ff66, 0xaaff00, 0xffaa00, 0xff3300]; // green→yellow→orange→red
+    for (let i = 0; i < 4; i++) {
+      const frac = (i + 1) / 4;
+      const r = rangeMetre * SCALE * frac;
+      const shellGeo = new THREE.SphereGeometry(r, 32, 16);
+      const shellMat = new THREE.MeshBasicMaterial({
+        color: shellColors[i], transparent: true, opacity: shellAlphas[i],
+        wireframe: true, depthWrite: false,
+      });
+      const shell = new THREE.Mesh(shellGeo, shellMat);
+      shell.position.set(ox, oy, oz);
+      scene.add(shell);
+    }
+
+    // ── Reference grid plane through origin for orientation ──
+    const gridRadius = rangeMetre * SCALE;
+    const gridDiv = 8;
+    const gridGeo = new THREE.BufferGeometry();
+    const gridVerts: number[] = [];
+    for (let i = -gridDiv; i <= gridDiv; i++) {
+      const t = (i / gridDiv) * gridRadius;
+      // X lines
+      gridVerts.push(ox - gridRadius, oy, oz + t, ox + gridRadius, oy, oz + t);
+      // Z lines
+      gridVerts.push(ox + t, oy, oz - gridRadius, ox + t, oy, oz + gridRadius);
+    }
+    gridGeo.setAttribute("position", new THREE.Float32BufferAttribute(gridVerts, 3));
+    const gridMat = new THREE.LineBasicMaterial({ color: 0x112233, transparent: true, opacity: 0.12, depthWrite: false });
+    scene.add(new THREE.LineSegments(gridGeo, gridMat));
   }, []);
 
   // ── Camera helpers ─────────────────────────────────────────────────────────
@@ -1208,6 +1242,15 @@ export function MapPanel() {
               <div style={{ marginTop:"6px", display:"flex", alignItems:"center", gap:"8px" }}>
                 <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#00e8ff" }} />
                 <span style={{ color:"#667" }}>Current position</span>
+              </div>
+              <div style={{ color:"#556", marginTop:"10px", marginBottom:"4px", letterSpacing:"0.08em", fontWeight:600 }}>RANGE SHELLS</div>
+              <div style={{ display:"flex", gap:"6px", alignItems:"center" }}>
+                {[["25%","#00ff66"],["50%","#aaff00"],["75%","#ffaa00"],["100%","#ff3300"]].map(([label, color]) => (
+                  <div key={label} style={{ display:"flex", alignItems:"center", gap:"3px" }}>
+                    <span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", border:`1.5px solid ${color}`, opacity:0.7 }} />
+                    <span style={{ color:"#556", fontSize:"10px" }}>{label}</span>
+                  </div>
+                ))}
               </div>
               <div style={{ color:"#556", marginTop:"10px", marginBottom:"6px", letterSpacing:"0.08em", fontWeight:600 }}>PLANETS</div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"4px 14px" }}>
