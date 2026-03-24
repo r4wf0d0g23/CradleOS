@@ -874,5 +874,3 @@ const greyBtn: React.CSSProperties = {
   cursor: "pointer",
   fontFamily: "monospace",
 };
-
-};
