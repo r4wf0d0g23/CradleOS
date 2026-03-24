@@ -260,6 +260,201 @@ async function fetchSystemDetail(id: number): Promise<SystemDetail | null> {
   }
 }
 
+// ── SystemOrrery — 3D planetary orrery for the detail panel ───────────────────
+
+type OrreryPlanet = { typeName: string; count?: number };
+
+function SystemOrrery({ planets }: { planets: OrreryPlanet[] }) {
+  const mountRef = useRef<HTMLDivElement>(null);
+
+  // Use a stable string key so the effect only re-runs when planet data actually changes
+  const planetKey = JSON.stringify(planets);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+
+    let rafId = 0;
+    const width  = mount.clientWidth  || 192;
+    const height = mount.clientHeight || 220;
+
+    // ── Scene ────────────────────────────────────────────────────────────────
+    const scene = new THREE.Scene();
+
+    // ── Camera — angled top-down ─────────────────────────────────────────────
+    const maxOrbit = planets.length > 0 ? 3 + (planets.length - 1) * 2 : 4;
+    const camDist  = Math.max(maxOrbit * 2.0, 12);
+    const camera   = new THREE.PerspectiveCamera(55, width / height, 0.1, 2000);
+    camera.position.set(0, camDist * 0.9, camDist * 0.5);
+    camera.lookAt(0, 0, 0);
+
+    // ── Renderer ─────────────────────────────────────────────────────────────
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x040608, 1);
+    mount.appendChild(renderer.domElement);
+
+    // ── Lighting ─────────────────────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    const starLight = new THREE.PointLight(0xff9933, 3.0, 80);
+    scene.add(starLight);
+
+    // ── Orbit group (auto-rotates for a living feel) ─────────────────────────
+    const orbitGroup = new THREE.Group();
+    scene.add(orbitGroup);
+
+    // ── Star — K7 Orange, emissive glow ──────────────────────────────────────
+    const starGeo = new THREE.SphereGeometry(1.2, 24, 24);
+    const starMat = new THREE.MeshStandardMaterial({
+      color:             0xff8822,
+      emissive:          new THREE.Color(0xff6600),
+      emissiveIntensity: 1.0,
+      roughness:         0.9,
+      metalness:         0.0,
+    });
+    const starMesh = new THREE.Mesh(starGeo, starMat);
+    orbitGroup.add(starMesh);
+
+    // Soft outer halo (additive-like feel with BackSide transparent sphere)
+    const haloGeo = new THREE.SphereGeometry(2.0, 24, 24);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color:       0xff7700,
+      transparent: true,
+      opacity:     0.08,
+      side:        THREE.BackSide,
+    });
+    orbitGroup.add(new THREE.Mesh(haloGeo, haloMat));
+
+    // ── Planet color map ──────────────────────────────────────────────────────
+    const colorMap: Record<string, string> = {
+      "Planet (Lava)":      "#ff3300",
+      "Planet (Barren)":    "#8b7355",
+      "Planet (Ice)":       "#44ccff",
+      "Planet (Gas)":       "#cc88ff",
+      "Planet (Oceanic)":   "#0066ff",
+      "Planet (Storm)":     "#ffaa00",
+      "Planet (Temperate)": "#22cc44",
+      "Planet (Plasma)":    "#ff44ff",
+      "Planet (Shattered)": "#888888",
+    };
+
+    // ── Planet animation data ─────────────────────────────────────────────────
+    const planetData: Array<{
+      mesh: THREE.Mesh;
+      orbitRadius: number;
+      speed: number;
+      angle: number;
+    }> = [];
+
+    planets.forEach((planet, idx) => {
+      const orbitRadius = 3 + idx * 2;
+      const isGas       = planet.typeName.includes("Gas");
+      const sphereSize  = isGas ? 0.45 : 0.3;
+      const colorStr    = colorMap[planet.typeName] ?? "#555555";
+      const count       = Math.max(1, planet.count ?? 1);
+      // Kepler-ish: inner planets orbit faster
+      const speed = 0.45 / Math.sqrt(orbitRadius);
+
+      // Orbit ring
+      const ringPts: THREE.Vector3[] = [];
+      for (let k = 0; k <= 80; k++) {
+        const a = (k / 80) * Math.PI * 2;
+        ringPts.push(new THREE.Vector3(Math.cos(a) * orbitRadius, 0, Math.sin(a) * orbitRadius));
+      }
+      const ringGeo = new THREE.BufferGeometry().setFromPoints(ringPts);
+      const ringMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
+      orbitGroup.add(new THREE.Line(ringGeo, ringMat));
+
+      // Planet spheres (count > 1 → evenly spread around orbit)
+      for (let j = 0; j < count; j++) {
+        const startAngle = (j / count) * Math.PI * 2;
+        const pGeo = new THREE.SphereGeometry(sphereSize, 14, 14);
+        const pMat = new THREE.MeshStandardMaterial({
+          color:    new THREE.Color(colorStr),
+          roughness: 0.75,
+          metalness: 0.05,
+        });
+        const pMesh = new THREE.Mesh(pGeo, pMat);
+        pMesh.position.set(
+          Math.cos(startAngle) * orbitRadius,
+          0,
+          Math.sin(startAngle) * orbitRadius,
+        );
+        orbitGroup.add(pMesh);
+        planetData.push({ mesh: pMesh, orbitRadius, speed, angle: startAngle });
+      }
+    });
+
+    // ── Animation loop ────────────────────────────────────────────────────────
+    let autoRotate = 0;
+    let starPulse  = 0;
+
+    const animate = () => {
+      rafId = requestAnimationFrame(animate);
+
+      // Slow auto-rotation of the whole system for a living feel
+      autoRotate += 0.003;
+      orbitGroup.rotation.y = autoRotate;
+
+      // Orbit planets around the star
+      for (const p of planetData) {
+        p.angle += p.speed * 0.016;
+        p.mesh.position.set(
+          Math.cos(p.angle) * p.orbitRadius,
+          0,
+          Math.sin(p.angle) * p.orbitRadius,
+        );
+      }
+
+      // Gentle star pulse
+      starPulse += 0.04;
+      starMat.emissiveIntensity = 0.75 + 0.25 * Math.sin(starPulse);
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // ── Resize observer ───────────────────────────────────────────────────────
+    const ro = new ResizeObserver(() => {
+      const w = mount.clientWidth, h = mount.clientHeight;
+      if (!w || !h) return;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+    ro.observe(mount);
+
+    // ── Cleanup ───────────────────────────────────────────────────────────────
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      renderer.dispose();
+      scene.clear();
+      if (mount.contains(renderer.domElement)) {
+        mount.removeChild(renderer.domElement);
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planetKey]);
+
+  return (
+    <div
+      ref={mountRef}
+      style={{
+        width:        "100%",
+        height:       "220px",
+        borderRadius: "4px",
+        border:       "1px solid rgba(255,255,255,0.06)",
+        background:   "rgba(4,6,14,0.9)",
+        overflow:     "hidden",
+        flexShrink:   0,
+        marginBottom: "10px",
+      }}
+    />
+  );
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 type SortKey = "distance" | "name" | "region";
@@ -629,8 +824,8 @@ export function MapPanel() {
       scene.add(gateLineRef.current);
     }
 
-    // Current system marker — small bright cyan sphere with gentle glimmer
-    const sg = new THREE.SphereGeometry(0.8, 8, 8);
+    // Current system marker — visible cyan sphere with gentle glimmer (larger hitbox than visual)
+    const sg = new THREE.SphereGeometry(1.5, 8, 8);
     const sm = new THREE.MeshBasicMaterial({ color:0x00e8ff, transparent:true, opacity:0.9 });
     const marker = new THREE.Mesh(sg, sm);
     marker.position.set(origin.x*SCALE, origin.z*SCALE, -origin.y*SCALE);
@@ -655,15 +850,23 @@ export function MapPanel() {
     const rect = mount.getBoundingClientRect();
     const ndx = ((e.clientX-rect.left)/rect.width)*2-1;
     const ndy = -((e.clientY-rect.top)/rect.height)*2+1;
-    raycaster.current.params.Points = { threshold: 4 };
+    raycaster.current.params.Points = { threshold: 8 };
     raycaster.current.setFromCamera(new THREE.Vector2(ndx,ndy), cam);
     const hits = raycaster.current.intersectObject(pts);
     if (hits.length > 0 && hits[0].index != null) {
       const sys = reachableSystems[hits[0].index];
       if (sys) { setTooltip({ x:e.clientX-rect.left+14, y:e.clientY-rect.top-10, name:`${sys.name}  ${sys.distLY.toFixed(1)} LY` }); return; }
     }
+    // Also check current system marker (mesh hitbox)
+    if (currentMarkerRef.current) {
+      const markerHits = raycaster.current.intersectObject(currentMarkerRef.current);
+      if (markerHits.length > 0 && currentSys) {
+        setTooltip({ x:e.clientX-rect.left+14, y:e.clientY-rect.top-10, name:`⊙ ${currentSys.name} (current)` });
+        return;
+      }
+    }
     setTooltip(null);
-  }, [reachableSystems]);
+  }, [reachableSystems, currentSys]);
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     mouseDownPos.current = { x:e.clientX, y:e.clientY };
@@ -680,7 +883,7 @@ export function MapPanel() {
     const rect = mount.getBoundingClientRect();
     const ndx = ((e.clientX-rect.left)/rect.width)*2-1;
     const ndy = -((e.clientY-rect.top)/rect.height)*2+1;
-    raycaster.current.params.Points = { threshold: 6 };
+    raycaster.current.params.Points = { threshold: 10 };
     raycaster.current.setFromCamera(new THREE.Vector2(ndx,ndy), cam);
     const hits = raycaster.current.intersectObject(pts);
     if (hits.length > 0 && hits[0].index != null) {
@@ -994,24 +1197,24 @@ export function MapPanel() {
           {/* Legend */}
           {currentSys && reachableSystems.length > 0 && (
             <div style={{ position:"absolute", bottom:"10px", left:"10px", pointerEvents:"none",
-              background:"rgba(4,6,14,0.85)", border:"1px solid rgba(255,255,255,0.06)",
-              borderRadius:"6px", padding:"8px 12px", fontSize:"10px" }}>
-              <div style={{ color:"#444", marginBottom:"4px", letterSpacing:"0.06em" }}>DISTANCE</div>
-              <div style={{ display:"flex", alignItems:"center", gap:"6px" }}>
-                <div style={{ width:"60px", height:"4px", borderRadius:"2px",
+              background:"rgba(4,6,14,0.90)", border:"1px solid rgba(255,255,255,0.08)",
+              borderRadius:"6px", padding:"12px 16px", fontSize:"12px" }}>
+              <div style={{ color:"#556", marginBottom:"6px", letterSpacing:"0.08em", fontWeight:600 }}>DISTANCE</div>
+              <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
+                <div style={{ width:"80px", height:"6px", borderRadius:"3px",
                   background:"linear-gradient(to right, #00ff00, #ffff00, #ff0000)" }} />
-                <span style={{ color:"#333" }}>0 → {maxRangeLY.toFixed(0)} LY</span>
+                <span style={{ color:"#667" }}>0 → {maxRangeLY.toFixed(0)} LY</span>
               </div>
-              <div style={{ marginTop:"4px", display:"flex", alignItems:"center", gap:"6px" }}>
-                <div style={{ width:"8px", height:"8px", borderRadius:"50%", background:"#00e8ff" }} />
-                <span style={{ color:"#336" }}>Current position</span>
+              <div style={{ marginTop:"6px", display:"flex", alignItems:"center", gap:"8px" }}>
+                <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#00e8ff" }} />
+                <span style={{ color:"#667" }}>Current position</span>
               </div>
-              <div style={{ color:"#444", marginTop:"8px", marginBottom:"4px", letterSpacing:"0.06em" }}>PLANETS</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 8px" }}>
+              <div style={{ color:"#556", marginTop:"10px", marginBottom:"6px", letterSpacing:"0.08em", fontWeight:600 }}>PLANETS</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"4px 14px" }}>
                 {Object.entries(PLANET_SHORT).map(([code, info]) => (
-                  <div key={code} style={{ display:"flex", alignItems:"center", gap:"3px" }}>
-                    <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background: info.color }} />
-                    <span style={{ color:"#336", fontSize:"9px" }}>{info.full}</span>
+                  <div key={code} style={{ display:"flex", alignItems:"center", gap:"5px" }}>
+                    <span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background: info.color, flexShrink:0 }} />
+                    <span style={{ color:"#667", fontSize:"11px" }}>{info.full}</span>
                   </div>
                 ))}
               </div>
@@ -1039,6 +1242,9 @@ export function MapPanel() {
             display:"flex", flexDirection:"column", overflow:"hidden",
           }}>
             <div style={{ padding:"14px", flex:1, overflowY:"auto" }}>
+              {/* 3D Planetary Orrery */}
+              <SystemOrrery planets={systemDetail?.planets ?? []} />
+
               <div style={{ color:"#00e8ff", fontWeight:700, fontSize:"13px", marginBottom:"4px" }}>
                 {selectedSys.name}
               </div>
