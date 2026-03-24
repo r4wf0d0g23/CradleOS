@@ -19,7 +19,7 @@ import {
 // ── Service definitions ───────────────────────────────────────────────────────
 
 const BASE = "https://r4wf0d0g23.github.io/CradleOS";
-const KEEPER_URL = "https://keeper.reapers.shop";
+const KEEPER_URL = `${BASE}/#/keeper`;
 
 interface ServiceDef {
   id: string;
@@ -252,20 +252,22 @@ export function LinksPanel() {
                       </button>
                     ))}
 
-                    {/* Easter egg — unlabeled lock icon */}
-                    <button
-                      onClick={() => handleLink(s, KEEPER_URL)}
-                      disabled={isBusy}
-                      title=""
-                      style={{
-                        padding: "5px 10px", fontSize: 14, cursor: "pointer", borderRadius: 2,
-                        background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
-                        color: "rgba(107,107,94,0.4)", fontFamily: "inherit",
-                        opacity: isBusy ? 0.4 : 1,
-                      }}
-                    >
-                      🔒
-                    </button>
+                    {/* Easter egg — only visible on Nodes and SSUs */}
+                    {(s.kind === "NetworkNode" || s.kind === "SSU") && (
+                      <button
+                        onClick={() => handleLink(s, KEEPER_URL)}
+                        disabled={isBusy}
+                        title=""
+                        style={{
+                          padding: "5px 10px", fontSize: 14, cursor: "pointer", borderRadius: 2,
+                          background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
+                          color: "rgba(107,107,94,0.4)", fontFamily: "inherit",
+                          opacity: isBusy ? 0.4 : 1,
+                        }}
+                      >
+                        🔒
+                      </button>
+                    )}
                   </div>
 
                   {/* Custom URL input */}
