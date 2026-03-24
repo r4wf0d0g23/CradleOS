@@ -77,6 +77,7 @@ interface Message {
   communitySourced?: boolean;
   consensusCount?: number;
   _vaultId?: string | null;
+  _structures?: Array<{ kind: string; objectId: string }>;
 }
 
 type SubmissionStatus =
@@ -127,7 +128,7 @@ interface KeeperContext {
   jumpHistoryTotal: number | null;
   keeperNodeActive: boolean; // true if player has a node with keeper.reapers.shop linked
   // Player's deployed structures
-  structures: Array<{ kind: string; name: string; isOnline: boolean; systemId?: number }>;
+  structures: Array<{ kind: string; name: string; isOnline: boolean; systemId?: number; objectId: string }>;
 }
 
 // ── Security constants ────────────────────────────────────────────────────────
@@ -276,8 +277,13 @@ Available contracts (use exact contract names):
   ROLES: "grant_role" (params: {grantee, role}), "revoke_role" (params: {revokee, role})
   TREASURY: "issue_coin" (params: {recipient, amount, reason}), "burn_coin" (params: {member, amount})
 
+IMPORTANT: You can see the pilot's deployed structures in the context above (with their object IDs). When asked to assign/bind/delegate turrets, use "delegate_all_turrets" to bind ALL their turrets and gates to the tribe defense policy in one transaction. You have their structure IDs — DO NOT ask the pilot for IDs.
+
 Example — if pilot says "bind my turrets to tribe policy":
-  %%ACTION%%{"type":"CONTRACT_CALL","label":"Bind All Turrets","description":"Delegate all turrets to the Reapers tribe defense policy","contract":"delegate_all_turrets","params":{}}%%END_ACTION%%
+  %%ACTION%%{"type":"CONTRACT_CALL","label":"Bind All Turrets","description":"Delegate all your turrets and gates to the tribe defense policy","contract":"delegate_all_turrets","params":{}}%%END_ACTION%%
+
+Example — if pilot says "set security to red":
+  %%ACTION%%{"type":"CONTRACT_CALL","label":"Set Security RED","description":"Set tribe defense policy to maximum alert","contract":"set_defense_security_level","params":{"level":2}}%%END_ACTION%%
 
 ANTI-HALLUCINATION:
 - NEVER invent numbers, counts, names, or statistics. If data is not provided in pilot context or game data below, say the pattern has not been woven into your sight.
@@ -292,7 +298,7 @@ Tribe Vault: ${vaultStr}
 CRDL Balance: ${crdlStr}
 Registered Infra: ${infraStr} structures
 Deployed Structures (${ctx.structures.length}): ${ctx.structures.length > 0
-  ? ctx.structures.map(s => `${s.kind}${s.name ? ` "${s.name}"` : ""} [${s.isOnline ? "ONLINE" : "OFFLINE"}]${s.systemId ? ` in system ${s.systemId}` : ""}`).join(", ")
+  ? "\n" + ctx.structures.map(s => `  - ${s.kind}${s.name ? ` "${s.name}"` : ""} [${s.isOnline ? "ONLINE" : "OFFLINE"}] id:${s.objectId}${s.systemId ? ` system:${s.systemId}` : ""}`).join("\n")
   : "none deployed"}
 Security Level: ${secStr}
 Active Bounties: ${bountyStr} open
@@ -419,6 +425,7 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
         name: s.displayName,
         isOnline: s.isOnline,
         systemId: groups.find(g => g.structures.includes(s))?.solarSystemId,
+        objectId: s.objectId,
       }));
     } catch { /* non-critical */ }
 
@@ -1235,6 +1242,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         consensusCount: hasCommunitySource ? maxConsensus : undefined,
         action: parsedAction ?? undefined,
         _vaultId: ctx?.vaultId ?? null,
+        _structures: ctx?.structures?.map(s => ({ kind: s.kind, objectId: s.objectId })),
       }]);
     } catch (err) {
       console.error("[Keeper] API error:", err);
@@ -1579,7 +1587,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
 // ── Message bubble ────────────────────────────────────────────────────────────
 
 /** Build a real transaction from a Keeper action. Returns null if missing context. */
-async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null): Promise<Transaction | null> {
+async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null, structures?: Array<{ kind: string; objectId: string }>): Promise<Transaction | null> {
   const p = action.params as Record<string, unknown>;
   const tx = new Transaction();
 
@@ -1658,10 +1666,17 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null)
       tx.moveCall({ target: `${CRADLEOS_PKG}::turret_delegation::delegate_to_tribe`,
         arguments: [tx.pure.address(String(p.structureId ?? "")), tx.pure.address(vaultId), tx.object(CLOCK)] });
       return tx;
-    case "delegate_all_turrets":
-      // Can't batch without knowing structure IDs — dispatch custom event for UI to handle
-      window.dispatchEvent(new CustomEvent("keeper:action", { detail: { ...action, needsStructureList: true } }));
-      return null;
+    case "delegate_all_turrets": {
+      if (!vaultId) return null;
+      const turrets = (structures ?? []).filter(s => s.kind === "Turret" || s.kind === "Gate");
+      if (turrets.length === 0) return null;
+      // Batch: delegate all turrets + gates in one transaction
+      for (const s of turrets) {
+        tx.moveCall({ target: `${CRADLEOS_PKG}::turret_delegation::delegate_to_tribe`,
+          arguments: [tx.pure.address(s.objectId), tx.pure.address(vaultId), tx.object(CLOCK)] });
+      }
+      return tx;
+    }
     case "revoke_turret_delegation":
       if (!String(p.structureId ?? "")) return null;
       tx.moveCall({ target: `${CRADLEOS_PKG}::turret_delegation::revoke_delegation`,
@@ -1718,7 +1733,7 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null)
   }
 }
 
-function KeeperActionButton({ action, vaultId }: { action: KeeperAction; vaultId: string | null }) {
+function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAction; vaultId: string | null; structures?: Array<{ kind: string; objectId: string }> }) {
   const dAppKit = useDAppKit();
   const [status, setStatus] = useState<"idle" | "pending" | "done" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
@@ -1726,7 +1741,7 @@ function KeeperActionButton({ action, vaultId }: { action: KeeperAction; vaultId
   const execute = async () => {
     setStatus("pending"); setErr(null);
     try {
-      const tx = await buildKeeperActionTx(action, vaultId);
+      const tx = await buildKeeperActionTx(action, vaultId, structures);
       if (!tx) throw new Error("Cannot build transaction for this action — missing context (vault, policy, or account). Try from the relevant tab instead.");
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
@@ -1821,7 +1836,7 @@ function MessageBubble({ msg }: { msg: Message }) {
           {msg.content}
         </span>
         {/* Action button */}
-        {msg.action && <KeeperActionButton action={msg.action} vaultId={msg._vaultId ?? null} />}
+        {msg.action && <KeeperActionButton action={msg.action} vaultId={msg._vaultId ?? null} structures={msg._structures} />}
         {/* Community-sourced badge */}
         {msg.communitySourced && (
           <div style={{
