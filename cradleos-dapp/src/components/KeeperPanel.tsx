@@ -15,16 +15,23 @@ import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import KeeperViewport from "./KeeperViewport";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import type { KeeperViewportProps } from "./KeeperViewport";
+import { useDAppKit } from "@mysten/dapp-kit-react";
+import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { Transaction } from "@mysten/sui/transactions";
 import {
   fetchCrdlBalance,
   fetchTribeVault,
   discoverVaultIdForTribe,
   findCharacterForWallet,
   fetchPlayerStructures,
+  buildSetGateAccessLevelTx,
+  buildIssueCoinTransaction,
+  buildBurnCoinTransaction,
   SEC_GREEN,
   SEC_YELLOW,
   SEC_RED,
 } from "../lib";
+import { CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC } from "../constants";
 import { WORLD_API, SERVER_LABEL } from "../constants";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -69,6 +76,7 @@ interface Message {
   images?: string[];
   communitySourced?: boolean;
   consensusCount?: number;
+  _vaultId?: string | null;
 }
 
 type SubmissionStatus =
@@ -374,7 +382,7 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
       base.tribeId = charInfo.value.tribeId ?? null;
       // Fetch character name from the Character object's metadata
       try {
-        const res = await fetch("https://fullnode.testnet.sui.io:443", {
+        const res = await fetch(SUI_TESTNET_RPC, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject",
             params: [charInfo.value.characterId, { showContent: true }] }),
@@ -1226,6 +1234,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         communitySourced: hasCommunitySource,
         consensusCount: hasCommunitySource ? maxConsensus : undefined,
         action: parsedAction ?? undefined,
+        _vaultId: ctx?.vaultId ?? null,
       }]);
     } catch (err) {
       console.error("[Keeper] API error:", err);
@@ -1569,20 +1578,161 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
 
 // ── Message bubble ────────────────────────────────────────────────────────────
 
-function KeeperActionButton({ action }: { action: KeeperAction }) {
+/** Build a real transaction from a Keeper action. Returns null if missing context. */
+async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null): Promise<Transaction | null> {
+  const p = action.params as Record<string, unknown>;
+  const tx = new Transaction();
+
+  // Resolve policy ID from vault if needed
+  let policyId: string | null = null;
+  if (vaultId && ["set_defense_security_level", "set_aggression_mode", "set_enforce", "set_relation"].includes(action.contract)) {
+    // Query PolicyCreated events to find policy for this vault
+    try {
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+          params: [{ MoveEventType: `${CRADLEOS_PKG}::defense_policy::PolicyCreated` }, null, 50, true] }),
+      });
+      const json = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
+      const match = (json.result?.data ?? []).find(e => String(e.parsedJson["vault_id"]) === vaultId);
+      if (match) policyId = String(match.parsedJson["policy_id"]);
+    } catch { /* */ }
+  }
+
+  // Gate policy ID
+  let gatePolicyId: string | null = null;
+  if (vaultId && ["set_gate_access_level", "set_gate_tribe_override", "set_gate_player_override"].includes(action.contract)) {
+    try {
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+          params: [{ MoveEventType: `${CRADLEOS_PKG}::gate_policy::GatePolicyCreated` }, null, 50, true] }),
+      });
+      const json = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
+      const match = (json.result?.data ?? []).find(e => String(e.parsedJson["vault_id"]) === vaultId);
+      if (match) gatePolicyId = String(match.parsedJson["policy_id"]);
+    } catch { /* */ }
+  }
+
+  switch (action.contract) {
+    // ── Defense policy ──
+    case "set_defense_security_level":
+      if (!policyId || !vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::defense_policy::set_security_level_entry`,
+        arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u8(Number(p.level ?? 0))] });
+      return tx;
+    case "set_aggression_mode":
+      if (!policyId || !vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::defense_policy::set_aggression_mode_entry`,
+        arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.bool(Boolean(p.enabled))] });
+      return tx;
+    case "set_enforce":
+      if (!policyId || !vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::defense_policy::set_enforce_entry`,
+        arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.bool(Boolean(p.enforce))] });
+      return tx;
+    case "set_relation":
+      if (!policyId || !vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::defense_policy::set_relation_entry`,
+        arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u32(Number(p.tribeId ?? 0)), tx.pure.bool(Boolean(p.friendly))] });
+      return tx;
+
+    // ── Gate policy ──
+    case "set_gate_access_level":
+      if (!gatePolicyId || !vaultId) return null;
+      return buildSetGateAccessLevelTx(gatePolicyId, vaultId, Number(p.level ?? 0));
+    case "set_gate_tribe_override":
+      if (!gatePolicyId || !vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::gate_policy::set_tribe_override`,
+        arguments: [tx.object(gatePolicyId), tx.object(vaultId), tx.pure.u32(Number(p.tribeId ?? 0)), tx.pure.u8(Number(p.value ?? 1))] });
+      return tx;
+    case "set_gate_player_override":
+      if (!gatePolicyId || !vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::gate_policy::set_player_override`,
+        arguments: [tx.object(gatePolicyId), tx.object(vaultId), tx.pure.address(String(p.player ?? "")), tx.pure.u8(Number(p.value ?? 1))] });
+      return tx;
+
+    // ── Turret delegation ──
+    case "delegate_turret":
+      if (!vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::turret_delegation::delegate_to_tribe`,
+        arguments: [tx.pure.address(String(p.structureId ?? "")), tx.pure.address(vaultId), tx.object(CLOCK)] });
+      return tx;
+    case "delegate_all_turrets":
+      // Can't batch without knowing structure IDs — dispatch custom event for UI to handle
+      window.dispatchEvent(new CustomEvent("keeper:action", { detail: { ...action, needsStructureList: true } }));
+      return null;
+    case "revoke_turret_delegation":
+      if (!String(p.structureId ?? "")) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::turret_delegation::revoke_delegation`,
+        arguments: [tx.object(String(p.delegationObjectId ?? p.structureId ?? "")), tx.object(CLOCK)] });
+      return tx;
+
+    // ── Gate delegation ──
+    case "delegate_gate":
+      if (!vaultId) return null;
+      tx.moveCall({ target: `${CRADLEOS_PKG}::gate_policy::delegate_gate`,
+        arguments: [tx.pure.address(String(p.gateId ?? "")), tx.object(vaultId), tx.object(CLOCK)] });
+      return tx;
+
+    // ── Roles ──
+    case "grant_role":
+      return null; // Needs rolesId which we'd need to discover
+    case "revoke_role":
+      return null;
+
+    // ── Succession ──
+    case "check_in":
+      if (!vaultId) return null;
+      // Need deed ID — discover from events
+      return null; // Complex — needs deed lookup
+    case "update_heir":
+      return null; // Needs deed ID
+
+    // ── Treasury ──
+    case "issue_coin":
+      if (!vaultId) return null;
+      return buildIssueCoinTransaction(vaultId, String(p.recipient ?? ""), Number(p.amount ?? 0), String(p.reason ?? "Keeper-initiated"));
+    case "burn_coin":
+      if (!vaultId) return null;
+      return buildBurnCoinTransaction(vaultId, String(p.member ?? ""), Number(p.amount ?? 0));
+
+    // ── Bounties / Cargo / SRP ──
+    case "post_bounty":
+    case "cancel_bounty":
+    case "create_cargo_contract":
+    case "dispute_delivery":
+    case "finalize_delivery":
+    case "cancel_cargo_contract":
+    case "submit_srp_claim":
+    case "open_recruiting":
+    case "close_recruiting":
+    case "update_requirements":
+    case "review_application":
+      // These require complex params — dispatch to UI
+      window.dispatchEvent(new CustomEvent("keeper:action", { detail: action }));
+      return null;
+
+    default:
+      return null;
+  }
+}
+
+function KeeperActionButton({ action, vaultId }: { action: KeeperAction; vaultId: string | null }) {
+  const dAppKit = useDAppKit();
   const [status, setStatus] = useState<"idle" | "pending" | "done" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
 
   const execute = async () => {
     setStatus("pending"); setErr(null);
     try {
-      // Route to the appropriate contract call via postMessage to EVE Vault
-      // For now, trigger the dApp's existing action routes via custom event
-      const event = new CustomEvent("keeper:action", { detail: action });
-      window.dispatchEvent(event);
+      const tx = await buildKeeperActionTx(action, vaultId);
+      if (!tx) throw new Error("Cannot build transaction for this action — missing context (vault, policy, or account). Try from the relevant tab instead.");
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
       setStatus("done");
     } catch (e) {
-      setErr(String(e));
+      setErr(e instanceof Error ? e.message : String(e));
       setStatus("error");
     }
   };
@@ -1671,7 +1821,7 @@ function MessageBubble({ msg }: { msg: Message }) {
           {msg.content}
         </span>
         {/* Action button */}
-        {msg.action && <KeeperActionButton action={msg.action} />}
+        {msg.action && <KeeperActionButton action={msg.action} vaultId={msg._vaultId ?? null} />}
         {/* Community-sourced badge */}
         {msg.communitySourced && (
           <div style={{
