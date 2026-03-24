@@ -1542,21 +1542,26 @@ export function buildBurnCoinTransaction(
 }
 
 /** Cache vault ID by tribeId. */
-// ── Cache-buster: clear stale vault IDs when package changes ──────────────────
+// ── Cache-buster: clear stale data when package or cache version changes ──────
+// Bump CACHE_VERSION any time cached data shape changes or needs forced invalidation.
+const CACHE_VERSION = 2;
 const CACHE_PKG_KEY = "cradleos:pkg";
+const CACHE_VER_KEY = "cradleos:cache-version";
 try {
   const cachedPkg = localStorage.getItem(CACHE_PKG_KEY);
-  if (cachedPkg && cachedPkg !== CRADLEOS_PKG) {
-    // Package changed — wipe all cached vault/policy IDs
+  const cachedVer = Number(localStorage.getItem(CACHE_VER_KEY) ?? "0");
+  if ((cachedPkg && cachedPkg !== CRADLEOS_PKG) || cachedVer < CACHE_VERSION) {
+    // Wipe all cradleos cached IDs + delegation state
     const toRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && (k.startsWith("cradleos:vault:") || k.startsWith("cradleos:policy:"))) toRemove.push(k);
+      if (k && (k.startsWith("cradleos:") || k.startsWith("delegation:"))) toRemove.push(k);
     }
     toRemove.forEach(k => localStorage.removeItem(k));
-    console.log(`[CradleOS] Package changed → cleared ${toRemove.length} cached IDs`);
+    console.log(`[CradleOS] Cache invalidated (pkg change or v${cachedVer}→v${CACHE_VERSION}) → cleared ${toRemove.length} entries`);
   }
   localStorage.setItem(CACHE_PKG_KEY, CRADLEOS_PKG);
+  localStorage.setItem(CACHE_VER_KEY, String(CACHE_VERSION));
 } catch { /* */ }
 
 export function getCachedVaultId(tribeId: number): string | null {
