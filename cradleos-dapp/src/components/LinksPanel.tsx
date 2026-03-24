@@ -253,7 +253,7 @@ export function LinksPanel() {
                     ))}
 
                     {/* Easter egg — only visible on Nodes and SSUs */}
-                    {(s.kind === "NetworkNode" || s.kind === "SSU") && (
+                    {(s.kind === "NetworkNode" || s.kind === "StorageUnit") && (
                       <button
                         onClick={() => handleLink(s, KEEPER_URL)}
                         disabled={isBusy}
