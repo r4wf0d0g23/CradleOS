@@ -240,11 +240,8 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
     if (!account || !tribeId || !coinName.trim() || !coinSymbol.trim()) return;
     setBusy(true); setErr(null);
     try {
-      // Use registry-gated vault creation if claim is active; fall back to bare create_vault
-      const useRegistry = myClaimActive && !claim?.vaultCreated;
-      const tx = useRegistry
-        ? buildCreateVaultWithRegistryTransaction(tribeId, coinName.trim(), coinSymbol.trim().toUpperCase())
-        : buildLaunchCoinTransaction(tribeId, coinName.trim(), coinSymbol.trim().toUpperCase());
+      // Direct vault creation — no registry needed on the new chain
+      const tx = buildLaunchCoinTransaction(tribeId, coinName.trim(), coinSymbol.trim().toUpperCase());
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
 
