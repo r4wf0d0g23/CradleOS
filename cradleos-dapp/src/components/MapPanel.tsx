@@ -884,14 +884,19 @@ export function MapPanel() {
     const rect = mount.getBoundingClientRect();
     const ndx = ((e.clientX-rect.left)/rect.width)*2-1;
     const ndy = -((e.clientY-rect.top)/rect.height)*2+1;
-    raycaster.current.params.Points = { threshold: 8 };
+    raycaster.current.params.Points = { threshold: 3 };
     raycaster.current.setFromCamera(new THREE.Vector2(ndx,ndy), cam);
     const hits = raycaster.current.intersectObject(pts);
-    if (hits.length > 0 && hits[0].index != null) {
-      const sys = reachableSystems[hits[0].index];
-      if (sys) { setTooltip({ x:e.clientX-rect.left+14, y:e.clientY-rect.top-10, name:`${sys.name}  ${sys.distLY.toFixed(1)} LY` }); return; }
+    // Pick the closest hit to camera (not just first in buffer order)
+    if (hits.length > 0) {
+      hits.sort((a, b) => a.distanceToRay! - b.distanceToRay!);
+      const best = hits[0];
+      if (best.index != null) {
+        const sys = reachableSystems[best.index];
+        if (sys) { setTooltip({ x:e.clientX-rect.left+14, y:e.clientY-rect.top-10, name:`${sys.name}  ${sys.distLY.toFixed(1)} LY` }); return; }
+      }
     }
-    // Also check current system marker (mesh hitbox)
+    // Also check current system marker (mesh)
     if (currentMarkerRef.current) {
       const markerHits = raycaster.current.intersectObject(currentMarkerRef.current);
       if (markerHits.length > 0 && currentSys) {
@@ -917,12 +922,17 @@ export function MapPanel() {
     const rect = mount.getBoundingClientRect();
     const ndx = ((e.clientX-rect.left)/rect.width)*2-1;
     const ndy = -((e.clientY-rect.top)/rect.height)*2+1;
-    raycaster.current.params.Points = { threshold: 10 };
+    raycaster.current.params.Points = { threshold: 4 };
     raycaster.current.setFromCamera(new THREE.Vector2(ndx,ndy), cam);
     const hits = raycaster.current.intersectObject(pts);
-    if (hits.length > 0 && hits[0].index != null) {
-      const sys = reachableSystems[hits[0].index];
-      if (sys) handleSelectSystem(sys);
+    if (hits.length > 0) {
+      // Pick closest to cursor ray, not closest to camera
+      hits.sort((a, b) => a.distanceToRay! - b.distanceToRay!);
+      const best = hits[0];
+      if (best.index != null) {
+        const sys = reachableSystems[best.index];
+        if (sys) handleSelectSystem(sys);
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reachableSystems]);
