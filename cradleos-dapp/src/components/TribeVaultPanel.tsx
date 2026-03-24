@@ -27,10 +27,7 @@ import {
   fetchTribeInfo,
   getCachedVaultId,
   setCachedVaultId,
-  fetchTribeClaim,
-  buildRegisterClaimTransaction,
-  buildCreateVaultWithRegistryTransaction,
-  findCharacterForWallet,
+
   type TribeVaultState,
   type CoinIssuedEvent,
   type PlayerStructure,
@@ -188,11 +185,9 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
   const { account: _verifiedAcct } = useVerifiedAccountContext();
   const account = _verifiedAcct;
   const dAppKit = useDAppKit();
-  const queryClient = useQueryClient();
   const [coinName, setCoinName] = useState("");
   const [coinSymbol, setCoinSymbol] = useState("");
   const [busy, setBusy] = useState(false);
-  const [claimBusy, setClaimBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   // After tx is sent: show a paste-vault-ID field in case auto-detect fails
   const [txSent, setTxSent] = useState(false);
@@ -203,38 +198,6 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
     queryFn: () => account ? fetchCharacterTribeId(account.address) : null,
     enabled: !!account?.address,
   });
-
-  const { data: characterId } = useQuery<string | null>({
-    queryKey: ["characterId", account?.address],
-    queryFn: async () => {
-      if (!account) return null;
-      const info = await findCharacterForWallet(account.address);
-      return info?.characterId ?? null;
-    },
-    enabled: !!account?.address,
-  });
-
-  const { data: claim, isLoading: claimLoading } = useQuery({
-    queryKey: ["tribeClaim", tribeId],
-    queryFn: () => tribeId != null ? fetchTribeClaim(tribeId) : Promise.resolve(null),
-    enabled: tribeId != null,
-    staleTime: 12_000,
-  });
-
-  const myClaimActive = claim?.claimer.toLowerCase() === account?.address.toLowerCase();
-  const claimConflict = !!claim && !myClaimActive;
-
-  const handleRegisterClaim = async () => {
-    if (!account || !tribeId || !characterId) return;
-    setClaimBusy(true); setErr(null);
-    try {
-      const tx = buildRegisterClaimTransaction(tribeId, characterId);
-      const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["tribeClaim", tribeId] }), 2500);
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
-    finally { setClaimBusy(false); }
-  };
 
   const handleLaunch = async () => {
     if (!account || !tribeId || !coinName.trim() || !coinSymbol.trim()) return;
