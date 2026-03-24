@@ -1591,6 +1591,20 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
   const p = action.params as Record<string, unknown>;
   const tx = new Transaction();
 
+  // If vaultId is missing, try to discover it from CoinLaunched events
+  if (!vaultId) {
+    try {
+      const evtRes = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+          params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` }, null, 20, true] }),
+      });
+      const evtJson = await evtRes.json() as { result?: { data?: Array<{ parsedJson?: { vault_id?: string; coin_name?: string } }> } };
+      const named = (evtJson.result?.data ?? []).find(e => (e.parsedJson?.coin_name ?? "").length > 0);
+      if (named?.parsedJson?.vault_id) vaultId = named.parsedJson.vault_id;
+    } catch { /* */ }
+  }
+
   // Resolve policy ID from vault if needed
   let policyId: string | null = null;
   if (vaultId && ["set_defense_security_level", "set_aggression_mode", "set_enforce", "set_relation"].includes(action.contract)) {
