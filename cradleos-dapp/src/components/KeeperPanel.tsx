@@ -118,6 +118,8 @@ interface KeeperContext {
   jumpHistory: JumpRecord[] | null;
   jumpHistoryTotal: number | null;
   keeperNodeActive: boolean; // true if player has a node with keeper.reapers.shop linked
+  // Player's deployed structures
+  structures: Array<{ kind: string; name: string; isOnline: boolean; systemId?: number }>;
 }
 
 // ── Security constants ────────────────────────────────────────────────────────
@@ -268,6 +270,9 @@ Character: ${charStr} (tribe ${tribeStr})
 Tribe Vault: ${vaultStr}
 CRDL Balance: ${crdlStr}
 Registered Infra: ${infraStr} structures
+Deployed Structures (${ctx.structures.length}): ${ctx.structures.length > 0
+  ? ctx.structures.map(s => `${s.kind}${s.name ? ` "${s.name}"` : ""} [${s.isOnline ? "ONLINE" : "OFFLINE"}]${s.systemId ? ` in system ${s.systemId}` : ""}`).join(", ")
+  : "none deployed"}
 Security Level: ${secStr}
 Active Bounties: ${bountyStr} open
 Recent Kills: ${killStr} on-chain (last 24h)${ctx.jumpHistory && ctx.jumpHistory.length > 0 ? `
@@ -340,6 +345,7 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
     jumpHistory: null,
     jumpHistoryTotal: null,
     keeperNodeActive: false,
+    structures: [],
   };
 
   try {
@@ -380,13 +386,19 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
       base.jumpHistoryTotal = jumpResult.value.total;
     }
 
-    // Check if player has a node with keeper.reapers.shop linked — unlocks deeper Keeper responses
+    // Fetch player structures — for Keeper context + node check
     try {
       const groups = await fetchPlayerStructures(walletAddress);
       const allStructures = groups.flatMap(g => g.structures);
       base.keeperNodeActive = allStructures.some(
         s => s.kind === "NetworkNode" && s.isOnline && s.metadataUrl?.includes("keeper.reapers.shop")
       );
+      base.structures = allStructures.map(s => ({
+        kind: s.kind,
+        name: s.displayName,
+        isOnline: s.isOnline,
+        systemId: groups.find(g => g.structures.includes(s))?.solarSystemId,
+      }));
     } catch { /* non-critical */ }
 
     // Fetch vault data if we have a tribe ID
@@ -809,7 +821,8 @@ export function KeeperPanel() {
         tribeNames: null,
         jumpHistory: null,
         jumpHistoryTotal: null,
-    keeperNodeActive: false,
+        keeperNodeActive: false,
+        structures: [],
       });
       setMessages([{
         role: "keeper",
@@ -1278,7 +1291,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       {/* ── "Keeper sees" disclosure ── */}
       <details style={styles.disclosure}>
         <summary style={styles.disclosureSummary}>
-          ▾ Keeper sees: wallet, tribe, CRDL, infra count
+          ▾ Keeper sees: wallet, tribe, CRDL, structures, infra count
         </summary>
         <div style={styles.disclosureContent}>
           <div style={{ marginBottom: "6px", color: "rgba(255,71,0,0.7)" }}>◆ Keeper sees:</div>
