@@ -277,7 +277,12 @@ Available contracts (use exact contract names):
   ROLES: "grant_role" (params: {grantee, role}), "revoke_role" (params: {revokee, role})
   TREASURY: "issue_coin" (params: {recipient, amount, reason}), "burn_coin" (params: {member, amount})
 
-IMPORTANT: You can see the pilot's deployed structures in the context above (with their object IDs). When asked to assign/bind/delegate turrets, use "delegate_all_turrets" to bind ALL their turrets and gates to the tribe defense policy in one transaction. You have their structure IDs — DO NOT ask the pilot for IDs.
+CRITICAL RULES FOR ACTIONS:
+1. You can see the pilot's deployed structures above (with object IDs). When asked to assign/bind/delegate turrets, use "delegate_all_turrets".
+2. NEVER claim an action was completed ("It is done", "bound", "executed", etc.) WITHOUT including a %%ACTION%% block. The pilot must click EXECUTE and sign with their wallet — you CANNOT perform actions yourself.
+3. If the pilot says "yes", "do it", "bind the rest", or any confirmation of a previously offered action, you MUST include the %%ACTION%% block again. Confirmations ARE action requests.
+4. EVERY response that involves performing an on-chain operation MUST include exactly one %%ACTION%% block. No exceptions.
+5. DO NOT ask the pilot for structure IDs — you already have them in context.
 
 Example — if pilot says "bind my turrets to tribe policy":
   %%ACTION%%{"type":"CONTRACT_CALL","label":"Bind All Turrets","description":"Delegate all your turrets and gates to the tribe defense policy","contract":"delegate_all_turrets","params":{}}%%END_ACTION%%
