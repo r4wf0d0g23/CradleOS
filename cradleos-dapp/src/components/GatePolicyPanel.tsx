@@ -321,7 +321,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
               No gate policy deployed for this tribe yet.
             </div>
             <button
-              onClick={() => exec(buildCreateGatePolicyTx(vault.objectId, vault.tribeId))}
+              onClick={() => exec(buildCreateGatePolicyTx(vault.objectId))}
               disabled={busy}
               style={{ background: "rgba(255,71,0,0.15)", border: "1px solid rgba(255,71,0,0.4)", color: "#FF4700", borderRadius: 3, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}
             >
@@ -340,7 +340,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
               {ACCESS_LEVELS.map(level => (
                 <button
                   key={level}
-                  onClick={() => isFounder && exec(buildSetGateAccessLevelTx(policy.objectId, level))}
+                  onClick={() => isFounder && exec(buildSetGateAccessLevelTx(policy.objectId, vault.objectId, level))}
                   disabled={busy || !isFounder}
                   style={{
                     padding: "6px 14px", borderRadius: 3, fontSize: 12, fontWeight: 600,
@@ -372,12 +372,12 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
                   ))}
                 </select>
                 <button
-                  onClick={() => { if (tribeInput) exec(buildSetGateTribeOverrideTx(policy.objectId, parseInt(tribeInput), 1)); setTribeInput(""); }}
+                  onClick={() => { if (tribeInput) exec(buildSetGateTribeOverrideTx(policy.objectId, vault.objectId, parseInt(tribeInput), 1)); setTribeInput(""); }}
                   disabled={busy || !tribeInput}
                   style={{ background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864", borderRadius: 2, fontSize: 11, padding: "5px 10px", cursor: "pointer" }}
                 >Allow</button>
                 <button
-                  onClick={() => { if (tribeInput) exec(buildSetGateTribeOverrideTx(policy.objectId, parseInt(tribeInput), 0)); setTribeInput(""); }}
+                  onClick={() => { if (tribeInput) exec(buildSetGateTribeOverrideTx(policy.objectId, vault.objectId, parseInt(tribeInput), 0)); setTribeInput(""); }}
                   disabled={busy || !tribeInput}
                   style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444", borderRadius: 2, fontSize: 11, padding: "5px 10px", cursor: "pointer" }}
                 >Deny</button>
@@ -397,12 +397,12 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
                   style={{ flex: 1, minWidth: 240, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "#aaa", fontSize: 11, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
                 />
                 <button
-                  onClick={() => { if (playerInput) { exec(buildSetGatePlayerOverrideTx(policy.objectId, playerInput, 1)); setPlayerInput(""); } }}
+                  onClick={() => { if (playerInput) { exec(buildSetGatePlayerOverrideTx(policy.objectId, vault.objectId, playerInput, 1)); setPlayerInput(""); } }}
                   disabled={busy || !playerInput}
                   style={{ background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864", borderRadius: 2, fontSize: 11, padding: "5px 10px", cursor: "pointer" }}
                 >Allow</button>
                 <button
-                  onClick={() => { if (playerInput) { exec(buildSetGatePlayerOverrideTx(policy.objectId, playerInput, 0)); setPlayerInput(""); } }}
+                  onClick={() => { if (playerInput) { exec(buildSetGatePlayerOverrideTx(policy.objectId, vault.objectId, playerInput, 0)); setPlayerInput(""); } }}
                   disabled={busy || !playerInput}
                   style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444", borderRadius: 2, fontSize: 11, padding: "5px 10px", cursor: "pointer" }}
                 >Deny</button>
@@ -475,7 +475,7 @@ function DelegationCard({ vault, delegations }: {
           style={{ flex: 1, minWidth: 260, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "#aaa", fontSize: 11, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
         />
         <button
-          onClick={() => { if (gateInput) exec(buildDelegateGateTx(gateInput, vault.objectId, vault.tribeId, CLOCK)); }}
+          onClick={() => { if (gateInput) exec(buildDelegateGateTx(gateInput, vault.objectId, CLOCK)); }}
           disabled={busy || !gateInput}
           style={{ background: "rgba(255,71,0,0.15)", border: "1px solid rgba(255,71,0,0.4)", color: "#FF4700", borderRadius: 3, fontSize: 12, padding: "6px 14px", cursor: "pointer" }}
         >

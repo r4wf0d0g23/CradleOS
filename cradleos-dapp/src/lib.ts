@@ -2233,31 +2233,31 @@ export async function fetchTribeRoles(vaultId: string): Promise<TribeRolesState 
 }
 
 /** Build create_roles transaction. */
-export function buildCreateRolesTx(vaultId: string, tribeId: number): Transaction {
+export function buildCreateRolesTx(vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${TRIBE_ROLES_PKG}::tribe_roles::create_roles`,
-    arguments: [tx.pure.address(vaultId), tx.pure.u32(tribeId >>> 0)],
+    arguments: [tx.object(vaultId)],
   });
   return tx;
 }
 
 /** Build grant_role transaction. */
-export function buildGrantRoleTx(rolesId: string, grantee: string, role: number): Transaction {
+export function buildGrantRoleTx(rolesId: string, vaultId: string, grantee: string, role: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${TRIBE_ROLES_PKG}::tribe_roles::grant_role`,
-    arguments: [tx.object(rolesId), tx.pure.address(grantee), tx.pure.u8(role)],
+    arguments: [tx.object(rolesId), tx.object(vaultId), tx.pure.address(grantee), tx.pure.u8(role)],
   });
   return tx;
 }
 
 /** Build revoke_role transaction. */
-export function buildRevokeRoleTx(rolesId: string, revokee: string, role: number): Transaction {
+export function buildRevokeRoleTx(rolesId: string, vaultId: string, revokee: string, role: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${TRIBE_ROLES_PKG}::tribe_roles::revoke_role`,
-    arguments: [tx.object(rolesId), tx.pure.address(revokee), tx.pure.u8(role)],
+    arguments: [tx.object(rolesId), tx.object(vaultId), tx.pure.address(revokee), tx.pure.u8(role)],
   });
   return tx;
 }
@@ -2402,38 +2402,45 @@ export async function fetchGateDelegations(walletAddress: string): Promise<GateD
   } catch { return []; }
 }
 
-export function buildCreateGatePolicyTx(vaultId: string, tribeId: number): Transaction {
+export function buildCreateGatePolicyTx(vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({ target: `${GATE_POLICY_PKG}::gate_policy::create_gate_policy`,
-    arguments: [tx.pure.address(vaultId), tx.pure.u32(tribeId >>> 0)] });
+    arguments: [tx.object(vaultId)] });
   return tx;
 }
 
-export function buildSetGateAccessLevelTx(policyId: string, level: number): Transaction {
+export function buildSetGateAccessLevelTx(policyId: string, vaultId: string, level: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({ target: `${GATE_POLICY_PKG}::gate_policy::set_access_level`,
-    arguments: [tx.object(policyId), tx.pure.u8(level)] });
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u8(level)] });
   return tx;
 }
 
-export function buildSetGateTribeOverrideTx(policyId: string, targetTribeId: number, value: number): Transaction {
+export function buildSetGateTribeOverrideTx(policyId: string, vaultId: string, targetTribeId: number, value: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({ target: `${GATE_POLICY_PKG}::gate_policy::set_tribe_override`,
-    arguments: [tx.object(policyId), tx.pure.u32(targetTribeId >>> 0), tx.pure.u8(value)] });
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u32(targetTribeId >>> 0), tx.pure.u8(value)] });
   return tx;
 }
 
-export function buildSetGatePlayerOverrideTx(policyId: string, player: string, value: number): Transaction {
+export function buildSetGatePlayerOverrideTx(policyId: string, vaultId: string, player: string, value: number): Transaction {
   const tx = new Transaction();
   tx.moveCall({ target: `${GATE_POLICY_PKG}::gate_policy::set_player_override`,
-    arguments: [tx.object(policyId), tx.pure.address(player), tx.pure.u8(value)] });
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.address(player), tx.pure.u8(value)] });
   return tx;
 }
 
-export function buildDelegateGateTx(gateId: string, vaultId: string, tribeId: number, clockId: string): Transaction {
+export function buildDelegateGateTx(gateId: string, vaultId: string, clockId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({ target: `${GATE_POLICY_PKG}::gate_policy::delegate_gate`,
-    arguments: [tx.pure.address(gateId), tx.pure.address(vaultId), tx.pure.u32(tribeId >>> 0), tx.object(clockId)] });
+    arguments: [tx.pure.address(gateId), tx.object(vaultId), tx.object(clockId)] });
+  return tx;
+}
+
+export function buildRemoveGatePlayerOverrideTx(policyId: string, vaultId: string, player: string): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({ target: `${GATE_POLICY_PKG}::gate_policy::remove_player_override`,
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.address(player)] });
   return tx;
 }
 
@@ -2607,16 +2614,12 @@ export async function buildCreatePersonalDefensePolicyTx(vaultId: string): Promi
   return tx;
 }
 
-/** Create gate policy for a vault.
- *  The standalone gate_policy package uses vault_id as a plain address (no TribeVault type dep).
- */
-export async function buildCreatePersonalGatePolicyTx(vaultId: string): Promise<Transaction> {
-  const fields = await rpcGetObject(vaultId);
-  const tribeId = numish(fields["tribe_id"]) ?? 0;
+/** Create gate policy for a vault. Vault is passed as object ref (TribeVault). */
+export function buildCreatePersonalGatePolicyTx(vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${GATE_POLICY_PKG}::gate_policy::create_gate_policy`,
-    arguments: [tx.pure.address(vaultId), tx.pure.u32(tribeId >>> 0)],
+    arguments: [tx.object(vaultId)],
   });
   return tx;
 }

@@ -472,7 +472,7 @@ function TribeRolesCard({ vault }: { vault: VaultFull }) {
               No roles contract deployed for this tribe yet.
             </div>
             <button
-              onClick={() => exec(buildCreateRolesTx(vault.objectId, vault.tribeId))}
+              onClick={() => exec(buildCreateRolesTx(vault.objectId))}
               disabled={busy}
               style={{ background: "rgba(255,71,0,0.15)", border: "1px solid rgba(255,71,0,0.4)", color: "#FF4700", borderRadius: 3, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}
             >
@@ -498,7 +498,7 @@ function TribeRolesCard({ vault }: { vault: VaultFull }) {
                         {TRIBE_ROLE_NAMES[r] ?? `Role ${r}`}
                         {isAuthorized && (
                           <button
-                            onClick={() => exec(buildRevokeRoleTx(roles.objectId, a.address, r))}
+                            onClick={() => exec(buildRevokeRoleTx(roles.objectId, vault.objectId, a.address, r))}
                             disabled={busy}
                             style={{ background: "none", border: "none", color: "#ff6432", cursor: "pointer", padding: "0 0 0 4px", fontSize: 10, lineHeight: 1 }}
                             title="Revoke"
@@ -533,7 +533,7 @@ function TribeRolesCard({ vault }: { vault: VaultFull }) {
                   ))}
                 </select>
                 <button
-                  onClick={() => { if (grantAddr) exec(buildGrantRoleTx(roles.objectId, grantAddr, grantRole)); }}
+                  onClick={() => { if (grantAddr) exec(buildGrantRoleTx(roles.objectId, vault.objectId, grantAddr, grantRole)); }}
                   disabled={busy || !grantAddr}
                   style={{ background: "rgba(255,71,0,0.15)", border: "1px solid rgba(255,71,0,0.4)", color: "#FF4700", borderRadius: 3, padding: "5px 12px", fontSize: 12, cursor: "pointer" }}
                 >

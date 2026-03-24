@@ -1638,7 +1638,7 @@ function PersonalPolicySection({
     setGateBusy(true); setGateErr(null);
     try {
       const signer = new CurrentAccountSigner(dAppKit);
-      const tx = buildSetGateAccessLevelTx(personalGatePolicyId, level);
+      const tx = buildSetGateAccessLevelTx(personalGatePolicyId, personalVaultData!.objectId, level);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setTimeout(() => refetchGatePolicy(), 2500);
     } catch (e) { setGateErr(e instanceof Error ? e.message : String(e)); }
