@@ -54,6 +54,22 @@ type SystemDetail = {
   region?: string;
 };
 
+// ── Planet type → color mapping ────────────────────────────────────────────────
+const PLANET_COLOR: Record<string, string> = {
+  "Planet (Lava)": "#ff3300",
+  "Planet (Barren)": "#8b7355",
+  "Planet (Ice)": "#44ccff",
+  "Planet (Gas)": "#cc88ff",
+  "Planet (Oceanic)": "#0066ff",
+  "Planet (Storm)": "#ffaa00",
+  "Planet (Temperate)": "#22cc44",
+  "Planet (Plasma)": "#ff44ff",
+  "Planet (Shattered)": "#888888",
+};
+function planetDot(typeName: string): string {
+  return PLANET_COLOR[typeName] ?? "#555";
+}
+
 // ── Ship / Fuel tables ─────────────────────────────────────────────────────────
 
 type ShipSpec = {
@@ -252,6 +268,7 @@ export function MapPanel() {
   const [sortKey,       setSortKey]       = useState<SortKey>("distance");
   const [selectedSys,   setSelectedSys]   = useState<SolarSystem & { distLY: number } | null>(null);
   const [systemDetail,  setSystemDetail]  = useState<SystemDetail | null>(null);
+  const [detailCache,   setDetailCache]   = useState<Map<number, SystemDetail>>(new Map());
   const [detailLoading, setDetailLoading] = useState(false);
   const [tooltip,       setTooltip]       = useState<{ x:number; y:number; name:string } | null>(null);
 
@@ -302,13 +319,12 @@ export function MapPanel() {
     const animate = () => {
       rafRef.current = requestAnimationFrame(animate);
       controls.update();
-      // Pulse current system marker
+      // Subtle glimmer on current system marker (slightly larger, gentle opacity shimmer)
       if (currentMarkerRef.current) {
-        pulseRef.current += 0.05;
-        const s = 1 + 0.4 * Math.sin(pulseRef.current);
-        currentMarkerRef.current.scale.setScalar(s);
+        pulseRef.current += 0.02;
+        currentMarkerRef.current.scale.setScalar(1.6);  // fixed 1.6× size (slightly larger than normal)
         const mat = currentMarkerRef.current.material as THREE.MeshBasicMaterial;
-        mat.opacity = 0.6 + 0.4 * Math.abs(Math.sin(pulseRef.current));
+        mat.opacity = 0.75 + 0.15 * Math.sin(pulseRef.current);  // gentle shimmer: 0.60–0.90
       }
       renderer.render(scene, camera);
     };
@@ -636,13 +652,18 @@ export function MapPanel() {
   // ── System selection ───────────────────────────────────────────────────────
   const handleSelectSystem = useCallback((sys: SolarSystem & { distLY: number }) => {
     setSelectedSys(sys);
+    const cached = detailCache.get(sys.id);
+    if (cached) { setSystemDetail(cached); setDetailLoading(false); flyTo(sys); return; }
     setSystemDetail(null);
     flyTo(sys);
     setDetailLoading(true);
     fetchSystemDetail(sys.id)
-      .then(d => setSystemDetail(d))
+      .then(d => {
+        setSystemDetail(d);
+        if (d) setDetailCache(prev => new Map(prev).set(sys.id, d));
+      })
       .finally(() => setDetailLoading(false));
-  }, [flyTo]);
+  }, [flyTo, detailCache]);
 
   // ── Manual system search ───────────────────────────────────────────────────
   const handleManualSearch = useCallback((q: string) => {
@@ -889,9 +910,19 @@ export function MapPanel() {
                       </span>
                     </div>
                   </div>
-                  {s.regionName && (
-                    <div style={{ color:"#2a3545", fontSize:"10px", marginTop:"1px" }}>{s.regionName}</div>
-                  )}
+                  <div style={{ display:"flex", alignItems:"center", gap:"3px", marginTop:"2px" }}>
+                    {s.regionName && (
+                      <span style={{ color:"#2a3545", fontSize:"10px" }}>{s.regionName}</span>
+                    )}
+                    {/* Planet type dots (from cache) */}
+                    {detailCache.get(s.id)?.planets?.map((p, i) => (
+                      <span key={i} title={`${p.typeName} ×${p.count ?? 1}`} style={{
+                        display:"inline-block", width:6, height:6, borderRadius:"50%",
+                        background: planetDot(p.typeName), marginLeft: i === 0 && s.regionName ? 4 : 0,
+                        opacity: 0.85,
+                      }} />
+                    ))}
+                  </div>
                 </div>
               );
             })}
@@ -998,9 +1029,13 @@ export function MapPanel() {
                     {(systemDetail.planets ?? []).length > 0 ? (
                       <div style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
                         {systemDetail.planets!.map((p, i) => (
-                          <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:"10px" }}>
-                            <span style={{ color:"#667" }}>{p.typeName}</span>
-                            <span style={{ color:"#444" }}>×{p.count}</span>
+                          <div key={i} style={{ display:"flex", alignItems:"center", gap:"6px", fontSize:"10px" }}>
+                            <span style={{
+                              display:"inline-block", width:8, height:8, borderRadius:"50%",
+                              background: planetDot(p.typeName), flexShrink:0,
+                            }} />
+                            <span style={{ color:"#aaa", flex:1 }}>{p.typeName.replace("Planet (", "").replace(")", "")}</span>
+                            <span style={{ color:"#555" }}>×{p.count}</span>
                           </div>
                         ))}
                       </div>
