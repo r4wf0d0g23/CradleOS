@@ -2683,10 +2683,10 @@ export async function fetchKeeperShrine(shrineId: string): Promise<KeeperShrineS
     if (fields._deleted) return null;
     return {
       objectId: shrineId,
-      keeper: String(fields.keeper ?? ""),
-      balance: Number(fields.balance ?? 0),
-      totalDonated: Number(fields.total_donated ?? 0),
-      donationCount: Number(fields.donation_count ?? 0),
+      keeper: String(fields.admin ?? fields.keeper ?? ""),
+      balance: Number(fields.offerings ?? fields.balance ?? 0),
+      totalDonated: Number(fields.total_offered ?? fields.total_donated ?? 0),
+      donationCount: Number(fields.offering_count ?? fields.donation_count ?? 0),
     };
   } catch {
     return null;
@@ -2707,7 +2707,7 @@ export async function fetchRecentDonations(shrineId: string, limit = 20): Promis
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_ORIGINAL}::keeper_shrine::Donation` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::keeper_shrine::OfferingMade` },
           null,
           limit,
           true, // descending
@@ -2732,11 +2732,11 @@ export async function fetchRecentDonations(shrineId: string, limit = 20): Promis
         const pj = e.parsedJson ?? {};
         return {
           shrineId: String(pj.shrine_id ?? shrineId),
-          donor: String(pj.donor ?? ""),
+          donor: String(pj.pilgrim ?? pj.donor ?? ""),
           amount: Number(pj.amount ?? 0),
           newBalance: Number(pj.new_balance ?? 0),
-          totalDonated: Number(pj.total_donated ?? 0),
-          donationCount: Number(pj.donation_count ?? 0),
+          totalDonated: Number(pj.total_offered ?? pj.total_donated ?? 0),
+          donationCount: Number(pj.offering_number ?? pj.donation_count ?? 0),
           timestampMs: Number(e.timestampMs ?? 0),
         };
       });
@@ -2747,7 +2747,7 @@ export async function fetchRecentDonations(shrineId: string, limit = 20): Promis
 
 /**
  * Build a donation transaction for a KeeperShrine.
- * Splits `amount` from the provided eveCoinId and calls keeper_shrine::donate.
+ * Splits `amount` from the provided eveCoinId and calls keeper_shrine::make_offering.
  *
  * @param shrineId   - Object ID of the shared KeeperShrine
  * @param eveCoinId  - Object ID of the Coin<EVE> to split from
@@ -2757,7 +2757,7 @@ export function buildDonateTransaction(shrineId: string, eveCoinId: string, amou
   const tx = new Transaction();
   const [splitCoin] = tx.splitCoins(tx.object(eveCoinId), [tx.pure.u64(amount)]);
   tx.moveCall({
-    target: `${CRADLEOS_PKG}::keeper_shrine::donate`,
+    target: `${CRADLEOS_PKG}::keeper_shrine::make_offering`,
     typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(shrineId),
