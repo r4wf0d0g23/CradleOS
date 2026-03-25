@@ -43,7 +43,7 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 // ── Unified package ───────────────────────────────────────────────────────────
 // Clean-slate publish 2026-03-24 v2: EVE/LUX economy (generic coin, no CRDL).
 // All old per-version package IDs are retired.
-export const CRADLEOS_PKG = "0x7541ac23fb681e4ea2cb54c0693a0c618c2ab24e69217cf4d0436adcc62ee715";
+export const CRADLEOS_PKG = "0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4";
 
 // All modules live in the unified package — these aliases exist for backward compat
 // with any code that still imports versioned names.
