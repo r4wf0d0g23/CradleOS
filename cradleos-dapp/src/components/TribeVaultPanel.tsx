@@ -1419,6 +1419,7 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
       queryClient.invalidateQueries({ queryKey: ["myVaultBalance"] });
       queryClient.invalidateQueries({ queryKey: ["coinIssuedEvents"] });
       queryClient.invalidateQueries({ queryKey: ["registeredInfra"] });
+      queryClient.invalidateQueries({ queryKey: ["collateralVault"] });
       onTxSuccess?.();
     }, delayMs);
   };
