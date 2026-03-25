@@ -6,7 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import type { ReactNode } from "react";
-import { SUI_TESTNET_RPC, CRADLEOS_PKG } from "../constants";
+import { SUI_TESTNET_RPC, CRADLEOS_ORIGINAL } from "../constants";
 import {
   numish,
   fetchCharacterTribeId, getCachedVaultId, fetchTribeVault,
@@ -120,7 +120,7 @@ async function discoverTreasuryForVault(vaultId: string): Promise<string | null>
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_PKG}::treasury::TreasuryCreated` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::treasury::TreasuryCreated` },
           null, 50, false,
         ],
       }),

@@ -7,7 +7,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { WORLD_PKG, CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
+import { WORLD_PKG, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
 
 // ── Preset dApp URLs per structure type ──────────────────────────────────────
 const DAPP_BASE = SERVER_ENV === "stillness"
@@ -143,7 +143,7 @@ function StructureRow({
         const ownedRes = await fetch(SUI_TESTNET_RPC, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getOwnedObjects",
-            params: [account.address, { filter: { StructType: `${CRADLEOS_PKG}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
+            params: [account.address, { filter: { StructType: `${CRADLEOS_ORIGINAL}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
         });
         const ownedJson = await ownedRes.json() as { result: { data: Array<{ data: { objectId: string; content: { fields: { structure_id: string } } } }> } };
         const match = ownedJson.result?.data?.find(o => o.data?.content?.fields?.structure_id === structure.objectId);

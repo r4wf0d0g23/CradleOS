@@ -3,7 +3,7 @@ import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
-import { SERVER_ENV, CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC } from "../constants";
+import { SERVER_ENV, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC } from "../constants";
 import { Transaction } from "@mysten/sui/transactions";
 import { useSponsoredTransaction, SponsoredTransactionActions, Assemblies } from "@evefrontier/dapp-kit";
 import type { AssemblyType } from "@evefrontier/dapp-kit";
@@ -703,7 +703,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
         const ownedRes = await fetch(SUI_TESTNET_RPC, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getOwnedObjects",
-            params: [account?.address, { filter: { StructType: `${CRADLEOS_PKG}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
+            params: [account?.address, { filter: { StructType: `${CRADLEOS_ORIGINAL}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
         });
         const ownedJson = await ownedRes.json() as any;
         const match = ownedJson.result?.data?.find((o: any) => o.data?.content?.fields?.structure_id === s.objectId);

@@ -26,7 +26,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import {
-  CRADLEOS_PKG, SUI_TESTNET_RPC, CLOCK,
+  CRADLEOS_PKG, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, CLOCK,
 } from "../constants";
 import {
   rpcGetObject, numish,
@@ -121,7 +121,7 @@ async function fetchTerminalIdForVault(vaultId: string): Promise<string | null> 
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_PKG}::recruiting_terminal::TerminalCreated` }, null, 100, true],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::recruiting_terminal::TerminalCreated` }, null, 100, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
@@ -143,7 +143,7 @@ async function fetchBoardEntries(): Promise<BoardEntry[]> {
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_PKG}::recruiting_terminal::TerminalCreated` }, null, 100, true],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::recruiting_terminal::TerminalCreated` }, null, 100, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
@@ -249,7 +249,7 @@ async function fetchOwnApplicationEvents(walletAddress: string): Promise<Array<{
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_PKG}::recruiting_terminal::ApplicationSubmitted` }, null, 200, true],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::recruiting_terminal::ApplicationSubmitted` }, null, 200, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };

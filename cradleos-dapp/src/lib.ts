@@ -3,6 +3,7 @@ import { SUI_GRAPHQL } from "./graphql";
 import {
   CLOCK,
   CRADLEOS_PKG,
+  CRADLEOS_ORIGINAL,
   TRIBE_ROLES_PKG,
   GATE_POLICY_PKG,
   EVE_COIN_TYPE,
@@ -180,7 +181,7 @@ export async function fetchNodeDashboard(_client: CoreLikeClient): Promise<NodeD
 export async function fetchCorpOverview(_client: CoreLikeClient): Promise<TribeOverviewData | null> {
   const results = await rpcGetOwnedObjects(
     RAW_CHARACTER_ID,
-    `${CRADLEOS_PKG}::corp_registry::CorpRegistry`,
+    `${CRADLEOS_ORIGINAL}::corp_registry::CorpRegistry`,
   );
   if (!results.length) return null;
   const { objectId, fields } = results[0];
@@ -1142,7 +1143,7 @@ export async function fetchTreasuryActivity(treasuryId: string): Promise<Treasur
         body: JSON.stringify({
           jsonrpc: "2.0", id: 1,
           method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG}::treasury::${eventType}` }, null, 20, false],
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::treasury::${eventType}` }, null, 20, false],
         }),
       });
       const json = await res.json() as { result: { data: Array<{ parsedJson: Record<string, unknown>; timestampMs: number }> } };
@@ -1409,7 +1410,7 @@ export async function fetchCoinIssuedEvents(vaultId: string): Promise<CoinIssued
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinIssued` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinIssued` }, null, 50, false],
       }),
     });
     const json = await res.json() as { result: { data: Array<{ parsedJson: Record<string, unknown>; timestampMs: number }> } };
@@ -1682,7 +1683,7 @@ export async function fetchOrderFilledEvents(dexId: string): Promise<OrderFilled
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_dex::OrderFilled` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_dex::OrderFilled` }, null, 50, false],
       }),
     });
     const j = await res.json() as {
@@ -1808,7 +1809,7 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_dex::DexCreated` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_dex::DexCreated` }, null, 50, false],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson?: { dex_id?: string; vault_id?: string } }> } };
@@ -1983,7 +1984,7 @@ export async function fetchAttestationsForWallet(walletAddress: string): Promise
         jsonrpc: "2.0", id: 1,
         method: "suix_getOwnedObjects",
         params: [walletAddress, {
-          filter: { StructType: `${CRADLEOS_PKG}::character_registry::EpochAttestation` },
+          filter: { StructType: `${CRADLEOS_ORIGINAL}::character_registry::EpochAttestation` },
           options: { showContent: true },
         }, null, 20],
       }),
@@ -2024,7 +2025,7 @@ export async function fetchSecurityConfig(policyId: string): Promise<SecurityCon
           jsonrpc: "2.0", id: 1,
           method: "suix_getDynamicFieldObject",
           params: [policyId, {
-            type: `${CRADLEOS_PKG}::defense_policy::SecurityLevelKey`,
+            type: `${CRADLEOS_ORIGINAL}::defense_policy::SecurityLevelKey`,
             value: { dummy_field: false },
           }],
         }),
@@ -2035,7 +2036,7 @@ export async function fetchSecurityConfig(policyId: string): Promise<SecurityCon
           jsonrpc: "2.0", id: 1,
           method: "suix_getDynamicFieldObject",
           params: [policyId, {
-            type: `${CRADLEOS_PKG}::defense_policy::AggressionModeKey`,
+            type: `${CRADLEOS_ORIGINAL}::defense_policy::AggressionModeKey`,
             value: { dummy_field: false },
           }],
         }),
@@ -2106,7 +2107,7 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` },
           null, 50, true,
         ],
       }),
@@ -2138,7 +2139,7 @@ export async function fetchAllRegisteredTribes(): Promise<RegisteredTribe[]> {
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` },
           null, 200, true, // descending=true → newest first
         ],
       }),
@@ -2196,7 +2197,7 @@ export async function fetchTribeRolesObjectId(vaultId: string): Promise<string |
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${TRIBE_ROLES_PKG}::tribe_roles::TribeRolesCreated` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_roles::TribeRolesCreated` },
           null, 50, false,
         ],
       }),
@@ -2216,10 +2217,10 @@ export async function fetchTribeRoles(vaultId: string): Promise<TribeRolesState 
     const [grantRes, revokeRes] = await Promise.all([
       fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${TRIBE_ROLES_PKG}::tribe_roles::RoleGranted` }, null, 200, false] }) }).then(r => r.json()),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_roles::RoleGranted` }, null, 200, false] }) }).then(r => r.json()),
       fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${TRIBE_ROLES_PKG}::tribe_roles::RoleRevoked` }, null, 200, false] }) }).then(r => r.json()),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_roles::RoleRevoked` }, null, 200, false] }) }).then(r => r.json()),
     ]);
     const grants = (grantRes?.result?.data ?? []) as Array<{ parsedJson?: Record<string, unknown> }>;
     const revokes = (revokeRes?.result?.data ?? []) as Array<{ parsedJson?: Record<string, unknown> }>;
@@ -2309,10 +2310,10 @@ export async function fetchPlayerRelations(vaultId: string): Promise<PlayerRelat
     const [setRes, rmRes] = await Promise.all([
       fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG}::defense_policy::PlayerRelationSet` }, null, 200, true] }) }).then(r => r.json()),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::PlayerRelationSet` }, null, 200, true] }) }).then(r => r.json()),
       fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG}::defense_policy::PlayerRelationRemoved` }, null, 200, true] }) }).then(r => r.json()),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::PlayerRelationRemoved` }, null, 200, true] }) }).then(r => r.json()),
     ]);
     // Latest-first: build map from events
     const map = new Map<string, number>();
@@ -2365,7 +2366,7 @@ export async function fetchGatePolicy(vaultId: string): Promise<GatePolicyState 
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-        params: [{ MoveEventType: `${GATE_POLICY_PKG}::gate_policy::GatePolicyCreated` }, null, 50, false] }),
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::gate_policy::GatePolicyCreated` }, null, 50, false] }),
     });
     const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
     const match = (json.result?.data ?? []).find(e => String(e.parsedJson?.vault_id) === vaultId);
@@ -2391,7 +2392,7 @@ export async function fetchGateDelegations(walletAddress: string): Promise<GateD
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getOwnedObjects",
-        params: [walletAddress, { filter: { StructType: `${GATE_POLICY_PKG}::gate_policy::GateDelegation` }, options: { showContent: true } }, null, 50] }),
+        params: [walletAddress, { filter: { StructType: `${CRADLEOS_ORIGINAL}::gate_policy::GateDelegation` }, options: { showContent: true } }, null, 50] }),
     });
     const json = await res.json() as { result?: { data?: Array<{ data?: { objectId?: string; content?: { fields?: Record<string, unknown> } } }> } };
     return (json.result?.data ?? []).map(o => ({
@@ -2516,7 +2517,7 @@ export async function fetchPersonalVaultForWallet(walletAddress: string): Promis
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` },
           null, 200, true,
         ],
       }),
@@ -2554,7 +2555,7 @@ export async function fetchPersonalVaultForWallet(walletAddress: string): Promis
 
 /** Find defense policy object ID for a vault by querying PolicyCreated events. */
 export async function fetchDefensePolicyForVault(vaultId: string): Promise<string | null> {
-  const DEFENSE_POLICY_ORIGIN = CRADLEOS_PKG;
+  const DEFENSE_POLICY_ORIGIN = CRADLEOS_ORIGINAL;
   try {
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
@@ -2580,7 +2581,7 @@ export async function fetchGatePolicyForVault(vaultId: string): Promise<string |
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        params: [{ MoveEventType: `${GATE_POLICY_PKG}::gate_policy::GatePolicyCreated` }, null, 50, false],
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::gate_policy::GatePolicyCreated` }, null, 50, false],
       }),
     });
     const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
@@ -2605,11 +2606,10 @@ export function buildCreatePersonalVaultTx(tribeId: number): Transaction {
 
 /** Create defense policy for a vault. Vault is passed as immutable sharedRef. */
 export async function buildCreatePersonalDefensePolicyTx(vaultId: string): Promise<Transaction> {
-  const DEFENSE_POLICY_ORIGIN = CRADLEOS_PKG;
   const vISV = await fetchInitialSharedVersion(vaultId);
   const tx = new Transaction();
   tx.moveCall({
-    target: `${DEFENSE_POLICY_ORIGIN}::defense_policy::create_policy_entry`,
+    target: `${CRADLEOS_PKG}::defense_policy::create_policy_entry`,
     arguments: [vISV ? sharedRef(tx, vaultId, vISV, false) : tx.object(vaultId)],
   });
   return tx;
@@ -2707,7 +2707,7 @@ export async function fetchRecentDonations(shrineId: string, limit = 20): Promis
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_PKG}::keeper_shrine::Donation` },
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::keeper_shrine::Donation` },
           null,
           limit,
           true, // descending

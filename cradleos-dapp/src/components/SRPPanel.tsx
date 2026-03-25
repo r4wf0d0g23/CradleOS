@@ -14,7 +14,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG, EVE_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
+import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, EVE_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
 import { numish } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -28,8 +28,8 @@ const CLAIM_DISPUTED  = 2;
 const POLICY_ACTIVE   = 0;
 // const POLICY_DRAINED  = 1;
 
-const SRP_POLICY_TYPE = `${CRADLEOS_PKG}::ship_reimbursement::SRPPolicy`;
-const SRP_CLAIM_TYPE  = `${CRADLEOS_PKG}::ship_reimbursement::SRPClaim`;
+const SRP_POLICY_TYPE = `${CRADLEOS_ORIGINAL}::ship_reimbursement::SRPPolicy`;
+const SRP_CLAIM_TYPE  = `${CRADLEOS_ORIGINAL}::ship_reimbursement::SRPClaim`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

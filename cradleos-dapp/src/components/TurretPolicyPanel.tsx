@@ -21,7 +21,7 @@ import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
-import { CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRIBES, eventType } from "../constants";
+import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRIBES, eventType } from "../constants";
 
 // defense_policy was NEW in v5 — its events index under CRADLEOS_PKG (v5), not CRADLEOS_PKG (v4)
 // tribe_vault events (CoinLaunched) remain under CRADLEOS_PKG (original v4)
@@ -1105,7 +1105,7 @@ function MemberDelegationSection({
       const res = await fetch(SUI_TESTNET_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getOwnedObjects",
-          params: [account.address, { filter: { StructType: `${CRADLEOS_PKG}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
+          params: [account.address, { filter: { StructType: `${CRADLEOS_ORIGINAL}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
       });
       const j = await res.json() as { result: { data: Array<{ data: { objectId: string; content: { fields: { structure_id: string; tribe_vault_id: string; active: boolean } } } }> } };
       const map: Record<string, { vaultId: string; delegationObjId: string }> = {};
@@ -1170,7 +1170,7 @@ function MemberDelegationSection({
         const ownedRes = await fetch(SUI_TESTNET_RPC, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getOwnedObjects",
-            params: [account.address, { filter: { StructType: `${CRADLEOS_PKG}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
+            params: [account.address, { filter: { StructType: `${CRADLEOS_ORIGINAL}::turret_delegation::TurretDelegation` }, options: { showContent: true } }, null, 50] }),
         });
         const ownedJson = await ownedRes.json() as { result: { data: Array<{ data: { objectId: string; content: { fields: { structure_id: string } } } }> } };
         const match = ownedJson.result?.data?.find(o => o.data?.content?.fields?.structure_id === s.objectId);
@@ -1348,8 +1348,8 @@ async function fetchPolicyDelegations(vaultId: string): Promise<DelegationEntry[
       }>;
 
     const [created, revoked] = await Promise.all([
-      rpc(1, `${CRADLEOS_PKG}::turret_delegation::DelegationCreated`),
-      rpc(2, `${CRADLEOS_PKG}::turret_delegation::DelegationRevoked`),
+      rpc(1, `${CRADLEOS_ORIGINAL}::turret_delegation::DelegationCreated`),
+      rpc(2, `${CRADLEOS_ORIGINAL}::turret_delegation::DelegationRevoked`),
     ]);
 
     // Filter created events to this vault

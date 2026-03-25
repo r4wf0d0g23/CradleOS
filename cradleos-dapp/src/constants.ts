@@ -40,61 +40,30 @@ export const WORLD_PKG_STILLNESS = "0x28b497559d65ab320d9da4613bf2498d5946b2c0ae
 export const WORLD_PKG = _serverEnv === "stillness" ? WORLD_PKG_STILLNESS : WORLD_PKG_UTOPIA;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-// ── Unified package ───────────────────────────────────────────────────────────
-// Clean-slate publish 2026-03-24 v2: EVE/LUX economy (generic coin, no CRDL).
-// All old per-version package IDs are retired.
-export const CRADLEOS_PKG = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
-
-// All modules live in the unified package — these aliases exist for backward compat
-// with any code that still imports versioned names.
-export const CRADLEOS_PKG_V8  = CRADLEOS_PKG;
-export const CRADLEOS_PKG_V10 = CRADLEOS_PKG;
-export const CRADLEOS_PKG_V11 = CRADLEOS_PKG;
-export const CRADLEOS_PKG_V12 = CRADLEOS_PKG;
-export const CRADLEOS_PKG_V14 = CRADLEOS_PKG;
-export const RECRUITING_PKG   = CRADLEOS_PKG;
-export const TRIBE_ROLES_PKG  = CRADLEOS_PKG;
-export const GATE_POLICY_PKG  = CRADLEOS_PKG;
-export const CRADLEOS_EVENTS_PKG = CRADLEOS_PKG;
-export const CRADLEOS_PKG_V5  = CRADLEOS_PKG;
-
-// ── Module origin map ─────────────────────────────────────────────────────────
-// Clean-slate publish: all events will be indexed under the new unified package.
-// Every module was first introduced in this package — no split origins.
+// ── CradleOS package IDs ──────────────────────────────────────────────────────
+// Sui uses TWO addresses:
+//   original-id  → event types, struct types, type filters (immutable, never changes)
+//   published-at → moveCall targets (changes on each `sui client upgrade`)
 //
-// To use: import { eventType } from "../constants";
-//   eventType("defense_policy", "PolicyCreated")
-//   → "0x97c435...::defense_policy::PolicyCreated"
-const MODULE_ORIGIN_PKG: Record<string, string> = {
-  tribe_vault:         CRADLEOS_PKG,
-  tribe_dex:           CRADLEOS_PKG,
-  registry:            CRADLEOS_PKG,
-  defense_policy:      CRADLEOS_PKG,
-  bounty_contract:     CRADLEOS_PKG,
-  gate_profile:        CRADLEOS_PKG,
-  inheritance:         CRADLEOS_PKG,
-  cargo_contract:      CRADLEOS_PKG,
-  recruiting_terminal: CRADLEOS_PKG,
-  announcement_board:  CRADLEOS_PKG,
-  lore_wiki:           CRADLEOS_PKG,
-  turret_delegation:   CRADLEOS_PKG,
-  ship_reimbursement:  CRADLEOS_PKG,
-  corp:                CRADLEOS_PKG,
-  gate_control:        CRADLEOS_PKG,
-  gate_policy:         CRADLEOS_PKG,
-  tribe_roles:         CRADLEOS_PKG,
-  treasury:            CRADLEOS_PKG,
-  contributions:       CRADLEOS_PKG,
-  character_registry:  CRADLEOS_PKG,
-  turret_ext:          CRADLEOS_PKG,
-  keeper_shrine:       CRADLEOS_PKG,
-};
+// v2 deployed 2026-03-25 (Reapers_v2)
+export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
+export const CRADLEOS_PKG      = "0x2e51c867e32537f4b04b53e8efefde559d3b9be3ca430e39957de536173d32b0";
+//
+// ── ARCHIVED PACKAGE IDS (do NOT use) ─────────────────────────────────────────
+// v1 (2026-03-24 clean-slate):  0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4
+// pre-v1 (legacy):              0x7541ac23fb681e4ea2cb54c0693a0c618c2ab24e69217cf4d0436adcc62ee715
+// ───────────────────────────────────────────────────────────────────────────────
 
-/** Build the correct MoveEventType string for suix_queryEvents.
- *  Always uses the original package ID regardless of current version. */
+// Backward-compat aliases — all point to published-at for moveCall targets
+export const RECRUITING_PKG       = CRADLEOS_PKG;
+export const TRIBE_ROLES_PKG      = CRADLEOS_PKG;
+export const GATE_POLICY_PKG      = CRADLEOS_PKG;
+export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
+
+/** Build a MoveEventType string for suix_queryEvents.
+ *  Uses ORIGINAL package ID (Sui indexes events by original, not published-at). */
 export function eventType(module: string, event: string): string {
-  const pkg = MODULE_ORIGIN_PKG[module] ?? CRADLEOS_PKG;
-  return `${pkg}::${module}::${event}`;
+  return `${CRADLEOS_ORIGINAL}::${module}::${event}`;
 }
 
 // EVE Token coin types per server environment
@@ -133,14 +102,14 @@ export const ASSEMBLY_TYPE = `${WORLD_PKG}::assembly::Assembly`;
 export const TURRET_TYPE = `${WORLD_PKG}::turret::Turret`;
 export const STORAGE_UNIT_TYPE = `${WORLD_PKG}::storage_unit::StorageUnit`;
 export const CHARACTER_TYPE = `${WORLD_PKG}::character::Character`;
-// Legacy on-chain module names from V7 deploy — displayed as 'tribe' in UI
-export const CORP_REGISTRY_TYPE = `${CRADLEOS_PKG}::corp_registry::CorpRegistry`;
-export const CORP_TYPE       = `${CRADLEOS_PKG}::corp::Corp`; // on-chain name; UI displays as 'Tribe'
-export const MEMBER_CAP_TYPE = `${CRADLEOS_PKG}::corp::MemberCap`;
-export const TREASURY_TYPE   = `${CRADLEOS_PKG}::treasury::Treasury`;
-export const REGISTRY_TYPE   = `${CRADLEOS_PKG}::registry::Registry`;
-export const TRIBE_VAULT_TYPE = `${CRADLEOS_PKG}::tribe_vault::TribeVault`;
-export const TRIBE_DEX_TYPE   = `${CRADLEOS_PKG}::tribe_dex::TribeDex`;
+// Struct types use ORIGINAL package ID (Sui indexes types by original, not published-at)
+export const CORP_REGISTRY_TYPE = `${CRADLEOS_ORIGINAL}::corp_registry::CorpRegistry`;
+export const CORP_TYPE       = `${CRADLEOS_ORIGINAL}::corp::Corp`;
+export const MEMBER_CAP_TYPE = `${CRADLEOS_ORIGINAL}::corp::MemberCap`;
+export const TREASURY_TYPE   = `${CRADLEOS_ORIGINAL}::treasury::Treasury`;
+export const REGISTRY_TYPE   = `${CRADLEOS_ORIGINAL}::registry::Registry`;
+export const TRIBE_VAULT_TYPE = `${CRADLEOS_ORIGINAL}::tribe_vault::TribeVault`;
+export const TRIBE_DEX_TYPE   = `${CRADLEOS_ORIGINAL}::tribe_dex::TribeDex`;
 
 // Shared objects that must be re-created by founders on the new chain
 export const BOUNTY_BOARD = "0x965709ce9d087d8f90edac6e19d8d42908098ec253e83f20a650884cd4814d90";

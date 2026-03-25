@@ -36,7 +36,7 @@ import {
   SEC_YELLOW,
   SEC_RED,
 } from "../lib";
-import { CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC, EVE_COIN_TYPE, KEEPER_SHRINE } from "../constants";
+import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, EVE_COIN_TYPE, KEEPER_SHRINE } from "../constants";
 import { WORLD_API, SERVER_LABEL } from "../constants";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -1931,7 +1931,7 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
       const evtRes = await fetch(SUI_TESTNET_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` }, null, 20, true] }),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` }, null, 20, true] }),
       });
       const evtJson = await evtRes.json() as { result?: { data?: Array<{ parsedJson?: { vault_id?: string; coin_name?: string } }> } };
       const named = (evtJson.result?.data ?? []).find(e => (e.parsedJson?.coin_name ?? "").length > 0);
@@ -1947,7 +1947,7 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
       const res = await fetch(SUI_TESTNET_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG}::defense_policy::PolicyCreated` }, null, 50, true] }),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::PolicyCreated` }, null, 50, true] }),
       });
       const json = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
       const match = (json.result?.data ?? []).find(e => String(e.parsedJson["vault_id"]) === vaultId);
@@ -1962,7 +1962,7 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
       const res = await fetch(SUI_TESTNET_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_PKG}::gate_policy::GatePolicyCreated` }, null, 50, true] }),
+          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::gate_policy::GatePolicyCreated` }, null, 50, true] }),
       });
       const json = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
       const match = (json.result?.data ?? []).find(e => String(e.parsedJson["vault_id"]) === vaultId);

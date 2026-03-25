@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_PKG, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
+import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
 import { numish } from "../lib";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ async function fetchCradleOSVaults(): Promise<CradleOSVault[]> {
   const res = await fetch(SUI_TESTNET_RPC, {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-      params: [{ MoveEventType: `${CRADLEOS_PKG}::tribe_vault::CoinLaunched` }, null, 200, true] }),
+      params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` }, null, 200, true] }),
   });
   const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
   const seen = new Set<number>();
