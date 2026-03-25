@@ -5,10 +5,9 @@
 
 export type ServerEnv = "utopia" | "stillness";
 
-// Runtime-switchable env (dev only — production builds bake it at compile time)
-// In dev mode, check localStorage for override
-const _buildEnv = (import.meta.env.VITE_SERVER_ENV ?? "utopia") as ServerEnv;
-const _storedEnv = import.meta.env.DEV ? (localStorage.getItem("cradleos_dev_env") as ServerEnv | null) : null;
+// Runtime-switchable env — check localStorage override in ALL builds (not just dev)
+const _buildEnv = (import.meta.env.VITE_SERVER_ENV ?? "stillness") as ServerEnv;
+const _storedEnv = (localStorage.getItem("cradleos_server_env") as ServerEnv | null);
 let _serverEnv: ServerEnv = _storedEnv ?? _buildEnv;
 const _listeners = new Set<() => void>();
 
@@ -16,8 +15,13 @@ export function getServerEnv(): ServerEnv { return _serverEnv; }
 export function setServerEnv(env: ServerEnv) {
   if (env === _serverEnv) return;
   _serverEnv = env;
-  if (import.meta.env.DEV) localStorage.setItem("cradleos_dev_env", env);
+  localStorage.setItem("cradleos_server_env", env);
   _listeners.forEach(fn => fn());
+}
+/** Switch server and reload the page so all derived constants reinitialize. */
+export function switchServerAndReload(env: ServerEnv) {
+  localStorage.setItem("cradleos_server_env", env);
+  window.location.reload();
 }
 export function onServerEnvChange(fn: () => void) { _listeners.add(fn); return () => { _listeners.delete(fn); }; }
 
@@ -37,9 +41,9 @@ export const WORLD_PKG = _serverEnv === "stillness" ? WORLD_PKG_STILLNESS : WORL
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 // ── Unified package ───────────────────────────────────────────────────────────
-// Clean-slate publish 2026-03-24: all 22 modules in a single package.
+// Clean-slate publish 2026-03-24 v2: EVE/LUX economy (generic coin, no CRDL).
 // All old per-version package IDs are retired.
-export const CRADLEOS_PKG = "0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4";
+export const CRADLEOS_PKG = "0x7541ac23fb681e4ea2cb54c0693a0c618c2ab24e69217cf4d0436adcc62ee715";
 
 // All modules live in the unified package — these aliases exist for backward compat
 // with any code that still imports versioned names.
@@ -62,7 +66,6 @@ export const CRADLEOS_PKG_V5  = CRADLEOS_PKG;
 //   eventType("defense_policy", "PolicyCreated")
 //   → "0x97c435...::defense_policy::PolicyCreated"
 const MODULE_ORIGIN_PKG: Record<string, string> = {
-  cradle_coin:         CRADLEOS_PKG,
   tribe_vault:         CRADLEOS_PKG,
   tribe_dex:           CRADLEOS_PKG,
   registry:            CRADLEOS_PKG,
@@ -84,6 +87,7 @@ const MODULE_ORIGIN_PKG: Record<string, string> = {
   contributions:       CRADLEOS_PKG,
   character_registry:  CRADLEOS_PKG,
   turret_ext:          CRADLEOS_PKG,
+  keeper_shrine:       CRADLEOS_PKG,
 };
 
 /** Build the correct MoveEventType string for suix_queryEvents.
@@ -93,9 +97,13 @@ export function eventType(module: string, event: string): string {
   return `${pkg}::${module}::${event}`;
 }
 
-// Shared objects created by the unified package publish
-export const CRADLE_MINT_CONTROLLER = "0xc2257efb6d3df3dbcfa47ec4dd784587e1c09d63b67d3b01a1b5a0410de1ca0c";
-export const CRDL_COIN_TYPE = `${CRADLEOS_PKG}::cradle_coin::CRADLE_COIN`;
+// EVE Token coin types per server environment
+export const EVE_COIN_TYPE_STILLNESS = "0x2a66a89b5a735738ffa4423ac024d23571326163f324f9051557617319e59d60::EVE::EVE";
+export const EVE_COIN_TYPE_UTOPIA = "0xf0446b93345c1118f21239d7ac58fb82d005219b2016e100f074e4d17162a465::EVE::EVE";
+export const EVE_COIN_TYPE = _serverEnv === "stillness" ? EVE_COIN_TYPE_STILLNESS : EVE_COIN_TYPE_UTOPIA;
+
+// Backward compat alias — deprecated, use EVE_COIN_TYPE
+export const CRDL_COIN_TYPE = EVE_COIN_TYPE;
 
 // Developer testnet objects — real users connect their own wallet
 export const RAW_CHARACTER_ID = "0x5ef314c39748d5027fe4aef711f92497a4ea9618886f107916f2df0f16034c1c";
@@ -135,12 +143,12 @@ export const TRIBE_VAULT_TYPE = `${CRADLEOS_PKG}::tribe_vault::TribeVault`;
 export const TRIBE_DEX_TYPE   = `${CRADLEOS_PKG}::tribe_dex::TribeDex`;
 
 // Shared objects that must be re-created by founders on the new chain
-export const BOUNTY_BOARD = "";
+export const BOUNTY_BOARD = "0x965709ce9d087d8f90edac6e19d8d42908098ec253e83f20a650884cd4814d90";
+export const KEEPER_SHRINE = "0x9f1d97fa45215ba5c567ad6b5a4c29761b53fc520e1050ee298614b91d3ef2bf";
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";
 
 export const MIST_PER_SUI = 1_000_000_000n;
-export const CRDL_PER_TRIBE = 1n; // 1 CRDL per tribe coin unit (default display scale)
 
 export const STRUCTURE_TYPES = [
   { type: NETWORK_NODE_TYPE, kind: "NetworkNode" as const, mod: "network_node", label: "Network Node" },

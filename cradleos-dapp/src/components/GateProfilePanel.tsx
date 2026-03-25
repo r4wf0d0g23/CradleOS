@@ -10,7 +10,7 @@ import { normalizeChainError } from "../utils";
  * Founder:
  *   • Create a GateProfile for the vault (if none exists)
  *   • Set access policy (OPEN / TRIBE ONLY / WHITELIST / CLOSED)
- *   • Set CRDL toll and policy notes
+ *   • Set EVE toll and policy notes
  *   • Manage tribe whitelist (add / remove tribe IDs)
  *
  * All users:
@@ -43,7 +43,7 @@ type GateProfileState = {
   objectId: string;
   vaultId: string;
   accessPolicy: number;
-  tollCrdl: number;
+  tollFee: number;
   notes: string;
   whitelist: number[];
   version: number;
@@ -55,7 +55,7 @@ type GateProfileFeedEntry = {
   vaultId: string;
   founder: string;
   accessPolicy: number;
-  tollCrdl: number;
+  tollFee: number;
   notes: string;
   version: number;
   coinSymbol?: string;
@@ -109,7 +109,7 @@ async function fetchGateProfileState(profileId: string): Promise<GateProfileStat
       objectId: profileId,
       vaultId: String(fields["vault_id"] ?? ""),
       accessPolicy: numish(fields["access_policy"]) ?? ACCESS_OPEN,
-      tollCrdl: numish(fields["toll_crdl"]) ?? 0,
+      tollFee: numish(fields["toll_fee"]) ?? numish(fields["toll_crdl"]) ?? 0,
       notes: String(fields["notes"] ?? ""),
       whitelist: whitelist.map(v => numish(v) ?? 0),
       version: numish(fields["version"]) ?? 0,
@@ -179,7 +179,7 @@ async function fetchAllGateProfiles(): Promise<GateProfileFeedEntry[]> {
           vaultId,
           founder,
           accessPolicy: state.accessPolicy,
-          tollCrdl: state.tollCrdl,
+          tollFee: state.tollFee,
           notes: state.notes,
           version: state.version,
         });
@@ -209,7 +209,7 @@ function buildSetAccessPolicyTransaction(
   profileId: string,
   vaultId: string,
   accessPolicy: number,
-  tollCrdl: number,
+  tollFee: number,
   notes: string,
   clockId: string,
 ): Transaction {
@@ -220,7 +220,7 @@ function buildSetAccessPolicyTransaction(
       tx.object(profileId),
       tx.object(vaultId),
       tx.pure.u8(accessPolicy),
-      tx.pure.u64(BigInt(tollCrdl)),
+      tx.pure.u64(BigInt(tollFee)),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(notes))),
       tx.object(clockId),
     ],
@@ -433,7 +433,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
   const handleOpenEdit = () => {
     if (profile) {
       setEditPolicy(profile.accessPolicy);
-      setEditToll(String(profile.tollCrdl));
+      setEditToll(String(profile.tollFee));
       setEditNotes(profile.notes);
     }
     setEditOpen(true);
@@ -574,8 +574,8 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
             {/* Toll */}
             <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px", minWidth: "80px" }}>TOLL</span>
-              <span style={{ color: profile.tollCrdl > 0 ? "#ffaa33" : "#00ff96", fontSize: "13px", fontWeight: 600 }}>
-                {profile.tollCrdl > 0 ? `${profile.tollCrdl} CRDL` : "Free passage"}
+              <span style={{ color: profile.tollFee > 0 ? "#ffaa33" : "#00ff96", fontSize: "13px", fontWeight: 600 }}>
+                {profile.tollFee > 0 ? `${profile.tollFee} EVE` : "Free passage"}
               </span>
             </div>
 
@@ -724,7 +724,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
             {/* Toll input */}
             <div style={{ marginBottom: "12px" }}>
               <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
-                TOLL (CRDL, 0 = free)
+                TOLL (EVE, 0 = free)
               </div>
               <input
                 type="number"
@@ -849,10 +849,10 @@ function GateProfileFeed({
 
               <div style={{ textAlign: "right", flex: "0 0 auto" }}>
                 <div style={{
-                  color: entry.tollCrdl > 0 ? "#ffaa33" : "#00ff96",
+                  color: entry.tollFee > 0 ? "#ffaa33" : "#00ff96",
                   fontSize: "12px", fontWeight: 600,
                 }}>
-                  {entry.tollCrdl > 0 ? `${entry.tollCrdl} CRDL` : "Free"}
+                  {entry.tollFee > 0 ? `${entry.tollFee} EVE` : "Free"}
                 </div>
                 <div style={{ color: "rgba(107,107,94,0.45)", fontSize: "10px", marginTop: "2px" }}>
                   v{entry.version}

@@ -145,7 +145,7 @@ async function discoverTreasuryForVault(vaultId: string): Promise<string | null>
 /** Fetch last filled price from OrderFilled events for this DEX. */
 function lastPrice(events: OrderFilledEvent[]): number | null {
   if (!events.length) return null;
-  return events[0].priceCrdlPerRaw;
+  return events[0].pricePerUnit;
 }
 
 // ── display helpers ───────────────────────────────────────────────────────────
@@ -288,7 +288,7 @@ function CoinSupplySection({
       <KVRow label="Symbol" value={vault.coinSymbol || "—"} />
       <KVRow label="Total supply (units)" value={fmt(vault.totalSupply)} />
       <KVRow
-        label="CRDL / coin (DEX last fill)"
+        label="EVE / coin (DEX last fill)"
         value={
           dexEventsLoading
             ? "Loading…"
@@ -412,9 +412,9 @@ function DexSection({
       ) : (
         <>
           <KVRow label="DEX ID" value={shortAddr(dex.objectId)} mono />
-          <KVRow label="Last fill price (CRDL/coin)" value={dex.lastPriceCrdl > 0 ? fmt(dex.lastPriceCrdl) : "—"} />
+          <KVRow label="Last fill price (EVE/coin)" value={dex.lastPrice > 0 ? fmt(dex.lastPrice) : "—"} />
           <KVRow label="Total volume (coin units)" value={fmt(dex.totalVolumeRaw)} />
-          <KVRow label="Total volume (CRDL)" value={fmt(dex.totalVolumeCrdl)} />
+          <KVRow label="Total volume (EVE)" value={fmt(dex.totalVolumePayment)} />
           <KVRow label="Open orders" value={dex.nextOrderId > 0 ? `${dex.nextOrderId} created` : "0"} />
 
           <div style={{ marginTop: "12px" }}>
@@ -428,7 +428,7 @@ function DexSection({
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                 <div style={{ display: "flex", gap: "8px", marginBottom: "4px" }}>
-                  {["ORDER", "BUYER", "AMOUNT", "PRICE", "CRDL PAID", "TIME"].map((h) => (
+                  {["ORDER", "BUYER", "AMOUNT", "PRICE", "EVE PAID", "TIME"].map((h) => (
                     <span key={h} style={{
                       color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.05em",
                       flex: h === "BUYER" ? 1.5 : 1,
@@ -443,8 +443,8 @@ function DexSection({
                     <span style={{ flex: 1, color: "rgba(107,107,94,0.55)" }}>#{t.orderId}</span>
                     <span style={{ flex: 1.5, fontFamily: "monospace" }}>{shortAddr(t.buyer)}</span>
                     <span style={{ flex: 1, color: "#c8c8b8" }}>{fmt(t.fillAmount)}</span>
-                    <span style={{ flex: 1 }}>{fmt(t.priceCrdlPerRaw)}</span>
-                    <span style={{ flex: 1, color: "#64b4ff" }}>{fmt(t.crdlPaid)}</span>
+                    <span style={{ flex: 1 }}>{fmt(t.pricePerUnit)}</span>
+                    <span style={{ flex: 1, color: "#64b4ff" }}>{fmt(t.paymentPaid)}</span>
                     <span style={{ flex: 1, color: "rgba(107,107,94,0.4)", fontSize: "10px" }}>
                       {t.timestampMs ? new Date(t.timestampMs).toLocaleDateString() : "—"}
                     </span>

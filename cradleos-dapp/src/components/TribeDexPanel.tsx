@@ -1,5 +1,5 @@
 /**
- * TribeDexPanel — On-chain order book for TRIBE/CRDL trading.
+ * TribeDexPanel — On-chain order book for TRIBE/EVE trading.
  *
  * Flow:
  * 1. No DEX found → "Create DEX" (one per vault)
@@ -15,7 +15,7 @@ import {
   fetchOpenOrders,
   fetchOrderFilledEvents,
   fetchMemberBalance,
-  fetchCrdlBalance,
+  fetchEveBalance,
   buildCreateDexTransaction,
   buildPostSellOrderTransaction,
   buildFillSellOrderTransaction,
@@ -28,15 +28,15 @@ import {
   type OrderFilledEvent,
   type TribeVaultState,
 } from "../lib";
-import { SUI_TESTNET_RPC, CRDL_COIN_TYPE } from "../constants";
+import { SUI_TESTNET_RPC, EVE_COIN_TYPE } from "../constants";
 
 function shortAddr(a: string | undefined | null) {
   if (!a) return "—";
   return `${a.slice(0, 6)}…${a.slice(-4)}`;
 }
-function fmtCrdl(crdl: number) {
-  if (crdl === 0) return "0 CRDL";
-  return `${crdl.toLocaleString()} CRDL`;
+function fmtEve(eve: number) {
+  if (eve === 0) return "0 EVE";
+  return `${eve.toLocaleString()} EVE`;
 }
 
 function StatBox({ label, value, sub }: { label: string; value: string; sub?: string }) {
@@ -96,17 +96,17 @@ function OrderRow({
   const [err, setErr] = useState<string | null>(null);
 
   const isMine = myAddress?.toLowerCase() === order.seller.toLowerCase();
-  const costCrdl = parseInt(fillAmt || "0", 10) * order.priceCrdlPerRaw;
+  const costCrdl = parseInt(fillAmt || "0", 10) * order.pricePerUnit;
 
   const handleFill = async () => {
     const amt = parseInt(fillAmt, 10);
     if (!amt || amt <= 0 || amt > order.rawRemaining) return;
     setBusy(true); setErr(null);
     try {
-      // Look up the buyer's CRDL coin object ID
-      const { coinId } = myAddress ? await fetchCrdlBalance(myAddress) : { coinId: null };
-      if (!coinId) throw new Error("No CRDL in wallet. Register infrastructure to earn CRDL first.");
-      const tx = buildFillSellOrderTransaction(dex.objectId, vault.objectId, order.orderId, amt, order.priceCrdlPerRaw, coinId);
+      // Look up the buyer's EVE coin object ID
+      const { coinId } = myAddress ? await fetchEveBalance(myAddress) : { coinId: null };
+      if (!coinId) throw new Error("No EVE in wallet. Register infrastructure to earn EVE first.");
+      const tx = buildFillSellOrderTransaction(dex.objectId, vault.objectId, order.orderId, amt, order.pricePerUnit, coinId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setFillAmt("");
@@ -142,7 +142,7 @@ function OrderRow({
         {order.rawRemaining.toLocaleString()} {vault.coinSymbol}
       </div>
       <div style={{ flex: "0 0 110px", color: "#aaa", fontSize: "12px" }}>
-        @ {fmtCrdl(order.priceCrdlPerRaw)}/{vault.coinSymbol}
+        @ {fmtEve(order.pricePerUnit)}/{vault.coinSymbol}
       </div>
       <div style={{ flex: 1, color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
         {isMine ? (
@@ -167,7 +167,7 @@ function OrderRow({
             }}
           />
           {fillAmt && parseInt(fillAmt) > 0 && (
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", minWidth: "70px" }}>{costCrdl.toLocaleString()} CRDL</span>
+            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", minWidth: "70px" }}>{costCrdl.toLocaleString()} EVE</span>
           )}
           <button
             onClick={handleFill}
@@ -212,7 +212,7 @@ function FillRow({ ev, symbol }: { ev: OrderFilledEvent; symbol: string }) {
     }}>
       <span style={{ minWidth: "40px", color: "rgba(107,107,94,0.55)" }}>#{ev.orderId}</span>
       <span style={{ color: "#00ff96" }}>+{ev.fillAmount.toLocaleString()} {symbol}</span>
-      <span>@ {fmtCrdl(ev.priceCrdlPerRaw)}</span>
+      <span>@ {fmtEve(ev.pricePerUnit)}</span>
       <span style={{ flex: 1, textAlign: "right", fontFamily: "monospace" }}>
         {shortAddr(ev.buyer)}
       </span>
@@ -274,31 +274,31 @@ function DexDashboard({
     finally { setPostBusy(false); }
   };
 
-  const lastPriceCrdl = dex.lastPriceCrdl > 0 ? dex.lastPriceCrdl.toLocaleString() : "—";
+  const lastPrice = dex.lastPrice > 0 ? dex.lastPrice.toLocaleString() : "—";
 
-  // CRDL balance for the connected wallet
-  const { data: crdlData } = useQuery({
-    queryKey: ["crdlBalance", account?.address],
-    queryFn: () => account ? fetchCrdlBalance(account.address) : Promise.resolve({ balance: 0, coinId: null }),
+  // EVE balance for the connected wallet
+  const { data: eveData } = useQuery({
+    queryKey: ["eveBalance", account?.address],
+    queryFn: () => account ? fetchEveBalance(account.address) : Promise.resolve({ balance: 0, coinId: null }),
     enabled: !!account?.address,
     staleTime: 15_000,
   });
-  const crdlBalance = crdlData?.balance ?? 0;
+  const eveBalance = eveData?.balance ?? 0;
 
   return (
     <div>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "20px" }}>
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "20px" }}>
-          {vault.coinSymbol} / CRDL
+          {vault.coinSymbol} / EVE
         </div>
         <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>Order Book</div>
-        {dex.lastPriceCrdl > 0 && (
+        {dex.lastPrice > 0 && (
           <div style={{
             marginLeft: "auto", color: "#00ff96", fontWeight: 700, fontSize: "14px",
             fontFamily: "monospace",
           }}>
-            Last: {lastPriceCrdl} CRDL
+            Last: {lastPrice} EVE
           </div>
         )}
       </div>
@@ -307,8 +307,8 @@ function DexDashboard({
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
         <StatBox
           label="LAST PRICE"
-          value={lastPriceCrdl}
-          sub="CRDL per token"
+          value={lastPrice}
+          sub="EVE per token"
         />
         <StatBox
           label="VOL (TRIBE)"
@@ -316,8 +316,8 @@ function DexDashboard({
           sub="all-time fills"
         />
         <StatBox
-          label="VOL (CRDL)"
-          value={dex.totalVolumeCrdl.toLocaleString()}
+          label="VOL (EVE)"
+          value={dex.totalVolumePayment.toLocaleString()}
           sub="all-time"
         />
         <StatBox
@@ -326,24 +326,24 @@ function DexDashboard({
           sub={vault.coinSymbol}
         />
         <StatBox
-          label="YOUR CRDL"
-          value={crdlBalance.toLocaleString()}
+          label="YOUR EVE"
+          value={eveBalance.toLocaleString()}
           sub="CradleCoin"
         />
       </div>
 
-      {/* CRDL token address */}
+      {/* EVE token address */}
       <div style={{
         display: "flex", alignItems: "center", gap: "8px",
         background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.08)",
         borderRadius: "0", padding: "8px 12px", marginBottom: "16px", flexWrap: "wrap",
       }}>
-        <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.08em" }}>CRDL TOKEN</span>
+        <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.08em" }}>EVE TOKEN</span>
         <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#888", flex: 1, wordBreak: "break-all" }}>
-          {CRDL_COIN_TYPE}
+          {EVE_COIN_TYPE}
         </span>
         <button
-          onClick={() => { try { navigator.clipboard.writeText(CRDL_COIN_TYPE); } catch {} }}
+          onClick={() => { try { navigator.clipboard.writeText(EVE_COIN_TYPE); } catch {} }}
           style={{
             background: "none", border: "1px solid rgba(255,71,0,0.3)", borderRadius: "0",
             color: "#FF4700", fontSize: "10px", padding: "2px 8px", cursor: "pointer",
@@ -384,7 +384,7 @@ function DexDashboard({
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>PRICE (CRDL per {vault.coinSymbol})</span>
+            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>PRICE (EVE per {vault.coinSymbol})</span>
             <input
               type="number"
               value={sellPrice}
@@ -406,7 +406,7 @@ function DexDashboard({
                 background: "#131313", border: "1px solid rgba(255,71,0,0.15)",
                 borderRadius: "5px",
               }}>
-                {(parseInt(sellAmt) * parseInt(sellPrice)).toLocaleString()} CRDL
+                {(parseInt(sellAmt) * parseInt(sellPrice)).toLocaleString()} EVE
               </div>
             </div>
           )}
@@ -590,10 +590,10 @@ export function TribeDexPanel({ vault, onTxSuccess }: Props) {
     return (
       <div className="card">
         <div style={{ color: "#aaa", fontWeight: 600, marginBottom: "16px" }}>
-          {vault.coinSymbol} / CRDL Order Book
+          {vault.coinSymbol} / EVE Order Book
         </div>
         <p style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "20px" }}>
-          No DEX found for this vault. Create one to enable on-chain price discovery and TRIBE/CRDL trading.
+          No DEX found for this vault. Create one to enable on-chain price discovery and TRIBE/EVE trading.
         </p>
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           <button
@@ -601,7 +601,7 @@ export function TribeDexPanel({ vault, onTxSuccess }: Props) {
             onClick={handleCreate}
             disabled={createBusy}
           >
-            {createBusy ? "Creating…" : `Create ${vault.coinSymbol}/CRDL DEX`}
+            {createBusy ? "Creating…" : `Create ${vault.coinSymbol}/EVE DEX`}
           </button>
         </div>
         {createErr && <div style={{ color: "#ff6432", fontSize: "12px", marginBottom: "12px" }}>⚠ {createErr}</div>}

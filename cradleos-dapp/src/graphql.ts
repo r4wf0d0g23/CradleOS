@@ -344,7 +344,7 @@ export async function findKillsByKiller(killerCharId: string): Promise<Killmail[
 
 export interface TribeMember {
   address: string;    // wallet address (key in balances Table)
-  balance: number;    // current CRDL balance
+  balance: number;    // current balance
   // Enriched after fetchCharactersByTribeId
   charId?: string;
   charName?: string;

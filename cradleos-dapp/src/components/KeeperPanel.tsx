@@ -2,7 +2,7 @@
  * KeeperPanel — Keeper AI co-pilot for EVE Frontier / CradleOS
  *
  * An on-board tactical intelligence agent with:
- * - Context injection from public on-chain data (wallet, tribe, CRDL, infra)
+ * - Context injection from public on-chain data (wallet, tribe, EVE, infra)
  * - Security: message sanitization, length cap, no credentials in context
  * - "Keeper sees" disclosure panel for transparency
  * - Lore-accurate EVE Frontier identity and diamond symbol
@@ -19,7 +19,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import {
-  fetchCrdlBalance,
+  fetchEveBalance,
   fetchTribeVault,
   discoverVaultIdForTribe,
   findCharacterForWallet,
@@ -27,11 +27,16 @@ import {
   buildSetGateAccessLevelTx,
   buildIssueCoinTransaction,
   buildBurnCoinTransaction,
+  fetchKeeperShrine,
+  fetchRecentDonations,
+  buildDonateTransaction,
+  type KeeperShrineState,
+  type DonationEvent,
   SEC_GREEN,
   SEC_YELLOW,
   SEC_RED,
 } from "../lib";
-import { CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC } from "../constants";
+import { CRADLEOS_PKG, CLOCK, SUI_TESTNET_RPC, EVE_COIN_TYPE, KEEPER_SHRINE } from "../constants";
 import { WORLD_API, SERVER_LABEL } from "../constants";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -114,7 +119,7 @@ interface KeeperContext {
   characterName: string | null;
   tribeId: number | null;
   vaultId: string | null;
-  crdlBalance: number | null;
+  eveBalance: number | null;
   infraCount: number | null;
   secLevel: number | null;
   bountyCount: number | null;
@@ -244,7 +249,7 @@ function buildKeeperContext(ctx: KeeperContext): string {
   const charStr    = ctx.characterName  ?? "unknown";
   const tribeStr   = ctx.tribeId        != null ? `#${ctx.tribeId}` : "unknown";
   const vaultStr   = ctx.vaultId        ?? "unknown";
-  const crdlStr    = ctx.crdlBalance    != null ? `${ctx.crdlBalance.toLocaleString()} CRDL` : "unknown";
+  const eveStr    = ctx.eveBalance    != null ? `${ctx.eveBalance.toLocaleString()} EVE` : "unknown";
   const infraStr   = ctx.infraCount     != null ? `${ctx.infraCount}` : "unknown";
   const bountyStr  = ctx.bountyCount    != null ? `${ctx.bountyCount}` : "unknown";
   const killStr    = ctx.killCount      != null ? `${ctx.killCount}` : "unknown";
@@ -300,7 +305,7 @@ Total Tribes (live): ${ctx.tribeCount != null ? ctx.tribeCount : "unknown"}${ctx
 Wallet: ${walletStr}
 Character: ${charStr} (tribe ${tribeStr})
 Tribe Vault: ${vaultStr}
-CRDL Balance: ${crdlStr}
+EVE Balance: ${eveStr}
 Registered Infra: ${infraStr} structures
 Deployed Structures (${ctx.structures.length}): ${ctx.structures.length > 0
   ? "\n" + ctx.structures.map(s => `  - ${s.kind}${s.name ? ` "${s.name}"` : ""} [${s.isOnline ? "ONLINE" : "OFFLINE"}] id:${s.objectId}${s.systemId ? ` system:${s.systemId}` : ""}`).join("\n")
@@ -366,7 +371,7 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
     characterName: null,
     tribeId: null,
     vaultId: null,
-    crdlBalance: null,
+    eveBalance: null,
     infraCount: null,
     secLevel: null,
     bountyCount: null,
@@ -382,9 +387,9 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
 
   try {
     // Fire parallel fetches — don't block on each other
-    const [charInfo, crdlResult, tribeResult, jumpResult] = await Promise.allSettled([
+    const [charInfo, eveResult, tribeResult, jumpResult] = await Promise.allSettled([
       findCharacterForWallet(walletAddress),
-      fetchCrdlBalance(walletAddress),
+      fetchEveBalance(walletAddress),
       fetch(`${WORLD_API}/v2/tribes?limit=100`).then(r => r.json()) as Promise<{ data: Array<{ id: number; name: string; nameShort: string }>; metadata: { total: number } }>,
       fetchJumpHistory(WORLD_API),
     ]);
@@ -404,8 +409,8 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
       } catch { base.characterName = null; }
     }
 
-    if (crdlResult.status === "fulfilled") {
-      base.crdlBalance = crdlResult.value.balance;
+    if (eveResult.status === "fulfilled") {
+      base.eveBalance = eveResult.value.balance;
     }
 
     if (tribeResult.status === "fulfilled" && tribeResult.value?.metadata) {
@@ -844,7 +849,7 @@ export function KeeperPanel() {
         characterName: null,
         tribeId: null,
         vaultId: null,
-        crdlBalance: null,
+        eveBalance: null,
         infraCount: null,
         secLevel: null,
         bountyCount: null,
@@ -1326,13 +1331,13 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       {/* ── "Keeper sees" disclosure ── */}
       <details style={styles.disclosure}>
         <summary style={styles.disclosureSummary}>
-          ▾ Keeper sees: wallet, tribe, CRDL, structures, infra count
+          ▾ Keeper sees: wallet, tribe, EVE, structures, infra count
         </summary>
         <div style={styles.disclosureContent}>
           <div style={{ marginBottom: "6px", color: "rgba(255,71,0,0.7)" }}>◆ Keeper sees:</div>
           <div>· Wallet: {ctx?.walletAddress ? abbreviateAddress(ctx.walletAddress) : "—"} (public)</div>
           <div>· Tribe: {ctx?.tribeId != null ? `#${ctx.tribeId}` : "—"}</div>
-          <div>· CRDL balance: {ctx?.crdlBalance != null ? `${ctx.crdlBalance.toLocaleString()} CRDL` : "—"}</div>
+          <div>· EVE balance: {ctx?.eveBalance != null ? `${ctx.eveBalance.toLocaleString()} EVE` : "—"}</div>
           <div>· Registered infra: {ctx?.infraCount != null ? ctx.infraCount : "—"}</div>
           <div>· Recent on-chain kills: {ctx?.killCount != null ? ctx.killCount : "unknown"}</div>
           <div>· Defense policy: {ctx?.secLevel != null ? secLevelLabel(ctx.secLevel) : "unknown"}</div>
@@ -1585,6 +1590,330 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         </button>
       </div>
 
+      {/* ── Keeper Shrine ── */}
+      <KeeperShrineSection />
+
+    </div>
+  );
+}
+
+// ── Keeper Shrine Section ─────────────────────────────────────────────────────
+
+function KeeperShrineSection() {
+  const account = useCurrentAccount();
+  const dAppKit = useDAppKit();
+
+  const [open, setOpen] = useState(false);
+  const [shrine, setShrine] = useState<KeeperShrineState | null>(null);
+  const [donations, setDonations] = useState<DonationEvent[]>([]);
+  const [loadingShrine, setLoadingShrine] = useState(false);
+  const [donateAmount, setDonateAmount] = useState("");
+  const [donateStatus, setDonateStatus] = useState<"idle" | "pending" | "done" | "error">("idle");
+  const [donateErr, setDonateErr] = useState<string | null>(null);
+
+  // Load shrine state when opened
+  useEffect(() => {
+    if (!open || !KEEPER_SHRINE) return;
+    let cancelled = false;
+    setLoadingShrine(true);
+    Promise.all([
+      fetchKeeperShrine(KEEPER_SHRINE),
+      fetchRecentDonations(KEEPER_SHRINE, 5),
+    ]).then(([s, d]) => {
+      if (cancelled) return;
+      setShrine(s);
+      setDonations(d);
+      setLoadingShrine(false);
+    }).catch(() => {
+      if (!cancelled) setLoadingShrine(false);
+    });
+    return () => { cancelled = true; };
+  }, [open]);
+
+  const handleDonate = async () => {
+    if (!account || !KEEPER_SHRINE || !donateAmount) return;
+    const amtFloat = parseFloat(donateAmount);
+    if (isNaN(amtFloat) || amtFloat <= 0) return;
+    const amtRaw = BigInt(Math.floor(amtFloat * 1_000_000_000));
+
+    setDonateStatus("pending");
+    setDonateErr(null);
+    try {
+      // Discover an EVE coin owned by the wallet to split from
+      const coinsRes = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "suix_getCoins",
+          params: [account.address, EVE_COIN_TYPE, null, 1],
+        }),
+      });
+      const coinsJson = await coinsRes.json() as { result?: { data?: Array<{ coinObjectId: string }> } };
+      const eveCoinId = coinsJson.result?.data?.[0]?.coinObjectId;
+      if (!eveCoinId) throw new Error("No EVE coins found in wallet");
+
+      const tx = buildDonateTransaction(KEEPER_SHRINE, eveCoinId, amtRaw);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+
+      setDonateStatus("done");
+      setDonateAmount("");
+      // Refresh shrine state
+      await Promise.all([
+        fetchKeeperShrine(KEEPER_SHRINE).then(s => setShrine(s)),
+        fetchRecentDonations(KEEPER_SHRINE, 5).then(d => setDonations(d)),
+      ]);
+    } catch (e) {
+      setDonateStatus("error");
+      setDonateErr(e instanceof Error ? e.message : String(e));
+    }
+    setTimeout(() => setDonateStatus("idle"), 4000);
+  };
+
+  const formatEve = (raw: number) => (raw / 1_000_000_000).toLocaleString(undefined, { maximumFractionDigits: 4 });
+  const abbrev = (addr: string) => addr?.length > 12 ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : addr;
+
+  const shrineColors = {
+    panel: "rgba(3,2,1,0.95)",
+    border: "rgba(255,200,0,0.15)",
+    accent: "rgba(255,200,0,0.8)",
+    accentDim: "rgba(255,200,0,0.4)",
+    text: "#c8c8b8",
+    textDim: "rgba(107,107,94,0.7)",
+    bg: "rgba(255,200,0,0.04)",
+    bgHover: "rgba(255,200,0,0.08)",
+    green: "rgba(0,255,150,0.8)",
+    red: "rgba(255,71,0,0.8)",
+  } as const;
+
+  return (
+    <div style={{
+      borderTop: `1px solid ${shrineColors.border}`,
+      background: shrineColors.panel,
+      flexShrink: 0,
+    }}>
+      {/* Collapsible header */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: "100%",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "7px 14px",
+          textAlign: "left",
+        }}
+      >
+        <span style={{ fontSize: 12 }}>⛩</span>
+        <span style={{
+          fontFamily: "IBM Plex Mono, monospace",
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: "0.16em",
+          color: shrineColors.accent,
+          flex: 1,
+        }}>
+          KEEPER SHRINE
+        </span>
+        {KEEPER_SHRINE && shrine && (
+          <span style={{
+            fontFamily: "IBM Plex Mono, monospace",
+            fontSize: 9,
+            color: shrineColors.accentDim,
+            letterSpacing: "0.08em",
+          }}>
+            {formatEve(shrine.balance)} EVE
+          </span>
+        )}
+        <span style={{ fontSize: 9, color: shrineColors.textDim }}>{open ? "▾" : "▸"}</span>
+      </button>
+
+      {open && (
+        <div style={{ padding: "0 14px 12px 14px" }}>
+          {!KEEPER_SHRINE ? (
+            <div style={{
+              fontFamily: "IBM Plex Mono, monospace",
+              fontSize: 10,
+              color: shrineColors.textDim,
+              letterSpacing: "0.08em",
+              padding: "8px 0",
+            }}>
+              ◆ Shrine not yet initialized
+            </div>
+          ) : loadingShrine ? (
+            <div style={{
+              fontFamily: "IBM Plex Mono, monospace",
+              fontSize: 10,
+              color: shrineColors.accentDim,
+              letterSpacing: "0.1em",
+              padding: "8px 0",
+            }}>
+              ◆ LOADING SHRINE…
+            </div>
+          ) : (
+            <>
+              {/* Balance display */}
+              <div style={{
+                background: shrineColors.bg,
+                border: `1px solid ${shrineColors.border}`,
+                borderRadius: 3,
+                padding: "10px 12px",
+                marginBottom: 10,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}>
+                <div>
+                  <div style={{
+                    fontFamily: "IBM Plex Mono, monospace",
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: shrineColors.accent,
+                    letterSpacing: "0.04em",
+                  }}>
+                    {shrine ? formatEve(shrine.balance) : "—"} EVE
+                  </div>
+                  <div style={{
+                    fontFamily: "IBM Plex Mono, monospace",
+                    fontSize: 9,
+                    color: shrineColors.textDim,
+                    letterSpacing: "0.1em",
+                    marginTop: 2,
+                  }}>
+                    SHRINE BALANCE
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{
+                    fontFamily: "IBM Plex Mono, monospace",
+                    fontSize: 12,
+                    color: shrineColors.text,
+                  }}>
+                    {shrine?.donationCount ?? "—"}
+                  </div>
+                  <div style={{
+                    fontFamily: "IBM Plex Mono, monospace",
+                    fontSize: 9,
+                    color: shrineColors.textDim,
+                    letterSpacing: "0.1em",
+                  }}>
+                    OFFERINGS
+                  </div>
+                </div>
+              </div>
+
+              {/* Donate form */}
+              {account ? (
+                <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="EVE amount"
+                    value={donateAmount}
+                    onChange={e => setDonateAmount(e.target.value)}
+                    disabled={donateStatus === "pending"}
+                    style={{
+                      flex: 1,
+                      background: "rgba(0,0,0,0.4)",
+                      border: `1px solid ${shrineColors.border}`,
+                      color: shrineColors.text,
+                      fontFamily: "IBM Plex Mono, monospace",
+                      fontSize: 11,
+                      padding: "5px 8px",
+                      borderRadius: 2,
+                      outline: "none",
+                    }}
+                  />
+                  <button
+                    onClick={handleDonate}
+                    disabled={donateStatus === "pending" || !donateAmount}
+                    style={{
+                      background: shrineColors.bg,
+                      border: `1px solid ${shrineColors.border}`,
+                      color: donateStatus === "done" ? shrineColors.green : shrineColors.accent,
+                      fontFamily: "IBM Plex Mono, monospace",
+                      fontSize: 9,
+                      fontWeight: 700,
+                      letterSpacing: "0.12em",
+                      padding: "5px 12px",
+                      cursor: "pointer",
+                      borderRadius: 2,
+                      opacity: (donateStatus === "pending" || !donateAmount) ? 0.5 : 1,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {donateStatus === "pending" ? "◆ …" : donateStatus === "done" ? "✓ OFFERED" : "OFFER ⛩"}
+                  </button>
+                </div>
+              ) : (
+                <div style={{
+                  fontFamily: "IBM Plex Mono, monospace",
+                  fontSize: 9,
+                  color: shrineColors.textDim,
+                  letterSpacing: "0.08em",
+                  marginBottom: 10,
+                }}>
+                  Connect wallet to make an offering
+                </div>
+              )}
+              {donateErr && (
+                <div style={{
+                  fontFamily: "IBM Plex Mono, monospace",
+                  fontSize: 9,
+                  color: shrineColors.red,
+                  marginBottom: 6,
+                  wordBreak: "break-all",
+                }}>
+                  ✕ {donateErr}
+                </div>
+              )}
+
+              {/* Recent donations feed */}
+              {donations.length > 0 && (
+                <div>
+                  <div style={{
+                    fontFamily: "IBM Plex Mono, monospace",
+                    fontSize: 8,
+                    color: shrineColors.textDim,
+                    letterSpacing: "0.14em",
+                    marginBottom: 5,
+                  }}>
+                    RECENT OFFERINGS
+                  </div>
+                  {donations.slice(0, 5).map((d, i) => (
+                    <div key={i} style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "3px 0",
+                      borderBottom: i < donations.length - 1 ? `1px solid rgba(255,200,0,0.06)` : "none",
+                    }}>
+                      <span style={{
+                        fontFamily: "IBM Plex Mono, monospace",
+                        fontSize: 9,
+                        color: shrineColors.textDim,
+                      }}>
+                        {abbrev(d.donor)}
+                      </span>
+                      <span style={{
+                        fontFamily: "IBM Plex Mono, monospace",
+                        fontSize: 9,
+                        color: shrineColors.accentDim,
+                      }}>
+                        +{formatEve(d.amount)} EVE
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

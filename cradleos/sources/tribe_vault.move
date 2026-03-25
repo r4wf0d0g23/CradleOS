@@ -1,14 +1,12 @@
-/// CradleOS – Tribe Vault v4
-/// Infra-backed tribe accounting. Registering EVE structures mints real
-/// Coin<CRADLE_COIN> (CRDL) to the founder. Tribe coins remain as on-chain
-/// accounting (Table<address, u64>) — they represent influence/reputation
-/// within the tribe and are traded against CRDL on TribeDex.
+/// CradleOS – Tribe Vault v5
+/// Infra-backed tribe accounting. Registering EVE structures accrues infra credits.
+/// No CRDL minting — uses EVE (or any Coin<T>) for actual payments.
+/// Tribe coins remain as on-chain accounting (Table<address, u64>) — they represent
+/// influence/reputation within the tribe and are traded against EVE on TribeDex.
 module cradleos::tribe_vault {
     use sui::event;
     use sui::table::{Self, Table};
-    use sui::coin::Coin;
     use std::string::{Self, String};
-    use cradleos::cradle_coin::{Self, CRADLE_COIN, CradleMintController};
 
     // ── Constants ─────────────────────────────────────────────────────────────
 
@@ -37,7 +35,7 @@ module cradleos::tribe_vault {
         balances: Table<address, u64>,
         /// Registered infra: structure ID → energy_cost.
         registered_infra: Table<address, u64>,
-        /// Total CRDL-denominated infra cap (Σ energy_cost × ENERGY_MULTIPLIER).
+        /// Total infra cap (Σ energy_cost × ENERGY_MULTIPLIER).
         infra_credits: u64,
     }
 
@@ -55,7 +53,6 @@ module cradleos::tribe_vault {
         vault_id: ID,
         structure_id: address,
         energy_cost: u64,
-        crdl_minted: u64,
         new_infra_credits: u64,
     }
 
@@ -120,13 +117,12 @@ module cradleos::tribe_vault {
         });
     }
 
-    // ── Infra registration — mints CRDL ──────────────────────────────────────
+    // ── Infra registration — pure accounting, no minting ─────────────────────
 
-    /// Register an EVE structure. Mints CRDL to the founder proportional to
-    /// the structure's energy cost. This is the primary CRDL issuance path.
+    /// Register an EVE structure. Accrues infra credits proportional to energy cost.
+    /// Founder-only. No coin minting.
     entry fun register_structure_entry(
         vault: &mut TribeVault,
-        ctrl: &mut CradleMintController,
         structure_id: address,
         energy_cost: u64,
         ctx: &mut TxContext,
@@ -134,37 +130,29 @@ module cradleos::tribe_vault {
         assert!(ctx.sender() == vault.founder, ENotFounder);
         assert!(!table::contains(&vault.registered_infra, structure_id), EInfraAlreadyRegistered);
         table::add(&mut vault.registered_infra, structure_id, energy_cost);
-        let crdl_amount = energy_cost * ENERGY_MULTIPLIER;
-        vault.infra_credits = vault.infra_credits + crdl_amount;
-        // Mint real CRDL to the founder's wallet
-        let crdl = cradle_coin::mint(ctrl, crdl_amount, ctx);
-        transfer::public_transfer(crdl, ctx.sender());
+        let credits = energy_cost * ENERGY_MULTIPLIER;
+        vault.infra_credits = vault.infra_credits + credits;
         event::emit(InfraRegistered {
             vault_id: object::uid_to_inner(&vault.id),
             structure_id,
             energy_cost,
-            crdl_minted: crdl_amount,
             new_infra_credits: vault.infra_credits,
         });
     }
 
-    /// Deregister a structure. Caller must burn their own CRDL to balance supply.
+    /// Deregister a structure. Reduces infra credits. No coin burning required.
     entry fun deregister_structure_entry(
         vault: &mut TribeVault,
-        ctrl: &mut CradleMintController,
         structure_id: address,
-        crdl_burn: Coin<CRADLE_COIN>,
         ctx: &mut TxContext,
     ) {
         assert!(ctx.sender() == vault.founder, ENotFounder);
         assert!(table::contains(&vault.registered_infra, structure_id), EInfraNotFound);
         let energy_cost = table::remove(&mut vault.registered_infra, structure_id);
-        let crdl_amount = energy_cost * ENERGY_MULTIPLIER;
-        vault.infra_credits = if (vault.infra_credits >= crdl_amount) {
-            vault.infra_credits - crdl_amount
+        let credits = energy_cost * ENERGY_MULTIPLIER;
+        vault.infra_credits = if (vault.infra_credits >= credits) {
+            vault.infra_credits - credits
         } else { 0 };
-        // Burn the returned CRDL
-        cradle_coin::burn(ctrl, crdl_burn);
         event::emit(InfraDeregistered {
             vault_id: object::uid_to_inner(&vault.id),
             structure_id,

@@ -9,15 +9,14 @@ import {
   SERVER_ENV, SERVER_LABEL,
   WORLD_PKG_UTOPIA, WORLD_PKG_STILLNESS,
   SUI_TESTNET_RPC,
+  switchServerAndReload,
 } from "../constants";
 
 type MismatchState = "checking" | "ok" | "wrong-server" | "not-found" | "error";
 
+const OTHER_ENV: "stillness" | "utopia" = SERVER_ENV === "stillness" ? "utopia" : "stillness";
 const OTHER_SERVER_LABEL = SERVER_ENV === "stillness" ? "UTOPIA (Hackathon)" : "STILLNESS (Live)";
 const OTHER_WORLD_PKG    = SERVER_ENV === "stillness" ? WORLD_PKG_UTOPIA : WORLD_PKG_STILLNESS;
-const SWITCH_INSTRUCTIONS = SERVER_ENV === "stillness"
-  ? "Open EVE Vault → Settings → switch to Stillness (Live Server)"
-  : "Open EVE Vault → Settings → switch to Utopia (Hackathon Server)";
 
 async function checkCharacterServer(walletAddress: string): Promise<MismatchState> {
   // Query owned objects filtered by package — finds Character objects regardless of event count
@@ -110,13 +109,18 @@ export function ServerMismatchBanner() {
           )}
         </div>
         {isWrong && (
-          <div style={{
-            marginTop: "6px", fontSize: "11px",
-            color: "rgba(255,160,32,0.85)", fontFamily: "monospace",
-            letterSpacing: "0.05em",
-          }}>
-            Fix: {SWITCH_INSTRUCTIONS}
-          </div>
+          <button
+            onClick={() => switchServerAndReload(OTHER_ENV)}
+            style={{
+              marginTop: "8px", padding: "6px 16px",
+              background: "rgba(255,71,0,0.15)", border: "1px solid rgba(255,71,0,0.5)",
+              color: "#FF4700", cursor: "pointer", fontSize: "11px",
+              fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+              fontFamily: "inherit",
+            }}
+          >
+            Switch to {OTHER_SERVER_LABEL}
+          </button>
         )}
       </div>
       <button

@@ -1,6 +1,7 @@
 /// CradleOS – Ship Reimbursement Plan (SRP) / Combat Insurance
 ///
-/// Trustless CRDL payout triggered by on-chain Killmail objects.
+/// Trustless coin payout triggered by on-chain Killmail objects.
+/// Generic over coin type T — works with EVE, LUX, or any Sui coin.
 ///
 /// Use cases:
 ///   • Tribal SRP  — founder funds a pool; any tribe member who loses a ship
@@ -13,7 +14,7 @@
 /// query the killmail and challenge fraudulent claims before funds leave.
 ///
 /// Lifecycle:
-///   1. Sponsor calls create_policy_entry → SRPPolicy shared, CRDL funded.
+///   1. Sponsor calls create_policy_entry<T> → SRPPolicy<T> shared, funded.
 ///   2. Pilot loses ship → Killmail object is created on-chain by WORLD_PKG.
 ///   3. Pilot calls submit_claim_entry(policy, killmail_object_id) →
 ///      SRPClaim shared object created, dispute window starts.
@@ -23,12 +24,12 @@
 ///        • loss_type is SHIP (not STRUCTURE, unless policy covers both)
 ///      If fraudulent → call dispute_claim_entry within window.
 ///   5. After window with no dispute → anyone calls finalize_claim_entry →
-///      payout_per_loss CRDL transfers from policy fund to claimant.
+///      payout_per_loss transfers from policy fund to claimant.
 ///   6. Sponsor can top_up_policy_entry any time, or drain_policy_entry when done.
 ///
 /// Claim status codes:
 ///   0 = pending   (waiting for dispute window to close)
-///   1 = paid      (finalized, CRDL sent to claimant)
+///   1 = paid      (finalized, coin sent to claimant)
 ///   2 = disputed  (sponsor rejected within window, no payout)
 ///
 /// Policy status codes:
@@ -40,7 +41,6 @@ module cradleos::ship_reimbursement {
     use sui::clock::Clock;
     use sui::event;
     use std::string::{Self, String};
-    use cradleos::cradle_coin::CRADLE_COIN;
 
     // ── Error codes ───────────────────────────────────────────────────────────
 
@@ -65,21 +65,21 @@ module cradleos::ship_reimbursement {
 
     // ── Structs ───────────────────────────────────────────────────────────────
 
-    /// Shared. The funded reimbursement pool.
-    public struct SRPPolicy has key {
+    /// Shared. The funded reimbursement pool. Generic over coin type T.
+    public struct SRPPolicy<phantom T> has key {
         id: UID,
         /// Tribe founder or individual pilot who funds and administers the policy.
         sponsor: address,
         /// Human-readable description (e.g. "Reapers Doctrine SRP — March 2026 op").
         description: String,
-        /// CRDL paid out per approved claim.
+        /// Coin amount paid out per approved claim.
         payout_per_loss: u64,
         /// Maximum number of claims (0 = unlimited while funded).
         max_claims: u64,
         /// How many claims have been paid so far.
         claims_paid: u64,
-        /// CRDL reserve.
-        fund: Balance<CRADLE_COIN>,
+        /// Coin reserve.
+        fund: Balance<T>,
         /// Policy is only claimable between these timestamps (ms).
         valid_from_ms: u64,
         valid_until_ms: u64,
@@ -97,8 +97,6 @@ module cradleos::ship_reimbursement {
         /// The wallet address of the killed pilot (ctx.sender() at submission time).
         claimant: address,
         /// On-chain Killmail object ID — the proof of ship loss.
-        /// Verifiable: suiscan.xyz/testnet/object/{killmail_object_id}
-        /// or via GraphQL: { object(address: "...") { asMoveObject { contents { json } } } }
         killmail_object_id: address,
         /// When the claim was submitted (ms).
         claim_submitted_ms: u64,
@@ -163,18 +161,14 @@ module cradleos::ship_reimbursement {
     // ── Entry functions ───────────────────────────────────────────────────────
 
     /// Sponsor creates a funded SRP policy.
-    /// valid_from_ms / valid_until_ms: only Killmail events within this window
-    ///   are eligible (enforced off-chain during dispute validation).
-    /// max_claims: 0 = unlimited while funds last.
-    /// dispute_window_ms: 0 = use default 24 h.
-    entry fun create_policy_entry(
+    entry fun create_policy_entry<T>(
         description: vector<u8>,
         payout_per_loss: u64,
         max_claims: u64,
         valid_from_ms: u64,
         valid_until_ms: u64,
         dispute_window_ms: u64,
-        coin: Coin<CRADLE_COIN>,
+        coin: Coin<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -198,7 +192,7 @@ module cradleos::ship_reimbursement {
             dispute_window_ms: window,
         });
 
-        transfer::share_object(SRPPolicy {
+        transfer::share_object(SRPPolicy<T> {
             id: uid,
             sponsor,
             description: string::utf8(description),
@@ -214,9 +208,9 @@ module cradleos::ship_reimbursement {
     }
 
     /// Sponsor tops up the policy fund.
-    entry fun top_up_policy_entry(
-        policy: &mut SRPPolicy,
-        coin: Coin<CRADLE_COIN>,
+    entry fun top_up_policy_entry<T>(
+        policy: &mut SRPPolicy<T>,
+        coin: Coin<T>,
         ctx: &mut TxContext,
     ) {
         assert!(ctx.sender() == policy.sponsor, ENotSponsor);
@@ -232,21 +226,14 @@ module cradleos::ship_reimbursement {
     }
 
     /// Killed pilot submits a loss claim.
-    /// killmail_object_id: the on-chain Killmail object ID where caller is the victim.
-    /// The sponsor has dispute_window_ms to verify and challenge.
-    /// Verifiable via GraphQL:
-    ///   { object(address: "<killmail_object_id>") { asMoveObject { contents { json } } } }
-    ///   Check: victim_id matches claimant, kill_timestamp within policy window.
-    entry fun submit_claim_entry(
-        policy: &mut SRPPolicy,
+    entry fun submit_claim_entry<T>(
+        policy: &mut SRPPolicy<T>,
         killmail_object_id: address,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
         assert!(policy.status == POLICY_ACTIVE, EPolicyInactive);
-        // Check policy has enough funds for this claim
         assert!(balance::value(&policy.fund) >= policy.payout_per_loss, EInsufficientFunds);
-        // Check max_claims not exceeded (0 = unlimited)
         assert!(policy.max_claims == 0 || policy.claims_paid < policy.max_claims, EWrongStatus);
 
         let claimant = ctx.sender();
@@ -274,12 +261,9 @@ module cradleos::ship_reimbursement {
     }
 
     /// Sponsor disputes a claim within the dispute window.
-    /// Call this if the Killmail object shows the claimant was NOT the victim,
-    /// or the kill_timestamp is outside the policy's valid window.
-    /// Disputed funds stay in the policy for legitimate future claims.
-    entry fun dispute_claim_entry(
+    entry fun dispute_claim_entry<T>(
         claim: &mut SRPClaim,
-        policy: &SRPPolicy,
+        policy: &SRPPolicy<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -303,10 +287,9 @@ module cradleos::ship_reimbursement {
 
     /// Finalize a pending claim after the dispute window has passed.
     /// Permissionless — anyone can call this once the window closes.
-    /// Transfers payout_per_loss CRDL from policy fund to claimant.
-    entry fun finalize_claim_entry(
+    entry fun finalize_claim_entry<T>(
         claim: &mut SRPClaim,
-        policy: &mut SRPPolicy,
+        policy: &mut SRPPolicy<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -337,8 +320,8 @@ module cradleos::ship_reimbursement {
     }
 
     /// Sponsor reclaims remaining fund and closes the policy.
-    entry fun drain_policy_entry(
-        policy: &mut SRPPolicy,
+    entry fun drain_policy_entry<T>(
+        policy: &mut SRPPolicy<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -362,16 +345,16 @@ module cradleos::ship_reimbursement {
 
     // ── Public reads ──────────────────────────────────────────────────────────
 
-    public fun sponsor(p: &SRPPolicy): address           { p.sponsor }
-    public fun payout_per_loss(p: &SRPPolicy): u64       { p.payout_per_loss }
-    public fun max_claims(p: &SRPPolicy): u64            { p.max_claims }
-    public fun claims_paid(p: &SRPPolicy): u64           { p.claims_paid }
-    public fun fund_balance(p: &SRPPolicy): u64          { balance::value(&p.fund) }
-    public fun valid_from_ms(p: &SRPPolicy): u64         { p.valid_from_ms }
-    public fun valid_until_ms(p: &SRPPolicy): u64        { p.valid_until_ms }
-    public fun dispute_window_ms(p: &SRPPolicy): u64     { p.dispute_window_ms }
-    public fun policy_status(p: &SRPPolicy): u8          { p.status }
-    public fun description(p: &SRPPolicy): &String       { &p.description }
+    public fun sponsor<T>(p: &SRPPolicy<T>): address           { p.sponsor }
+    public fun payout_per_loss<T>(p: &SRPPolicy<T>): u64       { p.payout_per_loss }
+    public fun max_claims<T>(p: &SRPPolicy<T>): u64            { p.max_claims }
+    public fun claims_paid<T>(p: &SRPPolicy<T>): u64           { p.claims_paid }
+    public fun fund_balance<T>(p: &SRPPolicy<T>): u64          { balance::value(&p.fund) }
+    public fun valid_from_ms<T>(p: &SRPPolicy<T>): u64         { p.valid_from_ms }
+    public fun valid_until_ms<T>(p: &SRPPolicy<T>): u64        { p.valid_until_ms }
+    public fun dispute_window_ms<T>(p: &SRPPolicy<T>): u64     { p.dispute_window_ms }
+    public fun policy_status<T>(p: &SRPPolicy<T>): u8          { p.status }
+    public fun description<T>(p: &SRPPolicy<T>): &String       { &p.description }
 
     public fun claim_claimant(c: &SRPClaim): address     { c.claimant }
     public fun claim_status(c: &SRPClaim): u8            { c.status }

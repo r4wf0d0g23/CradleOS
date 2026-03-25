@@ -7,7 +7,7 @@
 ///
 /// GateProfile (shared, one per tribe vault):
 ///   • access_policy: who the tribe intends to allow through
-///   • toll_crdl: suggested CRDL toll (0 = free passage)
+///   • toll_fee: suggested gate fee (0 = free passage)
 ///   • notes: free-text description of the gate stance
 ///   • whitelist: tribe IDs explicitly allowed (used when policy = WHITELIST)
 ///   • version: monotonic counter incremented on every update
@@ -43,8 +43,8 @@ module cradleos::gate_profile {
         vault_id: ID,
         /// Access policy: 0=OPEN, 1=TRIBE_ONLY, 2=WHITELIST, 3=CLOSED
         access_policy: u8,
-        /// Suggested CRDL toll per transit (0 = free).
-        toll_crdl: u64,
+        /// Suggested fee per transit (0 = free). Denomination determined by convention.
+        toll_fee: u64,
         /// Human-readable gate policy description.
         notes: String,
         /// Tribe IDs allowed through when access_policy == ACCESS_WHITELIST.
@@ -67,7 +67,7 @@ module cradleos::gate_profile {
         profile_id:    ID,
         vault_id:      ID,
         access_policy: u8,
-        toll_crdl:     u64,
+        toll_fee:      u64,
         version:       u64,
     }
 
@@ -95,7 +95,7 @@ module cradleos::gate_profile {
             id: profile_uid,
             vault_id,
             access_policy: ACCESS_OPEN,
-            toll_crdl: 0,
+            toll_fee: 0,
             notes: std::string::utf8(notes),
             whitelist: vector::empty(),
             version: 0,
@@ -111,7 +111,7 @@ module cradleos::gate_profile {
         profile: &mut GateProfile,
         vault: &TribeVault,
         access_policy: u8,
-        toll_crdl: u64,
+        toll_fee: u64,
         notes: vector<u8>,
         clock: &Clock,
         ctx: &mut TxContext,
@@ -121,7 +121,7 @@ module cradleos::gate_profile {
         assert!(access_policy <= ACCESS_CLOSED, EInvalidPolicy);
 
         profile.access_policy = access_policy;
-        profile.toll_crdl = toll_crdl;
+        profile.toll_fee = toll_fee;
         profile.notes = std::string::utf8(notes);
         profile.version = profile.version + 1;
         profile.updated_ms = clock.timestamp_ms();
@@ -130,7 +130,7 @@ module cradleos::gate_profile {
             profile_id: object::uid_to_inner(&profile.id),
             vault_id:   profile.vault_id,
             access_policy,
-            toll_crdl,
+            toll_fee,
             version: profile.version,
         });
     }
@@ -170,11 +170,11 @@ module cradleos::gate_profile {
 
     // ── Public reads ──────────────────────────────────────────────────────────
 
-    public fun vault_id(p: &GateProfile): ID           { p.vault_id }
-    public fun access_policy(p: &GateProfile): u8      { p.access_policy }
-    public fun toll_crdl(p: &GateProfile): u64         { p.toll_crdl }
-    public fun version(p: &GateProfile): u64           { p.version }
-    public fun updated_ms(p: &GateProfile): u64        { p.updated_ms }
+    public fun vault_id(p: &GateProfile): ID            { p.vault_id }
+    public fun access_policy(p: &GateProfile): u8       { p.access_policy }
+    public fun toll_fee(p: &GateProfile): u64           { p.toll_fee }
+    public fun version(p: &GateProfile): u64            { p.version }
+    public fun updated_ms(p: &GateProfile): u64         { p.updated_ms }
     public fun whitelist(p: &GateProfile): &vector<u32> { &p.whitelist }
 
     public fun is_whitelisted(p: &GateProfile, tribe_id: u32): bool {

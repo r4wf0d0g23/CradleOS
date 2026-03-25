@@ -1,13 +1,13 @@
 /// CradleOS – Bounty Contract
 ///
-/// Attestor-gated kill bounties with CRDL escrow.
+/// Attestor-gated kill bounties with generic coin escrow.
 ///
-/// Anyone can post a bounty by escrowing CRDL and naming:
+/// Anyone can post a bounty by escrowing Coin<T> and naming:
 ///   • The target (EVE character ID + display name)
 ///   • An attestor address trusted to confirm the kill on-chain
 ///   • An expiry timestamp (ms)
 ///
-/// The attestor calls confirm_kill_entry to release the escrowed CRDL to
+/// The attestor calls confirm_kill_entry to release the escrowed reward to
 /// whoever executed the kill.  The poster (or anyone, after expiry) can
 /// cancel and reclaim the funds.
 ///
@@ -19,7 +19,6 @@ module cradleos::bounty_contract {
     use sui::clock::Clock;
     use sui::event;
     use std::string::{Self, String};
-    use cradleos::cradle_coin::CRADLE_COIN;
     use world::killmail::Killmail;
     use world::character::Character;
     use world::in_game_id;
@@ -55,8 +54,8 @@ module cradleos::bounty_contract {
         bounty_count: u64,
     }
 
-    /// Shared.  One object per bounty.
-    public struct Bounty has key {
+    /// Shared.  One object per bounty. Generic over coin type T.
+    public struct Bounty<phantom T> has key {
         id: UID,
         /// ID of the BountyBoard that issued this bounty.
         board_id: ID,
@@ -68,8 +67,8 @@ module cradleos::bounty_contract {
         target_char_id: u64,
         /// Human-readable target name.
         target_name: String,
-        /// Escrowed CRDL reward.
-        reward: Balance<CRADLE_COIN>,
+        /// Escrowed reward.
+        reward: Balance<T>,
         /// Trusted party who can confirm the kill.
         attestor: address,
         /// Set to the killer's address when claimed.
@@ -120,11 +119,11 @@ module cradleos::bounty_contract {
 
     /// Post a new bounty.  Escrows `coin` as the reward.
     /// `expires_ms` is an absolute wall-clock millisecond timestamp.
-    entry fun post_bounty_entry(
+    entry fun post_bounty_entry<T>(
         board: &mut BountyBoard,
         target_char_id: u64,
         target_name: vector<u8>,
-        coin: Coin<CRADLE_COIN>,
+        coin: Coin<T>,
         attestor: address,
         expires_ms: u64,
         clock: &Clock,
@@ -151,7 +150,7 @@ module cradleos::bounty_contract {
             expires_ms,
         });
 
-        transfer::share_object(Bounty {
+        transfer::share_object(Bounty<T> {
             id: bounty_uid,
             board_id: object::uid_to_inner(&board.id),
             bounty_index,
@@ -169,9 +168,9 @@ module cradleos::bounty_contract {
     }
 
     /// Confirm a kill.  Only the designated attestor may call.
-    /// Transfers the escrowed CRDL to `killer_address`.
-    entry fun confirm_kill_entry(
-        bounty: &mut Bounty,
+    /// Transfers the escrowed reward to `killer_address`.
+    entry fun confirm_kill_entry<T>(
+        bounty: &mut Bounty<T>,
         killer_address: address,
         _clock: &Clock,
         killmail_object_id: address,
@@ -205,9 +204,9 @@ module cradleos::bounty_contract {
     ///   3. killmail.victim_id.item_id() == bounty.target_char_id.
     ///   4. killmail.killer_id.item_id() == killer_char.key().item_id().
     ///
-    /// Pays the escrowed CRDL to the killer's on-chain wallet address.
-    entry fun claim_bounty_trustless_entry(
-        bounty: &mut Bounty,
+    /// Pays the escrowed reward to the killer's on-chain wallet address.
+    entry fun claim_bounty_trustless_entry<T>(
+        bounty: &mut Bounty<T>,
         killmail: &Killmail,
         killer_char: &Character,
         clock: &Clock,
@@ -252,9 +251,9 @@ module cradleos::bounty_contract {
     }
 
     /// Cancel a bounty.  Caller must be the poster OR the bounty must be expired.
-    /// Refunds escrowed CRDL to the poster.
-    entry fun cancel_bounty_entry(
-        bounty: &mut Bounty,
+    /// Refunds escrowed reward to the poster.
+    entry fun cancel_bounty_entry<T>(
+        bounty: &mut Bounty<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -277,16 +276,16 @@ module cradleos::bounty_contract {
 
     // ── Public reads ──────────────────────────────────────────────────────────
 
-    public fun bounty_count(board: &BountyBoard): u64 { board.bounty_count }
-    public fun poster(b: &Bounty): address            { b.poster }
-    public fun attestor(b: &Bounty): address          { b.attestor }
-    public fun target_char_id(b: &Bounty): u64        { b.target_char_id }
-    public fun target_name(b: &Bounty): &String       { &b.target_name }
-    public fun status(b: &Bounty): u8                 { b.status }
-    public fun reward_amount(b: &Bounty): u64         { balance::value(&b.reward) }
-    public fun killer(b: &Bounty): Option<address>    { b.killer }
-    public fun expires_ms(b: &Bounty): u64            { b.expires_ms }
-    public fun created_ms(b: &Bounty): u64            { b.created_ms }
-    public fun board_id(b: &Bounty): ID               { b.board_id }
-    public fun bounty_index(b: &Bounty): u64          { b.bounty_index }
+    public fun bounty_count(board: &BountyBoard): u64                 { board.bounty_count }
+    public fun poster<T>(b: &Bounty<T>): address                      { b.poster }
+    public fun attestor<T>(b: &Bounty<T>): address                    { b.attestor }
+    public fun target_char_id<T>(b: &Bounty<T>): u64                  { b.target_char_id }
+    public fun target_name<T>(b: &Bounty<T>): &String                 { &b.target_name }
+    public fun status<T>(b: &Bounty<T>): u8                           { b.status }
+    public fun reward_amount<T>(b: &Bounty<T>): u64                   { balance::value(&b.reward) }
+    public fun killer<T>(b: &Bounty<T>): Option<address>              { b.killer }
+    public fun expires_ms<T>(b: &Bounty<T>): u64                      { b.expires_ms }
+    public fun created_ms<T>(b: &Bounty<T>): u64                      { b.created_ms }
+    public fun board_id<T>(b: &Bounty<T>): ID                         { b.board_id }
+    public fun bounty_index<T>(b: &Bounty<T>): u64                    { b.bounty_index }
 }

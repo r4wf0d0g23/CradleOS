@@ -363,7 +363,7 @@ function MemberRosterCard({
           <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(107,107,94,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
             <span style={{ flex: "0 0 140px" }}>Pilot</span>
             <span style={{ flex: "1 1 auto" }}>Address</span>
-            <span style={{ flex: "0 0 90px", textAlign: "right" }}>CRDL Balance</span>
+            <span style={{ flex: "0 0 90px", textAlign: "right" }}>EVE Balance</span>
             <span style={{ flex: "0 0 70px", textAlign: "right" }}>Role</span>
           </div>
           {roster.map(m => (

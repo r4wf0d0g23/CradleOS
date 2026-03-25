@@ -48,7 +48,7 @@ const SERVICES: ServiceDef[] = [
   {
     id: "tribe",
     label: "Tribe Vault",
-    description: "Treasury, CRDL balances, and tribe administration.",
+    description: "Treasury, EVE balances, and tribe administration.",
     url: `${BASE}/#/tribe`,
     icon: "🏛",
   },

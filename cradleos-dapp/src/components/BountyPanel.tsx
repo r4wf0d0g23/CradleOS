@@ -1,13 +1,13 @@
 import { normalizeChainError } from "../utils";
 /**
- * BountyPanel — Attestor-gated kill bounties with CRDL escrow.
+ * BountyPanel — Attestor-gated kill bounties with EVE escrow.
  *
  * All wallets:
  *   • View active bounties (queried from BountyPosted events + live object fetch)
  *   • Status badges: OPEN (orange), CLAIMED (green), CANCELLED (grey)
  *
  * Connected wallet:
- *   • Post a new bounty (target char ID, name, CRDL amount, attestor, expiry days)
+ *   • Post a new bounty (target char ID, name, EVE amount, attestor, expiry days)
  *
  * Attestors:
  *   • Confirm kill on open bounties they are attesting (enter killer address)
@@ -21,7 +21,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG, CRDL_COIN_TYPE, SUI_TESTNET_RPC, BOUNTY_BOARD, CLOCK, eventType } from "../constants";
+import { CRADLEOS_PKG, EVE_COIN_TYPE, SUI_TESTNET_RPC, BOUNTY_BOARD, CLOCK, eventType } from "../constants";
 import { rpcGetObject, numish } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -30,8 +30,8 @@ const STATUS_OPEN      = 0;
 const STATUS_CLAIMED   = 1;
 const STATUS_CANCELLED = 2;
 
-/** CRDL uses 9 decimals (same as SUI/MIST). */
-const CRDL_DECIMALS = 9;
+/** EVE uses 9 decimals (same as SUI/MIST). */
+const EVE_DECIMALS = 9;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -56,17 +56,17 @@ function shortAddr(a: string | undefined | null): string {
   return `${a.slice(0, 6)}…${a.slice(-4)}`;
 }
 
-function formatCrdl(mist: bigint): string {
-  if (mist === 0n) return "0 CRDL";
-  const whole = mist / BigInt(10 ** CRDL_DECIMALS);
-  const frac  = mist % BigInt(10 ** CRDL_DECIMALS);
-  if (frac === 0n) return `${whole} CRDL`;
-  const fracStr = frac.toString().padStart(CRDL_DECIMALS, "0").replace(/0+$/, "");
-  return `${whole}.${fracStr} CRDL`;
+function formatEve(mist: bigint): string {
+  if (mist === 0n) return "0 EVE";
+  const whole = mist / BigInt(10 ** EVE_DECIMALS);
+  const frac  = mist % BigInt(10 ** EVE_DECIMALS);
+  if (frac === 0n) return `${whole} EVE`;
+  const fracStr = frac.toString().padStart(EVE_DECIMALS, "0").replace(/0+$/, "");
+  return `${whole}.${fracStr} EVE`;
 }
 
-function crdlToMist(amount: number): bigint {
-  return BigInt(Math.round(amount * 10 ** CRDL_DECIMALS));
+function eveToMist(amount: number): bigint {
+  return BigInt(Math.round(amount * 10 ** EVE_DECIMALS));
 }
 
 function statusLabel(status: number): string {
@@ -183,7 +183,7 @@ async function fetchKillsForTarget(targetCharId: string): Promise<OnChainKill[]>
 
 // ── Tx builders ───────────────────────────────────────────────────────────────
 
-/** Post bounty tx — fetches a CRDL coin from the sender, splits the reward, and submits. */
+/** Post bounty tx — fetches an EVE coin from the sender, splits the reward, and submits. */
 async function buildPostBountyTx(
   targetCharId: number,
   targetName: string,
@@ -192,19 +192,19 @@ async function buildPostBountyTx(
   expiresMs: number,
   senderAddress: string,
 ): Promise<Transaction> {
-  // Fetch a CRDL coin belonging to the sender
+  // Fetch a EVE coin belonging to the sender
   const res = await fetch(SUI_TESTNET_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jsonrpc: "2.0", id: 1,
       method: "suix_getCoins",
-      params: [senderAddress, CRDL_COIN_TYPE, null, 10],
+      params: [senderAddress, EVE_COIN_TYPE, null, 10],
     }),
   });
   const j = await res.json() as { result?: { data?: Array<{ coinObjectId: string; balance: string }> } };
   const coins = j.result?.data ?? [];
-  if (coins.length === 0) throw new Error("No CRDL coins in wallet. Acquire CRDL first.");
+  if (coins.length === 0) throw new Error("No EVE coins in wallet. Acquire EVE first.");
 
   // Sort descending by balance, pick the largest
   coins.sort((a, b) => (BigInt(b.balance) > BigInt(a.balance) ? 1 : -1));
@@ -215,6 +215,7 @@ async function buildPostBountyTx(
 
   tx.moveCall({
     target: `${CRADLEOS_PKG}::bounty_contract::post_bounty_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(BOUNTY_BOARD),
       tx.pure.u64(BigInt(targetCharId)),
@@ -232,6 +233,7 @@ function buildConfirmKillTx(bountyId: string, killerAddress: string, killmailObj
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::bounty_contract::confirm_kill_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(bountyId),
       tx.pure.address(killerAddress),
@@ -246,6 +248,7 @@ function buildCancelBountyTx(bountyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::bounty_contract::cancel_bounty_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(bountyId),
       tx.object(CLOCK),
@@ -335,7 +338,7 @@ export function BountyPanel() {
     }
     setPostBusy(true); setPostErr(null);
     try {
-      const mistAmount = crdlToMist(amount);
+      const mistAmount = eveToMist(amount);
       const expiresMs  = Date.now() + Math.round(days * 24 * 60 * 60 * 1000);
       const tx = await buildPostBountyTx(charId, postTargetName.trim(), mistAmount, attestor, expiresMs, account.address);
       const signer = new CurrentAccountSigner(dAppKit);
@@ -430,9 +433,9 @@ export function BountyPanel() {
                 style={inputStyle}
               />
             </div>
-            {/* CRDL Amount */}
+            {/* EVE Amount */}
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.05em" }}>REWARD (CRDL)</span>
+              <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.05em" }}>REWARD (EVE)</span>
               <input
                 type="number"
                 value={postAmount}
@@ -554,7 +557,7 @@ export function BountyPanel() {
                   <div>
                     <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", letterSpacing: "0.05em" }}>REWARD </span>
                     <span style={{ color: "#FF4700", fontSize: "13px", fontWeight: 700, fontFamily: "monospace" }}>
-                      {formatCrdl(bounty.rewardAmount)}
+                      {formatEve(bounty.rewardAmount)}
                     </span>
                   </div>
                   <div>

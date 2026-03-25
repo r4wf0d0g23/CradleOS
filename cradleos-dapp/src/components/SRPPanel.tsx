@@ -14,12 +14,12 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG, CRDL_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
+import { CRADLEOS_PKG, EVE_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
 import { numish } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const CRDL_DECIMALS = 9;
+const EVE_DECIMALS = 9;
 
 const CLAIM_PENDING   = 0;
 const CLAIM_PAID      = 1;
@@ -63,17 +63,17 @@ function shortAddr(a: string | undefined | null): string {
   return `${a.slice(0, 6)}…${a.slice(-4)}`;
 }
 
-function formatCrdl(mist: bigint): string {
-  if (mist === 0n) return "0 CRDL";
-  const whole = mist / BigInt(10 ** CRDL_DECIMALS);
-  const frac  = mist % BigInt(10 ** CRDL_DECIMALS);
-  if (frac === 0n) return `${whole} CRDL`;
-  const fracStr = frac.toString().padStart(CRDL_DECIMALS, "0").replace(/0+$/, "");
-  return `${whole}.${fracStr} CRDL`;
+function formatEve(mist: bigint): string {
+  if (mist === 0n) return "0 EVE";
+  const whole = mist / BigInt(10 ** EVE_DECIMALS);
+  const frac  = mist % BigInt(10 ** EVE_DECIMALS);
+  if (frac === 0n) return `${whole} EVE`;
+  const fracStr = frac.toString().padStart(EVE_DECIMALS, "0").replace(/0+$/, "");
+  return `${whole}.${fracStr} EVE`;
 }
 
-function crdlToMist(amount: number): bigint {
-  return BigInt(Math.round(amount * 10 ** CRDL_DECIMALS));
+function eveToMist(amount: number): bigint {
+  return BigInt(Math.round(amount * 10 ** EVE_DECIMALS));
 }
 
 function fmtDate(ms: number): string {
@@ -187,21 +187,21 @@ async function fetchClaims(): Promise<SRPClaimState[]> {
   });
 }
 
-// ── CRDL coin helper ──────────────────────────────────────────────────────────
+// ── EVE coin helper ──────────────────────────────────────────────────────────
 
-async function fetchLargestCrdlCoin(address: string): Promise<string> {
+async function fetchLargestEveCoin(address: string): Promise<string> {
   const res = await fetch(SUI_TESTNET_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       jsonrpc: "2.0", id: 1,
       method: "suix_getCoins",
-      params: [address, CRDL_COIN_TYPE, null, 10],
+      params: [address, EVE_COIN_TYPE, null, 10],
     }),
   });
   const j = await res.json() as { result?: { data?: Array<{ coinObjectId: string; balance: string }> } };
   const coins = j.result?.data ?? [];
-  if (coins.length === 0) throw new Error("No CRDL coins in wallet. Acquire CRDL first.");
+  if (coins.length === 0) throw new Error("No EVE coins in wallet. Acquire EVE first.");
   coins.sort((a, b) => (BigInt(b.balance) > BigInt(a.balance) ? 1 : -1));
   return coins[0].coinObjectId;
 }
@@ -218,11 +218,12 @@ async function buildCreatePolicyTx(
   initialFund: bigint,
   senderAddress: string,
 ): Promise<Transaction> {
-  const sourceCoinId = await fetchLargestCrdlCoin(senderAddress);
+  const sourceCoinId = await fetchLargestEveCoin(senderAddress);
   const tx = new Transaction();
   const [coin] = tx.splitCoins(tx.object(sourceCoinId), [tx.pure.u64(initialFund)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::ship_reimbursement::create_policy_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(description))),
       tx.pure.u64(payoutPerLoss),
@@ -238,11 +239,12 @@ async function buildCreatePolicyTx(
 }
 
 async function buildTopUpTx(policyId: string, amount: bigint, senderAddress: string): Promise<Transaction> {
-  const sourceCoinId = await fetchLargestCrdlCoin(senderAddress);
+  const sourceCoinId = await fetchLargestEveCoin(senderAddress);
   const tx = new Transaction();
   const [coin] = tx.splitCoins(tx.object(sourceCoinId), [tx.pure.u64(amount)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::ship_reimbursement::top_up_policy_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(policyId),
       coin,
@@ -255,6 +257,7 @@ function buildSubmitClaimTx(policyId: string, killmailObjectId: string): Transac
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::ship_reimbursement::submit_claim_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(policyId),
       tx.pure.address(killmailObjectId),
@@ -268,6 +271,7 @@ function buildDisputeClaimTx(claimId: string, policyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::ship_reimbursement::dispute_claim_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(claimId),
       tx.object(policyId),
@@ -281,6 +285,7 @@ function buildFinalizeClaimTx(claimId: string, policyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::ship_reimbursement::finalize_claim_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(claimId),
       tx.object(policyId),
@@ -294,6 +299,7 @@ function buildDrainPolicyTx(policyId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::ship_reimbursement::drain_policy_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(policyId),
       tx.object(CLOCK),
@@ -393,12 +399,12 @@ export function SRPPanel() {
     const amountStr = topUpAmounts[policyId] ?? "";
     const amount = parseFloat(amountStr);
     if (!amount || amount <= 0) {
-      setTopUpErr(p => ({ ...p, [policyId]: "Enter a valid CRDL amount." })); return;
+      setTopUpErr(p => ({ ...p, [policyId]: "Enter a valid EVE amount." })); return;
     }
     setTopUpBusy(p => ({ ...p, [policyId]: true }));
     setTopUpErr(p => ({ ...p, [policyId]: null }));
     try {
-      const tx = await buildTopUpTx(policyId, crdlToMist(amount), account.address);
+      const tx = await buildTopUpTx(policyId, eveToMist(amount), account.address);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setTopUpAmounts(p => ({ ...p, [policyId]: "" }));
@@ -453,9 +459,9 @@ export function SRPPanel() {
       const validFromMs  = new Date(createValidFrom).getTime();
       const validUntilMs = new Date(createValidUntil).getTime();
       const disputeWindowMs = BigInt(Math.round((parseFloat(createDisputeH) || 24) * 3_600_000));
-      const payoutPerLoss   = crdlToMist(parseFloat(createPayout));
+      const payoutPerLoss   = eveToMist(parseFloat(createPayout));
       const maxClaims       = BigInt(parseInt(createMaxClaims) || 0);
-      const initialFund     = crdlToMist(parseFloat(createFund));
+      const initialFund     = eveToMist(parseFloat(createFund));
       // Embed eligible claimants restriction note in description
       const eligibleLabel = createEligibleClaimants === "tribe_members" ? "Tribe Members Only" : "Manual Approval Required";
       const descWithRestriction = `${createDesc.trim()} [Eligible: ${eligibleLabel}]`;
@@ -507,8 +513,8 @@ export function SRPPanel() {
                 )}
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-                <InfoCell label="PAYOUT / LOSS">{formatCrdl(p.payoutPerLoss)}</InfoCell>
-                <InfoCell label="FUND BALANCE">{formatCrdl(p.fundBalance)}</InfoCell>
+                <InfoCell label="PAYOUT / LOSS">{formatEve(p.payoutPerLoss)}</InfoCell>
+                <InfoCell label="FUND BALANCE">{formatEve(p.fundBalance)}</InfoCell>
                 <InfoCell label="CLAIMS">
                   {String(p.claimsPaid)} / {p.maxClaims === 0n ? "∞" : String(p.maxClaims)}
                 </InfoCell>
@@ -538,7 +544,7 @@ export function SRPPanel() {
                 <option value="">— select a policy —</option>
                 {activePolicies.map(p => (
                   <option key={p.objectId} value={p.objectId}>
-                    {p.description || shortAddr(p.objectId)} ({formatCrdl(p.payoutPerLoss)} payout)
+                    {p.description || shortAddr(p.objectId)} ({formatEve(p.payoutPerLoss)} payout)
                   </option>
                 ))}
               </select>
@@ -604,7 +610,7 @@ export function SRPPanel() {
                       </InfoCell>
                     )}
                     {policy && (
-                      <InfoCell label="PAYOUT">{formatCrdl(policy.payoutPerLoss)}</InfoCell>
+                      <InfoCell label="PAYOUT">{formatEve(policy.payoutPerLoss)}</InfoCell>
                     )}
                   </div>
                   {canFinalize && (
@@ -637,7 +643,7 @@ export function SRPPanel() {
                 <div style={{ color: "#fff", fontWeight: 700, fontSize: "13px", marginBottom: "10px" }}>
                   {policy.description || shortAddr(policy.objectId)}
                   <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginLeft: "8px" }}>
-                    Fund: {formatCrdl(policy.fundBalance)}
+                    Fund: {formatEve(policy.fundBalance)}
                   </span>
                 </div>
                 {/* Top Up */}
@@ -647,7 +653,7 @@ export function SRPPanel() {
                       type="number"
                       value={topUpAmounts[policy.objectId] ?? ""}
                       onChange={e => setTopUpAmounts(p => ({ ...p, [policy.objectId]: e.target.value }))}
-                      placeholder="CRDL amount"
+                      placeholder="EVE amount"
                       style={{ ...inputStyle, width: "120px" }}
                     />
                     <button
@@ -725,7 +731,7 @@ export function SRPPanel() {
               <input type="text" value={createDesc} onChange={e => setCreateDesc(e.target.value)}
                 placeholder="Reapers Doctrine SRP — March op" style={{ ...inputStyle, width: "280px" }} />
             </FormField>
-            <FormField label="PAYOUT / LOSS (CRDL)">
+            <FormField label="PAYOUT / LOSS (EVE)">
               <input type="number" value={createPayout} onChange={e => setCreatePayout(e.target.value)}
                 placeholder="100" min="0" style={inputStyle} />
             </FormField>
@@ -757,7 +763,7 @@ export function SRPPanel() {
               <input type="datetime-local" value={createValidUntil} onChange={e => setCreateValidUntil(e.target.value)}
                 style={inputStyle} />
             </FormField>
-            <FormField label="INITIAL FUND (CRDL)">
+            <FormField label="INITIAL FUND (EVE)">
               <input type="number" value={createFund} onChange={e => setCreateFund(e.target.value)}
                 placeholder="500" min="0" style={inputStyle} />
             </FormField>

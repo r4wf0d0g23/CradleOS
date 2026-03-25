@@ -5,8 +5,7 @@ import {
   CRADLEOS_PKG,
   TRIBE_ROLES_PKG,
   GATE_POLICY_PKG,
-  CRADLE_MINT_CONTROLLER,
-  CRDL_COIN_TYPE,
+  EVE_COIN_TYPE,
   ENERGY_CONFIG,
   ENERGY_CONFIG_INITIAL_SHARED_VERSION,
   FUEL_CONFIG,
@@ -1367,8 +1366,8 @@ export async function fetchMemberBalance(balancesTableId: string, memberAddress:
   } catch { return 0; }
 }
 
-/** Fetch the caller's Coin<CRADLE_COIN> balance and best coin object ID for transactions. */
-export async function fetchCrdlBalance(address: string): Promise<{ balance: number; coinId: string | null }> {
+/** Fetch the caller's EVE coin balance and best coin object ID for transactions. */
+export async function fetchEveBalance(address: string): Promise<{ balance: number; coinId: string | null }> {
   try {
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
@@ -1376,7 +1375,7 @@ export async function fetchCrdlBalance(address: string): Promise<{ balance: numb
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_getBalance",
-        params: [address, CRDL_COIN_TYPE],
+        params: [address, EVE_COIN_TYPE],
       }),
     });
     const j = await res.json() as { result?: { totalBalance?: string } };
@@ -1388,7 +1387,7 @@ export async function fetchCrdlBalance(address: string): Promise<{ balance: numb
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_getCoins",
-        params: [address, CRDL_COIN_TYPE, null, 1],
+        params: [address, EVE_COIN_TYPE, null, 1],
       }),
     });
     const coinsJ = await coinsRes.json() as { result?: { data?: Array<{ coinObjectId: string }> } };
@@ -1396,6 +1395,9 @@ export async function fetchCrdlBalance(address: string): Promise<{ balance: numb
     return { balance, coinId };
   } catch { return { balance: 0, coinId: null }; }
 }
+
+/** @deprecated Use fetchEveBalance instead. */
+export const fetchCrdlBalance = fetchEveBalance;
 
 /** Fetch recent CoinIssued events for a vault. */
 export async function fetchCoinIssuedEvents(vaultId: string): Promise<CoinIssuedEvent[]> {
@@ -1481,7 +1483,6 @@ export function buildRegisterStructureTransaction(
     target: `${CRADLEOS_PKG}::tribe_vault::register_structure_entry`,
     arguments: [
       tx.object(vaultId),
-      tx.object(CRADLE_MINT_CONTROLLER),      // CradleMintController — mint CRDL to founder
       tx.pure.address(structureObjectId),
       tx.pure.u64(BigInt(Math.floor(energyCost))),
     ],
@@ -1544,7 +1545,7 @@ export function buildBurnCoinTransaction(
 /** Cache vault ID by tribeId. */
 // ── Cache-buster: clear stale data when package or cache version changes ──────
 // Bump CACHE_VERSION any time cached data shape changes or needs forced invalidation.
-const CACHE_VERSION = 3;
+const CACHE_VERSION = 6;
 const CACHE_PKG_KEY = "cradleos:pkg";
 const CACHE_VER_KEY = "cradleos:cache-version";
 try {
@@ -1577,9 +1578,9 @@ export type DexState = {
   objectId: string;
   vaultId: string;
   nextOrderId: number;
-  lastPriceCrdl: number;
+  lastPrice: number;
   totalVolumeRaw: number;
-  totalVolumeCrdl: number;
+  totalVolumePayment: number;
   /** Inner UID of sell_orders Table — needed to query orders as dynamic fields */
   sellOrdersTableId: string;
 };
@@ -1589,7 +1590,7 @@ export type SellOrder = {
   seller: string;
   rawAmount: number;
   rawRemaining: number;
-  priceCrdlPerRaw: number;
+  pricePerUnit: number;
 };
 
 export type OrderFilledEvent = {
@@ -1598,8 +1599,8 @@ export type OrderFilledEvent = {
   buyer: string;
   seller: string;
   fillAmount: number;
-  priceCrdlPerRaw: number;
-  crdlPaid: number;
+  pricePerUnit: number;
+  paymentPaid: number;
   rawRemaining: number;
   timestampMs: number;
 };
@@ -1616,9 +1617,9 @@ export async function fetchDexState(dexId: string): Promise<DexState | null> {
       objectId: dexId,
       vaultId: String(fields["vault_id"] ?? ""),
       nextOrderId: numish(fields["next_order_id"]) ?? 0,
-      lastPriceCrdl: numish(fields["last_price_crdl"]) ?? 0,
+      lastPrice: numish(fields["last_price"]) ?? numish(fields["last_price_crdl"]) ?? 0,
       totalVolumeRaw: numish(fields["total_volume_raw"]) ?? 0,
-      totalVolumeCrdl: numish(fields["total_volume_crdl"]) ?? 0,
+      totalVolumePayment: numish(fields["total_volume_payment"]) ?? numish(fields["total_volume_crdl"]) ?? 0,
       sellOrdersTableId,
     };
   } catch { return null; }
@@ -1664,7 +1665,7 @@ export async function fetchOpenOrders(sellOrdersTableId: string): Promise<SellOr
           seller: String(inner["seller"] ?? ""),
           rawAmount: numish(inner["raw_amount"]) ?? 0,
           rawRemaining: numish(inner["raw_remaining"]) ?? 0,
-          priceCrdlPerRaw: numish(inner["price_crdl_per_raw"]) ?? 0,
+          pricePerUnit: numish(inner["price_per_unit"]) ?? numish(inner["price_crdl_per_raw"]) ?? 0,
         } as SellOrder;
       })
     );
@@ -1700,8 +1701,8 @@ export async function fetchOrderFilledEvents(dexId: string): Promise<OrderFilled
         buyer: String(e.parsedJson["buyer"] ?? ""),
         seller: String(e.parsedJson["seller"] ?? ""),
         fillAmount: numish(e.parsedJson["fill_amount"]) ?? 0,
-        priceCrdlPerRaw: numish(e.parsedJson["price_crdl_per_raw"]) ?? 0,
-        crdlPaid: numish(e.parsedJson["crdl_paid"]) ?? 0,
+        pricePerUnit: numish(e.parsedJson["price_per_unit"]) ?? numish(e.parsedJson["price_crdl_per_raw"]) ?? 0,
+        paymentPaid: numish(e.parsedJson["payment_paid"]) ?? numish(e.parsedJson["crdl_paid"]) ?? 0,
         rawRemaining: numish(e.parsedJson["raw_remaining"]) ?? 0,
         timestampMs: parseInt(String(e.timestampMs ?? "0"), 10),
       }));
@@ -1715,6 +1716,7 @@ export function buildCreateDexTransaction(vaultId: string): Transaction {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::tribe_dex::create_dex_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [tx.object(vaultId)],
   });
   return tx;
@@ -1730,6 +1732,7 @@ export function buildPostSellOrderTransaction(
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::tribe_dex::post_sell_order_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(dexId),
       tx.object(vaultId),
@@ -1740,7 +1743,7 @@ export function buildPostSellOrderTransaction(
   return tx;
 }
 
-/** Fill a sell order with CRDL. Buyer provides a Coin<CRADLE_COIN> from their wallet.
+/** Fill a sell order with EVE. Buyer provides a Coin<EVE_COIN> from their wallet.
  *  fillAmount: number of tribe coin units to buy.
  *  The payment coin is split by the contract; change is returned. */
 export function buildFillSellOrderTransaction(
@@ -1749,14 +1752,15 @@ export function buildFillSellOrderTransaction(
   orderId: number,
   fillAmount: number,
   priceCrdlPerRaw: number,
-  crdlCoinId: string,   // object ID of buyer's Coin<CRADLE_COIN>
+  paymentCoinId: string,   // object ID of buyer's Coin<EVE_COIN>
 ): Transaction {
   const tx = new Transaction();
   const totalCost = BigInt(Math.floor(fillAmount)) * BigInt(Math.floor(priceCrdlPerRaw));
-  // Split exact CRDL payment from the buyer's coin object
-  const [payment] = tx.splitCoins(tx.object(crdlCoinId), [tx.pure.u64(totalCost)]);
+  // Split exact EVE payment from the buyer's coin object
+  const [payment] = tx.splitCoins(tx.object(paymentCoinId), [tx.pure.u64(totalCost)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::tribe_dex::fill_sell_order_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(dexId),
       tx.object(vaultId),
@@ -1777,6 +1781,7 @@ export function buildCancelOrderTransaction(
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::tribe_dex::cancel_sell_order_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(dexId),
       tx.object(vaultId),
@@ -1816,7 +1821,7 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
 // CHARACTER REGISTRY — proof-based tribe vault ownership (v6)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const CHARACTER_REGISTRY_ID = "0xab7cdd5076ad39445c5732c95cd2482f4a940d5952c9d456c07767553718036b";
+export const CHARACTER_REGISTRY_ID = "0x2e988f290955c6bf8ccf00ed3b847494016eb907c36d81d3774fcc8cead82ef5";
 
 export type TribeClaim = {
   claimer: string;
@@ -2636,11 +2641,127 @@ export function buildClaimBountyTrustlessTransaction(
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::bounty_contract::claim_bounty_trustless_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(bountyId),
       tx.object(killmailId),
       tx.object(killerCharId),
       tx.object(CLOCK),
+    ],
+  });
+  return tx;
+}
+
+// ── Keeper Shrine ─────────────────────────────────────────────────────────────
+
+export type KeeperShrineState = {
+  objectId: string;
+  keeper: string;
+  balance: number;       // raw units (divide by 1e9 for EVE display)
+  totalDonated: number;
+  donationCount: number;
+};
+
+export type DonationEvent = {
+  shrineId: string;
+  donor: string;
+  amount: number;
+  newBalance: number;
+  totalDonated: number;
+  donationCount: number;
+  timestampMs: number;
+};
+
+/**
+ * Fetch the current state of a KeeperShrine shared object.
+ * Returns null if the shrine ID is empty or the object is not found.
+ */
+export async function fetchKeeperShrine(shrineId: string): Promise<KeeperShrineState | null> {
+  if (!shrineId) return null;
+  try {
+    const fields = await rpcGetObject(shrineId);
+    if (fields._deleted) return null;
+    return {
+      objectId: shrineId,
+      keeper: String(fields.keeper ?? ""),
+      balance: Number(fields.balance ?? 0),
+      totalDonated: Number(fields.total_donated ?? 0),
+      donationCount: Number(fields.donation_count ?? 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch recent Donation events for a KeeperShrine, most recent first.
+ * Returns up to `limit` events (default 20).
+ */
+export async function fetchRecentDonations(shrineId: string, limit = 20): Promise<DonationEvent[]> {
+  if (!shrineId) return [];
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [
+          { MoveEventType: `${CRADLEOS_PKG}::keeper_shrine::Donation` },
+          null,
+          limit,
+          true, // descending
+        ],
+      }),
+    });
+    const json = await res.json() as {
+      result?: {
+        data?: Array<{
+          parsedJson?: Record<string, unknown>;
+          timestampMs?: string | number;
+        }>;
+      };
+    };
+    return (json.result?.data ?? [])
+      .filter(e => {
+        const pj = e.parsedJson ?? {};
+        // Filter by shrine_id if available in event
+        return !pj.shrine_id || String(pj.shrine_id) === shrineId;
+      })
+      .map(e => {
+        const pj = e.parsedJson ?? {};
+        return {
+          shrineId: String(pj.shrine_id ?? shrineId),
+          donor: String(pj.donor ?? ""),
+          amount: Number(pj.amount ?? 0),
+          newBalance: Number(pj.new_balance ?? 0),
+          totalDonated: Number(pj.total_donated ?? 0),
+          donationCount: Number(pj.donation_count ?? 0),
+          timestampMs: Number(e.timestampMs ?? 0),
+        };
+      });
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Build a donation transaction for a KeeperShrine.
+ * Splits `amount` from the provided eveCoinId and calls keeper_shrine::donate.
+ *
+ * @param shrineId   - Object ID of the shared KeeperShrine
+ * @param eveCoinId  - Object ID of the Coin<EVE> to split from
+ * @param amount     - Amount in raw units (e.g. 1_000_000_000n = 1 EVE)
+ */
+export function buildDonateTransaction(shrineId: string, eveCoinId: string, amount: bigint): Transaction {
+  const tx = new Transaction();
+  const [splitCoin] = tx.splitCoins(tx.object(eveCoinId), [tx.pure.u64(amount)]);
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::keeper_shrine::donate`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [
+      tx.object(shrineId),
+      splitCoin,
     ],
   });
   return tx;

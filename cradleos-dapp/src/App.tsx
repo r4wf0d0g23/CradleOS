@@ -222,6 +222,80 @@ function getHashTab(): Tab | null {
   return ROUTE_MAP[hash] ?? null;
 }
 
+// ── Faucet button ─────────────────────────────────────────────────────────────
+function FaucetButton({ address, compact }: { address: string; compact: boolean }) {
+  const [state, setState] = useState<"idle" | "loading" | "ok" | "err">("idle");
+  const [msg, setMsg] = useState("");
+
+  const requestGas = async () => {
+    setState("loading");
+    setMsg("");
+    try {
+      const res = await fetch("https://faucet.testnet.sui.io/v1/gas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ FixedAmountRequest: { recipient: address } }),
+      });
+      if (res.ok) {
+        setState("ok");
+        setMsg("Gas sent!");
+        setTimeout(() => { setState("idle"); setMsg(""); }, 4000);
+      } else {
+        const text = await res.text().catch(() => "");
+        if (res.status === 429) {
+          setState("err");
+          setMsg("Rate limited — try again later");
+        } else {
+          setState("err");
+          setMsg(text.slice(0, 60) || `HTTP ${res.status}`);
+        }
+        setTimeout(() => { setState("idle"); setMsg(""); }, 5000);
+      }
+    } catch {
+      // CORS or network error — fall back to opening the web faucet
+      window.open(`https://faucet.sui.io/?network=testnet`, "_blank");
+      setState("idle");
+    }
+  };
+
+  const colors: Record<string, string> = {
+    idle: "rgba(0,200,255,0.6)",
+    loading: "rgba(255,200,0,0.7)",
+    ok: "#00ff96",
+    err: "#ff6b6b",
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <button
+        onClick={requestGas}
+        disabled={state === "loading"}
+        title="Request testnet SUI gas from faucet"
+        style={{
+          padding: compact ? "4px 8px" : "5px 12px",
+          fontSize: compact ? "8px" : "10px",
+          fontWeight: 700,
+          fontFamily: "inherit",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          background: "rgba(0,200,255,0.06)",
+          border: `1px solid ${colors[state]}`,
+          color: colors[state],
+          cursor: state === "loading" ? "wait" : "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        {state === "loading" ? "⏳" : state === "ok" ? "✓ GAS" : "🚰 GAS"}
+      </button>
+      {msg && (
+        <span style={{ fontSize: "9px", fontFamily: "monospace", color: colors[state] }}>
+          {msg}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function AppInner() {
   const [winWidth, setWinWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
   useEffect(() => {
@@ -238,7 +312,7 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war"]);
-  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "fitting"); // default to fitting — visible without wallet
+  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "intel"); // default to intel — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
   // Dev env toggle — only shown in dev mode
@@ -275,7 +349,7 @@ function AppInner() {
         "Connect EVE Vault — your wallet address must own the structures",
         "Structures are grouped by solar system (tab per location)",
         "Bring All Online sends a single batched transaction",
-        "Register structures to mint CRDL infra credits to your tribe vault",
+        "Register structures to mint EVE infra credits to your tribe vault",
         "Rename any structure with the ✎ button — writes on-chain",
         "Turrets and gates: use Apply Tribe Policy to delegate defense to your tribe",
       ],
@@ -291,11 +365,10 @@ function AppInner() {
     tribe: {
       title: "Launch a tribe economy backed by registered infra",
       steps: [
-        "Go to Registry tab first — register your tribe claim",
-        "Once claim is active, return here and name your token",
-        "Register structures to mint CRDL to the tribe vault",
+        "Name your tribe token and launch the vault",
+        "Register structures to back your tribe's supply cap",
         "Issue tribe tokens to members as contribution rewards",
-        "Tribe coins trade against CRDL on the Tribe DEX",
+        "Tribe coins trade against EVE on the Tribe DEX",
       ],
     },
     defense: {
@@ -320,29 +393,29 @@ function AppInner() {
       ],
     },
     bounties: {
-      title: "Post kill bounties backed by CRDL escrow",
+      title: "Post kill bounties backed by EVE escrow",
       steps: [
-        "Set a target by EVE character ID and escrow CRDL as reward",
+        "Set a target by EVE character ID and escrow EVE as reward",
         "On-chain killmails verify kills automatically — no trusted attestor required",
         "Claim a bounty by presenting a matching killmail object from the Sui chain",
-        "Poster or anyone can cancel an expired bounty to reclaim CRDL",
+        "Poster or anyone can cancel an expired bounty to reclaim EVE",
       ],
     },
     srp: {
       title: "Ship Reimbursement Plans and Combat Insurance",
       steps: [
-        "Sponsor funds an SRP pool with CRDL — tribal ops or personal coverage",
+        "Sponsor funds an SRP pool with EVE — tribal ops or personal coverage",
         "Pilot loses a ship in-game — Killmail object is created on-chain",
         "Submit your Killmail object ID as proof of loss to claim reimbursement",
         "Sponsor has a dispute window to verify the Killmail via GraphQL",
-        "After the dispute window: anyone can finalize — CRDL pays out automatically",
+        "After the dispute window: anyone can finalize — EVE pays out automatically",
         "Sponsor can top up the pool or drain it when the op is over",
       ],
     },
     cargo: {
-      title: "Trustless cargo delivery contracts with CRDL escrow",
+      title: "Trustless cargo delivery contracts with EVE escrow",
       steps: [
-        "Post a delivery contract — describe cargo, set destination, escrow CRDL",
+        "Post a delivery contract — describe cargo, set destination, escrow EVE",
         "Leave carrier blank for open contracts, or specify an address",
         "Carrier accepts and transits — attestor confirms delivery to release reward",
         "Shipper can cancel open contracts; carrier can dispute missed deadlines",
@@ -369,9 +442,9 @@ function AppInner() {
     intel: {
       title: "Aggregated intelligence across financial, industrial, combat, and security",
       steps: [
-        "Financial: tribe economies, CRDL issuance trends, DEX volume",
+        "Financial: tribe economies, EVE issuance trends, DEX volume",
         "Industrial: infra registrations and structure type breakdown",
-        "Combat: active bounties, CRDL at risk, confirmed kills",
+        "Combat: active bounties, EVE at risk, confirmed kills",
         "Security: passage events, defense policy stats, gate policy distribution",
       ],
     },
@@ -406,9 +479,9 @@ function AppInner() {
     assets: {
       title: "Tribe asset ledger — infra, token supply, treasury, DEX",
       steps: [
-        "Registered infra and energy credits form your CRDL collateral basis",
+        "Registered infra and energy credits form your EVE collateral basis",
         "Token supply shows total tribe tokens in circulation and last DEX price",
-        "Treasury shows CRDL reserves and deposit/withdraw history",
+        "Treasury shows EVE reserves and deposit/withdraw history",
         "DEX section shows pool depth, current price, and recent trades",
       ],
     },
@@ -565,6 +638,8 @@ function AppInner() {
           }}>
             {account ? abbreviateAddress(account.address) : "NO WALLET"}
           </div>
+          {/* Testnet faucet button */}
+          {account && <FaucetButton address={account.address} compact={compact} />}
           {/* Identity verification badge */}
           {account && (
             isVerifying ? (
@@ -631,7 +706,7 @@ function AppInner() {
               fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 800, letterSpacing: "0.06em",
               color: "#FF4700", margin: 0,
             }}>
-              C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS
+              C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS <span style={{ fontSize: "0.4em", verticalAlign: "super", opacity: 0.6, letterSpacing: "0.08em" }}>v2</span>
             </h1>
           </div>
           <p style={{

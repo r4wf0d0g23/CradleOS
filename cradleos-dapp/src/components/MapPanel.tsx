@@ -482,6 +482,7 @@ export function MapPanel() {
   // ── State ──────────────────────────────────────────────────────────────────
   const [loadState, setLoadState]     = useState({ loaded: 0, total: 0, done: false });
   const [currentSys,  setCurrentSys]  = useState<SolarSystem | null>(null);
+  const [targetSys,   setTargetSys]   = useState<SolarSystem | null>(null);
   const [locationSrc, setLocationSrc] = useState<string>("");
   const [locating,    setLocating]    = useState(false);
   const [planetIdx,   setPlanetIdx]   = useState<PlanetIndex>({});
@@ -1019,6 +1020,21 @@ export function MapPanel() {
           </div>
         )}
 
+        {/* Target system pill */}
+        {targetSys && (
+          <div style={{
+            background:"rgba(255,71,0,0.08)", border:"1px solid rgba(255,71,0,0.25)",
+            borderRadius:"12px", padding:"3px 10px", fontSize:"11px",
+            color:"#FF4700", fontFamily:"monospace", display:"flex", alignItems:"center", gap:"6px",
+          }}>
+            ⊕ {targetSys.name}
+            {currentSys && <span style={{ color:"#663", fontSize:"10px" }}>
+              {Math.sqrt((targetSys.x-currentSys.x)**2+(targetSys.y-currentSys.y)**2+(targetSys.z-currentSys.z)**2).toFixed(1)} LY
+            </span>}
+            <span onClick={() => setTargetSys(null)} style={{ cursor:"pointer", color:"rgba(255,71,0,0.5)", fontSize:"13px", lineHeight:1 }} title="Clear target">✕</span>
+          </div>
+        )}
+
         {locating && <span style={{ color:"#444", fontSize:"11px" }}>locating…</span>}
 
         {/* Re-detect button */}
@@ -1368,8 +1384,20 @@ export function MapPanel() {
                 </>
               )}
 
-              {/* Set as current position */}
-              <div style={{ marginTop:"12px", paddingTop:"12px", borderTop:"1px solid rgba(255,255,255,0.05)" }}>
+              {/* Set as current / target */}
+              <div style={{ marginTop:"12px", paddingTop:"12px", borderTop:"1px solid rgba(255,255,255,0.05)", display:"flex", flexDirection:"column", gap:"6px" }}>
+                <button
+                  onClick={() => {
+                    setTargetSys(selectedSys);
+                  }}
+                  style={{
+                    width:"100%", padding:"6px", borderRadius:"4px", cursor:"pointer",
+                    background: targetSys?.id === selectedSys.id ? "rgba(255,71,0,0.15)" : "rgba(255,71,0,0.06)",
+                    border:"1px solid rgba(255,71,0,0.3)",
+                    color:"#FF4700", fontSize:"11px",
+                  }}>
+                  {targetSys?.id === selectedSys.id ? "✓ Current target" : "⊕ Set as target"}
+                </button>
                 <button
                   onClick={() => {
                     setCurrentAndStore(selectedSys, "manual");

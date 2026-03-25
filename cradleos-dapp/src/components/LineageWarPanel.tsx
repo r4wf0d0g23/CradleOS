@@ -706,6 +706,79 @@ export function LineageWarPanel() {
             <Scoreboard data={data} tribeNames={tribeNames} />
           </div>
 
+          {/* The Orchestrator — Prediction Market + $SUFFER */}
+          <div style={{
+            border: "1px solid rgba(255,140,0,0.25)",
+            borderRadius: 4,
+            background: "rgba(0,0,0,0.3)",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              padding: "0.5rem 0.85rem",
+              borderBottom: "1px solid rgba(255,140,0,0.15)",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <span style={{ fontFamily: "IBM Plex Mono", fontSize: "0.65rem", letterSpacing: "0.12em", color: "rgba(255,140,0,0.8)" }}>
+                THE ORCHESTRATOR
+              </span>
+              <span style={{ fontFamily: "IBM Plex Mono", fontSize: "0.55rem", color: "var(--text-dim)" }}>
+                PREDICTION MARKET · $SUFFER
+              </span>
+            </div>
+            <div style={{ padding: "0.75rem 0.85rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              <div style={{ fontFamily: "IBM Plex Mono", fontSize: "0.65rem", color: "var(--text)", lineHeight: 1.6 }}>
+                On-chain prediction market for Frontier war outcomes. Trade shares via constant-product AMM, stake $SUFFER (SFR) as collateral, and resolve disputes through decentralized voting.
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                <a
+                  href="https://orchestrator.lineagewar.xyz/markets"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: "IBM Plex Mono", fontSize: "0.62rem", letterSpacing: "0.08em",
+                    color: "#ff9900", border: "1px solid rgba(255,153,0,0.4)",
+                    padding: "0.35rem 0.7rem", borderRadius: 3, textDecoration: "none",
+                    background: "rgba(255,153,0,0.08)", cursor: "pointer",
+                  }}
+                >
+                  PREDICTION MARKETS →
+                </a>
+                <a
+                  href="https://orchestrator.lineagewar.xyz/airdrop"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: "IBM Plex Mono", fontSize: "0.62rem", letterSpacing: "0.08em",
+                    color: "#ff4444", border: "1px solid rgba(255,68,68,0.4)",
+                    padding: "0.35rem 0.7rem", borderRadius: 3, textDecoration: "none",
+                    background: "rgba(255,68,68,0.08)", cursor: "pointer",
+                  }}
+                >
+                  CLAIM $SUFFER AIRDROP →
+                </a>
+                <a
+                  href="https://github.com/saemihemma/predictionmarket-OSS"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: "IBM Plex Mono", fontSize: "0.62rem", letterSpacing: "0.08em",
+                    color: "var(--text-dim)", border: "1px solid rgba(255,255,255,0.12)",
+                    padding: "0.35rem 0.7rem", borderRadius: 3, textDecoration: "none",
+                    background: "rgba(255,255,255,0.03)", cursor: "pointer",
+                  }}
+                >
+                  SOURCE (OSS) →
+                </a>
+              </div>
+              <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", fontFamily: "IBM Plex Mono", fontSize: "0.58rem", color: "var(--text-dim)" }}>
+                <span>STARTER: 100,000 SFR</span>
+                <span>DAILY: 10,000 SFR</span>
+                <span>GAS: SPONSORED</span>
+                <span>NETWORK: TESTNET</span>
+              </div>
+            </div>
+          </div>
+
           {/* Active Systems */}
           <div>
             <div style={{ fontFamily: "IBM Plex Mono", fontSize: "0.65rem", letterSpacing: "0.12em", color: "var(--text-dim)", marginBottom: "0.6rem" }}>

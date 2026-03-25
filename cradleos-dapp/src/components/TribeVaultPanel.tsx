@@ -705,7 +705,7 @@ function VaultDashboard({
                       border: "1px solid rgba(255,71,0,0.2)",
                       borderRadius: "0", padding: "1px 5px",
                     }}>
-                      ⚡{s.energyCost} → +{credits.toLocaleString()} CRDL
+                      ⚡{s.energyCost} → +{credits.toLocaleString()} EVE
                     </span>
                   )}
                   {isRegistered ? (

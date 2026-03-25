@@ -9,7 +9,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import {
   CLOCK,
   CRADLEOS_PKG,
-  CRDL_COIN_TYPE,
+  EVE_COIN_TYPE,
   SUI_TESTNET_RPC,
   SUI_GRAPHQL,
   ZERO_ADDRESS,
@@ -71,7 +71,7 @@ function isZeroAddr(value: string | null | undefined) {
 }
 
 function formatReward(value: bigint) {
-  return `${value.toString()} CRDL`;
+  return `${value.toString()} EVE`;
 }
 
 function formatDateTime(ms: number) {
@@ -204,11 +204,11 @@ async function fetchContracts(): Promise<CargoContractState[]> {
     .sort((a, b) => b.createdMs - a.createdMs);
 }
 
-async function fetchOwnedCrdlCoins(owner: string): Promise<Array<{ coinObjectId: string; balance: bigint }>> {
+async function fetchOwnedEveCoins(owner: string): Promise<Array<{ coinObjectId: string; balance: bigint }>> {
   try {
     const result = await rpc<{
       data?: Array<{ coinObjectId?: string; balance?: string }>;
-    }>("suix_getCoins", [owner, CRDL_COIN_TYPE, null, 100]);
+    }>("suix_getCoins", [owner, EVE_COIN_TYPE, null, 100]);
     return (result.data ?? []).map((coin) => ({
       coinObjectId: String(coin.coinObjectId ?? ""),
       balance: BigInt(coin.balance ?? "0"),
@@ -232,13 +232,14 @@ async function buildCreateContractTransaction(args: {
   deadlineMs: number;
 }): Promise<Transaction> {
   const tx = new Transaction();
-  const coins = await fetchOwnedCrdlCoins(args.owner);
+  const coins = await fetchOwnedEveCoins(args.owner);
   const source = coins.find((coin) => coin.balance >= args.reward);
-  if (!source) throw new Error("No CRDL coin found with enough balance for this reward.");
+  if (!source) throw new Error("No EVE coin found with enough balance for this reward.");
 
   const splitCoins = tx.splitCoins(tx.object(source.coinObjectId), [tx.pure.u64(args.reward)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::cargo_contract::create_contract_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(args.description))),
       tx.pure.address(args.destinationSsuId),
@@ -258,6 +259,7 @@ function buildSubmitDeliveryClaimTransaction(contractId: string, txDigestString:
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::cargo_contract::submit_delivery_claim_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(contractId),
       tx.pure.vector("u8", Array.from(new TextEncoder().encode(txDigestString))),
@@ -271,6 +273,7 @@ function buildDisputeDeliveryTransaction(contractId: string) {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::cargo_contract::dispute_delivery_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [tx.object(contractId), tx.object(CLOCK)],
   });
   return tx;
@@ -280,6 +283,7 @@ function buildFinalizeDeliveryTransaction(contractId: string) {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::cargo_contract::finalize_delivery_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [tx.object(contractId), tx.object(CLOCK)],
   });
   return tx;
@@ -289,6 +293,7 @@ function buildCancelContractTransaction(contractId: string) {
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_PKG}::cargo_contract::cancel_contract_entry`,
+    typeArguments: [EVE_COIN_TYPE],
     arguments: [tx.object(contractId), tx.object(CLOCK)],
   });
   return tx;
@@ -743,7 +748,7 @@ export function CargoContractPanel() {
                 <input value={minQuantity} onChange={(e) => setMinQuantity(e.target.value.replace(/[^0-9]/g, ""))} placeholder="1" style={inputStyle} />
               </label>
               <label style={labelStyle}>
-                REWARD (CRDL)
+                REWARD (EVE)
                 <input value={reward} onChange={(e) => setReward(e.target.value.replace(/[^0-9]/g, ""))} placeholder="100" style={inputStyle} />
               </label>
               <label style={labelStyle}>

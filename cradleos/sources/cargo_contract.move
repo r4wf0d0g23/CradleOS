@@ -1,18 +1,20 @@
-/// CradleOS – Cargo Contract (v2 — trustless delivery via ItemMintedEvent POD)
+/// CradleOS – Cargo Contract (v3 — generic coin, trustless delivery via ItemMintedEvent POD)
+///
+/// Generic over coin type T — works with EVE, LUX, or any Sui coin.
 ///
 /// Delivery proof is the on-chain ItemMintedEvent emitted by WORLD_PKG::inventory
 /// when goods land in the destination SSU. The tx_digest of that event is
 /// checkpoint-committed and publicly verifiable via Sui GraphQL.
 ///
 /// Lifecycle:
-///   1. Shipper calls create_contract_entry  → CargoContract shared, CRDL escrowed.
+///   1. Shipper calls create_contract_entry<T>  → CargoContract<T> shared, coin escrowed.
 ///   2. Carrier delivers goods to destination_ssu_id in-game.
 ///   3. Carrier calls submit_delivery_claim_entry with the tx_digest of the
 ///      ItemMintedEvent as proof. Carrier wallet = ctx.sender().
 ///   4. Dispute window opens (default 24 h). Shipper can query GraphQL to verify
 ///      the digest; if it doesn't match the contract terms, call dispute_delivery_entry.
 ///   5. After window with no dispute: anyone calls finalize_delivery_entry
-///      → CRDL reward transfers to carrier.
+///      → reward transfers to carrier.
 ///
 /// Escape hatches:
 ///   • Shipper can cancel_contract_entry while status == open (no claim yet).
@@ -23,14 +25,13 @@
 ///   1 = claimed   (carrier submitted proof, dispute window active)
 ///   2 = delivered (finalized, reward paid to carrier)
 ///   3 = cancelled (shipper cancelled pre-claim)
-///   4 = disputed  (shipper disputed within window, CRDL refunded)
+///   4 = disputed  (shipper disputed within window, reward refunded)
 module cradleos::cargo_contract {
     use sui::balance::{Self, Balance};
     use sui::coin::{Self, Coin};
     use sui::clock::Clock;
     use sui::event;
     use std::string::{Self, String};
-    use cradleos::cradle_coin::CRADLE_COIN;
 
     // ── Error codes ───────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ module cradleos::cargo_contract {
 
     // ── Structs ───────────────────────────────────────────────────────────────
 
-    public struct CargoContract has key {
+    public struct CargoContract<phantom T> has key {
         id: UID,
         /// Pilot who created the contract and locked the reward.
         shipper: address,
@@ -72,8 +73,8 @@ module cradleos::cargo_contract {
         item_type_id: u64,
         /// Minimum quantity required in the delivery event.
         min_quantity: u64,
-        /// CRDL reward held in escrow.
-        reward: Balance<CRADLE_COIN>,
+        /// Coin reward held in escrow.
+        reward: Balance<T>,
         /// Current lifecycle status (0–4).
         status: u8,
         /// Delivery claim: tx digest of the ItemMintedEvent (empty = no claim yet).
@@ -107,7 +108,6 @@ module cradleos::cargo_contract {
     public struct DeliveryClaimSubmitted has copy, drop {
         contract_id: ID,
         carrier: address,
-        /// Hex-encoded tx digest of the matching ItemMintedEvent transaction.
         tx_digest: vector<u8>,
         claim_submitted_ms: u64,
     }
@@ -138,18 +138,13 @@ module cradleos::cargo_contract {
 
     // ── Entry functions ───────────────────────────────────────────────────────
 
-    /// Shipper creates a cargo contract and escrows the CRDL reward.
-    /// destination_ssu_id: the assembly_id of the SSU where goods must be delivered.
-    /// item_type_id: the EVE type_id expected in the ItemMintedEvent.
-    /// min_quantity: minimum quantity that must appear in the delivery event.
-    /// carrier: ZERO_ADDRESS = open to any pilot; set to restrict to one pilot.
-    /// dispute_window_ms: 0 = use default (86 400 000 ms = 24 h).
-    entry fun create_contract_entry(
+    /// Shipper creates a cargo contract and escrows the reward coin.
+    entry fun create_contract_entry<T>(
         description: vector<u8>,
         destination_ssu_id: address,
         item_type_id: u64,
         min_quantity: u64,
-        coin: Coin<CRADLE_COIN>,
+        coin: Coin<T>,
         carrier: address,
         dispute_window_ms: u64,
         deadline_ms: u64,
@@ -178,7 +173,7 @@ module cradleos::cargo_contract {
             created_ms,
         });
 
-        transfer::share_object(CargoContract {
+        transfer::share_object(CargoContract<T> {
             id: uid,
             shipper,
             carrier,
@@ -197,14 +192,8 @@ module cradleos::cargo_contract {
     }
 
     /// Carrier submits proof of delivery.
-    /// tx_digest: the Sui transaction digest containing the matching ItemMintedEvent.
-    ///   Verifiable at: https://graphql.testnet.sui.io/graphql
-    ///   Query: { transaction(digest: "<tx_digest>") { effects { status }
-    ///            events { nodes { contents { json } } } } }
-    /// The shipper has `dispute_window_ms` to query GraphQL and dispute if the
-    /// digest does not prove delivery to destination_ssu_id of item_type_id × min_quantity.
-    entry fun submit_delivery_claim_entry(
-        contract: &mut CargoContract,
+    entry fun submit_delivery_claim_entry<T>(
+        contract: &mut CargoContract<T>,
         tx_digest: vector<u8>,
         clock: &Clock,
         ctx: &mut TxContext,
@@ -212,7 +201,6 @@ module cradleos::cargo_contract {
         assert!(contract.status == STATUS_OPEN, EWrongStatus);
         let sender = ctx.sender();
 
-        // Designate carrier if open contract, or verify match
         if (contract.carrier == ZERO_ADDRESS) {
             contract.carrier = sender;
         } else {
@@ -232,11 +220,8 @@ module cradleos::cargo_contract {
     }
 
     /// Shipper disputes a delivery claim within the dispute window.
-    /// Shipper should verify via GraphQL that the submitted tx_digest does NOT
-    /// contain a matching ItemMintedEvent before disputing.
-    /// On dispute: CRDL reward is refunded to shipper; contract closes as disputed.
-    entry fun dispute_delivery_entry(
-        contract: &mut CargoContract,
+    entry fun dispute_delivery_entry<T>(
+        contract: &mut CargoContract<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -263,10 +248,8 @@ module cradleos::cargo_contract {
     }
 
     /// Finalize a delivery claim after the dispute window has passed.
-    /// Can be called by anyone — permissionless once the window closes.
-    /// CRDL reward transfers to the carrier.
-    entry fun finalize_delivery_entry(
-        contract: &mut CargoContract,
+    entry fun finalize_delivery_entry<T>(
+        contract: &mut CargoContract<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -294,9 +277,8 @@ module cradleos::cargo_contract {
     }
 
     /// Shipper cancels the contract before any delivery claim (status == open).
-    /// CRDL reward is refunded.
-    entry fun cancel_contract_entry(
-        contract: &mut CargoContract,
+    entry fun cancel_contract_entry<T>(
+        contract: &mut CargoContract<T>,
         clock: &Clock,
         ctx: &mut TxContext,
     ) {
@@ -320,17 +302,17 @@ module cradleos::cargo_contract {
 
     // ── Public reads ──────────────────────────────────────────────────────────
 
-    public fun shipper(c: &CargoContract): address             { c.shipper }
-    public fun carrier(c: &CargoContract): address             { c.carrier }
-    public fun status(c: &CargoContract): u8                   { c.status }
-    public fun reward_amount(c: &CargoContract): u64           { balance::value(&c.reward) }
-    public fun destination_ssu_id(c: &CargoContract): address  { c.destination_ssu_id }
-    public fun item_type_id(c: &CargoContract): u64            { c.item_type_id }
-    public fun min_quantity(c: &CargoContract): u64            { c.min_quantity }
-    public fun deadline_ms(c: &CargoContract): u64             { c.deadline_ms }
-    public fun created_ms(c: &CargoContract): u64              { c.created_ms }
-    public fun claimed_tx_digest(c: &CargoContract): &vector<u8> { &c.claimed_tx_digest }
-    public fun claim_submitted_ms(c: &CargoContract): u64      { c.claim_submitted_ms }
-    public fun dispute_window_ms(c: &CargoContract): u64       { c.dispute_window_ms }
-    public fun description(c: &CargoContract): &String         { &c.description }
+    public fun shipper<T>(c: &CargoContract<T>): address             { c.shipper }
+    public fun carrier<T>(c: &CargoContract<T>): address             { c.carrier }
+    public fun status<T>(c: &CargoContract<T>): u8                   { c.status }
+    public fun reward_amount<T>(c: &CargoContract<T>): u64           { balance::value(&c.reward) }
+    public fun destination_ssu_id<T>(c: &CargoContract<T>): address  { c.destination_ssu_id }
+    public fun item_type_id<T>(c: &CargoContract<T>): u64            { c.item_type_id }
+    public fun min_quantity<T>(c: &CargoContract<T>): u64            { c.min_quantity }
+    public fun deadline_ms<T>(c: &CargoContract<T>): u64             { c.deadline_ms }
+    public fun created_ms<T>(c: &CargoContract<T>): u64              { c.created_ms }
+    public fun claimed_tx_digest<T>(c: &CargoContract<T>): &vector<u8> { &c.claimed_tx_digest }
+    public fun claim_submitted_ms<T>(c: &CargoContract<T>): u64      { c.claim_submitted_ms }
+    public fun dispute_window_ms<T>(c: &CargoContract<T>): u64       { c.dispute_window_ms }
+    public fun description<T>(c: &CargoContract<T>): &String         { &c.description }
 }

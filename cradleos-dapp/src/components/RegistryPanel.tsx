@@ -293,7 +293,7 @@ export function RegistryPanel() {
               </div>
             )}
             <div style={{ fontSize: "11px", fontWeight: 400, marginTop: 4 }}>
-              Head to the Tribe Token tab to mint your CRDL coin. Defense policy is ready in the Defense tab.
+              Head to the Tribe Token tab to mint your EVE coin. Defense policy is ready in the Defense tab.
             </div>
           </div>
         ) : launchStep === "vault_done" ? (
@@ -317,7 +317,7 @@ export function RegistryPanel() {
                 <input
                   value={launchTicker}
                   onChange={e => setLaunchTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5))}
-                  placeholder="CRDL"
+                  placeholder="EVE"
                   style={{ ...inputStyle, width: "90px", fontFamily: "monospace" }}
                 />
               </div>
