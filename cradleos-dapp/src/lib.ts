@@ -2766,3 +2766,134 @@ export function buildDonateTransaction(shrineId: string, eveCoinId: string, amou
   });
   return tx;
 }
+
+// ─── Collateral Vault ─────────────────────────────────────────────────────────
+
+export type CollateralVaultState = {
+  objectId: string;
+  collateralBalance: number;  // raw EVE units
+  mintRatio: number;          // tribe tokens per 1 EVE (raw unit)
+  totalMinted: number;
+  totalRedeemed: number;
+  mintCapacity: number;       // remaining mintable = collateralBalance*mintRatio/1e9 - totalMinted
+};
+
+/**
+ * Discover the CollateralVault linked to a TribeVault by scanning CollateralVaultCreated events.
+ * Returns null if no collateral vault has been created yet.
+ */
+export async function fetchCollateralVault(vaultId: string): Promise<CollateralVaultState | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [
+          { MoveEventType: `${CRADLEOS_ORIGINAL}::collateral_vault::CollateralVaultCreated` },
+          null, 50, false,
+        ],
+      }),
+    });
+    const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
+    const match = (json.result?.data ?? []).find(e => String(e.parsedJson?.vault_id) === vaultId);
+    if (!match) return null;
+
+    const cvId = String(match.parsedJson?.cv_id ?? "");
+    if (!cvId) return null;
+
+    // Fetch the CollateralVault object
+    const fields = await rpcGetObject(cvId);
+    if (fields._deleted) return null;
+
+    // Extract collateral_balance — may be nested under fields.collateral.fields.value or direct
+    const collateralRaw = asRecord(fields["collateral"]) ?? {};
+    const collateralBalance = numish(collateralRaw["value"]) ?? numish(fields["collateral_balance"]) ?? numish(fields["balance"]) ?? 0;
+    const mintRatio = numish(fields["mint_ratio"]) ?? 0;
+    const totalMinted = numish(fields["total_minted"]) ?? 0;
+    const totalRedeemed = numish(fields["total_redeemed"]) ?? 0;
+    // mintCapacity: how many tribe tokens can still be minted given current collateral
+    // collateral is in raw EVE units (9 decimals), mintRatio is tokens per 1 EVE (1e9 raw)
+    const mintableFromCollateral = Math.floor((collateralBalance * mintRatio) / 1e9);
+    const mintCapacity = Math.max(0, mintableFromCollateral - totalMinted);
+
+    return { objectId: cvId, collateralBalance, mintRatio, totalMinted, totalRedeemed, mintCapacity };
+  } catch { return null; }
+}
+
+/** Create a CollateralVault for a TribeVault. mintRatio = tribe tokens per 1 EVE. */
+export function buildCreateCollateralVaultTx(tribeVaultId: string, mintRatio: number): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::create_collateral_vault_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(tribeVaultId), tx.pure.u64(BigInt(Math.floor(mintRatio)))],
+  });
+  return tx;
+}
+
+/**
+ * Mint tribe tokens using EVE collateral (founder only).
+ * coinObjectId: a Coin<EVE> object owned by the sender.
+ */
+export function buildMintWithCollateralTx(
+  cvId: string,
+  tribeVaultId: string,
+  coinObjectId: string,
+  recipient: string,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::mint_with_collateral_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [
+      tx.object(cvId),
+      tx.object(tribeVaultId),
+      tx.object(coinObjectId),
+      tx.pure.address(recipient),
+    ],
+  });
+  return tx;
+}
+
+/** Deposit EVE into the collateral vault (increases capacity without minting). */
+export function buildDepositCollateralTx(cvId: string, coinObjectId: string): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::deposit_collateral_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(cvId), tx.object(coinObjectId)],
+  });
+  return tx;
+}
+
+/** Redeem tribe tokens → burn → receive EVE at floor price (1/mintRatio per token). */
+export function buildRedeemTx(cvId: string, tribeVaultId: string, amount: number): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::redeem_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [
+      tx.object(cvId),
+      tx.object(tribeVaultId),
+      tx.pure.u64(BigInt(Math.floor(amount))),
+    ],
+  });
+  return tx;
+}
+
+/** Update the mint ratio (founder only — affects future mints only). */
+export function buildSetMintRatioTx(cvId: string, tribeVaultId: string, newRatio: number): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::set_mint_ratio_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [
+      tx.object(cvId),
+      tx.object(tribeVaultId),
+      tx.pure.u64(BigInt(Math.floor(newRatio))),
+    ],
+  });
+  return tx;
+}

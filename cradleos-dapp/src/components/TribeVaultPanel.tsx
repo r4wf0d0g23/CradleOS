@@ -27,10 +27,18 @@ import {
   fetchTribeInfo,
   getCachedVaultId,
   setCachedVaultId,
+  fetchCollateralVault,
+  buildCreateCollateralVaultTx,
+  buildMintWithCollateralTx,
+  buildDepositCollateralTx,
+  buildRedeemTx,
+  buildSetMintRatioTx,
+  fetchEveBalance,
 
   type TribeVaultState,
   type CoinIssuedEvent,
   type PlayerStructure,
+  type CollateralVaultState,
 } from "../lib";
 import { SUI_TESTNET_RPC, CRADLEOS_ORIGINAL } from "../constants";
 import { TribeDexPanel } from "./TribeDexPanel";
@@ -418,6 +426,446 @@ function ConnectVaultForm({ tribeId, onConnect }: { tribeId: number; onConnect: 
   );
 }
 
+// ── Collateral Vault Card ─────────────────────────────────────────────────────
+
+function CollateralVaultCard({
+  vault,
+  onTxSuccess,
+}: {
+  vault: TribeVaultState;
+  onTxSuccess: () => void;
+}) {
+  const { account: _verifiedAcct } = useVerifiedAccountContext();
+  const account = _verifiedAcct;
+  const dAppKit = useDAppKit();
+  const { overrideIsFounder } = useDevOverrides();
+  const isFounder = overrideIsFounder(!!(account?.address && vault.founder &&
+    account.address.toLowerCase() === vault.founder.toLowerCase()));
+
+  const { data: cv, isLoading: cvLoading } = useQuery<CollateralVaultState | null>({
+    queryKey: ["collateralVault", vault.objectId],
+    queryFn: () => fetchCollateralVault(vault.objectId),
+    staleTime: 20_000,
+  });
+
+  const { data: eveBalanceData } = useQuery({
+    queryKey: ["eveBalance", account?.address],
+    queryFn: () => account ? fetchEveBalance(account.address) : { balance: 0, coinId: null },
+    enabled: !!account?.address,
+    staleTime: 15_000,
+  });
+
+  // Create vault state
+  const [mintRatioInput, setMintRatioInput] = useState("100");
+  const [createBusy, setCreateBusy] = useState(false);
+  const [createErr, setCreateErr] = useState<string | null>(null);
+
+  // Mint state
+  const [mintEveAmt, setMintEveAmt] = useState("");
+  const [mintRecipient, setMintRecipient] = useState("");
+  const [mintBusy, setMintBusy] = useState(false);
+  const [mintErr, setMintErr] = useState<string | null>(null);
+
+  // Deposit state
+  const [depositAmt, setDepositAmt] = useState("");
+  const [depositBusy, setDepositBusy] = useState(false);
+  const [depositErr, setDepositErr] = useState<string | null>(null);
+
+  // Change ratio state
+  const [newRatioInput, setNewRatioInput] = useState("");
+  const [ratioUpdateBusy, setRatioUpdateBusy] = useState(false);
+  const [ratioErr, setRatioErr] = useState<string | null>(null);
+
+  // Redeem state
+  const [redeemAmt, setRedeemAmt] = useState("");
+  const [redeemBusy, setRedeemBusy] = useState(false);
+  const [redeemErr, setRedeemErr] = useState<string | null>(null);
+
+  const inputStyle: React.CSSProperties = {
+    background: "#161616",
+    border: "1px solid rgba(0,255,150,0.25)",
+    borderRadius: "2px",
+    color: "#00ff96",
+    fontSize: "13px",
+    padding: "8px 11px",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const handleCreateVault = async () => {
+    if (!account) return;
+    setCreateBusy(true); setCreateErr(null);
+    try {
+      const ratio = parseInt(mintRatioInput, 10);
+      if (!ratio || ratio < 1) throw new Error("Invalid mint ratio");
+      const tx = buildCreateCollateralVaultTx(vault.objectId, ratio);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setCreateErr(e instanceof Error ? e.message : String(e));
+    } finally { setCreateBusy(false); }
+  };
+
+  const handleMint = async () => {
+    if (!account || !cv) return;
+    setMintBusy(true); setMintErr(null);
+    try {
+      const eveRaw = Math.floor(parseFloat(mintEveAmt) * 1e9);
+      if (!eveRaw || eveRaw < 1) throw new Error("Invalid EVE amount");
+      if (!mintRecipient.trim()) throw new Error("Recipient required");
+      const coinId = eveBalanceData?.coinId;
+      if (!coinId) throw new Error("No EVE coin object found in wallet");
+      const tx = buildMintWithCollateralTx(cv.objectId, vault.objectId, coinId, mintRecipient.trim());
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setMintEveAmt(""); setMintRecipient("");
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setMintErr(e instanceof Error ? e.message : String(e));
+    } finally { setMintBusy(false); }
+  };
+
+  const handleDeposit = async () => {
+    if (!account || !cv) return;
+    setDepositBusy(true); setDepositErr(null);
+    try {
+      if (!depositAmt || parseFloat(depositAmt) <= 0) throw new Error("Invalid amount");
+      const coinId = eveBalanceData?.coinId;
+      if (!coinId) throw new Error("No EVE coin object found in wallet");
+      const tx = buildDepositCollateralTx(cv.objectId, coinId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setDepositAmt("");
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setDepositErr(e instanceof Error ? e.message : String(e));
+    } finally { setDepositBusy(false); }
+  };
+
+  const handleUpdateRatio = async () => {
+    if (!account || !cv) return;
+    setRatioUpdateBusy(true); setRatioErr(null);
+    try {
+      const ratio = parseInt(newRatioInput, 10);
+      if (!ratio || ratio < 1) throw new Error("Invalid ratio");
+      const tx = buildSetMintRatioTx(cv.objectId, vault.objectId, ratio);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setNewRatioInput("");
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setRatioErr(e instanceof Error ? e.message : String(e));
+    } finally { setRatioUpdateBusy(false); }
+  };
+
+  const handleRedeem = async () => {
+    if (!account || !cv) return;
+    setRedeemBusy(true); setRedeemErr(null);
+    try {
+      const amt = parseInt(redeemAmt, 10);
+      if (!amt || amt < 1) throw new Error("Invalid amount");
+      const tx = buildRedeemTx(cv.objectId, vault.objectId, amt);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setRedeemAmt("");
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setRedeemErr(e instanceof Error ? e.message : String(e));
+    } finally { setRedeemBusy(false); }
+  };
+
+  const cardStyle: React.CSSProperties = {
+    background: "rgba(0,255,150,0.04)",
+    border: "1px solid rgba(0,255,150,0.22)",
+    borderRadius: "0",
+    padding: "16px",
+    marginBottom: "20px",
+  };
+
+  if (cvLoading) {
+    return (
+      <div style={cardStyle}>
+        <div style={{ color: "rgba(0,255,150,0.5)", fontSize: "12px" }}>Checking collateral vault…</div>
+      </div>
+    );
+  }
+
+  // No collateral vault yet — show init card (founder only)
+  if (!cv) {
+    if (!isFounder) return null;
+    return (
+      <div style={cardStyle}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+          <span style={{
+            background: "rgba(0,255,150,0.12)", border: "1px solid rgba(0,255,150,0.3)",
+            color: "#00ff96", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em",
+            padding: "3px 10px", borderRadius: "0",
+          }}>
+            🔒 EVE-COLLATERALIZED
+          </span>
+          <span style={{ color: "#888", fontSize: "12px" }}>not yet initialized</span>
+        </div>
+        <div style={{ color: "#00ff96", fontWeight: 600, fontSize: "13px", marginBottom: "8px" }}>
+          Initialize Collateral Backing
+        </div>
+        <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "12px", marginBottom: "14px" }}>
+          Deposit EVE to back your tribe token with real collateral.
+          Members can redeem tokens for EVE at the floor price (1/mint_ratio).
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px" }}>MINT RATIO</div>
+          <input
+            type="number"
+            value={mintRatioInput}
+            onChange={e => setMintRatioInput(e.target.value)}
+            placeholder="100"
+            min="1"
+            style={{ ...inputStyle, width: "100px" }}
+          />
+          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+            tokens per 1 EVE &nbsp;·&nbsp; floor: 1 {vault.coinSymbol} = {mintRatioInput ? (1 / parseInt(mintRatioInput || "100")).toFixed(4) : "0.01"} EVE
+          </div>
+        </div>
+        <button
+          className="accent-button"
+          onClick={handleCreateVault}
+          disabled={createBusy || !account}
+          style={{ marginTop: "12px", background: "rgba(0,255,150,0.12)", borderColor: "#00ff9640", color: "#00ff96" }}
+        >
+          {createBusy ? "Creating…" : "🔒 Create Collateral Vault"}
+        </button>
+        {createErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "8px" }}>⚠ {createErr}</div>}
+      </div>
+    );
+  }
+
+  // Collateral vault exists — show stats + actions
+  const eveLockedDisplay = (cv.collateralBalance / 1e9).toFixed(4);
+  const floorPrice = cv.mintRatio > 0 ? (1 / cv.mintRatio).toFixed(6) : "0";
+  const mintEveRaw = parseFloat(mintEveAmt) || 0;
+  const mintedTokens = Math.floor(mintEveRaw * cv.mintRatio);
+  const redeemAmt_ = parseInt(redeemAmt, 10) || 0;
+  const redeemEveOut = cv.mintRatio > 0 ? (redeemAmt_ / cv.mintRatio).toFixed(6) : "0";
+
+  return (
+    <div style={cardStyle}>
+      {/* Header badge */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
+        <span style={{
+          background: "rgba(0,255,150,0.15)", border: "1px solid rgba(0,255,150,0.4)",
+          color: "#00ff96", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em",
+          padding: "3px 10px", borderRadius: "0",
+        }}>
+          🔒 EVE-COLLATERALIZED
+        </span>
+        <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
+          {cv.objectId.slice(0, 10)}…
+        </span>
+      </div>
+
+      {/* Stats row */}
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
+        <div style={{
+          background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
+        }}>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>EVE LOCKED</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{eveLockedDisplay}</div>
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>EVE</div>
+        </div>
+        <div style={{
+          background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
+        }}>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>MINT RATIO</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.mintRatio}</div>
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>1 EVE = {cv.mintRatio} {vault.coinSymbol}</div>
+        </div>
+        <div style={{
+          background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
+        }}>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>FLOOR PRICE</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{floorPrice}</div>
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>EVE per {vault.coinSymbol}</div>
+        </div>
+        <div style={{
+          background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
+        }}>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>MINTED</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.totalMinted.toLocaleString()}</div>
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
+        </div>
+        <div style={{
+          background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
+        }}>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>REDEEMED</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.totalRedeemed.toLocaleString()}</div>
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
+        </div>
+        <div style={{
+          background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
+        }}>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>CAPACITY</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.mintCapacity.toLocaleString()}</div>
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>mintable</div>
+        </div>
+      </div>
+
+      {/* Founder actions */}
+      {isFounder && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "14px" }}>
+          {/* Mint with collateral */}
+          <div style={{
+            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(0,255,150,0.12)",
+            borderRadius: "0", padding: "12px",
+          }}>
+            <div style={{ color: "#00ff96", fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+              ▲ Mint Tokens (deposit EVE → mint {vault.coinSymbol})
+            </div>
+            {mintEveAmt && mintedTokens > 0 && (
+              <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
+                Depositing {mintEveAmt} EVE → minting {mintedTokens.toLocaleString()} {vault.coinSymbol} to {mintRecipient ? shortAddr(mintRecipient) : "[recipient]"}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <input
+                type="number"
+                value={mintEveAmt}
+                onChange={e => setMintEveAmt(e.target.value)}
+                placeholder="EVE amount"
+                min="0"
+                step="0.000000001"
+                style={{ ...inputStyle, width: "120px" }}
+              />
+              <input
+                value={mintRecipient}
+                onChange={e => setMintRecipient(e.target.value)}
+                placeholder="0x… recipient"
+                style={{ ...inputStyle, flex: 1, minWidth: "160px", fontFamily: "monospace" }}
+              />
+              <button
+                className="accent-button"
+                onClick={handleMint}
+                disabled={mintBusy || !mintEveAmt || !mintRecipient.trim()}
+                style={{ background: "rgba(0,255,150,0.12)", borderColor: "#00ff9640", color: "#00ff96" }}
+              >
+                {mintBusy ? "…" : "Mint"}
+              </button>
+            </div>
+            {mintErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {mintErr}</div>}
+          </div>
+
+          {/* Deposit EVE (capacity only) */}
+          <div style={{
+            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(0,255,150,0.12)",
+            borderRadius: "0", padding: "12px",
+          }}>
+            <div style={{ color: "#00ff96", fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+              ↓ Deposit EVE (increases capacity, no minting)
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="number"
+                value={depositAmt}
+                onChange={e => setDepositAmt(e.target.value)}
+                placeholder="EVE amount"
+                min="0"
+                step="0.000000001"
+                style={{ ...inputStyle, width: "140px" }}
+              />
+              <button
+                className="accent-button"
+                onClick={handleDeposit}
+                disabled={depositBusy || !depositAmt}
+                style={{ background: "rgba(0,255,150,0.12)", borderColor: "#00ff9640", color: "#00ff96" }}
+              >
+                {depositBusy ? "…" : "Deposit"}
+              </button>
+            </div>
+            {depositErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {depositErr}</div>}
+          </div>
+
+          {/* Change mint ratio */}
+          <div style={{
+            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(0,255,150,0.12)",
+            borderRadius: "0", padding: "12px",
+          }}>
+            <div style={{ color: "#00ff96", fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+              ⚙ Change Mint Ratio (affects future mints only)
+            </div>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <input
+                type="number"
+                value={newRatioInput}
+                onChange={e => setNewRatioInput(e.target.value)}
+                placeholder={`Current: ${cv.mintRatio}`}
+                min="1"
+                style={{ ...inputStyle, width: "160px" }}
+              />
+              <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px" }}>
+                {newRatioInput ? `1 EVE = ${newRatioInput} ${vault.coinSymbol}` : "tokens per 1 EVE"}
+              </span>
+              <button
+                className="accent-button"
+                onClick={handleUpdateRatio}
+                disabled={ratioUpdateBusy || !newRatioInput}
+                style={{ background: "rgba(255,71,0,0.12)", borderColor: "#FF470040", color: "#FF4700" }}
+              >
+                {ratioUpdateBusy ? "…" : "Update"}
+              </button>
+            </div>
+            {ratioErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {ratioErr}</div>}
+          </div>
+        </div>
+      )}
+
+      {/* Redeem (any holder) */}
+      <div style={{
+        background: "rgba(255,255,255,0.02)", border: "1px solid rgba(100,180,255,0.12)",
+        borderRadius: "0", padding: "12px",
+      }}>
+        <div style={{ color: "#64b4ff", fontSize: "12px", fontWeight: 600, marginBottom: "8px" }}>
+          ↩ Redeem {vault.coinSymbol} → EVE
+        </div>
+        {redeemAmt_ > 0 && (
+          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
+            Burning {redeemAmt_} {vault.coinSymbol} → receiving {redeemEveOut} EVE
+          </div>
+        )}
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            type="number"
+            value={redeemAmt}
+            onChange={e => setRedeemAmt(e.target.value)}
+            placeholder={`${vault.coinSymbol} to redeem`}
+            min="1"
+            style={{
+              ...inputStyle,
+              width: "160px",
+              border: "1px solid rgba(100,180,255,0.25)",
+              color: "#64b4ff",
+            }}
+          />
+          <button
+            className="accent-button"
+            onClick={handleRedeem}
+            disabled={redeemBusy || !redeemAmt || parseInt(redeemAmt, 10) < 1}
+            style={{ background: "rgba(100,180,255,0.10)", borderColor: "#64b4ff40", color: "#64b4ff" }}
+          >
+            {redeemBusy ? "…" : "Redeem"}
+          </button>
+        </div>
+        {redeemErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {redeemErr}</div>}
+      </div>
+    </div>
+  );
+}
+
 // ── Vault dashboard ───────────────────────────────────────────────────────────
 
 function VaultDashboard({
@@ -669,6 +1117,9 @@ function VaultDashboard({
           </div>
         </div>
       )}
+
+      {/* Collateral vault section */}
+      <CollateralVaultCard vault={vault} onTxSuccess={onTxSuccess} />
 
       {/* Infra management (founder only) */}
       {isFounder && nonNodeStructures.length > 0 && (
