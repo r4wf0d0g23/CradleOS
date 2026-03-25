@@ -2800,16 +2800,18 @@ export async function fetchCollateralVault(vaultId: string): Promise<CollateralV
     const match = (json.result?.data ?? []).find(e => String(e.parsedJson?.vault_id) === vaultId);
     if (!match) return null;
 
-    const cvId = String(match.parsedJson?.cv_id ?? "");
+    const cvId = String(match.parsedJson?.collateral_vault_id ?? match.parsedJson?.cv_id ?? "");
     if (!cvId) return null;
 
     // Fetch the CollateralVault object
     const fields = await rpcGetObject(cvId);
     if (fields._deleted) return null;
 
-    // Extract collateral_balance — may be nested under fields.collateral.fields.value or direct
-    const collateralRaw = asRecord(fields["collateral"]) ?? {};
-    const collateralBalance = numish(collateralRaw["value"]) ?? numish(fields["collateral_balance"]) ?? numish(fields["balance"]) ?? 0;
+    // Extract collateral balance — may be string "0", nested Balance object, or direct field
+    const collateralField = fields["collateral"];
+    const collateralBalance = typeof collateralField === "string" || typeof collateralField === "number"
+      ? numish(collateralField) ?? 0
+      : numish((asRecord(collateralField) ?? {})["value"]) ?? numish(fields["collateral_balance"]) ?? 0;
     const mintRatio = numish(fields["mint_ratio"]) ?? 0;
     const totalMinted = numish(fields["total_minted"]) ?? 0;
     const totalRedeemed = numish(fields["total_redeemed"]) ?? 0;
