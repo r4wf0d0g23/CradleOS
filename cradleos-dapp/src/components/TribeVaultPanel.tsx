@@ -492,8 +492,15 @@ function CollateralVaultCard({
     boxSizing: "border-box",
   };
 
+  const isFounderForCV = !!(account?.address && vault.founder &&
+    account.address.toLowerCase() === vault.founder.toLowerCase());
+
   const handleCreateVault = async () => {
     if (!account) return;
+    if (!isFounderForCV) {
+      setCreateErr("Only the vault founder can create the collateral vault. Connected wallet is not the founder.");
+      return;
+    }
     setCreateBusy(true); setCreateErr(null);
     try {
       const ratio = parseInt(mintRatioInput, 10);
@@ -503,7 +510,8 @@ function CollateralVaultCard({
       await signer.signAndExecuteTransaction({ transaction: tx });
       setTimeout(onTxSuccess, 3000);
     } catch (e) {
-      setCreateErr(e instanceof Error ? e.message : String(e));
+      const msg = e instanceof Error ? e.message : String(e);
+      setCreateErr(msg.includes("MoveAbort") ? "Transaction aborted — are you the vault founder?" : msg);
     } finally { setCreateBusy(false); }
   };
 
@@ -635,7 +643,20 @@ function CollateralVaultCard({
         >
           {createBusy ? "Creating…" : "🔒 Create Collateral Vault"}
         </button>
-        {createErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "8px" }}>⚠ {createErr}</div>}
+        {!isFounderForCV && account && (
+          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px", marginTop: "6px" }}>
+            ⚠ Only the vault founder can initialize collateral backing
+          </div>
+        )}
+        {createErr && (
+          <div style={{
+            color: "#ff6432", fontSize: "12px", marginTop: "8px",
+            background: "rgba(255,100,50,0.08)", border: "1px solid rgba(255,100,50,0.25)",
+            padding: "8px 12px", borderRadius: "2px",
+          }}>
+            ⚠ {createErr}
+          </div>
+        )}
       </div>
     );
   }
