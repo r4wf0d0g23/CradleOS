@@ -2791,7 +2791,7 @@ export async function fetchCollateralVault(vaultId: string): Promise<CollateralV
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_ORIGINAL}::collateral_vault::CollateralVaultCreated` },
+          { MoveEventType: `${CRADLEOS_PKG}::collateral_vault::CollateralVaultCreated` },
           null, 50, false,
         ],
       }),

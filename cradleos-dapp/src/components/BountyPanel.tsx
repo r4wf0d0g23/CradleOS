@@ -21,7 +21,7 @@ import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CRADLEOS_PKG,
-  CRADLEOS_ORIGINAL,
+
   EVE_COIN_TYPE,
   SUI_TESTNET_RPC,
   TRUSTLESS_BOUNTY_BOARD,
@@ -169,7 +169,7 @@ async function fetchTrustlessBounties(): Promise<TrustlessBountyState[]> {
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_ORIGINAL}::trustless_bounty::BountyPosted` },
+          { MoveEventType: `${CRADLEOS_PKG}::trustless_bounty::BountyPosted` },
           null, 100, true,
         ],
       }),
