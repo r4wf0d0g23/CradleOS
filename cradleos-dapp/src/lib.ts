@@ -1544,7 +1544,7 @@ export function buildBurnCoinTransaction(
 /** Cache vault ID by tribeId. */
 // ── Cache-buster: clear stale data when package or cache version changes ──────
 // Bump CACHE_VERSION any time cached data shape changes or needs forced invalidation.
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 const CACHE_PKG_KEY = "cradleos:pkg";
 const CACHE_VER_KEY = "cradleos:cache-version";
 try {
@@ -2109,9 +2109,12 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
     const json = await res.json() as {
       result?: { data?: Array<{ parsedJson?: { vault_id?: string; tribe_id?: string | number } }> }
     };
-    const match = (json.result?.data ?? []).find(
+    const tribeVaults = (json.result?.data ?? []).filter(
       e => Number(e.parsedJson?.tribe_id) === tribeId
     );
+    // Prefer vault with non-empty coin name (the "real" launch, not accidental empty ones)
+    const named = tribeVaults.find(e => ((e.parsedJson as Record<string,unknown>)?.coin_name as string ?? "").length > 0);
+    const match = named ?? tribeVaults[0];
     const vaultId = match?.parsedJson?.vault_id ?? null;
     if (vaultId) setCachedVaultId(tribeId, vaultId);
     return vaultId;
