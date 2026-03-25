@@ -47,7 +47,7 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //
 // v2 deployed 2026-03-25 (Reapers_v2)
 export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
-export const CRADLEOS_PKG      = "0x2e51c867e32537f4b04b53e8efefde559d3b9be3ca430e39957de536173d32b0";
+export const CRADLEOS_PKG      = "0xa676b73640f2cd4c385bc947efad25e1339e6a0ca9f0d313a6abecf44962c1bc";
 //
 // ── ARCHIVED PACKAGE IDS (do NOT use) ─────────────────────────────────────────
 // v1 (2026-03-24 clean-slate):  0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4
@@ -113,6 +113,8 @@ export const TRIBE_DEX_TYPE   = `${CRADLEOS_ORIGINAL}::tribe_dex::TribeDex`;
 
 // Shared objects that must be re-created by founders on the new chain
 export const BOUNTY_BOARD = "0x965709ce9d087d8f90edac6e19d8d42908098ec253e83f20a650884cd4814d90";
+// Trustless bounty board — set after deploying trustless_bounty module
+export const TRUSTLESS_BOUNTY_BOARD = "0xc6b60757b79e474745b5d0e9b1d2aa82b0ee6aca9efb92917b7f2a3c665c7498";
 export const KEEPER_SHRINE = "0x9f1d97fa45215ba5c567ad6b5a4c29761b53fc520e1050ee298614b91d3ef2bf";
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";

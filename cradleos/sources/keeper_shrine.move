@@ -1,170 +1,161 @@
-/// CradleOS – Keeper Shrine
+/// CradleOS – Keeper Shrine (compatible with on-chain v2 deploy)
 ///
-/// A shared donation pool where players deposit Coin<T> (EVE, LUX, or any Sui coin)
-/// as tribute to the Keeper. The shrine balance is publicly visible on-chain as a
-/// growing treasury that lore-anchors the Keeper entity.
-///
-/// Design:
-///   • Generic over coin type <phantom T> — accepts EVE, LUX, or any Sui coin.
-///   • Any player can donate Coin<T> to the shrine (permissionless deposit).
-///   • Only the shrine keeper (admin) can withdraw accumulated donations.
-///   • The keeper can transfer admin rights to a new address.
-///   • Each donation emits a Donation event with donor address + amount.
-///   • Withdrawals emit a Withdrawal event for transparency.
-///
-/// Lore framing: "The Keeper observes all. Offerings sustain its vigil."
+/// Shared donation pool. Players deposit Coin<T> as tribute to the Keeper.
 module cradleos::keeper_shrine {
     use sui::balance::{Self, Balance};
     use sui::coin::{Self, Coin};
     use sui::event;
+    use std::string::{Self, String};
 
-    // ── Error codes ───────────────────────────────────────────────────────────
-
-    const ENotKeeper:          u64 = 0;
-    const EZeroAmount:         u64 = 1;
+    const ENotAdmin:            u64 = 0;
+    const EZeroAmount:          u64 = 1;
     const EInsufficientBalance: u64 = 2;
 
-    // ── Structs ───────────────────────────────────────────────────────────────
+    // ── Structs (MUST match on-chain layout exactly) ──────────────────────────
 
-    /// Shared. One shrine per coin type.
-    /// `phantom T` allows the shrine to hold any Sui coin.
     public struct KeeperShrine<phantom T> has key {
         id: UID,
-        /// Address that can withdraw donations and transfer keeper rights.
-        keeper: address,
-        /// Accumulated donations.
-        balance: Balance<T>,
-        /// Total lifetime donations (monotonic counter).
-        total_donated: u64,
-        /// Number of individual donations made.
-        donation_count: u64,
+        admin: address,
+        name: String,
+        offerings: Balance<T>,
+        total_offered: u64,
+        total_withdrawn: u64,
+        offering_count: u64,
     }
-
-    // ── Events ────────────────────────────────────────────────────────────────
 
     public struct ShrineCreated has copy, drop {
         shrine_id: ID,
-        keeper: address,
+        admin: address,
+        name: String,
     }
 
-    public struct Donation has copy, drop {
+    public struct OfferingMade has copy, drop {
         shrine_id: ID,
-        donor: address,
+        pilgrim: address,
         amount: u64,
         new_balance: u64,
-        total_donated: u64,
-        donation_count: u64,
+        offering_number: u64,
     }
 
-    public struct Withdrawal has copy, drop {
+    public struct ShrineWithdrawn has copy, drop {
         shrine_id: ID,
-        recipient: address,
+        admin: address,
         amount: u64,
-        new_balance: u64,
+        remaining_balance: u64,
     }
 
-    public struct KeeperChanged has copy, drop {
+    public struct AdminTransferred has copy, drop {
         shrine_id: ID,
-        old_keeper: address,
-        new_keeper: address,
+        old_admin: address,
+        new_admin: address,
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
-    /// Create and share a Keeper Shrine for coin type T.
-    /// The sender becomes the keeper (admin).
-    entry fun create_shrine<T>(ctx: &mut TxContext) {
-        let keeper = ctx.sender();
+    entry fun create_shrine<T>(name_bytes: vector<u8>, ctx: &mut TxContext) {
+        let admin = ctx.sender();
         let uid = object::new(ctx);
         let shrine_id = object::uid_to_inner(&uid);
+        let name = string::utf8(name_bytes);
 
-        event::emit(ShrineCreated { shrine_id, keeper });
+        event::emit(ShrineCreated { shrine_id, admin, name });
 
         transfer::share_object(KeeperShrine<T> {
             id: uid,
-            keeper,
-            balance: balance::zero(),
-            total_donated: 0,
-            donation_count: 0,
+            admin,
+            name,
+            offerings: balance::zero(),
+            total_offered: 0,
+            total_withdrawn: 0,
+            offering_count: 0,
         });
     }
 
-    // ── Donations (permissionless) ────────────────────────────────────────────
-
-    /// Donate Coin<T> to the shrine. Any player can call this.
-    entry fun donate<T>(
+    entry fun make_offering<T>(
         shrine: &mut KeeperShrine<T>,
         coin: Coin<T>,
-        ctx: &mut TxContext,
+        _ctx: &mut TxContext,
     ) {
-        let amount = coin::value(&coin);
+        let amount = coin.value();
         assert!(amount > 0, EZeroAmount);
+        let pilgrim = _ctx.sender();
 
-        let donor = ctx.sender();
-        balance::join(&mut shrine.balance, coin::into_balance(coin));
-        shrine.total_donated = shrine.total_donated + amount;
-        shrine.donation_count = shrine.donation_count + 1;
+        balance::join(&mut shrine.offerings, coin.into_balance());
+        shrine.total_offered = shrine.total_offered + amount;
+        shrine.offering_count = shrine.offering_count + 1;
 
-        event::emit(Donation {
+        event::emit(OfferingMade {
             shrine_id: object::uid_to_inner(&shrine.id),
-            donor,
+            pilgrim,
             amount,
-            new_balance: balance::value(&shrine.balance),
-            total_donated: shrine.total_donated,
-            donation_count: shrine.donation_count,
+            new_balance: balance::value(&shrine.offerings),
+            offering_number: shrine.offering_count,
         });
     }
 
-    // ── Keeper: withdraw ──────────────────────────────────────────────────────
-
-    /// Keeper withdraws `amount` from the shrine treasury, sending to `recipient`.
     entry fun withdraw<T>(
         shrine: &mut KeeperShrine<T>,
         amount: u64,
-        recipient: address,
-        ctx: &mut TxContext,
+        _ctx: &mut TxContext,
     ) {
-        assert!(ctx.sender() == shrine.keeper, ENotKeeper);
+        assert!(_ctx.sender() == shrine.admin, ENotAdmin);
         assert!(amount > 0, EZeroAmount);
-        assert!(balance::value(&shrine.balance) >= amount, EInsufficientBalance);
+        assert!(balance::value(&shrine.offerings) >= amount, EInsufficientBalance);
 
-        let withdrawn = coin::from_balance(
-            balance::split(&mut shrine.balance, amount),
-            ctx,
-        );
-        transfer::public_transfer(withdrawn, recipient);
+        shrine.total_withdrawn = shrine.total_withdrawn + amount;
+        let payout = coin::from_balance(balance::split(&mut shrine.offerings, amount), _ctx);
+        transfer::public_transfer(payout, shrine.admin);
 
-        event::emit(Withdrawal {
+        event::emit(ShrineWithdrawn {
             shrine_id: object::uid_to_inner(&shrine.id),
-            recipient,
+            admin: shrine.admin,
             amount,
-            new_balance: balance::value(&shrine.balance),
+            remaining_balance: balance::value(&shrine.offerings),
         });
     }
 
-    // ── Keeper: transfer admin ────────────────────────────────────────────────
-
-    /// Transfer shrine keeper rights to a new address.
-    entry fun set_keeper<T>(
+    entry fun withdraw_all<T>(
         shrine: &mut KeeperShrine<T>,
-        new_keeper: address,
-        ctx: &mut TxContext,
+        _ctx: &mut TxContext,
     ) {
-        assert!(ctx.sender() == shrine.keeper, ENotKeeper);
-        let old_keeper = shrine.keeper;
-        shrine.keeper = new_keeper;
+        let amount = balance::value(&shrine.offerings);
+        assert!(_ctx.sender() == shrine.admin, ENotAdmin);
+        assert!(amount > 0, EZeroAmount);
 
-        event::emit(KeeperChanged {
+        shrine.total_withdrawn = shrine.total_withdrawn + amount;
+        let payout = coin::from_balance(balance::split(&mut shrine.offerings, amount), _ctx);
+        transfer::public_transfer(payout, shrine.admin);
+
+        event::emit(ShrineWithdrawn {
             shrine_id: object::uid_to_inner(&shrine.id),
-            old_keeper,
-            new_keeper,
+            admin: shrine.admin,
+            amount,
+            remaining_balance: 0,
         });
     }
 
-    // ── Public reads ──────────────────────────────────────────────────────────
+    entry fun transfer_admin<T>(
+        shrine: &mut KeeperShrine<T>,
+        new_admin: address,
+        _ctx: &mut TxContext,
+    ) {
+        assert!(_ctx.sender() == shrine.admin, ENotAdmin);
+        let old_admin = shrine.admin;
+        shrine.admin = new_admin;
 
-    public fun keeper<T>(shrine: &KeeperShrine<T>): address      { shrine.keeper }
-    public fun balance<T>(shrine: &KeeperShrine<T>): u64         { balance::value(&shrine.balance) }
-    public fun total_donated<T>(shrine: &KeeperShrine<T>): u64   { shrine.total_donated }
-    public fun donation_count<T>(shrine: &KeeperShrine<T>): u64  { shrine.donation_count }
+        event::emit(AdminTransferred {
+            shrine_id: object::uid_to_inner(&shrine.id),
+            old_admin,
+            new_admin,
+        });
+    }
+
+    // ── Public reads (MUST exist — part of on-chain interface) ────────────────
+
+    public fun admin<T>(shrine: &KeeperShrine<T>): address { shrine.admin }
+    public fun name<T>(shrine: &KeeperShrine<T>): &String { &shrine.name }
+    public fun balance<T>(shrine: &KeeperShrine<T>): u64 { balance::value(&shrine.offerings) }
+    public fun total_offered<T>(shrine: &KeeperShrine<T>): u64 { shrine.total_offered }
+    public fun total_withdrawn<T>(shrine: &KeeperShrine<T>): u64 { shrine.total_withdrawn }
+    public fun offering_count<T>(shrine: &KeeperShrine<T>): u64 { shrine.offering_count }
 }
