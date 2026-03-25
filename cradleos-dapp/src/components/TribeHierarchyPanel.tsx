@@ -9,12 +9,21 @@ import { fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVault
   fetchTribeRoles, buildCreateRolesTx, buildGrantRoleTx, buildRevokeRoleTx, TRIBE_ROLE_NAMES, type TribeRolesState,
   fetchTribeMembersByTribeId, type CharacterMember, fetchTribeClaim,
 } from "../lib";
-import { fetchTribeMembersEnriched, type TribeMember } from "../graphql";
+import { fetchTribeMembersEnriched, resolveCharacterNamesForSet, type TribeMember } from "../graphql";
 
 // Augmented shape — lib.ts may not yet expose all fields; we cast where needed
 interface VaultFull extends TribeVaultState {
   memberCount?: number;
   infraCount?: number;
+}
+
+// Shared roster member type used across components
+interface RosterMember {
+  address: string;
+  balance: number;
+  charName?: string;
+  isFounder: boolean;
+  displayName?: string;
 }
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -278,69 +287,15 @@ function TribeOverviewCard({ vault }: { vault: VaultFull }) {
 }
 
 // ─── section: member roster ───────────────────────────────────────────────────
+// Now receives pre-built roster data from parent (TribeHierarchyPanel)
 
 function MemberRosterCard({
-  vaultId,
-  balancesTableId,
-  founder,
-  tribeId,
+  roster,
+  isLoading,
 }: {
-  vaultId: string;
-  balancesTableId: string;
-  founder: string;
-  tribeId: number;
+  roster: RosterMember[];
+  isLoading: boolean;
 }) {
-  type EnrichedMember = TribeMember & { isFounder: boolean };
-
-  const { data: members, isLoading: membersLoading } = useQuery<EnrichedMember[]>({
-    queryKey: ["tribeMembersEnriched", balancesTableId, founder, tribeId],
-    queryFn: () => fetchTribeMembersEnriched(balancesTableId, founder, tribeId),
-    staleTime: 30_000,
-    enabled: !!balancesTableId,
-  });
-
-  // On-chain Character objects by tribe_id — works even before any tokens are issued
-  const { data: onChainMembers, isLoading: onChainLoading } = useQuery<CharacterMember[]>({
-    queryKey: ["tribeMembersByTribeId", tribeId],
-    queryFn: () => fetchTribeMembersByTribeId(tribeId),
-    staleTime: 60_000,
-    enabled: !!tribeId,
-  });
-
-  // If no balancesTable (vault not yet populated), fall back to coin-event scan
-  const { data: issued } = useQuery<CoinEvent[]>({
-    queryKey: ["coinIssued", vaultId],
-    queryFn: () => fetchCoinEvents("CoinIssued", vaultId),
-    staleTime: 15_000,
-    enabled: !balancesTableId,
-  });
-
-  // Derive fallback roster from events when GraphQL path is unavailable
-  const fallbackRoster = (() => {
-    if (balancesTableId || !issued) return [];
-    const map: Record<string, number> = {};
-    for (const e of issued) map[e.address] = (map[e.address] ?? 0) + e.amount;
-    return Object.entries(map)
-      .map(([addr, bal]) => ({ address: addr, balance: bal, charName: undefined as string | undefined, isFounder: addr.toLowerCase() === founder.toLowerCase() }))
-      .sort((a, b) => b.balance - a.balance);
-  })();
-
-  // Merge: vault-balance roster takes precedence; augment with on-chain Character members
-  const mergedRoster = (() => {
-    if (members && members.length > 0) return members;
-    if (fallbackRoster.length > 0) return fallbackRoster;
-    // Fall back to on-chain character roster (no balance data)
-    return (onChainMembers ?? []).map(m => ({
-      address: m.characterAddress || m.characterId,
-      balance: 0,
-      charName: undefined as string | undefined,
-      isFounder: (m.characterAddress || m.characterId).toLowerCase() === founder.toLowerCase(),
-    }));
-  })();
-
-  const isLoading = membersLoading || onChainLoading;
-  const roster = mergedRoster;
-
   return (
     <div style={cardStyle}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -366,26 +321,29 @@ function MemberRosterCard({
             <span style={{ flex: "0 0 90px", textAlign: "right" }}>EVE Balance</span>
             <span style={{ flex: "0 0 70px", textAlign: "right" }}>Role</span>
           </div>
-          {roster.map(m => (
-            <div key={m.address} style={{ display: "flex", gap: 8, fontSize: "12px", alignItems: "center" }}>
-              <span style={{ flex: "0 0 140px", color: m.isFounder ? "#FF4700" : "#e0e0d0", fontWeight: m.isFounder ? 700 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {m.charName ?? "—"}
-              </span>
-              <span style={{ flex: "1 1 auto", fontFamily: "monospace", fontSize: 10, color: "rgba(107,107,94,0.6)" }}>
-                {short(m.address)}
-              </span>
-              <span style={{ flex: "0 0 90px", textAlign: "right", color: m.balance > 0 ? "#00ff96" : "rgba(107,107,94,0.3)", fontFamily: "monospace" }}>
-                {m.balance > 0 ? m.balance.toLocaleString() : "—"}
-              </span>
-              <span style={{ flex: "0 0 70px", textAlign: "right" }}>
-                {m.isFounder ? (
-                  <span style={{ fontSize: 10, color: "#FF4700", fontWeight: 700, letterSpacing: "0.08em" }}>FOUNDER</span>
-                ) : (
-                  <span style={{ fontSize: 10, color: "rgba(107,107,94,0.5)", letterSpacing: "0.06em" }}>MEMBER</span>
-                )}
-              </span>
-            </div>
-          ))}
+          {roster.map(m => {
+            const displayName = m.displayName ?? m.charName ?? "—";
+            return (
+              <div key={m.address} style={{ display: "flex", gap: 8, fontSize: "12px", alignItems: "center" }}>
+                <span style={{ flex: "0 0 140px", color: m.isFounder ? "#FF4700" : "#e0e0d0", fontWeight: m.isFounder ? 700 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {displayName}
+                </span>
+                <span style={{ flex: "1 1 auto", fontFamily: "monospace", fontSize: 10, color: "rgba(107,107,94,0.6)" }}>
+                  {short(m.address)}
+                </span>
+                <span style={{ flex: "0 0 90px", textAlign: "right", color: m.balance > 0 ? "#00ff96" : "rgba(107,107,94,0.3)", fontFamily: "monospace" }}>
+                  {m.balance > 0 ? m.balance.toLocaleString() : "—"}
+                </span>
+                <span style={{ flex: "0 0 70px", textAlign: "right" }}>
+                  {m.isFounder ? (
+                    <span style={{ fontSize: 10, color: "#FF4700", fontWeight: 700, letterSpacing: "0.08em" }}>FOUNDER</span>
+                  ) : (
+                    <span style={{ fontSize: 10, color: "rgba(107,107,94,0.5)", letterSpacing: "0.06em" }}>MEMBER</span>
+                  )}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -445,7 +403,7 @@ function InfraCard({ vaultId }: { vaultId: string }) {
 
 // ─── section: tribe roles ─────────────────────────────────────────────────────
 
-function TribeRolesCard({ vault }: { vault: VaultFull }) {
+function TribeRolesCard({ vault, roster }: { vault: VaultFull; roster: RosterMember[] }) {
   const { account: _verifiedAcct } = useVerifiedAccountContext();
   const account = _verifiedAcct;
   const dAppKit = useDAppKit();
@@ -536,12 +494,27 @@ function TribeRolesCard({ vault }: { vault: VaultFull }) {
             <div style={{ borderTop: "1px solid rgba(255,71,0,0.15)", paddingTop: 10, marginTop: 4 }}>
               <div style={labelStyle}>Grant Role</div>
               <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-                <input
-                  value={grantAddr}
-                  onChange={e => setGrantAddr(e.target.value.trim())}
-                  placeholder="0x address"
-                  style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#e0e0d0", fontSize: 12, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
-                />
+                {roster.length > 0 ? (
+                  <select
+                    value={grantAddr}
+                    onChange={e => setGrantAddr(e.target.value)}
+                    style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#e0e0d0", fontSize: 12, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
+                  >
+                    <option value="">Select pilot…</option>
+                    {roster.map(m => (
+                      <option key={m.address} value={m.address}>
+                        {m.displayName ?? m.charName ?? short(m.address)} — {short(m.address)}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    value={grantAddr}
+                    onChange={e => setGrantAddr(e.target.value.trim())}
+                    placeholder="0x address"
+                    style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#e0e0d0", fontSize: 12, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
+                  />
+                )}
                 <select
                   value={grantRole}
                   onChange={e => setGrantRole(Number(e.target.value))}
@@ -881,6 +854,67 @@ export function TribeHierarchyPanel() {
     staleTime: 15_000,
   });
 
+  // ── Roster queries (hoisted here so both MemberRosterCard and TribeRolesCard share the data) ──
+
+  type EnrichedMember = TribeMember & { isFounder: boolean };
+
+  const { data: enrichedMembers, isLoading: membersLoading } = useQuery<EnrichedMember[]>({
+    queryKey: ["tribeMembersEnriched", vault?.balancesTableId, vault?.founder, vault?.tribeId],
+    queryFn: () => fetchTribeMembersEnriched(vault!.balancesTableId, vault!.founder, vault!.tribeId),
+    staleTime: 30_000,
+    enabled: !!vault?.balancesTableId,
+  });
+
+  const { data: onChainMembers, isLoading: onChainLoading } = useQuery<CharacterMember[]>({
+    queryKey: ["tribeMembersByTribeId", vault?.tribeId],
+    queryFn: () => fetchTribeMembersByTribeId(vault!.tribeId),
+    staleTime: 60_000,
+    enabled: !!vault?.tribeId,
+  });
+
+  const { data: issuedForRoster } = useQuery<CoinEvent[]>({
+    queryKey: ["coinIssued", vault?.objectId],
+    queryFn: () => fetchCoinEvents("CoinIssued", vault!.objectId),
+    staleTime: 15_000,
+    enabled: !!vault && !vault.balancesTableId,
+  });
+
+  // Derive merged roster (same logic as the old MemberRosterCard)
+  const mergedRoster: RosterMember[] = (() => {
+    if (!vault) return [];
+    if (enrichedMembers && enrichedMembers.length > 0) return enrichedMembers;
+    if (!vault.balancesTableId && issuedForRoster && issuedForRoster.length > 0) {
+      const map: Record<string, number> = {};
+      for (const e of issuedForRoster) map[e.address] = (map[e.address] ?? 0) + e.amount;
+      return Object.entries(map)
+        .map(([addr, bal]) => ({ address: addr, balance: bal, charName: undefined, isFounder: addr.toLowerCase() === vault.founder.toLowerCase() }))
+        .sort((a, b) => b.balance - a.balance);
+    }
+    return (onChainMembers ?? []).map(m => ({
+      address: m.characterAddress || m.characterId,
+      balance: 0,
+      charName: undefined,
+      isFounder: (m.characterAddress || m.characterId).toLowerCase() === vault.founder.toLowerCase(),
+    }));
+  })();
+
+  // Targeted name resolution pass — resolves names even when thousands of Character objects exist
+  const rosterAddresses = mergedRoster.map(m => m.address);
+  const { data: nameMap } = useQuery<Map<string, string>>({
+    queryKey: ["memberNames", ...rosterAddresses.slice(0, 5)],
+    queryFn: () => resolveCharacterNamesForSet(rosterAddresses),
+    enabled: rosterAddresses.length > 0,
+    staleTime: 120_000,
+  });
+
+  // Attach resolved display names to each roster member
+  const rosterWithNames: RosterMember[] = mergedRoster.map(m => ({
+    ...m,
+    displayName: nameMap?.get(m.address.toLowerCase()) ?? m.charName,
+  }));
+
+  const rosterLoading = membersLoading || onChainLoading;
+
   if (!account || (!vaultLoading && !vault)) {
     // Tribeless, no wallet, or no vault → public tribe explorer
     return <PublicTribeExplorer />;
@@ -906,13 +940,11 @@ export function TribeHierarchyPanel() {
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
       <TribeOverviewCard vault={vaultFull} />
       <MemberRosterCard
-        vaultId={vault.objectId}
-        balancesTableId={vault.balancesTableId}
-        founder={vault.founder}
-        tribeId={vault.tribeId}
+        roster={rosterWithNames}
+        isLoading={rosterLoading}
       />
       <InfraCard vaultId={vault.objectId} />
-      <TribeRolesCard vault={vaultFull} />
+      <TribeRolesCard vault={vaultFull} roster={rosterWithNames} />
       <FounderActionsCard vault={vaultFull} />
       <ActivityFeedCard vaultId={vault.objectId} />
     </div>
