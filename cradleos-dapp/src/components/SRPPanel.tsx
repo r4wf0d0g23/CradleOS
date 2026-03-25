@@ -356,6 +356,7 @@ export function SRPPanel() {
   const [createValidUntil,setCreateValidUntil]= useState("");
   const [createDisputeH,  setCreateDisputeH]  = useState("24");
   const [createFund,      setCreateFund]      = useState("");
+  const [createEligibleClaimants, setCreateEligibleClaimants] = useState<"tribe_members" | "manual_approval">("tribe_members");
   const [createBusy,      setCreateBusy]      = useState(false);
   const [createErr,       setCreateErr]       = useState<string | null>(null);
 
@@ -455,14 +456,18 @@ export function SRPPanel() {
       const payoutPerLoss   = crdlToMist(parseFloat(createPayout));
       const maxClaims       = BigInt(parseInt(createMaxClaims) || 0);
       const initialFund     = crdlToMist(parseFloat(createFund));
+      // Embed eligible claimants restriction note in description
+      const eligibleLabel = createEligibleClaimants === "tribe_members" ? "Tribe Members Only" : "Manual Approval Required";
+      const descWithRestriction = `${createDesc.trim()} [Eligible: ${eligibleLabel}]`;
       const tx = await buildCreatePolicyTx(
-        createDesc.trim(), payoutPerLoss, maxClaims,
+        descWithRestriction, payoutPerLoss, maxClaims,
         validFromMs, validUntilMs, disputeWindowMs, initialFund, account.address,
       );
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setCreateDesc(""); setCreatePayout(""); setCreateMaxClaims("0");
       setCreateValidFrom(""); setCreateValidUntil(""); setCreateDisputeH("24"); setCreateFund("");
+      setCreateEligibleClaimants("tribe_members");
       invalidate();
     } catch (e) { setCreateErr(normalizeChainError(e)); }
     finally { setCreateBusy(false); }
@@ -485,11 +490,21 @@ export function SRPPanel() {
           <div style={muted}>No active policies found.</div>
         )}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {activePolicies.map(p => (
+          {activePolicies.map(p => {
+            // Extract eligible claimants from description note
+            const eligibleMatch = p.description.match(/\[Eligible: ([^\]]+)\]/);
+            const eligibleLabel = eligibleMatch ? eligibleMatch[1] : null;
+            const cleanDesc = p.description.replace(/\s*\[Eligible:[^\]]*\]/, "").trim();
+            return (
             <div key={p.objectId} style={policyCard}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "8px" }}>
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: "14px" }}>{p.description || "(no description)"}</span>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: "14px" }}>{cleanDesc || "(no description)"}</span>
                 <span style={statusBadge(policyStatusColor(p.status))}>{policyStatusLabel(p.status)}</span>
+                {eligibleLabel && (
+                  <span style={{ fontSize: "10px", padding: "2px 8px", fontFamily: "monospace", color: "rgba(100,180,255,0.8)", background: "rgba(100,180,255,0.08)", border: "1px solid rgba(100,180,255,0.2)", letterSpacing: "0.04em" }}>
+                    {eligibleLabel.toUpperCase()}
+                  </span>
+                )}
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
                 <InfoCell label="PAYOUT / LOSS">{formatCrdl(p.payoutPerLoss)}</InfoCell>
@@ -503,7 +518,8 @@ export function SRPPanel() {
                 <InfoCell label="SPONSOR">{shortAddr(p.sponsor)}</InfoCell>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -720,6 +736,16 @@ export function SRPPanel() {
             <FormField label="DISPUTE WINDOW (HOURS)">
               <input type="number" value={createDisputeH} onChange={e => setCreateDisputeH(e.target.value)}
                 placeholder="24" min="1" style={{ ...inputStyle, width: "80px" }} />
+            </FormField>
+            <FormField label="ELIGIBLE CLAIMANTS">
+              <select
+                value={createEligibleClaimants}
+                onChange={e => setCreateEligibleClaimants(e.target.value as "tribe_members" | "manual_approval")}
+                style={{ ...inputStyle, width: "200px" }}
+              >
+                <option value="tribe_members">Tribe Members Only</option>
+                <option value="manual_approval">Manual Approval Required</option>
+              </select>
             </FormField>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "10px" }}>

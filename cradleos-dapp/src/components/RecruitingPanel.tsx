@@ -30,7 +30,7 @@ import {
 } from "../constants";
 import {
   rpcGetObject, numish,
-  fetchCharacterTribeId, fetchTribeVault, getCachedVaultId,
+  fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe,
   type TribeVaultState,
 } from "../lib";
 
@@ -994,6 +994,8 @@ export function RecruitingPanel() {
 
   const [createBusy, setCreateBusy] = useState(false);
   const [createErr, setCreateErr] = useState<string | null>(null);
+  const [createRequirements, setCreateRequirements] = useState("");
+  const [createMinInfraCount, setCreateMinInfraCount] = useState("0");
 
   // Discover own vault
   const { data: tribeId } = useQuery<number | null>({
@@ -1006,7 +1008,8 @@ export function RecruitingPanel() {
     queryKey: ["tribeVault", tribeId, account?.address],
     queryFn: async () => {
       if (!tribeId || !account) return null;
-      const vaultId = getCachedVaultId(tribeId);
+      // Try cache first, then full on-chain discovery
+      const vaultId = getCachedVaultId(tribeId) ?? await discoverVaultIdForTribe(tribeId);
       if (!vaultId) return null;
       return fetchTribeVault(vaultId);
     },
@@ -1054,7 +1057,11 @@ export function RecruitingPanel() {
     if (!account || !vault) return;
     setCreateBusy(true); setCreateErr(null);
     try {
-      const tx = buildCreateTerminalTransaction(vault!.objectId, "", 0);
+      const tx = buildCreateTerminalTransaction(
+        vault.objectId,
+        createRequirements.trim(),
+        Math.max(0, parseInt(createMinInfraCount || "0", 10) || 0),
+      );
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
 
@@ -1082,6 +1089,8 @@ export function RecruitingPanel() {
         } catch { /* fall through to event discovery */ }
       }
 
+      setCreateRequirements("");
+      setCreateMinInfraCount("0");
       invalidate();
       refetchTerminalId();
       const retries = [3000, 7000, 14000];
@@ -1147,14 +1156,36 @@ export function RecruitingPanel() {
           ) : !terminalId ? (
             <div>
               <div style={{ color: "#888", fontSize: "13px", marginBottom: "16px" }}>
-                No recruiting terminal exists for your vault yet.
+                No recruiting terminal exists for your vault yet. Set your requirements and launch.
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "14px" }}>
+                <label style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em" }}>
+                  REQUIREMENTS
+                  <textarea
+                    value={createRequirements}
+                    onChange={e => setCreateRequirements(e.target.value)}
+                    placeholder="Describe what you expect from recruits…"
+                    rows={3}
+                    style={{ display: "block", width: "100%", marginTop: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: "12px", padding: "8px", fontFamily: "inherit", resize: "vertical", borderRadius: "0" }}
+                  />
+                </label>
+                <label style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em" }}>
+                  MIN INFRASTRUCTURE COUNT
+                  <input
+                    type="number"
+                    min={0}
+                    value={createMinInfraCount}
+                    onChange={e => setCreateMinInfraCount(e.target.value)}
+                    style={{ display: "block", width: "120px", marginTop: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: "12px", padding: "6px 8px", fontFamily: "monospace", borderRadius: "0" }}
+                  />
+                </label>
               </div>
               <button
                 className="accent-button"
                 onClick={handleCreateTerminal}
                 disabled={createBusy}
               >
-                {createBusy ? "Creating…" : "Create Recruiting Terminal"}
+                {createBusy ? "Launching…" : "Launch Tribe Recruitment"}
               </button>
               {createErr && (
                 <div style={{ color: "#ff6432", fontSize: "12px", marginTop: "8px" }}>⚠ {createErr}</div>

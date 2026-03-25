@@ -147,7 +147,7 @@ async function resolveSolarSystemNames(sysIds: string[]): Promise<Map<string, st
   return sysNameCache;
 }
 
-const TABS = ["KILL FEED", "INFRASTRUCTURE", "CHARACTERS", "SECURITY"] as const;
+const TABS = ["KILL FEED", "INFRASTRUCTURE", "SECURITY"] as const;
 type Tab = (typeof TABS)[number];
 
 const S = {
@@ -495,7 +495,7 @@ async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
   return results;
 }
 
-type InfraView = "OVERVIEW" | "OWNERS" | "ALERTS" | "NODES" | "EXPOSED";
+type InfraView = "OVERVIEW" | "NODES" | "EXPOSED";
 
 const isOnline = (n: any) => n.status?.status?.["@variant"] === "ONLINE";
 const fuelQty = (n: any) => parseInt(n.fuel?.quantity ?? "0", 10);
@@ -504,14 +504,6 @@ const fuelPct = (n: any) => { const m = fuelMax(n); return m > 0 ? fuelQty(n) / 
 const connCount = (n: any) => Array.isArray(n.connected_assembly_ids) ? n.connected_assembly_ids.length : 0;
 const nodeName = (n: any) => (n.metadata?.name && n.metadata.name !== "") ? n.metadata.name : `Node #${n.key?.item_id ?? n.objectId}`;
 
-function FuelBar({ pct, size = 60 }: { pct: number; size?: number }) {
-  const color = pct >= 0.5 ? "#00ff96" : pct >= 0.1 ? "#ffd700" : "#ff4444";
-  return (
-    <div style={{ width: size, height: 5, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
-      <div style={{ width: `${Math.min(100, pct * 100)}%`, height: "100%", background: color }} />
-    </div>
-  );
-}
 
 function StatCard({ label, value, color, sub }: { label: string; value: string | number; color?: string; sub?: string }) {
   return (
@@ -519,6 +511,136 @@ function StatCard({ label, value, color, sub }: { label: string; value: string |
       <div style={{ fontSize: 20, fontWeight: 700, color: color ?? "#ddd", fontFamily: "monospace" }}>{value}</div>
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
       {sub && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>{sub}</div>}
+    </div>
+  );
+}
+
+// ── NODES VIEW COMPONENT (with filters) ──────────────────────────────────────
+
+type NodeStatusFilter = "ALL" | "ONLINE" | "OFFLINE";
+type NodeFuelFilter   = "ALL" | "HAS_FUEL" | "LOW_FUEL";
+
+function NodesView({ nodes, charMap, sysMap, nodeSystemMap }: {
+  nodes: any[];
+  charMap: Map<string, string>;
+  sysMap: Map<string, string>;
+  nodeSystemMap: Map<string, string>;
+}) {
+  const [statusFilter, setStatusFilter] = useState<NodeStatusFilter>("ALL");
+  const [fuelFilter, setFuelFilter]     = useState<NodeFuelFilter>("ALL");
+  const [search, setSearch]             = useState("");
+
+  const filtered = useMemo(() => {
+    let list = [...nodes];
+    if (statusFilter === "ONLINE")  list = list.filter(n => isOnline(n));
+    if (statusFilter === "OFFLINE") list = list.filter(n => !isOnline(n));
+    if (fuelFilter === "HAS_FUEL")  list = list.filter(n => fuelMax(n) > 0 && fuelPct(n) >= 0.1);
+    if (fuelFilter === "LOW_FUEL")  list = list.filter(n => fuelMax(n) > 0 && fuelPct(n) < 0.1);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(n => {
+        const name = nodeName(n).toLowerCase();
+        const itemId = String(n.key?.item_id ?? "").toLowerCase();
+        const objId = String(n.objectId ?? "").toLowerCase();
+        return name.includes(q) || itemId.includes(q) || objId.includes(q);
+      });
+    }
+    return list.sort((a, b) => {
+      const aOn = isOnline(a) ? 0 : 1;
+      const bOn = isOnline(b) ? 0 : 1;
+      if (aOn !== bOn) return aOn - bOn;
+      return fuelPct(a) - fuelPct(b);
+    });
+  }, [nodes, statusFilter, fuelFilter, search]);
+
+  return (
+    <div>
+      {/* Filter controls */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 4 }}>
+          {(["ALL", "ONLINE", "OFFLINE"] as NodeStatusFilter[]).map(f => (
+            <button key={f} style={S.pill(statusFilter === f)} onClick={() => setStatusFilter(f)}>{f}</button>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 4 }}>
+          {([["ALL", "ALL FUEL"], ["HAS_FUEL", "HAS FUEL"], ["LOW_FUEL", "LOW FUEL"]] as [NodeFuelFilter, string][]).map(([f, label]) => (
+            <button key={f} style={S.pill(fuelFilter === f)} onClick={() => setFuelFilter(f)}>{label}</button>
+          ))}
+        </div>
+        <input
+          style={{ ...S.input, flex: 1, minWidth: 140, marginBottom: 0 }}
+          placeholder="Search name or node ID…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+      </div>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
+        {filtered.length} / {nodes.length} nodes — {nodes.filter(isOnline).length} online · {nodes.filter(n => !isOnline(n)).length} offline
+      </div>
+      {/* Column headers */}
+      <div style={{ display: "grid", gridTemplateColumns: "8px 1fr 120px 90px 70px 80px 60px", gap: "0 8px", padding: "4px 6px", fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 2 }}>
+        <div />
+        <div>NAME / ITEM ID</div>
+        <div>OWNER</div>
+        <div>SYSTEM</div>
+        <div>FUEL</div>
+        <div>CONNECTED</div>
+        <div>STATUS</div>
+      </div>
+      {filtered.map(n => {
+        const pct     = fuelPct(n);
+        const online  = isOnline(n);
+        const itemId  = n.key?.item_id ?? "";
+        const ownerId = n.owner_character_id?.item_id ?? "";
+        const ownerName = ownerId ? (charMap.get(ownerId) ?? `#${ownerId}`) : "—";
+        const sysItemId = nodeSystemMap.get(itemId) ?? "";
+        const sysName   = sysItemId ? (sysMap.get(sysItemId) ?? `sys-${sysItemId}`) : "—";
+        const fuelColor = pct === 0 ? "#ff4444" : pct < 0.02 ? "#ff4444" : pct < 0.1 ? "#ffd700" : pct < 0.3 ? "#ffaa00" : "#00ff96";
+        const dappUrl = itemId ? `https://${SERVER_ENV === 'stillness' ? 'dapps' : 'uat.dapps'}.evefrontier.com/?itemId=${itemId}&tenant=${SERVER_ENV}` : null;
+        return (
+          <div key={n.objectId} style={{
+            display: "grid", gridTemplateColumns: "8px 1fr 120px 90px 70px 80px 60px",
+            gap: "0 8px", padding: "5px 6px", fontSize: 11,
+            borderBottom: "1px solid rgba(255,255,255,0.04)",
+            alignItems: "center",
+            background: online ? "transparent" : "rgba(255,68,68,0.02)",
+          }}>
+            <span style={{ width: 7, height: 7, borderRadius: "50%", background: online ? "#00ff96" : "#ff4444", boxShadow: online ? "0 0 4px #00ff9660" : "none" }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={n.objectId}>
+                {nodeName(n)}
+              </div>
+              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
+                {dappUrl
+                  ? <a href={dappUrl} target="_blank" rel="noopener noreferrer" style={{ color: "rgba(100,180,255,0.6)", textDecoration: "none" }}>#{itemId}</a>
+                  : `#${itemId}`
+                }
+              </div>
+            </div>
+            <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 10, color: "rgba(200,200,184,0.8)" }} title={ownerId}>
+              {ownerName}
+            </div>
+            <div style={{ fontSize: 10, color: sysName === "—" ? "rgba(255,255,255,0.2)" : "rgba(100,180,255,0.8)" }}>
+              {sysName}
+            </div>
+            <div style={{ fontSize: 10, color: fuelColor }}>
+              {fuelMax(n) > 0 ? `${(pct * 100).toFixed(0)}%` : "—"}
+            </div>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>
+              {connCount(n)} structures
+            </div>
+            <div>
+              <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 2, background: online ? "rgba(0,255,150,0.12)" : "rgba(255,68,68,0.12)", color: online ? "#00ff96" : "#ff6666", letterSpacing: "0.06em" }}>
+                {online ? "ONLINE" : "OFFLINE"}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+      {filtered.length === 0 && <div style={S.muted}>No nodes match filters</div>}
+      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 8 }}>
+        System location derived from killmail records — nodes never killed show "—"
+      </div>
     </div>
   );
 }
@@ -534,7 +656,6 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
     return m;
   }, [nodes]);
   const [view, setView] = useState<InfraView>("OVERVIEW");
-  const [expandedOwner, setExpandedOwner] = useState<string | null>(null);
 
   // ── Aggregate stats ──
   // Cross-reference node item_ids against killmail solar_system_ids for location intel
@@ -564,54 +685,13 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
     return { online, offline, critical, lowFuel, totalFuel, totalFuelMax, totalConns, totalEnergy, burning, ownerCount: owners.size };
   }, [nodes]);
 
-  // ── Owner grouping ──
-  const ownerGroups = useMemo(() => {
-    const groups = new Map<string, { charId: string; nodes: any[] }>();
-    for (const n of nodes) {
-      const ownerId = n.owner_character_id?.item_id ?? "unknown";
-      if (!groups.has(ownerId)) groups.set(ownerId, { charId: ownerId, nodes: [] });
-      groups.get(ownerId)!.nodes.push(n);
-    }
-    return [...groups.values()].sort((a, b) => b.nodes.length - a.nodes.length);
-  }, [nodes]);
-
-  // ── Alert items ──
-  const alerts = useMemo(() => {
-    const items: Array<{ severity: "critical" | "warning" | "info"; text: string; nodeId?: string }> = [];
-    for (const n of nodes) {
-      const pct = fuelPct(n);
-      const name = nodeName(n);
-      if (fuelMax(n) > 0 && pct < 0.01) {
-        items.push({ severity: "critical", text: `${name} — FUEL EMPTY (${fuelQty(n)}/${fuelMax(n)})`, nodeId: n.objectId });
-      } else if (fuelMax(n) > 0 && pct < 0.05) {
-        items.push({ severity: "critical", text: `${name} — fuel critical (${(pct * 100).toFixed(1)}%)`, nodeId: n.objectId });
-      } else if (fuelMax(n) > 0 && pct < 0.1) {
-        items.push({ severity: "warning", text: `${name} — fuel low (${(pct * 100).toFixed(1)}%)`, nodeId: n.objectId });
-      }
-      if (!isOnline(n) && connCount(n) > 0) {
-        items.push({ severity: "warning", text: `${name} — OFFLINE with ${connCount(n)} connected structures`, nodeId: n.objectId });
-      }
-    }
-    // Owner-level alerts
-    for (const g of ownerGroups) {
-      const offlineNodes = g.nodes.filter(n => !isOnline(n));
-      if (offlineNodes.length >= 3) {
-        items.push({ severity: "info", text: `Owner ${g.charId} has ${offlineNodes.length} offline nodes` });
-      }
-    }
-    items.sort((a, b) => { const p = { critical: 0, warning: 1, info: 2 }; return p[a.severity] - p[b.severity]; });
-    return items;
-  }, [nodes, ownerGroups]);
-
   if (loading) return <div style={S.loading}>[ scanning infrastructure lattice... ]</div>;
-
-  const sevColor = { critical: "#ff4444", warning: "#ffd700", info: "rgba(100,180,255,0.7)" };
 
   return (
     <div>
       {/* ── View tabs ── */}
       <div style={{ marginBottom: 10 }}>
-        {(["OVERVIEW", "OWNERS", "ALERTS", "NODES", "EXPOSED"] as InfraView[]).map(v => (
+        {(["OVERVIEW", "NODES", "EXPOSED"] as InfraView[]).map(v => (
           <button key={v} style={S.pill(view === v)} onClick={() => setView(v)}>{v}</button>
         ))}
       </div>
@@ -632,198 +712,12 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
             <StatCard label="Fuel Burning" value={stats.burning} color={stats.burning > 0 ? "#FF4700" : "#666"} />
             <StatCard label="Global Fuel" value={stats.totalFuelMax > 0 ? `${((stats.totalFuel / stats.totalFuelMax) * 100).toFixed(1)}%` : "—"} color={stats.totalFuel / (stats.totalFuelMax || 1) > 0.3 ? "#00ff96" : "#ffd700"} sub={`${stats.totalFuel.toLocaleString()} / ${stats.totalFuelMax.toLocaleString()}`} />
           </div>
-          {/* Fuel distribution histogram */}
-          <div style={{ marginBottom: 12, padding: "8px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Fuel Distribution</div>
-            {(() => {
-              const buckets = [
-                { label: "Empty (0-2%)", min: 0, max: 0.02, color: "#ff4444" },
-                { label: "Critical (2-10%)", min: 0.02, max: 0.1, color: "#ff6644" },
-                { label: "Low (10-30%)", min: 0.1, max: 0.3, color: "#ffd700" },
-                { label: "Moderate (30-70%)", min: 0.3, max: 0.7, color: "#88cc44" },
-                { label: "Healthy (70-100%)", min: 0.7, max: 1.01, color: "#00ff96" },
-              ];
-              const maxCount = Math.max(1, ...buckets.map(b => nodes.filter(n => { const p = fuelPct(n); return p >= b.min && p < b.max; }).length));
-              return buckets.map(b => {
-                const count = nodes.filter(n => { const p = fuelPct(n); return p >= b.min && p < b.max; }).length;
-                return (
-                  <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                    <span style={{ width: 120, fontSize: 10, color: b.color }}>{b.label}</span>
-                    <div style={{ flex: 1, height: 8, background: "rgba(255,255,255,0.05)", overflow: "hidden" }}>
-                      <div style={{ width: `${(count / maxCount) * 100}%`, height: "100%", background: b.color, opacity: 0.7 }} />
-                    </div>
-                    <span style={{ width: 30, fontSize: 10, color: "rgba(255,255,255,0.5)", textAlign: "right" }}>{count}</span>
-                  </div>
-                );
-              });
-            })()}
-          </div>
-          {/* Top alerts preview */}
-          {alerts.length > 0 && (
-            <div style={{ padding: "8px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Top Alerts ({alerts.length})</div>
-              {alerts.slice(0, 5).map((a, i) => (
-                <div key={i} style={{ fontSize: 11, color: sevColor[a.severity], marginBottom: 2 }}>
-                  {a.severity === "critical" ? "●" : a.severity === "warning" ? "▲" : "◆"} {a.text}
-                </div>
-              ))}
-              {alerts.length > 5 && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>+ {alerts.length - 5} more — switch to ALERTS view</div>}
-            </div>
-          )}
-        </div>
-      )}
-
-      {view === "OWNERS" && (
-        <div>
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>{ownerGroups.length} infrastructure operators</div>
-          {ownerGroups.map(g => {
-            const online = g.nodes.filter(isOnline).length;
-            const offline = g.nodes.length - online;
-            const totalFuelG = g.nodes.reduce((s, n) => s + fuelQty(n), 0);
-            const totalMaxG = g.nodes.reduce((s, n) => s + fuelMax(n), 0);
-            const avgPct = totalMaxG > 0 ? totalFuelG / totalMaxG : 0;
-            const conns = g.nodes.reduce((s, n) => s + connCount(n), 0);
-            const expanded = expandedOwner === g.charId;
-            return (
-              <div key={g.charId} style={{ marginBottom: 4 }}>
-                <div
-                  style={{ ...S.row, cursor: "pointer", background: expanded ? "rgba(255,71,0,0.05)" : undefined }}
-                  onClick={() => setExpandedOwner(expanded ? null : g.charId)}
-                >
-                  <span style={{ fontWeight: 600, minWidth: 80 }}>{g.charId === "unknown" ? "Unknown" : (charMap.get(g.charId) ?? `#${g.charId}`)}</span>
-                  <span style={{ color: "#00ff96", fontSize: 11 }}>{online}↑</span>
-                  {offline > 0 && <span style={{ color: "#ff4444", fontSize: 11 }}>{offline}↓</span>}
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{g.nodes.length} nodes</span>
-                  <FuelBar pct={avgPct} size={50} />
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{(avgPct * 100).toFixed(0)}% fuel</span>
-                  <span style={S.muted}>{conns} conn</span>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>{expanded ? "▾" : "▸"}</span>
-                </div>
-                {expanded && (
-                  <div style={{ paddingLeft: 16, borderLeft: "1px solid rgba(255,71,0,0.15)" }}>
-                    {g.nodes.sort((a, b) => fuelQty(a) - fuelQty(b)).map(n => {
-                      const pct = fuelPct(n);
-                      return (
-                        <div key={n.objectId} style={{ ...S.row, fontSize: 11 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: isOnline(n) ? "#00ff96" : "#ff4444", flexShrink: 0 }} />
-                          <span style={{ minWidth: 80 }}>{nodeName(n)}</span>
-                          <FuelBar pct={pct} size={40} />
-                          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)" }}>{fuelQty(n)}/{fuelMax(n)}</span>
-                          <span style={S.muted}>{connCount(n)} conn</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {view === "ALERTS" && (
-        <div>
-          {alerts.length === 0 ? (
-            <div style={S.empty}>No active alerts — infrastructure nominal</div>
-          ) : (
-            <div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>{alerts.length} alerts</div>
-              {alerts.map((a, i) => (
-                <div key={i} style={{ padding: "4px 8px", marginBottom: 2, fontSize: 12, color: sevColor[a.severity], background: "rgba(255,255,255,0.015)", borderLeft: `2px solid ${sevColor[a.severity]}` }}>
-                  {a.severity === "critical" ? "● CRITICAL" : a.severity === "warning" ? "▲ WARNING" : "◆ INFO"}: {a.text}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
       {view === "NODES" && (
-        <div>
-          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>
-            {nodes.length} nodes — {nodes.filter(isOnline).length} online · {nodes.filter(n => !isOnline(n)).length} offline
-          </div>
-          {/* Column headers */}
-          <div style={{ display: "grid", gridTemplateColumns: "8px 1fr 120px 90px 70px 80px 60px", gap: "0 8px", padding: "4px 6px", fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 2 }}>
-            <div />
-            <div>NAME / ITEM ID</div>
-            <div>OWNER</div>
-            <div>SYSTEM</div>
-            <div>FUEL</div>
-            <div>CONNECTED</div>
-            <div>STATUS</div>
-          </div>
-          {[...nodes].sort((a, b) => {
-            // Online first, then by fuel %
-            const aOn = isOnline(a) ? 0 : 1;
-            const bOn = isOnline(b) ? 0 : 1;
-            if (aOn !== bOn) return aOn - bOn;
-            return fuelPct(a) - fuelPct(b);
-          }).map(n => {
-            const pct = fuelPct(n);
-            const online = isOnline(n);
-            const itemId = n.key?.item_id ?? "";
-            const ownerId = n.owner_character_id?.item_id ?? "";
-            const ownerName = ownerId ? (charMap.get(ownerId) ?? `#${ownerId}`) : "—";
-            // System from killmail cross-ref
-            const sysItemId = nodeSystemMap.get(itemId) ?? "";
-            const sysName = sysItemId ? (sysMap.get(sysItemId) ?? `sys-${sysItemId}`) : "—";
-            const fuelColor = pct === 0 ? "#ff4444" : pct < 0.02 ? "#ff4444" : pct < 0.1 ? "#ffd700" : pct < 0.3 ? "#ffaa00" : "#00ff96";
-            const dappUrl = itemId ? `https://${SERVER_ENV === 'stillness' ? 'dapps' : 'uat.dapps'}.evefrontier.com/?itemId=${itemId}&tenant=${SERVER_ENV}` : null;
-            return (
-              <div key={n.objectId} style={{
-                display: "grid", gridTemplateColumns: "8px 1fr 120px 90px 70px 80px 60px",
-                gap: "0 8px", padding: "5px 6px", fontSize: 11,
-                borderBottom: "1px solid rgba(255,255,255,0.04)",
-                alignItems: "center",
-                background: online ? "transparent" : "rgba(255,68,68,0.02)",
-              }}>
-                {/* Status dot */}
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: online ? "#00ff96" : "#ff4444", boxShadow: online ? "0 0 4px #00ff9660" : "none" }} />
-                {/* Name + item id */}
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={n.objectId}>
-                    {nodeName(n)}
-                  </div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
-                    {dappUrl
-                      ? <a href={dappUrl} target="_blank" rel="noopener noreferrer" style={{ color: "rgba(100,180,255,0.6)", textDecoration: "none" }}>#{itemId}</a>
-                      : `#${itemId}`
-                    }
-                  </div>
-                </div>
-                {/* Owner */}
-                <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 10, color: "rgba(200,200,184,0.8)" }} title={ownerId}>
-                  {ownerName}
-                </div>
-                {/* System */}
-                <div style={{ fontSize: 10, color: sysName === "—" ? "rgba(255,255,255,0.2)" : "rgba(100,180,255,0.8)" }}>
-                  {sysName}
-                </div>
-                {/* Fuel */}
-                <div style={{ fontSize: 10, color: fuelColor }}>
-                  {fuelMax(n) > 0 ? `${(pct * 100).toFixed(0)}%` : "—"}
-                </div>
-                {/* Connected structures */}
-                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>
-                  {connCount(n)} structures
-                </div>
-                {/* Status badge */}
-                <div>
-                  <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 2, background: online ? "rgba(0,255,150,0.12)" : "rgba(255,68,68,0.12)", color: online ? "#00ff96" : "#ff6666", letterSpacing: "0.06em" }}>
-                    {online ? "ONLINE" : "OFFLINE"}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-          {nodes.length === 0 && <div style={S.muted}>No node data</div>}
-          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", marginTop: 8 }}>
-            System location derived from killmail records — nodes never killed show "—"
-          </div>
-        </div>
+        <NodesView nodes={nodes} charMap={charMap} sysMap={sysMap} nodeSystemMap={nodeSystemMap} />
       )}
-
       {view === "EXPOSED" && (
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
@@ -934,160 +828,6 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
           {!exposedLoading && exposed.length === 0 && (
             <div style={S.muted}>Click FETCH EXPOSED to load on-chain location data</div>
           )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── CHARACTERS TAB ────────────────────────────────────────────────────────────
-
-type CharSort = "NAME" | "TRIBE";
-
-function CharactersTab({
-  characters,
-  tribeMap,
-  loading,
-}: {
-  characters: any[];
-  tribeMap: Map<string, string>;
-  loading: boolean;
-}) {
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<CharSort>("TRIBE");
-  const [expandedTribes, setExpandedTribes] = useState<Set<string>>(new Set());
-
-  /* tribe name resolution placeholder — could fetch from WORLD_API/v2/tribes */
-
-  const sorted = useMemo(() => {
-    const list = [...characters];
-    if (sortBy === "TRIBE") {
-      list.sort((a, b) => {
-        const tA = a.tribe_id ?? 9999999;
-        const tB = b.tribe_id ?? 9999999;
-        if (tA !== tB) return tA - tB;
-        return (a.metadata?.name || "zzz").localeCompare(b.metadata?.name || "zzz");
-      });
-    } else {
-      const named: any[] = [];
-      const unnamed: any[] = [];
-      for (const c of list) {
-        if (c.metadata?.name?.trim()) named.push(c);
-        else unnamed.push(c);
-      }
-      named.sort((a, b) => (a.metadata.name || "").localeCompare(b.metadata.name || ""));
-      return [...named, ...unnamed];
-    }
-    return list;
-  }, [characters, sortBy]);
-
-  const filtered = useMemo(() => {
-    if (!search.trim()) return sorted;
-    const q = search.toLowerCase();
-    return sorted.filter(
-      (c) =>
-        (c.metadata?.name || "").toLowerCase().includes(q) ||
-        (c.key?.item_id || "").includes(q) ||
-        String(c.tribe_id ?? "").includes(q)
-    );
-  }, [sorted, search]);
-
-  // Group by tribe for tribe view
-  const tribeGroups = useMemo(() => {
-    if (sortBy !== "TRIBE") return null;
-    const groups = new Map<string, any[]>();
-    for (const c of filtered) {
-      const tid = String(c.tribe_id ?? "tribeless");
-      if (!groups.has(tid)) groups.set(tid, []);
-      groups.get(tid)!.push(c);
-    }
-    return groups;
-  }, [filtered, sortBy]);
-
-  // Tribe stats
-  const tribeStats = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const c of characters) {
-      const tid = String(c.tribe_id ?? "tribeless");
-      counts.set(tid, (counts.get(tid) ?? 0) + 1);
-    }
-    return counts;
-  }, [characters]);
-
-  if (loading) return <div style={S.loading}>[ fetching riders... ]</div>;
-
-  return (
-    <div>
-      <div style={S.statRow}>
-        <span><span style={S.statVal}>{characters.length}</span> riders</span>
-        <span><span style={S.statVal}>{tribeStats.size}</span> tribes</span>
-      </div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center" }}>
-        <input
-          style={{ ...S.input, flex: 1, marginBottom: 0 }}
-          placeholder="Search name, ID, or tribe..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        {(["TRIBE", "NAME"] as CharSort[]).map(s => (
-          <button key={s} style={S.pill(sortBy === s)} onClick={() => setSortBy(s)}>{s}</button>
-        ))}
-      </div>
-
-      {filtered.length === 0 ? (
-        <div style={S.empty}>No characters found</div>
-      ) : sortBy === "TRIBE" && tribeGroups ? (
-        <div>
-          {[...tribeGroups.entries()].map(([tid, members]) => {
-            const expanded = expandedTribes.has(tid);
-            return (
-              <div key={tid} style={{ marginBottom: 4 }}>
-                <div
-                  style={{ padding: "4px 8px", background: "rgba(255,71,0,0.08)", borderLeft: "2px solid #FF4700", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, userSelect: "none" }}
-                  onClick={() => setExpandedTribes(prev => {
-                    const next = new Set(prev);
-                    if (next.has(tid)) next.delete(tid); else next.add(tid);
-                    return next;
-                  })}
-                >
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", width: 12 }}>{expanded ? "▾" : "▸"}</span>
-                  <span style={{ fontWeight: 700, color: "#FF4700", fontSize: 12 }}>
-                    {tid === "tribeless" ? "TRIBELESS" : (tribeMap.get(tid) ?? `TRIBE ${tid}`)}
-                  </span>
-                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{members.length} members</span>
-                </div>
-                {expanded && members.map(c => {
-                  const charId = c.key?.item_id ?? c.objectId;
-                  const name = c.metadata?.name?.trim() || `Unnamed #${charId}`;
-                  const wallet = c.character_address ?? "";
-                  return (
-                    <div key={c.objectId} style={{ ...S.row, paddingLeft: 24, borderLeft: "1px solid rgba(255,71,0,0.1)" }}>
-                      <span style={{ fontWeight: 600, minWidth: 120 }}>{name}</span>
-                      <span style={S.muted}>#{charId}</span>
-                      <span style={S.muted}>{truncateAddr(wallet, 8, 6)}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div>
-          {filtered.map((c) => {
-            const charId = c.key?.item_id ?? c.objectId;
-            const name = c.metadata?.name?.trim() || `Unnamed #${charId}`;
-            const tribeId = c.tribe_id ?? "—";
-            const wallet = c.character_address ?? "";
-            return (
-              <div key={c.objectId} style={S.row}>
-                <span style={{ fontWeight: 600, minWidth: 120 }}>{name}</span>
-                <span style={S.muted}>#{charId}</span>
-                <span style={S.badge("rgba(255,71,0,0.5)")}>{tribeMap.get(String(tribeId)) ?? `tribe ${tribeId}`}</span>
-                <span style={S.muted}>{truncateAddr(wallet, 8, 6)}</span>
-              </div>
-            );
-          })}
         </div>
       )}
     </div>
@@ -1411,32 +1151,12 @@ export function IntelDashboardPanel() {
   const [nodes, setNodes] = useState<any[]>([]);
 
   const [sysMap, setSysMap] = useState<Map<string, string>>(new Map());
-  const [tribeMap, setTribeMap] = useState<Map<string, string>>(new Map());
   const [killsLoading, setKillsLoading] = useState(false);
-  const [charsLoading, setCharsLoading] = useState(false);
+  const [_charsLoading, setCharsLoading] = useState(false);
   const [nodesLoading, setNodesLoading] = useState(false);
 
   const loadedKillFeed = useRef(false);
   const loadedInfra = useRef(false);
-  const loadedChars = useRef(false);
-  const loadedTribes = useRef(false);
-
-  // Fetch tribe names once on mount
-  useEffect(() => {
-    if (loadedTribes.current) return;
-    loadedTribes.current = true;
-    fetch(`${WORLD_API}/v2/tribes?limit=200`)
-      .then(r => r.json())
-      .then((d: { data: Array<{ id: number; name: string; nameShort: string }> }) => {
-        const m = new Map<string, string>();
-        for (const t of d.data ?? []) {
-          m.set(String(t.id), `${t.name} [${t.nameShort}]`);
-        }
-        m.set("1000167", "Default Spawn");
-        setTribeMap(m);
-      })
-      .catch(() => {});
-  }, []);
 
   const charMap = useMemo(() => {
     const m = new Map<string, string>();
@@ -1516,21 +1236,6 @@ export function IntelDashboardPanel() {
     }
   }, [activeTab]);
 
-  // Load characters tab
-  useEffect(() => {
-    if (activeTab === "CHARACTERS" && !loadedChars.current) {
-      loadedChars.current = true;
-      // Characters tab: fetch all characters for the roster view
-      if (characters.length === 0) {
-        setCharsLoading(true);
-        fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000).then((c) => {
-          setCharacters(c);
-          setCharsLoading(false);
-        });
-      }
-    }
-  }, [activeTab]);
-
   // Security tab needs kills + nodes — trigger both if not yet loaded
   useEffect(() => {
     if (activeTab === "SECURITY") {
@@ -1592,9 +1297,6 @@ export function IntelDashboardPanel() {
       )}
       {activeTab === "INFRASTRUCTURE" && (
         <InfraTab nodes={nodes} charMap={charMap} kills={kills} sysMap={sysMap} loading={nodesLoading} />
-      )}
-      {activeTab === "CHARACTERS" && (
-        <CharactersTab characters={characters} tribeMap={tribeMap} loading={charsLoading} />
       )}
       {activeTab === "SECURITY" && (
         <SecurityTab

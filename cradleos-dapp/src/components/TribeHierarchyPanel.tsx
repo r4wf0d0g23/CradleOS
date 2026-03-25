@@ -5,7 +5,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import { CRADLEOS_PKG, SUI_TESTNET_RPC, eventType } from "../constants";
-import { fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, numish, fetchTribeInfo, type TribeVaultState,
+import { fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe, numish, fetchTribeInfo, type TribeVaultState,
   fetchTribeRoles, buildCreateRolesTx, buildGrantRoleTx, buildRevokeRoleTx, TRIBE_ROLE_NAMES, type TribeRolesState,
   fetchTribeMembersByTribeId, type CharacterMember, fetchTribeClaim,
 } from "../lib";
@@ -231,23 +231,42 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 // ─── section: tribe overview ─────────────────────────────────────────────────
 
 function TribeOverviewCard({ vault }: { vault: VaultFull }) {
+  const { data: worldInfo } = useQuery({
+    queryKey: ["tribeInfo", vault.tribeId],
+    queryFn: () => fetchTribeInfo(vault.tribeId),
+    staleTime: 300_000,
+  });
+
+  const { data: onChainMembers } = useQuery<CharacterMember[]>({
+    queryKey: ["tribeMembersByTribeId", vault.tribeId],
+    queryFn: () => fetchTribeMembersByTribeId(vault.tribeId),
+    staleTime: 60_000,
+    enabled: !!vault.tribeId,
+  });
+
+  const memberCount = vault.memberCount ?? onChainMembers?.length ?? "—";
+  const tribeName = worldInfo?.name || vault.coinName || "Unnamed Tribe";
+
   return (
     <div style={cardStyle}>
       <div style={headingStyle}>Tribe Overview</div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: "#FF4700", marginBottom: 10 }}>
+        {tribeName}
+        {worldInfo?.nameShort && <span style={{ fontSize: 12, color: "rgba(107,107,94,0.6)", marginLeft: 8 }}>[{worldInfo.nameShort}]</span>}
+      </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0 32px" }}>
         <Row label="Coin">
-          <span style={{ color: "#FF4700", fontWeight: 700 }}>{vault.coinName}</span>
-          {" "}
-          <span style={{ color: "rgba(107,107,94,0.6)" }}>[{vault.coinSymbol}]</span>
+          <span style={{ color: "#FF4700", fontWeight: 700 }}>{vault.coinName || "—"}</span>
+          {vault.coinSymbol && <span style={{ color: "rgba(107,107,94,0.6)" }}> [{vault.coinSymbol}]</span>}
         </Row>
         <Row label="Tribe ID">
           <span style={{ fontFamily: "monospace" }}>{vault.tribeId}</span>
         </Row>
-        <Row label="Members">{vault.memberCount ?? "—"}</Row>
+        <Row label="Members">{memberCount}</Row>
         <Row label="Infra Registered">{vault.infraCount ?? "—"}</Row>
       </div>
       <Row label="Founder">
-        <span style={{ fontFamily: "monospace" }}>{short(vault.founder)}</span>
+        <span style={{ fontFamily: "monospace" }}>{vault.founder}</span>
         <CopyButton value={vault.founder} />
       </Row>
       <Row label="Vault Object">
@@ -854,7 +873,7 @@ export function TribeHierarchyPanel() {
     queryKey: ["tribeVault", tribeId],
     queryFn: async () => {
       if (!tribeId) return null;
-      const vaultId = getCachedVaultId(tribeId);
+      const vaultId = getCachedVaultId(tribeId) ?? await discoverVaultIdForTribe(tribeId);
       if (!vaultId) return null;
       return fetchTribeVault(vaultId);
     },
