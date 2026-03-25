@@ -1,0 +1,1 @@
+import"./_virtual_wxt-html-plugins-DPbbfBKe.js";import{R as o,L as r}from"./client-BvvKQdJ9.js";import{y as t,R as e}from"./useAuth-mHKxfhoe.js";import{S as a}from"./SignTransaction-YoVl1J1t.js";import"./buildTx-CXBRwdfc.js";o.createRoot(document.getElementById("root")).render(t.jsx(e.StrictMode,{children:t.jsx(r,{showNav:!1,children:t.jsx(a,{})})}));

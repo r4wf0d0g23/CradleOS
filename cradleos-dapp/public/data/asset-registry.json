@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-03-18T20:39:00-05:00",
+  "source": "EVE Frontier ResFiles (stillness client)",
+  "ships": {
+    "lai": {"name": "LAI", "class": "frigate", "faction": "Dataist", "role": "Light Combat", "model": "data_frig_light_01", "glb": "lai.glb", "size_mb": 1.8},
+    "haf": {"name": "HAF", "class": "frigate", "faction": "Dataist", "role": "Heavy Combat", "model": "data_frig_heavy_01", "glb": "haf.glb", "size_mb": 2.4},
+    "carom": {"name": "Carom", "class": "frigate", "faction": "Dataist", "role": "Assassination", "model": "data_frig_assa_01", "glb": "carom.glb", "size_mb": 3.0},
+    "lorha": {"name": "Lorha", "class": "frigate", "faction": "Dataist", "role": "Hauling", "model": "data_frig_haul_01", "glb": "lorha.glb", "size_mb": 2.2},
+    "mcf": {"name": "MCF", "class": "frigate", "faction": "Dataist", "role": "Hauling", "model": "data_frig_haul_02", "glb": null, "size_mb": null},
+    "reflex": {"name": "Reflex", "class": "frigate", "faction": "Synod", "role": "Light Combat", "model": "syn_frig_light_01", "glb": "reflex.glb", "size_mb": 4.5},
+    "recurve": {"name": "Recurve", "class": "frigate", "faction": "Synod", "role": "Mining", "model": "syn_frig_mine_01", "glb": null, "size_mb": null},
+    "tades": {"name": "TADES", "class": "destroyer", "faction": "Dataist", "role": "Heavy Combat", "model": "data_dest_heavy_01", "glb": "tades.glb", "size_mb": 4.7},
+    "maul": {"name": "Maul", "class": "destroyer", "faction": "Dataist", "role": "Light Combat", "model": "data_dest_light_01", "glb": "maul.glb", "size_mb": 6.1},
+    "wend": {"name": "Wend", "class": "shuttle", "faction": "Dataist", "role": "Transport", "model": "data_shut_01", "glb": "wend.glb", "size_mb": 4.9},
+    "usv": {"name": "USV", "class": "shuttle", "faction": "Synod", "role": "Cargo Transport", "model": "syn_shut_cargo_01", "glb": "usv.glb", "size_mb": 6.6},
+    "stride": {"name": "Stride", "class": "cruiser", "faction": "Dataist", "role": "Heavy Combat", "model": "data_cr_heavy_01", "glb": null, "size_mb": null},
+    "reiver": {"name": "Reiver", "class": "cruiser", "faction": "Dataist", "role": "Assassination", "model": "data_cr_assa_01", "glb": null, "size_mb": null},
+    "chumaq": {"name": "Chumaq", "class": "cruiser", "faction": "Dataist", "role": "Hauling", "model": "data_cr_haul_01", "glb": null, "size_mb": null}
+  },
+  "structures": {
+    "ssu": {"name": "Smart Storage Unit", "type": "deployable", "model": "dep_smart_storage_01v01", "glb": null, "desc": "Primary inventory container. Variants: Heavy (2.6B m³), Standard (20M m³), Mini (2M m³)", "capacity": {"heavy": 2600000000, "standard": 20000000, "mini": 2000000}},
+    "gate": {"name": "Smart Gate", "type": "deployable", "model": "dep_stargate_s_01v01", "glb": "gate.glb", "desc": "Player-deployed jump gate with configurable access policies"},
+    "turret": {"name": "Smart Turret", "type": "deployable", "model": "smart_turret_01", "glb": "turret.glb", "desc": "Automated defense platform with configurable targeting policies"},
+    "hangar": {"name": "Smart Hangar", "type": "deployable", "model": "dep_smart_hangar_01", "glb": "hangar.glb", "desc": "Ship docking and storage facility"},
+    "refinery": {"name": "Refinery", "type": "deployable", "model": "dep_refinery_s_01v01", "glb": "refinery.glb", "desc": "Processes raw ore into refined materials"},
+    "assembly": {"name": "Assembly Line", "type": "deployable", "model": "dep_assembly_line_s_01v01", "glb": "assembly.glb", "desc": "Combines components into finished products"},
+    "printer": {"name": "Printer", "type": "deployable", "model": "dep_printer_s_01v01", "glb": "printer.glb", "desc": "3D manufacturing unit for producing items from blueprints"},
+    "shipyard": {"name": "Shipyard", "type": "deployable", "model": "dep_shipyard_s_01v01", "glb": "shipyard.glb", "desc": "Constructs and repairs ships"},
+    "silo": {"name": "Crude Silo", "type": "deployable", "model": "dep_crude_silo_s_01v01", "glb": "silo.glb", "desc": "Bulk raw material storage"},
+    "tether": {"name": "Smart Tether", "type": "deployable", "model": "dep_smart_tether_01", "glb": "tether.glb", "desc": "Tractor beam for pulling objects and ships"}
+  },
+  "celestials": {
+    "asteroid": {"name": "Mineable Asteroid", "type": "celestial", "model": "as_mine_gen_01v01", "glb": "asteroid.glb", "desc": "Generic ore deposit"},
+    "asteroid2": {"name": "Mineable Asteroid (Variant 2)", "type": "celestial", "model": "as_mine_gen_02v01", "glb": "asteroid2.glb", "desc": "Alternative asteroid geometry"}
+  },
+  "factions": {
+    "dataist": {"name": "Dataist", "ships": ["lai", "haf", "carom", "lorha", "mcf", "tades", "maul", "wend", "stride", "reiver", "chumaq"]},
+    "synod": {"name": "Synod", "ships": ["reflex", "recurve", "usv"]}
+  },
+  "ship_classes": {
+    "shuttle": {"ships": ["wend", "usv"], "desc": "Small transport vessels"},
+    "frigate": {"ships": ["lai", "haf", "carom", "lorha", "mcf", "reflex", "recurve"], "desc": "Versatile light warships — most common class"},
+    "destroyer": {"ships": ["tades", "maul"], "desc": "Mid-size combat vessels"},
+    "cruiser": {"ships": ["stride", "reiver", "chumaq"], "desc": "Heavy warships with diverse roles"},
+    "corvette": {"ships": [], "desc": "Light fast ships (game files exist but not in current playable roster)"},
+    "battlecruiser": {"ships": [], "desc": "Heavy combat cruiser (game files exist, not playable yet)"},
+    "battleship": {"ships": [], "desc": "Capital-class warship (game files exist, not playable yet)"}
+  }
+}

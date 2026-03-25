@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+cradleos-dapp/node_modules/
+cradleos-agent-proxy/node_modules/
+
+# Build outputs
+cradleos-dapp/dist/
+cradleos-dapp/.vite/
+
+# Sensitive / personal files
+raw-soul.md
+MEMORY.md
+memory/
+TOOLS.md
+AGENTS.md
+SOUL.md
+*.env
+.env*
+
+# Runtime / internal
+api.py
+intel-api/
+training_logs/
+__pycache__/
+*.pyc
+*.log
+*.asar
+*.asar.*
+app-extracted/
+
+# Large game data files
+resfileindex.txt
+data/wiki_munitions/
+wiki_attributes/
+
+# Misc
+.DS_Store
+public/SOUL.md

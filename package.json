@@ -1,0 +1,8 @@
+{
+  "name": "frontier-oracle",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@mysten/sui": "*"
+  }
+}

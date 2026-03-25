@@ -1,0 +1,95 @@
+keyFooter:
+  fixedItemSize: 8
+  itemTypes:
+    attributes:
+      key:
+        min: 0
+        size: 4
+        type: int
+      offset:
+        min: 0
+        size: 4
+        type: int
+    attributesWithVariableOffsets: []
+    constantAttributeOffsets:
+      key: 0
+      offset: 4
+    endOfFixedSizeData: 8
+    optionalValueLookups: {}
+    size: 8
+    type: object
+  type: list
+keyTypes:
+  min: 0
+  size: 4
+  type: int
+type: dict
+valueTypes:
+  attributes:
+    constellationID:
+      min: 0
+      size: 4
+      type: int
+    regionID:
+      min: 0
+      size: 4
+      type: int
+    nameID:
+      min: 0
+      size: 4
+      type: int
+    center:
+      aliases:
+        x: 0
+        y: 1
+        z: 2
+      precision: double
+      size: 24
+      type: vector3
+    solarSystemIDs:
+      fixedItemSize: 4
+      itemTypes:
+        min: 0
+        size: 4
+        type: int
+      type: list
+    factionID:
+      isOptional: true
+      min: 0
+      size: 4
+      type: int
+    wormholeClassID:
+      isOptional: true
+      min: 0
+      size: 4
+      type: int
+    neighbours:
+      fixedItemSize: 4
+      itemTypes:
+        min: 0
+        size: 4
+        type: int
+      type: list
+    visualEffect:
+      isOptional: true
+      min: 0
+      size: 4
+      type: int
+  attributesWithVariableOffsets:
+  - solarSystemIDs
+  - factionID
+  - wormholeClassID
+  - neighbours
+  - visualEffect
+  constantAttributeOffsets:
+    center: 12
+    constellationID: 0
+    nameID: 8
+    regionID: 4
+  endOfFixedSizeData: 36
+  maxBitFieldValue: 4
+  optionalValueLookups:
+    factionID: 1
+    visualEffect: 4
+    wormholeClassID: 2
+  type: object

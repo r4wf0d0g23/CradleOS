@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <symbol id="add_light" viewBox="-4 -4 14 14">
+        <rect x="0" y="2.5" width="6" height="1" fill="currentColor"/>
+        <rect x="2.5" y="0" width="1" height="6" fill="currentColor"/>
+    </symbol>
+    <symbol id="add_thin" viewBox="-4 -4 14 14">
+        <rect x="0" y="2.25" width="6" height="1.5" fill="currentColor"/>
+        <rect x="2.25" y="0" width="1.5" height="6" fill="currentColor"/>
+    </symbol>
+    <symbol id="add_regular" viewBox="-4 -4 14 14">
+        <rect x="0" y="2" width="6" height="2" fill="currentColor"/>
+        <rect x="2" y="0" width="2" height="6" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="add_light_borderless" viewBox="0 0 6 6">
+        <rect x="0" y="2.5" width="6" height="1" fill="currentColor"/>
+        <rect x="2.5" y="0" width="1" height="6" fill="currentColor"/>
+    </symbol>
+    <symbol id="add_thin_borderless" viewBox="0 0 6 6">
+        <rect x="0" y="2.25" width="6" height="1.5" fill="currentColor"/>
+        <rect x="2.25" y="0" width="1.5" height="6" fill="currentColor"/>
+    </symbol>
+    <symbol id="add_regular_borderless" viewBox="0 0 6 6">
+        <rect x="0" y="2" width="6" height="2" fill="currentColor"/>
+        <rect x="2" y="0" width="2" height="6" fill="currentColor"/>
+    </symbol>
+</svg>
