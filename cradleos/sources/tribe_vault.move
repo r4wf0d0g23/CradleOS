@@ -260,6 +260,37 @@ module cradleos::tribe_vault {
         *bal = *bal + amount;
     }
 
+    /// Mint tribe tokens (updates total_supply + member balance).
+    /// Used by collateral_vault for EVE-backed minting.
+    public(package) fun mint_internal(
+        vault: &mut TribeVault,
+        recipient: address,
+        amount: u64,
+    ) {
+        vault.total_supply = vault.total_supply + amount;
+        if (!table::contains(&vault.balances, recipient)) {
+            table::add(&mut vault.balances, recipient, 0);
+        };
+        let bal = table::borrow_mut(&mut vault.balances, recipient);
+        *bal = *bal + amount;
+    }
+
+    /// Burn tribe tokens (updates total_supply + member balance).
+    /// Used by collateral_vault for redemptions.
+    public(package) fun burn_internal(
+        vault: &mut TribeVault,
+        member: address,
+        amount: u64,
+    ) {
+        assert!(table::contains(&vault.balances, member), EInsufficientBalance);
+        let bal = table::borrow_mut(&mut vault.balances, member);
+        assert!(*bal >= amount, EInsufficientBalance);
+        *bal = *bal - amount;
+        vault.total_supply = if (vault.total_supply >= amount) {
+            vault.total_supply - amount
+        } else { 0 };
+    }
+
     // ── Public reads ──────────────────────────────────────────────────────────
 
     public fun tribe_id(vault: &TribeVault): u32       { vault.tribe_id }
