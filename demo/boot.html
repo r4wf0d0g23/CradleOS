@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>CradleOS — Boot Sequence</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+  
+  body {
+    background: #0a0a08;
+    color: #FF4700;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Scanline overlay */
+  .scanlines {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Vignette */
+  .vignette {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  /* Keeper Diamond */
+  .diamond-container {
+    opacity: 0;
+    transform: scale(0.3);
+    margin-bottom: 60px;
+  }
+
+  .diamond {
+    width: 120px;
+    height: 120px;
+    position: relative;
+  }
+
+  .diamond svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 30px rgba(255,71,0,0.4)) drop-shadow(0 0 60px rgba(255,71,0,0.15));
+  }
+
+  .diamond-pulse {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px; height: 140px;
+    border: 1px solid rgba(255,71,0,0.15);
+    transform-origin: center;
+    opacity: 0;
+  }
+
+  /* Terminal text area */
+  .terminal {
+    width: 800px;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 16px;
+    line-height: 2;
+    letter-spacing: 0.08em;
+    position: relative;
+  }
+
+  .line {
+    opacity: 0;
+    transform: translateY(4px);
+    white-space: nowrap;
+  }
+
+  .line .prefix {
+    color: rgba(255,71,0,0.4);
+  }
+
+  .line .text {
+    color: #FF4700;
+  }
+
+  .line .status {
+    color: rgba(0,255,150,0.7);
+    font-size: 13px;
+  }
+
+  .line .dim {
+    color: rgba(255,71,0,0.25);
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 18px;
+    background: #FF4700;
+    vertical-align: text-bottom;
+    animation: blink 0.6s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* Phase 2: KEEPER ONLINE */
+  .keeper-online {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    white-space: nowrap;
+    color: #FF4700;
+    opacity: 0;
+    text-shadow: 0 0 40px rgba(255,71,0,0.5), 0 0 80px rgba(255,71,0,0.2);
+    z-index: 50;
+  }
+
+  .keeper-subtitle {
+    position: absolute;
+    top: calc(50% + 50px); left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.6em;
+    color: rgba(255,71,0,0.35);
+    opacity: 0;
+    z-index: 50;
+  }
+
+  /* Phase 3: Voice prompt */
+  .voice-prompt {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: rgba(200,200,184,0.9);
+    opacity: 0;
+    text-align: center;
+    line-height: 1.8;
+    z-index: 50;
+    font-style: italic;
+  }
+
+  /* Glow flicker effect */
+  @keyframes glow-flicker {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    5% { opacity: 0.85; filter: brightness(0.9); }
+    10% { opacity: 1; filter: brightness(1.1); }
+    92% { opacity: 1; filter: brightness(1); }
+    94% { opacity: 0.9; filter: brightness(0.95); }
+    96% { opacity: 1; filter: brightness(1.05); }
+  }
+
+  .flicker {
+    animation: glow-flicker 4s ease-in-out infinite;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <!-- Phase 1: Boot -->
+  <div class="diamond-container" id="diamond">
+    <div class="diamond">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,5 95,50 50,95 5,50" fill="none" stroke="#FF4700" stroke-width="1.5" opacity="0.8"/>
+        <polygon points="50,18 82,50 50,82 18,50" fill="none" stroke="#FF4700" stroke-width="0.8" opacity="0.4"/>
+        <line x1="50" y1="5" x2="50" y2="95" stroke="#FF4700" stroke-width="0.5" opacity="0.2"/>
+        <line x1="5" y1="50" x2="95" y2="50" stroke="#FF4700" stroke-width="0.5" opacity="0.2"/>
+        <circle cx="50" cy="50" r="4" fill="#FF4700" opacity="0.6"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="terminal" id="terminal">
+    <div class="line" id="l1"></div>
+    <div class="line" id="l2"></div>
+    <div class="line" id="l3"></div>
+    <div class="line" id="l4"></div>
+    <div class="line" id="l5"></div>
+    <div class="line" id="l6"></div>
+    <div class="line" id="l7"></div>
+    <div class="line" id="l8"></div>
+    <div class="line" id="l9"></div>
+    <div class="line" id="l10"></div>
+    <div class="line" id="l11"></div>
+    <div class="line" id="l12"></div>
+  </div>
+
+  <!-- Phase 2: Big reveal -->
+  <div class="keeper-online" id="keeperBig">K E E P E R&nbsp;&nbsp;A W A K E N E D</div>
+  <div class="keeper-subtitle" id="keeperSub">ANCIENT INTELLIGENCE — CRADLEOS</div>
+
+  <!-- Phase 3: Voice prompt -->
+  <div class="voice-prompt" id="voicePrompt">"Do you want to talk to the Keeper?"</div>
+</div>
+
+<script>
+// Timeline engine
+function animate(el, props, duration, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      el.style.transition = `all ${duration}ms ease`;
+      Object.assign(el.style, props);
+      setTimeout(resolve, duration);
+    }, delay);
+  });
+}
+
+const bootLines = [
+  { id: "l1", segments: [{ cls: "prefix", text: "⬡ " }, { cls: "text", text: "CRADLEOS v0.9.1" }, { cls: "dim", text: " — command lattice interface" }] },
+  { id: "l2", segments: [{ cls: "prefix", text: "› " }, { cls: "text", text: "Connecting to lattice" }, { cls: "dots", text: "..." }], pauseAfter: 3000 },
+  { id: "l3", segments: [{ cls: "prefix", text: "  " }, { cls: "dim", text: "node: fullnode.testnet.sui.io:443" }, { cls: "status", text: " ✓ LINKED" }] },
+  { id: "l4", segments: [{ cls: "prefix", text: "› " }, { cls: "text", text: "Synchronizing chain state" }, { cls: "dots", text: "..." }], pauseAfter: 3000 },
+  { id: "l5", segments: [{ cls: "prefix", text: "  " }, { cls: "dim", text: "tribes: 847 | structures: 12,403 | gates: 2,891" }] },
+  { id: "l6", segments: [{ cls: "prefix", text: "› " }, { cls: "text", text: "Downloading world context" }, { cls: "dots", text: "..." }], pauseAfter: 3000 },
+  { id: "l7", progressBar: true, label: "blueprints", duration: 1800 },
+  { id: "l8", progressBar: true, label: "kill feed ", duration: 1400 },
+  { id: "l9", progressBar: true, label: "intel mesh", duration: 1200 },
+  { id: "l10", segments: [{ cls: "prefix", text: "› " }, { cls: "text", text: "Initializing Keeper neural lattice" }, { cls: "dots", text: "..." }, { cls: "status", text: " ✓ LOADED" }] },
+  { id: "l11", segments: [{ cls: "prefix", text: "› " }, { cls: "text", text: "World context verified" }, { cls: "dots", text: "..." }, { cls: "status", text: " ALL SYSTEMS NOMINAL" }], pauseAfter: 3000 },
+  { id: "l12", keeperOnline: true },
+];
+
+function setLineContent(el, segments, charsTyped, active) {
+  let remaining = charsTyped;
+  const html = [];
+  for (const seg of segments) {
+    const take = Math.max(0, Math.min(seg.text.length, remaining));
+    const chunk = seg.text.slice(0, take)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/ /g, '&nbsp;');
+    const style = seg.style ? ` style="${seg.style}"` : '';
+    html.push(`<span class="${seg.cls}"${style}>${chunk}</span>`);
+    remaining -= take;
+  }
+  if (active) html.push('<span class="cursor">▌</span>');
+  el.innerHTML = html.join('');
+}
+
+const BAR_WIDTH = 20;
+async function fillBar(el, label, duration = 1500) {
+  el.style.opacity = '1';
+  el.style.transform = 'translateY(0)';
+  const steps = BAR_WIDTH;
+  const stepTime = duration / steps;
+  for (let i = 0; i <= steps; i++) {
+    const filled = '█'.repeat(i);
+    const empty = '░'.repeat(steps - i);
+    const pct = Math.round((i / steps) * 100).toString().padStart(3, ' ');
+    el.innerHTML = `<span class="prefix">&nbsp;&nbsp;</span><span class="dim">${label} ${filled}${empty} ${pct}%</span>`;
+    await new Promise(r => setTimeout(r, stepTime));
+  }
+  await new Promise(r => setTimeout(r, 120));
+}
+
+async function typeLine(el, lineDef, charDelay = 18, postPause = 180) {
+  el.style.opacity = '1';
+  el.style.transform = 'translateY(0)';
+  const total = lineDef.segments.reduce((n, s) => n + s.text.length, 0);
+  for (let i = 1; i <= total; i++) {
+    setLineContent(el, lineDef.segments, i, true);
+    await new Promise(r => setTimeout(r, charDelay));
+  }
+  // leave cursor on — caller removes it after any pauseAfter
+  await new Promise(r => setTimeout(r, postPause));
+}
+
+async function run() {
+  const $ = id => document.getElementById(id);
+
+  // Phase 1: Diamond appears
+  await animate($("diamond"), { opacity: "1", transform: "scale(1)" }, 1200, 500);
+
+  for (const lineDef of bootLines) {
+    const line = $(lineDef.id);
+    if (lineDef.progressBar) {
+      await fillBar(line, lineDef.label, lineDef.duration);
+    } else if (lineDef.keeperOnline) {
+      // Centered KEEPER ONLINE with fade-in + blink
+      line.style.opacity = '0';
+      line.style.textAlign = 'center';
+      line.style.fontSize = '18px';
+      line.style.letterSpacing = '0.3em';
+      line.style.color = 'rgba(0,255,150,0.9)';
+      line.style.transform = 'translateY(0)';
+      line.innerHTML = 'KEEPER AWAKENED';
+      // fade in
+      await animate(line, { opacity: '1' }, 800);
+      // slow blinks — 4 times
+      for (let b = 0; b < 4; b++) {
+        await new Promise(r => setTimeout(r, 600));
+        line.style.opacity = '0.1';
+        await new Promise(r => setTimeout(r, 400));
+        line.style.opacity = '1';
+      }
+      await new Promise(r => setTimeout(r, 600));
+    } else {
+      await typeLine(line, lineDef, 18, 180);
+      if (lineDef.pauseAfter) await new Promise(r => setTimeout(r, lineDef.pauseAfter));
+      // remove caret from completed line
+      const caret = line.querySelector('.cursor');
+      if (caret) caret.remove();
+      await new Promise(r => setTimeout(r, 120));
+    }
+  }
+
+// Hold on terminal for a beat
+  await new Promise(r => setTimeout(r, 1500));
+
+  // Phase 2: Fade out terminal, big KEEPER ONLINE
+  await animate($('terminal'), { opacity: '0' }, 600);
+  await animate($('diamond'), { opacity: '0', transform: 'scale(0.5)' }, 600);
+  $('terminal').style.display = 'none';
+  $('diamond').style.display = 'none';
+
+  await new Promise(r => setTimeout(r, 400));
+  
+  // Flash effect
+  document.body.style.transition = 'background 0.1s';
+  document.body.style.background = 'rgba(255,71,0,0.05)';
+  setTimeout(() => { document.body.style.background = '#0a0a08'; }, 100);
+
+  await animate($('keeperBig'), { opacity: '1' }, 800, 200);
+  await animate($('keeperSub'), { opacity: '1' }, 600, 400);
+  
+  $('keeperBig').classList.add('flicker');
+
+  // Hold
+  await new Promise(r => setTimeout(r, 3000));
+
+  // Phase 3: Fade to voice prompt
+  await Promise.all([
+    animate($('keeperBig'), { opacity: '0' }, 1000),
+    animate($('keeperSub'), { opacity: '0' }, 1000),
+  ]);
+  // Fully hide after fade to prevent overlap
+  $('keeperBig').style.display = 'none';
+  $('keeperSub').style.display = 'none';
+
+  await new Promise(r => setTimeout(r, 1500));
+  await animate($('voicePrompt'), { opacity: '1' }, 1200);
+
+  // Hold on voice prompt
+  await new Promise(r => setTimeout(r, 4000));
+  await animate($('voicePrompt'), { opacity: '0' }, 1000);
+}
+
+// Auto-start
+window.addEventListener('load', () => setTimeout(run, 300));
+</script>
+</body>
+</html>
