@@ -498,11 +498,11 @@ function TribeRolesCard({ vault, roster }: { vault: VaultFull; roster: RosterMem
                   <select
                     value={grantAddr}
                     onChange={e => setGrantAddr(e.target.value)}
-                    style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#e0e0d0", fontSize: 12, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
+                    style={{ flex: 1, minWidth: 180, background: "#1a1a1a", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#e0e0d0", fontSize: 12, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
                   >
-                    <option value="">Select pilot…</option>
+                    <option value="" style={{ background: "#1a1a1a", color: "#888" }}>Select pilot…</option>
                     {roster.map(m => (
-                      <option key={m.address} value={m.address}>
+                      <option key={m.address} value={m.address} style={{ background: "#1a1a1a", color: "#e0e0d0" }}>
                         {m.displayName ?? m.charName ?? short(m.address)} — {short(m.address)}
                       </option>
                     ))}
@@ -518,10 +518,10 @@ function TribeRolesCard({ vault, roster }: { vault: VaultFull; roster: RosterMem
                 <select
                   value={grantRole}
                   onChange={e => setGrantRole(Number(e.target.value))}
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#aaa", fontSize: 12, padding: "5px 8px" }}
+                  style={{ background: "#1a1a1a", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 4, color: "#aaa", fontSize: 12, padding: "5px 8px" }}
                 >
                   {Object.entries(TRIBE_ROLE_NAMES).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
+                    <option key={k} value={k} style={{ background: "#1a1a1a", color: "#e0e0d0" }}>{v}</option>
                   ))}
                 </select>
                 <button

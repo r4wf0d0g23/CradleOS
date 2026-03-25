@@ -304,3 +304,13 @@ html::before {
     letter-spacing: 0.05em !important;
   }
 }
+
+/* Dark theme for all select/option elements */
+select, select option {
+  background-color: #1a1a1a;
+  color: #e0e0d0;
+}
+select option:checked {
+  background-color: rgba(255, 71, 0, 0.25);
+  color: #FF4700;
+}
