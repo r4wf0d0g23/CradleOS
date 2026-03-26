@@ -487,6 +487,7 @@ export function MapPanel() {
   const reachPointsRef = useRef<THREE.Points | null>(null);
   const currentMarkerRef = useRef<THREE.Mesh | null>(null);
   const gateLineRef    = useRef<THREE.LineSegments | null>(null);
+  const rangeGroupRef  = useRef<THREE.Group | null>(null);
   const rafRef         = useRef(0);
   const raycaster      = useRef(new THREE.Raycaster());
   const mouseDownPos   = useRef<{x:number;y:number} | null>(null);
@@ -679,7 +680,7 @@ export function MapPanel() {
     const ctrl = controlsRef.current, cam = cameraRef.current;
     if (ctrl && cam) {
       ctrl.target.copy(sp.center);
-      cam.position.set(sp.center.x, sp.center.y, sp.center.z + dist);
+      cam.position.set(sp.center.x, sp.center.y + dist * 0.5, sp.center.z + dist * 0.7);
       cam.lookAt(sp.center.x, sp.center.y, sp.center.z);
       ctrl.update();
     }
@@ -856,6 +857,10 @@ export function MapPanel() {
     scene.add(marker);
     currentMarkerRef.current = marker;
 
+    // ── Clean up old range visuals ──
+    if (rangeGroupRef.current) { scene.remove(rangeGroupRef.current); rangeGroupRef.current = null; }
+    const rangeGroup = new THREE.Group();
+
     // ── Range shells: concentric wireframe spheres at 25/50/75/100% of range ──
     const ox = origin.x*SCALE, oy = origin.z*SCALE, oz = -origin.y*SCALE;
     const rangeMetre = rangeLY * LY_M;
@@ -871,7 +876,7 @@ export function MapPanel() {
       });
       const shell = new THREE.Mesh(shellGeo, shellMat);
       shell.position.set(ox, oy, oz);
-      scene.add(shell);
+      rangeGroup.add(shell);
     }
 
     // ── Reference grid plane through origin for orientation ──
@@ -888,7 +893,10 @@ export function MapPanel() {
     }
     gridGeo.setAttribute("position", new THREE.Float32BufferAttribute(gridVerts, 3));
     const gridMat = new THREE.LineBasicMaterial({ color: 0x112233, transparent: true, opacity: 0.12, depthWrite: false });
-    scene.add(new THREE.LineSegments(gridGeo, gridMat));
+    rangeGroup.add(new THREE.LineSegments(gridGeo, gridMat));
+
+    scene.add(rangeGroup);
+    rangeGroupRef.current = rangeGroup;
   }, []);
 
   // ── Camera helpers ─────────────────────────────────────────────────────────
@@ -896,7 +904,8 @@ export function MapPanel() {
     const cam = cameraRef.current, ctrl = controlsRef.current; if (!cam || !ctrl) return;
     const tx = sys.x*SCALE, ty = sys.z*SCALE, tz = -sys.y*SCALE;
     ctrl.target.set(tx,ty,tz);
-    cam.position.set(tx, ty, tz+80);
+    // Slightly elevated view to show galaxy disc (matches in-game map perspective)
+    cam.position.set(tx, ty + 60, tz + 40);
     cam.lookAt(tx,ty,tz); cam.up.set(0,1,0); ctrl.update();
   }, []);
 
