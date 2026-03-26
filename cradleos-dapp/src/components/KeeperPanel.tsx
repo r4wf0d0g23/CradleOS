@@ -463,8 +463,8 @@ const styles = {
   panel: {
     display: "flex",
     flexDirection: "column" as const,
-    height: "calc(100vh - 320px)",
-    minHeight: "520px",
+    height: "calc(100vh - 140px)",
+    minHeight: "400px",
     maxWidth: "1100px",
     margin: "0 auto",
     paddingTop: "80px",
@@ -478,6 +478,7 @@ const styles = {
     background: "rgba(5,3,2,0.95)",
     border: "1px solid rgba(255,71,0,0.35)",
     borderBottom: "2px solid #FF4700",
+    marginBottom: "6px",
   },
   diamondWrap: {
     width: "32px",
@@ -1330,7 +1331,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       </div>
 
       {/* ── "Keeper sees" disclosure (collapsed by default) ── */}
-      <details style={{ ...styles.disclosure, maxHeight: "none" }}>
+      <details style={{ ...styles.disclosure, maxHeight: "none", marginTop: 0 }}>
         <summary style={styles.disclosureSummary}>
           ▸ Keeper sees: wallet, tribe, EVE, structures, infra count
         </summary>
@@ -1363,9 +1364,9 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
 
       {/* ── Side-by-side: viewport left, chat right ── */}
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: 0, overflow: "hidden" }}>
-        {/* Left: 3D Holographic Viewport */}
-        <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0 }}>
-          <KeeperViewport {...viewportProps} height={320} />
+        {/* Left: 3D Holographic Viewport — flex height matches chat */}
+        <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0, flex: 1 }}>
+          <KeeperViewport {...viewportProps} />
         </div>
 
         {/* Center+Right: tabbed area */}
