@@ -90,7 +90,6 @@ function buildSupplyTree(
   const bpKey = productToBp.get(productTypeId);
 
   if (!bpKey || visited.has(productTypeId)) {
-    // Raw material or cycle guard
     return {
       typeId: productTypeId,
       name: info.name,
@@ -106,7 +105,6 @@ function buildSupplyTree(
   }
 
   const bp = blueprints[bpKey];
-  // How many blueprint runs do we need?
   const productEntry = bp.products.find(p => p.typeID === productTypeId);
   const producedPerRun = productEntry?.quantity ?? 1;
   const runs = Math.ceil(qty / producedPerRun);
@@ -138,8 +136,29 @@ function buildSupplyTree(
 
 // ── Aggregators ───────────────────────────────────────────────────────────────
 
-function collectRawMaterials(node: TreeNode, acc: Map<number, RawSummaryItem>) {
-  if (node.isRaw) {
+/**
+ * Collect materials with optional depth cutoff.
+ * maxDepth=null → collect only natural raw materials (full tree).
+ * maxDepth=N    → treat nodes at depth >= N as terminal inputs.
+ *                  The root (depth 0) always recurses into children.
+ */
+function collectMaterialsWithDepthFilter(
+  node: TreeNode,
+  acc: Map<number, RawSummaryItem>,
+  maxDepth: number | null
+) {
+  const atBoundary = maxDepth !== null && node.depth >= maxDepth;
+  const shouldAdd = node.isRaw || atBoundary;
+
+  // Root is the product being built — always recurse, never add it to shopping list
+  if (node.depth === 0 && !node.isRaw) {
+    for (const child of node.children) {
+      collectMaterialsWithDepthFilter(child, acc, maxDepth);
+    }
+    return;
+  }
+
+  if (shouldAdd) {
     const existing = acc.get(node.typeId);
     if (existing) {
       existing.totalQuantity += node.quantity;
@@ -154,8 +173,9 @@ function collectRawMaterials(node: TreeNode, acc: Map<number, RawSummaryItem>) {
     }
     return;
   }
+
   for (const child of node.children) {
-    collectRawMaterials(child, acc);
+    collectMaterialsWithDepthFilter(child, acc, maxDepth);
   }
 }
 
@@ -184,19 +204,58 @@ function fmtTime(seconds: number): string {
 // ── Category colors ───────────────────────────────────────────────────────────
 
 const CAT_COLORS: Record<string, { bg: string; text: string }> = {
-  Ship:      { bg: "rgba(220,40,40,0.18)",  text: "#ff6b6b" },
-  Module:    { bg: "rgba(255,140,0,0.18)",  text: "#ffaa33" },
-  Charge:    { bg: "rgba(220,200,0,0.18)",  text: "#ffe033" },
-  Material:  { bg: "rgba(40,180,80,0.18)",  text: "#44cc66" },
-  Commodity: { bg: "rgba(40,80,220,0.18)",  text: "#6699ff" },
+  Ship:      { bg: "rgba(220,40,40,0.18)",   text: "#ff6b6b" },
+  Module:    { bg: "rgba(255,140,0,0.18)",   text: "#ffaa33" },
+  Charge:    { bg: "rgba(220,200,0,0.18)",   text: "#ffe033" },
+  Material:  { bg: "rgba(40,180,80,0.18)",   text: "#44cc66" },
+  Commodity: { bg: "rgba(40,80,220,0.18)",   text: "#6699ff" },
   Asteroid:  { bg: "rgba(130,130,130,0.15)", text: "#aaaaaa" },
   Raw:       { bg: "rgba(100,100,100,0.15)", text: "#999999" },
-  Unknown:   { bg: "rgba(80,80,80,0.12)",   text: "#888888" },
+  Unknown:   { bg: "rgba(80,80,80,0.12)",    text: "#888888" },
 };
 
 function catStyle(cat: string, isRaw: boolean) {
   if (isRaw) return CAT_COLORS["Raw"];
   return CAT_COLORS[cat] ?? CAT_COLORS["Unknown"];
+}
+
+// ── Depth color gradient ──────────────────────────────────────────────────────
+
+// Orange (L0) → Yellow-Orange (L3) → Grey (L7)
+const DEPTH_COLORS = [
+  "#FF4700", // L0 — orange
+  "#FF6200", // L1
+  "#FF8A00", // L2
+  "#FFAF00", // L3 — gold-orange
+  "#C89600", // L4 — olive-gold
+  "#8A7A00", // L5 — olive
+  "#666655", // L6 — grey-green
+  "#444444", // L7 — dark grey
+];
+
+function getDepthColor(depth: number): string {
+  return DEPTH_COLORS[Math.min(depth, DEPTH_COLORS.length - 1)];
+}
+
+// ── Tree connector prefix ─────────────────────────────────────────────────────
+
+/**
+ * Build unicode box-drawing prefix for a tree node.
+ * isLastPath[i] = true if the ancestor at that level was the last child.
+ */
+function buildPrefix(isLastPath: boolean[]): string {
+  if (isLastPath.length === 0) return "";
+  let prefix = "";
+  for (let i = 0; i < isLastPath.length; i++) {
+    if (i === isLastPath.length - 1) {
+      // Connection to current node
+      prefix += isLastPath[i] ? "└─ " : "├─ ";
+    } else {
+      // Ancestor pipe or gap
+      prefix += isLastPath[i] ? "   " : "│  ";
+    }
+  }
+  return prefix;
 }
 
 // ── Badge ─────────────────────────────────────────────────────────────────────
@@ -222,19 +281,80 @@ function Badge({ label, colors }: { label: string; colors: { bg: string; text: s
   );
 }
 
+// ── Pill button ───────────────────────────────────────────────────────────────
+
+function Pill({
+  label,
+  active,
+  onClick,
+  accentColor = "#FF4700",
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  accentColor?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: "2px 10px",
+        borderRadius: "10px",
+        fontSize: "9px",
+        fontFamily: "IBM Plex Mono, monospace",
+        fontWeight: active ? 700 : 400,
+        letterSpacing: "0.07em",
+        textTransform: "uppercase" as const,
+        cursor: "pointer",
+        border: active ? `1px solid ${accentColor}` : "1px solid rgba(255,71,0,0.18)",
+        background: active ? `${accentColor}28` : "transparent",
+        color: active ? accentColor : "rgba(180,160,140,0.35)",
+        transition: "all 0.12s",
+        outline: "none",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 // ── Tree Node Row ─────────────────────────────────────────────────────────────
 
-function TreeRow({ node, expanded, onToggle }: {
+function TreeRow({
+  node,
+  expanded,
+  onToggle,
+  maxDepth,
+  isLastPath,
+  siblingIndex,
+}: {
   node: TreeNode;
   expanded: Set<string>;
   onToggle: (key: string) => void;
+  maxDepth: number | null;
+  isLastPath: boolean[];
+  siblingIndex: number;
 }) {
   const key = `${node.depth}-${node.typeId}-${node.quantity}`;
   const hasChildren = node.children.length > 0;
+
+  // Apply depth filter to visible children
+  const visibleChildren = maxDepth !== null
+    ? node.children.filter(c => c.depth <= maxDepth)
+    : node.children;
+  const hasVisibleChildren = visibleChildren.length > 0;
+
   const isOpen = expanded.has(key);
   const colors = catStyle(node.category, node.isRaw);
+  const prefix = buildPrefix(isLastPath);
+  const depthColor = getDepthColor(node.depth);
 
-  const indent = node.depth * 16;
+  // Alternate row shading (very subtle)
+  const rowBg = node.depth === 0
+    ? "rgba(255,71,0,0.06)"
+    : siblingIndex % 2 === 0
+      ? "transparent"
+      : "rgba(255,255,255,0.018)";
 
   return (
     <>
@@ -242,27 +362,35 @@ function TreeRow({ node, expanded, onToggle }: {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "6px",
-          padding: "4px 8px 4px 0",
-          paddingLeft: `${indent + 8}px`,
-          borderLeft: node.depth > 0
-            ? `2px solid rgba(255,71,0,${Math.max(0.08, 0.35 - node.depth * 0.07)})`
-            : "none",
-          marginLeft: node.depth > 0 ? "0" : "0",
-          cursor: hasChildren ? "pointer" : "default",
-          background: node.depth === 0 ? "rgba(255,71,0,0.06)" : "transparent",
-          borderRadius: "0",
+          gap: "4px",
+          padding: "7px 8px 7px 6px",
+          borderLeft: `3px solid ${depthColor}${node.depth === 0 ? "99" : "44"}`,
+          cursor: hasVisibleChildren ? "pointer" : "default",
+          background: rowBg,
           transition: "background 0.1s",
         }}
-        onClick={() => hasChildren && onToggle(key)}
+        onClick={() => hasVisibleChildren && onToggle(key)}
         onMouseEnter={e => {
-          if (hasChildren) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,71,0,0.04)";
+          if (hasVisibleChildren) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,71,0,0.04)";
         }}
         onMouseLeave={e => {
-          (e.currentTarget as HTMLDivElement).style.background =
-            node.depth === 0 ? "rgba(255,71,0,0.06)" : "transparent";
+          (e.currentTarget as HTMLDivElement).style.background = rowBg;
         }}
       >
+        {/* Unicode tree connector prefix */}
+        {prefix && (
+          <span style={{
+            fontFamily: "IBM Plex Mono, monospace",
+            fontSize: "11px",
+            color: `${depthColor}55`,
+            flexShrink: 0,
+            whiteSpace: "pre",
+            userSelect: "none",
+          }}>
+            {prefix}
+          </span>
+        )}
+
         {/* Expand/collapse chevron */}
         <span style={{
           fontSize: "9px",
@@ -270,8 +398,9 @@ function TreeRow({ node, expanded, onToggle }: {
           width: "10px",
           flexShrink: 0,
           fontFamily: "monospace",
+          userSelect: "none",
         }}>
-          {hasChildren ? (isOpen ? "▾" : "▸") : ""}
+          {hasVisibleChildren ? (isOpen ? "▾" : "▸") : ""}
         </span>
 
         {/* Icon */}
@@ -284,7 +413,7 @@ function TreeRow({ node, expanded, onToggle }: {
           flex: 1,
           fontSize: "12px",
           fontFamily: "IBM Plex Mono, monospace",
-          color: node.depth === 0 ? "#FF4700" : node.isRaw ? "#999" : "rgba(220,200,180,0.9)",
+          color: node.depth === 0 ? "#FF4700" : node.isRaw ? "#888" : "rgba(220,200,180,0.9)",
           fontWeight: node.depth === 0 ? 700 : 400,
           minWidth: 0,
           overflow: "hidden",
@@ -293,6 +422,19 @@ function TreeRow({ node, expanded, onToggle }: {
         }}>
           {node.name}
         </span>
+
+        {/* Collapsed sub-items count badge */}
+        {hasChildren && !isOpen && (
+          <span style={{
+            fontSize: "9px",
+            color: "rgba(180,160,140,0.28)",
+            flexShrink: 0,
+            fontFamily: "IBM Plex Mono, monospace",
+            fontStyle: "italic",
+          }}>
+            ({node.children.length} sub-item{node.children.length !== 1 ? "s" : ""})
+          </span>
+        )}
 
         {/* Quantity */}
         <span style={{
@@ -311,12 +453,12 @@ function TreeRow({ node, expanded, onToggle }: {
           colors={colors}
         />
 
-        {/* Time */}
+        {/* Manufacturing time */}
         {!node.isRaw && node.timePerUnit > 0 && (
           <span style={{
             fontSize: "9px",
             fontFamily: "IBM Plex Mono, monospace",
-            color: "rgba(180,160,140,0.4)",
+            color: "rgba(180,160,140,0.35)",
             flexShrink: 0,
           }}>
             ⏱{fmtTime(node.timePerUnit * node.quantity)}
@@ -325,30 +467,42 @@ function TreeRow({ node, expanded, onToggle }: {
       </div>
 
       {/* Children */}
-      {hasChildren && isOpen && node.children.map((child, i) => (
+      {hasVisibleChildren && isOpen && visibleChildren.map((child, i) => (
         <TreeRow
           key={`${child.depth}-${child.typeId}-${i}`}
           node={child}
           expanded={expanded}
           onToggle={onToggle}
+          maxDepth={maxDepth}
+          isLastPath={[...isLastPath, i === visibleChildren.length - 1]}
+          siblingIndex={i}
         />
       ))}
     </>
   );
 }
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const CATEGORY_PILLS = ["All", "Ship", "Module", "Charge", "Commodity", "Material"];
+const LEVEL_LABELS = ["All", "L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"];
+
 // ── Main Panel ────────────────────────────────────────────────────────────────
 
 export function IndustryPanel() {
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [maxDepth, setMaxDepth] = useState<number | null>(null);
+  const [shoppingListOpen, setShoppingListOpen] = useState(true);
+  const [mfgTimeOpen, setMfgTimeOpen] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // All producible products, sorted by category then name
+  // All producible products sorted by category then name
   const products = useMemo(() => {
     const result: { typeId: number; info: TypeInfo }[] = [];
     for (const typeId of producibleTypeIds) {
@@ -362,16 +516,20 @@ export function IndustryPanel() {
     });
   }, []);
 
-  // Filtered products
+  // Filtered products (category pill + text search)
   const filtered = useMemo(() => {
-    if (!search.trim()) return products;
+    let result = products;
+    if (categoryFilter !== "All") {
+      result = result.filter(p => p.info.category === categoryFilter);
+    }
+    if (!search.trim()) return result;
     const q = search.toLowerCase();
-    return products.filter(p =>
+    return result.filter(p =>
       p.info.name.toLowerCase().includes(q) ||
       p.info.category.toLowerCase().includes(q) ||
       p.info.group.toLowerCase().includes(q)
     );
-  }, [products, search]);
+  }, [products, search, categoryFilter]);
 
   // Group filtered by category
   const grouped = useMemo(() => {
@@ -384,37 +542,33 @@ export function IndustryPanel() {
     return map;
   }, [filtered]);
 
-  // Build tree
+  // Build supply chain tree
   const tree = useMemo(() => {
     if (selectedTypeId === null) return null;
     const qty = Math.max(1, Math.floor(quantity));
     return buildSupplyTree(selectedTypeId, qty, 0, new Set());
   }, [selectedTypeId, quantity]);
 
-  // Auto-expand root children when tree changes
+  // Auto-expand root and first-level children when tree changes
   useEffect(() => {
     if (!tree) { setExpanded(new Set()); return; }
     const initialExpanded = new Set<string>();
-    // Expand root node itself
-    const rootKey = `0-${tree.typeId}-${tree.quantity}`;
-    initialExpanded.add(rootKey);
-    // Expand first level
-    tree.children.forEach((child) => {
-      const key = `${child.depth}-${child.typeId}-${child.quantity}`;
-      initialExpanded.add(key);
+    initialExpanded.add(`0-${tree.typeId}-${tree.quantity}`);
+    tree.children.forEach(child => {
+      initialExpanded.add(`${child.depth}-${child.typeId}-${child.quantity}`);
     });
     setExpanded(initialExpanded);
   }, [tree]);
 
-  // Raw materials summary
+  // Raw materials summary with depth filter
   const rawSummary = useMemo(() => {
     if (!tree) return [];
     const acc = new Map<number, RawSummaryItem>();
-    collectRawMaterials(tree, acc);
+    collectMaterialsWithDepthFilter(tree, acc, maxDepth);
     return Array.from(acc.values()).sort((a, b) => b.totalQuantity - a.totalQuantity);
-  }, [tree]);
+  }, [tree, maxDepth]);
 
-  // Time summary
+  // Manufacturing time summary
   const timeSummary = useMemo((): TimeSummary => {
     if (!tree) return { totalSeconds: 0, byDepth: [] };
     const depthMap = new Map<number, number>();
@@ -446,6 +600,24 @@ export function IndustryPanel() {
     inputRef.current?.blur();
   };
 
+  const copyShoppingList = () => {
+    const text = rawSummary
+      .map(item => `${item.totalQuantity.toLocaleString()}x ${item.name}`)
+      .join("\n");
+    navigator.clipboard.writeText(text).catch(() => {});
+  };
+
+  const expandAll = () => {
+    if (!tree) return;
+    const allKeys = new Set<string>();
+    function collectKeys(node: TreeNode) {
+      allKeys.add(`${node.depth}-${node.typeId}-${node.quantity}`);
+      node.children.forEach(collectKeys);
+    }
+    collectKeys(tree);
+    setExpanded(allKeys);
+  };
+
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -462,6 +634,19 @@ export function IndustryPanel() {
 
   const selectedInfo = selectedTypeId !== null ? getTypeInfo(selectedTypeId) : null;
 
+  // Small reusable header button style
+  const headerBtn: React.CSSProperties = {
+    background: "none",
+    border: "1px solid rgba(255,71,0,0.2)",
+    color: "rgba(255,71,0,0.5)",
+    fontSize: "9px",
+    fontFamily: "IBM Plex Mono, monospace",
+    padding: "2px 8px",
+    cursor: "pointer",
+    letterSpacing: "0.08em",
+    outline: "none",
+  };
+
   return (
     <div style={{
       fontFamily: "IBM Plex Mono, monospace",
@@ -469,11 +654,11 @@ export function IndustryPanel() {
       padding: "16px",
       display: "flex",
       flexDirection: "column",
-      gap: "16px",
+      gap: "14px",
       maxWidth: "900px",
     }}>
 
-      {/* Header */}
+      {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid rgba(255,71,0,0.2)", paddingBottom: "12px" }}>
         <div style={{
           fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase",
@@ -486,12 +671,35 @@ export function IndustryPanel() {
         </div>
       </div>
 
-      {/* Controls row */}
+      {/* ── Category Quick-Filter Pills ── */}
+      <div>
+        <div style={{
+          fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase",
+          color: "rgba(255,71,0,0.4)", marginBottom: "6px",
+        }}>
+          Category
+        </div>
+        <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+          {CATEGORY_PILLS.map(cat => (
+            <Pill
+              key={cat}
+              label={cat}
+              active={categoryFilter === cat}
+              onClick={() => setCategoryFilter(cat)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Controls row: search + quantity ── */}
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
 
         {/* Product search */}
         <div style={{ position: "relative", flex: "1 1 280px" }}>
-          <div style={{ fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,71,0,0.5)", marginBottom: "4px" }}>
+          <div style={{
+            fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase",
+            color: "rgba(255,71,0,0.5)", marginBottom: "4px",
+          }}>
             Product to build
           </div>
           <input
@@ -585,7 +793,10 @@ export function IndustryPanel() {
 
         {/* Quantity */}
         <div style={{ flex: "0 0 140px" }}>
-          <div style={{ fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,71,0,0.5)", marginBottom: "4px" }}>
+          <div style={{
+            fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase",
+            color: "rgba(255,71,0,0.5)", marginBottom: "4px",
+          }}>
             Quantity
           </div>
           <input
@@ -609,7 +820,7 @@ export function IndustryPanel() {
         </div>
       </div>
 
-      {/* Selected product info strip */}
+      {/* ── Selected product info strip ── */}
       {selectedInfo && (
         <div style={{
           display: "flex",
@@ -634,156 +845,39 @@ export function IndustryPanel() {
         </div>
       )}
 
-      {/* Supply Chain Tree */}
+      {/* ── Supply Chain Tree ── */}
       {tree && (
-        <div style={{
-          border: "1px solid rgba(255,71,0,0.15)",
-          background: "#0a0a0a",
-        }}>
+        <div>
+          {/* Level filter pills */}
           <div style={{
-            padding: "8px 12px",
-            borderBottom: "1px solid rgba(255,71,0,0.1)",
-            fontSize: "9px",
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "rgba(255,71,0,0.5)",
             display: "flex",
-            justifyContent: "space-between",
+            gap: "4px",
+            marginBottom: "8px",
+            flexWrap: "wrap",
             alignItems: "center",
           }}>
-            <span>Supply Chain Tree</span>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button
-                onClick={() => {
-                  // Expand all nodes
-                  const allKeys = new Set<string>();
-                  function collectKeys(node: TreeNode) {
-                    const k = `${node.depth}-${node.typeId}-${node.quantity}`;
-                    allKeys.add(k);
-                    node.children.forEach(collectKeys);
-                  }
-                  collectKeys(tree);
-                  setExpanded(allKeys);
-                }}
-                style={{
-                  background: "none", border: "1px solid rgba(255,71,0,0.2)",
-                  color: "rgba(255,71,0,0.5)", fontSize: "9px", fontFamily: "inherit",
-                  padding: "2px 8px", cursor: "pointer", letterSpacing: "0.08em",
-                }}
-              >
-                Expand All
-              </button>
-              <button
-                onClick={() => setExpanded(new Set())}
-                style={{
-                  background: "none", border: "1px solid rgba(255,71,0,0.2)",
-                  color: "rgba(255,71,0,0.5)", fontSize: "9px", fontFamily: "inherit",
-                  padding: "2px 8px", cursor: "pointer", letterSpacing: "0.08em",
-                }}
-              >
-                Collapse All
-              </button>
-            </div>
-          </div>
-          <div style={{ padding: "8px 4px", maxHeight: "500px", overflowY: "auto" }}>
-            <TreeRow node={tree} expanded={expanded} onToggle={handleToggle} />
-          </div>
-        </div>
-      )}
-
-      {/* Bottom panels: raw materials + time summary */}
-      {tree && (
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-
-          {/* Raw Materials Shopping List */}
-          <div style={{
-            flex: "1 1 300px",
-            border: "1px solid rgba(100,100,100,0.3)",
-            background: "#0a0a0a",
-          }}>
-            <div style={{
-              padding: "8px 12px",
-              borderBottom: "1px solid rgba(100,100,100,0.2)",
-              fontSize: "9px",
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              color: "#aaaaaa",
-              display: "flex",
-              justifyContent: "space-between",
+            <span style={{
+              fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
+              color: "rgba(255,71,0,0.35)", marginRight: "4px",
             }}>
-              <span>🪨 Shopping List — Raw Materials</span>
-              <span style={{ color: "rgba(180,160,140,0.4)" }}>{rawSummary.length} types</span>
-            </div>
-            <div style={{ maxHeight: "360px", overflowY: "auto" }}>
-              {rawSummary.length === 0 ? (
-                <div style={{ padding: "12px", fontSize: "11px", color: "rgba(180,160,140,0.4)" }}>
-                  No raw materials — this item is already a base material.
-                </div>
-              ) : (
-                rawSummary.map((item, i) => {
-                  const colors = catStyle(item.category, true);
-                  return (
-                    <div
-                      key={item.typeId}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        padding: "5px 12px",
-                        borderBottom: "1px solid rgba(255,255,255,0.03)",
-                        background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.015)",
-                      }}
-                    >
-                      <span style={{
-                        fontSize: "10px",
-                        fontFamily: "IBM Plex Mono, monospace",
-                        color: "#FF4700",
-                        fontWeight: 700,
-                        minWidth: "60px",
-                        textAlign: "right",
-                      }}>
-                        {item.totalQuantity.toLocaleString()}
-                      </span>
-                      <span style={{
-                        flex: 1,
-                        fontSize: "11px",
-                        color: "rgba(200,180,160,0.8)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
-                        {item.name}
-                      </span>
-                      {item.category && (
-                        <Badge label={item.category} colors={colors} />
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-            {rawSummary.length > 0 && (
-              <div style={{
-                padding: "8px 12px",
-                borderTop: "1px solid rgba(100,100,100,0.2)",
-                fontSize: "9px",
-                color: "rgba(180,160,140,0.4)",
-                display: "flex",
-                justifyContent: "space-between",
-              }}>
-                <span>Total raw types</span>
-                <span style={{ color: "#FF4700" }}>{rawSummary.length}</span>
-              </div>
-            )}
+              Depth:
+            </span>
+            {LEVEL_LABELS.map((label, i) => {
+              const level = i === 0 ? null : i - 1;
+              return (
+                <Pill
+                  key={label}
+                  label={label}
+                  active={maxDepth === level}
+                  onClick={() => setMaxDepth(level)}
+                />
+              );
+            })}
           </div>
 
-          {/* Time Summary */}
-          <div style={{
-            flex: "0 1 220px",
-            border: "1px solid rgba(255,71,0,0.15)",
-            background: "#0a0a0a",
-            alignSelf: "flex-start",
-          }}>
+          {/* Tree container */}
+          <div style={{ border: "1px solid rgba(255,71,0,0.15)", background: "#0a0a0a" }}>
+            {/* Header */}
             <div style={{
               padding: "8px 12px",
               borderBottom: "1px solid rgba(255,71,0,0.1)",
@@ -791,47 +885,230 @@ export function IndustryPanel() {
               letterSpacing: "0.16em",
               textTransform: "uppercase",
               color: "rgba(255,71,0,0.5)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}>
-              ⏱ Manufacturing Time
-            </div>
-            <div style={{ padding: "8px 12px" }}>
-              <div style={{
-                fontSize: "22px",
-                fontWeight: 700,
-                color: "#FF4700",
-                marginBottom: "12px",
-              }}>
-                {fmtTime(timeSummary.totalSeconds)}
-              </div>
-              {timeSummary.byDepth.map(row => (
-                <div
-                  key={row.depth}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "3px 0",
-                    borderBottom: "1px solid rgba(255,71,0,0.05)",
-                    fontSize: "10px",
-                  }}
-                >
-                  <span style={{ color: "rgba(180,160,140,0.5)" }}>{row.label}</span>
-                  <span style={{ color: "rgba(220,200,180,0.8)", fontFamily: "IBM Plex Mono, monospace" }}>
-                    {fmtTime(row.seconds)}
+              <span>
+                Supply Chain Tree
+                {maxDepth !== null && (
+                  <span style={{ color: "rgba(255,71,0,0.35)", marginLeft: "8px" }}>
+                    (showing L0–L{maxDepth})
                   </span>
-                </div>
-              ))}
-              {timeSummary.totalSeconds === 0 && (
-                <div style={{ fontSize: "11px", color: "rgba(180,160,140,0.4)" }}>
-                  No manufacturing steps found.
-                </div>
-              )}
+                )}
+              </span>
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button onClick={expandAll} style={headerBtn}>Expand All</button>
+                <button onClick={() => setExpanded(new Set())} style={headerBtn}>Collapse All</button>
+              </div>
+            </div>
+
+            {/* Tree rows */}
+            <div style={{ padding: "6px 4px", maxHeight: "500px", overflowY: "auto" }}>
+              <TreeRow
+                node={tree}
+                expanded={expanded}
+                onToggle={handleToggle}
+                maxDepth={maxDepth}
+                isLastPath={[]}
+                siblingIndex={0}
+              />
             </div>
           </div>
         </div>
       )}
 
-      {/* Empty state */}
+      {/* ── Bottom panels: shopping list + time summary ── */}
+      {tree && (
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+
+          {/* ── Shopping List (collapsible) ── */}
+          <div style={{
+            flex: "1 1 300px",
+            border: "1px solid rgba(100,100,100,0.3)",
+            background: "#0a0a0a",
+          }}>
+            {/* Header */}
+            <div
+              onClick={() => setShoppingListOpen(v => !v)}
+              style={{
+                padding: "8px 12px",
+                borderBottom: shoppingListOpen ? "1px solid rgba(100,100,100,0.2)" : "none",
+                fontSize: "9px",
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: "#aaaaaa",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                cursor: "pointer",
+                userSelect: "none",
+              }}
+            >
+              <span>
+                <span style={{ color: "rgba(255,71,0,0.5)", marginRight: "4px" }}>
+                  {shoppingListOpen ? "▾" : "▸"}
+                </span>
+                🪨 Shopping List — Raw Materials
+              </span>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <span style={{ color: "rgba(180,160,140,0.4)" }}>{rawSummary.length} types</span>
+                {rawSummary.length > 0 && (
+                  <button
+                    onClick={e => { e.stopPropagation(); copyShoppingList(); }}
+                    style={{
+                      ...headerBtn,
+                      border: "1px solid rgba(100,100,100,0.3)",
+                      color: "rgba(160,140,120,0.6)",
+                      fontSize: "8px",
+                    }}
+                    title="Copy shopping list to clipboard"
+                  >
+                    📋 Copy
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Content */}
+            {shoppingListOpen && (
+              <>
+                <div style={{ maxHeight: "360px", overflowY: "auto" }}>
+                  {rawSummary.length === 0 ? (
+                    <div style={{ padding: "12px", fontSize: "11px", color: "rgba(180,160,140,0.4)" }}>
+                      No materials — this item is a base material.
+                    </div>
+                  ) : (
+                    rawSummary.map((item, i) => {
+                      const colors = catStyle(item.category, true);
+                      return (
+                        <div
+                          key={item.typeId}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "5px 12px",
+                            borderBottom: "1px solid rgba(255,255,255,0.03)",
+                            background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.015)",
+                          }}
+                        >
+                          <span style={{
+                            fontSize: "10px",
+                            fontFamily: "IBM Plex Mono, monospace",
+                            color: "#FF4700",
+                            fontWeight: 700,
+                            minWidth: "60px",
+                            textAlign: "right",
+                          }}>
+                            {item.totalQuantity.toLocaleString()}
+                          </span>
+                          <span style={{
+                            flex: 1,
+                            fontSize: "11px",
+                            color: "rgba(200,180,160,0.8)",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}>
+                            {item.name}
+                          </span>
+                          {item.category && (
+                            <Badge label={item.category} colors={colors} />
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                {rawSummary.length > 0 && (
+                  <div style={{
+                    padding: "7px 12px",
+                    borderTop: "1px solid rgba(100,100,100,0.2)",
+                    fontSize: "9px",
+                    color: "rgba(180,160,140,0.4)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}>
+                    <span>Total raw types</span>
+                    <span style={{ color: "#FF4700" }}>{rawSummary.length}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* ── Manufacturing Time (collapsible) ── */}
+          <div style={{
+            flex: "0 1 220px",
+            border: "1px solid rgba(255,71,0,0.15)",
+            background: "#0a0a0a",
+            alignSelf: "flex-start",
+          }}>
+            {/* Header */}
+            <div
+              onClick={() => setMfgTimeOpen(v => !v)}
+              style={{
+                padding: "8px 12px",
+                borderBottom: mfgTimeOpen ? "1px solid rgba(255,71,0,0.1)" : "none",
+                fontSize: "9px",
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: "rgba(255,71,0,0.5)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                cursor: "pointer",
+                userSelect: "none",
+              }}
+            >
+              <span style={{ color: "rgba(255,71,0,0.4)" }}>
+                {mfgTimeOpen ? "▾" : "▸"}
+              </span>
+              <span>⏱ Manufacturing Time</span>
+            </div>
+
+            {/* Content */}
+            {mfgTimeOpen && (
+              <div style={{ padding: "8px 12px" }}>
+                <div style={{
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#FF4700",
+                  marginBottom: "12px",
+                }}>
+                  {fmtTime(timeSummary.totalSeconds)}
+                </div>
+                {timeSummary.byDepth.map(row => (
+                  <div
+                    key={row.depth}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "3px 0",
+                      borderBottom: "1px solid rgba(255,71,0,0.05)",
+                      fontSize: "10px",
+                    }}
+                  >
+                    <span style={{ color: "rgba(180,160,140,0.5)" }}>{row.label}</span>
+                    <span style={{ color: "rgba(220,200,180,0.8)", fontFamily: "IBM Plex Mono, monospace" }}>
+                      {fmtTime(row.seconds)}
+                    </span>
+                  </div>
+                ))}
+                {timeSummary.totalSeconds === 0 && (
+                  <div style={{ fontSize: "11px", color: "rgba(180,160,140,0.4)" }}>
+                    No manufacturing steps found.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Empty state ── */}
       {!tree && (
         <div style={{
           textAlign: "center",
