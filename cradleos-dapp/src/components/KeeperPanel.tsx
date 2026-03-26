@@ -934,7 +934,7 @@ export function KeeperPanel() {
   const handleScreenCapture = useCallback(async () => {
     try {
       if (!navigator.mediaDevices?.getDisplayMedia) {
-        setWarningMsg("⚠ Screen capture requires HTTPS. Use the deployed site or upload a screenshot instead.");
+        setWarningMsg("⚠ Screen capture is not available in this browser. Use FILE to upload a screenshot instead.");
         return;
       }
       const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -1544,19 +1544,22 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         </div>
       )}
       <div style={styles.inputRow}>
-        {/* Camera/upload button */}
+        {/* File upload button */}
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
           title="Offer a relic — attach a screenshot"
           style={{
-            padding: "0 12px",
+            padding: "0 10px",
             background: "rgba(255,200,0,0.06)",
             border: "none",
             borderRight: "1px solid rgba(255,71,0,0.15)",
             color: "rgba(255,200,0,0.6)",
             cursor: "pointer",
-            fontSize: "16px",
+            fontSize: "10px",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            fontFamily: "IBM Plex Mono, monospace",
             flexShrink: 0,
             opacity: isLoading ? 0.4 : 1,
             transition: "background 0.15s",
@@ -1564,7 +1567,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           onMouseEnter={e => { if (!isLoading) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,200,0,0.14)"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,200,0,0.06)"; }}
         >
-          📷
+          FILE
         </button>
         {/* Screen capture button */}
         <button
@@ -1586,7 +1589,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           onMouseEnter={e => { if (!isLoading) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,200,0,0.14)"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,200,0,0.06)"; }}
         >
-          🖥️
+          <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.06em", fontFamily: "IBM Plex Mono, monospace" }}>SNAP</span>
         </button>
         <textarea
           ref={inputRef}
