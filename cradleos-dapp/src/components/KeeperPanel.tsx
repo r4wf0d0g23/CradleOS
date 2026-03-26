@@ -1365,8 +1365,8 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
 
       {/* ── Side-by-side: viewport left, chat right ── */}
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: 0, overflow: "hidden" }}>
-        {/* Left: 3D Holographic Viewport — flex height matches chat */}
-        <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0, flex: 1 }}>
+        {/* Left: 3D Holographic Viewport — fills entire left side */}
+        <div style={{ width: "40%", minWidth: 220, maxWidth: 420, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0 }}>
           <KeeperViewport {...viewportProps} />
         </div>
 
