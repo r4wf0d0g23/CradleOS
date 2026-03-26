@@ -502,7 +502,7 @@ const styles = {
     border: "1px solid rgba(255,71,0,0.15)",
     borderTop: "none",
     padding: "0",
-    fontSize: "11px",
+    fontSize: "13px",
     fontFamily: "monospace",
   },
   disclosureSummary: {
@@ -510,7 +510,7 @@ const styles = {
     cursor: "pointer",
     color: "rgba(255,71,0,0.7)",
     letterSpacing: "0.08em",
-    fontSize: "10px",
+    fontSize: "12px",
     userSelect: "none" as const,
     listStyle: "none" as const,
   },
@@ -556,7 +556,7 @@ const styles = {
     borderLeft: "1px solid rgba(255,71,0,0.25)",
     color: "#FF4700",
     cursor: "pointer",
-    fontSize: "11px",
+    fontSize: "13px",
     fontWeight: 700,
     letterSpacing: "0.12em",
     textTransform: "uppercase" as const,
@@ -624,7 +624,7 @@ function NoWalletState() {
         The agent requires on-chain identity to provide<br />
         contextual assistance.
       </div>
-      <div style={{ fontSize: "10px", color: "rgba(107,107,94,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "8px" }}>
+      <div style={{ fontSize: "12px", color: "rgba(107,107,94,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "8px" }}>
         Keeper works in read-only mode — no transactions
       </div>
     </div>
@@ -1289,7 +1289,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         <div style={styles.header}>
           <div style={styles.diamondWrap}><KeeperDiamond size={28} /></div>
           <span style={styles.headerTitle}>KEEPER</span>
-          <span style={{ fontSize: "9px", color: "rgba(107,107,94,0.4)", letterSpacing: "0.1em" }}>
+          <span style={{ fontSize: "12px", color: "rgba(107,107,94,0.4)", letterSpacing: "0.1em" }}>
             ANCIENT INTELLIGENCE
           </span>
         </div>
@@ -1315,17 +1315,17 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         <div style={styles.diamondWrap}><KeeperDiamond size={28} /></div>
         <span style={styles.headerTitle}>KEEPER</span>
         {ctxLoading && (
-          <span style={{ fontSize: "9px", color: "rgba(255,71,0,0.5)", letterSpacing: "0.1em", fontFamily: "monospace" }}>
+          <span style={{ fontSize: "12px", color: "rgba(255,71,0,0.5)", letterSpacing: "0.1em", fontFamily: "monospace" }}>
             LOADING CONTEXT…
           </span>
         )}
         {!ctxLoading && ctx && (
-          <span style={{ fontSize: "9px", color: "rgba(0,255,150,0.5)", letterSpacing: "0.1em", fontFamily: "monospace" }}>
+          <span style={{ fontSize: "12px", color: "rgba(0,255,150,0.5)", letterSpacing: "0.1em", fontFamily: "monospace" }}>
             ◆ CONTEXT LOADED
           </span>
         )}
         {pilotTier && pilotTier.tier > 0 && (
-          <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.6rem', color: '#00ff99', letterSpacing: '0.1em', padding: '0.1rem 0.4rem', border: '1px solid rgba(0,255,153,0.3)', borderRadius: 3 }}>
+          <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.75rem', color: '#00ff99', letterSpacing: '0.1em', padding: '0.1rem 0.4rem', border: '1px solid rgba(0,255,153,0.3)', borderRadius: 3 }}>
             {pilotTier.label} · {pilotTier.count} OFFERINGS
           </div>
         )}
@@ -1345,7 +1345,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           <div>· Recent on-chain kills: {ctx?.killCount != null ? ctx.killCount : "unknown"}</div>
           <div>· Defense policy: {ctx?.secLevel != null ? secLevelLabel(ctx.secLevel) : "unknown"}</div>
           <div>· Active bounties: {ctx?.bountyCount != null ? ctx.bountyCount : "unknown"}</div>
-          <div style={{ marginTop: "8px", color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>
+          <div style={{ marginTop: "8px", color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>
             Keeper does NOT see: private keys, seed phrases,
             off-chain communications, or other players' private data.
           </div>
@@ -1357,7 +1357,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         <div style={{
           background: "rgba(255,71,0,0.08)", border: "1px solid rgba(255,71,0,0.3)",
           borderTop: "none", padding: "6px 14px",
-          fontSize: "10px", color: "#FF4700", fontFamily: "monospace", letterSpacing: "0.06em",
+          fontSize: "12px", color: "#FF4700", fontFamily: "monospace", letterSpacing: "0.06em",
         }}>
           {warningMsg}
         </div>
@@ -1365,8 +1365,8 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
 
       {/* ── Side-by-side: viewport left, chat right ── */}
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: 0, overflow: "hidden" }}>
-        {/* Left: 3D Holographic Viewport — fills entire left side */}
-        <div style={{ width: "40%", minWidth: 220, maxWidth: 420, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0 }}>
+        {/* Left: 3D Holographic Viewport — fills entire left side top to bottom */}
+        <div style={{ width: "40%", minWidth: 220, maxWidth: 420, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0, height: "100%" }}>
           <KeeperViewport {...viewportProps} />
         </div>
 
@@ -1376,7 +1376,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           <div style={{ display: "flex", borderBottom: "1px solid rgba(255,71,0,0.15)", flexShrink: 0 }}>
             {(["chat", "lattice"] as const).map(tab => (
               <button key={tab} onClick={() => setRightTab(tab)} style={{
-                fontFamily: "IBM Plex Mono", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em",
+                fontFamily: "IBM Plex Mono", fontSize: 12, fontWeight: 700, letterSpacing: "0.14em",
                 textTransform: "uppercase", padding: "5px 14px", border: "none", cursor: "pointer",
                 background: rightTab === tab ? "rgba(255,71,0,0.1)" : "transparent",
                 color: rightTab === tab ? "#FF4700" : "rgba(255,255,255,0.25)",
@@ -1404,7 +1404,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
             <LoadingDots />
             {queueInfo && queueInfo.queued > 0 && (
               <div style={{
-                fontSize: "9px", color: "rgba(255,71,0,0.45)", fontFamily: "monospace",
+                fontSize: "12px", color: "rgba(255,71,0,0.45)", fontFamily: "monospace",
                 letterSpacing: "0.1em", paddingLeft: "26px",
               }}>
                 ◆ {queueInfo.queued} seeker{queueInfo.queued !== 1 ? "s" : ""} ahead — the Keeper will attend to you shortly
@@ -1412,7 +1412,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
             )}
             {queueInfo && queueInfo.active >= 2 && queueInfo.queued === 0 && (
               <div style={{
-                fontSize: "9px", color: "rgba(255,71,0,0.35)", fontFamily: "monospace",
+                fontSize: "12px", color: "rgba(255,71,0,0.35)", fontFamily: "monospace",
                 letterSpacing: "0.1em", paddingLeft: "26px",
               }}>
                 ◆ the Keeper is attending to your query…
@@ -1468,7 +1468,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
             >×</button>
           </div>
           <span style={{
-            fontSize: "10px", color: "rgba(200,200,184,0.6)", fontFamily: "monospace",
+            fontSize: "12px", color: "rgba(200,200,184,0.6)", fontFamily: "monospace",
             letterSpacing: "0.06em", flex: 1,
           }}>
             {submission.statusText
@@ -1488,7 +1488,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           {submission.noveltyScore !== undefined && (
             <div style={{
               fontFamily: 'IBM Plex Mono',
-              fontSize: '0.6rem',
+              fontSize: '0.75rem',
               color: submission.noveltyScore >= 70 ? '#00ff99' : submission.noveltyScore >= 40 ? '#ffaa00' : 'var(--text-dim)',
               marginTop: '0.25rem'
             }}>
@@ -1505,7 +1505,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
               border: "1px solid rgba(255,200,0,0.25)",
               color: "rgba(255,200,0,0.8)",
               cursor: "pointer",
-              fontSize: "9px",
+              fontSize: "12px",
               fontWeight: 700,
               letterSpacing: "0.1em",
               fontFamily: "inherit",
@@ -1713,7 +1713,7 @@ function KeeperShrineSection() {
         <span style={{ fontSize: 12 }}>⛩</span>
         <span style={{
           fontFamily: "IBM Plex Mono, monospace",
-          fontSize: 9,
+          fontSize: 12,
           fontWeight: 700,
           letterSpacing: "0.16em",
           color: shrineColors.accent,
@@ -1724,14 +1724,14 @@ function KeeperShrineSection() {
         {KEEPER_SHRINE && shrine && (
           <span style={{
             fontFamily: "IBM Plex Mono, monospace",
-            fontSize: 9,
+            fontSize: 12,
             color: shrineColors.accentDim,
             letterSpacing: "0.08em",
           }}>
             {formatEve(shrine.balance)} EVE
           </span>
         )}
-        <span style={{ fontSize: 9, color: shrineColors.textDim }}>{open ? "▾" : "▸"}</span>
+        <span style={{ fontSize: 12, color: shrineColors.textDim }}>{open ? "▾" : "▸"}</span>
       </button>
 
       {open && (
@@ -1739,7 +1739,7 @@ function KeeperShrineSection() {
           {!KEEPER_SHRINE ? (
             <div style={{
               fontFamily: "IBM Plex Mono, monospace",
-              fontSize: 10,
+              fontSize: 12,
               color: shrineColors.textDim,
               letterSpacing: "0.08em",
               padding: "8px 0",
@@ -1749,7 +1749,7 @@ function KeeperShrineSection() {
           ) : loadingShrine ? (
             <div style={{
               fontFamily: "IBM Plex Mono, monospace",
-              fontSize: 10,
+              fontSize: 12,
               color: shrineColors.accentDim,
               letterSpacing: "0.1em",
               padding: "8px 0",
@@ -1781,7 +1781,7 @@ function KeeperShrineSection() {
                   </div>
                   <div style={{
                     fontFamily: "IBM Plex Mono, monospace",
-                    fontSize: 9,
+                    fontSize: 12,
                     color: shrineColors.textDim,
                     letterSpacing: "0.1em",
                     marginTop: 2,
@@ -1799,7 +1799,7 @@ function KeeperShrineSection() {
                   </div>
                   <div style={{
                     fontFamily: "IBM Plex Mono, monospace",
-                    fontSize: 9,
+                    fontSize: 12,
                     color: shrineColors.textDim,
                     letterSpacing: "0.1em",
                   }}>
@@ -1839,7 +1839,7 @@ function KeeperShrineSection() {
                       border: `1px solid ${shrineColors.border}`,
                       color: donateStatus === "done" ? shrineColors.green : shrineColors.accent,
                       fontFamily: "IBM Plex Mono, monospace",
-                      fontSize: 9,
+                      fontSize: 12,
                       fontWeight: 700,
                       letterSpacing: "0.12em",
                       padding: "5px 12px",
@@ -1855,7 +1855,7 @@ function KeeperShrineSection() {
               ) : (
                 <div style={{
                   fontFamily: "IBM Plex Mono, monospace",
-                  fontSize: 9,
+                  fontSize: 12,
                   color: shrineColors.textDim,
                   letterSpacing: "0.08em",
                   marginBottom: 10,
@@ -1866,7 +1866,7 @@ function KeeperShrineSection() {
               {donateErr && (
                 <div style={{
                   fontFamily: "IBM Plex Mono, monospace",
-                  fontSize: 9,
+                  fontSize: 12,
                   color: shrineColors.red,
                   marginBottom: 6,
                   wordBreak: "break-all",
@@ -1897,14 +1897,14 @@ function KeeperShrineSection() {
                     }}>
                       <span style={{
                         fontFamily: "IBM Plex Mono, monospace",
-                        fontSize: 9,
+                        fontSize: 12,
                         color: shrineColors.textDim,
                       }}>
                         {abbrev(d.donor)}
                       </span>
                       <span style={{
                         fontFamily: "IBM Plex Mono, monospace",
-                        fontSize: 9,
+                        fontSize: 12,
                         color: shrineColors.accentDim,
                       }}>
                         +{formatEve(d.amount)} EVE
@@ -2104,27 +2104,27 @@ function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAct
   };
 
   if (status === "done") return (
-    <div style={{ marginTop: 8, fontFamily: "IBM Plex Mono", fontSize: 10, color: "#00ff99", letterSpacing: "0.1em" }}>
+    <div style={{ marginTop: 8, fontFamily: "IBM Plex Mono", fontSize: 12, color: "#00ff99", letterSpacing: "0.1em" }}>
       ✓ COMMAND DISPATCHED — CHECK YOUR WALLET FOR SIGNATURE
     </div>
   );
 
   return (
     <div style={{ marginTop: 10, borderTop: "1px solid rgba(0,255,153,0.15)", paddingTop: 8 }}>
-      <div style={{ fontFamily: "IBM Plex Mono", fontSize: 9, color: "rgba(0,255,153,0.5)", letterSpacing: "0.12em", marginBottom: 4 }}>
+      <div style={{ fontFamily: "IBM Plex Mono", fontSize: 12, color: "rgba(0,255,153,0.5)", letterSpacing: "0.12em", marginBottom: 4 }}>
         ◈ KEEPER OFFERS A COMMAND
       </div>
       <div style={{ fontFamily: "IBM Plex Mono", fontSize: 11, color: "#00ff99", marginBottom: 4 }}>
         {action.label}
       </div>
-      <div style={{ fontFamily: "IBM Plex Mono", fontSize: 10, color: "var(--text-dim)", marginBottom: 8 }}>
+      <div style={{ fontFamily: "IBM Plex Mono", fontSize: 12, color: "var(--text-dim)", marginBottom: 8 }}>
         {action.description}
       </div>
       <button
         onClick={execute}
         disabled={status === "pending"}
         style={{
-          fontFamily: "IBM Plex Mono", fontSize: 10, letterSpacing: "0.1em",
+          fontFamily: "IBM Plex Mono", fontSize: 12, letterSpacing: "0.1em",
           background: "rgba(0,255,153,0.08)", border: "1px solid rgba(0,255,153,0.4)",
           color: "#00ff99", padding: "4px 12px", borderRadius: 3, cursor: "pointer",
           opacity: status === "pending" ? 0.5 : 1,
@@ -2132,7 +2132,7 @@ function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAct
       >
         {status === "pending" ? "EXECUTING…" : "⚡ EXECUTE"}
       </button>
-      {err && <div style={{ marginTop: 4, fontSize: 10, color: "#ff4444" }}>{err}</div>}
+      {err && <div style={{ marginTop: 4, fontSize: 12, color: "#ff4444" }}>{err}</div>}
     </div>
   );
 }
@@ -2144,7 +2144,7 @@ function MessageBubble({ msg }: { msg: Message }) {
     return (
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <div style={{ maxWidth: "75%", textAlign: "right" }}>
-          <span style={{ color: "#FF4700", fontWeight: 700, fontSize: "10px", letterSpacing: "0.12em", marginRight: "6px" }}>YOU:</span>
+          <span style={{ color: "#FF4700", fontWeight: 700, fontSize: "12px", letterSpacing: "0.12em", marginRight: "6px" }}>YOU:</span>
           {msg.images && msg.images.length > 0 && (
             <div style={{ marginBottom: "4px" }}>
               <img
@@ -2177,7 +2177,7 @@ function MessageBubble({ msg }: { msg: Message }) {
         <KeeperDiamond size={16} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ color: "#FF4700", fontWeight: 700, fontSize: "10px", letterSpacing: "0.12em", marginRight: "6px" }}>KEEPER:</span>
+        <span style={{ color: "#FF4700", fontWeight: 700, fontSize: "12px", letterSpacing: "0.12em", marginRight: "6px" }}>KEEPER:</span>
         <span style={{
           color: isError ? "#ff4444" : "#c8c8b8",
           fontSize: "12px", lineHeight: 1.7,
@@ -2192,7 +2192,7 @@ function MessageBubble({ msg }: { msg: Message }) {
         {msg.communitySourced && (
           <div style={{
             marginTop: "6px",
-            fontSize: "10px",
+            fontSize: "12px",
             fontFamily: "monospace",
             color: "rgba(255,200,0,0.6)",
             letterSpacing: "0.08em",
@@ -2205,7 +2205,7 @@ function MessageBubble({ msg }: { msg: Message }) {
         {ragImages.length > 0 && (
           <div style={{ marginTop: 8, borderTop: "1px solid rgba(255,71,0,0.1)", paddingTop: 8 }}>
             <div
-              style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(107,107,94,0.5)", marginBottom: 4, cursor: "pointer", userSelect: "none" }}
+              style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(107,107,94,0.5)", marginBottom: 4, cursor: "pointer", userSelect: "none" }}
               onClick={() => setShowSources(!showSources)}
             >
               {showSources ? "▾" : "▸"} SOURCES ({ragImages.length})
