@@ -147,12 +147,14 @@ function fuelLimitedRange(ship: ShipSpec, fuelUnits: number, fuel: FuelSpec): nu
 
 function distColor(distLY: number, maxRangeLY: number): THREE.Color {
   const t = Math.min(distLY / Math.max(maxRangeLY, 1), 1);
+  // Brightness boost for close systems: 1.5x at origin, 0.6x at max range
+  const brightness = 1.5 - t * 0.9;
   if (t < 0.5) {
     // green → yellow
-    return new THREE.Color(t * 2, 1, 0);
+    return new THREE.Color(t * 2 * brightness, 1 * brightness, 0);
   } else {
     // yellow → red
-    return new THREE.Color(1, 1 - (t - 0.5) * 2, 0);
+    return new THREE.Color(1 * brightness, (1 - (t - 0.5) * 2) * brightness, 0);
   }
 }
 
@@ -803,21 +805,50 @@ export function MapPanel() {
     if (currentMarkerRef.current) { scene.remove(currentMarkerRef.current); currentMarkerRef.current = null; }
     if (gateLineRef.current) { scene.remove(gateLineRef.current); gateLineRef.current = null; }
 
-    // Reachable points coloured by distance
+    // Reachable points coloured by distance — close systems are brighter + larger
     const n = reachable.length;
     if (n > 0) {
-      const pos = new Float32Array(n*3), col = new Float32Array(n*3);
+      const pos = new Float32Array(n*3), col = new Float32Array(n*3), sizes = new Float32Array(n);
       for (let i = 0; i < n; i++) {
         const s = reachable[i];
         pos[i*3] = s.x*SCALE; pos[i*3+1] = s.z*SCALE; pos[i*3+2] = -s.y*SCALE;
         const c = distColor(s.distLY, rangeLY);
         col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
+        // Size: 10 at origin → 4 at max range
+        const t = Math.min(s.distLY / Math.max(rangeLY, 1), 1);
+        sizes[i] = 10 - t * 6;
       }
       const geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.BufferAttribute(pos,3));
       geo.setAttribute("color", new THREE.BufferAttribute(col,3));
+      geo.setAttribute("size", new THREE.BufferAttribute(sizes,1));
       const reachStarTex = createStarTexture();
-      const mat = new THREE.PointsMaterial({ size:6, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:1.0, map:reachStarTex, blending:THREE.AdditiveBlending, depthWrite:false });
+      // Custom shader for per-point sizes
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { map: { value: reachStarTex } },
+        vertexShader: `
+          attribute float size;
+          varying vec3 vColor;
+          void main() {
+            vColor = color;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size;
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D map;
+          varying vec3 vColor;
+          void main() {
+            vec4 texColor = texture2D(map, gl_PointCoord);
+            gl_FragColor = vec4(vColor * texColor.rgb, texColor.a);
+          }
+        `,
+        vertexColors: true,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
       const pts = new THREE.Points(geo, mat);
       scene.add(pts);
       reachPointsRef.current = pts;
