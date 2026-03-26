@@ -455,6 +455,21 @@ function SystemOrrery({ planets }: { planets: OrreryPlanet[] }) {
   );
 }
 
+// ── Star texture for celestial point rendering ─────────────────────────────────
+function createStarTexture(): THREE.Texture {
+  const c = document.createElement("canvas");
+  c.width = 32; c.height = 32;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.2, "rgba(255,200,100,0.8)");
+  g.addColorStop(0.5, "rgba(255,100,50,0.3)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 32, 32);
+  return new THREE.CanvasTexture(c);
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 type SortKey = "distance" | "name" | "region";
@@ -488,6 +503,9 @@ export function MapPanel() {
   const [planetIdx,   setPlanetIdx]   = useState<PlanetIndex>({});
   const [manualSearchQ, setManualSearchQ] = useState("");
   const [manualResults, setManualResults] = useState<SolarSystem[]>([]);
+  const [changeCurrentQ, setChangeCurrentQ] = useState("");
+  const [changeCurrentResults, setChangeCurrentResults] = useState<SolarSystem[]>([]);
+  const [showChangeCurrentInput, setShowChangeCurrentInput] = useState(false);
 
   // Reachable systems
   const [reachableSystems, setReachableSystems] = useState<Array<SolarSystem & { distLY: number }>>([]);
@@ -647,7 +665,8 @@ export function MapPanel() {
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(pos,3));
-    const mat = new THREE.PointsMaterial({ size:1, sizeAttenuation:false, color:0x1a1e2a, transparent:true, opacity:0.4 });
+    const starTex = createStarTexture();
+    const mat = new THREE.PointsMaterial({ size:1.5, sizeAttenuation:false, color:0x334466, transparent:true, opacity:0.5, map:starTex, alphaTest:0.01, blending:THREE.AdditiveBlending });
     const pts = new THREE.Points(geo, mat);
     scene.add(pts); bgPointsRef.current = pts;
 
@@ -793,7 +812,8 @@ export function MapPanel() {
       const geo = new THREE.BufferGeometry();
       geo.setAttribute("position", new THREE.BufferAttribute(pos,3));
       geo.setAttribute("color", new THREE.BufferAttribute(col,3));
-      const mat = new THREE.PointsMaterial({ size:5, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:0.9 });
+      const reachStarTex = createStarTexture();
+      const mat = new THREE.PointsMaterial({ size:4, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:0.9, map:reachStarTex, alphaTest:0.01, blending:THREE.AdditiveBlending });
       const pts = new THREE.Points(geo, mat);
       scene.add(pts);
       reachPointsRef.current = pts;
@@ -962,6 +982,13 @@ export function MapPanel() {
     setManualResults(systemsRef.current.filter(s => s.name.toLowerCase().includes(ql)).slice(0, 8));
   }, []);
 
+  const handleChangeCurrentSearch = useCallback((q: string) => {
+    setChangeCurrentQ(q);
+    if (q.length < 2) { setChangeCurrentResults([]); return; }
+    const ql = q.toLowerCase();
+    setChangeCurrentResults(systemsRef.current.filter(s => s.name.toLowerCase().includes(ql)).slice(0, 8));
+  }, []);
+
   // ── Export helpers ─────────────────────────────────────────────────────────
   function systemLink(s: SolarSystem): string {
     return `<a href="showinfo:5//${s.id}">${s.name}</a>`;
@@ -1029,7 +1056,7 @@ export function MapPanel() {
           }}>
             ⊕ {targetSys.name}
             {currentSys && <span style={{ color:"#663", fontSize:"10px" }}>
-              {Math.sqrt((targetSys.x-currentSys.x)**2+(targetSys.y-currentSys.y)**2+(targetSys.z-currentSys.z)**2).toFixed(1)} LY
+              {(Math.sqrt((targetSys.x-currentSys.x)**2+(targetSys.y-currentSys.y)**2+(targetSys.z-currentSys.z)**2) / LY_M).toFixed(1)} LY
             </span>}
             <span onClick={() => setTargetSys(null)} style={{ cursor:"pointer", color:"rgba(255,71,0,0.5)", fontSize:"13px", lineHeight:1 }} title="Clear target">✕</span>
           </div>
@@ -1107,6 +1134,51 @@ export function MapPanel() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Change current system (when already set) */}
+          {currentSys && loadState.done && (
+            <div style={{ padding:"8px 12px", borderBottom:"1px solid rgba(255,255,255,0.05)", flexShrink:0 }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: showChangeCurrentInput ? "6px" : "0" }}>
+                <span style={{ color:"#00e8ff", fontSize:"10px", fontFamily:"monospace" }}>⊙ {currentSys.name}</span>
+                <button
+                  onClick={() => { setShowChangeCurrentInput(v => !v); setChangeCurrentQ(""); setChangeCurrentResults([]); }}
+                  style={{ fontSize:"9px", padding:"2px 6px", cursor:"pointer",
+                    background:"rgba(0,232,255,0.06)", border:"1px solid rgba(0,232,255,0.2)",
+                    color:"#00e8ff", borderRadius:"3px" }}>
+                  {showChangeCurrentInput ? "✕" : "change"}
+                </button>
+              </div>
+              {showChangeCurrentInput && (
+                <div style={{ position:"relative" }}>
+                  <input
+                    value={changeCurrentQ}
+                    onChange={e => handleChangeCurrentSearch(e.target.value)}
+                    placeholder="Type system name…"
+                    autoFocus
+                    style={inputSx}
+                  />
+                  {changeCurrentResults.length > 0 && (
+                    <div style={{ position:"absolute", top:"100%", left:0, right:0, zIndex:200,
+                      background:"#0a0c14", border:"1px solid rgba(0,232,255,0.2)", borderRadius:"4px", marginTop:"2px" }}>
+                      {changeCurrentResults.map(s => (
+                        <div key={s.id}
+                          onClick={() => {
+                            setCurrentAndStore(s, "manual");
+                            setChangeCurrentQ(""); setChangeCurrentResults([]);
+                            setShowChangeCurrentInput(false);
+                          }}
+                          style={{ padding:"5px 10px", fontSize:"11px", color:"#bbb", cursor:"pointer" }}
+                          onMouseEnter={e=>e.currentTarget.style.background="rgba(0,232,255,0.08)"}
+                          onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                          {s.name}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
