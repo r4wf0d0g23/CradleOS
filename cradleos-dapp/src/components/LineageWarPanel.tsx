@@ -293,7 +293,9 @@ function SystemCard({
   streak: number;
   tribeNames: Map<number, string>;
 }) {
-  const state = snapshot?.state ?? "NEUTRAL";
+  // If snapshot shows NEUTRAL but there's an active controlled streak, use the last resolved state
+  const snapshotState = snapshot?.state ?? "NEUTRAL";
+  const state = (snapshotState === "NEUTRAL" && streak > 0) ? "CONTROLLED" : snapshotState;
   const color = stateColor(state);
   const allowedTypes = snapshot?.explanation?.allowedAssemblyTypeIds ?? [];
   const controller = snapshot?.resolution?.topTribeId ?? null;
@@ -548,11 +550,13 @@ export function LineageWarPanel() {
       const bySystem = data.commitments
         .filter(c => c.systemId === sid)
         .sort((a, b) => a.tickTimestampMs - b.tickTimestampMs);
-      const last = bySystem[bySystem.length - 1];
+      // Find the most recent RESOLVED commitment (one that has a controller)
+      const resolved = bySystem.filter(c => c.controllerTribeId != null);
+      const last = resolved[resolved.length - 1];
       if (!last || last.controllerTribeId == null) { streakMap.set(sid, 0); continue; }
       let count = 0;
-      for (let i = bySystem.length - 1; i >= 0; i--) {
-        if (bySystem[i].controllerTribeId === last.controllerTribeId) count++;
+      for (let i = resolved.length - 1; i >= 0; i--) {
+        if (resolved[i].controllerTribeId === last.controllerTribeId) count++;
         else break;
       }
       streakMap.set(sid, count);
