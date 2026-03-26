@@ -467,6 +467,7 @@ const styles = {
     minHeight: "520px",
     maxWidth: "1100px",
     margin: "0 auto",
+    paddingTop: "80px",
     fontFamily: "inherit",
   },
   header: {
