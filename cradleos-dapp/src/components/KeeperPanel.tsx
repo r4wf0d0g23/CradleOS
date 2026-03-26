@@ -463,11 +463,12 @@ const styles = {
   panel: {
     display: "flex",
     flexDirection: "column" as const,
-    height: "calc(100vh - 140px)",
-    minHeight: "400px",
+    height: "calc(100vh - 80px)",
+    minHeight: 0,
     maxWidth: "1100px",
     margin: "0 auto",
     paddingTop: "80px",
+    boxSizing: "border-box" as const,
     fontFamily: "inherit",
   },
   header: {
