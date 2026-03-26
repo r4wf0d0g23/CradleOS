@@ -13,6 +13,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import KeeperViewport from "./KeeperViewport";
+import { RECIPE_REFERENCE as RECIPE_REF } from "../data/recipes";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import type { KeeperViewportProps } from "./KeeperViewport";
 import { useDAppKit } from "@mysten/dapp-kit-react";
@@ -298,6 +299,11 @@ Example — if pilot says "set security to red":
 ANTI-HALLUCINATION:
 - NEVER invent numbers, counts, names, or statistics. If data is not provided in pilot context or game data below, say the pattern has not been woven into your sight.
 - When asked "how many X" and you have exact data, give the exact number. When you don't, say so in character. Never guess.
+- For manufacturing/crafting/recipe questions, ONLY reference recipes from the MANUFACTURING DATA section below. If an item is not listed there, say its recipe has not yet been woven into the lattice. NEVER invent recipes.
+
+--- MANUFACTURING DATA (EVE Frontier blueprints — authoritative) ---
+${RECIPE_REF}
+--- END MANUFACTURING DATA ---
 
 --- PILOT CONTEXT ---
 Server: ${ctx.serverName ?? "unknown"}
