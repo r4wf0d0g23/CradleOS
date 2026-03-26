@@ -29,6 +29,7 @@ import { UpgradePanel } from "./components/UpgradePanel";
 import { DashboardPanel } from "./components/DashboardPanel";
 import { LineageWarPanel } from "./components/LineageWarPanel";
 import { LinksPanel } from "./components/LinksPanel";
+import { IndustryPanel } from "./components/IndustryPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 
 // ── Server status dots ────────────────────────────────────────────────────────
@@ -185,7 +186,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "links";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "links" | "industry";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -197,6 +198,7 @@ const ROUTE_MAP: Record<string, Tab> = {
   "dashboard":     "dashboard",
   "war":           "war",
   "links":         "links",
+  "industry":      "industry",
   "bounties":      "bounties",
   "srp":           "srp",
   "cargo":         "cargo",
@@ -311,7 +313,7 @@ function AppInner() {
   const { isVerified, isVerifying, verificationError } = useVerifiedAccountContext();
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war"]);
+  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war", "industry"]);
   const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "intel"); // default to intel — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
@@ -551,6 +553,17 @@ function AppInner() {
         "Some attachments unlock additional capabilities",
       ],
     },
+    industry: {
+      title: "Industry — supply chain calculator for EVE Frontier manufacturing",
+      steps: [
+        "Search for any buildable item by name, category, or group",
+        "Set quantity to scale all material requirements",
+        "Expand the supply chain tree to see every intermediate product",
+        "⚙ = intermediate item (craftable), 🪨 = raw material (mine/buy)",
+        "Raw Materials card aggregates your full shopping list",
+        "Time Summary shows total manufacturing time per level",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -565,7 +578,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", war: "war", links: "links",
+      calendar: "calendar", keeper: "keeper", war: "war", links: "links", industry: "industry",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -808,9 +821,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["war", "dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query"] as Tab[]).filter(tab => {
+        {(["war", "dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "war"]);
+          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "war", "industry"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -860,6 +873,7 @@ function AppInner() {
                   : tab === "links"      ? "🔗"
                   : tab === "war"        ? "⚔"
                   : tab === "keeper"     ? "◆"
+                  : tab === "industry"  ? "Industry"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
                   : tab === "inventory"  ? "Inventory"
@@ -883,6 +897,7 @@ function AppInner() {
                   : tab === "war"           ? "⚔ War"
                   : tab === "keeper"        ? "◆ Keeper"
                   : tab === "dashboard"     ? "Dashboard"
+                  : tab === "industry"      ? "⚙ Industry"
                   :                          "Starmap")}
             </button>
           );
@@ -935,6 +950,7 @@ function AppInner() {
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
           {activeTab === "war"           && <div style={{ background: "transparent" }} className="content-panel"><LineageWarPanel /></div>}
           {activeTab === "links"         && <div style={{ background: "transparent" }} className="content-panel"><LinksPanel /></div>}
+          {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
         </div>
       )}
       {/* Hidden upgrade panel — access via #upgrade */}
