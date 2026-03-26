@@ -459,26 +459,20 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-/** Wrapper that measures its own height and forces children to fill it */
-function ViewportColumn({ children }: { children: React.ReactElement }) {
+/** Measures its own height and passes explicit pixel height to KeeperViewport */
+function useContainerHeight(): [React.RefObject<HTMLDivElement | null>, number] {
   const ref = useRef<HTMLDivElement>(null);
-  const [h, setH] = useState(400);
+  const [h, setH] = useState(600);
   useEffect(() => {
     const el = ref.current; if (!el) return;
+    setH(el.clientHeight);
     const ro = new ResizeObserver(entries => {
       for (const e of entries) setH(Math.floor(e.contentRect.height));
     });
     ro.observe(el);
-    setH(el.clientHeight);
     return () => ro.disconnect();
   }, []);
-  return (
-    <div ref={ref} style={{ width: "40%", minWidth: 220, maxWidth: 420, flexShrink: 0, borderRight: "1px solid rgba(255,71,0,0.15)", overflow: "hidden" }}>
-      <div style={{ width: "100%", height: h }}>
-        {children}
-      </div>
-    </div>
-  );
+  return [ref, h];
 }
 
 const styles = {
@@ -666,6 +660,7 @@ export function KeeperPanel() {
   const [warningMsg, setWarningMsg] = useState<string | null>(null);
   const [pilotTier, setPilotTier] = useState<{ tier: number; label: string; count: number } | null>(null);
   const [rightTab, setRightTab] = useState<"chat" | "lattice">("chat");
+  const [vpColRef, vpColHeight] = useContainerHeight();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1388,9 +1383,9 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       {/* ── Side-by-side: viewport left, chat right ── */}
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: 0, overflow: "hidden" }}>
         {/* Left: 3D Holographic Viewport — fills entire left side top to bottom */}
-        <ViewportColumn>
-          <KeeperViewport {...viewportProps} />
-        </ViewportColumn>
+        <div ref={vpColRef} style={{ width: "40%", minWidth: 220, maxWidth: 420, flexShrink: 0, borderRight: "1px solid rgba(255,71,0,0.15)", overflow: "hidden" }}>
+          <KeeperViewport {...viewportProps} height={vpColHeight} />
+        </div>
 
         {/* Center+Right: tabbed area */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
