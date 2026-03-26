@@ -573,8 +573,9 @@ export function MapPanel() {
     controls.enableDamping = true; controls.dampingFactor = 0.06;
     controls.screenSpacePanning = true; controls.minDistance = 1; controls.maxDistance = 10000;
     // Limit vertical rotation — keep "up" as up (40° from pole = ~0.7 rad to ~2.44 rad)
-    controls.minPolarAngle = 0.7;   // ~40° from top
-    controls.maxPolarAngle = 2.44;  // ~40° from bottom
+    // Polar = vertical tilt (0=top, π=bottom). Allow nearly full range, just prevent flipping.
+    controls.minPolarAngle = 0.1;   // ~6° from straight above
+    controls.maxPolarAngle = 3.04;  // ~6° from straight below
     controlsRef.current = controls;
 
     const animate = () => {
