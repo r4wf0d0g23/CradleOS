@@ -402,7 +402,8 @@ export function LinksPanel() {
   const [err, setErr] = useState<string | null>(null);
   const [customUrls, setCustomUrls] = useState<Record<string, string>>({});
   const [selectedService, setSelectedService] = useState<Record<string, string>>({}); // structureId → service id
-  const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
+  const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set(["__ALL_COLLAPSED_INIT__"])); // sentinel — see useEffect below
+  const [initialized, setInitialized] = useState(false);
 
   const { data: groups, isLoading, refetch } = useQuery({
     queryKey: ["playerStructures", account?.address],
@@ -493,12 +494,37 @@ export function LinksPanel() {
     a.displayName.localeCompare(b.displayName)
   );
 
+  // Default all nodes collapsed on first load
+  useEffect(() => {
+    if (!initialized && nodesSorted.length > 0) {
+      setCollapsedNodes(new Set(nodesSorted.map(n => n.objectId)));
+      setInitialized(true);
+    }
+  }, [nodesSorted, initialized]);
+
+  const collapseAll = () => setCollapsedNodes(new Set(nodesSorted.map(n => n.objectId)));
+  const expandAll = () => setCollapsedNodes(new Set());
+
   return (
     <div style={{ fontFamily: "inherit", padding: "0 4px" }}>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#FF4700", letterSpacing: "0.1em", marginBottom: 6 }}>
-          🔗 STRUCTURE LINKS
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#FF4700", letterSpacing: "0.1em" }}>
+            🔗 STRUCTURE LINKS
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button onClick={expandAll} style={{
+              background: "none", border: "1px solid rgba(255,71,0,0.2)", borderRadius: 2,
+              color: "rgba(255,71,0,0.5)", fontSize: 10, padding: "2px 8px", cursor: "pointer",
+              fontFamily: "inherit", letterSpacing: "0.06em",
+            }}>Expand All</button>
+            <button onClick={collapseAll} style={{
+              background: "none", border: "1px solid rgba(255,71,0,0.2)", borderRadius: 2,
+              color: "rgba(255,71,0,0.5)", fontSize: 10, padding: "2px 8px", cursor: "pointer",
+              fontFamily: "inherit", letterSpacing: "0.06em",
+            }}>Collapse All</button>
+          </div>
         </div>
         <p style={{ fontSize: 11, color: "rgba(180,160,140,0.6)", margin: 0, lineHeight: 1.6 }}>
           Attach CradleOS services to your deployed structures. Links are stored on-chain in the structure's metadata —
@@ -542,8 +568,8 @@ export function LinksPanel() {
                 userSelect: "none",
               }}
             >
-              <span style={{ fontSize: 12, color: "rgba(0,232,255,0.5)", width: 14, flexShrink: 0, fontFamily: "monospace" }}>
-                {collapsedNodes.has(node.objectId) ? "▸" : "▾"}
+              <span style={{ fontSize: 18, color: "#00e8ff", width: 20, flexShrink: 0, fontFamily: "monospace", fontWeight: 700, lineHeight: 1 }}>
+                {collapsedNodes.has(node.objectId) ? "▶" : "▼"}
               </span>
               <span style={{ fontSize: 20, lineHeight: 1 }}>⬡</span>
               <div style={{ flex: 1 }}>
