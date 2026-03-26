@@ -569,6 +569,9 @@ export function MapPanel() {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; controls.dampingFactor = 0.06;
     controls.screenSpacePanning = true; controls.minDistance = 1; controls.maxDistance = 10000;
+    // Limit vertical rotation — keep "up" as up (40° from pole = ~0.7 rad to ~2.44 rad)
+    controls.minPolarAngle = 0.7;   // ~40° from top
+    controls.maxPolarAngle = 2.44;  // ~40° from bottom
     controlsRef.current = controls;
 
     const animate = () => {

@@ -824,7 +824,7 @@ function AppInner() {
                 borderBottom: active ? "2px solid #FF4700" : "2px solid transparent",
                 borderRight: "1px solid rgba(255,71,0,0.1)",
                 background: active ? "rgba(20,12,6,0.92)" : "rgba(8,5,2,0.60)",
-                color: active ? "#FF4700" : "rgba(107,107,94,0.6)",
+                color: active ? "#FF4700" : "rgba(160,150,130,0.7)",
                 cursor: "pointer",
                 fontSize: compact ? "8px" : "11px",
                 fontWeight: 700,
@@ -835,7 +835,7 @@ function AppInner() {
                 fontFamily: "inherit",
               }}
               onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,71,0,0.8)"; (e.currentTarget as HTMLButtonElement).style.background = "#151515"; } }}
-              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = "rgba(107,107,94,0.6)"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(8,5,2,0.60)"; } }}
+              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = "rgba(160,150,130,0.7)"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(8,5,2,0.60)"; } }}
             >
               {compact
                 ? (tab === "structures" ? "Structs"
