@@ -402,6 +402,7 @@ export function LinksPanel() {
   const [err, setErr] = useState<string | null>(null);
   const [customUrls, setCustomUrls] = useState<Record<string, string>>({});
   const [selectedService, setSelectedService] = useState<Record<string, string>>({}); // structureId → service id
+  const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
 
   const { data: groups, isLoading, refetch } = useQuery({
     queryKey: ["playerStructures", account?.address],
@@ -522,15 +523,28 @@ export function LinksPanel() {
 
         return (
           <div key={node.objectId} style={{ marginBottom: 18 }}>
-            {/* Node header card */}
-            <div style={{
-              padding: "7px 14px",
-              marginBottom: 8,
-              background: "rgba(0,232,255,0.04)",
-              border: "1px solid rgba(0,232,255,0.2)",
-              borderRadius: 3,
-              display: "flex", alignItems: "center", gap: 10,
-            }}>
+            {/* Node header card — clickable to collapse */}
+            <div
+              onClick={() => setCollapsedNodes(prev => {
+                const next = new Set(prev);
+                if (next.has(node.objectId)) next.delete(node.objectId);
+                else next.add(node.objectId);
+                return next;
+              })}
+              style={{
+                padding: "7px 14px",
+                marginBottom: 8,
+                background: "rgba(0,232,255,0.04)",
+                border: "1px solid rgba(0,232,255,0.2)",
+                borderRadius: 3,
+                display: "flex", alignItems: "center", gap: 10,
+                cursor: "pointer",
+                userSelect: "none",
+              }}
+            >
+              <span style={{ fontSize: 12, color: "rgba(0,232,255,0.5)", width: 14, flexShrink: 0, fontFamily: "monospace" }}>
+                {collapsedNodes.has(node.objectId) ? "▸" : "▾"}
+              </span>
               <span style={{ fontSize: 20, lineHeight: 1 }}>⬡</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "#00e8ff", letterSpacing: "0.06em" }}>
@@ -543,6 +557,11 @@ export function LinksPanel() {
                     : ""}
                 </div>
               </div>
+              {collapsedNodes.has(node.objectId) && children.length > 0 && (
+                <span style={{ fontSize: 9, color: "rgba(0,232,255,0.35)", fontFamily: "monospace", marginRight: 6 }}>
+                  ({children.length + 1} structures)
+                </span>
+              )}
               <span style={{
                 fontSize: 9, padding: "1px 6px", borderRadius: 2,
                 background: node.isOnline ? "rgba(0,232,255,0.1)" : "rgba(255,68,68,0.1)",
@@ -554,18 +573,23 @@ export function LinksPanel() {
               </span>
             </div>
 
-            {/* Node itself as a linkable structure */}
-            <StructureCard s={node} indented {...sharedProps} />
+            {/* Node + children — collapsible */}
+            {!collapsedNodes.has(node.objectId) && (
+              <>
+                {/* Node itself as a linkable structure */}
+                <StructureCard s={node} indented {...sharedProps} />
 
-            {/* Child structures */}
-            {children.map(child => (
-              <StructureCard key={child.objectId} s={child} indented {...sharedProps} />
-            ))}
+                {/* Child structures */}
+                {children.map(child => (
+                  <StructureCard key={child.objectId} s={child} indented {...sharedProps} />
+                ))}
 
-            {children.length === 0 && (
-              <div style={{ marginLeft: 24, fontSize: 10, color: "rgba(107,107,94,0.4)", padding: "4px 0 8px" }}>
-                No anchored structures on this node.
-              </div>
+                {children.length === 0 && (
+                  <div style={{ marginLeft: 24, fontSize: 10, color: "rgba(107,107,94,0.4)", padding: "4px 0 8px" }}>
+                    No anchored structures on this node.
+                  </div>
+                )}
+              </>
             )}
           </div>
         );
