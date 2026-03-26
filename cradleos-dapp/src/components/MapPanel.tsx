@@ -666,7 +666,7 @@ export function MapPanel() {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(pos,3));
     const starTex = createStarTexture();
-    const mat = new THREE.PointsMaterial({ size:1.5, sizeAttenuation:false, color:0x334466, transparent:true, opacity:0.5, map:starTex, alphaTest:0.01, blending:THREE.AdditiveBlending });
+    const mat = new THREE.PointsMaterial({ size:2.5, sizeAttenuation:false, color:0x556688, transparent:true, opacity:0.6, map:starTex, blending:THREE.AdditiveBlending, depthWrite:false });
     const pts = new THREE.Points(geo, mat);
     scene.add(pts); bgPointsRef.current = pts;
 
@@ -813,7 +813,7 @@ export function MapPanel() {
       geo.setAttribute("position", new THREE.BufferAttribute(pos,3));
       geo.setAttribute("color", new THREE.BufferAttribute(col,3));
       const reachStarTex = createStarTexture();
-      const mat = new THREE.PointsMaterial({ size:4, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:0.9, map:reachStarTex, alphaTest:0.01, blending:THREE.AdditiveBlending });
+      const mat = new THREE.PointsMaterial({ size:6, sizeAttenuation:false, vertexColors:true, transparent:true, opacity:1.0, map:reachStarTex, blending:THREE.AdditiveBlending, depthWrite:false });
       const pts = new THREE.Points(geo, mat);
       scene.add(pts);
       reachPointsRef.current = pts;
