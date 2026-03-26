@@ -1328,10 +1328,10 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
         )}
       </div>
 
-      {/* ── "Keeper sees" disclosure ── */}
-      <details style={styles.disclosure}>
+      {/* ── "Keeper sees" disclosure (collapsed by default) ── */}
+      <details style={{ ...styles.disclosure, maxHeight: "none" }}>
         <summary style={styles.disclosureSummary}>
-          ▾ Keeper sees: wallet, tribe, EVE, structures, infra count
+          ▸ Keeper sees: wallet, tribe, EVE, structures, infra count
         </summary>
         <div style={styles.disclosureContent}>
           <div style={{ marginBottom: "6px", color: "rgba(255,71,0,0.7)" }}>◆ Keeper sees:</div>
@@ -1363,8 +1363,8 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       {/* ── Side-by-side: viewport left, chat right ── */}
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: 0, overflow: "hidden" }}>
         {/* Left: 3D Holographic Viewport */}
-        <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 400 }}>
-          <KeeperViewport {...viewportProps} height={420} />
+        <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(255,71,0,0.15)", minHeight: 0 }}>
+          <KeeperViewport {...viewportProps} height={320} />
         </div>
 
         {/* Center+Right: tabbed area */}
