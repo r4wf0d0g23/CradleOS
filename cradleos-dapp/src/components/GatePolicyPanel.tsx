@@ -95,7 +95,6 @@ export function GatePolicyPanel() {
       // Try to get EVE Vault JWT from sessionStorage for direct API call
       // EVE Vault's txb endpoint has CORS restrictions — must go through extension background.js
       // The useSponsoredTransaction hook routes through EVE Vault's message passing system
-      console.log("[GateLink] Sending LINK_SMART_GATE via EVE Vault, assembly:", gate.gameItemId, "tenant: utopia");
 
       // Fallback: EVE Vault hook handles everything
       // Note: requires wallet to be fully connected (not just installed) on this page

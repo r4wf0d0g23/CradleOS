@@ -1,6 +1,6 @@
 # CradleOS dApp — Deployment Standard Operating Procedure
 
-**Last updated:** 2026-03-25
+**Last updated:** 2026-03-27
 **Maintainer:** Reality Anchor
 
 ---
@@ -117,8 +117,10 @@ npx gh-pages -d dist-ghpages -r git@github.com:r4wf0d0g23/CradleOS.git
 
 | Version | ID | Status | Notes |
 |---|---|---|---|
-| v2 (current) | published-at: `0x2e51c867e32537f4b04b53e8efefde559d3b9be3ca430e39957de536173d32b0` | ✅ ACTIVE | Reapers_v2, 2026-03-25 |
-| v2 (current) | original-id: `0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3` | ✅ ACTIVE | Used for events/types |
+| v5 (current) | published-at: `0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4` | ✅ ACTIVE | Turret ext + hostile chars, 2026-03-26 |
+| v5 (current) | original-id: `0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3` | ✅ ACTIVE | Used for events/types (never changes) |
+| v4 (retired) | `0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d` | ❌ ARCHIVED | Trustless bounty + collateral, 2026-03-25 |
+| v3 (retired) | `0x2e51c867e32537f4b04b53e8efefde559d3b9be3ca430e39957de536173d32b0` | ❌ ARCHIVED | Reapers_v2, 2026-03-25 |
 | v1 (retired) | `0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4` | ❌ ARCHIVED | Clean-slate 2026-03-24 |
 | pre-v1 (retired) | `0x7541ac23fb681e4ea2cb54c0693a0c618c2ab24e69217cf4d0436adcc62ee715` | ❌ ARCHIVED | Legacy, no vaults |
 

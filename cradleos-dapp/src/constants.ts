@@ -116,6 +116,7 @@ export const BOUNTY_BOARD = "0x965709ce9d087d8f90edac6e19d8d42908098ec253e83f20a
 // Trustless bounty board — set after deploying trustless_bounty module
 export const TRUSTLESS_BOUNTY_BOARD = "0xc6b60757b79e474745b5d0e9b1d2aa82b0ee6aca9efb92917b7f2a3c665c7498";
 export const KEEPER_SHRINE = "0x1bc082778513e51d2dfe691f8084822ac3b5db4014c0135a61c4ff135b5b671a";
+// Wiki board not yet created on-chain — LoreWikiPanel shows placeholder when empty
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";
 

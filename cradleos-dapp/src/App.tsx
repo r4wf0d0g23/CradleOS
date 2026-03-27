@@ -610,8 +610,7 @@ function AppInner() {
     if (!wallet) { setConnectError("No wallet found"); return; }
     setConnectError(undefined);
     try {
-      const result = await dAppKit.connectWallet({ wallet });
-      console.log("[CradleOS] connect result:", result);
+      await dAppKit.connectWallet({ wallet });
     } catch (err: any) {
       console.error("[CradleOS] connect error:", err);
       setConnectError(err?.message || String(err));

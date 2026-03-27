@@ -37,7 +37,6 @@ async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): P
       console.warn(`[IntelDashboard] Failed to derive address for ${id}:`, e);
     }
   }
-  console.log(`[IntelDashboard] Derived ${idToAddr.size} addresses for tenant="${tenantToUse}"`);
 
   // Batch fetch in groups of 10 (Sui GraphQL has a 50KB payload limit)
   const addrs = [...idToAddr.values()];
@@ -46,7 +45,6 @@ async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): P
     const fragments = batch.map((addr, idx) =>
       `obj${idx}: object(address: "${addr}") { address asMoveObject { contents { json } } }`
     ).join("\n");
-    console.log(`[IntelDashboard] Batch ${Math.floor(i/50)+1}: fetching ${batch.length} objects`);
     const data = await gql(`{ ${fragments} }`);
     if (!data) { console.warn("[IntelDashboard] Batch query returned null"); continue; }
     for (let j = 0; j < batch.length; j++) {
@@ -59,7 +57,6 @@ async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): P
     }
   }
 
-  console.log(`[IntelDashboard] Resolved ${result.size}/${itemIds.length} character names via targeted derivation`);
   return result;
 }
 
@@ -1194,7 +1191,6 @@ export function IntelDashboardPanel() {
 
         // Fallback: if targeted resolution fails (0 results), use brute-force fetch
         if (resolvedMap.size === 0 && allCharIds.size > 0) {
-          console.log("[IntelDashboard] Targeted resolution returned 0 — falling back to full character fetch");
           const allChars = await fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000);
           const fallbackMap = new Map<string, string>();
           for (const c of allChars) {

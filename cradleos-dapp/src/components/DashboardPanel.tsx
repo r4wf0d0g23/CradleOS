@@ -814,7 +814,6 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
       if (cancelled || !vid) return;
       setTribeVaultId(vid);
       localStorage.setItem("cradleos_tribe_vault_id", vid);
-      console.log(`[Dashboard] Discovered tribe vault: ${vid}`);
     }).catch(() => {});
     return () => { cancelled = true; };
   }, [characterId, account?.address, tribeVaultId]);

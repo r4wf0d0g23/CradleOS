@@ -323,7 +323,6 @@ export async function fetchTypeNames(): Promise<Map<number, string>> {
   try {
     // Fetch all types (deployables + structures)
     const url = `${WORLD_API}/v2/types?limit=500`;
-    console.log("[fetchTypeNames] Fetching from:", url);
     const res = await fetch(url);
     const data = await res.json() as { data: Array<{ id: number; name: string; categoryName: string }> };
     for (const t of data.data ?? []) {
@@ -331,7 +330,6 @@ export async function fetchTypeNames(): Promise<Map<number, string>> {
         m.set(t.id, t.name);
       }
     }
-    console.log(`[fetchTypeNames] Loaded ${m.size} type names`);
   } catch (e) {
     console.error("[fetchTypeNames] Failed:", e);
   }
@@ -622,7 +620,6 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
       }
     }
   }
-  console.log(`[fetchPlayerStructures] Type names resolved: ${typeResolved}/${validStructures.length} (typeNameMap size: ${typeNameMap.size})`);
   const structuresWithCost = validStructures.map(s => ({
     ...s,
     energyCost: s.typeId !== undefined ? (energyCostMap.get(s.typeId) ?? 0) : 0,
@@ -1649,7 +1646,6 @@ try {
       if (k && (k.startsWith("cradleos:") || k.startsWith("delegation:"))) toRemove.push(k);
     }
     toRemove.forEach(k => localStorage.removeItem(k));
-    console.log(`[CradleOS] Cache invalidated (pkg change or v${cachedVer}→v${CACHE_VERSION}) → cleared ${toRemove.length} entries`);
   }
   localStorage.setItem(CACHE_PKG_KEY, CRADLEOS_PKG);
   localStorage.setItem(CACHE_VER_KEY, String(CACHE_VERSION));

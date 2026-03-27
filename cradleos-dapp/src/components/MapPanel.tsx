@@ -7,8 +7,6 @@
  *   3. localStorage     — cradleos:last-system { id, name }
  *   4. Manual search    — user types system name
  *
- * TODO: fetch /v2/characters/me/jumps with EVE Vault session token for real-time location
- *       Currently implemented above — expand to also refresh on focus if token is cached.
  *
  * Jump mechanics — canonical source: ef-map.com/llms-full.txt (verified 2026-03-13):
  *
@@ -192,7 +190,7 @@ async function fetchLastJumpSystem(): Promise<{ id: number; name: string } | nul
         clearTimeout(timeout);
         window.removeEventListener("message", handler);
         const idToken = d.token.id_token;
-        // TODO: expand to also cache idToken for subsequent refreshes
+
         fetch(`${WORLD_API}/v2/characters/me/jumps?limit=1`, {
           headers: { Authorization: `Bearer ${idToken}` },
         })

@@ -123,11 +123,9 @@ function CorpSetupForm({ onSuccess }: { onSuccess: () => void }) {
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
       const ids = extractCreatedIds(result);
       if (ids.length >= 3) {
-        console.log("[CradleOS] created objects:", ids);
         setCachedTreasuryId("pending", ids[ids.length - 1]);
       }
-      const digest = readDigest(result);
-      if (digest) console.log("[CradleOS] init tx:", digest);
+      readDigest(result);
       onSuccess();
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));

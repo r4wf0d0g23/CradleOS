@@ -234,7 +234,6 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
 
       if (vaultId) {
         setCachedVaultId(tribeId, vaultId);
-        console.log("[CradleOS] TribeVault launched:", vaultId);
         // Give the indexer time to catch up before re-fetching
         setTimeout(() => onSuccess(), 4000);
       } else {
