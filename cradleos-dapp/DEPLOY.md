@@ -111,8 +111,8 @@ git commit -m "feat/fix: <description>"
 
 ### Step 2: Push source to both repos
 ```bash
-git push cradleos main          # CradleOS repo — main branch
-git push hackathon main:main    # Hackathon repo — main branch (NOT master!)
+git push cradleos main:master   # CradleOS repo — master branch (source)
+git push hackathon main:main    # Hackathon repo — main branch
 ```
 
 ### Step 3: Build for CradleOS (Stillness)
@@ -146,16 +146,19 @@ npx gh-pages -d dist-hackathon -r git@github.com:r4wf0d0g23/Reality_Anchor_Eve_F
 
 ## Repository Map
 
-| Repo | Default Branch | gh-pages | VITE_BASE | Live URL |
-|---|---|---|---|---|
-| `r4wf0d0g23/CradleOS` | `main` | `gh-pages` | `/CradleOS/` | `r4wf0d0g23.github.io/CradleOS/` |
-| `r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026` | `main` | `gh-pages` | `/Reality_Anchor_Eve_Frontier_Hackathon_2026/` | `r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026/` |
+| Repo | Branch | Purpose | Push command |
+|---|---|---|---|
+| `r4wf0d0g23/CradleOS` | `main` (default) | Flat monorepo + README (GitHub landing page) | Manual only (different structure) |
+| `r4wf0d0g23/CradleOS` | `master` | Full source tree (Move + dApp + world-contracts) | `git push cradleos main:master` |
+| `r4wf0d0g23/CradleOS` | `gh-pages` | Built dist (Stillness) | `npx gh-pages ... -b gh-pages` |
+| `r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026` | `main` (default) | Full source tree | `git push hackathon main:main` |
+| `r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026` | `gh-pages` | Built dist (Utopia) | `npx gh-pages ... -b gh-pages` |
 
 **⚠️ Branch rules:**
-- Both repos use `main` as the default branch. There is NO `master` branch.
-- Always push `main:main`. Never push to `master` — it will create a ghost branch judges can't see.
-- Always clear `node_modules/.cache/gh-pages` before each `npx gh-pages` deploy (prevents stale pushes or branch mismatch errors).
-- The CradleOS repo `main` has a **different monorepo structure** (flat root with dist + submodules). Do NOT force-push the local working tree to it — only use `npx gh-pages` for dist deploys. Source pushes go to the hackathon repo.
+- CradleOS has TWO content branches: `main` (flat monorepo landing page) and `master` (full source). They have **separate histories**. Do NOT merge or rebase between them.
+- Hackathon repo uses `main` only for source.
+- Always clear `node_modules/.cache/gh-pages` before each `npx gh-pages` deploy.
+- **Before deleting ANY branch**, diff file trees first (see Lessons Learned).
 
 **⚠️ Two builds required:**
 - CradleOS build uses `VITE_BASE="/CradleOS/"` → `dist-ghpages/`
