@@ -4,6 +4,7 @@ import {
   CLOCK,
   CRADLEOS_PKG,
   CRADLEOS_ORIGINAL,
+  CRADLEOS_UPGRADE_ORIGIN,
   TRIBE_ROLES_PKG,
   GATE_POLICY_PKG,
   EVE_COIN_TYPE,
@@ -2847,7 +2848,7 @@ export async function fetchRecentDonations(shrineId: string, limit = 20): Promis
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_ORIGINAL}::keeper_shrine::OfferingMade` },
+          { MoveEventType: `${CRADLEOS_UPGRADE_ORIGIN}::keeper_shrine::OfferingMade` },
           null,
           limit,
           true, // descending
@@ -2931,7 +2932,7 @@ export async function fetchCollateralVault(vaultId: string): Promise<CollateralV
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
         params: [
-          { MoveEventType: `${CRADLEOS_ORIGINAL}::collateral_vault::CollateralVaultCreated` },
+          { MoveEventType: `${CRADLEOS_UPGRADE_ORIGIN}::collateral_vault::CollateralVaultCreated` },
           null, 50, false,
         ],
       }),

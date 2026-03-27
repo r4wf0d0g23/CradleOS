@@ -54,6 +54,13 @@ export const CRADLEOS_PKG      = "0x38115c0620f5f885529e932c1369cbe10305c9f2de50
 // pre-v1 (legacy):              0x7541ac23fb681e4ea2cb54c0693a0c618c2ab24e69217cf4d0436adcc62ee715
 // ───────────────────────────────────────────────────────────────────────────────
 
+// Modules added AFTER the original publish have a different original-id on Sui.
+// Sui indexes events/types by the package version where the module first appeared,
+// NOT the package's original-id. These modules were introduced in upgrade v2.
+export const CRADLEOS_UPGRADE_ORIGIN = "0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d";
+// Affected modules: collateral_vault, keeper_shrine, trustless_bounty
+// Use CRADLEOS_UPGRADE_ORIGIN (not CRADLEOS_ORIGINAL) for event queries on these.
+
 // Backward-compat aliases — all point to published-at for moveCall targets
 export const RECRUITING_PKG       = CRADLEOS_PKG;
 export const TRIBE_ROLES_PKG      = CRADLEOS_PKG;
