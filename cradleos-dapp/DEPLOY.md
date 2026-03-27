@@ -237,6 +237,20 @@ If a bad deploy goes out:
   - Added pre-flight step 2b to catch this automatically before every deploy
   - Rule: `CRADLEOS_PKG` = writes (moveCall), `CRADLEOS_ORIGINAL` = reads (events, types, filters)
 
+- **2026-03-27:** Deleted CradleOS `master` branch without verifying content:
+  - `main` and `master` had SEPARATE HISTORIES (not one ahead of the other)
+  - `master` contained full source tree (Move + dApp + world-contracts); `main` was flat monorepo
+  - Assumed `main` was a superset because it had a newer commit — WRONG
+  - Commit was GC'd by GitHub within minutes — unrecoverable from remote
+  - No data lost only because source exists locally and in hackathon repo
+  - **RULE: Before deleting ANY branch, ALWAYS diff the file trees:**
+    ```bash
+    diff <(git ls-tree -r --name-only branch-to-keep | sort) \
+         <(git ls-tree -r --name-only branch-to-delete | sort) | grep "^>"
+    # If ANY output → branch-to-delete has files not in branch-to-keep → DO NOT DELETE
+    ```
+  - **RULE: Never assume two branches with similar names share history. Check `git merge-base` first.**
+
 - **2026-03-27:** gh-pages cache caused stale deploys when switching between repos:
   - `node_modules/.cache/gh-pages` retains state from previous deploy target
   - Fix: `rm -rf node_modules/.cache/gh-pages` before EVERY `npx gh-pages` call
