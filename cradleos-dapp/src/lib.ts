@@ -1367,6 +1367,95 @@ export async function fetchMemberBalance(balancesTableId: string, memberAddress:
   } catch { return 0; }
 }
 
+// ─── Turret Extension Authorization ──────────────────────────────────────────
+
+/**
+ * Fetch OwnerCap<Turret> objects for a wallet's character.
+ * OwnerCaps are held by the Character object, not the wallet directly.
+ * Returns [{ capId, turretId }] for each turret OwnerCap found.
+ */
+export async function fetchOwnerCapsForWallet(walletAddress: string): Promise<{ capId: string; turretId: string; characterId: string }[]> {
+  const charInfo = await findCharacterForWallet(walletAddress);
+  if (!charInfo) return [];
+  const ownerCapType = `${WORLD_PKG}::access::OwnerCap<${WORLD_PKG}::turret::Turret>`;
+  const caps = await rpcGetOwnedObjects(charInfo.characterId, ownerCapType, 50);
+  return caps
+    .map(({ objectId: capId, fields }) => ({
+      capId,
+      turretId: String(fields["authorized_object_id"] ?? ""),
+      characterId: charInfo.characterId,
+    }))
+    .filter(c => c.turretId.length > 0);
+}
+
+/**
+ * Build a single PTB that:
+ * 1. Creates a TurretConfig shared object via turret_ext::create_config_entry
+ * 2. Authorizes the turret_ext extension via turret::authorize_extension<TurretAuth>
+ *
+ * @param turretId   - Object ID of the Turret (shared)
+ * @param ownerCapId - Object ID of the OwnerCap<Turret>
+ * @param policyId   - Object ID of the TribeDefensePolicy to link the config to
+ * @param preset     - Targeting preset (default 0 = AUTOCANNON)
+ */
+export function buildAuthorizeExtensionTx(
+  turretId: string,
+  ownerCapId: string,
+  characterId: string,
+  policyId: string,
+  preset: number = 0,
+): Transaction {
+  const tx = new Transaction();
+
+  // Step 1: create TurretConfig shared object (turret_id: ID, policy_id: ID, preset: u8)
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::turret_ext::create_config_entry`,
+    arguments: [
+      tx.pure.address(turretId),
+      tx.pure.address(policyId),
+      tx.pure.u8(preset),
+    ],
+  });
+
+  // Step 2: Borrow OwnerCap from the Character (OwnerCap is owned by Character, not wallet)
+  // borrow_owner_cap<T: key>(character: &mut Character, owner_cap_ticket: Receiving<OwnerCap<T>>, ctx)
+  // Returns (OwnerCap<T>, ReturnOwnerCapReceipt)
+  const turretType = `${WORLD_PKG}::turret::Turret`;
+  const [borrowedCap, receipt] = tx.moveCall({
+    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    typeArguments: [turretType],
+    arguments: [
+      tx.object(characterId),
+      tx.object(ownerCapId),
+    ],
+  });
+
+  // Step 3: Authorize the CradleOS turret extension on the world contract
+  // authorize_extension<Auth: drop>(turret: &mut Turret, owner_cap: &OwnerCap<Turret>)
+  tx.moveCall({
+    target: `${WORLD_PKG}::turret::authorize_extension`,
+    typeArguments: [`${CRADLEOS_PKG}::turret_ext::TurretAuth`],
+    arguments: [
+      tx.object(turretId),
+      borrowedCap,
+    ],
+  });
+
+  // Step 4: Return the OwnerCap back to the Character
+  // return_owner_cap<T: key>(character: &Character, owner_cap: OwnerCap<T>, receipt: ReturnOwnerCapReceipt)
+  tx.moveCall({
+    target: `${WORLD_PKG}::character::return_owner_cap`,
+    typeArguments: [turretType],
+    arguments: [
+      tx.object(characterId),
+      borrowedCap,
+      receipt,
+    ],
+  });
+
+  return tx;
+}
+
 /** Fetch the caller's EVE coin balance and best coin object ID for transactions. */
 export async function fetchEveBalance(address: string): Promise<{ balance: number; coinId: string | null }> {
   try {
@@ -2331,6 +2420,61 @@ export async function fetchPlayerRelations(vaultId: string): Promise<PlayerRelat
     return [...map.entries()]
       .filter(([p]) => !removed.has(p))
       .map(([player, value]) => ({ player, value }));
+  } catch { return []; }
+}
+
+// ── Hostile Characters (turret same-tribe override) ───────────────────────────
+
+export type HostileCharacter = { characterId: number; hostile: boolean };
+
+/** Build set_hostile_character_entry transaction. */
+export function buildSetHostileCharacterTx(
+  policyId: string, vaultId: string, characterId: number, hostile: boolean,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::defense_policy::set_hostile_character_entry`,
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u32(characterId), tx.pure.bool(hostile)],
+  });
+  return tx;
+}
+
+/** Build batch set_hostile_characters_batch_entry transaction. */
+export function buildSetHostileCharactersBatchTx(
+  policyId: string, vaultId: string, characterIds: number[], hostileFlags: boolean[],
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::defense_policy::set_hostile_characters_batch_entry`,
+    arguments: [
+      tx.object(policyId), tx.object(vaultId),
+      tx.pure.vector("u32", characterIds),
+      tx.pure.vector("bool", hostileFlags),
+    ],
+  });
+  return tx;
+}
+
+/** Fetch hostile characters from HostileCharacterSet events. */
+export async function fetchHostileCharacters(vaultId: string): Promise<HostileCharacter[]> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::HostileCharacterSet` }, null, 200, true] }),
+    });
+    const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
+    // Most recent event per character_id wins (descending order)
+    const map = new Map<number, boolean>();
+    for (const e of (j.result?.data ?? [])) {
+      if (String(e.parsedJson?.vault_id) !== vaultId) continue;
+      const charId = Number(e.parsedJson?.character_id ?? 0);
+      if (!map.has(charId)) map.set(charId, Boolean(e.parsedJson?.hostile));
+    }
+    // Only return characters that are currently hostile
+    return [...map.entries()]
+      .filter(([, hostile]) => hostile)
+      .map(([characterId, hostile]) => ({ characterId, hostile }));
   } catch { return []; }
 }
 

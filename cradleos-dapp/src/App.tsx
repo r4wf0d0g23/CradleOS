@@ -721,6 +721,16 @@ function AppInner() {
             }}>
               C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS <span style={{ fontSize: "0.4em", verticalAlign: "super", opacity: 0.6, letterSpacing: "0.08em" }}>v2</span>
             </h1>
+            <button
+              onClick={() => window.location.reload()}
+              title="Reload"
+              style={{
+                position: "absolute", top: 8, right: 10,
+                background: "none", border: "1px solid rgba(255,255,255,0.1)",
+                color: "rgba(255,255,255,0.35)", fontSize: "13px", padding: "3px 8px",
+                cursor: "pointer", borderRadius: "2px", fontFamily: "monospace",
+              }}
+            >↻</button>
           </div>
           <p style={{
             fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase",

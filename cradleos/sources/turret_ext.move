@@ -12,6 +12,9 @@
 ///   2. Reads this turret's TurretConfig (which preset: AUTOCANNON / PLASMA /
 ///      HOWITZER) from a shared config object.
 ///   3. For each TargetCandidate:
+///        a0. SAME-TRIBE PROTECTION: if candidate is same tribe as turret owner,
+///            ALWAYS skip UNLESS the character_id is on the hostile character list.
+///            This prevents friendly-fire even when tribe members aggress.
 ///        a. Skip if character_tribe is FRIENDLY in the policy.
 ///        b. Skip if the candidate's group_id is NOT in the turret's specialty
 ///           group list (the turret simply ignores ships it can't efficiently kill).
@@ -129,6 +132,17 @@ module cradleos::turret_ext {
         skipped_non_aggressor: u64,
     }
 
+    /// Extended targeting event with hostile character tracking (v5+).
+    public struct TargetingResolvedV2 has copy, drop {
+        turret_id:    ID,
+        candidates:   u64,
+        targeted:     u64,
+        skipped_friendly:   u64,
+        skipped_off_class:  u64,
+        skipped_non_aggressor: u64,
+        targeted_hostile_character: u64,
+    }
+
     // ── Entry functions ───────────────────────────────────────────────────────
 
     /// Create a TurretConfig for a turret.
@@ -183,7 +197,7 @@ module cradleos::turret_ext {
     /// Returns BCS of vector<ReturnTargetPriorityList>.
     public fun get_target_priority_list(
         turret: &Turret,
-        _character: &Character,
+        owner_character: &Character,
         config: &TurretConfig,
         policy: &TribeDefensePolicy,
         target_candidate_list: vector<u8>,
@@ -195,13 +209,16 @@ module cradleos::turret_ext {
         let sec_level  = defense_policy::security_level(policy);
         let aggr_mode  = defense_policy::aggression_mode(policy);
         let preset     = config.preset;
+        // Owner's tribe — used for same-tribe protection logic
+        let owner_tribe_id = world::character::tribe(owner_character);
 
         let mut return_list: vector<turret::ReturnTargetPriorityList> = vector::empty();
 
-        let mut i_friendly   = 0u64;
-        let mut i_off_class  = 0u64;
-        let mut i_non_aggr   = 0u64;
-        let mut i_targeted   = 0u64;
+        let mut i_friendly        = 0u64;
+        let mut i_off_class       = 0u64;
+        let mut i_non_aggr        = 0u64;
+        let mut i_targeted        = 0u64;
+        let mut i_hostile_char    = 0u64;
         let total            = vector::length(&candidates);
         let mut i            = 0u64;
 
@@ -218,7 +235,23 @@ module cradleos::turret_ext {
             // default world weighting; add our own aggressor/class logic on top.
             let itm   = turret::item_id(c);
 
-            // ── 1. Skip FRIENDLY characters ──────────────────────────────────
+            // ── 0. Same-tribe protection ─────────────────────────────────────
+            // Always protect same-tribe members UNLESS explicitly flagged hostile
+            // by character_id in the defense policy's hostile character list.
+            // This prevents friendly-fire from turrets even when a tribe member
+            // aggresses (e.g. sparring, testing). The owner's tribe is read from
+            // the Character object passed by the game engine.
+            let char_id = turret::character_id(c);
+            if (tribe != 0 && tribe == owner_tribe_id) {
+                if (!defense_policy::is_hostile_character(policy, char_id)) {
+                    i_friendly = i_friendly + 1;
+                    continue
+                };
+                // Character IS explicitly hostile — fall through to targeting logic
+                i_hostile_char = i_hostile_char + 1;
+            };
+
+            // ── 1. Skip FRIENDLY tribes ──────────────────────────────────────
             // NPCs have tribe == 0; treat as hostile unless explicitly friendly-listed.
             if (tribe != 0 && defense_policy::is_friendly(policy, tribe)) {
                 i_friendly = i_friendly + 1;
@@ -258,13 +291,14 @@ module cradleos::turret_ext {
 
         turret::destroy_online_receipt(receipt, TurretAuth {});
 
-        event::emit(TargetingResolved {
+        event::emit(TargetingResolvedV2 {
             turret_id: object::id(turret),
             candidates: total,
             targeted:   i_targeted,
             skipped_friendly:      i_friendly,
             skipped_off_class:     i_off_class,
             skipped_non_aggressor: i_non_aggr,
+            targeted_hostile_character: i_hostile_char,
         });
 
         result

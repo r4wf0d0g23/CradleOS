@@ -135,6 +135,8 @@ interface KeeperContext {
   keeperNodeActive: boolean; // true if player has a node with keeper.reapers.shop linked
   // Player's deployed structures
   structures: Array<{ kind: string; name: string; isOnline: boolean; systemId?: number; objectId: string }>;
+  // SSU inventory summaries (typeId → {name, quantity} per SSU)
+  ssuInventories: Array<{ ssuName: string; ssuId: string; items: Array<{ typeId: number; name: string; quantity: number }> }>;
 }
 
 // ── Security constants ────────────────────────────────────────────────────────
@@ -301,6 +303,8 @@ ANTI-HALLUCINATION:
 - When asked "how many X" and you have exact data, give the exact number. When you don't, say so in character. Never guess.
 - For manufacturing/crafting/recipe questions, ONLY reference recipes from the MANUFACTURING DATA section below. If an item is not listed there, say its recipe has not yet been woven into the lattice. NEVER invent recipes.
 - Items NOT in the manufacturing data (like Exclave Technocores, rare components, NPC loot) are found from NPC caches scattered across the galaxy — they CANNOT be manufactured. If asked where to find them, say they are found in NPC wreck caches and salvage sites, not crafted.
+- You CANNOT see inside storage units or containers unless their inventory data is explicitly provided in the PILOT CONTEXT above under "SSU Inventories". If no inventory data is shown, say you cannot read the contents. NEVER invent storage contents.
+- All materials in EVE Frontier are unique to this game. There is NO Tritanium, Pyerite, Mexallon, Isogen, Nocxium, Zydrine, Megacyte, or Morphite — those are EVE Online minerals. EVE Frontier materials include: Feldspar Crystals, Platinum-Palladium Matrix, Hydrated Sulfide Matrix, Iridosmine Nodules, Deep-Core Carbon Ore, Methane Ice Shards, Primitive Kerogen Matrix, Aromatic Carbon Veins, Tholin Nodules, Rough/Old/Young Crude Matter, and Rogue Drone Components (Gravionite, Luminalis, Eclipsite, Radiantium, Catalytic Dust).
 - This is EVE FRONTIER, NOT EVE Online. There is NO security status system, NO low-sec/high-sec/null-sec, NO CONCORD, NO empire space, NO sovereignty. Do NOT reference any EVE Online mechanics. EVE Frontier has: solar systems, smart gates, smart storage units, network nodes, tribes (not corporations), and a lawless frontier. All systems are equally dangerous.
 
 --- MANUFACTURING DATA (EVE Frontier blueprints — authoritative) ---
@@ -318,6 +322,10 @@ Registered Infra: ${infraStr} structures
 Deployed Structures (${ctx.structures.length}): ${ctx.structures.length > 0
   ? "\n" + ctx.structures.map(s => `  - ${s.kind}${s.name ? ` "${s.name}"` : ""} [${s.isOnline ? "ONLINE" : "OFFLINE"}] id:${s.objectId}${s.systemId ? ` system:${s.systemId}` : ""}`).join("\n")
   : "none deployed"}
+${ctx.ssuInventories.length > 0 ? `
+SSU Inventories (REAL on-chain data — these are the ACTUAL contents):
+${ctx.ssuInventories.map(inv => `  ${inv.ssuName} (${inv.ssuId.slice(0, 10)}…):
+${inv.items.map(it => `    - ${it.name}: ${it.quantity.toLocaleString()}`).join("\n")}`).join("\n")}` : "No SSU inventory data available."}
 Security Level: ${secStr}
 Active Bounties: ${bountyStr} open
 Recent Kills: ${killStr} on-chain (last 24h)${ctx.jumpHistory && ctx.jumpHistory.length > 0 ? `
@@ -391,6 +399,7 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
     jumpHistoryTotal: null,
     keeperNodeActive: false,
     structures: [],
+    ssuInventories: [],
   };
 
   try {
@@ -445,6 +454,69 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
         systemId: groups.find(g => g.structures.includes(s))?.solarSystemId,
         objectId: s.objectId,
       }));
+
+      // Fetch SSU inventories for Keeper context
+      const ssus = allStructures.filter(s => s.kind === "StorageUnit");
+      const inventories: typeof base.ssuInventories = [];
+      for (const ssu of ssus.slice(0, 5)) {
+        try {
+          const dfRes = await fetch(SUI_TESTNET_RPC, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getDynamicFields", params: [ssu.objectId, null, 20] }),
+          });
+          const dfJson = await dfRes.json() as { result?: { data?: Array<{ name?: { value?: string } }> } };
+          const keys: string[] = dfJson.result?.data?.map((f) => f.name?.value).filter(Boolean) as string[] ?? [];
+
+          const rawItems: Array<{ typeId: number; quantity: number }> = [];
+          for (const key of keys) {
+            const invRes = await fetch(SUI_TESTNET_RPC, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                jsonrpc: "2.0",
+                id: 1,
+                method: "suix_getDynamicFieldObject",
+                params: [ssu.objectId, { type: "0x2::object::ID", value: key }],
+              }),
+            });
+            const invJson = await invRes.json() as { result?: { data?: { content?: { fields?: { value?: { fields?: { items?: { fields?: { contents?: Array<{ fields?: { value?: { fields?: { type_id?: string | number; quantity?: string | number } } } }> } } } } } } } } };
+            const invFields = invJson.result?.data?.content?.fields?.value?.fields;
+            const contents = invFields?.items?.fields?.contents ?? [];
+            for (const entry of contents) {
+              const val = entry?.fields?.value?.fields;
+              if (val) rawItems.push({ typeId: Number(val.type_id), quantity: Number(val.quantity) });
+            }
+          }
+
+          const map = new Map<number, number>();
+          for (const item of rawItems) {
+            map.set(item.typeId, (map.get(item.typeId) ?? 0) + item.quantity);
+          }
+
+          const items: Array<{ typeId: number; name: string; quantity: number }> = [];
+          for (const [typeId, quantity] of map) {
+            let name = `Type#${typeId}`;
+            try {
+              const r = await fetch(`${WORLD_API}/v2/types/${typeId}`);
+              if (r.ok) {
+                const d = await r.json() as { name?: string };
+                name = d.name ?? name;
+              }
+            } catch { /* keep numeric name */ }
+            items.push({ typeId, name, quantity });
+          }
+
+          if (items.length > 0) {
+            inventories.push({
+              ssuName: ssu.displayName,
+              ssuId: ssu.objectId,
+              items: items.sort((a, b) => b.quantity - a.quantity),
+            });
+          }
+        } catch { /* skip this SSU */ }
+      }
+      base.ssuInventories = inventories;
     } catch { /* non-critical */ }
 
     // Fetch vault data if we have a tribe ID
@@ -889,6 +961,7 @@ export function KeeperPanel() {
         jumpHistoryTotal: null,
         keeperNodeActive: false,
         structures: [],
+        ssuInventories: [],
       });
       setMessages([{
         role: "keeper",

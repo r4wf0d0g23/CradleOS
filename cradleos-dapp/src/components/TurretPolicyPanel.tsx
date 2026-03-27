@@ -21,7 +21,7 @@ import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
-import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRIBES, eventType } from "../constants";
+import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRIBES, WORLD_PKG, eventType } from "../constants";
 
 // defense_policy was NEW in v5 — its events index under CRADLEOS_PKG (v5), not CRADLEOS_PKG (v4)
 // tribe_vault events (CoinLaunched) remain under CRADLEOS_PKG (original v4)
@@ -33,10 +33,12 @@ import {
   SEC_GREEN, SEC_YELLOW, SEC_RED,
   type TribeVaultState, type SecurityConfig, type PlayerStructure,
   fetchPlayerRelations, buildSetPlayerRelationTx, buildRemovePlayerRelationTx, type PlayerRelation,
+  fetchHostileCharacters, buildSetHostileCharacterTx, type HostileCharacter,
   fetchPersonalVaultForWallet, fetchDefensePolicyForVault, fetchGatePolicyForVault,
   buildCreatePersonalVaultTx, buildCreatePersonalDefensePolicyTx, buildCreatePersonalGatePolicyTx,
   buildSetGateAccessLevelTx,
   GATE_ACCESS_LABELS,
+  fetchOwnerCapsForWallet,
 } from "../lib";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -663,9 +665,9 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
           {/* Level selector */}
           <div style={{ display: "flex", gap: "8px", marginBottom: "12px", flexWrap: "wrap" }}>
             {([
-              { level: SEC_GREEN,  label: "● GREEN",  desc: "Arm on aggression only",           color: "#00ff96", dimColor: "#1a4d2e" },
-              { level: SEC_YELLOW, label: "● YELLOW", desc: "Arm against blacklisted on approach", color: "#ffcc00", dimColor: "#4d3d00" },
-              { level: SEC_RED,    label: "● RED",    desc: "Arm against all non-tribe",         color: "#ff4444", dimColor: "#4d1111" },
+              { level: SEC_GREEN,  label: "● GREEN",  desc: "Arm on aggression only (tribe safe)",    color: "#00ff96", dimColor: "#1a4d2e" },
+              { level: SEC_YELLOW, label: "● YELLOW", desc: "Arm against hostile on approach",       color: "#ffcc00", dimColor: "#4d3d00" },
+              { level: SEC_RED,    label: "● RED",    desc: "Arm against all non-tribe (tribe safe)", color: "#ff4444", dimColor: "#4d1111" },
             ] as const).map(({ level, label, desc, color, dimColor }) => {
               const active = (secConfig?.level ?? SEC_GREEN) === level;
               return (
@@ -880,6 +882,9 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
       {/* Player Relations — per-address hostile/friendly overrides */}
       <PlayerRelationsSection vault={vault} policyId={policyId ?? null} isFounder={isFounder} />
 
+      {/* Hostile Characters — same-tribe targeting overrides by character ID */}
+      <HostileCharactersSection vault={vault} policyId={policyId ?? null} isFounder={isFounder} />
+
       {/* Policy members — who has delegated to this policy */}
       <PolicyMembersSection vault={vault} />
 
@@ -978,7 +983,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
 
       {/* Member: Apply tribe policy to own structures — always visible */}
       {account && (
-        <MemberDelegationSection vault={vault} account={account} personalVaultId={personalVaultId} />
+        <MemberDelegationSection vault={vault} account={account} personalVaultId={personalVaultId} policyId={policyId ?? null} />
       )}
     </div>
   );
@@ -1074,16 +1079,144 @@ function PlayerRelationsSection({ vault, policyId, isFounder }: {
   );
 }
 
+// ── Hostile Characters — same-tribe targeting override by character ID ────────
+
+function HostileCharactersSection({ vault, policyId, isFounder }: {
+  vault: TribeVaultState;
+  policyId: string | null;
+  isFounder: boolean;
+}) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [charInput, setCharInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const { data: hostileChars } = useQuery<HostileCharacter[]>({
+    queryKey: ["hostileCharacters", vault.objectId],
+    queryFn: () => fetchHostileCharacters(vault.objectId),
+    staleTime: 30_000,
+  });
+
+  const handleAdd = async () => {
+    const charId = parseInt(charInput, 10);
+    if (!account || !policyId || !charId || isNaN(charId)) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetHostileCharacterTx(policyId, vault.objectId, charId, true);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setCharInput("");
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
+    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  const handleRemove = async (charId: number) => {
+    if (!account || !policyId) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetHostileCharacterTx(policyId, vault.objectId, charId, false);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
+    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.12)",
+      borderRadius: "0", padding: "14px", marginBottom: "20px",
+    }}>
+      <div style={{ color: "#ff4444", fontWeight: 600, fontSize: "13px", marginBottom: "4px" }}>
+        Hostile Characters (Same-Tribe Override)
+        {!isFounder && <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
+      </div>
+      <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
+        Tribe turrets will <strong style={{ color: "#ff4444" }}>never fire on same-tribe members</strong> unless
+        their character ID is listed here. Use this for KOS (kill-on-sight) characters
+        who are in your tribe but should be treated as hostile.
+      </div>
+
+      {(hostileChars ?? []).length === 0 ? (
+        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", marginBottom: isFounder ? 12 : 0 }}>
+          No hostile characters listed. All tribe members are protected from turret fire.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: 12 }}>
+          {(hostileChars ?? []).map(hc => (
+            <div key={hc.characterId} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+              <span style={{ flex: 1, fontFamily: "monospace", color: "#ff4444" }}>
+                Character #{hc.characterId}
+              </span>
+              <span style={{
+                padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
+                background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444",
+              }}>
+                KOS
+              </span>
+              {isFounder && policyId && (
+                <button
+                  onClick={() => handleRemove(hc.characterId)}
+                  disabled={busy}
+                  style={{
+                    background: "none", border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer",
+                  }}
+                >Remove</button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isFounder && policyId && (
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+          <input
+            value={charInput}
+            onChange={e => setCharInput(e.target.value.replace(/\D/g, ""))}
+            placeholder="Character ID (number)"
+            style={{
+              flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0",
+              color: "#aaa", fontSize: "11px", padding: "5px 8px", outline: "none",
+              fontFamily: "monospace",
+            }}
+          />
+          <button
+            onClick={handleAdd}
+            disabled={busy || !charInput}
+            style={{
+              background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)",
+              color: "#ff4444", borderRadius: "2px", fontSize: "11px", padding: "5px 12px", cursor: "pointer",
+            }}
+          >
+            {busy ? "..." : "+ Add Hostile"}
+          </button>
+        </div>
+      )}
+      {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
 function MemberDelegationSection({
   vault,
   account,
   personalVaultId,
+  policyId,
 }: {
   vault: TribeVaultState;
   account: { address: string };
   personalVaultId: string | null;
+  policyId: string | null;
 }) {
   const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
   const { data: groups, isLoading } = useQuery({
     queryKey: ["playerStructures", account.address],
     queryFn: () => fetchPlayerStructures(account.address),
@@ -1097,6 +1230,8 @@ function MemberDelegationSection({
 
   const [busy, setBusy] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [applyAllBusy, setApplyAllBusy] = useState(false);
+  const [applyAllErr, setApplyAllErr] = useState<string | null>(null);
 
   // Fetch real on-chain delegation state by querying TurretDelegation objects
   const { data: onChainDelegations } = useQuery<Record<string, { vaultId: string; delegationObjId: string }>>({
@@ -1118,6 +1253,43 @@ function MemberDelegationSection({
       return map;
     },
     staleTime: 15_000,
+  });
+
+  // Fetch OwnerCaps for this wallet's character — needed for authorize extension
+  const { data: ownerCaps } = useQuery<{ capId: string; turretId: string; characterId: string }[]>({
+    queryKey: ["turretOwnerCaps", account.address],
+    queryFn: () => fetchOwnerCapsForWallet(account.address),
+    staleTime: 60_000,
+  });
+
+  // Fetch extension status for each turret: check content.fields.extension field
+  const turretIds = defensiveStructures.filter(s => s.kind === "Turret").map(s => s.objectId);
+  const { data: extensionStatus, refetch: refetchExtension } = useQuery<Record<string, boolean>>({
+    queryKey: ["turretExtensionStatus", turretIds.join(",")],
+    queryFn: async () => {
+      const result: Record<string, boolean> = {};
+      await Promise.all(
+        turretIds.map(async (id) => {
+          try {
+            const fields = await rpcGetObject(id);
+            // extension field is Option<TypeName> — None = null/undefined, Some = object
+            const ext = fields["extension"];
+            // None variant: null, undefined, or { None: {} } / { variant: "None" }
+            // Some variant: non-null object with a wrapped TypeName
+            const isActive = ext !== null && ext !== undefined &&
+              typeof ext === "object" &&
+              !("None" in (ext as Record<string, unknown>)) &&
+              (("Some" in (ext as Record<string, unknown>)) || ("fields" in (ext as Record<string, unknown>)));
+            result[id] = isActive;
+          } catch {
+            result[id] = false;
+          }
+        })
+      );
+      return result;
+    },
+    enabled: turretIds.length > 0,
+    staleTime: 30_000,
   });
 
   // Merge on-chain state with localStorage fallback: structure_id → delegated vaultId or null
@@ -1154,6 +1326,7 @@ function MemberDelegationSection({
     setErrors(prev => ({ ...prev, [s.objectId]: "" }));
     try {
       const tx = new Transaction();
+      // Step 1: CradleOS delegation record
       tx.moveCall({
         target: `${CRADLEOS_PKG}::turret_delegation::delegate_to_tribe`,
         arguments: [
@@ -1162,6 +1335,41 @@ function MemberDelegationSection({
           tx.object(CLOCK),
         ],
       });
+
+      // Step 2: For turrets, also authorize the CradleOS extension if not already active
+      const isAlreadyExt = extensionStatus?.[s.objectId] === true;
+      const cap = s.kind === "Turret" ? (ownerCaps ?? []).find(c => c.turretId === s.objectId) : null;
+      if (s.kind === "Turret" && cap && policyId && !isAlreadyExt) {
+        // Create TurretConfig
+        tx.moveCall({
+          target: `${CRADLEOS_PKG}::turret_ext::create_config_entry`,
+          arguments: [
+            tx.pure.address(s.objectId),
+            tx.pure.address(policyId),
+            tx.pure.u8(0), // AUTOCANNON default
+          ],
+        });
+        // Borrow OwnerCap from character
+        const turretType = `${WORLD_PKG}::turret::Turret`;
+        const [borrowedCap, receipt] = tx.moveCall({
+          target: `${WORLD_PKG}::character::borrow_owner_cap`,
+          typeArguments: [turretType],
+          arguments: [tx.object(cap.characterId), tx.object(cap.capId)],
+        });
+        // Authorize extension
+        tx.moveCall({
+          target: `${WORLD_PKG}::turret::authorize_extension`,
+          typeArguments: [`${CRADLEOS_PKG}::turret_ext::TurretAuth`],
+          arguments: [tx.object(s.objectId), borrowedCap],
+        });
+        // Return OwnerCap
+        tx.moveCall({
+          target: `${WORLD_PKG}::character::return_owner_cap`,
+          typeArguments: [turretType],
+          arguments: [tx.object(cap.characterId), borrowedCap, receipt],
+        });
+      }
+
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       localStorage.setItem(`delegation:${s.objectId}`, targetVaultId);
@@ -1177,6 +1385,11 @@ function MemberDelegationSection({
         if (match?.data?.objectId) localStorage.setItem(`delegation-obj:${s.objectId}`, match.data.objectId);
       } catch { /* non-critical */ }
       setDelegated(prev => ({ ...prev, [s.objectId]: targetVaultId }));
+      // Refresh extension status
+      if (s.kind === "Turret" && cap && !isAlreadyExt) {
+        setTimeout(() => { queryClient.invalidateQueries({ queryKey: ["turretExtensionStatus"] }); refetchExtension(); }, 2500);
+        setTimeout(() => { queryClient.invalidateQueries({ queryKey: ["turretExtensionStatus"] }); refetchExtension(); }, 6000);
+      }
     } catch (e) {
       setErrors(prev => ({ ...prev, [s.objectId]: e instanceof Error ? e.message : String(e) }));
     } finally {
@@ -1210,6 +1423,24 @@ function MemberDelegationSection({
       setErrors(prev => ({ ...prev, [s.objectId]: e instanceof Error ? e.message : String(e) }));
     } finally {
       setBusy(null);
+    }
+  };
+
+  // Unassigned structures for "Apply All" button
+  const unassignedStructures = defensiveStructures.filter(s => !delegated[s.objectId]);
+
+  const handleApplyAll = async (targetVaultId: string) => {
+    setApplyAllBusy(true); setApplyAllErr(null);
+    let succeeded = 0;
+    for (const s of unassignedStructures) {
+      try {
+        await handleDelegate(s, targetVaultId);
+        succeeded++;
+      } catch { /* individual errors shown per-row */ }
+    }
+    setApplyAllBusy(false);
+    if (succeeded < unassignedStructures.length) {
+      setApplyAllErr(`${succeeded}/${unassignedStructures.length} succeeded`);
     }
   };
 
@@ -1249,6 +1480,36 @@ function MemberDelegationSection({
 
       {!isLoading && defensiveStructures.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {/* Apply All buttons — only show when 2+ structures unassigned */}
+          {unassignedStructures.length >= 2 && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 6, alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                onClick={() => handleApplyAll(vault.objectId)}
+                disabled={applyAllBusy}
+                style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", fontFamily: "monospace",
+                  color: "#FF4700", border: "1px solid rgba(255,71,0,0.5)", padding: "5px 14px",
+                  background: "rgba(255,71,0,0.08)", cursor: applyAllBusy ? "default" : "pointer",
+                }}
+              >
+                {applyAllBusy ? "APPLYING…" : `APPLY TRIBE POLICY TO ALL (${unassignedStructures.length})`}
+              </button>
+              {personalVaultId && (
+                <button
+                  onClick={() => handleApplyAll(personalVaultId)}
+                  disabled={applyAllBusy}
+                  style={{
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", fontFamily: "monospace",
+                    color: "#c87fff", border: "1px solid rgba(160,80,255,0.4)", padding: "5px 14px",
+                    background: "rgba(160,80,255,0.06)", cursor: applyAllBusy ? "default" : "pointer",
+                  }}
+                >
+                  {applyAllBusy ? "APPLYING…" : `APPLY PERSONAL TO ALL (${unassignedStructures.length})`}
+                </button>
+              )}
+              {applyAllErr && <span style={{ fontSize: 10, color: "#ff6432" }}>⚠ {applyAllErr}</span>}
+            </div>
+          )}
           {defensiveStructures.map(s => {
             const delegatedTo = delegated[s.objectId] ?? null;
             const isTribeDelegated = delegatedTo === vault.objectId;
@@ -1256,6 +1517,8 @@ function MemberDelegationSection({
             const isAssigned = isTribeDelegated || isPersonalDelegated;
             const isBusy = busy === s.objectId;
             const err = errors[s.objectId];
+            // Extension status — only relevant for turrets
+            const isExtActive = s.kind === "Turret" ? (extensionStatus?.[s.objectId] ?? false) : null;
             return (
               <div key={s.objectId} style={{
                 display: "flex", alignItems: "center", gap: 10,
@@ -1279,6 +1542,17 @@ function MemberDelegationSection({
                 {isPersonalDelegated && (
                   <span style={{ fontSize: 10, color: "#c87fff", border: "1px solid rgba(160,80,255,0.35)", padding: "2px 8px", fontFamily: "monospace" }}>
                     ✓ PERSONAL POLICY
+                  </span>
+                )}
+                {/* Extension status badge — turrets only */}
+                {s.kind === "Turret" && isExtActive && (
+                  <span style={{
+                    fontSize: 10, color: "#00ff96",
+                    border: "1px solid rgba(0,255,150,0.3)",
+                    padding: "2px 8px", fontFamily: "monospace",
+                    background: "rgba(0,255,150,0.06)",
+                  }}>
+                    ✓ EXTENSION
                   </span>
                 )}
                 {isAssigned ? (
@@ -1311,7 +1585,7 @@ function MemberDelegationSection({
                 )}
                 {err && (
                   <div style={{ width: "100%", fontSize: 10, color: "#ff6432", fontFamily: "monospace", marginTop: 2 }}>
-                    ⚠ {err.slice(0, 100)}
+                    ⚠ {err.slice(0, 120)}
                   </div>
                 )}
               </div>

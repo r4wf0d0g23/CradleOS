@@ -376,8 +376,12 @@ module cradleos::defense_policy {
 
     // ── Player-level relations (added v13 via dynamic fields) ─────────────────
 
-    /// Key for per-player relation dynamic field.
+    /// Key for per-player relation dynamic field (by wallet address).
     public struct PlayerRelationKey has copy, drop, store { player: address }
+
+    /// Key for per-character hostile flag (by in-game character_id u32).
+    /// Used by turret extension to override same-tribe protection for specific characters.
+    public struct HostileCharacterKey has copy, drop, store { character_id: u32 }
 
     /// Set a per-player relation on an existing TribeDefensePolicy.
     /// value: 1 = FRIENDLY, 0 = HOSTILE
@@ -408,6 +412,105 @@ module cradleos::defense_policy {
             value,
             set_by: caller,
         });
+    }
+
+    // ── Character-level hostile flags (for turret same-tribe override) ─────
+
+    public struct HostileCharacterSet has copy, drop {
+        vault_id: ID,
+        character_id: u32,
+        hostile: bool,
+        set_by: address,
+    }
+
+    /// Mark an in-game character_id as hostile (true) or clear the flag (false).
+    /// When hostile, turrets will fire on this character even if same-tribe.
+    public entry fun set_hostile_character_entry(
+        policy: &mut TribeDefensePolicy,
+        vault: &TribeVault,
+        character_id: u32,
+        hostile: bool,
+        ctx: &mut TxContext,
+    ) {
+        use cradleos::tribe_vault::founder;
+        let caller = tx_context::sender(ctx);
+        assert!(caller == founder(vault), 1);
+        assert!(object::id(vault) == policy.vault_id, 2);
+
+        let key = HostileCharacterKey { character_id };
+        if (hostile) {
+            if (df::exists_(&policy.id, key)) {
+                *df::borrow_mut<HostileCharacterKey, bool>(&mut policy.id, key) = true;
+            } else {
+                df::add(&mut policy.id, key, true);
+            };
+        } else {
+            // Clear the flag
+            if (df::exists_(&policy.id, key)) {
+                df::remove<HostileCharacterKey, bool>(&mut policy.id, key);
+            };
+        };
+        policy.version = policy.version + 1;
+
+        event::emit(HostileCharacterSet {
+            vault_id: policy.vault_id,
+            character_id,
+            hostile,
+            set_by: caller,
+        });
+    }
+
+    /// Batch-set multiple character hostile flags in one transaction.
+    public entry fun set_hostile_characters_batch_entry(
+        policy: &mut TribeDefensePolicy,
+        vault: &TribeVault,
+        character_ids: vector<u32>,
+        hostile_flags: vector<bool>,
+        ctx: &mut TxContext,
+    ) {
+        use cradleos::tribe_vault::founder;
+        let caller = tx_context::sender(ctx);
+        assert!(caller == founder(vault), 1);
+        assert!(object::id(vault) == policy.vault_id, 2);
+        let len = character_ids.length();
+        assert!(hostile_flags.length() == len, 3);
+
+        let mut i = 0;
+        while (i < len) {
+            let character_id = *character_ids.borrow(i);
+            let hostile = *hostile_flags.borrow(i);
+            let key = HostileCharacterKey { character_id };
+            if (hostile) {
+                if (df::exists_(&policy.id, key)) {
+                    *df::borrow_mut<HostileCharacterKey, bool>(&mut policy.id, key) = true;
+                } else {
+                    df::add(&mut policy.id, key, true);
+                };
+            } else {
+                if (df::exists_(&policy.id, key)) {
+                    df::remove<HostileCharacterKey, bool>(&mut policy.id, key);
+                };
+            };
+
+            event::emit(HostileCharacterSet {
+                vault_id: policy.vault_id,
+                character_id,
+                hostile,
+                set_by: caller,
+            });
+            i = i + 1;
+        };
+        policy.version = policy.version + (len as u64);
+    }
+
+    /// Check if a character_id is flagged as hostile in this policy.
+    public fun is_hostile_character(p: &TribeDefensePolicy, character_id: u32): bool {
+        let key = HostileCharacterKey { character_id };
+        if (df::exists_(&p.id, key)) {
+            *df::borrow(&p.id, key)
+        } else {
+            false
+        }
     }
 
     /// Remove a per-player relation (resets to default/tribe-based behavior).
