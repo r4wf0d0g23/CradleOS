@@ -38,6 +38,39 @@ grep -rn "0x97c4350f\|0x7541ac23" src/
 
 If matches found → STOP. Fix them.
 
+### 2b. Verify Event Queries Use ORIGINAL (not PKG)
+
+```bash
+# Every MoveEventType and StructType filter MUST use CRADLEOS_ORIGINAL.
+# CRADLEOS_PKG is ONLY for moveCall targets.
+# This catches the #1 recurring bug after package upgrades.
+
+# Find any event/struct queries using the WRONG package ID:
+grep -rn "MoveEventType.*CRADLEOS_PKG\|StructType.*CRADLEOS_PKG" src/
+# Expected: ZERO matches
+
+# Sanity check — all event queries should reference ORIGINAL:
+grep -rn "MoveEventType.*CRADLEOS_ORIGINAL" src/ | wc -l
+# Expected: non-zero (confirms events are being queried)
+```
+
+**Why this matters:** Sui indexes events and struct types by `original-id` (immutable,
+set at first publish). `published-at` changes on every `sui client upgrade`. If an event
+query uses `published-at`, it silently returns zero results — the feature looks "not
+initialized" but is actually just invisible.
+
+**Rule of thumb:**
+| Operation | Which ID | Constant |
+|---|---|---|
+| `moveCall` target | published-at | `CRADLEOS_PKG` |
+| `MoveEventType` query | original-id | `CRADLEOS_ORIGINAL` |
+| `StructType` filter | original-id | `CRADLEOS_ORIGINAL` |
+| Dynamic field type key | original-id | `CRADLEOS_ORIGINAL` |
+
+If you add a new event query or struct filter anywhere in the codebase, use the
+`eventType()` helper from `constants.ts` or reference `CRADLEOS_ORIGINAL` directly.
+**Never use `CRADLEOS_PKG` for reads — only for writes.**
+
 ### 3. Verify On-Chain Events Resolve
 
 ```bash
@@ -196,6 +229,13 @@ If a bad deploy goes out:
   - Fix: synced `master` → `main`, deleted `master` branch entirely
   - Rule: always check `default_branch` via GitHub API before first push to a repo
   - Rule: if `main` and `master` both exist, delete whichever is NOT the default
+
+- **2026-03-27:** Collateral vault + bounty panel showed "not initialized" after v5 upgrade:
+  - Both used `CRADLEOS_PKG` for event queries instead of `CRADLEOS_ORIGINAL`
+  - Worked before upgrade because PKG == ORIGINAL on first publish; broke silently on upgrade
+  - **This is the most dangerous Sui bug pattern** — it fails silently (zero results, no error)
+  - Added pre-flight step 2b to catch this automatically before every deploy
+  - Rule: `CRADLEOS_PKG` = writes (moveCall), `CRADLEOS_ORIGINAL` = reads (events, types, filters)
 
 - **2026-03-27:** gh-pages cache caused stale deploys when switching between repos:
   - `node_modules/.cache/gh-pages` retains state from previous deploy target
