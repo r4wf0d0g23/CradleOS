@@ -76,26 +76,58 @@ git add -A
 git commit -m "feat/fix: <description>"
 ```
 
-### Step 2: Build for gh-pages
+### Step 2: Push source to both repos
+```bash
+git push cradleos main          # CradleOS repo — main branch
+git push hackathon main:main    # Hackathon repo — main branch (NOT master!)
+```
+
+### Step 3: Build for CradleOS (Stillness)
 ```bash
 VITE_BASE="/CradleOS/" npx vite build --outDir dist-ghpages
 ```
 
-### Step 3: Push to both repos
+### Step 4: Deploy CradleOS gh-pages
 ```bash
-git push cradleos main
-git push hackathon main
+rm -rf node_modules/.cache/gh-pages
+npx gh-pages -d dist-ghpages -r git@github.com:r4wf0d0g23/CradleOS.git -b gh-pages
 ```
 
-### Step 4: Deploy gh-pages
+### Step 5: Build for Hackathon (Utopia)
 ```bash
-npx gh-pages -d dist-ghpages -r git@github.com:r4wf0d0g23/CradleOS.git
+VITE_BASE="/Reality_Anchor_Eve_Frontier_Hackathon_2026/" npx vite build --outDir dist-hackathon
 ```
 
-### Step 5: Post-deploy verification
-- Hard refresh the live site
+### Step 6: Deploy Hackathon gh-pages
+```bash
+rm -rf node_modules/.cache/gh-pages
+npx gh-pages -d dist-hackathon -r git@github.com:r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026.git -b gh-pages
+```
+
+### Step 7: Post-deploy verification
+- Hard refresh BOTH live sites
 - Check browser console for RPC errors
 - Verify vault detection works (connect wallet → tribe tab shows vault, not launch form)
+
+---
+
+## Repository Map
+
+| Repo | Default Branch | gh-pages | VITE_BASE | Live URL |
+|---|---|---|---|---|
+| `r4wf0d0g23/CradleOS` | `main` | `gh-pages` | `/CradleOS/` | `r4wf0d0g23.github.io/CradleOS/` |
+| `r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026` | `main` | `gh-pages` | `/Reality_Anchor_Eve_Frontier_Hackathon_2026/` | `r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026/` |
+
+**⚠️ Branch rules:**
+- Both repos use `main` as the default branch. There is NO `master` branch.
+- Always push `main:main`. Never push to `master` — it will create a ghost branch judges can't see.
+- Always clear `node_modules/.cache/gh-pages` before each `npx gh-pages` deploy (prevents stale pushes or branch mismatch errors).
+- The CradleOS repo `main` has a **different monorepo structure** (flat root with dist + submodules). Do NOT force-push the local working tree to it — only use `npx gh-pages` for dist deploys. Source pushes go to the hackathon repo.
+
+**⚠️ Two builds required:**
+- CradleOS build uses `VITE_BASE="/CradleOS/"` → `dist-ghpages/`
+- Hackathon build uses `VITE_BASE="/Reality_Anchor_Eve_Frontier_Hackathon_2026/"` → `dist-hackathon/`
+- These are DIFFERENT base paths. Using the wrong one breaks all asset loading.
 
 ---
 
@@ -153,3 +185,19 @@ If a bad deploy goes out:
   - No pre-flight check existed to catch it
   - Mixed up `original-id` vs `published-at` (Sui uses both for different purposes)
   - No documented procedure → relied on memory → memory was wrong
+
+- **2026-03-26:** Deployed 3 times to wrong branch (`-b main` instead of `-b gh-pages`):
+  - `npx gh-pages` reports "Published" even when pushing to a non-Pages branch
+  - Always verify the Pages config branch matches the `-b` flag (or omit `-b` to use default `gh-pages`)
+  - "Published" from `npx gh-pages` only means git push succeeded — NOT that GitHub Pages deployed
+
+- **2026-03-27:** Full QA session pushed source to `master` while GitHub default was `main`:
+  - Hackathon repo had both `main` and `master` — all pushes went to `master` (invisible to visitors)
+  - Fix: synced `master` → `main`, deleted `master` branch entirely
+  - Rule: always check `default_branch` via GitHub API before first push to a repo
+  - Rule: if `main` and `master` both exist, delete whichever is NOT the default
+
+- **2026-03-27:** gh-pages cache caused stale deploys when switching between repos:
+  - `node_modules/.cache/gh-pages` retains state from previous deploy target
+  - Fix: `rm -rf node_modules/.cache/gh-pages` before EVERY `npx gh-pages` call
+  - This is now mandatory in the deploy steps above
