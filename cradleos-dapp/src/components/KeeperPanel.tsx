@@ -1353,24 +1353,45 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       // Parse out any embedded action block
       let { text: rawDisplayText, action: parsedAction } = parseKeeperAction(content);
 
-      // ── Fallback: detect when Keeper offers an action without %%ACTION%% tag ──
-      // The DGX model sometimes forgets the tag. If the response mentions delegating/binding
-      // turrets and the last user message was a confirmation, inject the action.
+      // ── Fallback: detect when Keeper mentions an action without %%ACTION%% tag ──
+      // The DGX model frequently forgets the tag. Detect intent from response + user message.
       if (!parsedAction) {
-        const lowerContent = content.toLowerCase();
+        const lc = content.toLowerCase();
         const lastUserMsg = messages.filter(m => m.role === "user").pop()?.content?.toLowerCase() ?? "";
-        const isConfirmation = /\b(yes|do it|proceed|confirm|go ahead|bind|delegate|execute|assign)\b/.test(lastUserMsg);
-        const mentionsTurretDelegate = /\b(delegat|bind|assign).*turret/i.test(lowerContent) || /turret.*\b(delegat|bind|assign)/i.test(lowerContent);
-        const mentionsDefensePolicy = /tribe.*polic|defense.*polic/i.test(lowerContent);
 
-        if ((isConfirmation || mentionsTurretDelegate) && (mentionsTurretDelegate || mentionsDefensePolicy)) {
-          parsedAction = {
-            type: "CONTRACT_CALL",
-            label: "Bind All Turrets",
-            description: "Delegate all your turrets and gates to the tribe defense policy",
-            contract: "delegate_all_turrets",
-            params: {},
-          } as KeeperAction;
+        // Turret delegation
+        const mentionsTurretDelegate = /\b(delegat|bind|assign).*turret/i.test(lc) || /turret.*\b(delegat|bind|assign)/i.test(lc);
+        const mentionsDefensePolicy = /tribe.*polic|defense.*polic/i.test(lc);
+        if (mentionsTurretDelegate || (mentionsDefensePolicy && /turret/i.test(lc))) {
+          parsedAction = { type: "CONTRACT_CALL", label: "Bind All Turrets", description: "Delegate all your turrets and gates to the tribe defense policy", contract: "delegate_all_turrets", params: {} } as KeeperAction;
+        }
+
+        // Online structure(s)
+        if (!parsedAction && (/\bonline\b/i.test(lastUserMsg) || /\bbring.*online\b/i.test(lastUserMsg) || /\bpower.*on\b/i.test(lastUserMsg))) {
+          // Check if user asked about a specific structure or all
+          const wantsAll = /\b(all|everything)\b/i.test(lastUserMsg);
+          if (wantsAll) {
+            parsedAction = { type: "CONTRACT_CALL", label: "Online All Structures", description: "Bring all your deployed structures online", contract: "online_all", params: {} } as KeeperAction;
+          } else {
+            // Try to find a specific structure ID from the Keeper's response
+            const idMatch = lc.match(/id:(0x[a-f0-9]+)/);
+            if (idMatch) {
+              parsedAction = { type: "CONTRACT_CALL", label: "Online Structure", description: "Bring this structure online", contract: "online_structure", params: { structureId: idMatch[1] } } as KeeperAction;
+            }
+          }
+        }
+
+        // Offline structure(s)
+        if (!parsedAction && (/\boffline\b/i.test(lastUserMsg) || /\btake.*offline\b/i.test(lastUserMsg) || /\bpower.*down\b/i.test(lastUserMsg) || /\bshut.*down\b/i.test(lastUserMsg))) {
+          const wantsAll = /\b(all|everything)\b/i.test(lastUserMsg);
+          if (wantsAll) {
+            parsedAction = { type: "CONTRACT_CALL", label: "Offline All Structures", description: "Take all your deployed structures offline", contract: "offline_all", params: {} } as KeeperAction;
+          } else {
+            const idMatch = lc.match(/id:(0x[a-f0-9]+)/);
+            if (idMatch) {
+              parsedAction = { type: "CONTRACT_CALL", label: "Offline Structure", description: "Take this structure offline", contract: "offline_structure", params: { structureId: idMatch[1] } } as KeeperAction;
+            }
+          }
         }
       }
 
