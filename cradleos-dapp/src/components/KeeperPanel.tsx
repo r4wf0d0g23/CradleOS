@@ -38,6 +38,7 @@ import {
   SEC_RED,
 } from "../lib";
 import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, EVE_COIN_TYPE, KEEPER_SHRINE } from "../constants";
+import { buildStructureOnlineTransaction, buildStructureOfflineTransaction, buildBatchOnlineTransaction, buildBatchOfflineTransaction } from "../lib";
 import { WORLD_API, SERVER_LABEL } from "../constants";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -63,7 +64,9 @@ type KeeperContract =
   // Roles
   | "grant_role" | "revoke_role"
   // Treasury
-  | "issue_coin" | "burn_coin";
+  | "issue_coin" | "burn_coin"
+  // Structure power
+  | "online_structure" | "offline_structure" | "online_all" | "offline_all";
 
 interface KeeperAction {
   type: "CONTRACT_CALL";
@@ -284,6 +287,7 @@ Available contracts (use exact contract names):
   SUCCESSION: "check_in", "update_heir" (params: {heir: address})
   ROLES: "grant_role" (params: {grantee, role}), "revoke_role" (params: {revokee, role})
   TREASURY: "issue_coin" (params: {recipient, amount, reason}), "burn_coin" (params: {member, amount})
+  STRUCTURES: "online_structure" (params: {structureId}), "offline_structure" (params: {structureId}), "online_all" (bring all structures online), "offline_all" (take all structures offline)
 
 CRITICAL RULES FOR ACTIONS:
 1. You can see the pilot's deployed structures above (with object IDs). When asked to assign/bind/delegate turrets, use "delegate_all_turrets".
@@ -297,6 +301,15 @@ Example — if pilot says "bind my turrets to tribe policy":
 
 Example — if pilot says "set security to red":
   %%ACTION%%{"type":"CONTRACT_CALL","label":"Set Security RED","description":"Set tribe defense policy to maximum alert","contract":"set_defense_security_level","params":{"level":2}}%%END_ACTION%%
+
+Example — if pilot says "bring everything online" or "online all my structures":
+  %%ACTION%%{"type":"CONTRACT_CALL","label":"Online All Structures","description":"Bring all your deployed structures online","contract":"online_all","params":{}}%%END_ACTION%%
+
+Example — if pilot says "take everything offline" or "power down":
+  %%ACTION%%{"type":"CONTRACT_CALL","label":"Offline All Structures","description":"Take all your deployed structures offline","contract":"offline_all","params":{}}%%END_ACTION%%
+
+Example — if pilot says "bring turret X online" (use actual structure ID from context):
+  %%ACTION%%{"type":"CONTRACT_CALL","label":"Online Structure","description":"Bring this structure online","contract":"online_structure","params":{"structureId":"0x..."}}%%END_ACTION%%
 
 ANTI-HALLUCINATION:
 - NEVER invent numbers, counts, names, or statistics. If data is not provided in pilot context or game data below, say the pattern has not been woven into your sight.
@@ -1517,7 +1530,7 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           {rightTab === "chat" && (
       <div style={styles.messageArea}>
         {messages.map((msg, i) => (
-          <MessageBubble key={i} msg={msg} />
+          <MessageBubble key={i} msg={msg} walletAddress={account?.address} />
         ))}
         {isLoading && (
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -2047,7 +2060,7 @@ function KeeperShrineSection() {
 // ── Message bubble ────────────────────────────────────────────────────────────
 
 /** Build a real transaction from a Keeper action. Returns null if missing context. */
-async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null, structures?: Array<{ kind: string; objectId: string }>): Promise<Transaction | null> {
+async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null, structures?: Array<{ kind: string; objectId: string }>, walletAddress?: string | null): Promise<Transaction | null> {
   const p = action.params as Record<string, unknown>;
   const tx = new Transaction();
 
@@ -2189,6 +2202,37 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
     // ── Bounties / Cargo / SRP ──
     case "post_bounty":
     case "cancel_bounty":
+    // ── Structure power (online/offline) ──
+    case "online_structure":
+    case "offline_structure":
+    case "online_all":
+    case "offline_all": {
+      if (!walletAddress) return null;
+      const charInfo = await findCharacterForWallet(walletAddress);
+      if (!charInfo) throw new Error("Character not found for this wallet");
+      const groups = await fetchPlayerStructures(walletAddress);
+      const allStructures = groups.flatMap(g => g.structures);
+      if (!allStructures.length) throw new Error("No deployed structures found");
+
+      if (action.contract === "online_all") {
+        const offline = allStructures.filter(s => !s.isOnline);
+        if (!offline.length) throw new Error("All structures are already online");
+        return buildBatchOnlineTransaction(offline, charInfo.characterId);
+      }
+      if (action.contract === "offline_all") {
+        const online = allStructures.filter(s => s.isOnline);
+        if (!online.length) throw new Error("All structures are already offline");
+        return await buildBatchOfflineTransaction(online, charInfo.characterId);
+      }
+      const structureId = String(p.structureId ?? "");
+      const target = allStructures.find(s => s.objectId === structureId);
+      if (!target) throw new Error(`Structure ${structureId} not found`);
+      if (action.contract === "online_structure") {
+        return await buildStructureOnlineTransaction(target, charInfo.characterId);
+      }
+      return await buildStructureOfflineTransaction(target, charInfo.characterId);
+    }
+
     case "create_cargo_contract":
     case "dispute_delivery":
     case "finalize_delivery":
@@ -2207,7 +2251,7 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
   }
 }
 
-function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAction; vaultId: string | null; structures?: Array<{ kind: string; objectId: string }> }) {
+function KeeperActionButton({ action, vaultId, structures, walletAddress }: { action: KeeperAction; vaultId: string | null; structures?: Array<{ kind: string; objectId: string }>; walletAddress?: string | null }) {
   const dAppKit = useDAppKit();
   const [status, setStatus] = useState<"idle" | "pending" | "done" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
@@ -2215,7 +2259,7 @@ function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAct
   const execute = async () => {
     setStatus("pending"); setErr(null);
     try {
-      const tx = await buildKeeperActionTx(action, vaultId, structures);
+      const tx = await buildKeeperActionTx(action, vaultId, structures, walletAddress);
       if (!tx) throw new Error("Cannot build transaction for this action — missing context (vault, policy, or account). Try from the relevant tab instead.");
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
@@ -2264,7 +2308,7 @@ function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAct
   );
 }
 
-function MessageBubble({ msg }: { msg: Message }) {
+function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: string }) {
   const [showSources, setShowSources] = useState(false);
 
   if (msg.role === "user") {
@@ -2314,7 +2358,7 @@ function MessageBubble({ msg }: { msg: Message }) {
           {msg.content}
         </span>
         {/* Action button */}
-        {msg.action && <KeeperActionButton action={msg.action} vaultId={msg._vaultId ?? null} structures={msg._structures} />}
+        {msg.action && <KeeperActionButton action={msg.action} vaultId={msg._vaultId ?? null} structures={msg._structures} walletAddress={walletAddress} />}
         {/* Community-sourced badge */}
         {msg.communitySourced && (
           <div style={{
