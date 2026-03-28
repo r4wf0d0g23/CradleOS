@@ -521,7 +521,7 @@ function TreeRow({
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const CATEGORY_PILLS = ["All", "Ship", "Module", "Charge", "Commodity", "Material", "Deployable"];
+const CATEGORY_PILLS = ["All", "Ship", "Module", "Charge", "Material", "Commodity"];
 const LEVEL_LABELS = ["All", "L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"];
 
 // ── Main Panel ────────────────────────────────────────────────────────────────
