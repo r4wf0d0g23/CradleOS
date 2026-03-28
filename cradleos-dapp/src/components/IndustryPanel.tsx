@@ -21,6 +21,14 @@ interface Blueprint {
   products: BlueprintMaterial[];
 }
 
+interface Recipe {
+  name: string;
+  facility: string;
+  time: number;
+  inputs: BlueprintMaterial[];
+  outputs: BlueprintMaterial[];
+}
+
 interface TreeNode {
   typeId: number;
   name: string;
@@ -51,18 +59,47 @@ interface TimeSummary {
 
 const types = industryData.types as Record<string, TypeInfo>;
 const blueprints = industryData.blueprints as Record<string, Blueprint>;
+const recipes = (industryData as { recipes?: Recipe[] }).recipes ?? [];
 
-// Build productToBp: typeID (number) → blueprint key (string)
+// Convert recipes into blueprint-like entries for unified supply chain resolution.
+// Recipe key format: "r_<index>" to avoid collisions with numeric blueprint keys.
+const recipeBps: Record<string, Blueprint> = {};
+for (let i = 0; i < recipes.length; i++) {
+  const r = recipes[i];
+  recipeBps[`r_${i}`] = {
+    bpId: -1 - i,
+    time: r.time,
+    materials: r.inputs,
+    products: r.outputs,
+  };
+}
+
+// Merge blueprints + recipes into a single lookup.
+// Blueprint entries take priority — if an item has both, the assembly blueprint wins.
+const allBlueprints: Record<string, Blueprint> = { ...blueprints };
+for (const [key, rbp] of Object.entries(recipeBps)) {
+  allBlueprints[key] = rbp;
+}
+
+// Build productToBp: typeID (number) → blueprint/recipe key (string)
+// Assembly blueprints first (higher priority), then recipes fill gaps.
 const productToBp = new Map<number, string>();
 for (const [key, bp] of Object.entries(blueprints)) {
   for (const prod of bp.products) {
     productToBp.set(prod.typeID, key);
   }
 }
+for (const [key, bp] of Object.entries(recipeBps)) {
+  for (const prod of bp.products) {
+    if (!productToBp.has(prod.typeID)) {
+      productToBp.set(prod.typeID, key);
+    }
+  }
+}
 
-// Collect all producible typeIDs (products of blueprints)
+// Collect all producible typeIDs (products of blueprints + recipes)
 const producibleTypeIds = new Set<number>();
-for (const bp of Object.values(blueprints)) {
+for (const bp of Object.values(allBlueprints)) {
   for (const prod of bp.products) {
     producibleTypeIds.add(prod.typeID);
   }
@@ -104,7 +141,7 @@ function buildSupplyTree(
     };
   }
 
-  const bp = blueprints[bpKey];
+  const bp = allBlueprints[bpKey];
   const productEntry = bp.products.find(p => p.typeID === productTypeId);
   const producedPerRun = productEntry?.quantity ?? 1;
   const runs = Math.ceil(qty / producedPerRun);
@@ -484,7 +521,7 @@ function TreeRow({
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const CATEGORY_PILLS = ["All", "Ship", "Module", "Charge", "Commodity", "Material"];
+const CATEGORY_PILLS = ["All", "Ship", "Module", "Charge", "Commodity", "Material", "Deployable"];
 const LEVEL_LABELS = ["All", "L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"];
 
 // ── Main Panel ────────────────────────────────────────────────────────────────
@@ -739,7 +776,7 @@ export function IndustryPanel() {
           ⚙ Industry — Supply Chain Calculator
         </div>
         <div style={{ fontSize: "10px", color: "rgba(180,160,140,0.4)", letterSpacing: "0.08em" }}>
-          {Object.keys(blueprints).length} blueprints · {producibleTypeIds.size} producible items
+          {Object.keys(blueprints).length} blueprints · {recipes.length} recipes · {producibleTypeIds.size} producible items
         </div>
       </div>
 
@@ -1195,7 +1232,7 @@ export function IndustryPanel() {
           <div style={{ fontSize: "36px", marginBottom: "12px", opacity: 0.3 }}>⚙</div>
           <div style={{ fontSize: "13px", marginBottom: "6px" }}>Select a product to calculate its supply chain</div>
           <div style={{ fontSize: "11px", color: "rgba(107,107,94,0.35)" }}>
-            {producibleTypeIds.size} buildable items across {Object.keys(blueprints).length} blueprints
+            {producibleTypeIds.size} buildable items across {Object.keys(blueprints).length} blueprints + {recipes.length} recipes
           </div>
         </div>
       )}
