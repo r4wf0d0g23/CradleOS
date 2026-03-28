@@ -1338,7 +1338,29 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
       if (!content) throw new Error("Empty response");
 
       // Parse out any embedded action block
-      const { text: rawDisplayText, action: parsedAction } = parseKeeperAction(content);
+      let { text: rawDisplayText, action: parsedAction } = parseKeeperAction(content);
+
+      // ── Fallback: detect when Keeper offers an action without %%ACTION%% tag ──
+      // The DGX model sometimes forgets the tag. If the response mentions delegating/binding
+      // turrets and the last user message was a confirmation, inject the action.
+      if (!parsedAction) {
+        const lowerContent = content.toLowerCase();
+        const lastUserMsg = messages.filter(m => m.role === "user").pop()?.content?.toLowerCase() ?? "";
+        const isConfirmation = /\b(yes|do it|proceed|confirm|go ahead|bind|delegate|execute|assign)\b/.test(lastUserMsg);
+        const mentionsTurretDelegate = /\b(delegat|bind|assign).*turret/i.test(lowerContent) || /turret.*\b(delegat|bind|assign)/i.test(lowerContent);
+        const mentionsDefensePolicy = /tribe.*polic|defense.*polic/i.test(lowerContent);
+
+        if ((isConfirmation || mentionsTurretDelegate) && (mentionsTurretDelegate || mentionsDefensePolicy)) {
+          parsedAction = {
+            type: "CONTRACT_CALL",
+            label: "Bind All Turrets",
+            description: "Delegate all your turrets and gates to the tribe defense policy",
+            contract: "delegate_all_turrets",
+            params: {},
+          } as KeeperAction;
+        }
+      }
+
       const displayText = rawDisplayText || content.replace(/%%ACTION%%[\s\S]*?%%END_ACTION%%/g, "").trim() || content;
 
       // Collect non-null image URLs from RAG results
