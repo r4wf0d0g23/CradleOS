@@ -28,6 +28,11 @@ const SHIP_MODELS: Record<string, string> = {
   wend: "wend.glb",
   usv: "usv.glb",
   reflex: "reflex.glb",
+  stride: "stride.glb",
+  chumaq: "chumaq.glb",
+  mcf: "mcf.glb",
+  recurve: "recurve.glb",
+  reiver: "reiver.glb",
 };
 
 // Structure/object models for Keeper's "mind" visualization
@@ -43,6 +48,8 @@ const STRUCTURE_MODELS: Record<string, string> = {
   shipyard: "shipyard.glb",
   silo: "silo.glb",
   tether: "tether.glb",
+  wall: "wall.glb",
+  warehouse: "warehouse.glb",
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -55,7 +62,7 @@ export interface KeeperViewportProps {
   shipClass?: "frigate" | "destroyer" | "hauler" | "shuttle" | "cruiser";
   shipName?: string; // lowercase ship name for model lookup (e.g. "lai", "haf")
   // Structure mode
-  structureType?: "ssu" | "gate" | "turret" | "node" | "hangar" | "refinery" | "assembly" | "printer" | "shipyard" | "silo" | "tether" | "asteroid" | "asteroid2";
+  structureType?: "ssu" | "gate" | "turret" | "node" | "hangar" | "refinery" | "assembly" | "printer" | "shipyard" | "silo" | "tether" | "asteroid" | "asteroid2" | "wall" | "warehouse";
   capacityPercent?: number;
   // Map mode
   points?: Array<{ name: string; x: number; y: number; z: number }>;
