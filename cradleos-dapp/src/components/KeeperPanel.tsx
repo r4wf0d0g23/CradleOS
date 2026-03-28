@@ -2196,7 +2196,11 @@ function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAct
       const tx = await buildKeeperActionTx(action, vaultId, structures);
       if (!tx) throw new Error("Cannot build transaction for this action — missing context (vault, policy, or account). Try from the relevant tab instead.");
       const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      const txResult = result?.Transaction ?? result?.FailedTransaction;
+      if (txResult && !txResult.status?.success) {
+        throw new Error(`Transaction failed on-chain: ${txResult.status?.error ?? txResult.digest ?? "unknown"}`);
+      }
       setStatus("done");
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
@@ -2206,7 +2210,7 @@ function KeeperActionButton({ action, vaultId, structures }: { action: KeeperAct
 
   if (status === "done") return (
     <div style={{ marginTop: 8, fontFamily: "IBM Plex Mono", fontSize: 12, color: "#00ff99", letterSpacing: "0.1em" }}>
-      ✓ COMMAND DISPATCHED — CHECK YOUR WALLET FOR SIGNATURE
+      ✓ COMMAND EXECUTED — Transaction confirmed on-chain
     </div>
   );
 
