@@ -6205,5 +6205,701 @@
         }
       ]
     }
-  }
+  },
+  "recipes": [
+    {
+      "name": "Platinum-Palladium Matrix",
+      "facility": "refinery",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 77810,
+          "quantity": 40
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 89259,
+          "quantity": 10
+        },
+        {
+          "typeID": 89260,
+          "quantity": 30
+        },
+        {
+          "typeID": 99001,
+          "quantity": 8
+        }
+      ]
+    },
+    {
+      "name": "Aromatic Carbon Veins",
+      "facility": "refinery",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 78448,
+          "quantity": 100
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88781,
+          "quantity": 1
+        },
+        {
+          "typeID": 88782,
+          "quantity": 4
+        },
+        {
+          "typeID": 88783,
+          "quantity": 8
+        }
+      ]
+    },
+    {
+      "name": "D2 Fuel",
+      "facility": "refinery",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 88319,
+          "quantity": 200
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83839,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Eupraxite (fuel)",
+      "facility": "refinery",
+      "time": 18,
+      "inputs": [
+        {
+          "typeID": 78435,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78516,
+          "quantity": 600
+        }
+      ]
+    },
+    {
+      "name": "Eupraxite (refine)",
+      "facility": "refinery",
+      "time": 20,
+      "inputs": [
+        {
+          "typeID": 92394,
+          "quantity": 30
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78435,
+          "quantity": 3
+        },
+        {
+          "typeID": 92422,
+          "quantity": 26
+        }
+      ]
+    },
+    {
+      "name": "Feldspar Crystals",
+      "facility": "refinery",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 77800,
+          "quantity": 40
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 89258,
+          "quantity": 10
+        },
+        {
+          "typeID": 89259,
+          "quantity": 30
+        }
+      ]
+    },
+    {
+      "name": "Hydrated Sulfide Matrix",
+      "facility": "refinery",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 77811,
+          "quantity": 40
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 89258,
+          "quantity": 20
+        },
+        {
+          "typeID": 78423,
+          "quantity": 200
+        }
+      ]
+    },
+    {
+      "name": "Hydrocarbon Residue",
+      "facility": "refinery",
+      "time": 9,
+      "inputs": [
+        {
+          "typeID": 89258,
+          "quantity": 20
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88234,
+          "quantity": 20
+        },
+        {
+          "typeID": 77804,
+          "quantity": 180
+        }
+      ]
+    },
+    {
+      "name": "Iridosmine Nodules",
+      "facility": "refinery",
+      "time": 5,
+      "inputs": [
+        {
+          "typeID": 78426,
+          "quantity": 40
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 89260,
+          "quantity": 40
+        }
+      ]
+    },
+    {
+      "name": "Iron-Rich Nodules",
+      "facility": "refinery",
+      "time": 9,
+      "inputs": [
+        {
+          "typeID": 89260,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 77805,
+          "quantity": 20
+        },
+        {
+          "typeID": 77801,
+          "quantity": 198
+        }
+      ]
+    },
+    {
+      "name": "Methane Ice Shards",
+      "facility": "refinery",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 78446,
+          "quantity": 100
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88781,
+          "quantity": 1
+        },
+        {
+          "typeID": 77804,
+          "quantity": 126
+        },
+        {
+          "typeID": 78423,
+          "quantity": 349
+        }
+      ]
+    },
+    {
+      "name": "Mummified Clone",
+      "facility": "refinery",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 88765,
+          "quantity": 5
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88782,
+          "quantity": 1
+        },
+        {
+          "typeID": 88783,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Primitive Kerogen Matrix",
+      "facility": "refinery",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 78447,
+          "quantity": 100
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88781,
+          "quantity": 1
+        },
+        {
+          "typeID": 88783,
+          "quantity": 16
+        }
+      ]
+    },
+    {
+      "name": "Rough Old Crude Matter",
+      "facility": "refinery",
+      "time": 20,
+      "inputs": [
+        {
+          "typeID": 77729,
+          "quantity": 30
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83839,
+          "quantity": 16
+        },
+        {
+          "typeID": 77728,
+          "quantity": 28
+        }
+      ]
+    },
+    {
+      "name": "Rough Young Crude Matter",
+      "facility": "refinery",
+      "time": 20,
+      "inputs": [
+        {
+          "typeID": 78434,
+          "quantity": 30
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83839,
+          "quantity": 1
+        },
+        {
+          "typeID": 78435,
+          "quantity": 28
+        }
+      ]
+    },
+    {
+      "name": "Salvaged Materials",
+      "facility": "refinery",
+      "time": 4,
+      "inputs": [
+        {
+          "typeID": 88764,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 84210,
+          "quantity": 1
+        },
+        {
+          "typeID": 88561,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 6
+        }
+      ]
+    },
+    {
+      "name": "Silica Grains",
+      "facility": "refinery",
+      "time": 9,
+      "inputs": [
+        {
+          "typeID": 89259,
+          "quantity": 20
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88235,
+          "quantity": 50
+        },
+        {
+          "typeID": 77803,
+          "quantity": 150
+        }
+      ]
+    },
+    {
+      "name": "Sophrogon (fuel)",
+      "facility": "refinery",
+      "time": 18,
+      "inputs": [
+        {
+          "typeID": 77728,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 84868,
+          "quantity": 600
+        }
+      ]
+    },
+    {
+      "name": "Sophrogon (refine)",
+      "facility": "refinery",
+      "time": 20,
+      "inputs": [
+        {
+          "typeID": 92414,
+          "quantity": 30
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 77728,
+          "quantity": 3
+        },
+        {
+          "typeID": 92422,
+          "quantity": 26
+        }
+      ]
+    },
+    {
+      "name": "Tholin Nodules",
+      "facility": "refinery",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 78449,
+          "quantity": 100
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88781,
+          "quantity": 1
+        },
+        {
+          "typeID": 88782,
+          "quantity": 8
+        }
+      ]
+    },
+    {
+      "name": "Water Ice",
+      "facility": "refinery",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 78423,
+          "quantity": 275
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88335,
+          "quantity": 75
+        }
+      ]
+    },
+    {
+      "name": "Batched Reinforced Alloys",
+      "facility": "printer",
+      "time": 7,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 84204,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Batched Thermal Composites",
+      "facility": "printer",
+      "time": 7,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88843,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Batched Carbon Weave",
+      "facility": "printer",
+      "time": 8,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88841,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "EM Disintegrator Charge (M)",
+      "facility": "printer",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 77801,
+          "quantity": 20
+        },
+        {
+          "typeID": 77805,
+          "quantity": 60
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82137,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "EM Disintegrator Charge (S)",
+      "facility": "printer",
+      "time": 3,
+      "inputs": [
+        {
+          "typeID": 77801,
+          "quantity": 3
+        },
+        {
+          "typeID": 77805,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 81658,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "AC Gyrojet Ammo 2 (S)",
+      "facility": "printer",
+      "time": 5,
+      "inputs": [
+        {
+          "typeID": 77801,
+          "quantity": 230
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82126,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "AC Gyrojet Ammo 3 (S)",
+      "facility": "printer",
+      "time": 5,
+      "inputs": [
+        {
+          "typeID": 77801,
+          "quantity": 230
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82127,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "Rapid Plasma Ammo 2 (S)",
+      "facility": "printer",
+      "time": 5,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 400
+        },
+        {
+          "typeID": 88234,
+          "quantity": 400
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82131,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "EM Nanite Sequencer",
+      "facility": "printer",
+      "time": 248,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82411,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explosive Nanite Sequencer",
+      "facility": "printer",
+      "time": 222,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82410,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Kinetic Nanite Sequencer",
+      "facility": "printer",
+      "time": 222,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82413,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal Nanite Sequencer",
+      "facility": "printer",
+      "time": 222,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82412,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Echo Chamber",
+      "facility": "printer",
+      "time": 17,
+      "inputs": [
+        {
+          "typeID": 77801,
+          "quantity": 120
+        },
+        {
+          "typeID": 88234,
+          "quantity": 45
+        },
+        {
+          "typeID": 88235,
+          "quantity": 105
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88780,
+          "quantity": 1
+        }
+      ]
+    }
+  ]
 }
