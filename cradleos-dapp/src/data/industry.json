@@ -2646,9 +2646,9 @@
       "group": "Manufacturing Component"
     },
     "99901": {
-      "name": "LAI",
-      "category": "Ship",
-      "group": "Frigate"
+      "name": "Large Cutting Laser",
+      "category": "Module",
+      "group": "Asteroid Mining Laser"
     },
     "99001": {
       "name": "Palladium",
@@ -4106,6 +4106,11 @@
       "volume": 1000,
       "mass": 10000,
       "description": "A Field Cairn is deployable anchor that fixes a signature to an exact point in space for those intending to return.\r\n\r\nCairns lack stabilizing thrusters and are inherently unstable, gradually degrading and drifting out of orbit within 24 hours."
+    },
+    "99910": {
+      "name": "Thermal Field Array V",
+      "category": "Module",
+      "group": ""
     }
   },
   "blueprints": {
@@ -6897,6 +6902,2341 @@
       "outputs": [
         {
           "typeID": 88780,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 3 Rapid Plasma (S)",
+      "facility": "assembler",
+      "time": 597,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 88234,
+          "quantity": 210
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82087,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Adaptive Nanitic Armor Weave II",
+      "facility": "assembler",
+      "time": 97,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83441,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Adaptive Nanitic Armor Weave IV",
+      "facility": "assembler",
+      "time": 804,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 12
+        },
+        {
+          "typeID": 92483,
+          "quantity": 6
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83443,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Afterburner II",
+      "facility": "assembler",
+      "time": 97,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82681,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Attuned Shield Generator II",
+      "facility": "assembler",
+      "time": 207,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84210,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82653,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Attuned Shield Generator III",
+      "facility": "assembler",
+      "time": 505,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 12
+        },
+        {
+          "typeID": 84210,
+          "quantity": 24
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83450,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Base Autocannon (S)",
+      "facility": "assembler",
+      "time": 156,
+      "inputs": [
+        {
+          "typeID": 89260,
+          "quantity": 10
+        },
+        {
+          "typeID": 89259,
+          "quantity": 30
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 81974,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Bulky Armor Plates II",
+      "facility": "assembler",
+      "time": 155,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82647,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Bulky Armor Plates III",
+      "facility": "assembler",
+      "time": 357,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 7
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83421,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Bulwark Shield Generator III",
+      "facility": "assembler",
+      "time": 505,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 12
+        },
+        {
+          "typeID": 84210,
+          "quantity": 21
+        },
+        {
+          "typeID": 99001,
+          "quantity": 450
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83448,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Cargo Grid III",
+      "facility": "assembler",
+      "time": 469,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 7
+        },
+        {
+          "typeID": 84210,
+          "quantity": 13
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83498,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Cargo Grid IV",
+      "facility": "assembler",
+      "time": 1054,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 14
+        },
+        {
+          "typeID": 84210,
+          "quantity": 26
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83499,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Cargo Grid V",
+      "facility": "assembler",
+      "time": 2339,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 28
+        },
+        {
+          "typeID": 84210,
+          "quantity": 52
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83500,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Cargo Grid VI",
+      "facility": "assembler",
+      "time": 5144,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 56
+        },
+        {
+          "typeID": 84210,
+          "quantity": 104
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83501,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Celerity CD01",
+      "facility": "assembler",
+      "time": 207,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 88561,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78506,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Celerity CD03",
+      "facility": "assembler",
+      "time": 4230,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 16
+        },
+        {
+          "typeID": 84182,
+          "quantity": 16
+        },
+        {
+          "typeID": 88561,
+          "quantity": 32
+        },
+        {
+          "typeID": 92483,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78508,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Coated Armor Plates II",
+      "facility": "assembler",
+      "time": 172,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82648,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Coated Armor Plates III",
+      "facility": "assembler",
+      "time": 391,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 7
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83425,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Crude Extractor",
+      "facility": "assembler",
+      "time": 750,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 3
+        },
+        {
+          "typeID": 84210,
+          "quantity": 5
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 77484,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Cryogenic Ejector S",
+      "facility": "assembler",
+      "time": 904,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 35
+        },
+        {
+          "typeID": 84182,
+          "quantity": 6
+        },
+        {
+          "typeID": 88335,
+          "quantity": 500
+        },
+        {
+          "typeID": 99001,
+          "quantity": 35
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 87599,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "EM Field Array II",
+      "facility": "assembler",
+      "time": 218,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 12
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83768,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "EM Field Array III",
+      "facility": "assembler",
+      "time": 461,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 16
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83769,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "EM Field Array IV",
+      "facility": "assembler",
+      "time": 949,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 19
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83770,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Embark",
+      "facility": "assembler",
+      "time": 89,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 77753,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explo-electro Nanitic Brace II",
+      "facility": "assembler",
+      "time": 159,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83623,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explo-electro Nanitic Brace III",
+      "facility": "assembler",
+      "time": 350,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 3
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83624,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explo-electro Nanitic Brace IV",
+      "facility": "assembler",
+      "time": 796,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83625,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explonetic-electro Nanitic Brace II",
+      "facility": "assembler",
+      "time": 159,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83618,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explonetic-electro Nanitic Brace III",
+      "facility": "assembler",
+      "time": 362,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83619,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explonetic-electro Nanitic Brace IV",
+      "facility": "assembler",
+      "time": 835,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 11
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83620,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explosive Field Array II",
+      "facility": "assembler",
+      "time": 201,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 6
+        },
+        {
+          "typeID": 88561,
+          "quantity": 6
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83777,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explosive Field Array III",
+      "facility": "assembler",
+      "time": 415,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 7
+        },
+        {
+          "typeID": 88561,
+          "quantity": 7
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83778,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Explosive Field Array IV",
+      "facility": "assembler",
+      "time": 863,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 9
+        },
+        {
+          "typeID": 88561,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83779,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Heat Exchanger S",
+      "facility": "assembler",
+      "time": 452,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 35
+        },
+        {
+          "typeID": 84182,
+          "quantity": 6
+        },
+        {
+          "typeID": 88335,
+          "quantity": 500
+        },
+        {
+          "typeID": 99001,
+          "quantity": 35
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88889,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Heat Exchanger XS",
+      "facility": "assembler",
+      "time": 197,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 3
+        },
+        {
+          "typeID": 88335,
+          "quantity": 280
+        },
+        {
+          "typeID": 99001,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88886,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Hop",
+      "facility": "assembler",
+      "time": 120,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 2
+        },
+        {
+          "typeID": 84180,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 90887,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Hull Repairer",
+      "facility": "assembler",
+      "time": 148,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 72960,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Kinetic Field Array II",
+      "facility": "assembler",
+      "time": 184,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83782,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Kinetic Field Array III",
+      "facility": "assembler",
+      "time": 387,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83783,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Kinetic Field Array IV",
+      "facility": "assembler",
+      "time": 804,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 12
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83784,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Large Cutting Laser",
+      "facility": "assembler",
+      "time": 14863,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 7
+        },
+        {
+          "typeID": 84210,
+          "quantity": 15
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 99901,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Leap",
+      "facility": "assembler",
+      "time": 320,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 4
+        },
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 92421,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Lunge",
+      "facility": "assembler",
+      "time": 800,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 8
+        },
+        {
+          "typeID": 84180,
+          "quantity": 16
+        },
+        {
+          "typeID": 84182,
+          "quantity": 16
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 92390,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Medium Cutting Laser",
+      "facility": "assembler",
+      "time": 863,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 5
+        },
+        {
+          "typeID": 84210,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83528,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Nimble Armor Plates II",
+      "facility": "assembler",
+      "time": 150,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 84210,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82650,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Nimble Armor Plates III",
+      "facility": "assembler",
+      "time": 357,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83433,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Nimble Armor Plates IV",
+      "facility": "assembler",
+      "time": 830,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 8
+        },
+        {
+          "typeID": 84210,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83434,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Rapid Plasma (M)",
+      "facility": "assembler",
+      "time": 643,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88234,
+          "quantity": 180
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82033,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Reactive Armor Plates II",
+      "facility": "assembler",
+      "time": 182,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 3
+        },
+        {
+          "typeID": 88561,
+          "quantity": 3
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82649,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Reactive Armor Plates III",
+      "facility": "assembler",
+      "time": 421,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 6
+        },
+        {
+          "typeID": 88561,
+          "quantity": 6
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83429,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Reactive Armor Plates IV",
+      "facility": "assembler",
+      "time": 943,
+      "inputs": [
+        {
+          "typeID": 84210,
+          "quantity": 11
+        },
+        {
+          "typeID": 88561,
+          "quantity": 11
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83430,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Reinforced Shield Generator II",
+      "facility": "assembler",
+      "time": 207,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84210,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82654,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Reinforced Shield Generator III",
+      "facility": "assembler",
+      "time": 505,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 12
+        },
+        {
+          "typeID": 84210,
+          "quantity": 24
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83456,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Reinforced Shield Generator IV",
+      "facility": "assembler",
+      "time": 1169,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 31
+        },
+        {
+          "typeID": 84210,
+          "quantity": 62
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83457,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Shield Restorer II",
+      "facility": "assembler",
+      "time": 243,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 13
+        },
+        {
+          "typeID": 84180,
+          "quantity": 17
+        },
+        {
+          "typeID": 84210,
+          "quantity": 17
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82667,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Shield Restorer III",
+      "facility": "assembler",
+      "time": 496,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 15
+        },
+        {
+          "typeID": 84180,
+          "quantity": 20
+        },
+        {
+          "typeID": 84210,
+          "quantity": 19
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83458,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Shield Restorer IV",
+      "facility": "assembler",
+      "time": 970,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 13
+        },
+        {
+          "typeID": 84180,
+          "quantity": 17
+        },
+        {
+          "typeID": 84210,
+          "quantity": 17
+        },
+        {
+          "typeID": 92483,
+          "quantity": 3
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83459,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Small Cutting Laser",
+      "facility": "assembler",
+      "time": 167,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84210,
+          "quantity": 3
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 77852,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Sojourn",
+      "facility": "assembler",
+      "time": 39,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 89258,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 81846,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Stasis Net II",
+      "facility": "assembler",
+      "time": 178,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82683,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Stasis Net III",
+      "facility": "assembler",
+      "time": 366,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 3
+        },
+        {
+          "typeID": 88561,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83520,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Stasis Net IV",
+      "facility": "assembler",
+      "time": 760,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 3
+        },
+        {
+          "typeID": 84182,
+          "quantity": 3
+        },
+        {
+          "typeID": 88561,
+          "quantity": 5
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83521,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Stasis Net V",
+      "facility": "assembler",
+      "time": 1553,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 3
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 88561,
+          "quantity": 5
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83522,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Stasis Net VI",
+      "facility": "assembler",
+      "time": 3192,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 88561,
+          "quantity": 6
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83523,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Systematic Armor Restorer II",
+      "facility": "assembler",
+      "time": 111,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82651,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Systematic Armor Restorer III",
+      "facility": "assembler",
+      "time": 222,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 92483,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83437,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Systematic Armor Restorer IV",
+      "facility": "assembler",
+      "time": 962,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 22
+        },
+        {
+          "typeID": 84182,
+          "quantity": 22
+        },
+        {
+          "typeID": 92483,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83438,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tempo CD41",
+      "facility": "assembler",
+      "time": 413,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 88561,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78511,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tempo CD42",
+      "facility": "assembler",
+      "time": 942,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 8
+        },
+        {
+          "typeID": 84182,
+          "quantity": 8
+        },
+        {
+          "typeID": 88561,
+          "quantity": 16
+        },
+        {
+          "typeID": 92483,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78510,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal Field Array II",
+      "facility": "assembler",
+      "time": 201,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 12
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83772,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal Field Array III",
+      "facility": "assembler",
+      "time": 426,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 16
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83773,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal Field Array IV",
+      "facility": "assembler",
+      "time": 881,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 19
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83774,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal Field Array V",
+      "facility": "assembler",
+      "time": 1811,
+      "inputs": [
+        {
+          "typeID": 88561,
+          "quantity": 22
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 99910,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal-electro Nanitic Brace II",
+      "facility": "assembler",
+      "time": 181,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83613,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal-electro Nanitic Brace III",
+      "facility": "assembler",
+      "time": 405,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 9
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83614,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermal-electro Nanitic Brace IV",
+      "facility": "assembler",
+      "time": 916,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 18
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83615,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermalnetic Nanitic Brace II",
+      "facility": "assembler",
+      "time": 181,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84210,
+          "quantity": 2
+        },
+        {
+          "typeID": 88561,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83628,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermalnetic Nanitic Brace III",
+      "facility": "assembler",
+      "time": 405,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 88561,
+          "quantity": 12
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83629,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Thermalnetic Nanitic Brace IV",
+      "facility": "assembler",
+      "time": 923,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 88561,
+          "quantity": 24
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83630,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 2 Autocannon (S)",
+      "facility": "assembler",
+      "time": 276,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 88235,
+          "quantity": 125
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82084,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 2 Coilgun (M)",
+      "facility": "assembler",
+      "time": 2457,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 70
+        },
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 99001,
+          "quantity": 70
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82092,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 2 Coilgun (S)",
+      "facility": "assembler",
+      "time": 249,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 140
+        },
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82088,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 2 Howitzer (M)",
+      "facility": "assembler",
+      "time": 2667,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88235,
+          "quantity": 250
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82098,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 2 Rapid Plasma (M)",
+      "facility": "assembler",
+      "time": 2727,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88234,
+          "quantity": 300
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82096,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 2 Rapid Plasma (S)",
+      "facility": "assembler",
+      "time": 283,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 88234,
+          "quantity": 150
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82086,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 3 Autocannon (S)",
+      "facility": "assembler",
+      "time": 577,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 1
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 88235,
+          "quantity": 170
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82085,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 3 Coilgun (M)",
+      "facility": "assembler",
+      "time": 9935,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 440
+        },
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82093,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 3 Coilgun (S)",
+      "facility": "assembler",
+      "time": 505,
+      "inputs": [
+        {
+          "typeID": 77805,
+          "quantity": 110
+        },
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        },
+        {
+          "typeID": 99001,
+          "quantity": 110
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82089,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 3 Howitzer (M)",
+      "facility": "assembler",
+      "time": 11086,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88235,
+          "quantity": 340
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82099,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tier 3 Rapid Plasma (M)",
+      "facility": "assembler",
+      "time": 11412,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 88234,
+          "quantity": 420
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82097,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tuho 7",
+      "facility": "assembler",
+      "time": 137,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 1
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 81656,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tuho 9",
+      "facility": "assembler",
+      "time": 301,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82090,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Tuho S",
+      "facility": "assembler",
+      "time": 620,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 5
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82091,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Velocity CD81",
+      "facility": "assembler",
+      "time": 825,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 88561,
+          "quantity": 8
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78490,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Velocity CD82",
+      "facility": "assembler",
+      "time": 1883,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 8
+        },
+        {
+          "typeID": 84182,
+          "quantity": 8
+        },
+        {
+          "typeID": 88561,
+          "quantity": 16
+        },
+        {
+          "typeID": 92483,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78502,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Warp Entangler II",
+      "facility": "assembler",
+      "time": 181,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        },
+        {
+          "typeID": 84210,
+          "quantity": 3
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82682,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Warp Entangler III",
+      "facility": "assembler",
+      "time": 371,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 2
+        },
+        {
+          "typeID": 84182,
+          "quantity": 3
+        },
+        {
+          "typeID": 84210,
+          "quantity": 3
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83516,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Warp Entangler IV",
+      "facility": "assembler",
+      "time": 777,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 3
+        },
+        {
+          "typeID": 84182,
+          "quantity": 3
+        },
+        {
+          "typeID": 84210,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83517,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Warp Entangler V",
+      "facility": "assembler",
+      "time": 1585,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 3
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 84210,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83518,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Warp Entangler VI",
+      "facility": "assembler",
+      "time": 3274,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 4
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 84210,
+          "quantity": 5
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 83519,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Xoru 7",
+      "facility": "assembler",
+      "time": 664,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 8
+        },
+        {
+          "typeID": 84182,
+          "quantity": 2
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 81657,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Xoru 9",
+      "facility": "assembler",
+      "time": 2784,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 8
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82094,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Xoru S",
+      "facility": "assembler",
+      "time": 11520,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 10
+        },
+        {
+          "typeID": 84182,
+          "quantity": 4
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82095,
           "quantity": 1
         }
       ]
