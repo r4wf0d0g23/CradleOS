@@ -9240,6 +9240,91 @@
           "quantity": 1
         }
       ]
+    },
+    {
+      "name": "Packaged Reinforced Alloys",
+      "facility": "printer",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 84204,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 84206,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Packaged Carbon Weave",
+      "facility": "printer",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 88841,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88842,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Packaged Thermal Composites",
+      "facility": "printer",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 88843,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88844,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Packaged Printed Circuits",
+      "facility": "printer",
+      "time": 15,
+      "inputs": [
+        {
+          "typeID": 88839,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88840,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Batched Printed Circuits",
+      "facility": "printer",
+      "time": 8,
+      "inputs": [
+        {
+          "typeID": 84180,
+          "quantity": 10
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 88839,
+          "quantity": 1
+        }
+      ]
     }
   ]
 }

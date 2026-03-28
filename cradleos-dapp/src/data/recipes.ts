@@ -222,4 +222,11 @@ Warp Entangler VI [ASSEMBLER]: 4x Printed Circuits, 4x Reinforced Alloys, 5x Car
 Xoru 7 [ASSEMBLER]: 8x Printed Circuits, 2x Reinforced Alloys → 1x Xoru 7 (11m 4s)
 Xoru 9 [ASSEMBLER]: 8x Printed Circuits, 4x Reinforced Alloys → 1x Xoru 9 (46m 24s)
 Xoru S [ASSEMBLER]: 10x Printed Circuits, 4x Reinforced Alloys → 1x Xoru S (3h 12m)
+
+--- PACKAGING RECIPES (estimated ratios — verify in-game) ---
+Batched Printed Circuits [PRINTER]: 10x Printed Circuits → 1x Batched Printed Circuits (8s)
+Packaged Reinforced Alloys [PRINTER]: 10x Batched Reinforced Alloys → 1x Packaged Reinforced Alloys (15s)
+Packaged Carbon Weave [PRINTER]: 10x Batched Carbon Weave → 1x Packaged Carbon Weave (15s)
+Packaged Thermal Composites [PRINTER]: 10x Batched Thermal Composites → 1x Packaged Thermal Composites (15s)
+Packaged Printed Circuits [PRINTER]: 10x Batched Printed Circuits → 1x Packaged Printed Circuits (15s)
 `;
