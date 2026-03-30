@@ -1,14 +1,17 @@
 // ── Server environment ─────────────────────────────────────────────────────────
 // VITE_SERVER_ENV: "utopia" (hackathon) | "stillness" (live CradleOS)
-// Set at build time via env var. Defaults to utopia (hackathon dApp).
+// Set at build time via env var. Defaults to stillness (live CradleOS build).
+// Hackathon build sets VITE_SERVER_ENV=utopia explicitly.
 // In dev mode, can be toggled at runtime via setServerEnv().
 
 export type ServerEnv = "utopia" | "stillness";
 
 // Runtime-switchable env — check localStorage override in ALL builds (not just dev)
 const _buildEnv = (import.meta.env.VITE_SERVER_ENV ?? "stillness") as ServerEnv;
+// For Stillness (CradleOS) builds: never allow localStorage to override to utopia.
+// Utopia localStorage state from the hackathon dApp must not bleed into Stillness.
 const _storedEnv = (localStorage.getItem("cradleos_server_env") as ServerEnv | null);
-let _serverEnv: ServerEnv = _storedEnv ?? _buildEnv;
+let _serverEnv: ServerEnv = (_buildEnv === "stillness") ? "stillness" : (_storedEnv ?? _buildEnv);
 const _listeners = new Set<() => void>();
 
 export function getServerEnv(): ServerEnv { return _serverEnv; }

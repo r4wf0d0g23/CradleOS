@@ -153,7 +153,7 @@ export function ServerMismatchBanner() {
             </>
           )}
         </div>
-        {isWrong && (
+        {isWrong && SERVER_ENV === "utopia" && (
           <button
             onClick={() => switchServerAndReload(OTHER_ENV)}
             style={{
