@@ -195,12 +195,12 @@ const S = {
   } as React.CSSProperties,
   statVal: { color: "#c8c8b4", fontWeight: 700 } as React.CSSProperties,
   row: {
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "140px 80px minmax(0,1fr) 40px minmax(0,1fr) 90px 100px",
     alignItems: "center",
-    gap: 10,
-    padding: "6px 8px",
+    gap: "0 8px",
+    padding: "5px 8px",
     borderBottom: "1px solid rgba(255,255,255,0.05)",
-    flexWrap: "wrap" as const,
   } as React.CSSProperties,
   badge: (color: string): React.CSSProperties => ({
     background: color,
@@ -332,6 +332,11 @@ function KillFeedTab({
         <div style={S.empty}>No kills recorded on-chain yet</div>
       ) : (
         <div>
+          <div style={{ display: "grid", gridTemplateColumns: "140px 80px minmax(0,1fr) 40px minmax(0,1fr) 90px 100px", gap: "0 8px", padding: "3px 8px 5px", borderBottom: "1px solid rgba(255,255,255,0.12)", marginBottom: 2 }}>
+            {["TIME", "TYPE", "KILLER", "", "VICTIM", "LOCATION", "TX"].map((h, i) => (
+              <span key={i} style={{ color: "rgba(255,255,255,0.3)", fontSize: 9, letterSpacing: "0.12em", fontWeight: 700 }}>{h}</span>
+            ))}
+          </div>
           {filtered.map((k) => {
             const killerId = k.killer_id?.item_id ?? "";
             const victimId = k.victim_id?.item_id ?? "";
