@@ -2427,29 +2427,7 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
             ⚡ Community-sourced{msg.consensusCount && msg.consensusCount > 1 ? ` (confirmed by ${msg.consensusCount} pilots)` : ""}
           </div>
         )}
-        {ragImages.length > 0 && (
-          <div style={{ marginTop: 8, borderTop: "1px solid rgba(255,71,0,0.1)", paddingTop: 8 }}>
-            <div
-              style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(107,107,94,0.5)", marginBottom: 4, cursor: "pointer", userSelect: "none" }}
-              onClick={() => setShowSources(!showSources)}
-            >
-              {showSources ? "▾" : "▸"} SOURCES ({ragImages.length})
-            </div>
-            {showSources && (
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {ragImages.map((url, i) => (
-                  <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={url}
-                      alt="source"
-                      style={{ maxWidth: 200, borderRadius: 4, border: "1px solid rgba(255,71,0,0.2)", cursor: "pointer", display: "block" }}
-                    />
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Source thumbnails removed — image URLs from RAG backend don't resolve in-game browser */}
       </div>
     </div>
   );
