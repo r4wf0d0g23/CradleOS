@@ -18,9 +18,9 @@ const OTHER_ENV: "stillness" | "utopia" = SERVER_ENV === "stillness" ? "utopia" 
 const OTHER_SERVER_LABEL = SERVER_ENV === "stillness" ? "UTOPIA (Hackathon)" : "STILLNESS (Live)";
 const OTHER_WORLD_PKG    = SERVER_ENV === "stillness" ? WORLD_PKG_UTOPIA : WORLD_PKG_STILLNESS;
 
-async function checkCharacterServer(walletAddress: string): Promise<MismatchState> {
-  // Query owned objects filtered by package — finds Character objects regardless of event count
-  const query = (pkg: string) => fetch(SUI_TESTNET_RPC, {
+/** Check if a wallet owns a PlayerProfile from a given world package. */
+async function hasPlayerProfile(walletAddress: string, pkg: string): Promise<boolean> {
+  const res = await fetch(SUI_TESTNET_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -28,23 +28,61 @@ async function checkCharacterServer(walletAddress: string): Promise<MismatchStat
       method: "suix_getOwnedObjects",
       params: [
         walletAddress,
-        { filter: { Package: pkg }, options: { showType: true } },
+        { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showType: true } },
         null, 5,
       ],
     }),
-  }).then(r => r.json()).then(d => {
-    const objs: Array<{ data?: { type?: string } }> = d?.result?.data ?? [];
-    return objs.length > 0;
   });
+  const d = await res.json();
+  const objs: Array<unknown> = d?.result?.data ?? [];
+  return objs.length > 0;
+}
 
+/** Scan CharacterCreatedEvent for the wallet address (fallback for zkLogin/sponsored wallets). */
+async function hasCharacterEvent(walletAddress: string, pkg: string): Promise<boolean> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_queryEvents",
+        params: [
+          { MoveEventType: `${pkg}::character::CharacterCreatedEvent` },
+          null, 50, false,
+        ],
+      }),
+    });
+    const json = await res.json() as {
+      result: { data: Array<{ parsedJson: { character_address: string } }> }
+    };
+    return json.result?.data?.some(
+      e => e.parsedJson?.character_address?.toLowerCase() === walletAddress.toLowerCase()
+    ) ?? false;
+  } catch {
+    return false;
+  }
+}
+
+async function checkCharacterServer(walletAddress: string): Promise<MismatchState> {
   try {
     const { WORLD_PKG } = await import("../constants");
-    const [onThis, onOther] = await Promise.all([
-      query(WORLD_PKG),
-      query(OTHER_WORLD_PKG),
+    // Try PlayerProfile first (fast), then fall back to event scan (covers zkLogin/sponsored chars)
+    const [profileThis, profileOther] = await Promise.all([
+      hasPlayerProfile(walletAddress, WORLD_PKG),
+      hasPlayerProfile(walletAddress, OTHER_WORLD_PKG),
     ]);
-    if (onThis)  return "ok";
-    if (onOther) return "wrong-server";
+    if (profileThis)  return "ok";
+    if (profileOther) return "wrong-server";
+
+    // Fallback: scan events (covers characters where PlayerProfile went to a different address)
+    const [eventThis, eventOther] = await Promise.all([
+      hasCharacterEvent(walletAddress, WORLD_PKG),
+      hasCharacterEvent(walletAddress, OTHER_WORLD_PKG),
+    ]);
+    if (eventThis)  return "ok";
+    if (eventOther) return "wrong-server";
+
     return "not-found";
   } catch {
     return "error";
@@ -104,7 +142,7 @@ export function ServerMismatchBanner() {
             <>
               No character found on{" "}
               <strong style={{ color: "#FF4700" }}>{SERVER_LABEL}</strong>
-              {" "}for this wallet. You may need to create a character in-game first.
+              {" "}for this wallet. If you just created a character, try refreshing — it may take a moment to index. Make sure your EVE Vault wallet address matches the address used to create the character in-game.
             </>
           )}
         </div>
