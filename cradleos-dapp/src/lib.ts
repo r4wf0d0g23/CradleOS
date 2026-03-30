@@ -227,7 +227,11 @@ export function buildBringOnlineTransaction() {
 }
 
 const GATE_TYPE_FULL = `${WORLD_PKG}::gate::Gate`;
+const GATE_TYPE_FULL_V1 = `${WORLD_PKG_UTOPIA_V1}::gate::Gate`;
 const ASSEMBLY_TYPE_FULL = `${WORLD_PKG}::assembly::Assembly`;
+const ASSEMBLY_TYPE_FULL_V1 = `${WORLD_PKG_UTOPIA_V1}::assembly::Assembly`;
+const isGateType = (t: string) => t === GATE_TYPE_FULL || t === GATE_TYPE_FULL_V1;
+const isAssemblyType = (t: string) => t === ASSEMBLY_TYPE_FULL || t === ASSEMBLY_TYPE_FULL_V1;
 
 export async function buildBringOfflineTransaction(): Promise<Transaction> {
   // Fetch live connected assembly IDs and their types
@@ -262,12 +266,12 @@ export async function buildBringOfflineTransaction(): Promise<Transaction> {
 
   // Drain connected assemblies from the hot potato
   for (const { id, type } of assemblyMeta) {
-    if (type === GATE_TYPE_FULL) {
+    if (isGateType(type)) {
       offlineHotPotato = tx.moveCall({
         target: `${WORLD_PKG}::gate::offline_connected_gate`,
         arguments: [tx.object(id), offlineHotPotato, tx.object(RAW_NETWORK_NODE_ID), energyConfigRef(tx)],
       })[0];
-    } else if (type === ASSEMBLY_TYPE_FULL) {
+    } else if (isAssemblyType(type)) {
       offlineHotPotato = tx.moveCall({
         target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
         arguments: [tx.object(id), offlineHotPotato, tx.object(RAW_NETWORK_NODE_ID), energyConfigRef(tx)],
@@ -549,15 +553,24 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
 
   // Discover all OwnerCaps
   const capEntries: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; label: string }> = [];
+  // Query OwnerCaps for both world package versions — characters created before v0.0.21
+  // have OwnerCaps typed against the v1 package (WORLD_PKG_UTOPIA_V1).
+  const worldPkgsToCheck = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
   await Promise.all(
-    STRUCTURE_TYPES.map(async ({ type: structType, kind, label }) => {
-      const ownerCapType = `${WORLD_PKG}::access::OwnerCap<${structType}>`;
-      const caps = await rpcGetOwnedObjects(characterId, ownerCapType, 50);
-      for (const { objectId: capId, fields } of caps) {
-        const structureId = fields["authorized_object_id"] as string;
-        if (structureId) capEntries.push({ capId, structureId, kind, typeFull: structType, label });
-      }
-    })
+    STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
+      worldPkgsToCheck.map(async (wpkg) => {
+        // Build the struct type using the current pkg prefix but override the world pkg
+        const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
+        const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
+        const caps = await rpcGetOwnedObjects(characterId, ownerCapType, 50);
+        for (const { objectId: capId, fields } of caps) {
+          const structureId = fields["authorized_object_id"] as string;
+          if (structureId && !capEntries.some(e => e.structureId === structureId)) {
+            capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
+          }
+        }
+      })
+    )
   );
   if (!capEntries.length) return [];
 
@@ -763,12 +776,12 @@ export async function buildBatchOfflineTransaction(
         arguments: [tx.object(s.objectId), tx.object(FUEL_CONFIG), cap, tx.object(CLOCK)],
       })[0];
       for (const { id, type } of assemblyMeta) {
-        if (type === GATE_TYPE_FULL) {
+        if (isGateType(type)) {
           hotPotato = tx.moveCall({
             target: `${WORLD_PKG}::gate::offline_connected_gate`,
             arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
           })[0];
-        } else if (type === ASSEMBLY_TYPE_FULL) {
+        } else if (isAssemblyType(type)) {
           hotPotato = tx.moveCall({
             target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
             arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
@@ -929,12 +942,12 @@ export async function buildStructureOfflineTransaction(
     })[0];
 
     for (const { id, type } of assemblyMeta) {
-      if (type === GATE_TYPE_FULL) {
+      if (isGateType(type)) {
         hotPotato = tx.moveCall({
           target: `${WORLD_PKG}::gate::offline_connected_gate`,
           arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), energyConfigRef(tx)],
         })[0];
-      } else if (type === ASSEMBLY_TYPE_FULL) {
+      } else if (isAssemblyType(type)) {
         hotPotato = tx.moveCall({
           target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
           arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), energyConfigRef(tx)],
@@ -1387,15 +1400,20 @@ export async function fetchMemberBalance(balancesTableId: string, memberAddress:
 export async function fetchOwnerCapsForWallet(walletAddress: string): Promise<{ capId: string; turretId: string; characterId: string }[]> {
   const charInfo = await findCharacterForWallet(walletAddress);
   if (!charInfo) return [];
-  const ownerCapType = `${WORLD_PKG}::access::OwnerCap<${WORLD_PKG}::turret::Turret>`;
-  const caps = await rpcGetOwnedObjects(charInfo.characterId, ownerCapType, 50);
-  return caps
-    .map(({ objectId: capId, fields }) => ({
-      capId,
-      turretId: String(fields["authorized_object_id"] ?? ""),
-      characterId: charInfo.characterId,
-    }))
-    .filter(c => c.turretId.length > 0);
+  // Check both world pkg versions for OwnerCaps
+  const worldPkgs = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
+  const allCaps: { capId: string; turretId: string; characterId: string }[] = [];
+  for (const wpkg of worldPkgs) {
+    const ownerCapType = `${wpkg}::access::OwnerCap<${wpkg}::turret::Turret>`;
+    const caps = await rpcGetOwnedObjects(charInfo.characterId, ownerCapType, 50);
+    for (const { objectId: capId, fields } of caps) {
+      const turretId = String(fields["authorized_object_id"] ?? "");
+      if (turretId && !allCaps.some(c => c.turretId === turretId)) {
+        allCaps.push({ capId, turretId, characterId: charInfo.characterId });
+      }
+    }
+  }
+  return allCaps;
 }
 
 /**
