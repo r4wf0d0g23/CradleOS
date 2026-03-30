@@ -15,6 +15,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, EVE_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
+import { SUI_GRAPHQL } from "../graphql";
 import { numish } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -113,37 +114,38 @@ async function fetchObjectsOfType(structType: string): Promise<Array<{ objectId:
   const results: Array<{ objectId: string; fields: Record<string, unknown> }> = [];
   let cursor: string | null = null;
   for (let page = 0; page < 10; page++) {
-    const res = await fetch(SUI_TESTNET_RPC, {
+    const query = `{
+      objects(filter: { type: "${structType}" }, after: ${cursor ? `"${cursor}"` : "null"}, first: 50) {
+        nodes {
+          address
+          asMoveObject { contents { json } }
+        }
+        pageInfo { hasNextPage endCursor }
+      }
+    }`;
+    const res = await fetch(SUI_GRAPHQL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1,
-        method: "suix_queryObjects",
-        params: [
-          { StructType: structType },
-          cursor,
-          50,
-          false,
-        ],
-      }),
+      body: JSON.stringify({ query }),
     });
     const j = await res.json() as {
-      result?: {
-        data?: Array<{ data?: { objectId?: string; content?: { fields?: Record<string, unknown> } } }>;
-        nextCursor?: string | null;
-        hasNextPage?: boolean;
+      data?: {
+        objects?: {
+          nodes?: Array<{ address: string; asMoveObject?: { contents?: { json?: Record<string, unknown> } } }>;
+          pageInfo?: { hasNextPage: boolean; endCursor?: string };
+        };
       };
     };
-    const data = j.result?.data ?? [];
-    for (const item of data) {
-      const objectId = item.data?.objectId;
-      const fields = item.data?.content?.fields;
-      if (objectId && fields) {
-        results.push({ objectId, fields });
+    const nodes = j.data?.objects?.nodes ?? [];
+    for (const n of nodes) {
+      const fields = n.asMoveObject?.contents?.json;
+      if (n.address && fields) {
+        results.push({ objectId: n.address, fields });
       }
     }
-    if (!j.result?.hasNextPage) break;
-    cursor = j.result?.nextCursor ?? null;
+    const pageInfo = j.data?.objects?.pageInfo;
+    if (!pageInfo?.hasNextPage) break;
+    cursor = pageInfo.endCursor ?? null;
     if (!cursor) break;
   }
   return results;
