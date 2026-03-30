@@ -3033,15 +3033,18 @@ export function buildMintWithCollateralTx(
   tribeVaultId: string,
   coinObjectId: string,
   recipient: string,
+  amountRaw: bigint, // exact amount in raw EVE units (9 decimals) to deposit
 ): Transaction {
   const tx = new Transaction();
+  // Split exact amount from the coin — prevents entire coin balance being consumed
+  const [exactCoin] = tx.splitCoins(tx.object(coinObjectId), [tx.pure.u64(amountRaw)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::collateral_vault::mint_with_collateral_entry`,
     typeArguments: [EVE_COIN_TYPE],
     arguments: [
       tx.object(cvId),
       tx.object(tribeVaultId),
-      tx.object(coinObjectId),
+      exactCoin,
       tx.pure.address(recipient),
     ],
   });
@@ -3049,12 +3052,14 @@ export function buildMintWithCollateralTx(
 }
 
 /** Deposit EVE into the collateral vault (increases capacity without minting). */
-export function buildDepositCollateralTx(cvId: string, coinObjectId: string): Transaction {
+export function buildDepositCollateralTx(cvId: string, coinObjectId: string, amountRaw: bigint): Transaction {
   const tx = new Transaction();
+  // Split exact amount from the coin — prevents entire coin balance being consumed
+  const [exactCoin] = tx.splitCoins(tx.object(coinObjectId), [tx.pure.u64(amountRaw)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::collateral_vault::deposit_collateral_entry`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(cvId), tx.object(coinObjectId)],
+    arguments: [tx.object(cvId), exactCoin],
   });
   return tx;
 }

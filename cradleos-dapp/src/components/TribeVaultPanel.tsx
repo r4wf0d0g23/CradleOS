@@ -523,7 +523,7 @@ function CollateralVaultCard({
       if (!mintRecipient.trim()) throw new Error("Recipient required");
       const coinId = eveBalanceData?.coinId;
       if (!coinId) throw new Error("No EVE coin object found in wallet");
-      const tx = buildMintWithCollateralTx(cv.objectId, vault.objectId, coinId, mintRecipient.trim());
+      const tx = buildMintWithCollateralTx(cv.objectId, vault.objectId, coinId, mintRecipient.trim(), BigInt(eveRaw));
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setMintEveAmt(""); setMintRecipient("");
@@ -538,9 +538,10 @@ function CollateralVaultCard({
     setDepositBusy(true); setDepositErr(null);
     try {
       if (!depositAmt || parseFloat(depositAmt) <= 0) throw new Error("Invalid amount");
+      const depositRaw = BigInt(Math.floor(parseFloat(depositAmt) * 1e9));
       const coinId = eveBalanceData?.coinId;
       if (!coinId) throw new Error("No EVE coin object found in wallet");
-      const tx = buildDepositCollateralTx(cv.objectId, coinId);
+      const tx = buildDepositCollateralTx(cv.objectId, coinId, depositRaw);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setDepositAmt("");
