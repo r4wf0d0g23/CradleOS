@@ -752,7 +752,7 @@ function CollateralVaultCard({
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
           borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
         }}>
-          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>MINTED</div>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>TOTAL EVER MINTED</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.totalMinted.toLocaleString()}</div>
           <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
         </div>
@@ -760,7 +760,7 @@ function CollateralVaultCard({
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
           borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
         }}>
-          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>REDEEMED</div>
+          <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>TOTAL EVER REDEEMED</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.totalRedeemed.toLocaleString()}</div>
           <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
         </div>
