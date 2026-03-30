@@ -87,10 +87,14 @@ export const RAW_NETWORK_NODE_ID = "0xbce555aedb0c1322232c4243ce62cfc6210293cb69
 export const RAW_NODE_OWNER_CAP = "0x1e69832d1977a6963ea93b4cf2feeb7e432cde4ae463ff2989f35de3c78765f2";
 export const FUEL_CONFIG = "0x0f354c803af170ac0d1ac9068625c6321996b3013dc67bdaf14d06f93fa1671f";
 // EnergyConfig for Stillness world package (0x28b497...)
-export const ENERGY_CONFIG = "0xd77693d0df5656d68b1b833e2a23cc81eb3875d8d767e7bd249adde82bdbc952";
-export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = 791126223;
-// EnergyConfig for Utopia world package (0xd12a70c7...) — kept for reference
+export const ENERGY_CONFIG_STILLNESS = "0xd77693d0df5656d68b1b833e2a23cc81eb3875d8d767e7bd249adde82bdbc952";
+export const ENERGY_CONFIG_STILLNESS_ISV = 791126223;
+// EnergyConfig for Utopia world package (0xd12a70c7...)
 export const ENERGY_CONFIG_UTOPIA = "0x9285364e8104c04380d9cc4a001bbdfc81a554aad441c2909c2d3bd52a0c9c62";
+export const ENERGY_CONFIG_UTOPIA_ISV = 791126162;
+// Active EnergyConfig — selected by server env
+export const ENERGY_CONFIG = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS : ENERGY_CONFIG_UTOPIA;
+export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS_ISV : ENERGY_CONFIG_UTOPIA_ISV;
 export const CLOCK = "0x6";
 export const SUI_TESTNET_RPC = "https://fullnode.testnet.sui.io:443";
 export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
