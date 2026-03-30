@@ -4,7 +4,7 @@
 
 [published.testnet]
 chain-id = "4c78adac"
-published-at = "0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4"
+published-at = "0xf0211d3c84d3be89cb924dce383afaf11cfb8cf204afa05ecd2e869347f68b13"
 original-id = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3"
 version = 5
 toolchain-version = "1.68.1"

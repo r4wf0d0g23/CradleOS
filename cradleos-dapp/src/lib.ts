@@ -3064,6 +3064,20 @@ export function buildDepositCollateralTx(cvId: string, coinObjectId: string, amo
   return tx;
 }
 
+/** Founder emergency drain — withdraw all locked EVE collateral back to founder wallet. */
+export function buildDrainCollateralTx(cvId: string, tribeVaultId: string): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::drain_collateral_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [
+      tx.object(cvId),
+      tx.object(tribeVaultId),
+    ],
+  });
+  return tx;
+}
+
 /** Redeem tribe tokens → burn → receive EVE at floor price (1/mintRatio per token). */
 export function buildRedeemTx(cvId: string, tribeVaultId: string, amount: number): Transaction {
   const tx = new Transaction();

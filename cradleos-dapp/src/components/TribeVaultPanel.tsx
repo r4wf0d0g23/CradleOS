@@ -31,6 +31,7 @@ import {
   buildCreateCollateralVaultTx,
   buildMintWithCollateralTx,
   buildDepositCollateralTx,
+  buildDrainCollateralTx,
   buildRedeemTx,
   buildSetMintRatioTx,
   fetchEveBalance,
@@ -583,6 +584,21 @@ function CollateralVaultCard({
     } finally { setRedeemBusy(false); }
   };
 
+  const [drainBusy, setDrainBusy] = useState(false);
+  const [drainErr, setDrainErr] = useState<string | null>(null);
+  const handleDrain = async () => {
+    if (!account || !cv) return;
+    setDrainBusy(true); setDrainErr(null);
+    try {
+      const tx = buildDrainCollateralTx(cv.objectId, vault.objectId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setDrainErr(e instanceof Error ? e.message : String(e));
+    } finally { setDrainBusy(false); }
+  };
+
   const cardStyle: React.CSSProperties = {
     background: "rgba(0,255,150,0.04)",
     border: "1px solid rgba(0,255,150,0.22)",
@@ -885,6 +901,30 @@ function CollateralVaultCard({
         </div>
         {redeemErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {redeemErr}</div>}
       </div>
+
+      {/* Founder emergency drain */}
+      {isFounder && cv && cv.collateralBalance > 0 && (
+        <div style={{ marginTop: "16px", padding: "12px", background: "rgba(255,50,50,0.05)", border: "1px solid rgba(255,50,50,0.2)" }}>
+          <div style={{ color: "#ff6432", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", marginBottom: "6px" }}>
+            ⚠ EMERGENCY DRAIN (FOUNDER ONLY)
+          </div>
+          <div style={{ color: "rgba(180,180,160,0.6)", fontSize: "11px", marginBottom: "8px" }}>
+            Withdraws all {(cv.collateralBalance / 1e9).toFixed(4)} locked EVE back to your wallet. Irreversible.
+          </div>
+          <button
+            onClick={handleDrain}
+            disabled={drainBusy}
+            style={{
+              background: "rgba(255,50,50,0.12)", border: "1px solid rgba(255,50,50,0.4)",
+              color: "#ff6432", cursor: "pointer", fontSize: "11px", fontWeight: 700,
+              padding: "5px 14px", letterSpacing: "0.08em", fontFamily: "inherit",
+            }}
+          >
+            {drainBusy ? "Draining…" : "Drain All EVE"}
+          </button>
+          {drainErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {drainErr}</div>}
+        </div>
+      )}
     </div>
   );
 }

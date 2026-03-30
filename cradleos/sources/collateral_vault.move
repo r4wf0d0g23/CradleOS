@@ -243,6 +243,23 @@ module cradleos::collateral_vault {
         });
     }
 
+    /// Founder emergency drain — withdraw all collateral EVE back to founder wallet.
+    /// Only callable by the tribe vault founder. Resets locked collateral to zero.
+    entry fun drain_collateral_entry<T>(
+        cv: &mut CollateralVault<T>,
+        tribe_vault: &TribeVault,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == tribe_vault::founder(tribe_vault), ENotFounder);
+        assert!(object::id(tribe_vault) == cv.vault_id, EWrongVault);
+
+        let amount = balance::value(&cv.collateral);
+        assert!(amount > 0, 0); // nothing to drain
+
+        let payout = coin::from_balance(balance::split(&mut cv.collateral, amount), ctx);
+        transfer::public_transfer(payout, ctx.sender());
+    }
+
     // ── Public reads ──────────────────────────────────────────────────────────
 
     public fun vault_id<T>(cv: &CollateralVault<T>): ID { cv.vault_id }
