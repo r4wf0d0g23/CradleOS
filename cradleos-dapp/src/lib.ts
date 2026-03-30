@@ -1503,7 +1503,7 @@ export function buildAuthorizeExtensionTx(
 }
 
 /** Fetch the caller's EVE coin balance and best coin object ID for transactions. */
-export async function fetchEveBalance(address: string): Promise<{ balance: number; coinId: string | null }> {
+export async function fetchEveBalance(address: string): Promise<{ balance: number; coinId: string | null; allCoinIds: string[] }> {
   try {
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
@@ -1516,20 +1516,24 @@ export async function fetchEveBalance(address: string): Promise<{ balance: numbe
     });
     const j = await res.json() as { result?: { totalBalance?: string } };
     const balance = numish(j.result?.totalBalance) ?? 0;
-    // Get the specific coin object ID for use in transactions
+    // Fetch ALL coin objects — wallet may have multiple EVE coins from splits/merges
     const coinsRes = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_getCoins",
-        params: [address, EVE_COIN_TYPE, null, 1],
+        params: [address, EVE_COIN_TYPE, null, 50],
       }),
     });
-    const coinsJ = await coinsRes.json() as { result?: { data?: Array<{ coinObjectId: string }> } };
-    const coinId = coinsJ.result?.data?.[0]?.coinObjectId ?? null;
-    return { balance, coinId };
-  } catch { return { balance: 0, coinId: null }; }
+    const coinsJ = await coinsRes.json() as { result?: { data?: Array<{ coinObjectId: string; balance: string }> } };
+    const coins = coinsJ.result?.data ?? [];
+    // Sort by balance descending — pick the largest as primary
+    coins.sort((a, b) => Number(BigInt(b.balance) - BigInt(a.balance)));
+    const allCoinIds = coins.map(c => c.coinObjectId);
+    const coinId = allCoinIds[0] ?? null;
+    return { balance, coinId, allCoinIds };
+  } catch { return { balance: 0, coinId: null, allCoinIds: [] }; }
 }
 
 /** @deprecated Use fetchEveBalance instead. */
@@ -3031,13 +3035,17 @@ export function buildCreateCollateralVaultTx(tribeVaultId: string, mintRatio: nu
 export function buildMintWithCollateralTx(
   cvId: string,
   tribeVaultId: string,
-  coinObjectId: string,
+  coinObjectIds: string[], // ALL eve coin objects — will be merged before split
   recipient: string,
   amountRaw: bigint, // exact amount in raw EVE units (9 decimals) to deposit
 ): Transaction {
   const tx = new Transaction();
-  // Split exact amount from the coin — prevents entire coin balance being consumed
-  const [exactCoin] = tx.splitCoins(tx.object(coinObjectId), [tx.pure.u64(amountRaw)]);
+  // Merge all coin objects into one, then split exact amount
+  const primary = tx.object(coinObjectIds[0]);
+  if (coinObjectIds.length > 1) {
+    tx.mergeCoins(primary, coinObjectIds.slice(1).map(id => tx.object(id)));
+  }
+  const [exactCoin] = tx.splitCoins(primary, [tx.pure.u64(amountRaw)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::collateral_vault::mint_with_collateral_entry`,
     typeArguments: [EVE_COIN_TYPE],
@@ -3052,10 +3060,13 @@ export function buildMintWithCollateralTx(
 }
 
 /** Deposit EVE into the collateral vault (increases capacity without minting). */
-export function buildDepositCollateralTx(cvId: string, coinObjectId: string, amountRaw: bigint): Transaction {
+export function buildDepositCollateralTx(cvId: string, coinObjectIds: string[], amountRaw: bigint): Transaction {
   const tx = new Transaction();
-  // Split exact amount from the coin — prevents entire coin balance being consumed
-  const [exactCoin] = tx.splitCoins(tx.object(coinObjectId), [tx.pure.u64(amountRaw)]);
+  const primary = tx.object(coinObjectIds[0]);
+  if (coinObjectIds.length > 1) {
+    tx.mergeCoins(primary, coinObjectIds.slice(1).map(id => tx.object(id)));
+  }
+  const [exactCoin] = tx.splitCoins(primary, [tx.pure.u64(amountRaw)]);
   tx.moveCall({
     target: `${CRADLEOS_PKG}::collateral_vault::deposit_collateral_entry`,
     typeArguments: [EVE_COIN_TYPE],

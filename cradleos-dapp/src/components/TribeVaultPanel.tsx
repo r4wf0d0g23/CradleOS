@@ -458,7 +458,7 @@ function CollateralVaultCard({
 
   const { data: eveBalanceData } = useQuery({
     queryKey: ["eveBalance", account?.address],
-    queryFn: () => account ? fetchEveBalance(account.address) : { balance: 0, coinId: null },
+    queryFn: () => account ? fetchEveBalance(account.address) : Promise.resolve({ balance: 0, coinId: null, allCoinIds: [] }),
     enabled: !!account?.address,
     staleTime: 15_000,
   });
@@ -530,9 +530,9 @@ function CollateralVaultCard({
       const eveRaw = Math.floor(parseFloat(mintEveAmt) * 1e9);
       if (!eveRaw || eveRaw < 1) throw new Error("Invalid EVE amount");
       if (!mintRecipient.trim()) throw new Error("Recipient required");
-      const coinId = eveBalanceData?.coinId;
-      if (!coinId) throw new Error("No EVE coin object found in wallet");
-      const tx = buildMintWithCollateralTx(cv.objectId, vault.objectId, coinId, mintRecipient.trim(), BigInt(eveRaw));
+      const coinIds = eveBalanceData?.allCoinIds ?? [];
+      if (!coinIds.length) throw new Error("No EVE coin objects found in wallet");
+      const tx = buildMintWithCollateralTx(cv.objectId, vault.objectId, coinIds, mintRecipient.trim(), BigInt(eveRaw));
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setMintEveAmt(""); setMintRecipient("");
@@ -548,9 +548,9 @@ function CollateralVaultCard({
     try {
       if (!depositAmt || parseFloat(depositAmt) <= 0) throw new Error("Invalid amount");
       const depositRaw = BigInt(Math.floor(parseFloat(depositAmt) * 1e9));
-      const coinId = eveBalanceData?.coinId;
-      if (!coinId) throw new Error("No EVE coin object found in wallet");
-      const tx = buildDepositCollateralTx(cv.objectId, coinId, depositRaw);
+      const coinIds = eveBalanceData?.allCoinIds ?? [];
+      if (!coinIds.length) throw new Error("No EVE coin objects found in wallet");
+      const tx = buildDepositCollateralTx(cv.objectId, coinIds, depositRaw);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setDepositAmt("");

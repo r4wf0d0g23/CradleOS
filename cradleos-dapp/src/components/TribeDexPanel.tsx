@@ -284,7 +284,7 @@ function DexDashboard({
   // EVE balance for the connected wallet
   const { data: eveData } = useQuery({
     queryKey: ["eveBalance", account?.address],
-    queryFn: () => account ? fetchEveBalance(account.address) : Promise.resolve({ balance: 0, coinId: null }),
+    queryFn: () => account ? fetchEveBalance(account.address) : Promise.resolve({ balance: 0, coinId: null, allCoinIds: [] }),
     enabled: !!account?.address,
     staleTime: 15_000,
   });
