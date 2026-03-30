@@ -32,6 +32,7 @@ import {
   buildMintWithCollateralTx,
   buildDepositCollateralTx,
   buildDrainCollateralTx,
+  buildResetAccountingTx,
   buildBurnCoinTransaction,
   buildRedeemTx,
   buildSetMintRatioTx,
@@ -603,6 +604,21 @@ function CollateralVaultCard({
     } finally { setBurnAllBusy(false); }
   };
 
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetErr, setResetErr] = useState<string | null>(null);
+  const handleResetAccounting = async () => {
+    if (!account || !cv) return;
+    setResetBusy(true); setResetErr(null);
+    try {
+      const tx = buildResetAccountingTx(cv.objectId, vault.objectId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setResetErr(e instanceof Error ? e.message : String(e));
+    } finally { setResetBusy(false); }
+  };
+
   const [drainBusy, setDrainBusy] = useState(false);
   const [drainErr, setDrainErr] = useState<string | null>(null);
   const handleDrain = async () => {
@@ -942,6 +958,30 @@ function CollateralVaultCard({
             {burnAllBusy ? "Burning…" : `Burn All ${vault.coinSymbol}`}
           </button>
           {burnAllErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {burnAllErr}</div>}
+        </div>
+      )}
+
+      {/* Founder accounting reset — only when supply is 0 */}
+      {isFounder && cv && Number(vault.totalSupply ?? 0) === 0 && (cv.totalMinted > 0 || cv.totalRedeemed > 0) && (
+        <div style={{ marginTop: "16px", padding: "12px", background: "rgba(255,140,0,0.05)", border: "1px solid rgba(255,140,0,0.2)" }}>
+          <div style={{ color: "#ffa020", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", marginBottom: "6px" }}>
+            ↺ RESET ACCOUNTING (FOUNDER ONLY)
+          </div>
+          <div style={{ color: "rgba(180,180,160,0.6)", fontSize: "11px", marginBottom: "8px" }}>
+            Zeroes lifetime minted/redeemed counters. Only available when circulating supply is 0.
+          </div>
+          <button
+            onClick={handleResetAccounting}
+            disabled={resetBusy}
+            style={{
+              background: "rgba(255,140,0,0.12)", border: "1px solid rgba(255,140,0,0.4)",
+              color: "#ffa020", cursor: "pointer", fontSize: "11px", fontWeight: 700,
+              padding: "5px 14px", letterSpacing: "0.08em", fontFamily: "inherit",
+            }}
+          >
+            {resetBusy ? "Resetting…" : "Reset Counters"}
+          </button>
+          {resetErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {resetErr}</div>}
         </div>
       )}
 

@@ -270,4 +270,19 @@ module cradleos::collateral_vault {
     public fun mint_capacity<T>(cv: &CollateralVault<T>): u64 {
         balance::value(&cv.collateral) * cv.mint_ratio
     }
+
+    /// Founder accounting reset — zeroes total_minted and total_redeemed when
+    /// circulating supply is already 0. Cannot be used to hide active inflation.
+    entry fun founder_reset_accounting_entry<T>(
+        cv: &mut CollateralVault<T>,
+        tribe_vault: &TribeVault,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == tribe_vault::founder(tribe_vault), ENotFounder);
+        assert!(object::id(tribe_vault) == cv.vault_id, EWrongVault);
+        // Only allowed when no tokens are in circulation
+        assert!(tribe_vault::total_supply(tribe_vault) == 0, 0);
+        cv.total_minted = 0;
+        cv.total_redeemed = 0;
+    }
 }

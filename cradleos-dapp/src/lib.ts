@@ -3064,6 +3064,17 @@ export function buildDepositCollateralTx(cvId: string, coinObjectId: string, amo
   return tx;
 }
 
+/** Founder accounting reset — zeroes total_minted and total_redeemed when supply is 0. */
+export function buildResetAccountingTx(cvId: string, tribeVaultId: string): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::founder_reset_accounting_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(cvId), tx.object(tribeVaultId)],
+  });
+  return tx;
+}
+
 /** Founder emergency drain — withdraw all locked EVE collateral back to founder wallet. */
 export function buildDrainCollateralTx(cvId: string, tribeVaultId: string): Transaction {
   const tx = new Transaction();
