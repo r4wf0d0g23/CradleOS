@@ -500,6 +500,12 @@ function CollateralVaultCard({
   vault: TribeVaultState;
   onTxSuccess: () => void;
 }) {
+  const queryClient = useQueryClient();
+  // Invalidate EVE balance after every tx so coin IDs are always fresh
+  const onTxSuccessWithRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["eveBalance"] });
+    onTxSuccess();
+  };
   const { account: _verifiedAcct } = useVerifiedAccountContext();
   const account = _verifiedAcct;
   const dAppKit = useDAppKit();
@@ -517,7 +523,7 @@ function CollateralVaultCard({
     queryKey: ["eveBalance", account?.address],
     queryFn: () => account ? fetchEveBalance(account.address) : Promise.resolve({ balance: 0, coinId: null, allCoinIds: [] }),
     enabled: !!account?.address,
-    staleTime: 15_000,
+    staleTime: 5_000,
   });
 
   // Create vault state
@@ -573,7 +579,7 @@ function CollateralVaultCard({
       const tx = buildCreateCollateralVaultTx(vault.objectId, ratio);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setCreateErr(msg.includes("MoveAbort") ? "Transaction aborted — are you the vault founder?" : msg);
@@ -593,7 +599,7 @@ function CollateralVaultCard({
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setMintEveAmt(""); setMintRecipient("");
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setMintErr(e instanceof Error ? e.message : String(e));
     } finally { setMintBusy(false); }
@@ -611,7 +617,7 @@ function CollateralVaultCard({
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setDepositAmt("");
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setDepositErr(e instanceof Error ? e.message : String(e));
     } finally { setDepositBusy(false); }
@@ -627,7 +633,7 @@ function CollateralVaultCard({
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setNewRatioInput("");
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setRatioErr(e instanceof Error ? e.message : String(e));
     } finally { setRatioUpdateBusy(false); }
@@ -643,7 +649,7 @@ function CollateralVaultCard({
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       setRedeemAmt("");
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setRedeemErr(e instanceof Error ? e.message : String(e));
     } finally { setRedeemBusy(false); }
@@ -661,7 +667,7 @@ function CollateralVaultCard({
       const tx = buildBurnCoinTransaction(vault.objectId, account.address, supply);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setBurnAllErr(e instanceof Error ? e.message : String(e));
     } finally { setBurnAllBusy(false); }
@@ -676,7 +682,7 @@ function CollateralVaultCard({
       const tx = buildResetAccountingTx(cv.objectId, vault.objectId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setResetErr(e instanceof Error ? e.message : String(e));
     } finally { setResetBusy(false); }
@@ -691,7 +697,7 @@ function CollateralVaultCard({
       const tx = buildDrainCollateralTx(cv.objectId, vault.objectId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(onTxSuccess, 3000);
+      setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
       setDrainErr(e instanceof Error ? e.message : String(e));
     } finally { setDrainBusy(false); }
