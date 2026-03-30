@@ -13,6 +13,12 @@ import { WORLD_PKG, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, SER
 const DAPP_BASE = SERVER_ENV === "stillness"
   ? "https://r4wf0d0g23.github.io/CradleOS"
   : "https://r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026";
+const DAPP_OTHER_BASE = SERVER_ENV === "stillness"
+  ? "https://r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026"
+  : "https://r4wf0d0g23.github.io/CradleOS";
+/** True if the structure's metadata URL points to the wrong server's dApp. */
+const isWrongServerUrl = (url?: string) =>
+  !!url && url.includes(DAPP_OTHER_BASE);
 
 const DAPP_PRESETS: Record<string, Array<{ label: string; url: string; desc: string }>> = {
   Turret: [
@@ -389,6 +395,34 @@ function StructureRow({
                 🔗
               </button>
             )}
+          </div>
+        )}
+
+        {/* Wrong-server URL warning */}
+        {!settingUrl && canRename && isWrongServerUrl(structure.metadataUrl) && (
+          <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", background: "rgba(255,140,0,0.08)", border: "1px solid rgba(255,140,0,0.35)" }}>
+            <span style={{ fontSize: 10, color: "#ffa020", letterSpacing: "0.08em" }}>⚠ URL points to wrong server</span>
+            <button
+              disabled={busy}
+              onClick={async () => {
+                const fixedUrl = structure.metadataUrl!.replace(DAPP_OTHER_BASE, DAPP_BASE);
+                setBusy(true); setErr(null);
+                try {
+                  const charInfo = await (await import("../lib")).findCharacterForWallet(account!.address);
+                  if (!charInfo) { setErr("Character not found"); return; }
+                  const tx = buildSetUrlTransaction(structure, charInfo.characterId, fixedUrl);
+                  const signer = new CurrentAccountSigner(dAppKit);
+                  const result = await signer.signAndExecuteTransaction({ transaction: tx });
+                  onTxSuccess?.(readDigest(result));
+                } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+                finally { setBusy(false); }
+              }}
+              style={{
+                background: "rgba(255,140,0,0.15)", border: "1px solid rgba(255,140,0,0.5)",
+                color: "#ffa020", fontSize: 10, fontWeight: 700, padding: "2px 10px",
+                cursor: "pointer", letterSpacing: "0.06em", fontFamily: "inherit",
+              }}
+            >FIX URL</button>
           </div>
         )}
 
