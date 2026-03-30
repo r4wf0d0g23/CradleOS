@@ -717,8 +717,6 @@ function AppInner() {
             EVE FRONTIER &nbsp;·&nbsp; SUI TESTNET &nbsp;·&nbsp; HACKATHON 2026
           </p>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"20px", margin:"0 0 14px" }}>
-            <img src="cradleos-logo.png" alt="CradleOS"
-              style={{ height:"clamp(56px,7vw,88px)", width:"auto", imageRendering:"auto", filter:"drop-shadow(0 0 18px rgba(255,71,0,0.7)) drop-shadow(0 0 6px rgba(255,71,0,0.4))" }} />
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
               <KeeperOrb size={48} onClick={() => setActiveTab("keeper")} title="Open Keeper" />
               <h1 style={{
