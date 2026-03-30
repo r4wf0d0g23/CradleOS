@@ -6,6 +6,11 @@
  * 2. DEX live → order book + post/fill/cancel controls
  */
 import { useState } from "react";
+
+const TOKEN_DECIMALS = 1_000_000_000;
+function fmtToken(raw: number): string {
+  return (raw / TOKEN_DECIMALS).toLocaleString(undefined, { maximumFractionDigits: 4 });
+}
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
@@ -139,7 +144,7 @@ function OrderRow({
         #{order.orderId}
       </div>
       <div style={{ flex: "0 0 90px", color: "#FF4700", fontWeight: 600, fontSize: "13px" }}>
-        {order.rawRemaining.toLocaleString()} {vault.coinSymbol}
+        {fmtToken(order.rawRemaining)} {vault.coinSymbol}
       </div>
       <div style={{ flex: "0 0 110px", color: "#aaa", fontSize: "12px" }}>
         @ {fmtEve(order.pricePerUnit)}/{vault.coinSymbol}
@@ -211,7 +216,7 @@ function FillRow({ ev, symbol }: { ev: OrderFilledEvent; symbol: string }) {
       fontSize: "11px", color: "rgba(107,107,94,0.6)",
     }}>
       <span style={{ minWidth: "40px", color: "rgba(107,107,94,0.55)" }}>#{ev.orderId}</span>
-      <span style={{ color: "#00ff96" }}>+{ev.fillAmount.toLocaleString()} {symbol}</span>
+      <span style={{ color: "#00ff96" }}>+{fmtToken(ev.fillAmount)} {symbol}</span>
       <span>@ {fmtEve(ev.pricePerUnit)}</span>
       <span style={{ flex: 1, textAlign: "right", fontFamily: "monospace" }}>
         {shortAddr(ev.buyer)}
@@ -312,7 +317,7 @@ function DexDashboard({
         />
         <StatBox
           label="VOL (TRIBE)"
-          value={dex.totalVolumeRaw.toLocaleString()}
+          value={fmtToken(dex.totalVolumeRaw)}
           sub="all-time fills"
         />
         <StatBox
@@ -322,7 +327,7 @@ function DexDashboard({
         />
         <StatBox
           label="YOUR BALANCE"
-          value={(myBalance ?? 0).toLocaleString()}
+          value={fmtToken(myBalance ?? 0)}
           sub={vault.coinSymbol}
         />
         <StatBox
@@ -363,7 +368,7 @@ function DexDashboard({
         <div style={{ color: "#FF4700", fontWeight: 600, fontSize: "13px", marginBottom: "10px" }}>
           ↓ Post Sell Order
           <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: "11px", marginLeft: "8px" }}>
-            your balance: {(myBalance ?? 0).toLocaleString()} {vault.coinSymbol}
+            your balance: {fmtToken(myBalance ?? 0)} {vault.coinSymbol}
           </span>
         </div>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
