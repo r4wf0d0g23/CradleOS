@@ -32,6 +32,7 @@ import {
   buildMintWithCollateralTx,
   buildDepositCollateralTx,
   buildDrainCollateralTx,
+  buildBurnCoinTransaction,
   buildRedeemTx,
   buildSetMintRatioTx,
   fetchEveBalance,
@@ -584,6 +585,24 @@ function CollateralVaultCard({
     } finally { setRedeemBusy(false); }
   };
 
+  const [burnAllBusy, setBurnAllBusy] = useState(false);
+  const [burnAllErr, setBurnAllErr] = useState<string | null>(null);
+  const handleBurnAll = async () => {
+    if (!account || !vault) return;
+    setBurnAllBusy(true); setBurnAllErr(null);
+    try {
+      const supply = Number(vault.totalSupply ?? 0);
+      if (!supply) throw new Error("No tokens in circulation");
+      // burn_coin_entry: founder burns tokens from a member address
+      const tx = buildBurnCoinTransaction(vault.objectId, account.address, supply);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setBurnAllErr(e instanceof Error ? e.message : String(e));
+    } finally { setBurnAllBusy(false); }
+  };
+
   const [drainBusy, setDrainBusy] = useState(false);
   const [drainErr, setDrainErr] = useState<string | null>(null);
   const handleDrain = async () => {
@@ -901,6 +920,30 @@ function CollateralVaultCard({
         </div>
         {redeemErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {redeemErr}</div>}
       </div>
+
+      {/* Founder burn all circulating tokens */}
+      {isFounder && vault && Number(vault.totalSupply ?? 0) > 0 && (
+        <div style={{ marginTop: "16px", padding: "12px", background: "rgba(255,50,50,0.05)", border: "1px solid rgba(255,50,50,0.2)" }}>
+          <div style={{ color: "#ff6432", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", marginBottom: "6px" }}>
+            🔥 BURN ALL CIRCULATING (FOUNDER ONLY)
+          </div>
+          <div style={{ color: "rgba(180,180,160,0.6)", fontSize: "11px", marginBottom: "8px" }}>
+            Burns all {Number(vault.totalSupply).toLocaleString()} {vault.coinSymbol} from your wallet. Irreversible.
+          </div>
+          <button
+            onClick={handleBurnAll}
+            disabled={burnAllBusy}
+            style={{
+              background: "rgba(255,50,50,0.12)", border: "1px solid rgba(255,50,50,0.4)",
+              color: "#ff6432", cursor: "pointer", fontSize: "11px", fontWeight: 700,
+              padding: "5px 14px", letterSpacing: "0.08em", fontFamily: "inherit",
+            }}
+          >
+            {burnAllBusy ? "Burning…" : `Burn All ${vault.coinSymbol}`}
+          </button>
+          {burnAllErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {burnAllErr}</div>}
+        </div>
+      )}
 
       {/* Founder emergency drain */}
       {isFounder && cv && cv.collateralBalance > 0 && (
