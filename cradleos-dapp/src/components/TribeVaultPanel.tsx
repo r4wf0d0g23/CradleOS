@@ -143,6 +143,12 @@ function extractCreatedShared(result: unknown): string[] {
   } catch { return []; }
 }
 
+/** Tribe tokens have 9 decimal places — divide raw on-chain value for human display. */
+const TOKEN_DECIMALS = 1_000_000_000;
+function fmtToken(raw: number): string {
+  return (raw / TOKEN_DECIMALS).toLocaleString(undefined, { maximumFractionDigits: 4 });
+}
+
 function shortAddr(addr: string): string {
   return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "—";
 }
@@ -769,7 +775,7 @@ function CollateralVaultCard({
           borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>TOTAL EVER MINTED</div>
-          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.totalMinted.toLocaleString()}</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{fmtToken(cv.totalMinted)}</div>
           <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
         </div>
         <div style={{
@@ -777,7 +783,7 @@ function CollateralVaultCard({
           borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>TOTAL EVER REDEEMED</div>
-          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.totalRedeemed.toLocaleString()}</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{fmtToken(cv.totalRedeemed)}</div>
           <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
         </div>
         <div style={{
@@ -785,7 +791,7 @@ function CollateralVaultCard({
           borderRadius: "0", padding: "10px 14px", minWidth: "110px", flex: 1,
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>CAPACITY</div>
-          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.mintCapacity.toLocaleString()}</div>
+          <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{fmtToken(cv.mintCapacity)}</div>
           <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>mintable</div>
         </div>
       </div>
@@ -803,7 +809,7 @@ function CollateralVaultCard({
             </div>
             {mintEveAmt && mintedTokens > 0 && (
               <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
-                Depositing {mintEveAmt} EVE → minting {mintedTokens.toLocaleString()} {vault.coinSymbol} to {mintRecipient ? shortAddr(mintRecipient) : "[recipient]"}
+                Depositing {mintEveAmt} EVE → minting {fmtToken(mintedTokens * TOKEN_DECIMALS)} {vault.coinSymbol} to {mintRecipient ? shortAddr(mintRecipient) : "[recipient]"}
               </div>
             )}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -908,7 +914,7 @@ function CollateralVaultCard({
         </div>
         {redeemAmt_ > 0 && (
           <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
-            Burning {redeemAmt_} {vault.coinSymbol} → receiving {redeemEveOut} EVE
+            Burning {fmtToken(redeemAmt_)} {vault.coinSymbol} → receiving {redeemEveOut} EVE
           </div>
         )}
         <div style={{ display: "flex", gap: "8px" }}>
@@ -944,7 +950,7 @@ function CollateralVaultCard({
             🔥 BURN ALL CIRCULATING (FOUNDER ONLY)
           </div>
           <div style={{ color: "rgba(180,180,160,0.6)", fontSize: "11px", marginBottom: "8px" }}>
-            Burns all {Number(vault.totalSupply).toLocaleString()} {vault.coinSymbol} from your wallet. Irreversible.
+            Burns all {fmtToken(Number(vault.totalSupply))} {vault.coinSymbol} from your wallet. Irreversible.
           </div>
           <button
             onClick={handleBurnAll}
@@ -1053,8 +1059,9 @@ function VaultDashboard({
     queryFn: () => fetchTribeInfo(vault.tribeId),
     staleTime: 300_000,
   });
+  // Both totalSupply and infraCredits are raw (9 decimals) — ratio is still correct when comparing raw to raw
   const cappedPct = infraCredits > 0 ? Math.min(100, (vault.totalSupply / infraCredits) * 100) : 0;
-  const issuable = Math.max(0, infraCredits - vault.totalSupply);
+  const issuable = Math.max(0, infraCredits - vault.totalSupply); // raw units, divided by fmtToken at display
 
   const { data: myBalance } = useQuery<number>({
     queryKey: ["myVaultBalance", vault.objectId, account?.address],
@@ -1186,22 +1193,22 @@ function VaultDashboard({
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
         <StatBox
           label="CIRCULATING"
-          value={vault.totalSupply.toLocaleString()}
+          value={fmtToken(vault.totalSupply)}
           sub={vault.coinSymbol}
         />
         <StatBox
           label="INFRA CAP"
-          value={infraCredits.toLocaleString()}
+          value={fmtToken(infraCredits)}
           sub={infraCredits > 0 ? `${cappedPct.toFixed(1)}% used` : "no infra registered"}
         />
         <StatBox
           label="ISSUABLE"
-          value={issuable.toLocaleString()}
+          value={fmtToken(issuable)}
           sub="remaining cap"
         />
         <StatBox
           label="YOUR BALANCE"
-          value={(myBalance ?? 0).toLocaleString()}
+          value={fmtToken(myBalance ?? 0)}
           sub={vault.coinSymbol}
         />
       </div>
@@ -1259,7 +1266,7 @@ function VaultDashboard({
             }} />
           </div>
           <div style={{ fontSize: "10px", color: "rgba(107,107,94,0.55)", marginTop: "3px" }}>
-            {vault.totalSupply.toLocaleString()} / {infraCredits.toLocaleString()} {vault.coinSymbol} issued
+            {fmtToken(vault.totalSupply)} / {fmtToken(infraCredits)} {vault.coinSymbol} issued
           </div>
         </div>
       )}
@@ -1379,7 +1386,7 @@ function VaultDashboard({
               type="number"
               value={amount}
               onChange={e => setAmount(e.target.value)}
-              placeholder={`Max: ${issuable.toLocaleString()}`}
+              placeholder={`Max: ${fmtToken(issuable)}`}
               min="1"
               max={issuable}
               style={{
@@ -1427,7 +1434,7 @@ function VaultDashboard({
         <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: "13px", marginBottom: "10px" }}>
           ↗ Transfer {vault.coinSymbol}
           <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: "11px", marginLeft: "8px" }}>
-            your balance: {(myBalance ?? 0).toLocaleString()}
+            your balance: {fmtToken(myBalance ?? 0)}
           </span>
         </div>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
