@@ -501,9 +501,11 @@ function CollateralVaultCard({
   onTxSuccess: () => void;
 }) {
   const queryClient = useQueryClient();
-  // Invalidate EVE balance after every tx so coin IDs are always fresh
+  // Invalidate all vault-related caches after every tx
   const onTxSuccessWithRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["eveBalance"] });
+    queryClient.invalidateQueries({ queryKey: ["collateralVault"] });
+    queryClient.invalidateQueries({ queryKey: ["tribeVault"] });
     onTxSuccess();
   };
   const { account: _verifiedAcct } = useVerifiedAccountContext();
@@ -516,7 +518,7 @@ function CollateralVaultCard({
   const { data: cv, isLoading: cvLoading } = useQuery<CollateralVaultState | null>({
     queryKey: ["collateralVault", vault.objectId],
     queryFn: () => fetchCollateralVault(vault.objectId),
-    staleTime: 20_000,
+    staleTime: 5_000,
   });
 
   const { data: eveBalanceData } = useQuery({
