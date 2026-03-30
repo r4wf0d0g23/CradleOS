@@ -2363,7 +2363,7 @@ function KeeperActionButton({ action, vaultId, structures, walletAddress }: { ac
 }
 
 function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: string }) {
-  const [showSources, setShowSources] = useState(false);
+
 
   if (msg.role === "user") {
     return (
@@ -2394,7 +2394,7 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
   }
 
   const isError = msg.content === "Signal lost. Retry.";
-  const ragImages = msg.images ?? [];
+
 
   return (
     <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", maxWidth: "85%" }}>
