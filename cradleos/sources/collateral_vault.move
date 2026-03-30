@@ -271,6 +271,36 @@ module cradleos::collateral_vault {
         balance::value(&cv.collateral) * cv.mint_ratio
     }
 
+    /// Mint tribe tokens against already-locked collateral without depositing more EVE.
+    /// Allows a founder to issue tokens up to remaining mint capacity.
+    entry fun mint_from_collateral_entry<T>(
+        cv: &mut CollateralVault<T>,
+        tribe_vault: &mut TribeVault,
+        amount: u64,       // tribe tokens to mint (raw units, 9 decimals)
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == tribe_vault::founder(tribe_vault), ENotFounder);
+        assert!(object::id(tribe_vault) == cv.vault_id, EWrongVault);
+        assert!(amount > 0, EZeroAmount);
+
+        // Check mint capacity: collateral * ratio - already minted
+        let capacity = balance::value(&cv.collateral) * cv.mint_ratio;
+        let already_minted = tribe_vault::total_supply(tribe_vault);
+        assert!(already_minted + amount <= capacity, EInsufficientBalance);
+
+        tribe_vault::mint_internal(tribe_vault, recipient, amount);
+        cv.total_minted = cv.total_minted + amount;
+
+        event::emit(CollateralMinted {
+            collateral_vault_id: object::uid_to_inner(&cv.id),
+            eve_deposited: 0, // no new EVE deposited
+            tribe_tokens_minted: amount,
+            recipient,
+            new_collateral_balance: balance::value(&cv.collateral),
+        });
+    }
+
     /// Founder accounting reset — zeroes total_minted and total_redeemed when
     /// circulating supply is already 0. Cannot be used to hide active inflation.
     entry fun founder_reset_accounting_entry<T>(

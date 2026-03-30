@@ -33,6 +33,7 @@ import {
   buildDepositCollateralTx,
   buildDrainCollateralTx,
   buildResetAccountingTx,
+  buildMintFromCollateralTx,
   buildBurnCoinTransaction,
   buildRedeemTx,
   buildSetMintRatioTx,
@@ -430,6 +431,62 @@ function ConnectVaultForm({ tribeId, onConnect }: { tribeId: number; onConnect: 
       >
         Connect
       </button>
+    </div>
+  );
+}
+
+// ── Issue From Capacity Form ─────────────────────────────────────────────────
+
+function IssueFromCapacityForm({ vault, cv, onTxSuccess }: { vault: TribeVaultState; cv: CollateralVaultState; onTxSuccess: () => void }) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const [amt, setAmt] = useState("");
+  const [recipient, setRecipient] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const availableRaw = Math.max(0, cv.collateralBalance * cv.mintRatio - vault.totalSupply);
+
+  const handleIssue = async () => {
+    if (!account) return;
+    setBusy(true); setErr(null);
+    try {
+      const amtHuman = parseFloat(amt);
+      if (!amtHuman || amtHuman <= 0) throw new Error("Invalid amount");
+      const amtRaw = BigInt(Math.floor(amtHuman * TOKEN_DECIMALS));
+      if (amtRaw > BigInt(Math.floor(availableRaw))) throw new Error(`Exceeds available capacity (${fmtToken(availableRaw)} ${vault.coinSymbol})`);
+      const to = recipient.trim() || account.address;
+      const tx = buildMintFromCollateralTx(cv.objectId, vault.objectId, amtRaw, to);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setAmt(""); setRecipient("");
+      setTimeout(onTxSuccess, 3000);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally { setBusy(false); }
+  };
+
+  const iStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "0", color: "#fff", fontSize: "12px", padding: "6px 10px", outline: "none",
+    fontFamily: "monospace",
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        <input type="number" value={amt} onChange={e => setAmt(e.target.value)}
+          placeholder={`${vault.coinSymbol} to issue`} min="0"
+          style={{ ...iStyle, width: "140px", borderColor: "rgba(0,200,255,0.3)", color: "#00ccff" }} />
+        <input type="text" value={recipient} onChange={e => setRecipient(e.target.value)}
+          placeholder="Recipient (default: you)"
+          style={{ ...iStyle, flex: 1, minWidth: "180px" }} />
+        <button className="accent-button" onClick={handleIssue} disabled={busy || !amt}
+          style={{ background: "rgba(0,200,255,0.12)", borderColor: "#00ccff40", color: "#00ccff" }}>
+          {busy ? "…" : "Issue"}
+        </button>
+      </div>
+      {err && <div style={{ color: "#ff6432", fontSize: "11px" }}>⚠ {err}</div>}
     </div>
   );
 }
@@ -869,6 +926,23 @@ function CollateralVaultCard({
             </div>
             {depositErr && <div style={{ color: "#ff6432", fontSize: "11px", marginTop: "6px" }}>⚠ {depositErr}</div>}
           </div>
+
+          {/* Issue tokens against existing collateral */}
+          {cv && cv.collateralBalance > 0 && (
+            <div style={{
+              background: "rgba(255,255,255,0.02)", border: "1px solid rgba(0,200,255,0.15)",
+              borderRadius: "0", padding: "12px",
+            }}>
+              <div style={{ color: "#00ccff", fontSize: "12px", fontWeight: 600, marginBottom: "4px" }}>
+                ✦ Issue Against Capacity
+              </div>
+              <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "8px" }}>
+                Mint {vault.coinSymbol} using already-locked EVE collateral (no new deposit needed).
+                Available: {fmtToken(Math.max(0, cv.collateralBalance * cv.mintRatio - vault.totalSupply))} {vault.coinSymbol}
+              </div>
+              <IssueFromCapacityForm vault={vault} cv={cv} onTxSuccess={onTxSuccess} />
+            </div>
+          )}
 
           {/* Change mint ratio */}
           <div style={{

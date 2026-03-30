@@ -50,7 +50,7 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //
 // v2 deployed 2026-03-25 (Reapers_v2)
 export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
-export const CRADLEOS_PKG      = "0x6bd96c6255abbcd75c19565e1e39b6037a20916122a401ea2c381094815e3f32";
+export const CRADLEOS_PKG      = "0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce";
 //
 // ── ARCHIVED PACKAGE IDS (do NOT use) ─────────────────────────────────────────
 // v1 (2026-03-24 clean-slate):  0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4

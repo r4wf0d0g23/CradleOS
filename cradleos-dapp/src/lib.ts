@@ -3075,6 +3075,28 @@ export function buildDepositCollateralTx(cvId: string, coinObjectIds: string[], 
   return tx;
 }
 
+/** Mint tribe tokens against already-locked collateral (no new EVE deposit needed).
+ *  amount is in raw tribe token units (9 decimals). */
+export function buildMintFromCollateralTx(
+  cvId: string,
+  tribeVaultId: string,
+  amountRaw: bigint,
+  recipient: string,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::collateral_vault::mint_from_collateral_entry`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [
+      tx.object(cvId),
+      tx.object(tribeVaultId),
+      tx.pure.u64(amountRaw),
+      tx.pure.address(recipient),
+    ],
+  });
+  return tx;
+}
+
 /** Founder accounting reset — zeroes total_minted and total_redeemed when supply is 0. */
 export function buildResetAccountingTx(cvId: string, tribeVaultId: string): Transaction {
   const tx = new Transaction();
