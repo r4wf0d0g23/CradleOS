@@ -666,7 +666,9 @@ function CollateralVaultCard({
   const mintEveRaw = parseFloat(mintEveAmt) || 0;
   const mintedTokens = Math.floor(mintEveRaw * cv.mintRatio);
   const redeemAmt_ = parseInt(redeemAmt, 10) || 0;
-  const redeemEveOut = cv.mintRatio > 0 ? (redeemAmt_ / cv.mintRatio).toFixed(6) : "0";
+  // redeemAmt_ is in raw token units (9 decimals). Convert to human units before dividing by mintRatio.
+  const redeemAmtHuman = redeemAmt_ / 1e9;
+  const redeemEveOut = cv.mintRatio > 0 ? (redeemAmtHuman / cv.mintRatio).toFixed(6) : "0";
 
   return (
     <div style={cardStyle}>
