@@ -1366,17 +1366,45 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           parsedAction = { type: "CONTRACT_CALL", label: "Bind All Turrets", description: "Delegate all your turrets and gates to the tribe defense policy", contract: "delegate_all_turrets", params: {} } as KeeperAction;
         }
 
+        // Helper: find a structure from the context by matching user message keywords
+        const findStructureFromUserMsg = (msg: string) => {
+          const structs = ctx?.structures ?? [];
+          if (!structs.length) return null;
+          // Direct objectId mention
+          const idMatch = msg.match(/0x[a-f0-9]{10,}/i);
+          if (idMatch) return structs.find(s => (s as {kind: string; objectId: string; name?: string}).objectId.toLowerCase() === idMatch[0].toLowerCase()) ?? null;
+          // Match by kind name (storage unit, ssu, node, gate, turret, assembly)
+          const kindMap: Record<string, string> = {
+            "storage unit": "StorageUnit", "ssu": "StorageUnit", "heavy ssu": "StorageUnit", "light ssu": "StorageUnit",
+            "network node": "NetworkNode", "node": "NetworkNode",
+            "gate": "Gate", "smart gate": "Gate",
+            "turret": "Turret", "smart turret": "Turret",
+            "assembly": "Assembly",
+          };
+          for (const [kw, kind] of Object.entries(kindMap)) {
+            if (msg.toLowerCase().includes(kw)) {
+              return structs.find(s => s.kind === kind) ?? null;
+            }
+          }
+          // Match by display name
+          return structs.find(s => s.name && msg.toLowerCase().includes(s.name.toLowerCase())) ?? null;
+        };
+
         // Online structure(s)
         if (!parsedAction && (/\bonline\b/i.test(lastUserMsg) || /\bbring.*online\b/i.test(lastUserMsg) || /\bpower.*on\b/i.test(lastUserMsg))) {
-          // Check if user asked about a specific structure or all
           const wantsAll = /\b(all|everything)\b/i.test(lastUserMsg);
           if (wantsAll) {
             parsedAction = { type: "CONTRACT_CALL", label: "Online All Structures", description: "Bring all your deployed structures online", contract: "online_all", params: {} } as KeeperAction;
           } else {
-            // Try to find a specific structure ID from the Keeper's response
-            const idMatch = lc.match(/id:(0x[a-f0-9]+)/);
-            if (idMatch) {
-              parsedAction = { type: "CONTRACT_CALL", label: "Online Structure", description: "Bring this structure online", contract: "online_structure", params: { structureId: idMatch[1] } } as KeeperAction;
+            // Try ID from Keeper response, then match from user message, then fallback online_all
+            const idMatch = (lc + " " + lastUserMsg).match(/id:(0x[a-f0-9]+)/);
+            const matchedStruct = idMatch
+              ? { objectId: idMatch[1] }
+              : findStructureFromUserMsg(lastUserMsg);
+            if (matchedStruct) {
+              parsedAction = { type: "CONTRACT_CALL", label: "Online Structure", description: "Bring this structure online", contract: "online_structure", params: { structureId: matchedStruct.objectId } } as KeeperAction;
+            } else {
+              parsedAction = { type: "CONTRACT_CALL", label: "Online All Structures", description: "Bring all your deployed structures online", contract: "online_all", params: {} } as KeeperAction;
             }
           }
         }
@@ -1387,9 +1415,14 @@ CRITICAL: Respond ONLY with your final answer. No reasoning steps, no preamble. 
           if (wantsAll) {
             parsedAction = { type: "CONTRACT_CALL", label: "Offline All Structures", description: "Take all your deployed structures offline", contract: "offline_all", params: {} } as KeeperAction;
           } else {
-            const idMatch = lc.match(/id:(0x[a-f0-9]+)/);
-            if (idMatch) {
-              parsedAction = { type: "CONTRACT_CALL", label: "Offline Structure", description: "Take this structure offline", contract: "offline_structure", params: { structureId: idMatch[1] } } as KeeperAction;
+            const idMatch = (lc + " " + lastUserMsg).match(/id:(0x[a-f0-9]+)/);
+            const matchedStruct = idMatch
+              ? { objectId: idMatch[1] }
+              : findStructureFromUserMsg(lastUserMsg);
+            if (matchedStruct) {
+              parsedAction = { type: "CONTRACT_CALL", label: "Offline Structure", description: "Take this structure offline", contract: "offline_structure", params: { structureId: matchedStruct.objectId } } as KeeperAction;
+            } else {
+              parsedAction = { type: "CONTRACT_CALL", label: "Offline All Structures", description: "Take all your deployed structures offline", contract: "offline_all", params: {} } as KeeperAction;
             }
           }
         }
@@ -2246,7 +2279,7 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
         return await buildBatchOfflineTransaction(online, charInfo.characterId);
       }
       const structureId = String(p.structureId ?? "");
-      const target = allStructures.find(s => s.objectId === structureId);
+      const target = allStructures.find(s => (s as {kind: string; objectId: string; name?: string}).objectId === structureId);
       if (!target) throw new Error(`Structure ${structureId} not found`);
       if (action.contract === "online_structure") {
         return await buildStructureOnlineTransaction(target, charInfo.characterId);
