@@ -645,7 +645,9 @@ function CollateralVaultCard({
     if (!account || !cv) return;
     setRedeemBusy(true); setRedeemErr(null);
     try {
-      const amt = parseInt(redeemAmt, 10);
+      const amtHuman = parseFloat(redeemAmt);
+      if (!amtHuman || amtHuman <= 0) throw new Error("Invalid amount");
+      const amt = Math.floor(amtHuman * TOKEN_DECIMALS); // convert human → raw for on-chain
       if (!amt || amt < 1) throw new Error("Invalid amount");
       const tx = buildRedeemTx(cv.objectId, vault.objectId, amt);
       const signer = new CurrentAccountSigner(dAppKit);
@@ -788,9 +790,9 @@ function CollateralVaultCard({
   const floorPrice = cv.mintRatio > 0 ? (1 / cv.mintRatio).toFixed(6) : "0";
   const mintEveRaw = parseFloat(mintEveAmt) || 0;
   const mintedTokens = Math.floor(mintEveRaw * cv.mintRatio);
-  const redeemAmt_ = parseInt(redeemAmt, 10) || 0;
-  // redeemAmt_ is in raw token units (9 decimals). Convert to human units before dividing by mintRatio.
-  const redeemAmtHuman = redeemAmt_ / 1e9;
+  // User inputs human amount (e.g. 100 DEMO). Raw = human * 1e9.
+  const redeemAmtHuman = parseFloat(redeemAmt) || 0;
+  const redeemAmt_ = Math.floor(redeemAmtHuman * TOKEN_DECIMALS);
   const redeemEveOut = cv.mintRatio > 0 ? (redeemAmtHuman / cv.mintRatio).toFixed(6) : "0";
 
   return (
@@ -996,7 +998,7 @@ function CollateralVaultCard({
         </div>
         {redeemAmt_ > 0 && (
           <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
-            Burning {fmtToken(redeemAmt_)} {vault.coinSymbol} → receiving {redeemEveOut} EVE
+            Burning {redeemAmtHuman.toLocaleString()} {vault.coinSymbol} → receiving {redeemEveOut} EVE
           </div>
         )}
         <div style={{ display: "flex", gap: "8px" }}>
@@ -1016,7 +1018,7 @@ function CollateralVaultCard({
           <button
             className="accent-button"
             onClick={handleRedeem}
-            disabled={redeemBusy || !redeemAmt || parseInt(redeemAmt, 10) < 1}
+            disabled={redeemBusy || !redeemAmt || parseFloat(redeemAmt) <= 0}
             style={{ background: "rgba(100,180,255,0.10)", borderColor: "#64b4ff40", color: "#64b4ff" }}
           >
             {redeemBusy ? "…" : "Redeem"}
