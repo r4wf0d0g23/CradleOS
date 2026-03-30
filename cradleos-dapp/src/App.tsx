@@ -30,6 +30,7 @@ import { DashboardPanel } from "./components/DashboardPanel";
 import { LineageWarPanel } from "./components/LineageWarPanel";
 import { LinksPanel } from "./components/LinksPanel";
 import { IndustryPanel } from "./components/IndustryPanel";
+import KeeperOrb from "./components/KeeperOrb";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 
 // ── Server status dots ────────────────────────────────────────────────────────
@@ -719,28 +720,14 @@ function AppInner() {
             <img src="cradleos-logo.png" alt="CradleOS"
               style={{ height:"clamp(56px,7vw,88px)", width:"auto", imageRendering:"auto", filter:"drop-shadow(0 0 18px rgba(255,71,0,0.7)) drop-shadow(0 0 6px rgba(255,71,0,0.4))" }} />
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <button onClick={() => setActiveTab("keeper")} title="Open Keeper"
-                style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
-                  fontSize: "clamp(18px, 2.5vw, 28px)", opacity: 0.18,
-                  filter: "drop-shadow(0 0 4px rgba(167,139,250,0.4))",
-                  transition: "opacity 0.3s, filter 0.3s", lineHeight: 1 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.55"; (e.currentTarget as HTMLButtonElement).style.filter = "drop-shadow(0 0 8px rgba(167,139,250,0.7))"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.18"; (e.currentTarget as HTMLButtonElement).style.filter = "drop-shadow(0 0 4px rgba(167,139,250,0.4))"; }}
-              >🔮</button>
+              <KeeperOrb size={48} onClick={() => setActiveTab("keeper")} title="Open Keeper" />
               <h1 style={{
                 fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 800, letterSpacing: "0.06em",
                 color: "#FF4700", margin: 0,
               }}>
                 C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS <span style={{ fontSize: "0.4em", verticalAlign: "super", opacity: 0.6, letterSpacing: "0.08em" }}>v2</span>
               </h1>
-              <button onClick={() => setActiveTab("keeper")} title="Open Keeper"
-                style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
-                  fontSize: "clamp(18px, 2.5vw, 28px)", opacity: 0.18,
-                  filter: "drop-shadow(0 0 4px rgba(167,139,250,0.4))",
-                  transition: "opacity 0.3s, filter 0.3s", lineHeight: 1 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.55"; (e.currentTarget as HTMLButtonElement).style.filter = "drop-shadow(0 0 8px rgba(167,139,250,0.7))"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.18"; (e.currentTarget as HTMLButtonElement).style.filter = "drop-shadow(0 0 4px rgba(167,139,250,0.4))"; }}
-              >🔮</button>
+              <KeeperOrb size={48} onClick={() => setActiveTab("keeper")} title="Open Keeper" />
             </div>
             <button
               onClick={() => window.location.reload()}
