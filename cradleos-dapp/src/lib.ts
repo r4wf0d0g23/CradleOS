@@ -18,6 +18,7 @@ import {
   SUI_TESTNET_RPC,
   WORLD_API,
   WORLD_PKG,
+  WORLD_PKG_UTOPIA_V1,
   STRUCTURE_TYPES,
   type StructureKind,
 } from "./constants";
@@ -384,8 +385,8 @@ export type CharacterInfo = {
   tribeId: number;
 };
 
-export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
-  // Primary: query PlayerProfile owned object (works on Utopia + Stillness — no event scanning needed)
+/** Try to find a PlayerProfile owned by walletAddress for a given world package. */
+async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Promise<CharacterInfo | null> {
   const ppRes = await fetch(SUI_TESTNET_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -394,7 +395,7 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
       method: "suix_getOwnedObjects",
       params: [
         walletAddress,
-        { filter: { StructType: `${WORLD_PKG}::character::PlayerProfile` }, options: { showContent: true } },
+        { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showContent: true } },
         null, 5,
       ],
     }),
@@ -403,45 +404,56 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
     result: { data: Array<{ data: { objectId: string; content: { fields: { character_id: string } } } }> }
   };
   const pp = ppJson.result?.data?.[0];
-  if (pp?.data?.content?.fields?.character_id) {
-    const charId = pp.data.content.fields.character_id;
-    // Fetch tribe_id from the Character object
-    const charFields = await rpcGetObject(charId);
-    const tribeId = numish(charFields["tribe_id"]) ?? 0;
-    return { characterId: charId, tribeId };
-  }
+  if (!pp?.data?.content?.fields?.character_id) return null;
+  const charId = pp.data.content.fields.character_id;
+  const charFields = await rpcGetObject(charId);
+  const tribeId = numish(charFields["tribe_id"]) ?? 0;
+  return { characterId: charId, tribeId };
+}
 
-  // Fallback: scan CharacterCreatedEvent (Utopia only — Stillness uses sponsored tx with different address)
-  let cursor: string | null = null;
-  do {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1,
-        method: "suix_queryEvents",
-        params: [
-          { MoveEventType: `${WORLD_PKG}::character::CharacterCreatedEvent` },
-          cursor, 50, false,
-        ],
-      }),
-    });
-    const json = await res.json() as {
-      result: {
-        data: Array<{ parsedJson: { character_address: string; character_id: string; tribe_id: string | number } }>;
-        hasNextPage: boolean;
-        nextCursor: string | null;
-      }
-    };
-    const match = json.result.data.find(
-      e => e.parsedJson.character_address.toLowerCase() === walletAddress.toLowerCase()
-    );
-    if (match) return {
-      characterId: match.parsedJson.character_id,
-      tribeId: Number(match.parsedJson.tribe_id),
-    };
-    cursor = json.result.hasNextPage ? json.result.nextCursor : null;
-  } while (cursor);
+export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
+  // Primary: query PlayerProfile owned object — try BOTH world package versions (v2 then v1)
+  // Characters created before the v0.0.21 upgrade have PlayerProfiles from the v1 package.
+  const current = await findPlayerProfileForPkg(walletAddress, WORLD_PKG);
+  if (current) return current;
+
+  // Fallback to v1 Utopia package (characters created before world-contracts v0.0.21 upgrade)
+  const v1 = await findPlayerProfileForPkg(walletAddress, WORLD_PKG_UTOPIA_V1);
+  if (v1) return v1;
+
+  // Last resort: scan CharacterCreatedEvent for both packages
+  for (const pkg of [WORLD_PKG, WORLD_PKG_UTOPIA_V1]) {
+    let cursor: string | null = null;
+    do {
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "suix_queryEvents",
+          params: [
+            { MoveEventType: `${pkg}::character::CharacterCreatedEvent` },
+            cursor, 50, false,
+          ],
+        }),
+      });
+      const json = await res.json() as {
+        result: {
+          data: Array<{ parsedJson: { character_address: string; character_id: string; tribe_id: string | number } }>;
+          hasNextPage: boolean;
+          nextCursor: string | null;
+        }
+      };
+      const match = json.result?.data?.find(
+        e => e.parsedJson.character_address.toLowerCase() === walletAddress.toLowerCase()
+      );
+      if (match) return {
+        characterId: match.parsedJson.character_id,
+        tribeId: Number(match.parsedJson.tribe_id),
+      };
+      cursor = json.result?.hasNextPage ? json.result.nextCursor : null;
+    } while (cursor);
+  }
   return null;
 }
 

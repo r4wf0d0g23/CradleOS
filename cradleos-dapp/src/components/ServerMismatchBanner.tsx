@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import {
   SERVER_ENV, SERVER_LABEL,
-  WORLD_PKG_UTOPIA, WORLD_PKG_STILLNESS,
+  WORLD_PKG_UTOPIA, WORLD_PKG_UTOPIA_V1, WORLD_PKG_STILLNESS,
   SUI_TESTNET_RPC,
   switchServerAndReload,
 } from "../constants";
@@ -16,7 +16,6 @@ type MismatchState = "checking" | "ok" | "wrong-server" | "not-found" | "error";
 
 const OTHER_ENV: "stillness" | "utopia" = SERVER_ENV === "stillness" ? "utopia" : "stillness";
 const OTHER_SERVER_LABEL = SERVER_ENV === "stillness" ? "UTOPIA (Hackathon)" : "STILLNESS (Live)";
-const OTHER_WORLD_PKG    = SERVER_ENV === "stillness" ? WORLD_PKG_UTOPIA : WORLD_PKG_STILLNESS;
 
 /** Check if a wallet owns a PlayerProfile from a given world package. */
 async function hasPlayerProfile(walletAddress: string, pkg: string): Promise<boolean> {
@@ -67,21 +66,29 @@ async function hasCharacterEvent(walletAddress: string, pkg: string): Promise<bo
 async function checkCharacterServer(walletAddress: string): Promise<MismatchState> {
   try {
     const { WORLD_PKG } = await import("../constants");
-    // Try PlayerProfile first (fast), then fall back to event scan (covers zkLogin/sponsored chars)
-    const [profileThis, profileOther] = await Promise.all([
-      hasPlayerProfile(walletAddress, WORLD_PKG),
-      hasPlayerProfile(walletAddress, OTHER_WORLD_PKG),
-    ]);
-    if (profileThis)  return "ok";
-    if (profileOther) return "wrong-server";
+    // Check current + v1 packages for this server, and other server's packages
+    // Characters created before world-contracts v0.0.21 have PlayerProfiles from the v1 package
+    const thisPackages  = SERVER_ENV === "utopia"
+      ? [WORLD_PKG, WORLD_PKG_UTOPIA_V1]
+      : [WORLD_PKG];
+    const otherPackages = SERVER_ENV === "utopia"
+      ? [WORLD_PKG_STILLNESS]
+      : [WORLD_PKG_UTOPIA, WORLD_PKG_UTOPIA_V1];
 
-    // Fallback: scan events (covers characters where PlayerProfile went to a different address)
-    const [eventThis, eventOther] = await Promise.all([
-      hasCharacterEvent(walletAddress, WORLD_PKG),
-      hasCharacterEvent(walletAddress, OTHER_WORLD_PKG),
-    ]);
-    if (eventThis)  return "ok";
-    if (eventOther) return "wrong-server";
+    for (const pkg of thisPackages) {
+      if (await hasPlayerProfile(walletAddress, pkg)) return "ok";
+    }
+    for (const pkg of otherPackages) {
+      if (await hasPlayerProfile(walletAddress, pkg)) return "wrong-server";
+    }
+
+    // Fallback: event scan
+    for (const pkg of thisPackages) {
+      if (await hasCharacterEvent(walletAddress, pkg)) return "ok";
+    }
+    for (const pkg of otherPackages) {
+      if (await hasCharacterEvent(walletAddress, pkg)) return "wrong-server";
+    }
 
     return "not-found";
   } catch {
