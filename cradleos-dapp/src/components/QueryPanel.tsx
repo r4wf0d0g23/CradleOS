@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
+import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
 import { numish } from "../lib";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -80,7 +80,14 @@ async function fetchCharactersByPkg(charType: string): Promise<CharacterResult[]
 }
 
 async function fetchAllCharacters(): Promise<CharacterResult[]> {
-  return fetchCharactersByPkg(`${WORLD_PKG}::character::Character`);
+  // Fetch from both world pkg versions — characters created before v0.0.21 are typed against v1
+  const [v2, v1] = await Promise.all([
+    fetchCharactersByPkg(`${WORLD_PKG}::character::Character`),
+    fetchCharactersByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`),
+  ]);
+  // Deduplicate by objectId
+  const seen = new Set<string>();
+  return [...v2, ...v1].filter(c => { if (seen.has(c.objectId)) return false; seen.add(c.objectId); return true; });
 }
 
 async function fetchAllTribes(): Promise<TribeResult[]> {
