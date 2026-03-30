@@ -245,13 +245,15 @@ function FaucetButton({ address, compact }: { address: string; compact: boolean 
       } else {
         const text = await res.text().catch(() => "");
         if (res.status === 429) {
-          setState("err");
-          setMsg("Rate limited — try again later");
+          // Rate limited — fall back to web faucet so the button is always useful
+          window.open(`https://faucet.sui.io/?network=testnet&address=${encodeURIComponent(address)}`, "_blank");
+          setState("idle");
+          setMsg("");
         } else {
           setState("err");
           setMsg(text.slice(0, 60) || `HTTP ${res.status}`);
+          setTimeout(() => { setState("idle"); setMsg(""); }, 5000);
         }
-        setTimeout(() => { setState("idle"); setMsg(""); }, 5000);
       }
     } catch {
       // CORS or network error — fall back to opening the web faucet
@@ -272,7 +274,7 @@ function FaucetButton({ address, compact }: { address: string; compact: boolean 
       <button
         onClick={requestGas}
         disabled={state === "loading"}
-        title="Request testnet SUI gas from faucet"
+        title="Request testnet SUI gas — opens web faucet if rate limited"
         style={{
           padding: compact ? "4px 8px" : "5px 12px",
           fontSize: compact ? "8px" : "10px",
