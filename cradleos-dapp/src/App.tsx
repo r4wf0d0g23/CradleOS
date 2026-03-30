@@ -314,7 +314,7 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war", "industry"]);
-  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "intel"); // default to intel — visible without wallet
+  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "war"); // default to war — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
   // Dev env toggle — only shown in dev mode
