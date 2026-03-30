@@ -964,6 +964,8 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
             const isNodeFocused = focused?.objectId === node.objectId;
             const totalEnergyCost = children.reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
             const onlineEnergyCost = children.filter(c => c.isOnline).reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
+            // Node must be online + have fuel to bring children online (ENotProducing otherwise)
+            const nodeCanPowerChildren = node.isOnline && (node.fuelLevelPct ?? 0) > 0;
 
             return (
               <div key={node.objectId} style={{
@@ -1120,9 +1122,13 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                           {/* Action buttons */}
                           <div style={{ display: "flex", gap: 1, marginTop: 4 }}>
                             <button
-                              style={btnStyle(child.isOnline ? "rgba(255,68,68,0.15)" : "rgba(0,255,150,0.15)", child.isOnline ? "#ff4444" : "#00ff96")}
+                              disabled={!child.isOnline && !nodeCanPowerChildren}
+                              style={{
+                                ...btnStyle(child.isOnline ? "rgba(255,68,68,0.15)" : "rgba(0,255,150,0.15)", child.isOnline ? "#ff4444" : "#00ff96"),
+                                ...(!child.isOnline && !nodeCanPowerChildren ? { opacity: 0.35, cursor: "not-allowed" } : {}),
+                              }}
                               onClick={(e) => { e.stopPropagation(); child.isOnline ? handleOffline(child) : handleOnline(child); }}
-                              title={child.isOnline ? "Take offline" : "Bring online"}
+                              title={!child.isOnline && !nodeCanPowerChildren ? "Node must be online with fuel before structures can power up" : (child.isOnline ? "Take offline" : "Bring online")}
                             >
                               {child.isOnline ? "OFF" : "ON"}
                             </button>

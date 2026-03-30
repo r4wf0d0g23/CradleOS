@@ -85,7 +85,10 @@ export const CRDL_COIN_TYPE = EVE_COIN_TYPE;
 export const RAW_CHARACTER_ID = "0x5ef314c39748d5027fe4aef711f92497a4ea9618886f107916f2df0f16034c1c";
 export const RAW_NETWORK_NODE_ID = "0xbce555aedb0c1322232c4243ce62cfc6210293cb69be6b4fe212ab9b4ba49fd7";
 export const RAW_NODE_OWNER_CAP = "0x1e69832d1977a6963ea93b4cf2feeb7e432cde4ae463ff2989f35de3c78765f2";
-export const FUEL_CONFIG = "0x0f354c803af170ac0d1ac9068625c6321996b3013dc67bdaf14d06f93fa1671f";
+// FuelConfig per server — used in network_node::offline tx
+export const FUEL_CONFIG_STILLNESS = "0x4fcf28a9be750d242bc5d2f324429e31176faecb5b84f0af7dff3a2a6e243550";
+export const FUEL_CONFIG_UTOPIA    = "0x0f354c803af170ac0d1ac9068625c6321996b3013dc67bdaf14d06f93fa1671f";
+export const FUEL_CONFIG = _serverEnv === "stillness" ? FUEL_CONFIG_STILLNESS : FUEL_CONFIG_UTOPIA;
 // EnergyConfig for Stillness world package (0x28b497...)
 export const ENERGY_CONFIG_STILLNESS = "0xd77693d0df5656d68b1b833e2a23cc81eb3875d8d767e7bd249adde82bdbc952";
 export const ENERGY_CONFIG_STILLNESS_ISV = 791126223;
