@@ -203,6 +203,16 @@ function energyConfigRef(tx: Transaction) {
   });
 }
 
+/**
+ * Extract the world package ID from a structure's typeFull string.
+ * e.g. "0xd12a70c7...::network_node::NetworkNode" → "0xd12a70c7..."
+ * Falls back to WORLD_PKG if parsing fails.
+ */
+function worldPkgFromType(typeFull: string): string {
+  const match = typeFull.match(/^(0x[0-9a-fA-F]+)::/);
+  return match ? match[1] : WORLD_PKG;
+}
+
 export function buildBringOnlineTransaction() {
   const tx = new Transaction();
 
@@ -699,41 +709,42 @@ export function buildBatchOnlineTransaction(
   }
   const tx = new Transaction();
   for (const s of structures) {
+    const wpkg = worldPkgFromType(s.typeFull);
     const [cap, receipt] = tx.moveCall({
-      target: `${WORLD_PKG}::character::borrow_owner_cap`,
+      target: `${wpkg}::character::borrow_owner_cap`,
       typeArguments: [s.typeFull],
       arguments: [tx.object(characterId), tx.object(s.ownerCapId)],
     });
 
     if (s.kind === "NetworkNode") {
       tx.moveCall({
-        target: `${WORLD_PKG}::network_node::online`,
+        target: `${wpkg}::network_node::online`,
         arguments: [tx.object(s.objectId), cap, tx.object(CLOCK)],
       });
     } else if (s.kind === "Gate") {
       tx.moveCall({
-        target: `${WORLD_PKG}::gate::online`,
+        target: `${wpkg}::gate::online`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Assembly") {
       tx.moveCall({
-        target: `${WORLD_PKG}::assembly::online`,
+        target: `${wpkg}::assembly::online`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Turret") {
       tx.moveCall({
-        target: `${WORLD_PKG}::turret::online`,
+        target: `${wpkg}::turret::online`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "StorageUnit") {
       tx.moveCall({
-        target: `${WORLD_PKG}::storage_unit::online`,
+        target: `${wpkg}::storage_unit::online`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     }
 
     tx.moveCall({
-      target: `${WORLD_PKG}::character::return_owner_cap`,
+      target: `${wpkg}::character::return_owner_cap`,
       typeArguments: [s.typeFull],
       arguments: [tx.object(characterId), cap, receipt],
     });
@@ -752,8 +763,9 @@ export async function buildBatchOfflineTransaction(
   const tx = new Transaction();
 
   for (const s of structures) {
+    const wpkg = worldPkgFromType(s.typeFull);
     const [cap, receipt] = tx.moveCall({
-      target: `${WORLD_PKG}::character::borrow_owner_cap`,
+      target: `${wpkg}::character::borrow_owner_cap`,
       typeArguments: [s.typeFull],
       arguments: [tx.object(characterId), tx.object(s.ownerCapId)],
     });
@@ -772,47 +784,48 @@ export async function buildBatchOfflineTransaction(
         })
       );
       let hotPotato = tx.moveCall({
-        target: `${WORLD_PKG}::network_node::offline`,
+        target: `${wpkg}::network_node::offline`,
         arguments: [tx.object(s.objectId), tx.object(FUEL_CONFIG), cap, tx.object(CLOCK)],
       })[0];
       for (const { id, type } of assemblyMeta) {
+        const cwpkg = worldPkgFromType(type);
         if (isGateType(type)) {
           hotPotato = tx.moveCall({
-            target: `${WORLD_PKG}::gate::offline_connected_gate`,
+            target: `${cwpkg}::gate::offline_connected_gate`,
             arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
           })[0];
         } else if (isAssemblyType(type)) {
           hotPotato = tx.moveCall({
-            target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
+            target: `${cwpkg}::assembly::offline_connected_assembly`,
             arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
           })[0];
         }
       }
-      tx.moveCall({ target: `${WORLD_PKG}::network_node::destroy_offline_assemblies`, arguments: [hotPotato] });
+      tx.moveCall({ target: `${wpkg}::network_node::destroy_offline_assemblies`, arguments: [hotPotato] });
     } else if (s.kind === "Gate") {
       tx.moveCall({
-        target: `${WORLD_PKG}::gate::offline`,
+        target: `${wpkg}::gate::offline`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Assembly") {
       tx.moveCall({
-        target: `${WORLD_PKG}::assembly::offline`,
+        target: `${wpkg}::assembly::offline`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "Turret") {
       tx.moveCall({
-        target: `${WORLD_PKG}::turret::offline`,
+        target: `${wpkg}::turret::offline`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     } else if (s.kind === "StorageUnit") {
       tx.moveCall({
-        target: `${WORLD_PKG}::storage_unit::offline`,
+        target: `${wpkg}::storage_unit::offline`,
         arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
       });
     }
 
     tx.moveCall({
-      target: `${WORLD_PKG}::character::return_owner_cap`,
+      target: `${wpkg}::character::return_owner_cap`,
       typeArguments: [s.typeFull],
       arguments: [tx.object(characterId), cap, receipt],
     });
@@ -849,6 +862,9 @@ export async function buildStructureOnlineTransaction(
     throw new Error("Character ID not yet resolved — please wait a moment and try again.");
   }
 
+  // Derive the correct world pkg from the structure's type — handles v1 and v2 packages
+  const wpkg = worldPkgFromType(structure.typeFull);
+
   // Fetch shared versions if not already on the structure
   const structureISV = structure.initialSharedVersion
     ?? (await fetchInitialSharedVersion(structure.objectId));
@@ -858,7 +874,7 @@ export async function buildStructureOnlineTransaction(
   const tx = new Transaction();
 
   const [cap, receipt] = tx.moveCall({
-    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    target: `${wpkg}::character::borrow_owner_cap`,
     typeArguments: [structure.typeFull],
     arguments: [tx.object(characterId), tx.object(structure.ownerCapId)],
   });
@@ -873,33 +889,33 @@ export async function buildStructureOnlineTransaction(
 
   if (structure.kind === "NetworkNode") {
     tx.moveCall({
-      target: `${WORLD_PKG}::network_node::online`,
+      target: `${wpkg}::network_node::online`,
       arguments: [structRef, cap, tx.object(CLOCK)],
     });
   } else if (structure.kind === "Gate") {
     tx.moveCall({
-      target: `${WORLD_PKG}::gate::online`,
+      target: `${wpkg}::gate::online`,
       arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Assembly") {
     tx.moveCall({
-      target: `${WORLD_PKG}::assembly::online`,
+      target: `${wpkg}::assembly::online`,
       arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Turret") {
     tx.moveCall({
-      target: `${WORLD_PKG}::turret::online`,
+      target: `${wpkg}::turret::online`,
       arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "StorageUnit") {
     tx.moveCall({
-      target: `${WORLD_PKG}::storage_unit::online`,
+      target: `${wpkg}::storage_unit::online`,
       arguments: [structRef, energyRef!, energyConfigRef(tx), cap],
     });
   }
 
   tx.moveCall({
-    target: `${WORLD_PKG}::character::return_owner_cap`,
+    target: `${wpkg}::character::return_owner_cap`,
     typeArguments: [structure.typeFull],
     arguments: [tx.object(characterId), cap, receipt],
   });
@@ -914,10 +930,11 @@ export async function buildStructureOfflineTransaction(
   if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
     throw new Error("Character ID not yet resolved — please wait a moment and try again.");
   }
+  const wpkg = worldPkgFromType(structure.typeFull);
   const tx = new Transaction();
 
   const [cap, receipt] = tx.moveCall({
-    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    target: `${wpkg}::character::borrow_owner_cap`,
     typeArguments: [structure.typeFull],
     arguments: [tx.object(characterId), tx.object(structure.ownerCapId)],
   });
@@ -937,48 +954,49 @@ export async function buildStructureOfflineTransaction(
     );
 
     let hotPotato = tx.moveCall({
-      target: `${WORLD_PKG}::network_node::offline`,
+      target: `${wpkg}::network_node::offline`,
       arguments: [tx.object(structure.objectId), tx.object(FUEL_CONFIG), cap, tx.object(CLOCK)],
     })[0];
 
     for (const { id, type } of assemblyMeta) {
+      const connectedWpkg = worldPkgFromType(type);
       if (isGateType(type)) {
         hotPotato = tx.moveCall({
-          target: `${WORLD_PKG}::gate::offline_connected_gate`,
+          target: `${connectedWpkg}::gate::offline_connected_gate`,
           arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), energyConfigRef(tx)],
         })[0];
       } else if (isAssemblyType(type)) {
         hotPotato = tx.moveCall({
-          target: `${WORLD_PKG}::assembly::offline_connected_assembly`,
+          target: `${connectedWpkg}::assembly::offline_connected_assembly`,
           arguments: [tx.object(id), hotPotato, tx.object(structure.objectId), energyConfigRef(tx)],
         })[0];
       }
     }
-    tx.moveCall({ target: `${WORLD_PKG}::network_node::destroy_offline_assemblies`, arguments: [hotPotato] });
+    tx.moveCall({ target: `${wpkg}::network_node::destroy_offline_assemblies`, arguments: [hotPotato] });
   } else if (structure.kind === "Gate") {
     tx.moveCall({
-      target: `${WORLD_PKG}::gate::offline`,
+      target: `${wpkg}::gate::offline`,
       arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Assembly") {
     tx.moveCall({
-      target: `${WORLD_PKG}::assembly::offline`,
+      target: `${wpkg}::assembly::offline`,
       arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "Turret") {
     tx.moveCall({
-      target: `${WORLD_PKG}::turret::offline`,
+      target: `${wpkg}::turret::offline`,
       arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   } else if (structure.kind === "StorageUnit") {
     tx.moveCall({
-      target: `${WORLD_PKG}::storage_unit::offline`,
+      target: `${wpkg}::storage_unit::offline`,
       arguments: [tx.object(structure.objectId), tx.object(structure.energySourceId!), energyConfigRef(tx), cap],
     });
   }
 
   tx.moveCall({
-    target: `${WORLD_PKG}::character::return_owner_cap`,
+    target: `${wpkg}::character::return_owner_cap`,
     typeArguments: [structure.typeFull],
     arguments: [tx.object(characterId), cap, receipt],
   });
