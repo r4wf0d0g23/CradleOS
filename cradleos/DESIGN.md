@@ -2,7 +2,7 @@
 
 **Project:** CradleOS — On-chain civilization infrastructure for EVE Frontier  
 **Network:** Sui Testnet  
-**Status:** Live — unified v5 package deployment  
+**Status:** Live — unified v9 package deployment  
 **Hackathon:** EVE Frontier × Sui 2026 · March 11–31
 
 ---
@@ -30,7 +30,7 @@ entire system.
 - **Package:** CradleOS
 - **Chain:** Sui testnet
 - **Chain ID:** `4c78adac`
-- **Version:** v5
+- **Version:** v9
 - **Edition:** Move 2024
 - **Dependency:** EVE Frontier world-contracts
 - **Code size:** 24 modules, 6,533 lines
@@ -38,7 +38,7 @@ entire system.
 ### Current On-Chain Status
 
 - **Published-at:**
-  `0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4`
+  `0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce`
 - **Original-id:**
   `0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3`
 - **UpgradeCap:**

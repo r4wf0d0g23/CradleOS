@@ -14,7 +14,7 @@
 
 CradleOS is a unified **Sui Move package for running a tribe, corporation, and settlement
 stack inside EVE Frontier**. It is not a concept repo and not a thin demo: the current
-package contains **24 Move modules**, **6,533 lines of code**, a live **v5 deployment on
+package contains **24 Move modules**, **6,533 lines of code**, a live **v9 deployment on
 Sui testnet**, and a full dApp that also runs **inside the EVE Frontier in-game browser**.
 
 At a high level, CradleOS turns the social, economic, defensive, and operational layer of a
@@ -37,7 +37,7 @@ reactive dApp for both web and in-game use.
 - **Package:** CradleOS
 - **Chain:** Sui testnet
 - **Chain ID:** `4c78adac`
-- **Version:** v5
+- **Version:** v9
 - **Edition:** Move 2024
 - **Dependency:** EVE Frontier world-contracts
   (`../world-contracts/contracts/world`)
@@ -135,7 +135,7 @@ sui client upgrade --gas-budget 500000000 --skip-dependency-verification \
 +----------------------+      +-----------+------------+      +----------------------+
 |  EVE Frontier Game   |<---->|     CradleOS Move      |<---->|  World Contracts     |
 |  In-Game Browser     |      |   24-module package    |      |  Character / Gate /  |
-|  metadata URL loads  |      |   on Sui testnet v5    |      |  Turret / Storage /  |
+|  metadata URL loads  |      |   on Sui testnet v9    |      |  Turret / Storage /  |
 |  dApp with wallet    |      |                        |      |  NetworkNode         |
 +----------+-----------+      +-----------+------------+      +----------+-----------+
            ^                              |                              ^
@@ -191,7 +191,7 @@ sui client upgrade --gas-budget 500000000 --skip-dependency-verification \
 CradleOS is currently deployed on **Sui testnet**.
 
 - **Published-at:**
-  `0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4`
+  `0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce`
 - **Original-id:**
   `0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3`
 - **UpgradeCap:**

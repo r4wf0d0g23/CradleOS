@@ -162,7 +162,8 @@ function useVerifierData() {
 }
 
 function useSystemInfos(systemIds: number[]) {
-  const [infos, setInfos] = useState<Map<number, SystemInfo>>(new Map());
+  // Map value: SystemInfo = resolved, null = fetch failed, absent key = pending
+  const [infos, setInfos] = useState<Map<number, SystemInfo | null>>(new Map());
   const fetchedRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
@@ -188,6 +189,9 @@ function useSystemInfos(systemIds: number[]) {
               regionId: sys.regionId,
               constellationId: sys.constellationId,
             });
+          } else {
+            // Mark failed fetch explicitly so callers can distinguish from pending
+            next.set(toFetch[i], null);
           }
         });
         return next;
@@ -288,7 +292,7 @@ function SystemCard({
   systemId: number;
   tickMs: number;
   snapshot: Snapshot | null;
-  systemInfo: SystemInfo | null;
+  systemInfo: SystemInfo | null | undefined;
   typeInfos: Map<number, TypeInfo>;
   streak: number;
   tribeNames: Map<number, string>;
@@ -303,7 +307,9 @@ function SystemCard({
   const topScore = snapshot?.resolution?.topScore ?? 0;
   const secondScore = snapshot?.resolution?.secondScore ?? 0;
   const margin = snapshot?.resolution?.requiredMargin ?? 1;
-  const name = systemInfo?.name ?? `System ${systemId}`;
+  // systemInfo absent (undefined) = pending fetch; null = fetch failed; SystemInfo = resolved
+  const isPending = systemInfo === undefined;
+  const name = systemInfo?.name ?? (isPending ? `⏳ ${systemId}` : `[${systemId}]`);
 
   return (
     <div style={{
@@ -797,7 +803,7 @@ export function LineageWarPanel() {
                     systemId={systemId}
                     tickMs={tickMs}
                     snapshot={snap}
-                    systemInfo={systemInfos.get(systemId) ?? null}
+                    systemInfo={systemInfos.has(systemId) ? (systemInfos.get(systemId) ?? null) : undefined}
                     typeInfos={typeInfos}
                     streak={streakMap.get(systemId) ?? 0}
                     tribeNames={tribeNames}
@@ -828,7 +834,8 @@ export function LineageWarPanel() {
                 </thead>
                 <tbody>
                   {data.commitments.slice().reverse().slice(0, 10).map((c, i) => {
-                    const sysName = systemInfos.get(c.systemId)?.name ?? `System ${c.systemId}`;
+                    const _sysRaw = systemInfos.has(c.systemId) ? systemInfos.get(c.systemId) : undefined;
+                    const sysName = _sysRaw?.name ?? (_sysRaw === undefined ? `⏳ ${c.systemId}` : `[${c.systemId}]`);
                     const tribeName = c.controllerTribeId ? (tribeNames.get(c.controllerTribeId) ?? `Tribe ${c.controllerTribeId}`) : "—";
                     const stateCol = stateColor(c.state);
                     return (

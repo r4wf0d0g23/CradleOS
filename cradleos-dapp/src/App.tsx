@@ -31,6 +31,7 @@ import { LineageWarPanel } from "./components/LineageWarPanel";
 import { LinksPanel } from "./components/LinksPanel";
 import { IndustryPanel } from "./components/IndustryPanel";
 import KeeperOrb from "./components/KeeperOrb";
+import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 
 // ── Server status dots ────────────────────────────────────────────────────────
@@ -187,7 +188,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "links" | "industry";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "links" | "industry" | "flappy";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -200,6 +201,7 @@ const ROUTE_MAP: Record<string, Tab> = {
   "war":           "war",
   "links":         "links",
   "industry":      "industry",
+  "flappy":        "flappy",
   "bounties":      "bounties",
   "srp":           "srp",
   "cargo":         "cargo",
@@ -569,6 +571,10 @@ function AppInner() {
         "Time Summary shows total manufacturing time per level",
       ],
     },
+    flappy: {
+      title: "Flappy Frontier — dev only",
+      steps: ["Navigate your ship through Smart Gates", "Click or Space to warp", "Don't die"],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -583,7 +589,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", war: "war", links: "links", industry: "industry",
+      calendar: "calendar", keeper: "keeper", war: "war", links: "links", industry: "industry", flappy: "flappy",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -890,6 +896,7 @@ function AppInner() {
                   : tab === "war"        ? "⚔"
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
+                  : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
                   : tab === "inventory"  ? "Inventory"
@@ -914,6 +921,7 @@ function AppInner() {
                   : tab === "keeper"        ? "◆ Keeper"
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
+                  : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
           );
@@ -967,6 +975,7 @@ function AppInner() {
           {activeTab === "war"           && <div style={{ background: "transparent" }} className="content-panel"><LineageWarPanel /></div>}
           {activeTab === "links"         && <div style={{ background: "transparent" }} className="content-panel"><LinksPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
+          {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}
       {/* Hidden upgrade panel — access via #upgrade */}

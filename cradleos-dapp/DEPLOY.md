@@ -200,7 +200,7 @@ npx gh-pages -d dist-hackathon -r git@github.com:r4wf0d0g23/Reality_Anchor_Eve_F
 
 | Version | ID | Status | Notes |
 |---|---|---|---|
-| v5 (current) | published-at: `0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4` | ✅ ACTIVE | Turret ext + hostile chars, 2026-03-26 |
+| v9 (current) | published-at: `0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce` | ✅ ACTIVE | +drain/reset/mint_from_collateral ext + hostile chars, 2026-03-26 |
 | v5 (current) | original-id: `0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3` | ✅ ACTIVE | Used for events/types (never changes) |
 | v4 (upgrade origin) | `0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d` | ⚠️ ACTIVE for events | Origin ID for modules added in this upgrade: `collateral_vault`, `keeper_shrine`, `trustless_bounty`. Sui indexes their events/types under THIS ID, not the package original-id. See `CRADLEOS_UPGRADE_ORIGIN` in constants.ts. |
 | v3 (retired) | `0x2e51c867e32537f4b04b53e8efefde559d3b9be3ca430e39957de536173d32b0` | ❌ ARCHIVED | Reapers_v2, 2026-03-25 |

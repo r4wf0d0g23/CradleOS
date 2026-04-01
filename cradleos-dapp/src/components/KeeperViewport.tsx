@@ -355,7 +355,7 @@ export default function KeeperViewport({
                 child.visible = false;
                 const pos = child.geometry.attributes.position;
                 if (!pos) return;
-                const step = Math.max(1, Math.floor(pos.count / 5000));
+                const step = Math.max(1, Math.floor(pos.count / 8000));
                 const localPts: number[] = [];
                 for (let i = 0; i < pos.count; i += step) {
                   localPts.push(pos.getX(i), pos.getY(i), pos.getZ(i));
@@ -365,7 +365,7 @@ export default function KeeperViewport({
                 ptGeo.setAttribute("position", new THREE.Float32BufferAttribute(localPts, 3));
                 disposables.push(ptGeo);
                 const ptMat = new THREE.PointsMaterial({
-                  color: PRIMARY, size: 0.045, opacity: 0.9, transparent: true,
+                  color: PRIMARY, size: 0.025, opacity: 0.35, transparent: true,
                   sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
                 });
                 edgeMaterials.push(ptMat as unknown as THREE.LineBasicMaterial);
@@ -375,6 +375,19 @@ export default function KeeperViewport({
                 pts.rotation.copy(child.rotation);
                 pts.scale.copy(child.scale);
                 child.parent?.add(pts);
+                // Wireframe edges — gives structural siding/silhouette over the point cloud
+                const edgeGeo = new THREE.EdgesGeometry(child.geometry, 25);
+                disposables.push(edgeGeo);
+                const edgeMat = new THREE.LineBasicMaterial({
+                  color: PRIMARY, opacity: 0.18, transparent: true,
+                  blending: THREE.AdditiveBlending,
+                });
+                disposables.push(edgeMat);
+                const edges = new THREE.LineSegments(edgeGeo, edgeMat);
+                edges.position.copy(child.position);
+                edges.rotation.copy(child.rotation);
+                edges.scale.copy(child.scale);
+                child.parent?.add(edges);
               }
             });
             ship.add(model);
@@ -427,7 +440,7 @@ export default function KeeperViewport({
                 child.visible = false;
                 const pos = child.geometry.attributes.position;
                 if (!pos) return;
-                const step = Math.max(1, Math.floor(pos.count / 5000));
+                const step = Math.max(1, Math.floor(pos.count / 8000));
                 const localPts: number[] = [];
                 for (let i = 0; i < pos.count; i += step) {
                   localPts.push(pos.getX(i), pos.getY(i), pos.getZ(i));
@@ -437,7 +450,7 @@ export default function KeeperViewport({
                 ptGeo.setAttribute("position", new THREE.Float32BufferAttribute(localPts, 3));
                 disposables.push(ptGeo);
                 const ptMat = new THREE.PointsMaterial({
-                  color: AMBER, size: 0.045, opacity: 0.9, transparent: true,
+                  color: AMBER, size: 0.025, opacity: 0.35, transparent: true,
                   sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
                 });
                 edgeMaterials.push(ptMat as unknown as THREE.LineBasicMaterial);
@@ -446,6 +459,19 @@ export default function KeeperViewport({
                 pts.rotation.copy(child.rotation);
                 pts.scale.copy(child.scale);
                 child.parent?.add(pts);
+                // Wireframe edges for structural siding
+                const edgeGeo2 = new THREE.EdgesGeometry(child.geometry, 25);
+                disposables.push(edgeGeo2);
+                const edgeMat2 = new THREE.LineBasicMaterial({
+                  color: AMBER, opacity: 0.18, transparent: true,
+                  blending: THREE.AdditiveBlending,
+                });
+                disposables.push(edgeMat2);
+                const edges2 = new THREE.LineSegments(edgeGeo2, edgeMat2);
+                edges2.position.copy(child.position);
+                edges2.rotation.copy(child.rotation);
+                edges2.scale.copy(child.scale);
+                child.parent?.add(edges2);
               }
             });
             struct.add(model);

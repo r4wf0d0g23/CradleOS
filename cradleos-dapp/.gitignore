@@ -1,2 +1,17 @@
+# Build outputs
+dist/
 dist-ghpages/
-dist-hackathon
+dist-hackathon/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.DS_Store
+*.log
+.vscode/
