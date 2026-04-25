@@ -16,5 +16,22 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5173,
+    // Allow tailnet, LAN, and any *.ts.net hostname for dev preview from
+    // remote devices via Tailscale Serve.
+    allowedHosts: [
+      "agent-raw-jetson1",
+      "agent-raw-jetson1.local",
+      "agent-raw-jetson1.tail587192.ts.net",
+      ".tail587192.ts.net",
+      "localhost",
+    ],
+    // HMR over Tailscale HTTPS proxy: client connects to the proxy host:port
+    // (4173), but websocket protocol must be wss + same host.
+    hmr: {
+      host: "agent-raw-jetson1.tail587192.ts.net",
+      port: 4173,
+      protocol: "wss",
+      clientPort: 4173,
+    },
   },
 });
