@@ -1344,8 +1344,11 @@ export function KeeperPanel() {
 
       const displayText = rawDisplayText || content.replace(/%%ACTION%%[\s\S]*?%%END_ACTION%%/g, "").trim() || content;
 
-      // Collect non-null image URLs from RAG results
-      const ragImages = ragResults.map(r => r.imageUrl).filter((url): url is string => url !== null);
+      // Collect non-null image URLs from RAG results, deduped (the same ship
+      // can show up in multiple RAG hits with the same image URL).
+      const ragImages = Array.from(new Set(
+        ragResults.map(r => r.imageUrl).filter((url): url is string => url !== null)
+      ));
 
       setMessages(prev => [...prev, {
         role: "keeper",
@@ -2277,6 +2280,8 @@ function KeeperActionButton({ action, vaultId, structures, walletAddress }: { ac
 }
 
 function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: string }) {
+  // Lightbox state for click-to-maximize on RAG cite thumbnails
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
 
   if (msg.role === "user") {
@@ -2341,7 +2346,7 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
             ⚡ Community-sourced{msg.consensusCount && msg.consensusCount > 1 ? ` (confirmed by ${msg.consensusCount} pilots)` : ""}
           </div>
         )}
-        {/* RAG images — shown for ship/entity queries */}
+        {/* RAG images — shown for ship/entity queries (click to maximize) */}
         {msg.images && msg.images.length > 0 && msg.role === "keeper" && (
           <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "8px" }}>
             {msg.images.slice(0, 2).map((url, i) => (
@@ -2349,6 +2354,7 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
                 key={i}
                 src={url}
                 alt="keeper-rag"
+                title="Click to enlarge"
                 style={{
                   maxWidth: "160px",
                   maxHeight: "100px",
@@ -2356,6 +2362,17 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
                   border: "1px solid rgba(255,71,0,0.25)",
                   borderRadius: "2px",
                   background: "rgba(0,0,0,0.5)",
+                  cursor: "zoom-in",
+                  transition: "border-color 120ms ease, transform 120ms ease",
+                }}
+                onClick={() => setLightboxUrl(url)}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = "rgba(255,71,0,0.7)";
+                  e.currentTarget.style.transform = "scale(1.02)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = "rgba(255,71,0,0.25)";
+                  e.currentTarget.style.transform = "scale(1)";
                 }}
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
               />
@@ -2363,6 +2380,57 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
           </div>
         )}
       </div>
+      {/* Lightbox modal — fixed position, full-screen overlay */}
+      {lightboxUrl && (
+        <div
+          onClick={() => setLightboxUrl(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            cursor: "zoom-out",
+            padding: "24px",
+          }}
+        >
+          <img
+            src={lightboxUrl}
+            alt="keeper-rag-fullsize"
+            style={{
+              maxWidth: "95vw",
+              maxHeight: "95vh",
+              objectFit: "contain",
+              border: "1px solid rgba(255,71,0,0.5)",
+              borderRadius: "2px",
+              boxShadow: "0 0 40px rgba(255,71,0,0.3)",
+              background: "rgba(0,0,0,0.6)",
+            }}
+            onClick={e => e.stopPropagation()}
+          />
+          <button
+            onClick={e => { e.stopPropagation(); setLightboxUrl(null); }}
+            style={{
+              position: "absolute",
+              top: "16px",
+              right: "20px",
+              background: "rgba(0,0,0,0.7)",
+              border: "1px solid rgba(255,71,0,0.5)",
+              color: "#FF4700",
+              padding: "6px 12px",
+              fontSize: "14px",
+              fontFamily: "inherit",
+              cursor: "pointer",
+              borderRadius: "2px",
+              letterSpacing: "0.1em",
+            }}
+          >
+            ✕ CLOSE
+          </button>
+        </div>
+      )}
     </div>
   );
 }
