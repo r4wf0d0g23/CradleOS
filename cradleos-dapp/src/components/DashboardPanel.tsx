@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
@@ -765,7 +765,6 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
       const result = await sendSponsoredTx({
         txAction: SponsoredTransactionActions.LINK_SMART_GATE,
         assembly: assemblyObj,
-        chain: `sui:testnet` as `sui:${string}`,
       });
       setGateActionState({ gateId: sourceGate.objectId, status: `✓ Linked (tx: ${result.digest?.slice(0, 10)}…)` });
       setTimeout(() => { setGateActionState(null); onRefresh(); }, 3000);
@@ -792,7 +791,6 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
       const result = await sendSponsoredTx({
         txAction: SponsoredTransactionActions.UNLINK_SMART_GATE,
         assembly: assemblyObj,
-        chain: `sui:testnet` as `sui:${string}`,
       });
       setGateActionState({ gateId: gate.objectId, status: `✓ Unlinked (tx: ${result.digest?.slice(0, 10)}…)` });
       setTimeout(() => { setGateActionState(null); onRefresh(); }, 3000);
@@ -821,6 +819,10 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
   const [selectedSystem, setSelectedSystem] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [focused, setFocused] = useState<PlayerStructure | null>(null);
+  // Tracks whether we have already handled the "hidden-only" auto-jump for this
+  // mount so we do not fight the user if they manually navigate back to the
+  // systems overview after we redirected them.
+  const hiddenAutoJumpHandledRef = useRef(false);
 
   const allStructures = useMemo(() => groups.flatMap(g => g.structures), [groups]);
   const totalOnline = allStructures.filter(s => s.isOnline).length;
@@ -832,6 +834,34 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
     const id = s.gameItemId ?? s.objectId;
     window.open(`${EVE_DAPP_BASE}?itemId=${id}&tenant=${SERVER_ENV}`, "eve-dapp", "width=800,height=700,menubar=no,toolbar=no,location=no,status=no");
   };
+
+  // Auto-jump into the hidden-structures view when the user has structures
+  // but ALL of them are hidden (no exposed solar systems). The hidden bubble
+  // is the only meaningful thing on the page in that case, and the previous
+  // UX forced users to discover that the unlabeled "?" bubble was clickable.
+  //
+  // Triggers exactly once per mount (hiddenAutoJumpHandledRef gate). After we
+  // redirect, if the user backs out to the systems overview manually, we do
+  // not fight them — they keep the systems view for the rest of the session.
+  useEffect(() => {
+    if (hiddenAutoJumpHandledRef.current) return;
+    if (level !== "systems" || selectedSystem !== null) return;
+    if (groups.length === 0) return;
+    const allStructuresFlat = groups.flatMap(g => g.structures);
+    if (allStructuresFlat.length === 0) return;
+    const exposedCount = groups.filter(g => g.solarSystemId !== undefined).length;
+    const hiddenCount = groups.filter(g => g.solarSystemId === undefined)
+      .reduce((sum, g) => sum + g.structures.length, 0);
+    if (exposedCount === 0 && hiddenCount > 0) {
+      hiddenAutoJumpHandledRef.current = true;
+      setSelectedSystem("hidden");
+      setLevel("nodes");
+    } else {
+      // Mixed or only-exposed: nothing to redirect; mark handled so we do not
+      // fire on a future hidden-only re-render after the user navigates around.
+      hiddenAutoJumpHandledRef.current = true;
+    }
+  }, [groups, level, selectedSystem]);
 
   // Build per-system topology
   const systems = useMemo(() => {
@@ -955,6 +985,29 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
             {nodeCount} node{nodeCount !== 1 ? "s" : ""} · {sys.structures.length} structures
           </span>
         </div>
+
+        {/* Auto-jump banner: when ALL of a pilot's structures are hidden, we
+            land them here automatically. Explain why so the back button is
+            obviously available and the redirect doesn't feel like a glitch. */}
+        {selectedSystem === "hidden" && systems.filter(s => s.solarSystemId !== undefined).length === 0 && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "10px 14px",
+            marginBottom: 14,
+            background: "rgba(255,71,0,0.05)",
+            border: "1px solid rgba(255,71,0,0.2)",
+            borderRadius: 2,
+          }}>
+            <span style={{ fontSize: 16, color: "#FF4700" }}>◆</span>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", lineHeight: 1.5 }}>
+              <span style={{ color: "#FF4700", fontWeight: 700 }}>All of your structures are in unrevealed systems.</span>
+              {" "}Their solar-system identity has not yet been written to the lattice. They are still controllable from this view.
+              {" "}Use <span style={{ color: "#FF4700" }}>←</span> above to return to the Systems overview when other systems become visible.
+            </span>
+          </div>
+        )}
 
         {/* Node clusters — each node with its children */}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
