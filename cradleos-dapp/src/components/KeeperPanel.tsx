@@ -78,13 +78,21 @@ interface KeeperAction {
   params: Record<string, unknown>;
 }
 
+// RagCite is now defined in src/lib/keeperCites.ts (and re-imported below).
+// Keep the type local to Message for ergonomics.
+import type { RagCite } from "../lib/keeperCites";
+import { buildCites as buildCitesLib } from "../lib/keeperCites";
+
 interface Message {
   role: "user" | "keeper" | "system";
   content: string;
   action?: KeeperAction;
   blocked?: boolean;
   timestamp?: number;
+  // Legacy raw URL list for user-attached uploads (kept for back-compat).
   images?: string[];
+  // Curated, relevance-filtered, labeled cites for Keeper RAG responses.
+  cites?: RagCite[];
   communitySourced?: boolean;
   consensusCount?: number;
   _vaultId?: string | null;
@@ -169,7 +177,13 @@ type RagResult = {
   imageUrl: string | null;
   source?: string;
   consensusCount?: number;
+  // Distance from chroma (lower = more relevant). Optional.
+  distance?: number;
+  // Free-form metadata blob from chroma (entity name/type/etc.)
+  meta?: Record<string, unknown>;
 };
+// extractCiteLabel + isCiteRelevant + buildCites live in ../lib/keeperCites
+// (and are unit-tested there).
 
 async function fetchRagContext(query: string): Promise<{ contextText: string; ragResults: RagResult[]; hasCommunitySource: boolean; maxConsensus: number }> {
   try {
@@ -178,10 +192,16 @@ async function fetchRagContext(query: string): Promise<{ contextText: string; ra
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, n_results: 4 }),
     });
-    const json = await res.json() as { results?: string[]; images?: (string | null)[]; metadatas?: (Record<string, unknown> | null)[] };
+    const json = await res.json() as {
+      results?: string[];
+      images?: (string | null)[];
+      metadatas?: (Record<string, unknown> | null)[];
+      distances?: (number | null)[];
+    };
     const docs = json.results ?? [];
     const images = json.images ?? [];
     const metadatas = json.metadatas ?? [];
+    const distances = json.distances ?? [];
     if (!docs.length) return { contextText: "", ragResults: [], hasCommunitySource: false, maxConsensus: 0 };
     const ragResults: RagResult[] = docs.map((text, i) => ({
       text,
@@ -190,6 +210,8 @@ async function fetchRagContext(query: string): Promise<{ contextText: string; ra
       consensusCount: typeof (metadatas[i] as Record<string, number> | null)?.consensus_count === "number"
         ? (metadatas[i] as Record<string, number>).consensus_count
         : undefined,
+      distance: typeof distances[i] === "number" ? (distances[i] as number) : undefined,
+      meta: metadatas[i] ?? undefined,
     }));
     const hasCommunitySource = ragResults.some(r => r.source === "player_submission");
     const maxConsensus = ragResults
@@ -1344,17 +1366,18 @@ export function KeeperPanel() {
 
       const displayText = rawDisplayText || content.replace(/%%ACTION%%[\s\S]*?%%END_ACTION%%/g, "").trim() || content;
 
-      // Collect non-null image URLs from RAG results, deduped (the same ship
-      // can show up in multiple RAG hits with the same image URL).
-      const ragImages = Array.from(new Set(
-        ragResults.map(r => r.imageUrl).filter((url): url is string => url !== null)
-      ));
+      // Build relevance-filtered, labeled cites from RAG results.
+      // ragQuery includes any OCR'd image context, so a user-uploaded screenshot
+      // of e.g. an LAI cargo bay can still surface an LAI cite even if the
+      // typed text doesn't mention the ship name.
+      // Logic + tests live in ../lib/keeperCites.
+      const cites: RagCite[] = buildCitesLib(ragResults, ragQuery, 3);
 
       setMessages(prev => [...prev, {
         role: "keeper",
         content: displayText,
         timestamp: Date.now(),
-        images: ragImages.length > 0 ? ragImages : undefined,
+        cites: cites.length > 0 ? cites : undefined,
         communitySourced: hasCommunitySource,
         consensusCount: hasCommunitySource ? maxConsensus : undefined,
         action: parsedAction ?? undefined,
@@ -2346,36 +2369,56 @@ function MessageBubble({ msg, walletAddress }: { msg: Message; walletAddress?: s
             ⚡ Community-sourced{msg.consensusCount && msg.consensusCount > 1 ? ` (confirmed by ${msg.consensusCount} pilots)` : ""}
           </div>
         )}
-        {/* RAG images — shown for ship/entity queries (click to maximize) */}
-        {msg.images && msg.images.length > 0 && msg.role === "keeper" && (
-          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "8px" }}>
-            {msg.images.slice(0, 2).map((url, i) => (
-              <img
-                key={i}
-                src={url}
-                alt="keeper-rag"
-                title="Click to enlarge"
+        {/* RAG cites — labeled, relevance-gated thumbnails (click to maximize) */}
+        {msg.cites && msg.cites.length > 0 && msg.role === "keeper" && (
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "10px" }}>
+            {msg.cites.slice(0, 3).map((cite, i) => (
+              <div
+                key={`${cite.url}-${i}`}
                 style={{
-                  maxWidth: "160px",
-                  maxHeight: "100px",
-                  objectFit: "contain",
-                  border: "1px solid rgba(255,71,0,0.25)",
-                  borderRadius: "2px",
-                  background: "rgba(0,0,0,0.5)",
-                  cursor: "zoom-in",
-                  transition: "border-color 120ms ease, transform 120ms ease",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
-                onClick={() => setLightboxUrl(url)}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = "rgba(255,71,0,0.7)";
-                  e.currentTarget.style.transform = "scale(1.02)";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = "rgba(255,71,0,0.25)";
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-              />
+              >
+                <img
+                  src={cite.url}
+                  alt={cite.label || "keeper-rag"}
+                  title={`${cite.label || "reference"} — click to enlarge`}
+                  style={{
+                    maxWidth: "160px",
+                    maxHeight: "100px",
+                    objectFit: "contain",
+                    border: "1px solid rgba(255,71,0,0.25)",
+                    borderRadius: "2px",
+                    background: "rgba(0,0,0,0.5)",
+                    cursor: "zoom-in",
+                    transition: "border-color 120ms ease, transform 120ms ease",
+                  }}
+                  onClick={() => setLightboxUrl(cite.url)}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = "rgba(255,71,0,0.7)";
+                    e.currentTarget.style.transform = "scale(1.02)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = "rgba(255,71,0,0.25)";
+                    e.currentTarget.style.transform = "scale(1)";
+                  }}
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                />
+                {cite.label && (
+                  <span style={{
+                    fontSize: "10px",
+                    color: "rgba(255,71,0,0.85)",
+                    letterSpacing: "0.12em",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                  }}>
+                    {cite.entityType ? `◆ ${cite.label}` : cite.label}
+                  </span>
+                )}
+              </div>
             ))}
           </div>
         )}
