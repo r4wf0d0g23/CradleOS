@@ -2234,9 +2234,25 @@ export async function buildSetAggressionModeTransaction(
  * the TribeClaim.vault_created flag (which is only set via create_vault_with_registry).
  */
 export async function discoverVaultIdForTribe(tribeId: number): Promise<string | null> {
-  // Check cache first
+  // Check cache first — fast path. New cache writes only contain "real"
+  // (named) vaults; legacy cache writes from before the bug fix may still
+  // contain an empty/aborted-launch vault. Validate the cache by checking
+  // the vault's coin_name; clear and re-discover if it's empty.
   const cached = getCachedVaultId(tribeId);
-  if (cached) return cached;
+  if (cached) {
+    try {
+      const fields = await rpcGetObject(cached);
+      const coinName = String(fields["coin_name"] ?? "");
+      if (coinName.length > 0) return cached;
+      // Cached vault has no coin_name — stale. Clear and fall through to
+      // re-discover the canonical (named) vault for this tribe.
+      try { localStorage.removeItem(`cradleos:vault:${tribeId}`); } catch { /* */ }
+    } catch {
+      // If RPC fails on the cache lookup, fall back to the cached value
+      // rather than blocking the user entirely.
+      return cached;
+    }
+  }
   try {
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
@@ -2251,16 +2267,23 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
       }),
     });
     const json = await res.json() as {
-      result?: { data?: Array<{ parsedJson?: { vault_id?: string; tribe_id?: string | number } }> }
+      result?: { data?: Array<{ parsedJson?: { vault_id?: string; tribe_id?: string | number; coin_name?: string } }> }
     };
     const tribeVaults = (json.result?.data ?? []).filter(
       e => Number(e.parsedJson?.tribe_id) === tribeId
     );
-    // Prefer vault with non-empty coin name (the "real" launch, not accidental empty ones)
-    const named = tribeVaults.find(e => ((e.parsedJson as Record<string,unknown>)?.coin_name as string ?? "").length > 0);
+    // Prefer vault with non-empty coin name (the "real" launch, not aborted
+    // empty test launches). Among multiple named entries, the first (newest
+    // by descending sort) wins.
+    const named = tribeVaults.find(
+      e => String((e.parsedJson as Record<string, unknown>)?.coin_name ?? "").length > 0,
+    );
     const match = named ?? tribeVaults[0];
     const vaultId = match?.parsedJson?.vault_id ?? null;
-    if (vaultId) setCachedVaultId(tribeId, vaultId);
+    // Only cache when the chosen vault is named — we don't want an empty
+    // test launch poisoning the cache and shadowing a real vault that
+    // gets created later.
+    if (vaultId && named) setCachedVaultId(tribeId, vaultId);
     return vaultId;
   } catch { return null; }
 }
@@ -2285,18 +2308,34 @@ export async function fetchAllRegisteredTribes(): Promise<RegisteredTribe[]> {
     const json = await res.json() as {
       result?: { data?: Array<{ parsedJson?: { vault_id?: string; tribe_id?: string | number; coin_symbol?: string; coin_name?: string } }> }
     };
-    const seen = new Set<number>();
-    const tribes: RegisteredTribe[] = [];
-    for (const e of json.result?.data ?? []) {
+    // Group all CoinLaunched events by tribeId, then pick the canonical
+    // vault per tribe. A tribe can have multiple CoinLaunched events (e.g.
+    // an aborted/empty test launch followed by a real one). Prefer the
+    // event with a non-empty coin_name; among those, prefer the newest.
+    // If none have a non-empty name, fall back to the newest empty one.
+    type RawEvt = { parsedJson?: { vault_id?: string; tribe_id?: string | number; coin_symbol?: string; coin_name?: string } };
+    const byTribe = new Map<number, RawEvt[]>();
+    for (const e of (json.result?.data ?? []) as RawEvt[]) {
       const tribeId = Number(e.parsedJson?.tribe_id ?? 0);
-      if (!tribeId || seen.has(tribeId)) continue;
-      seen.add(tribeId);
-      const vaultId = String(e.parsedJson?.vault_id ?? "");
-      if (vaultId) setCachedVaultId(tribeId, vaultId);
+      if (!tribeId) continue;
+      if (!byTribe.has(tribeId)) byTribe.set(tribeId, []);
+      byTribe.get(tribeId)!.push(e);
+    }
+    const tribes: RegisteredTribe[] = [];
+    for (const [tribeId, events] of byTribe) {
+      // Events arrive in descending timestamp order (newest first). Find
+      // the first one with a non-empty coin_name, falling back to the
+      // newest event when all are empty.
+      const named = events.find(e => String(e.parsedJson?.coin_name ?? "").length > 0);
+      const chosen = named ?? events[0];
+      const vaultId = String(chosen.parsedJson?.vault_id ?? "");
+      // Only cache when the chosen vault is named. Prevents an empty test
+      // launch from poisoning the cache and shadowing a real vault.
+      if (vaultId && named) setCachedVaultId(tribeId, vaultId);
       tribes.push({
         tribeId,
-        coinSymbol: String(e.parsedJson?.coin_symbol ?? "?"),
-        coinName:   String(e.parsedJson?.coin_name   ?? ""),
+        coinSymbol: String(chosen.parsedJson?.coin_symbol ?? "?"),
+        coinName:   String(chosen.parsedJson?.coin_name   ?? ""),
         vaultId,
       });
     }
