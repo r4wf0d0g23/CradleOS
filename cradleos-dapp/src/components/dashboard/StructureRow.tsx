@@ -45,6 +45,10 @@ export interface StructureRowProps {
   actionBusy: string | null;
   isDelegatable: boolean;
   isDelegated: boolean;
+  /** True when the user has a tribe vault available to delegate to.
+   *  Required for the DELEGATE action to succeed; the button is hidden
+   *  when no vault exists. REVOKE remains available regardless. */
+  tribeVaultAvailable: boolean;
   /** Available unlinked gates for the link-gate <select>. */
   availableGateLinkTargets?: PlayerStructure[];
   /** Inline transient status string for gate link/unlink action. */
@@ -99,6 +103,7 @@ export function StructureRow({
   actionBusy,
   isDelegatable,
   isDelegated,
+  tribeVaultAvailable,
   availableGateLinkTargets,
   gateActionStatus,
   kindIcon,
@@ -224,7 +229,12 @@ export function StructureRow({
         >
           EDIT
         </button>
-        {isDelegatable && (
+        {/* DELEGATE / REVOKE: REVOKE always available when delegated
+            (only needs the local delegation-obj key, not the vault).
+            DELEGATE only shown when the user has a tribe vault to
+            delegate TO. Hidden entirely when delegatable but no
+            valid action surface exists. */}
+        {isDelegatable && (isDelegated || tribeVaultAvailable) && (
           <button
             type="button"
             onClick={e => {
@@ -291,6 +301,13 @@ function GateLinkControls({
     );
   }
 
+  // No link target available — hide the select rather than render an
+  // empty/no-op dropdown. The user can return when they own another gate.
+  const linkable = availableTargets.filter(
+    g => g.objectId !== s.objectId && !g.linkedGateId,
+  );
+  if (linkable.length === 0) return null;
+
   return (
     <select
       onClick={e => e.stopPropagation()}
@@ -313,9 +330,7 @@ function GateLinkControls({
       }}
     >
       <option value="" disabled>⛩ LINK GATE…</option>
-      {availableTargets
-        .filter(g => g.objectId !== s.objectId && !g.linkedGateId)
-        .map(g => (
+      {linkable.map(g => (
           <option key={g.objectId} value={g.objectId}>
             {g.displayName} ({g.gameItemId ?? g.objectId.slice(0, 8)})
           </option>

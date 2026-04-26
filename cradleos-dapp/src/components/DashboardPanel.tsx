@@ -826,6 +826,30 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
   const [selectedSystem, setSelectedSystem] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [focused, setFocused] = useState<PlayerStructure | null>(null);
+  // Per-node collapse state. Default is expanded (object not in the set).
+  // Persists to localStorage so user choices survive page reloads. Keyed
+  // by node objectId.
+  const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(() => {
+    try {
+      const raw = window.localStorage.getItem("cradleos.dashboard.collapsedNodes");
+      if (!raw) return new Set();
+      return new Set(JSON.parse(raw) as string[]);
+    } catch { return new Set(); }
+  });
+  const setNodeCollapsed = useCallback((objectId: string, collapsed: boolean) => {
+    setCollapsedNodes(prev => {
+      const next = new Set(prev);
+      if (collapsed) next.add(objectId);
+      else next.delete(objectId);
+      try {
+        window.localStorage.setItem(
+          "cradleos.dashboard.collapsedNodes",
+          JSON.stringify(Array.from(next))
+        );
+      } catch { /* localStorage unavailable */ }
+      return next;
+    });
+  }, []);
   // Tracks whether we have already handled the "hidden-only" auto-jump for this
   // mount so we do not fight the user if they manually navigate back to the
   // systems overview after we redirected them.
@@ -1029,6 +1053,9 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
             const epAvailable = Math.max(0, NODE_EP_MAX - onlineEnergyCost);
             // Node must be online + have fuel to bring children online (ENotProducing otherwise)
             const nodeCanPowerChildren = node.isOnline && (node.fuelLevelPct ?? 0) > 0;
+            // Default expanded — only collapsed when the user has explicitly
+            // toggled this node into the persisted collapsedNodes set.
+            const isCollapsed = collapsedNodes.has(node.objectId);
 
             return (
               <div key={node.objectId} style={{
@@ -1038,11 +1065,45 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
               }}>
                 {/* Node header row */}
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12, cursor: "pointer" }}
+                  style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: isCollapsed ? 0 : 12, cursor: "pointer" }}
                   onMouseEnter={() => setFocused(node)}
                   onMouseLeave={() => setFocused(null)}
                   onClick={() => openDApp(node)}
                 >
+                  {/* Collapse chevron — own click target so the rest of the
+                      header still opens the in-game dApp. */}
+                  <button
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setNodeCollapsed(node.objectId, !isCollapsed);
+                    }}
+                    aria-label={isCollapsed ? `Expand ${node.displayName}` : `Collapse ${node.displayName}`}
+                    aria-expanded={!isCollapsed}
+                    title={isCollapsed ? "Expand" : "Collapse"}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      color: "rgba(250,250,229,0.6)",
+                      width: 14,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      style={{
+                        display: "inline-block",
+                        fontSize: 11,
+                        lineHeight: 1,
+                        transform: isCollapsed ? "rotate(0deg)" : "rotate(90deg)",
+                        transition: "transform 140ms ease",
+                      }}
+                    >▶</span>
+                  </button>
                   {/* status indicated by section border color */}
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#FF4700" }}>⚡ {node.displayName}</span>
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{node.typeName ?? "Network Node"}</span>
@@ -1130,42 +1191,47 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                   </span>
                 </div>
 
-                {/* Connected structures — dense rows with toggle, status LED, EP gate */}
-                {children.length > 0 ? (
-                  <div style={{ borderTop: "1px solid rgba(250,250,229,0.10)" }}>
-                    {sortByFamily(children).map((child, i) => (
-                      <StructureRow
-                        key={child.objectId}
-                        structure={child}
-                        index={i}
-                        epAvailable={epAvailable}
-                        fuelBlocked={!nodeCanPowerChildren}
-                        onOnline={handleOnline}
-                        onOffline={handleOffline}
-                        onRename={handleRename}
-                        onDelegate={s => {
-                          if (tribeVaultId) handleDelegate(s, tribeVaultId);
-                          else setActionErr("No tribe vault found. Create one in the Tribe Vault tab first.");
-                        }}
-                        onRevoke={handleRevoke}
-                        onLinkGate={handleLinkGate}
-                        onUnlinkGate={handleUnlinkGate}
-                        onOpenDApp={openDApp}
-                        onFocus={setFocused}
-                        isFocused={focused?.objectId === child.objectId}
-                        actionBusy={actionBusy}
-                        isDelegatable={isDelegatable(child)}
-                        isDelegated={isDelegated(child)}
-                        availableGateLinkTargets={allGates}
-                        gateActionStatus={gateActionState?.gateId === child.objectId ? gateActionState.status : null}
-                        kindIcon={kindIcon}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", paddingLeft: 8, fontStyle: "italic" }}>
-                    No structures connected to this node
-                  </div>
+                {/* Connected structures — dense rows with toggle, status LED, EP gate.
+                    Hidden when the node is collapsed; the header above remains visible
+                    so the user can still see status and operate the node power. */}
+                {!isCollapsed && (
+                  children.length > 0 ? (
+                    <div style={{ borderTop: "1px solid rgba(250,250,229,0.10)" }}>
+                      {sortByFamily(children).map((child, i) => (
+                        <StructureRow
+                          key={child.objectId}
+                          structure={child}
+                          index={i}
+                          epAvailable={epAvailable}
+                          fuelBlocked={!nodeCanPowerChildren}
+                          onOnline={handleOnline}
+                          onOffline={handleOffline}
+                          onRename={handleRename}
+                          onDelegate={s => {
+                            if (tribeVaultId) handleDelegate(s, tribeVaultId);
+                            else setActionErr("No tribe vault found. Create one in the Tribe Vault tab first.");
+                          }}
+                          onRevoke={handleRevoke}
+                          onLinkGate={handleLinkGate}
+                          onUnlinkGate={handleUnlinkGate}
+                          onOpenDApp={openDApp}
+                          onFocus={setFocused}
+                          isFocused={focused?.objectId === child.objectId}
+                          actionBusy={actionBusy}
+                          tribeVaultAvailable={!!tribeVaultId}
+                          isDelegatable={isDelegatable(child)}
+                          isDelegated={isDelegated(child)}
+                          availableGateLinkTargets={allGates}
+                          gateActionStatus={gateActionState?.gateId === child.objectId ? gateActionState.status : null}
+                          kindIcon={kindIcon}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", paddingLeft: 8, fontStyle: "italic" }}>
+                      No structures connected to this node
+                    </div>
+                  )
                 )}
               </div>
             );
