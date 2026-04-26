@@ -251,7 +251,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
           tightens the read order: object identity left, controls right. */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "32px 1fr 70px 90px 200px",
+        gridTemplateColumns: "32px 1fr 70px 90px 230px",
         alignItems: "center",
         gap: 12,
         padding: "7px 18px",
@@ -294,7 +294,7 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: "32px 1fr 70px 90px 200px",
+      gridTemplateColumns: "32px 1fr 70px 90px 230px",
       alignItems: "center",
       gap: 12,
       padding: "9px 18px",
@@ -395,12 +395,21 @@ function Segmented({ value, color, segments, width }: {
  * CcpToggle — left/right power toggle following the CCP design-system
  * toggle component (per the official component-form sheet, 2026-04-25).
  *
- * Track: dark pill, hairline Martian-Red border, both "OFF" and "ON"
- *        labels rendered inside the track at the two terminals.
- * Knob:  square; orange-filled at right when ON, neutral at left when OFF.
- *        The label UNDER the knob is dim; the OPPOSITE label is bright,
- *        so the eye reads the active terminal at a glance like a hardware
- *        instrument switch.
+ * Anatomy:
+ *   Track: dark pill, hairline Martian-Red border. Inside the track sits
+ *          a single "chip" knob that is wide enough to hold its own label,
+ *          and a separate dim label on the opposite (inactive) terminal.
+ *   Chip:  the active indicator. When ON, the chip is Martian-Red filled
+ *          and reads bright "ON" in dark ink, sitting at the right terminal.
+ *          When OFF, the chip is dark with a neutral-40 border and reads
+ *          "OFF" in bright neutral ink, sitting at the left terminal.
+ *   Inactive terminal label: small, neutral-20, in the empty half of the
+ *          track. Tells the user what the OTHER state would be.
+ *
+ * This avoids the previous bug where the active label and the knob were
+ * the same Martian-Red — the chip is now the carrier of the active label,
+ * which means the chip and its label can't visually fight each other.
+ *
  * Click anywhere on the track flips state.
  */
 function CcpToggle({ on, onChange, ariaLabel }: {
@@ -408,15 +417,16 @@ function CcpToggle({ on, onChange, ariaLabel }: {
   onChange: (next: boolean) => void;
   ariaLabel?: string;
 }) {
-  const W = 56;     // wider than the labelless variant to hold ON/OFF text
-  const H = 20;
-  const KNOB = 16;
-  const PAD = 2;
-  // Active terminal (the side the knob sits AGAINST) reads bright; the
-  // covered terminal reads dim, so the labels behave like an aircraft
-  // instrument switch instead of a smartphone toggle.
-  const labelOnColor  = on  ? M    : N20;
-  const labelOffColor = on  ? N20  : N80;
+  const W = 84;       // total track width
+  const H = 26;
+  const PAD = 2;      // inner padding from track edge to chip
+  const CHIP_W = 38;  // active chip is roughly half the track
+  const CHIP_H = H - PAD * 2;
+  const inactiveLabelLeft  = on ? PAD + 6 : W - CHIP_W - PAD;
+  const inactiveLabelText  = on ? "OFF" : "ON";
+  const inactiveAlign      = on ? "flex-start" : "flex-end";
+  const inactivePadX       = on ? "0 0 0 6px" : "0 6px 0 0";
+
   return (
     <button
       type="button"
@@ -428,7 +438,7 @@ function CcpToggle({ on, onChange, ariaLabel }: {
         position: "relative",
         width: W,
         height: H,
-        background: "#1A1A1A",
+        background: "#0A0A0A",
         border: `1px solid ${M}`,
         borderRadius: 0,
         padding: 0,
@@ -444,64 +454,54 @@ function CcpToggle({ on, onChange, ariaLabel }: {
         (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
       }}
     >
-      {/* OFF label, left terminal */}
+      {/* Inactive-terminal label — sits in the empty half of the track
+          and tells the user what flipping would do. */}
       <span
         aria-hidden
         style={{
           position: "absolute",
           top: 0,
           bottom: 0,
-          left: PAD + 1,
-          width: KNOB + 2,
+          left: inactiveLabelLeft,
+          width: W - CHIP_W - PAD * 2 - 4,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          fontSize: 9,
+          justifyContent: inactiveAlign,
+          padding: inactivePadX,
+          fontSize: 10,
           fontWeight: 700,
-          letterSpacing: "0.10em",
-          color: labelOffColor,
-          transition: "color 140ms ease",
+          letterSpacing: "0.14em",
+          color: N20,
+          transition: "left 140ms ease, color 140ms ease",
           pointerEvents: "none",
         }}
-      >OFF</span>
-      {/* ON label, right terminal */}
+      >{inactiveLabelText}</span>
+
+      {/* The active chip — the knob carries the active state's label */}
       <span
         aria-hidden
         style={{
           position: "absolute",
-          top: 0,
-          bottom: 0,
-          right: PAD + 1,
-          width: KNOB + 2,
+          top: PAD,
+          left: on ? W - CHIP_W - PAD : PAD,
+          width: CHIP_W,
+          height: CHIP_H,
+          background: on ? M : "#1A1A1A",
+          border: `1px solid ${on ? M : N40}`,
+          color: on ? "#0A0A0A" : N,
+          transition: "left 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 700,
-          letterSpacing: "0.10em",
-          color: labelOnColor,
-          transition: "color 140ms ease",
-          pointerEvents: "none",
-        }}
-      >ON</span>
-      {/* The knob — sits over whichever terminal is active */}
-      <span
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: PAD - 1,
-          left: on ? W - KNOB - PAD - 1 : PAD - 1,
-          width: KNOB,
-          height: KNOB,
-          background: on ? M : N40,
-          transition: "left 140ms ease, background 140ms ease",
-          borderRadius: 0,
-          // tiny inner shadow to feel like a physical knob over the label
+          letterSpacing: "0.14em",
+          // Inset shadow to read as a physical chip over the track
           boxShadow: on
-            ? "inset 0 0 0 1px rgba(0,0,0,0.25)"
-            : "inset 0 0 0 1px rgba(255,255,255,0.08)",
+            ? "inset 0 0 0 1px rgba(0,0,0,0.30)"
+            : "inset 0 0 0 1px rgba(255,255,255,0.06)",
         }}
-      />
+      >{on ? "ON" : "OFF"}</span>
     </button>
   );
 }
