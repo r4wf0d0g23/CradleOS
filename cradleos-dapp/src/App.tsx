@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { PlaygroundHarness } from "./playground/PlaygroundHarness";
 import { abbreviateAddress, useConnection } from "@evefrontier/dapp-kit";
 import { useCurrentAccount, useWallets, useDAppKit } from "@mysten/dapp-kit-react";
 import { VerifiedAccountProvider, useVerifiedAccountContext } from "./contexts/VerifiedAccountContext";
@@ -28,7 +29,7 @@ import { KeeperPanel } from "./components/KeeperPanel";
 import { UpgradePanel } from "./components/UpgradePanel";
 import { DashboardPanel } from "./components/DashboardPanel";
 import { LineageWarPanel } from "./components/LineageWarPanel";
-import { LinksPanel } from "./components/LinksPanel";
+// LinksPanel removed — kiosk link controls merged into StructurePanel
 import { IndustryPanel } from "./components/IndustryPanel";
 import KeeperOrb from "./components/KeeperOrb";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
@@ -188,7 +189,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "links" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "industry" | "flappy";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -199,7 +200,7 @@ const ROUTE_MAP: Record<string, Tab> = {
   "structures":    "structures",
   "dashboard":     "dashboard",
   "war":           "war",
-  "links":         "links",
+  "links":         "structures",
   "industry":      "industry",
   "flappy":        "flappy",
   "bounties":      "bounties",
@@ -550,16 +551,7 @@ function AppInner() {
         "Data sourced directly from lineagewar.xyz verifier — refreshes every 30 seconds",
       ],
     },
-    links: {
-      title: "Structure Links — attach services to your infrastructure",
-      steps: [
-        "Select any of your deployed structures to attach a CradleOS service",
-        "Links are stored on-chain in the structure's metadata URL field",
-        "Linked services are visible to anyone who queries the structure",
-        "Detach at any time — no cooldown, just a transaction",
-        "Some attachments unlock additional capabilities",
-      ],
-    },
+    // links tab removed — merged into StructurePanel KIOSK section
     industry: {
       title: "Industry — supply chain calculator for EVE Frontier manufacturing",
       steps: [
@@ -589,7 +581,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", war: "war", links: "links", industry: "industry", flappy: "flappy",
+      calendar: "calendar", keeper: "keeper", war: "war", industry: "industry", flappy: "flappy",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -892,7 +884,6 @@ function AppInner() {
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
-                  : tab === "links"      ? "🔗"
                   : tab === "war"        ? "⚔"
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
@@ -916,7 +907,6 @@ function AppInner() {
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
-                  : tab === "links"         ? "🔗 Links"
                   : tab === "war"           ? "⚔ War"
                   : tab === "keeper"        ? "◆ Keeper"
                   : tab === "dashboard"     ? "Dashboard"
@@ -973,7 +963,6 @@ function AppInner() {
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
           {activeTab === "war"           && <div style={{ background: "transparent" }} className="content-panel"><LineageWarPanel /></div>}
-          {activeTab === "links"         && <div style={{ background: "transparent" }} className="content-panel"><LinksPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
@@ -987,6 +976,15 @@ function AppInner() {
 }
 
 function App() {
+  // Playground harness short-circuit. When the URL has ?playground=<key>
+  // we render an isolated UI exploration page without wallet/dApp-kit
+  // providers loaded. The production app is unaffected.
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("playground")) {
+      return <PlaygroundHarness />;
+    }
+  }
   return (
     <DevModeProvider>
       <VerifiedAccountProvider>

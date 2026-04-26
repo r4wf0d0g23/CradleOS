@@ -1,0 +1,175 @@
+/**
+ * ccp-tokens.css
+ *
+ * Canonical CCP / EVE Frontier design system tokens.
+ *
+ * Sourced from CCP's official design-system reference sheets (received
+ * 2026-04-25). These tokens override or extend the legacy `--ccp-*`
+ * tokens defined in main.css — main.css predates the official spec and
+ * had drift (e.g. orange #FF4700 instead of the canonical Martian Red
+ * #FF2800).
+ *
+ * Three families, each with 100/80/60/40 opacity variants:
+ *   • NEUTRAL      #FAFAE5  (foreground / text)
+ *   • MARTIAN RED  #FF2800  (primary accent / status)
+ *   • CRUDE        #050505  (backgrounds)
+ *
+ * Type scale (Frontier Disket Mono primary, ABC Favorit Mono headlines):
+ *   • Headline  24px   ABC Favorit Mono / Disket Mono   regular + bold
+ *   • Header    18px   Disket Mono                       regular + bold
+ *   • Header    16px   Disket Mono                       regular + bold
+ *   • Default   14px   Disket Mono                       regular + bold
+ *   • Detail    12px   Disket Mono                       regular + bold
+ *   • Meta       —     Disket Mono                       regular + bold
+ *
+ * IMPORTANT:
+ *  - Token names are stable. Add new tokens via `--ccp-ds-*` namespace.
+ *  - Do NOT rename existing `--ccp-*` legacy tokens — they're load-bearing
+ *    across many components in main.css.
+ */
+
+:root {
+  /* ── COLOR FAMILY: NEUTRAL ──────────────────────────────────────────── */
+  --ccp-ds-neutral-100: #FAFAE5;
+  --ccp-ds-neutral-80:  rgba(250, 250, 229, 0.80);
+  --ccp-ds-neutral-60:  rgba(250, 250, 229, 0.60);
+  --ccp-ds-neutral-40:  rgba(250, 250, 229, 0.40);
+  --ccp-ds-neutral-20:  rgba(250, 250, 229, 0.20);
+  --ccp-ds-neutral-10:  rgba(250, 250, 229, 0.10);
+
+  /* ── COLOR FAMILY: MARTIAN RED ──────────────────────────────────────── */
+  --ccp-ds-martian-100: #FF2800;
+  --ccp-ds-martian-80:  rgba(255, 40, 0, 0.80);
+  --ccp-ds-martian-60:  rgba(255, 40, 0, 0.60);
+  --ccp-ds-martian-40:  rgba(255, 40, 0, 0.40);
+  --ccp-ds-martian-20:  rgba(255, 40, 0, 0.20);
+  --ccp-ds-martian-10:  rgba(255, 40, 0, 0.10);
+
+  /* ── COLOR FAMILY: CRUDE ────────────────────────────────────────────── */
+  --ccp-ds-crude-100:   #050505;
+  --ccp-ds-crude-80:    rgba(5, 5, 5, 0.80);
+  --ccp-ds-crude-60:    rgba(5, 5, 5, 0.60);
+  --ccp-ds-crude-40:    rgba(5, 5, 5, 0.40);
+
+  /* ── SEMANTIC ALIASES (new components should use these) ─────────────── */
+  --ccp-ds-fg:          var(--ccp-ds-neutral-100);
+  --ccp-ds-fg-muted:    var(--ccp-ds-neutral-60);
+  --ccp-ds-fg-faint:    var(--ccp-ds-neutral-40);
+  --ccp-ds-bg:          var(--ccp-ds-crude-100);
+  --ccp-ds-bg-elev-1:   #0c0c0c;   /* one step lifted from crude */
+  --ccp-ds-bg-elev-2:   #141414;   /* two steps lifted */
+  --ccp-ds-accent:      var(--ccp-ds-martian-100);
+  --ccp-ds-accent-line: var(--ccp-ds-martian-40);
+  --ccp-ds-accent-hover:var(--ccp-ds-martian-80);
+
+  /* Status colors (kept compatible with EF in-game UI conventions) */
+  --ccp-ds-status-on:   #5DFF9A;   /* online — kept from legacy main.css */
+  --ccp-ds-status-off:  var(--ccp-ds-neutral-40);
+  --ccp-ds-status-warn: #FFB800;
+  --ccp-ds-status-crit: var(--ccp-ds-martian-100);
+
+  /* ── TYPOGRAPHY ─────────────────────────────────────────────────────── */
+  --ccp-ds-font-disket:  "Frontier Disket Mono", "Disket Mono", "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --ccp-ds-font-favorit: "ABC Favorit Mono", "Frontier Disket Mono", "Disket Mono", "IBM Plex Mono", monospace;
+
+  --ccp-ds-fw-regular:   400;
+  --ccp-ds-fw-bold:      700;
+
+  /* Type sizes (px → rem at 16px root) */
+  --ccp-ds-size-headline: 24px;
+  --ccp-ds-size-display-lg: 22px;
+  --ccp-ds-size-header-lg:  18px;
+  --ccp-ds-size-header-sm:  16px;
+  --ccp-ds-size-default:    14px;
+  --ccp-ds-size-detail:     12px;
+  --ccp-ds-size-meta:       11px;
+
+  /* Letter-spacing — CCP UI uses moderate tracking on UPPERCASE labels */
+  --ccp-ds-tracking-caps:   0.08em;
+  --ccp-ds-tracking-normal: 0.01em;
+
+  /* Line heights */
+  --ccp-ds-lh-tight:  1.15;
+  --ccp-ds-lh-normal: 1.45;
+  --ccp-ds-lh-loose:  1.6;
+
+  /* ── BORDERS / SHAPES (CCP uses hairlines + sharp rectangles) ───────── */
+  --ccp-ds-border-hairline: 1px solid var(--ccp-ds-neutral-10);
+  --ccp-ds-border-line:     1px solid var(--ccp-ds-neutral-20);
+  --ccp-ds-border-accent:   1px solid var(--ccp-ds-accent-line);
+  --ccp-ds-border-selected: 1.5px solid var(--ccp-ds-martian-100);
+  --ccp-ds-radius:          0;
+
+  /* ── SPACING SCALE (8px base) ───────────────────────────────────────── */
+  --ccp-ds-space-1: 4px;
+  --ccp-ds-space-2: 8px;
+  --ccp-ds-space-3: 12px;
+  --ccp-ds-space-4: 16px;
+  --ccp-ds-space-5: 24px;
+  --ccp-ds-space-6: 32px;
+
+  /* ── ELEVATION (CCP uses subtle row alternation, not shadows) ───────── */
+  --ccp-ds-row-zebra-a: rgba(255, 255, 255, 0.000);
+  --ccp-ds-row-zebra-b: rgba(255, 255, 255, 0.025);
+
+  /* Glow used for HOVER on form controls */
+  --ccp-ds-glow-accent: 0 0 0 2px rgba(255, 40, 0, 0.20);
+}
+
+/* ── UTILITY TYPE CLASSES (opt-in; new playground components use these) */
+.ccp-type-headline {
+  font-family: var(--ccp-ds-font-favorit);
+  font-size: var(--ccp-ds-size-headline);
+  font-weight: var(--ccp-ds-fw-bold);
+  letter-spacing: var(--ccp-ds-tracking-caps);
+  line-height: var(--ccp-ds-lh-tight);
+}
+.ccp-type-header-lg {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-header-lg);
+  font-weight: var(--ccp-ds-fw-bold);
+  letter-spacing: var(--ccp-ds-tracking-caps);
+  line-height: var(--ccp-ds-lh-tight);
+}
+.ccp-type-header-sm {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-header-sm);
+  font-weight: var(--ccp-ds-fw-bold);
+  letter-spacing: var(--ccp-ds-tracking-caps);
+  line-height: var(--ccp-ds-lh-tight);
+}
+.ccp-type-default {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-default);
+  font-weight: var(--ccp-ds-fw-regular);
+  line-height: var(--ccp-ds-lh-normal);
+}
+.ccp-type-default-bold {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-default);
+  font-weight: var(--ccp-ds-fw-bold);
+  line-height: var(--ccp-ds-lh-normal);
+}
+.ccp-type-detail {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-detail);
+  font-weight: var(--ccp-ds-fw-regular);
+  letter-spacing: var(--ccp-ds-tracking-normal);
+  line-height: var(--ccp-ds-lh-normal);
+}
+.ccp-type-detail-caps {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-detail);
+  font-weight: var(--ccp-ds-fw-bold);
+  letter-spacing: var(--ccp-ds-tracking-caps);
+  text-transform: uppercase;
+  line-height: var(--ccp-ds-lh-tight);
+}
+.ccp-type-meta {
+  font-family: var(--ccp-ds-font-disket);
+  font-size: var(--ccp-ds-size-meta);
+  font-weight: var(--ccp-ds-fw-regular);
+  color: var(--ccp-ds-fg-muted);
+  letter-spacing: var(--ccp-ds-tracking-normal);
+  line-height: var(--ccp-ds-lh-normal);
+}

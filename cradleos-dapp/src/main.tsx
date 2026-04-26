@@ -14,6 +14,7 @@ if (typeof crypto.randomUUID !== "function") {
   };
 }
 import "./main.css";
+import "./styles/ccp-tokens.css";
 import "@radix-ui/themes/styles.css";
 
 import { QueryClient } from "@tanstack/react-query";
