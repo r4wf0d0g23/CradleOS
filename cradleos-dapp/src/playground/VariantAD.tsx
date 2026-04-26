@@ -8,6 +8,7 @@
  * This is the most "EVE Frontier-esque" of the four variants.
  */
 
+import { useState } from "react";
 import type { FixtureNode, FixtureStructure, StructureKind } from "./fixture";
 
 type Summary = { structures: number; online: number; systems: number; hidden: number };
@@ -43,70 +44,58 @@ const KIND_GLYPH: Record<string, string> = {
   Relay: "▷",
 };
 
-// Groups structures by kind for visual scanability — "all the Refineries
-// together" — then by label within each kind. The kind ordering itself
-// follows production/utility flow: power & networking first, then logistics,
-// then production, then habitation/specialty.
-const KIND_ORDER: StructureKind[] = [
-  "Relay",
-  "NetworkNode",
-  "MiniStorage",
-  "MiniBerth",
-  "Berth",
-  "HeavyBerth",
-  "MiniPrinter",
-  "Printer",
-  "Refinery",
-  "Assembler",
-  "Nest",
-  "Nursery",
-  "Shelter",
+// Sort structures so same-family kinds cluster together (mini-printer next
+// to printer, mini-storage next to storage, mini-berth next to berth and
+// heavy-berth) WITHOUT visual breaks between them. Within a family they
+// order by family-rank (mini < standard < heavy), then by label.
+//
+// Family is the noun stem ('printer', 'storage', 'berth'). Family rank is
+// the size variant: mini = 0, standard = 1, heavy = 2.
+//
+// Kinds outside any defined family land at the end in alphabetical order.
+const FAMILY_ORDER = [
+  "relay",      // utility/networking sized rank 1
+  "node",       // network nodes (rank 1)
+  "storage",    // storage family
+  "berth",      // berth family (mini/standard/heavy)
+  "printer",    // printer family (mini/standard)
+  "refinery",
+  "assembler",
+  "nest",
+  "nursery",
+  "shelter",
 ];
 
-const KIND_DISPLAY: Record<string, string> = {
-  NetworkNode: "NETWORK NODE",
-  MiniPrinter: "MINI PRINTER",
-  Printer: "PRINTER",
-  MiniStorage: "MINI STORAGE",
-  Nest: "NEST",
-  Nursery: "NURSERY",
-  Refinery: "REFINERY",
-  Shelter: "SHELTER",
-  Assembler: "ASSEMBLER",
-  Berth: "BERTH",
-  HeavyBerth: "HEAVY BERTH",
-  MiniBerth: "MINI BERTH",
-  Relay: "RELAY",
+// Maps each StructureKind → (family stem, rank-within-family).
+const FAMILY_OF: Record<StructureKind, { family: string; rank: number }> = {
+  Relay:        { family: "relay",     rank: 1 },
+  NetworkNode:  { family: "node",      rank: 1 },
+  MiniStorage:  { family: "storage",   rank: 0 },
+  MiniBerth:    { family: "berth",     rank: 0 },
+  Berth:        { family: "berth",     rank: 1 },
+  HeavyBerth:   { family: "berth",     rank: 2 },
+  MiniPrinter:  { family: "printer",   rank: 0 },
+  Printer:      { family: "printer",   rank: 1 },
+  Refinery:     { family: "refinery",  rank: 1 },
+  Assembler:    { family: "assembler", rank: 1 },
+  Nest:         { family: "nest",      rank: 1 },
+  Nursery:      { family: "nursery",   rank: 1 },
+  Shelter:      { family: "shelter",   rank: 1 },
 };
 
-function groupByKind(children: FixtureStructure[]): Array<{ kind: StructureKind; rows: FixtureStructure[] }> {
-  const buckets = new Map<StructureKind, FixtureStructure[]>();
-  for (const c of children) {
-    if (!buckets.has(c.kind)) buckets.set(c.kind, []);
-    buckets.get(c.kind)!.push(c);
-  }
-  // Sort each bucket by label (then objectId for determinism)
-  for (const arr of buckets.values()) {
-    arr.sort((a, b) =>
-      a.label.localeCompare(b.label) || a.objectId.localeCompare(b.objectId)
-    );
-  }
-  // Emit in canonical KIND_ORDER first, then any unknown kinds alphabetically
-  const result: Array<{ kind: StructureKind; rows: FixtureStructure[] }> = [];
-  for (const k of KIND_ORDER) {
-    const rows = buckets.get(k);
-    if (rows && rows.length) {
-      result.push({ kind: k, rows });
-      buckets.delete(k);
-    }
-  }
-  const leftover = Array.from(buckets.entries()).sort(([a], [b]) =>
-    String(a).localeCompare(String(b))
-  );
-  for (const [kind, rows] of leftover) {
-    result.push({ kind, rows });
-  }
-  return result;
+function sortByFamily(children: FixtureStructure[]): FixtureStructure[] {
+  return [...children].sort((a, b) => {
+    const fa = FAMILY_OF[a.kind] ?? { family: "~" + a.kind, rank: 1 };
+    const fb = FAMILY_OF[b.kind] ?? { family: "~" + b.kind, rank: 1 };
+    const ai = FAMILY_ORDER.indexOf(fa.family);
+    const bi = FAMILY_ORDER.indexOf(fb.family);
+    const aRank = ai === -1 ? FAMILY_ORDER.length : ai;
+    const bRank = bi === -1 ? FAMILY_ORDER.length : bi;
+    if (aRank !== bRank) return aRank - bRank;
+    if (fa.rank !== fb.rank) return fa.rank - fb.rank;
+    if (a.kind !== b.kind) return a.kind.localeCompare(b.kind);
+    return a.label.localeCompare(b.label) || a.objectId.localeCompare(b.objectId);
+  });
 }
 
 export function VariantAD({ nodes, summary }: Props) {
@@ -188,12 +177,13 @@ function Stat({ n, label, color }: { n: number; label: string; color: string }) 
 }
 
 function NodeGroup({ node }: { node: FixtureNode }) {
+  const [nodeOn, setNodeOn] = useState(node.isOnline);
   const childOnline = node.children.filter(c => c.isOnline).length;
   const childOffline = node.children.length - childOnline;
   const fuelColor = node.fuelLevelPct < 15 ? "#FFB54A"
     : node.fuelLevelPct < 50 ? "#FFB54A" : ON;
-  const onlineColor = node.isOnline ? ON : M;
-  const grouped = groupByKind(node.children);
+  const onlineColor = nodeOn ? ON : M;
+  const sorted = sortByFamily(node.children);
 
   return (
     <div style={{ border: `1px solid ${N10}` }}>
@@ -229,7 +219,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
           fontSize: 11,
           fontWeight: 700,
           letterSpacing: "0.12em",
-        }}>● {node.isOnline ? "ONLINE" : "OFFLINE"}</span>
+        }}>● {nodeOn ? "ONLINE" : "OFFLINE"}</span>
         {/* Fuel display: the production lib.ts current emits a "hours"
             value but the underlying calc (qty * burn_rate_in_ms / 3.6e6)
             actually reads as fuel UNITS remaining, not hours. Show the
@@ -241,9 +231,8 @@ function NodeGroup({ node }: { node: FixtureNode }) {
           pct={(node.fuelGjCurrent / node.fuelGjMax) * 100}
           right={`${node.fuelGjCurrent}/${node.fuelGjMax}`}
           color={N80} />
-        {/* Action buttons label the TARGET state with an arrow so they read
-            unambiguously as actions, not as the current state. */}
-        <CcpBtn>{node.isOnline ? "→ OFFLINE" : "→ ONLINE"}</CcpBtn>
+        {/* Power toggle for the entire Network Node */}
+        <CcpToggle on={nodeOn} onChange={setNodeOn} ariaLabel={`${node.label} power`} />
         <CcpBtn>EDIT</CcpBtn>
         <span style={{ display: "flex", gap: 6 }}>
           <CcpBtn variant="ghost">DEFENSE</CcpBtn>
@@ -274,85 +263,25 @@ function NodeGroup({ node }: { node: FixtureNode }) {
         <span style={{ textAlign: "right" }}>ACTIONS</span>
       </div>
 
-      {/* Structure rows, grouped by kind. Each kind block starts with a
-          small kind banner so the user can scan "all the Refineries" or
-          "all the Mini Storages" without re-reading the kind on every row. */}
+      {/* Structure rows, family-clustered (mini-printer next to printer next
+          to heavy-printer, etc.) but no group separators — just one continuous
+          list. Zebra striping comes from row index, so the eye still picks
+          up the row rhythm without visual category breaks. */}
       <div>
-        {grouped.map(({ kind, rows }) => {
-          const onlineInGroup = rows.filter(r => r.isOnline).length;
-          return (
-            <div key={kind}>
-              <KindBanner
-                kind={kind}
-                count={rows.length}
-                onlineCount={onlineInGroup}
-              />
-              {rows.map((s, i) => (
-                <StructureRow key={s.objectId} structure={s} index={i} />
-              ))}
-            </div>
-          );
-        })}
+        {sorted.map((s, i) => (
+          <StructureRow key={s.objectId} structure={s} index={i} />
+        ))}
       </div>
-    </div>
-  );
-}
-
-function KindBanner({ kind, count, onlineCount }: {
-  kind: StructureKind; count: number; onlineCount: number;
-}) {
-  const offlineCount = count - onlineCount;
-  return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "32px 1fr auto",
-      alignItems: "center",
-      gap: 12,
-      padding: "6px 18px",
-      background: "rgba(255,255,255,0.015)",
-      borderBottom: `1px solid ${N10}`,
-    }}>
-      <span style={{
-        color: N60,
-        fontSize: 14,
-        textAlign: "center",
-      }}>{KIND_GLYPH[kind] ?? "◇"}</span>
-      <span style={{
-        color: N60,
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: "0.16em",
-        textTransform: "uppercase",
-      }}>
-        {KIND_DISPLAY[kind] ?? kind}
-        <span style={{
-          color: N40,
-          marginLeft: 8,
-          fontSize: 10,
-          letterSpacing: "0.10em",
-        }}>
-          × {count}
-        </span>
-      </span>
-      <span style={{
-        fontSize: 10,
-        color: N40,
-        letterSpacing: "0.10em",
-      }}>
-        {onlineCount > 0 && (
-          <span style={{ color: ON, fontWeight: 700 }}>{onlineCount}↑ </span>
-        )}
-        {offlineCount > 0 && (
-          <span style={{ color: M, fontWeight: 700 }}>{offlineCount}↓</span>
-        )}
-      </span>
     </div>
   );
 }
 
 function StructureRow({ structure, index }: { structure: FixtureStructure; index: number }) {
   const zebra = index % 2 === 0 ? "rgba(0,0,0,0)" : "rgba(255,255,255,0.025)";
-  const statusColor = structure.isOnline ? ON : M;
+  // Local state lets the playground demo the toggle interaction without
+  // wiring real on-chain calls. Production will pass an onToggle handler.
+  const [isOn, setIsOn] = useState(structure.isOnline);
+  const statusColor = isOn ? ON : M;
   const glyph = KIND_GLYPH[structure.kind] ?? "◇";
 
   return (
@@ -385,7 +314,7 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
         fontWeight: 700,
         fontSize: 11,
         letterSpacing: "0.12em",
-      }}>● {structure.isOnline ? "ON" : "OFF"}</span>
+      }}>● {isOn ? "ON" : "OFF"}</span>
       <span style={{
         color: N40,
         fontSize: 10,
@@ -393,12 +322,8 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
         fontVariantNumeric: "tabular-nums",
         letterSpacing: "0.04em",
       }}>{structure.objectId.slice(-6)}</span>
-      <span style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-        {/* Action label = the TARGET state with arrow, not the current state.
-            "→ OFFLINE" reads as the action, not as a status indicator. */}
-        <CcpBtn small accent={statusColor}>
-          {structure.isOnline ? "→ OFFLINE" : "→ ONLINE"}
-        </CcpBtn>
+      <span style={{ display: "flex", gap: 10, justifyContent: "flex-end", alignItems: "center" }}>
+        <CcpToggle on={isOn} onChange={setIsOn} ariaLabel={`${structure.label} power`} />
         <CcpBtn small variant="ghost">EDIT</CcpBtn>
       </span>
     </div>
@@ -447,6 +372,66 @@ function Segmented({ value, color, segments, width }: {
         }} />
       ))}
     </div>
+  );
+}
+
+/**
+ * CcpToggle — left/right power toggle following the CCP design-system
+ * toggle component (per the official component-form sheet, 2026-04-25).
+ *
+ * Track: dark pill, hairline Martian-Red border.
+ * Knob:  square; orange-filled at right when ON, neutral at left when OFF.
+ * Click anywhere on the track flips state.
+ */
+function CcpToggle({ on, onChange, ariaLabel }: {
+  on: boolean;
+  onChange: (next: boolean) => void;
+  ariaLabel?: string;
+}) {
+  const W = 38;     // total track width
+  const H = 18;     // track height
+  const KNOB = 14;  // knob size
+  const PAD = 2;    // inner padding from track edge to knob
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={ariaLabel}
+      onClick={() => onChange(!on)}
+      style={{
+        position: "relative",
+        width: W,
+        height: H,
+        background: "#1A1A1A",
+        border: `1px solid ${M}`,
+        borderRadius: 0,
+        padding: 0,
+        cursor: "pointer",
+        flexShrink: 0,
+        transition: "box-shadow 120ms ease",
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 0 2px rgba(255,40,0,0.20)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: PAD - 1,
+          left: on ? W - KNOB - PAD - 1 : PAD - 1,
+          width: KNOB,
+          height: KNOB,
+          background: on ? M : N40,
+          transition: "left 140ms ease, background 140ms ease",
+          borderRadius: 0,
+        }}
+      />
+    </button>
   );
 }
 
