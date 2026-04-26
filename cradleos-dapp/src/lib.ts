@@ -545,24 +545,66 @@ export async function fetchTribeInfo(tribeId: number): Promise<{
   return null;
 }
 
-/** Server-membership check: returns true if the given tribeId exists on the
- *  active server's World API. Used to filter on-chain CradleOS data (events,
- *  events-derived lists) that are server-agnostic by package design.
+/** Server-membership check: returns true if the given (tribeId, vaultCoin)
+ *  pair belongs to the active server.
  *
- *  The CradleOS Move package is shared across Stillness and Utopia, but
- *  EVE-side tribe IDs use independent ID spaces per server. The same
- *  tribe_id can refer to entirely different tribes on each server. The
- *  WORLD_API base URL is per-server (per build), so its 200/404 is the
- *  cleanest available signal.
+ *  IMPORTANT: existence-only checks are NOT sufficient. The CradleOS Move
+ *  package is shared across Stillness and Utopia, and the SAME tribe_id can
+ *  refer to entirely different tribes on each server (e.g. 98000013 =
+ *  'Nirvana' on Stillness, 'DemoCorp' on Utopia). A previous version of
+ *  this function only checked whether the tribe existed on the active
+ *  server's API — which let cross-server vaults leak through whenever a
+ *  same-numbered tribe coincidentally existed on both.
  *
- *  Memoized per-process to avoid re-querying the World API for the same
- *  tribe within a session. */
-const _tribeOnServerMemo = new Map<number, boolean>();
-export async function isTribeOnActiveServer(tribeId: number): Promise<boolean> {
-  if (_tribeOnServerMemo.has(tribeId)) return _tribeOnServerMemo.get(tribeId)!;
+ *  The cleanest discriminator is the vault's `coin_symbol` (or `coin_name`):
+ *  when a tribe creates a CradleOS vault, the on-chain coin_symbol mirrors
+ *  the in-game tribe ticker. We compare it against the active server's
+ *  `nameShort` (and `name` as a fallback) for that tribe_id. Mismatch →
+ *  the vault belongs to the OTHER server's tribe with the same id.
+ *
+ *  When `vaultCoinSymbol` is empty (legacy/empty vaults that bypassed the
+ *  named-vault filter), we fall back to existence-only — better to show a
+ *  potentially-cross-server tribe than to hide a legitimate one with no
+ *  coin_symbol set.
+ *
+ *  Memoized per-process to avoid re-querying the World API. */
+const _tribeOnServerMemo = new Map<string, boolean>();
+export async function isTribeOnActiveServer(
+  tribeId: number,
+  vaultCoinSymbol?: string,
+  vaultCoinName?: string,
+): Promise<boolean> {
+  const memoKey = `${tribeId}|${(vaultCoinSymbol ?? "").toLowerCase()}|${(vaultCoinName ?? "").toLowerCase()}`;
+  if (_tribeOnServerMemo.has(memoKey)) return _tribeOnServerMemo.get(memoKey)!;
   const info = await fetchTribeInfo(tribeId);
-  const onServer = info !== null;
-  _tribeOnServerMemo.set(tribeId, onServer);
+  if (!info) {
+    _tribeOnServerMemo.set(memoKey, false);
+    return false;
+  }
+  // No vault coin to compare against — existence is best we have. Used by
+  // legacy callers that don't have the vault data on hand.
+  if (!vaultCoinSymbol && !vaultCoinName) {
+    _tribeOnServerMemo.set(memoKey, true);
+    return true;
+  }
+  // Compare vault coin_symbol/coin_name against the active server's tribe
+  // identity. Match either nameShort (ticker) or name. Case-insensitive.
+  const apiShort = info.nameShort?.toLowerCase() ?? "";
+  const apiName = info.name?.toLowerCase() ?? "";
+  const vaultSym = (vaultCoinSymbol ?? "").toLowerCase();
+  const vaultName = (vaultCoinName ?? "").toLowerCase();
+  // The vault's coin_name is often a versioned/decorated form of the tribe
+  // name (e.g. 'Reapers_v2' for the 'Reapers' tribe), so we match by
+  // prefix-or-substring rather than equality. coin_symbol matches the
+  // ticker more strictly.
+  const symbolMatches = !!(vaultSym && (vaultSym === apiShort || vaultSym === apiName));
+  const nameMatches = !!(vaultName && (
+    vaultName === apiName ||
+    vaultName.startsWith(apiName) ||
+    apiName.startsWith(vaultName)
+  ));
+  const onServer = symbolMatches || nameMatches;
+  _tribeOnServerMemo.set(memoKey, onServer);
   return onServer;
 }
 
@@ -2365,8 +2407,13 @@ export async function fetchAllRegisteredTribes(): Promise<RegisteredTribe[]> {
     // server. Drop tribes whose tribeId is not registered on the active
     // server's World API. Memoized so this only costs one round-trip per
     // tribe per session.
+    // Pass each vault's coin_symbol + coin_name so isTribeOnActiveServer
+    // can match against the World API's tribe nameShort/name. Without this,
+    // tribes whose numeric IDs collide between Stillness and Utopia would
+    // leak through (existence on the active server is necessary but not
+    // sufficient).
     const onServerFlags = await Promise.all(
-      tribes.map(t => isTribeOnActiveServer(t.tribeId)),
+      tribes.map(t => isTribeOnActiveServer(t.tribeId, t.coinSymbol, t.coinName)),
     );
     const filtered = tribes.filter((_, i) => onServerFlags[i]);
     return filtered.sort((a, b) => a.tribeId - b.tribeId);

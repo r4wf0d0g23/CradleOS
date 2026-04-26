@@ -125,10 +125,12 @@ async function fetchCradleOSVaults(): Promise<CradleOSVault[]> {
       coinName: String(chosen.parsedJson?.coin_name ?? ""),
     });
   }
-  // Server-membership gate: drop vaults whose tribeId isn't on the active
-  // server's World API (Stillness vs Utopia have independent ID spaces).
+  // Server-membership gate: pass coin_symbol + coin_name so the helper can
+  // match against the World API's tribe nameShort/name (existence-only is
+  // not sufficient — same tribeId can refer to different tribes on
+  // Stillness vs Utopia).
   const onServerFlags = await Promise.all(
-    candidates.map(v => isTribeOnActiveServer(v.tribeId)),
+    candidates.map(v => isTribeOnActiveServer(v.tribeId, v.coinSymbol, v.coinName)),
   );
   return candidates.filter((_, i) => onServerFlags[i]);
 }

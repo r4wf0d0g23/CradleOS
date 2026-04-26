@@ -55,6 +55,7 @@ type PolicyState = {
 type KnownTribe = {
   tribeId: number;
   coinSymbol: string;
+  coinName: string;
   vaultId: string;
 };
 
@@ -153,16 +154,17 @@ async function fetchKnownTribes(): Promise<KnownTribe[]> {
       candidates.push({
         tribeId,
         coinSymbol: String(chosen.parsedJson["coin_symbol"] ?? "?"),
-        vaultId: String(chosen.parsedJson["vault_id"] ?? ""),
+        coinName:   String(chosen.parsedJson["coin_name"]   ?? ""),
+        vaultId:    String(chosen.parsedJson["vault_id"]    ?? ""),
       });
     }
-    // Server-membership gate: drop tribes that don't exist on the active
-    // server's World API. Same tribeId can refer to different tribes on
-    // Stillness vs Utopia (the CradleOS package is shared across servers),
-    // so this filter prevents wrong-server tribes from appearing in the
-    // 'add tribe to defense policy' dropdown.
+    // Server-membership gate: drop tribes whose vault coin_symbol/coin_name
+    // doesn't match the active server's World API tribe identity. Existence
+    // check alone is NOT sufficient — same tribeId can refer to different
+    // tribes on each server (e.g. 98000013 = Nirvana on Stillness, DemoCorp
+    // on Utopia).
     const onServerFlags = await Promise.all(
-      candidates.map(t => isTribeOnActiveServer(t.tribeId)),
+      candidates.map(t => isTribeOnActiveServer(t.tribeId, t.coinSymbol, t.coinName)),
     );
     return candidates.filter((_, i) => onServerFlags[i]);
   } catch { return []; }
@@ -577,7 +579,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
   const ownTribeId = String(vault.tribeId);
   const mergedTribes: KnownTribe[] = [];
   const seenIds = new Set<string>();
-  for (const t of [...(tribes ?? []), ...WELL_KNOWN_TRIBES.map(w => ({ ...w, vaultId: "" })), ...manualTribes]) {
+  for (const t of [...(tribes ?? []), ...WELL_KNOWN_TRIBES.map(w => ({ ...w, coinName: "", vaultId: "" })), ...manualTribes]) {
     const key = String(t.tribeId);
     if (seenIds.has(key) || key === ownTribeId) continue;
     seenIds.add(key);
@@ -854,7 +856,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
                     if (!val) return;
                     const id = parseInt(val, 10);
                     if (!id || seenIds.has(String(id))) return;
-                    setManualTribes(prev => [...prev, { tribeId: id, coinSymbol: options.find(o => o.tribeId === id)?.label.match(/\(([^)]+)\)/)?.[1] ?? "?", vaultId: "" }]);
+                    setManualTribes(prev => [...prev, { tribeId: id, coinSymbol: options.find(o => o.tribeId === id)?.label.match(/\(([^)]+)\)/)?.[1] ?? "?", coinName: "", vaultId: "" }]);
                     setAddTribeInput("");
                     e.target.value = "";
                   }}
@@ -886,7 +888,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
               onClick={() => {
                 const id = parseInt(addTribeInput, 10);
                 if (!id || seenIds.has(String(id))) { setAddTribeInput(""); return; }
-                setManualTribes(prev => [...prev, { tribeId: id, coinSymbol: "?", vaultId: "" }]);
+                setManualTribes(prev => [...prev, { tribeId: id, coinSymbol: "?", coinName: "", vaultId: "" }]);
                 setAddTribeInput("");
               }}
               disabled={!addTribeInput}
