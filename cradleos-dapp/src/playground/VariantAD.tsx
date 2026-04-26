@@ -19,6 +19,7 @@ const N   = "#FAFAE5";
 const N80 = "rgba(250,250,229,0.80)";
 const N60 = "rgba(250,250,229,0.60)";
 const N40 = "rgba(250,250,229,0.40)";
+const N20 = "rgba(250,250,229,0.20)";
 const N10 = "rgba(250,250,229,0.10)";
 const N05 = "rgba(250,250,229,0.05)";
 const M   = "#FF2800";
@@ -187,10 +188,12 @@ function NodeGroup({ node }: { node: FixtureNode }) {
 
   return (
     <div style={{ border: `1px solid ${N10}` }}>
-      {/* Node header */}
+      {/* Node header. The standalone status badge was removed — the
+          status dot is now rendered immediately next to the node toggle
+          for the same read-order reasons as the structure rows. */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "auto 1fr auto auto auto auto auto auto",
+        gridTemplateColumns: "auto 1fr auto auto auto",
         alignItems: "center",
         gap: 14,
         padding: "12px 18px",
@@ -214,36 +217,41 @@ function NodeGroup({ node }: { node: FixtureNode }) {
             letterSpacing: "0.10em",
           }}>NETWORK NODE · {node.children.length} STRUCT · {childOnline}↑ {childOffline}↓</span>
         </span>
-        <span style={{
-          color: onlineColor,
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: "0.12em",
-        }}>● {nodeOn ? "ONLINE" : "OFFLINE"}</span>
-        {/* Fuel display: the production lib.ts current emits a "hours"
-            value but the underlying calc (qty * burn_rate_in_ms / 3.6e6)
-            actually reads as fuel UNITS remaining, not hours. Show the
-            raw units count with a "u" suffix until the formula is
-            verified against on-chain data. */}
+        {/* Fuel + energy bar chips */}
         <BarChip label="FUEL" pct={node.fuelLevelPct}
           right={`${node.fuelUnitsLeft.toLocaleString()} u`} color={fuelColor} />
         <BarChip label="EP"
           pct={(node.fuelGjCurrent / node.fuelGjMax) * 100}
           right={`${node.fuelGjCurrent}/${node.fuelGjMax}`}
           color={N80} />
-        {/* Power toggle for the entire Network Node */}
-        <CcpToggle on={nodeOn} onChange={setNodeOn} ariaLabel={`${node.label} power`} />
-        <CcpBtn>EDIT</CcpBtn>
-        <span style={{ display: "flex", gap: 6 }}>
+        {/* STATUS + power toggle + secondary actions, all clustered at right */}
+        <span style={{
+          display: "flex",
+          gap: 10,
+          alignItems: "center",
+          justifyContent: "flex-end",
+        }}>
+          <span style={{
+            color: onlineColor,
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.12em",
+            minWidth: 64,
+            textAlign: "right",
+          }}>● {nodeOn ? "ONLINE" : "OFFLINE"}</span>
+          <CcpToggle on={nodeOn} onChange={setNodeOn} ariaLabel={`${node.label} power`} />
+          <CcpBtn>EDIT</CcpBtn>
           <CcpBtn variant="ghost">DEFENSE</CcpBtn>
           <CcpBtn variant="ghost">GATES</CcpBtn>
         </span>
       </div>
 
-      {/* Column header */}
+      {/* Column header. STATUS column was removed — the status dot is now
+          rendered alongside the toggle inside the ACTIONS cluster, which
+          tightens the read order: object identity left, controls right. */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "32px 1fr 70px 90px 90px 170px",
+        gridTemplateColumns: "32px 1fr 70px 90px 200px",
         alignItems: "center",
         gap: 12,
         padding: "7px 18px",
@@ -258,9 +266,8 @@ function NodeGroup({ node }: { node: FixtureNode }) {
         <span></span>
         <span>NAME</span>
         <span style={{ textAlign: "right" }}>EP</span>
-        <span style={{ textAlign: "center" }}>STATUS</span>
         <span style={{ textAlign: "right" }}>OBJ ID</span>
-        <span style={{ textAlign: "right" }}>ACTIONS</span>
+        <span style={{ textAlign: "right" }}>STATUS · ACTIONS</span>
       </div>
 
       {/* Structure rows, family-clustered (mini-printer next to printer next
@@ -287,7 +294,7 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: "32px 1fr 70px 90px 90px 170px",
+      gridTemplateColumns: "32px 1fr 70px 90px 200px",
       alignItems: "center",
       gap: 12,
       padding: "9px 18px",
@@ -309,20 +316,29 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
         letterSpacing: "0.02em",
       }}>{structure.energyCost} EP</span>
       <span style={{
-        color: statusColor,
-        textAlign: "center",
-        fontWeight: 700,
-        fontSize: 11,
-        letterSpacing: "0.12em",
-      }}>● {isOn ? "ON" : "OFF"}</span>
-      <span style={{
         color: N40,
         fontSize: 10,
         textAlign: "right",
         fontVariantNumeric: "tabular-nums",
         letterSpacing: "0.04em",
       }}>{structure.objectId.slice(-6)}</span>
-      <span style={{ display: "flex", gap: 10, justifyContent: "flex-end", alignItems: "center" }}>
+      {/* STATUS + ACTIONS cluster. Status dot sits adjacent to the toggle
+          so the eye reads (current state → control → secondary action)
+          without scanning across the row. */}
+      <span style={{
+        display: "flex",
+        gap: 10,
+        justifyContent: "flex-end",
+        alignItems: "center",
+      }}>
+        <span style={{
+          color: statusColor,
+          fontWeight: 700,
+          fontSize: 11,
+          letterSpacing: "0.12em",
+          minWidth: 38,
+          textAlign: "right",
+        }}>● {isOn ? "ON" : "OFF"}</span>
         <CcpToggle on={isOn} onChange={setIsOn} ariaLabel={`${structure.label} power`} />
         <CcpBtn small variant="ghost">EDIT</CcpBtn>
       </span>
@@ -379,8 +395,12 @@ function Segmented({ value, color, segments, width }: {
  * CcpToggle — left/right power toggle following the CCP design-system
  * toggle component (per the official component-form sheet, 2026-04-25).
  *
- * Track: dark pill, hairline Martian-Red border.
+ * Track: dark pill, hairline Martian-Red border, both "OFF" and "ON"
+ *        labels rendered inside the track at the two terminals.
  * Knob:  square; orange-filled at right when ON, neutral at left when OFF.
+ *        The label UNDER the knob is dim; the OPPOSITE label is bright,
+ *        so the eye reads the active terminal at a glance like a hardware
+ *        instrument switch.
  * Click anywhere on the track flips state.
  */
 function CcpToggle({ on, onChange, ariaLabel }: {
@@ -388,10 +408,15 @@ function CcpToggle({ on, onChange, ariaLabel }: {
   onChange: (next: boolean) => void;
   ariaLabel?: string;
 }) {
-  const W = 38;     // total track width
-  const H = 18;     // track height
-  const KNOB = 14;  // knob size
-  const PAD = 2;    // inner padding from track edge to knob
+  const W = 56;     // wider than the labelless variant to hold ON/OFF text
+  const H = 20;
+  const KNOB = 16;
+  const PAD = 2;
+  // Active terminal (the side the knob sits AGAINST) reads bright; the
+  // covered terminal reads dim, so the labels behave like an aircraft
+  // instrument switch instead of a smartphone toggle.
+  const labelOnColor  = on  ? M    : N20;
+  const labelOffColor = on  ? N20  : N80;
   return (
     <button
       type="button"
@@ -410,6 +435,7 @@ function CcpToggle({ on, onChange, ariaLabel }: {
         cursor: "pointer",
         flexShrink: 0,
         transition: "box-shadow 120ms ease",
+        fontFamily: "inherit",
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 0 2px rgba(255,40,0,0.20)";
@@ -418,6 +444,47 @@ function CcpToggle({ on, onChange, ariaLabel }: {
         (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
       }}
     >
+      {/* OFF label, left terminal */}
+      <span
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          left: PAD + 1,
+          width: KNOB + 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: "0.10em",
+          color: labelOffColor,
+          transition: "color 140ms ease",
+          pointerEvents: "none",
+        }}
+      >OFF</span>
+      {/* ON label, right terminal */}
+      <span
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          right: PAD + 1,
+          width: KNOB + 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: "0.10em",
+          color: labelOnColor,
+          transition: "color 140ms ease",
+          pointerEvents: "none",
+        }}
+      >ON</span>
+      {/* The knob — sits over whichever terminal is active */}
       <span
         aria-hidden
         style={{
@@ -429,6 +496,10 @@ function CcpToggle({ on, onChange, ariaLabel }: {
           background: on ? M : N40,
           transition: "left 140ms ease, background 140ms ease",
           borderRadius: 0,
+          // tiny inner shadow to feel like a physical knob over the label
+          boxShadow: on
+            ? "inset 0 0 0 1px rgba(0,0,0,0.25)"
+            : "inset 0 0 0 1px rgba(255,255,255,0.08)",
         }}
       />
     </button>
