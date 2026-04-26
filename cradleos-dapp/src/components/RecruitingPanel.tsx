@@ -31,6 +31,7 @@ import {
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe,
+  isTribeOnActiveServer,
   type TribeVaultState,
 } from "../lib";
 
@@ -166,12 +167,26 @@ async function fetchBoardEntries(): Promise<BoardEntry[]> {
       const terminal = await fetchTerminalState(terminalId);
       if (!terminal || !terminal.open) return;
 
-      // Fetch token symbol from vault
+      // Fetch vault data — coin_symbol for display + tribe_id for the
+      // server-membership filter below.
       let coinSymbol = "?";
+      let tribeId: number | null = null;
       try {
         const vaultFields = await rpcGetObject(vaultId);
         coinSymbol = String(vaultFields["coin_symbol"] ?? "?");
+        const tid = numish(vaultFields["tribe_id"]);
+        if (typeof tid === "number" && tid > 0) tribeId = tid;
       } catch { /* */ }
+
+      // Server-membership gate: drop the terminal entirely if its tribe is
+      // not registered on the active server's World API. Same tribeId can
+      // exist as different tribes on Stillness vs Utopia, so we cannot use
+      // tribeId alone as the discriminator. The CradleOS Move package is
+      // shared across both servers, so chain queries return everyone's
+      // terminals; this filter narrows to the correct server.
+      if (tribeId === null) return; // no tribe id on vault — drop defensively
+      const onActiveServer = await isTribeOnActiveServer(tribeId);
+      if (!onActiveServer) return;
 
       entries.push({
         terminalId,

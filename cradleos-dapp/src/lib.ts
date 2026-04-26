@@ -545,6 +545,27 @@ export async function fetchTribeInfo(tribeId: number): Promise<{
   return null;
 }
 
+/** Server-membership check: returns true if the given tribeId exists on the
+ *  active server's World API. Used to filter on-chain CradleOS data (events,
+ *  events-derived lists) that are server-agnostic by package design.
+ *
+ *  The CradleOS Move package is shared across Stillness and Utopia, but
+ *  EVE-side tribe IDs use independent ID spaces per server. The same
+ *  tribe_id can refer to entirely different tribes on each server. The
+ *  WORLD_API base URL is per-server (per build), so its 200/404 is the
+ *  cleanest available signal.
+ *
+ *  Memoized per-process to avoid re-querying the World API for the same
+ *  tribe within a session. */
+const _tribeOnServerMemo = new Map<number, boolean>();
+export async function isTribeOnActiveServer(tribeId: number): Promise<boolean> {
+  if (_tribeOnServerMemo.has(tribeId)) return _tribeOnServerMemo.get(tribeId)!;
+  const info = await fetchTribeInfo(tribeId);
+  const onServer = info !== null;
+  _tribeOnServerMemo.set(tribeId, onServer);
+  return onServer;
+}
+
 /** Fetch solar system details (name, constellation, region, gateLinks). */
 export async function fetchSolarSystem(systemId: number): Promise<{
   id: number; name: string; constellationId: number; regionId: number;
@@ -2339,7 +2360,16 @@ export async function fetchAllRegisteredTribes(): Promise<RegisteredTribe[]> {
         vaultId,
       });
     }
-    return tribes.sort((a, b) => a.tribeId - b.tribeId);
+    // Server-membership gate: the CradleOS Move package is shared across
+    // Stillness and Utopia, but tribe IDs use independent ID spaces per
+    // server. Drop tribes whose tribeId is not registered on the active
+    // server's World API. Memoized so this only costs one round-trip per
+    // tribe per session.
+    const onServerFlags = await Promise.all(
+      tribes.map(t => isTribeOnActiveServer(t.tribeId)),
+    );
+    const filtered = tribes.filter((_, i) => onServerFlags[i]);
+    return filtered.sort((a, b) => a.tribeId - b.tribeId);
   } catch { return []; }
 }
 

@@ -5,7 +5,7 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
-import { numish } from "../lib";
+import { numish, isTribeOnActiveServer } from "../lib";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -103,20 +103,34 @@ async function fetchCradleOSVaults(): Promise<CradleOSVault[]> {
       params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` }, null, 200, true] }),
   });
   const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
-  const seen = new Set<number>();
-  const vaults: CradleOSVault[] = [];
-  for (const e of json.result?.data ?? []) {
+  // Group by tribeId, prefer the newest event with a non-empty coin_name
+  // (the canonical launch); fall back to newest empty event when none have
+  // a name. Same pattern as fetchAllRegisteredTribes — see lib.ts.
+  type Evt = { parsedJson?: Record<string, unknown> };
+  const byTribe = new Map<number, Evt[]>();
+  for (const e of (json.result?.data ?? []) as Evt[]) {
     const tribeId = numish(e.parsedJson?.tribe_id) ?? 0;
-    if (!tribeId || seen.has(tribeId)) continue;
-    seen.add(tribeId);
-    vaults.push({
+    if (!tribeId) continue;
+    if (!byTribe.has(tribeId)) byTribe.set(tribeId, []);
+    byTribe.get(tribeId)!.push(e);
+  }
+  const candidates: CradleOSVault[] = [];
+  for (const [tribeId, events] of byTribe) {
+    const named = events.find(e => String(e.parsedJson?.coin_name ?? "").length > 0);
+    const chosen = named ?? events[0];
+    candidates.push({
       tribeId,
-      vaultId: String(e.parsedJson?.vault_id ?? ""),
-      coinSymbol: String(e.parsedJson?.coin_symbol ?? "?"),
-      coinName: String(e.parsedJson?.coin_name ?? ""),
+      vaultId: String(chosen.parsedJson?.vault_id ?? ""),
+      coinSymbol: String(chosen.parsedJson?.coin_symbol ?? "?"),
+      coinName: String(chosen.parsedJson?.coin_name ?? ""),
     });
   }
-  return vaults;
+  // Server-membership gate: drop vaults whose tribeId isn't on the active
+  // server's World API (Stillness vs Utopia have independent ID spaces).
+  const onServerFlags = await Promise.all(
+    candidates.map(v => isTribeOnActiveServer(v.tribeId)),
+  );
+  return candidates.filter((_, i) => onServerFlags[i]);
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────

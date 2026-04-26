@@ -28,6 +28,7 @@ import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRI
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe, fetchTribeClaim,
+  isTribeOnActiveServer,
   fetchSecurityConfig, buildSetSecurityLevelTransaction, buildSetAggressionModeTransaction,
   fetchPlayerStructures,
   SEC_GREEN, SEC_YELLOW, SEC_RED,
@@ -141,7 +142,7 @@ async function fetchKnownTribes(): Promise<KnownTribe[]> {
       if (!byTribe.has(tribeId)) byTribe.set(tribeId, []);
       byTribe.get(tribeId)!.push(e);
     }
-    const result: KnownTribe[] = [];
+    const candidates: KnownTribe[] = [];
     for (const [tribeId, events] of byTribe) {
       // Prefer the first event (newest) with a non-empty coin_name; fall back
       // to the newest event when all are empty.
@@ -149,13 +150,21 @@ async function fetchKnownTribes(): Promise<KnownTribe[]> {
         e => String(e.parsedJson["coin_name"] ?? "").length > 0,
       );
       const chosen = named ?? events[0];
-      result.push({
+      candidates.push({
         tribeId,
         coinSymbol: String(chosen.parsedJson["coin_symbol"] ?? "?"),
         vaultId: String(chosen.parsedJson["vault_id"] ?? ""),
       });
     }
-    return result;
+    // Server-membership gate: drop tribes that don't exist on the active
+    // server's World API. Same tribeId can refer to different tribes on
+    // Stillness vs Utopia (the CradleOS package is shared across servers),
+    // so this filter prevents wrong-server tribes from appearing in the
+    // 'add tribe to defense policy' dropdown.
+    const onServerFlags = await Promise.all(
+      candidates.map(t => isTribeOnActiveServer(t.tribeId)),
+    );
+    return candidates.filter((_, i) => onServerFlags[i]);
   } catch { return []; }
 }
 
