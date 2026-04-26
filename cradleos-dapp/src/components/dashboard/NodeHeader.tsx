@@ -93,13 +93,15 @@ export function NodeHeader({
   // EP bar amber when consumption > 90% of capacity, else neutral
   const epColor = consumedEp > epMax * 0.9 ? "#FFB54A" : "rgba(250,250,229,0.80)";
 
-  // Visual right tail for the fuel bar — reflects the production calc which
-  // still mis-labels qty * burn_rate_in_ms / 3.6e6 as 'hours' on-chain. We
-  // print 'h' in production until that calc is verified against the on-chain
-  // semantics (open task in MEMORY.md). Playground prints 'u' because we know
-  // the value is fuel-units, not hours.
+  // Visual right tail for the fuel bar.
+  //
+  // Confirmed by Raw 2026-04-25: the value the production lib.ts calc emits
+  // (qty * burn_rate_in_ms / 3.6e6) is fuel UNITS remaining, not hours. The
+  // formula's dimensional analysis was wrong. Until lib.ts is fixed we render
+  // the value as 'u' here so the label matches reality — it's better to show
+  // a correctly-labeled units count than a wrong 'hours' figure.
   const fuelRightLabel = node.runtimeHoursRemaining !== undefined
-    ? `~${Math.round(node.runtimeHoursRemaining)}h`
+    ? `${Math.round(node.runtimeHoursRemaining).toLocaleString()} u`
     : "";
 
   return (
@@ -146,12 +148,12 @@ export function NodeHeader({
           aria-hidden
           style={{
             display: "inline-block",
-            width: 10,
-            fontSize: 11,
+            width: 16,
+            fontSize: 16,
             lineHeight: 1,
             transform: collapsed ? "rotate(0deg)" : "rotate(90deg)",
-            transition: "transform 140ms ease",
-            color: N60,
+            transition: "transform 140ms ease, color 140ms ease",
+            color: M,
           }}
         >▶</span>
         <span style={{ color: N40, fontSize: 14 }}>◆</span>
