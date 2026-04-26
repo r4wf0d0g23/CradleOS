@@ -173,3 +173,31 @@
   letter-spacing: var(--ccp-ds-tracking-normal);
   line-height: var(--ccp-ds-lh-normal);
 }
+
+/* ── INSTRUMENT-PANEL STATUS LIGHT PULSE ────────────────────────────────────
+   Used by playground StatusLight + (eventually) production status indicators.
+   ON pulses at a calm 1.6s rhythm — alive but not distracting.
+   OFF pulses slower (2.4s) and shallower — it's a warning, not an alarm. */
+@keyframes ccp-led-pulse-on {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.18);
+  }
+}
+@keyframes ccp-led-pulse-off {
+  0%, 100% {
+    filter: brightness(0.85);
+  }
+  50% {
+    filter: brightness(1.05);
+  }
+}
+
+/* Respect prefers-reduced-motion — LEDs go static for users who
+   request reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes ccp-led-pulse-on  { 0%, 100% { filter: brightness(1);    } }
+  @keyframes ccp-led-pulse-off { 0%, 100% { filter: brightness(0.92); } }
+}
