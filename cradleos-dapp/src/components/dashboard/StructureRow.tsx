@@ -127,8 +127,12 @@ export function StructureRow({
       onMouseEnter={() => onFocus?.(s)}
       onMouseLeave={() => onFocus?.(null)}
       style={{
+        // Fixed column widths so EP / OBJ ID / actions all line up between
+        // every row of every node. The actions cluster is fixed width too
+        // because the EDIT/DELEGATE buttons would otherwise jump rightward
+        // on rows where DELEGATE is hidden.
         display: "grid",
-        gridTemplateColumns: "32px 1fr 90px 90px auto",
+        gridTemplateColumns: "32px 1fr 90px 90px 320px",
         alignItems: "center",
         gap: 12,
         padding: "9px 18px",
@@ -195,21 +199,24 @@ export function StructureRow({
         {s.objectId.slice(-6)}
       </span>
 
-      {/* Status + actions cluster */}
+      {/* Status + actions cluster. Order: warning glyph (when blocked) is
+          to the LEFT of the LED — user reads 'why is this blocked?' before
+          the LED tells them current state. Then toggle, then secondary
+          actions. */}
       <span style={{
         display: "flex",
         gap: 8,
         alignItems: "center",
         justifyContent: "flex-end",
-        flexWrap: "wrap",
+        flexWrap: "nowrap",
       }}>
-        <StatusLight on={s.isOnline} size={12} ariaLabel={`${s.displayName} status`} />
         {epBlocked && (
           <PowerBlockedGlyph
             ariaLabel={`Power blocked: ${blockedReason}`}
             tooltip={`INSUFFICIENT POWER — ${blockedReason}`}
           />
         )}
+        <StatusLight on={s.isOnline} size={12} ariaLabel={`${s.displayName} status`} />
         <CcpToggle
           on={s.isOnline}
           onChange={() => {

@@ -10,3 +10,7 @@ export { CcpToggle } from "./CcpToggle";
 export type { CcpToggleProps } from "./CcpToggle";
 export { PowerBlockedGlyph } from "./PowerBlockedGlyph";
 export type { PowerBlockedGlyphProps } from "./PowerBlockedGlyph";
+export { Segmented } from "./Segmented";
+export type { SegmentedProps } from "./Segmented";
+export { BarChip } from "./BarChip";
+export type { BarChipProps } from "./BarChip";

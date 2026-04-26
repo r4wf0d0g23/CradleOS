@@ -18,6 +18,8 @@ import {
   type LocationGroup,
 } from "../lib";
 import { StructureRow } from "./dashboard/StructureRow";
+import { StructureRowHeader } from "./dashboard/StructureRowHeader";
+import { NodeHeader } from "./dashboard/NodeHeader";
 import { sortByFamily } from "./dashboard/sortByFamily";
 
 // Node EP capacity. The on-chain Move object does not expose this as a field
@@ -1046,7 +1048,6 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
             const children = sys.nodeChildren.get(node.objectId) ?? [];
             const childOnline = children.filter(c => c.isOnline).length;
             const isNodeFocused = focused?.objectId === node.objectId;
-            const totalEnergyCost = children.reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
             const onlineEnergyCost = children.filter(c => c.isOnline).reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
             // Live EP budget remaining at this node — used to gate offline
             // structures' power-on toggles when their cost would exceed budget.
@@ -1063,108 +1064,52 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                 background: "rgba(255,255,255,0.015)",
                 border: `2px solid ${node.isOnline ? (isNodeFocused ? "#00ff96" : "rgba(0,255,150,0.3)") : (isNodeFocused ? "#ff4444" : "rgba(255,68,68,0.3)")}`,
               }}>
-                {/* Node header row */}
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: isCollapsed ? 0 : 12, cursor: "pointer" }}
-                  onMouseEnter={() => setFocused(node)}
-                  onMouseLeave={() => setFocused(null)}
-                  onClick={() => openDApp(node)}
-                >
-                  {/* Collapse chevron — own click target so the rest of the
-                      header still opens the in-game dApp. */}
-                  <button
-                    type="button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      setNodeCollapsed(node.objectId, !isCollapsed);
-                    }}
-                    aria-label={isCollapsed ? `Expand ${node.displayName}` : `Collapse ${node.displayName}`}
-                    aria-expanded={!isCollapsed}
-                    title={isCollapsed ? "Expand" : "Collapse"}
+                {/* Node header — name, status, fuel/EP bars, power toggle, action chips */}
+                <NodeHeader
+                  node={node}
+                  childCount={children.length}
+                  childOnline={childOnline}
+                  childOffline={children.length - childOnline}
+                  consumedEp={onlineEnergyCost}
+                  epMax={NODE_EP_MAX}
+                  collapsed={isCollapsed}
+                  onToggleCollapsed={() => setNodeCollapsed(node.objectId, !isCollapsed)}
+                  onOpenDApp={() => openDApp(node)}
+                  onFocus={setFocused}
+                  isFocused={isNodeFocused}
+                  onTogglePower={() => node.isOnline ? handleOffline(node) : handleOnline(node)}
+                  busy={actionBusy === node.objectId}
+                  onEdit={() => handleRename(node)}
+                  onDefense={onNavigate ? () => onNavigate("defense") : undefined}
+                  onGates={onNavigate ? () => onNavigate("gates") : undefined}
+                />
+
+                {/* Bulk-assign strip — appears when the user has a tribe vault
+                    AND there are undelegated turrets or gates to bulk-assign. */}
+                {!isCollapsed && tribeVaultId && (
+                  children.some(c => c.kind === "Turret" && !isDelegated(c))
+                  || children.some(c => c.kind === "Gate" && !isDelegated(c))
+                ) && (
+                  <div
                     style={{
-                      background: "transparent",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                      color: "rgba(250,250,229,0.6)",
-                      width: 14,
-                      display: "inline-flex",
+                      display: "flex",
+                      gap: 6,
+                      padding: "6px 18px",
+                      background: "rgba(255,180,74,0.05)",
+                      borderBottom: "1px solid rgba(250,250,229,0.10)",
                       alignItems: "center",
-                      justifyContent: "center",
                     }}
                   >
-                    <span
-                      aria-hidden
-                      style={{
-                        display: "inline-block",
-                        fontSize: 11,
-                        lineHeight: 1,
-                        transform: isCollapsed ? "rotate(0deg)" : "rotate(90deg)",
-                        transition: "transform 140ms ease",
-                      }}
-                    >▶</span>
-                  </button>
-                  {/* status indicated by section border color */}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#FF4700" }}>⚡ {node.displayName}</span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{node.typeName ?? "Network Node"}</span>
-                  <span style={{ fontSize: 12, color: node.isOnline ? "#00ff96" : "#ff4444", fontWeight: 600 }}>
-                    {node.isOnline ? "● ONLINE" : "○ OFFLINE"}
-                  </span>
-                  {node.fuelLevelPct !== undefined && (
-                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ width: 60, height: 5, background: "rgba(255,255,255,0.1)", display: "inline-block", overflow: "hidden" }}>
-                        <span style={{ width: `${Math.min(100, node.fuelLevelPct)}%`, height: "100%", background: node.fuelLevelPct > 50 ? "#00ff96" : node.fuelLevelPct > 10 ? "#ffd700" : "#ff4444", display: "block" }} />
-                      </span>
-                      <span style={{ fontSize: 10, color: node.fuelLevelPct > 50 ? "#00ff96" : node.fuelLevelPct > 10 ? "#ffd700" : "#ff4444" }}>
-                        {node.fuelLevelPct.toFixed(0)}%
-                        {node.runtimeHoursRemaining !== undefined ? ` (~${Math.round(node.runtimeHoursRemaining)}h)` : ""}
-                      </span>
-                    </span>
-                  )}
-                  {/* Energy capacity bar */}
-                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 10, color: "rgba(255,180,50,0.8)" }}>⚡</span>
-                    <span style={{ width: 60, height: 5, background: "rgba(255,255,255,0.1)", display: "inline-block", overflow: "hidden" }}>
-                      <span style={{ width: `${totalEnergyCost > 0 ? Math.min(100, (onlineEnergyCost / 1000) * 100) : 0}%`, height: "100%", background: onlineEnergyCost > 800 ? "#ff4444" : onlineEnergyCost > 500 ? "#ffd700" : "rgba(255,180,50,0.8)", display: "block" }} />
-                    </span>
-                    <span style={{ fontSize: 10, color: "rgba(255,180,50,0.8)" }}>{onlineEnergyCost}/1000 GJ</span>
-                  </span>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>
-                    {children.length} structure{children.length !== 1 ? "s" : ""} · {childOnline}↑
-                    {children.length - childOnline > 0 ? ` ${children.length - childOnline}↓` : ""}
-                  </span>
-                  {/* Node action buttons */}
-                  <span style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
-                    <button
-                      style={{ background: node.isOnline ? "rgba(255,68,68,0.15)" : "rgba(0,255,150,0.15)", color: node.isOnline ? "#ff4444" : "#00ff96", border: "none", padding: "3px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-                      onClick={(e) => { e.stopPropagation(); node.isOnline ? handleOffline(node) : handleOnline(node); }}
-                    >
-                      {node.isOnline ? "OFFLINE" : "ONLINE"}
-                    </button>
-                    <button
-                      style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "none", padding: "3px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-                      onClick={(e) => { e.stopPropagation(); handleRename(node); }}
-                    >
-                      EDIT
-                    </button>
-                    <button
-                      style={{ background: "rgba(255,68,68,0.12)", color: "#ff6644", border: "none", padding: "3px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-                      onClick={(e) => { e.stopPropagation(); onNavigate?.("defense"); }}
-                      title="Turret defense policy"
-                    >
-                      🛡 DEFENSE
-                    </button>
-                    <button
-                      style={{ background: "rgba(0,180,255,0.12)", color: "#00ccff", border: "none", padding: "3px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-                      onClick={(e) => { e.stopPropagation(); onNavigate?.("gates"); }}
-                      title="Gate access policy"
-                    >
-                      ⛩ GATES
-                    </button>
-                    {/* Bulk assign buttons */}
-                    {tribeVaultId && children.some(c => c.kind === "Turret" && !isDelegated(c)) && (
+                    <span style={{
+                      fontSize: 10,
+                      color: "rgba(255,180,74,0.9)",
+                      letterSpacing: "0.12em",
+                      fontWeight: 700,
+                      marginRight: 8,
+                    }}>BULK ASSIGN ·</span>
+                    {children.some(c => c.kind === "Turret" && !isDelegated(c)) && (
                       <button
-                        style={{ background: "rgba(255,180,50,0.12)", color: "rgba(255,180,50,0.9)", border: "none", padding: "3px 8px", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+                        style={{ background: "transparent", border: "1px solid rgba(255,180,74,0.6)", color: "rgba(255,180,74,0.95)", padding: "3px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.10em", textTransform: "uppercase" }}
                         onClick={async (e) => {
                           e.stopPropagation();
                           const turrets = children.filter(c => c.kind === "Turret" && !isDelegated(c));
@@ -1175,9 +1120,9 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                         ⚑ ALL TURRETS
                       </button>
                     )}
-                    {tribeVaultId && children.some(c => c.kind === "Gate" && !isDelegated(c)) && (
+                    {children.some(c => c.kind === "Gate" && !isDelegated(c)) && (
                       <button
-                        style={{ background: "rgba(255,180,50,0.12)", color: "rgba(255,180,50,0.9)", border: "none", padding: "3px 8px", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+                        style={{ background: "transparent", border: "1px solid rgba(255,180,74,0.6)", color: "rgba(255,180,74,0.95)", padding: "3px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.10em", textTransform: "uppercase" }}
                         onClick={async (e) => {
                           e.stopPropagation();
                           const gates = children.filter(c => c.kind === "Gate" && !isDelegated(c));
@@ -1188,15 +1133,16 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                         ⚑ ALL GATES
                       </button>
                     )}
-                  </span>
-                </div>
+                  </div>
+                )}
 
                 {/* Connected structures — dense rows with toggle, status LED, EP gate.
                     Hidden when the node is collapsed; the header above remains visible
                     so the user can still see status and operate the node power. */}
                 {!isCollapsed && (
                   children.length > 0 ? (
-                    <div style={{ borderTop: "1px solid rgba(250,250,229,0.10)" }}>
+                    <div>
+                      <StructureRowHeader />
                       {sortByFamily(children).map((child, i) => (
                         <StructureRow
                           key={child.objectId}
