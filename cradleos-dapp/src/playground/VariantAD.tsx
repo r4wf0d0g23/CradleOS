@@ -177,19 +177,46 @@ function Stat({ n, label, color }: { n: number; label: string; color: string }) 
   );
 }
 
+// localStorage key prefix for per-node collapse state.
+const COLLAPSE_KEY_PREFIX = "cradleos.playground.nodeCollapsed.";
+
+function loadCollapsed(objectId: string): boolean {
+  try {
+    return window.localStorage.getItem(COLLAPSE_KEY_PREFIX + objectId) === "1";
+  } catch {
+    return false;
+  }
+}
+function saveCollapsed(objectId: string, collapsed: boolean): void {
+  try {
+    if (collapsed) window.localStorage.setItem(COLLAPSE_KEY_PREFIX + objectId, "1");
+    else window.localStorage.removeItem(COLLAPSE_KEY_PREFIX + objectId);
+  } catch { /* localStorage unavailable — silently ignore */ }
+}
+
 function NodeGroup({ node }: { node: FixtureNode }) {
   const [nodeOn, setNodeOn] = useState(node.isOnline);
+  // Collapse state persists per-node via localStorage so the user's
+  // expand/collapse choices survive page reloads.
+  const [collapsed, setCollapsed] = useState<boolean>(() => loadCollapsed(node.objectId));
   const childOnline = node.children.filter(c => c.isOnline).length;
   const childOffline = node.children.length - childOnline;
   const fuelColor = node.fuelLevelPct < 15 ? "#FFB54A"
     : node.fuelLevelPct < 50 ? "#FFB54A" : ON;
   const sorted = sortByFamily(node.children);
 
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    saveCollapsed(node.objectId, next);
+  }
+
   return (
     <div style={{ border: `1px solid ${N10}` }}>
-      {/* Node header. The standalone status badge was removed — the
-          status dot is now rendered immediately next to the node toggle
-          for the same read-order reasons as the structure rows. */}
+      {/* Node header. Click the title area or chevron to collapse/expand the
+          structure list below; controls (toggle, edit, defense, gates) and
+          status indicators stay visible regardless of collapse state so the
+          dashboard can be scanned at a glance even when fully collapsed. */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "auto 1fr auto auto auto",
@@ -197,16 +224,56 @@ function NodeGroup({ node }: { node: FixtureNode }) {
         gap: 14,
         padding: "12px 18px",
         background: N05,
-        borderBottom: `1px solid ${N10}`,
+        borderBottom: collapsed ? "none" : `1px solid ${N10}`,
       }}>
-        <span style={{ color: N40, fontSize: 14 }}>{KIND_GLYPH.NetworkNode}</span>
-        <span style={{
-          color: N,
-          fontWeight: 700,
-          fontSize: 16,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}>
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? `Expand ${node.label}` : `Collapse ${node.label}`}
+          aria-expanded={!collapsed}
+          title={collapsed ? "Expand" : "Collapse"}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: N60,
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              display: "inline-block",
+              width: 10,
+              fontSize: 11,
+              lineHeight: 1,
+              transform: collapsed ? "rotate(0deg)" : "rotate(90deg)",
+              transition: "transform 140ms ease",
+              color: N60,
+            }}
+          >▶</span>
+          <span style={{ color: N40, fontSize: 14 }}>{KIND_GLYPH.NetworkNode}</span>
+        </button>
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            textAlign: "left",
+            color: N,
+            fontWeight: 700,
+            fontSize: 16,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            fontFamily: "inherit",
+          }}
+        >
           {node.label}
           <span style={{
             color: N40,
@@ -214,8 +281,8 @@ function NodeGroup({ node }: { node: FixtureNode }) {
             fontSize: 11,
             marginLeft: 12,
             letterSpacing: "0.10em",
-          }}>NETWORK NODE · {node.children.length} STRUCT · {childOnline}↑ {childOffline}↓</span>
-        </span>
+          }}>NETWORK NODE · {node.children.length} STRUCT · {childOnline}↑ {childOffline}↓{collapsed ? " · COLLAPSED" : ""}</span>
+        </button>
         {/* Fuel + energy bar chips */}
         <BarChip label="FUEL" pct={node.fuelLevelPct}
           right={`${node.fuelUnitsLeft.toLocaleString()} u`} color={fuelColor} />
@@ -238,39 +305,44 @@ function NodeGroup({ node }: { node: FixtureNode }) {
         </span>
       </div>
 
-      {/* Column header. STATUS column was removed — the status dot is now
-          rendered alongside the toggle inside the ACTIONS cluster, which
-          tightens the read order: object identity left, controls right. */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "32px 1fr 70px 90px 230px",
-        alignItems: "center",
-        gap: 12,
-        padding: "7px 18px",
-        background: N05,
-        borderBottom: `1px solid ${N10}`,
-        fontSize: 10,
-        color: N60,
-        letterSpacing: "0.12em",
-        textTransform: "uppercase",
-        fontWeight: 700,
-      }}>
-        <span></span>
-        <span>NAME</span>
-        <span style={{ textAlign: "right" }}>EP</span>
-        <span style={{ textAlign: "right" }}>OBJ ID</span>
-        <span style={{ textAlign: "right" }}>STATUS · ACTIONS</span>
-      </div>
+      {/* Column header + structure rows are hidden when the node is
+          collapsed. Status indicators and controls remain visible in
+          the header so the dashboard stays scannable. */}
+      {!collapsed && (
+        <>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "32px 1fr 70px 90px 230px",
+            alignItems: "center",
+            gap: 12,
+            padding: "7px 18px",
+            background: N05,
+            borderBottom: `1px solid ${N10}`,
+            fontSize: 10,
+            color: N60,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}>
+            <span></span>
+            <span>NAME</span>
+            <span style={{ textAlign: "right" }}>EP</span>
+            <span style={{ textAlign: "right" }}>OBJ ID</span>
+            <span style={{ textAlign: "right" }}>STATUS · ACTIONS</span>
+          </div>
 
-      {/* Structure rows, family-clustered (mini-printer next to printer next
-          to heavy-printer, etc.) but no group separators — just one continuous
-          list. Zebra striping comes from row index, so the eye still picks
-          up the row rhythm without visual category breaks. */}
-      <div>
-        {sorted.map((s, i) => (
-          <StructureRow key={s.objectId} structure={s} index={i} />
-        ))}
-      </div>
+          {/* Structure rows, family-clustered (mini-printer next to printer
+              next to heavy-printer, etc.) but no group separators — just
+              one continuous list. Zebra striping comes from row index, so
+              the eye still picks up the row rhythm without visual category
+              breaks. */}
+          <div>
+            {sorted.map((s, i) => (
+              <StructureRow key={s.objectId} structure={s} index={i} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
