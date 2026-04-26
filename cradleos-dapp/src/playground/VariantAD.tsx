@@ -8,7 +8,7 @@
  * This is the most "EVE Frontier-esque" of the four variants.
  */
 
-import type { FixtureNode, FixtureStructure } from "./fixture";
+import type { FixtureNode, FixtureStructure, StructureKind } from "./fixture";
 
 type Summary = { structures: number; online: number; systems: number; hidden: number };
 type Props = { nodes: FixtureNode[]; summary: Summary };
@@ -42,6 +42,72 @@ const KIND_GLYPH: Record<string, string> = {
   MiniBerth: "○",
   Relay: "▷",
 };
+
+// Groups structures by kind for visual scanability — "all the Refineries
+// together" — then by label within each kind. The kind ordering itself
+// follows production/utility flow: power & networking first, then logistics,
+// then production, then habitation/specialty.
+const KIND_ORDER: StructureKind[] = [
+  "Relay",
+  "NetworkNode",
+  "MiniStorage",
+  "MiniBerth",
+  "Berth",
+  "HeavyBerth",
+  "MiniPrinter",
+  "Printer",
+  "Refinery",
+  "Assembler",
+  "Nest",
+  "Nursery",
+  "Shelter",
+];
+
+const KIND_DISPLAY: Record<string, string> = {
+  NetworkNode: "NETWORK NODE",
+  MiniPrinter: "MINI PRINTER",
+  Printer: "PRINTER",
+  MiniStorage: "MINI STORAGE",
+  Nest: "NEST",
+  Nursery: "NURSERY",
+  Refinery: "REFINERY",
+  Shelter: "SHELTER",
+  Assembler: "ASSEMBLER",
+  Berth: "BERTH",
+  HeavyBerth: "HEAVY BERTH",
+  MiniBerth: "MINI BERTH",
+  Relay: "RELAY",
+};
+
+function groupByKind(children: FixtureStructure[]): Array<{ kind: StructureKind; rows: FixtureStructure[] }> {
+  const buckets = new Map<StructureKind, FixtureStructure[]>();
+  for (const c of children) {
+    if (!buckets.has(c.kind)) buckets.set(c.kind, []);
+    buckets.get(c.kind)!.push(c);
+  }
+  // Sort each bucket by label (then objectId for determinism)
+  for (const arr of buckets.values()) {
+    arr.sort((a, b) =>
+      a.label.localeCompare(b.label) || a.objectId.localeCompare(b.objectId)
+    );
+  }
+  // Emit in canonical KIND_ORDER first, then any unknown kinds alphabetically
+  const result: Array<{ kind: StructureKind; rows: FixtureStructure[] }> = [];
+  for (const k of KIND_ORDER) {
+    const rows = buckets.get(k);
+    if (rows && rows.length) {
+      result.push({ kind: k, rows });
+      buckets.delete(k);
+    }
+  }
+  const leftover = Array.from(buckets.entries()).sort(([a], [b]) =>
+    String(a).localeCompare(String(b))
+  );
+  for (const [kind, rows] of leftover) {
+    result.push({ kind, rows });
+  }
+  return result;
+}
 
 export function VariantAD({ nodes, summary }: Props) {
   return (
@@ -127,6 +193,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
   const fuelColor = node.fuelLevelPct < 15 ? "#FFB54A"
     : node.fuelLevelPct < 50 ? "#FFB54A" : ON;
   const onlineColor = node.isOnline ? ON : M;
+  const grouped = groupByKind(node.children);
 
   return (
     <div style={{ border: `1px solid ${N10}` }}>
@@ -163,13 +230,20 @@ function NodeGroup({ node }: { node: FixtureNode }) {
           fontWeight: 700,
           letterSpacing: "0.12em",
         }}>● {node.isOnline ? "ONLINE" : "OFFLINE"}</span>
+        {/* Fuel display: the production lib.ts current emits a "hours"
+            value but the underlying calc (qty * burn_rate_in_ms / 3.6e6)
+            actually reads as fuel UNITS remaining, not hours. Show the
+            raw units count with a "u" suffix until the formula is
+            verified against on-chain data. */}
         <BarChip label="FUEL" pct={node.fuelLevelPct}
-          right={`~${node.fuelHoursLeft}h`} color={fuelColor} />
+          right={`${node.fuelUnitsLeft.toLocaleString()} u`} color={fuelColor} />
         <BarChip label="EP"
           pct={(node.fuelGjCurrent / node.fuelGjMax) * 100}
           right={`${node.fuelGjCurrent}/${node.fuelGjMax}`}
           color={N80} />
-        <CcpBtn>{node.isOnline ? "OFFLINE" : "ONLINE"}</CcpBtn>
+        {/* Action buttons label the TARGET state with an arrow so they read
+            unambiguously as actions, not as the current state. */}
+        <CcpBtn>{node.isOnline ? "→ OFFLINE" : "→ ONLINE"}</CcpBtn>
         <CcpBtn>EDIT</CcpBtn>
         <span style={{ display: "flex", gap: 6 }}>
           <CcpBtn variant="ghost">DEFENSE</CcpBtn>
@@ -180,7 +254,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
       {/* Column header */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "32px 1fr 130px 70px 90px 90px 150px",
+        gridTemplateColumns: "32px 1fr 70px 90px 90px 170px",
         alignItems: "center",
         gap: 12,
         padding: "7px 18px",
@@ -194,19 +268,84 @@ function NodeGroup({ node }: { node: FixtureNode }) {
       }}>
         <span></span>
         <span>NAME</span>
-        <span>KIND</span>
         <span style={{ textAlign: "right" }}>EP</span>
         <span style={{ textAlign: "center" }}>STATUS</span>
         <span style={{ textAlign: "right" }}>OBJ ID</span>
         <span style={{ textAlign: "right" }}>ACTIONS</span>
       </div>
 
-      {/* Structure rows */}
+      {/* Structure rows, grouped by kind. Each kind block starts with a
+          small kind banner so the user can scan "all the Refineries" or
+          "all the Mini Storages" without re-reading the kind on every row. */}
       <div>
-        {node.children.map((s, i) => (
-          <StructureRow key={s.objectId} structure={s} index={i} />
-        ))}
+        {grouped.map(({ kind, rows }) => {
+          const onlineInGroup = rows.filter(r => r.isOnline).length;
+          return (
+            <div key={kind}>
+              <KindBanner
+                kind={kind}
+                count={rows.length}
+                onlineCount={onlineInGroup}
+              />
+              {rows.map((s, i) => (
+                <StructureRow key={s.objectId} structure={s} index={i} />
+              ))}
+            </div>
+          );
+        })}
       </div>
+    </div>
+  );
+}
+
+function KindBanner({ kind, count, onlineCount }: {
+  kind: StructureKind; count: number; onlineCount: number;
+}) {
+  const offlineCount = count - onlineCount;
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "32px 1fr auto",
+      alignItems: "center",
+      gap: 12,
+      padding: "6px 18px",
+      background: "rgba(255,255,255,0.015)",
+      borderBottom: `1px solid ${N10}`,
+    }}>
+      <span style={{
+        color: N60,
+        fontSize: 14,
+        textAlign: "center",
+      }}>{KIND_GLYPH[kind] ?? "◇"}</span>
+      <span style={{
+        color: N60,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.16em",
+        textTransform: "uppercase",
+      }}>
+        {KIND_DISPLAY[kind] ?? kind}
+        <span style={{
+          color: N40,
+          marginLeft: 8,
+          fontSize: 10,
+          letterSpacing: "0.10em",
+        }}>
+          × {count}
+        </span>
+      </span>
+      <span style={{
+        fontSize: 10,
+        color: N40,
+        letterSpacing: "0.10em",
+      }}>
+        {onlineCount > 0 && (
+          <span style={{ color: ON, fontWeight: 700 }}>{onlineCount}↑ </span>
+        )}
+        {offlineCount > 0 && (
+          <span style={{ color: M, fontWeight: 700 }}>{offlineCount}↓</span>
+        )}
+      </span>
     </div>
   );
 }
@@ -219,7 +358,7 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: "32px 1fr 130px 70px 90px 90px 150px",
+      gridTemplateColumns: "32px 1fr 70px 90px 90px 170px",
       alignItems: "center",
       gap: 12,
       padding: "9px 18px",
@@ -234,12 +373,6 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
         fontWeight: 400,
         letterSpacing: "0.02em",
       }}>{structure.label}</span>
-      <span style={{
-        color: N60,
-        fontSize: 11,
-        letterSpacing: "0.10em",
-        textTransform: "uppercase",
-      }}>{structure.kind}</span>
       <span style={{
         color: N80,
         textAlign: "right",
@@ -261,8 +394,10 @@ function StructureRow({ structure, index }: { structure: FixtureStructure; index
         letterSpacing: "0.04em",
       }}>{structure.objectId.slice(-6)}</span>
       <span style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+        {/* Action label = the TARGET state with arrow, not the current state.
+            "→ OFFLINE" reads as the action, not as a status indicator. */}
         <CcpBtn small accent={statusColor}>
-          {structure.isOnline ? "OFFLINE" : "ONLINE"}
+          {structure.isOnline ? "→ OFFLINE" : "→ ONLINE"}
         </CcpBtn>
         <CcpBtn small variant="ghost">EDIT</CcpBtn>
       </span>

@@ -38,7 +38,10 @@ export interface FixtureNode {
   kind: "NetworkNode";
   isOnline: boolean;
   fuelLevelPct: number;      // 0..100
-  fuelHoursLeft: number;     // estimated hours remaining
+  fuelUnitsLeft: number;     // fuel UNITS remaining in the tank (NOT hours).
+                             // Production lib.ts currently mis-labels this as
+                             // hours via `qty * br / 3_600_000` — needs an
+                             // on-chain verification before that calc is fixed.
   fuelGjCurrent: number;
   fuelGjMax: number;
   children: FixtureStructure[];
@@ -82,7 +85,7 @@ export const FIXTURE_NODES: FixtureNode[] = [
     kind: "NetworkNode",
     isOnline: true,
     fuelLevelPct: 9,
-    fuelHoursLeft: 308,
+    fuelUnitsLeft: 308,
     fuelGjCurrent: 700,
     fuelGjMax: 1000,
     children: node1Children,
@@ -93,7 +96,7 @@ export const FIXTURE_NODES: FixtureNode[] = [
     kind: "NetworkNode",
     isOnline: true,
     fuelLevelPct: 86,
-    fuelHoursLeft: 3059,
+    fuelUnitsLeft: 3059,
     fuelGjCurrent: 250,
     fuelGjMax: 1000,
     children: node2Children,
@@ -104,7 +107,7 @@ export const FIXTURE_NODES: FixtureNode[] = [
     kind: "NetworkNode",
     isOnline: false,
     fuelLevelPct: 0,
-    fuelHoursLeft: 0,
+    fuelUnitsLeft: 0,
     fuelGjCurrent: 0,
     fuelGjMax: 1000,
     children: node3Children,

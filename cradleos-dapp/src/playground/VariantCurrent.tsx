@@ -111,7 +111,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
             <div style={{ width: `${node.fuelLevelPct}%`, height: "100%", background: fuelBarColor }} />
           </div>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
-            {node.fuelLevelPct}% (~{node.fuelHoursLeft}h)
+            {node.fuelLevelPct}% ({node.fuelUnitsLeft.toLocaleString()} u)
           </span>
         </div>
         <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>⚡</span>

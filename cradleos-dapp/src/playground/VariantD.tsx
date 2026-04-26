@@ -129,7 +129,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
         {/* Fuel bar (segmented) */}
         <Segmented value={node.fuelLevelPct} color={fuelColor} segments={20} width={100} />
         <span style={{ fontSize: 11, color: N60, letterSpacing: "0.02em" }}>
-          {node.fuelLevelPct}% · ~{node.fuelHoursLeft}h
+          {node.fuelLevelPct}% · {node.fuelUnitsLeft.toLocaleString()} u
         </span>
 
         {/* Energy bar */}

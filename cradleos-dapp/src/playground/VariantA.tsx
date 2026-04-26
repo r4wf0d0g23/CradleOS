@@ -137,7 +137,7 @@ function NodeGroup({ node }: { node: FixtureNode }) {
           ● {node.isOnline ? "ONLINE" : "OFFLINE"}
         </span>
         <BarChip label="FUEL" pct={node.fuelLevelPct}
-          right={`~${node.fuelHoursLeft}h`} color={fuelColor} />
+          right={`${node.fuelUnitsLeft.toLocaleString()} u`} color={fuelColor} />
         <BarChip label="EP"
           pct={(node.fuelGjCurrent / node.fuelGjMax) * 100}
           right={`${node.fuelGjCurrent}/${node.fuelGjMax}`}
