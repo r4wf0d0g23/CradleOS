@@ -501,6 +501,10 @@ export function MapPanel() {
   const [targetSys,   setTargetSys]   = useState<SolarSystem | null>(null);
   const [locationSrc, setLocationSrc] = useState<string>("");
   const [locating,    setLocating]    = useState(false);
+  // Friendly failure message shown when none of the auto-detect sources
+  // (EVE Vault jumps, structures, localStorage) returned a result. Cleared
+  // whenever a successful detection happens or the user manually picks.
+  const [locateError, setLocateError] = useState<string>("");
   const [planetIdx,   setPlanetIdx]   = useState<PlanetIndex>({});
   const [manualSearchQ, setManualSearchQ] = useState("");
   const [manualResults, setManualResults] = useState<SolarSystem[]>([]);
@@ -696,6 +700,7 @@ export function MapPanel() {
 
   const detectCurrentSystem = useCallback(async () => {
     setLocating(true);
+    setLocateError("");
 
     // 1. World API jumps via EVE Vault token
     try {
@@ -742,15 +747,25 @@ export function MapPanel() {
       }
     } catch { /* fall through */ }
 
-    // 4. Manual — no source found
+    // 4. Manual — no auto-source found. Clear locationSrc and signal the
+    // caller via locateError so the panel can render an actionable message.
     setLocating(false);
     setLocationSrc("");
+    setLocateError(
+      "Could not auto-detect your current system. Connect EVE Vault for last-jump tracking, or pick a system manually below.",
+    );
   }, [account?.address]);
 
   function setCurrentAndStore(sys: SolarSystem, src: string) {
     setCurrentSys(sys);
     setLocationSrc(src);
+    setLocateError("");
     try { localStorage.setItem(LS_LAST_SYS, JSON.stringify({ id: sys.id, name: sys.name })); } catch { /* quota */ }
+    // Fly the camera to the located system immediately. Previously this was
+    // deferred to the reachable-systems effect, which short-circuits when
+    // maxRangeLY is 0 (the default before the user enters fuel) — meaning
+    // first-time pilots saw 'locate me' do nothing visually.
+    flyTo(sys);
   }
 
   // ── Calculate reachable systems when current or range changes ─────────────
@@ -1105,6 +1120,24 @@ export function MapPanel() {
         )}
 
         {locating && <span style={{ color:"#444", fontSize:"11px" }}>locating…</span>}
+
+        {/* Locate failure message — only shown when auto-detect ran and
+            found nothing. Click to dismiss. */}
+        {locateError && !locating && (
+          <span
+            onClick={() => setLocateError("")}
+            title="Dismiss"
+            style={{
+              color: "rgba(255,180,74,0.9)",
+              background: "rgba(255,180,74,0.08)",
+              border: "1px solid rgba(255,180,74,0.25)",
+              borderRadius: 12,
+              padding: "3px 10px",
+              fontSize: 11,
+              cursor: "pointer",
+            }}
+          >⚠ {locateError} ✕</span>
+        )}
 
         {/* Re-detect button */}
         {loadState.done && (
