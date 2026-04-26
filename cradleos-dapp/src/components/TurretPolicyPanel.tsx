@@ -117,7 +117,9 @@ async function fetchRelations(relationsTableId: string): Promise<Map<number, boo
 }
 
 /** Fetch all known tribes by querying CoinLaunched events.
- *  Deduplicates by tribeId — keeps the most recent vault per tribe (descending order). */
+ *  Deduplicates by tribeId, preferring the event with a non-empty coin_name
+ *  (the "real" launch) over empty/aborted test launches. Among multiple
+ *  named events for the same tribe, the newest wins. */
 async function fetchKnownTribes(): Promise<KnownTribe[]> {
   try {
     const res = await fetch(SUI_TESTNET_RPC, {
@@ -125,21 +127,32 @@ async function fetchKnownTribes(): Promise<KnownTribe[]> {
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
         method: "suix_queryEvents",
-        // descending=true → newest first; first occurrence of each tribeId wins
+        // descending=true → newest first
         params: [{ MoveEventType: eventType("tribe_vault", "CoinLaunched") }, null, 200, true],
       }),
     });
     const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
-    const seen = new Set<number>();
-    const result: KnownTribe[] = [];
+    // Group events by tribeId so we can pick the canonical (named) one.
+    type Evt = { parsedJson: Record<string, unknown> };
+    const byTribe = new Map<number, Evt[]>();
     for (const e of (j.result?.data ?? [])) {
       const tribeId = numish(e.parsedJson["tribe_id"]) ?? 0;
-      if (seen.has(tribeId)) continue;
-      seen.add(tribeId);
+      if (!tribeId) continue;
+      if (!byTribe.has(tribeId)) byTribe.set(tribeId, []);
+      byTribe.get(tribeId)!.push(e);
+    }
+    const result: KnownTribe[] = [];
+    for (const [tribeId, events] of byTribe) {
+      // Prefer the first event (newest) with a non-empty coin_name; fall back
+      // to the newest event when all are empty.
+      const named = events.find(
+        e => String(e.parsedJson["coin_name"] ?? "").length > 0,
+      );
+      const chosen = named ?? events[0];
       result.push({
         tribeId,
-        coinSymbol: String(e.parsedJson["coin_symbol"] ?? "?"),
-        vaultId: String(e.parsedJson["vault_id"] ?? ""),
+        coinSymbol: String(chosen.parsedJson["coin_symbol"] ?? "?"),
+        vaultId: String(chosen.parsedJson["vault_id"] ?? ""),
       });
     }
     return result;

@@ -66,6 +66,11 @@ type TrustlessBountyState = {
   status: number;
   createdMs: number;
   expiresMs: number;
+  /** Phantom coin type T from TrustlessBounty<T>. Used to filter
+   *  Stillness vs Utopia bounties (the on-chain object type repr
+   *  carries the coin package, but the GraphQL/RPC base-type query
+   *  matches every coin variant). */
+  coinType: string;
 };
 
 interface OnChainKill {
@@ -138,10 +143,19 @@ function poolRemaining(b: TrustlessBountyState): bigint {
 
 // ── RPC helpers ───────────────────────────────────────────────────────────────
 
+/** Extract the phantom coin-type T from a TrustlessBounty<T> Move type string.
+ *  e.g. 'PKG::trustless_bounty::TrustlessBounty<COIN_PKG::EVE::EVE>' → 'COIN_PKG::EVE::EVE'
+ *  Returns empty string when the type cannot be parsed (legacy fallback). */
+function extractCoinTypeFromBountyType(typeRepr: string): string {
+  const m = typeRepr.match(/TrustlessBounty<([^>]+)>/);
+  return m ? m[1].trim() : "";
+}
+
 async function fetchTrustlessBountyObject(objectId: string): Promise<TrustlessBountyState | null> {
   try {
     const fields = await rpcGetObject(objectId);
     const rewardField = fields["reward"] as { fields?: { balance?: string | number } } | undefined;
+    const coinType = extractCoinTypeFromBountyType(String(fields["_type"] ?? ""));
     return {
       objectId,
       poster:        String(fields["poster"] ?? ""),
@@ -155,6 +169,7 @@ async function fetchTrustlessBountyObject(objectId: string): Promise<TrustlessBo
       status:        numish(fields["status"]) ?? 0,
       createdMs:     numish(fields["created_ms"]) ?? 0,
       expiresMs:     numish(fields["expires_ms"]) ?? 0,
+      coinType,
     };
   } catch { return null; }
 }
@@ -183,6 +198,14 @@ async function fetchTrustlessBounties(): Promise<TrustlessBountyState[]> {
     );
     return bounties
       .filter((b): b is TrustlessBountyState => b !== null)
+      // Coin-type filter: only show bounties denominated in this server's
+      // EVE coin. A Utopia EVE bounty cannot be claimed on Stillness and
+      // vice versa — displaying them is misleading. Tribal-coin bounties
+      // are also excluded by this gate; if we want a tribe-coin marketplace
+      // later we'll need a separate coin-aware filter UI.
+      // Empty coinType (legacy data without parsed phantom-T) falls through
+      // so we don't accidentally hide good data.
+      .filter(b => !b.coinType || b.coinType === EVE_COIN_TYPE)
       .sort((a, b) => b.createdMs - a.createdMs);
   } catch { return []; }
 }

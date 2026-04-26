@@ -34,6 +34,10 @@ type CargoContractState = {
   status: number;
   createdMs: number;
   deadlineMs: number;
+  /** Phantom coin type T from CargoContract<T>. Used to filter Stillness
+   *  vs Utopia contracts (the on-chain object type carries the coin
+   *  package, but the event/RPC base-type query matches every variant). */
+  coinType: string;
 };
 
 type ContractCreatedEvent = {
@@ -172,10 +176,19 @@ async function fetchContractEvents(): Promise<ContractCreatedEvent[]> {
   }
 }
 
+/** Extract the phantom coin-type T from a CargoContract<T> Move type string.
+ *  e.g. 'PKG::cargo_contract::CargoContract<COIN_PKG::EVE::EVE>' → 'COIN_PKG::EVE::EVE'
+ *  Returns empty string when the type cannot be parsed (legacy fallback). */
+function extractCoinTypeFromContractType(typeRepr: string): string {
+  const m = typeRepr.match(/CargoContract<([^>]+)>/);
+  return m ? m[1].trim() : "";
+}
+
 async function fetchContractObject(objectId: string): Promise<CargoContractState | null> {
   try {
     const fields = await rpcGetObject(objectId);
     if (fields._deleted) return null;
+    const coinType = extractCoinTypeFromContractType(String(fields["_type"] ?? ""));
     return {
       objectId,
       shipper: String(fields["shipper"] ?? ""),
@@ -191,6 +204,7 @@ async function fetchContractObject(objectId: string): Promise<CargoContractState
       status: numish(fields["status"]) ?? 0,
       createdMs: numish(fields["created_ms"]) ?? 0,
       deadlineMs: numish(fields["deadline_ms"]) ?? 0,
+      coinType,
     };
   } catch {
     return null;
@@ -201,6 +215,11 @@ async function fetchContracts(): Promise<CargoContractState[]> {
   const events = await fetchContractEvents();
   const objects = await Promise.all(events.map((ev) => fetchContractObject(ev.contractId)));
   return objects.filter((item): item is CargoContractState => !!item)
+    // Coin-type filter: only show contracts denominated in this server's
+    // EVE coin. A Utopia EVE contract is unclaimable from a Stillness
+    // wallet; showing it is misleading. Empty coinType (legacy data) falls
+    // through so we don't accidentally hide good data.
+    .filter((item) => !item.coinType || item.coinType === EVE_COIN_TYPE)
     .sort((a, b) => b.createdMs - a.createdMs);
 }
 
