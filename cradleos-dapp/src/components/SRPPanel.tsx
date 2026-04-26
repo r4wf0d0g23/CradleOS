@@ -357,14 +357,16 @@ export function SRPPanel() {
     staleTime: 30_000,
   });
 
-  // ── Tribe filter ───────────────────────────────────────────────────────────
-  // Default view: only show policies sponsored by this user's tribe AND
-  // denominated in the current server's coin type. The original SRPPanel
-  // showed every policy on chain, which leaked Utopia policies into the
-  // Stillness build and other-tribe policies into your tribe's view. The
-  // 'show all' toggle restores the original cross-tribe view for users who
-  // want to browse public-marketplace SRP offerings.
-  const [showAllPolicies, setShowAllPolicies] = useState(false);
+  // ── Tribe filter (strict) ────────────────────────────────────────────────
+  // SRP policies are only useful to a pilot if their tribe sponsors them
+  // (claims must be paid out of a policy your tribe set up; cross-tribe
+  // claims are not supported by the on-chain logic). Showing other tribes'
+  // policies is noise. Showing other servers' policies (Utopia coin on a
+  // Stillness build) is misleading. The panel filters strictly:
+  //   1. coinType must equal current server's EVE_COIN_TYPE
+  //   2. sponsor wallet must be a member of the user's tribe
+  // No 'show all' escape hatch — the previous design's marketplace intent
+  // turned out to be wrong for the actual SRP claim flow.
 
   const { data: myTribeId } = useQuery<number | null>({
     queryKey: ["srp-my-tribe", account?.address],
@@ -425,25 +427,22 @@ export function SRPPanel() {
 
   const now = Date.now();
 
-  // Active policy filter applies in this order:
+  // Active policy filter (strict, no escape hatch):
   //   1. status === ACTIVE (drained / closed policies hidden)
-  //   2. coinType matches active server's EVE_COIN_TYPE (unless 'show all')
-  //   3. sponsor is in the user's tribe member set (unless 'show all')
-  const allActivePolicies = (policies ?? []).filter(p => p.status === POLICY_ACTIVE);
-  const activePolicies = showAllPolicies
-    ? allActivePolicies
-    : allActivePolicies.filter(p => {
-        // Coin gate: must match this server's coin type. Empty coinType
-        // falls through (legacy data without parsed phantom-T) to the
-        // sponsor gate so we don't accidentally hide good data.
-        const coinOk = !p.coinType || p.coinType === EVE_COIN_TYPE;
-        if (!coinOk) return false;
-        // Tribe gate: sponsor must be in the user's tribe. While tribe
-        // membership is loading, fall back to the connected wallet only.
-        const sponsorLc = p.sponsor.toLowerCase();
-        return tribeMemberSet.has(sponsorLc);
-      });
-  const otherPoliciesCount = allActivePolicies.length - activePolicies.length;
+  //   2. coinType === current server's EVE_COIN_TYPE
+  //   3. sponsor wallet is in the user's tribe member set
+  const activePolicies = (policies ?? []).filter(p => {
+    if (p.status !== POLICY_ACTIVE) return false;
+    // Coin gate: must match this server's coin type. Empty coinType falls
+    // through (legacy data without parsed phantom-T) to the sponsor gate so
+    // we don't accidentally hide good data.
+    const coinOk = !p.coinType || p.coinType === EVE_COIN_TYPE;
+    if (!coinOk) return false;
+    // Tribe gate: sponsor must be in the user's tribe. While tribe
+    // membership is loading, fall back to the connected wallet only.
+    const sponsorLc = p.sponsor.toLowerCase();
+    return tribeMemberSet.has(sponsorLc);
+  });
   const myClaims = account
     ? (claims ?? []).filter(c => c.claimant.toLowerCase() === account.address.toLowerCase())
     : [];
@@ -565,63 +564,27 @@ export function SRPPanel() {
 
       {/* ── Section 1: Active Policies ─────────────────────────────────────── */}
       <div style={sectionBox}>
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          flexWrap: "wrap",
-        }}>
-          <div style={sectionTitle}>
-            ACTIVE POLICIES
-            {!showAllPolicies && account && (
-              <span style={{
-                marginLeft: 10,
-                fontSize: 10,
-                color: "rgba(100,180,255,0.8)",
-                letterSpacing: "0.08em",
-                fontWeight: 700,
-              }}>
-                · MY TRIBE
-              </span>
-            )}
-          </div>
-          {/* View toggle: tribe-only vs all on-chain. Hidden until policies
-              load so the toggle doesn't flicker on first render. */}
-          {!policiesLoading && account && (otherPoliciesCount > 0 || showAllPolicies) && (
-            <button
-              onClick={() => setShowAllPolicies(v => !v)}
-              style={{
-                background: "transparent",
-                border: "1px solid rgba(255,71,0,0.4)",
-                color: "#FF4700",
-                padding: "4px 12px",
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "0.10em",
-                textTransform: "uppercase",
-                cursor: "pointer",
-                fontFamily: "inherit",
-              }}
-              title={showAllPolicies
-                ? "Show only my tribe's policies on this server"
-                : `Show all on-chain policies (${otherPoliciesCount} more from other tribes / servers)`}
-            >
-              {showAllPolicies
-                ? "← MY TRIBE ONLY"
-                : `SHOW ALL (+${otherPoliciesCount})`}
-            </button>
+        <div style={sectionTitle}>
+          ACTIVE POLICIES
+          {account && (
+            <span style={{
+              marginLeft: 10,
+              fontSize: 10,
+              color: "rgba(100,180,255,0.8)",
+              letterSpacing: "0.08em",
+              fontWeight: 700,
+            }}>
+              · MY TRIBE
+            </span>
           )}
         </div>
         {policiesLoading && <div style={muted}>Loading policies…</div>}
         {!policiesLoading && activePolicies.length === 0 && (
           <div style={muted}>
-            {showAllPolicies
-              ? "No active policies found anywhere on chain."
-              : "No active policies in your tribe yet. Create one below, or click SHOW ALL to browse other tribes' policies."}
+            No active policies in your tribe yet. Create one below.
           </div>
         )}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {activePolicies.map(p => {
             // Extract eligible claimants from description note
             const eligibleMatch = p.description.match(/\[Eligible: ([^\]]+)\]/);
