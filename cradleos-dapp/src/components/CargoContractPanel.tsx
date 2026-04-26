@@ -12,6 +12,7 @@ import {
   EVE_COIN_TYPE,
   SUI_TESTNET_RPC,
   SUI_GRAPHQL,
+  WORLD_PKG,
   ZERO_ADDRESS,
   eventType,
 } from "../constants";
@@ -320,14 +321,23 @@ function buildCancelContractTransaction(contractId: string) {
 
 // ─── POD Validator ─────────────────────────────────────────────────────────────
 
+/** The on-chain event the cargo-contract module expects as proof-of-delivery.
+ *  Contract module comment: 'Delivery proof is the on-chain ItemMintedEvent
+ *  emitted by WORLD_PKG::inventory'. */
+const ITEM_MINTED_EVENT_TYPE = `${WORLD_PKG}::inventory::ItemMintedEvent`;
+
 async function validatePod(
   txDigest: string,
   contract: CargoContractState,
 ): Promise<PodValidationResult> {
+  // Ask GraphQL for each event's full type signature (contents.type.repr)
+  // so we can filter to ItemMintedEvent instead of inspecting every event in
+  // the transaction. Also pull tx effects status to ensure the proof tx
+  // actually succeeded on-chain.
   const query = `{
     transaction(digest: "${txDigest}") {
       effects { status }
-      events { nodes { contents { json } } }
+      events { nodes { contents { type { repr } json } } }
     }
   }`;
 
@@ -343,41 +353,97 @@ async function validatePod(
     return { assemblyIdMatch: null, itemTypeIdMatch: null, quantityOk: null, pass: false, error: String(e) };
   }
 
-  const txData = (data as { data?: { transaction?: { effects?: { status?: string }; events?: { nodes?: Array<{ contents?: { json?: unknown } }> } } } })
-    ?.data?.transaction;
+  const txData = (data as {
+    data?: {
+      transaction?: {
+        effects?: { status?: string };
+        events?: { nodes?: Array<{ contents?: { type?: { repr?: string }; json?: unknown } }> };
+      };
+    };
+  })?.data?.transaction;
 
   if (!txData) {
     return { assemblyIdMatch: null, itemTypeIdMatch: null, quantityOk: null, pass: false, error: "Transaction not found" };
   }
 
-  const nodes = txData.events?.nodes ?? [];
-  let assemblyIdMatch = false;
-  let itemTypeIdMatch = false;
-  let quantityOk = false;
+  // Tx must have succeeded on-chain. A reverted/aborted tx cannot be valid POD.
+  const status = txData.effects?.status ?? "";
+  if (status && status.toUpperCase() !== "SUCCESS") {
+    return {
+      assemblyIdMatch: null, itemTypeIdMatch: null, quantityOk: null,
+      pass: false,
+      error: `Transaction effects status is '${status}' — not a successful delivery.`,
+    };
+  }
 
-  for (const node of nodes) {
+  // Filter to ONLY ItemMintedEvent emissions. The on-chain cargo-contract
+  // doc explicitly says the POD is the ItemMintedEvent emitted by
+  // WORLD_PKG::inventory. Other events in the same tx are irrelevant.
+  const nodes = txData.events?.nodes ?? [];
+  const itemMinted = nodes.filter(n => n.contents?.type?.repr === ITEM_MINTED_EVENT_TYPE);
+
+  if (itemMinted.length === 0) {
+    return {
+      assemblyIdMatch: false, itemTypeIdMatch: false, quantityOk: false,
+      pass: false,
+      error: `No ItemMintedEvent found in this transaction. Cargo POD must be a tx that emits WORLD_PKG::inventory::ItemMintedEvent (the in-game inventory deposit event).`,
+    };
+  }
+
+  // CRITICAL FIX: a valid POD requires ONE ItemMintedEvent that satisfies
+  // all three contract terms simultaneously. The previous implementation
+  // OR-accumulated the three checks across every event in the transaction,
+  // so a tx that happened to touch the right SSU in event A, the right
+  // item_type_id in unrelated event B, and a high-quantity number in
+  // unrelated event C would falsely PASS.
+  let bestAssembly = false;
+  let bestItemType = false;
+  let bestQuantityOk = false;
+  let simultaneousPass = false;
+
+  const wantSsu = contract.destinationSsuId.toLowerCase();
+  const wantItemType = contract.itemTypeId;
+  const wantMinQty = contract.minQuantity;
+
+  for (const node of itemMinted) {
     const json = node.contents?.json;
     if (!json || typeof json !== "object") continue;
     const ev = json as Record<string, unknown>;
 
-    // Look for ItemMintedEvent or similar fields
-    const evAssemblyId = String(ev["assembly_id"] ?? ev["ssu_id"] ?? ev["destination_ssu_id"] ?? "").toLowerCase();
-    const evItemTypeId = String(ev["item_type_id"] ?? "");
+    const evAssemblyId = String(
+      ev["assembly_id"] ?? ev["ssu_id"] ?? ev["destination_ssu_id"] ?? "",
+    ).toLowerCase();
+    const evItemTypeRaw = ev["item_type_id"] ?? ev["type_id"];
+    const evItemTypeStr = evItemTypeRaw === undefined || evItemTypeRaw === null
+      ? ""
+      : String(evItemTypeRaw);
     const evQuantity = numish(ev["quantity"] ?? ev["amount"] ?? ev["count"]);
 
-    if (evAssemblyId && evAssemblyId === contract.destinationSsuId.toLowerCase()) {
-      assemblyIdMatch = true;
-    }
-    if (evItemTypeId && BigInt(evItemTypeId || "0") === contract.itemTypeId) {
-      itemTypeIdMatch = true;
-    }
-    if (evQuantity !== null && BigInt(evQuantity) >= contract.minQuantity) {
-      quantityOk = true;
+    const aOk = !!evAssemblyId && evAssemblyId === wantSsu;
+    const tOk = (() => {
+      if (!evItemTypeStr) return false;
+      try { return BigInt(evItemTypeStr) === wantItemType; } catch { return false; }
+    })();
+    const qOk = evQuantity !== null && BigInt(evQuantity) >= wantMinQty;
+
+    bestAssembly = bestAssembly || aOk;
+    bestItemType = bestItemType || tOk;
+    bestQuantityOk = bestQuantityOk || qOk;
+    if (aOk && tOk && qOk) {
+      simultaneousPass = true;
+      break; // one matching event is sufficient
     }
   }
 
-  const pass = assemblyIdMatch && itemTypeIdMatch && quantityOk;
-  return { assemblyIdMatch, itemTypeIdMatch, quantityOk, pass };
+  return {
+    assemblyIdMatch: bestAssembly,
+    itemTypeIdMatch: bestItemType,
+    quantityOk: bestQuantityOk,
+    pass: simultaneousPass,
+    error: simultaneousPass
+      ? undefined
+      : "Found ItemMintedEvent(s), but no single event satisfies all three contract terms simultaneously. Carrier may have minted to the wrong SSU, the wrong item type, or below min_quantity.",
+  };
 }
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
@@ -646,6 +712,78 @@ export function CargoContractPanel() {
 
   const allContracts = useMemo(() => contracts ?? [], [contracts]);
 
+  // ── Filtering / sorting / grouping ─────────────────────────────────────────────────────────
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "open" | "claimed" | "delivered" | "cancelled" | "disputed"
+  >("open");
+  const [roleFilter, setRoleFilter] = useState<"all" | "mine">("all");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "reward" | "deadline">("newest");
+
+  const myAddr = (account?.address ?? "").toLowerCase();
+
+  const filteredContracts = useMemo(() => {
+    return allContracts.filter(c => {
+      // Status filter
+      if (statusFilter !== "all") {
+        const want = { open: 0, claimed: 1, delivered: 2, cancelled: 3, disputed: 4 }[statusFilter];
+        if (c.status !== want) return false;
+      }
+      // Role filter
+      if (roleFilter === "mine") {
+        if (!myAddr) return false;
+        const isMine =
+          c.shipper.toLowerCase() === myAddr ||
+          (c.carrier && !isZeroAddr(c.carrier) && c.carrier.toLowerCase() === myAddr);
+        if (!isMine) return false;
+      }
+      return true;
+    });
+  }, [allContracts, statusFilter, roleFilter, myAddr]);
+
+  const sortedContracts = useMemo(() => {
+    const arr = [...filteredContracts];
+    switch (sortBy) {
+      case "newest":
+        arr.sort((a, b) => b.createdMs - a.createdMs);
+        break;
+      case "oldest":
+        arr.sort((a, b) => a.createdMs - b.createdMs);
+        break;
+      case "reward":
+        arr.sort((a, b) => (b.reward > a.reward ? 1 : b.reward < a.reward ? -1 : 0));
+        break;
+      case "deadline":
+        // Soonest deadline first; status>=2 contracts (terminal) sink to bottom
+        arr.sort((a, b) => {
+          const aTerm = a.status >= 2 ? 1 : 0;
+          const bTerm = b.status >= 2 ? 1 : 0;
+          if (aTerm !== bTerm) return aTerm - bTerm;
+          return a.deadlineMs - b.deadlineMs;
+        });
+        break;
+    }
+    return arr;
+  }, [filteredContracts, sortBy]);
+
+  // Counts per status — used to show the live count next to each filter chip.
+  const statusCounts = useMemo(() => {
+    const counts = { all: allContracts.length, open: 0, claimed: 0, delivered: 0, cancelled: 0, disputed: 0 };
+    const roleScoped = roleFilter === "mine" && myAddr
+      ? allContracts.filter(c =>
+          c.shipper.toLowerCase() === myAddr ||
+          (c.carrier && !isZeroAddr(c.carrier) && c.carrier.toLowerCase() === myAddr))
+      : allContracts;
+    counts.all = roleScoped.length;
+    for (const c of roleScoped) {
+      if (c.status === 0) counts.open++;
+      else if (c.status === 1) counts.claimed++;
+      else if (c.status === 2) counts.delivered++;
+      else if (c.status === 3) counts.cancelled++;
+      else if (c.status === 4) counts.disputed++;
+    }
+    return counts;
+  }, [allContracts, roleFilter, myAddr]);
+
   const invalidate = () => {
     setTimeout(() => queryClient.invalidateQueries({ queryKey: ["cargoContractsV11"] }), 2500);
     setTimeout(() => queryClient.invalidateQueries({ queryKey: ["cargoContractsV11"] }), 7000);
@@ -803,17 +941,137 @@ export function CargoContractPanel() {
         border: "1px solid rgba(255,255,255,0.08)",
         padding: "14px",
       }}>
-        <div style={{ color: "#aaa", fontWeight: 600, fontSize: "13px", marginBottom: "12px", fontFamily: "monospace" }}>
-          Active Contracts
+        <div style={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: 10,
+          flexWrap: "wrap",
+          marginBottom: "10px",
+        }}>
+          <div style={{ color: "#aaa", fontWeight: 600, fontSize: "13px", fontFamily: "monospace" }}>
+            Cargo Contracts
+            <span style={{ color: "#666", marginLeft: 8, fontWeight: 400, fontSize: 11 }}>
+              {sortedContracts.length} of {allContracts.length}
+            </span>
+          </div>
+          {/* Sort dropdown */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ color: "#666", fontSize: "11px", fontFamily: "monospace" }}>SORT:</span>
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value as typeof sortBy)}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#aaa",
+                fontSize: 11,
+                fontFamily: "monospace",
+                padding: "3px 6px",
+                cursor: "pointer",
+              }}
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="reward">Reward (high → low)</option>
+              <option value="deadline">Deadline (soonest)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Status filter chips + role filter */}
+        <div style={{
+          display: "flex",
+          gap: 6,
+          flexWrap: "wrap",
+          marginBottom: 12,
+          alignItems: "center",
+        }}>
+          {([
+            ["open", "Open", "#00ff96"],
+            ["claimed", "In Dispute Window", "#64b4ff"],
+            ["delivered", "Delivered", "#888"],
+            ["cancelled", "Cancelled", "#666"],
+            ["disputed", "Disputed", "#ff6432"],
+            ["all", "All", "#aaa"],
+          ] as const).map(([key, label, color]) => {
+            const count = statusCounts[key as keyof typeof statusCounts];
+            const active = statusFilter === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setStatusFilter(key as typeof statusFilter)}
+                style={{
+                  background: active ? `${color}22` : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${active ? color : "rgba(255,255,255,0.1)"}`,
+                  color: active ? color : "#888",
+                  padding: "4px 10px",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: "monospace",
+                  cursor: "pointer",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {label}
+                <span style={{ marginLeft: 6, color: active ? color : "#555", fontWeight: 400 }}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+          <span style={{ flex: 1 }} />
+          {/* Role filter — only useful when wallet is connected */}
+          {account && (
+            <button
+              onClick={() => setRoleFilter(roleFilter === "mine" ? "all" : "mine")}
+              style={{
+                background: roleFilter === "mine"
+                  ? "rgba(255,71,0,0.10)"
+                  : "rgba(255,255,255,0.03)",
+                border: `1px solid ${roleFilter === "mine" ? "#FF4700" : "rgba(255,255,255,0.1)"}`,
+                color: roleFilter === "mine" ? "#FF4700" : "#888",
+                padding: "4px 10px",
+                fontSize: 11,
+                fontWeight: 700,
+                fontFamily: "monospace",
+                cursor: "pointer",
+                letterSpacing: "0.04em",
+              }}
+              title="Toggle: show only contracts where I am the shipper or carrier"
+            >
+              {roleFilter === "mine" ? "◆ MY CONTRACTS" : "MY CONTRACTS"}
+            </button>
+          )}
         </div>
 
         {isLoading ? (
           <div style={{ color: "#888", fontSize: "12px" }}>Loading contracts…</div>
         ) : allContracts.length === 0 ? (
           <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No cargo contracts found yet.</div>
+        ) : sortedContracts.length === 0 ? (
+          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", fontFamily: "monospace" }}>
+            No contracts match the current filters
+            {statusFilter !== "open" || roleFilter !== "all" ? (
+              <button
+                onClick={() => { setStatusFilter("open"); setRoleFilter("all"); }}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#FF4700",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  fontFamily: "monospace",
+                  padding: 0,
+                  marginLeft: 8,
+                  textDecoration: "underline",
+                }}
+              >— reset filters</button>
+            ) : null}
+          </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {allContracts.map((contract) => (
+            {sortedContracts.map((contract) => (
               <ContractCard
                 key={contract.objectId}
                 contract={contract}
