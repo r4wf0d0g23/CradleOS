@@ -16,7 +16,7 @@ import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
 import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, EVE_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
 import { SUI_GRAPHQL } from "../graphql";
-import { numish } from "../lib";
+import { numish, fetchCharacterTribeId, fetchTribeMembersByTribeId } from "../lib";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -46,6 +46,8 @@ type SRPPolicyState = {
   validUntilMs: number;
   disputeWindowMs: number;
   status: number;
+  /** Phantom coin type T from SRPPolicy<T> — used to filter Stillness vs Utopia. */
+  coinType: string;
 };
 
 type SRPClaimState = {
@@ -110,15 +112,22 @@ function policyStatusColor(s: number): string {
 
 // ── RPC fetchers ──────────────────────────────────────────────────────────────
 
-async function fetchObjectsOfType(structType: string): Promise<Array<{ objectId: string; fields: Record<string, unknown> }>> {
-  const results: Array<{ objectId: string; fields: Record<string, unknown> }> = [];
+async function fetchObjectsOfType(
+  structType: string,
+): Promise<Array<{ objectId: string; fields: Record<string, unknown>; typeRepr: string }>> {
+  // typeRepr is the full Move type signature including phantom-T params
+  // (e.g. 'PKG::ship_reimbursement::SRPPolicy<COIN_PKG::EVE::EVE>'). We use
+  // it to filter by coin type — SRPPolicy is `<phantom T>` so multiple
+  // server coin types coexist in one chain query, and the dApp must filter
+  // client-side to match the active server's coin.
+  const results: Array<{ objectId: string; fields: Record<string, unknown>; typeRepr: string }> = [];
   let cursor: string | null = null;
   for (let page = 0; page < 10; page++) {
     const query = `{
       objects(filter: { type: "${structType}" }, after: ${cursor ? `"${cursor}"` : "null"}, first: 50) {
         nodes {
           address
-          asMoveObject { contents { json } }
+          asMoveObject { contents { type { repr } json } }
         }
         pageInfo { hasNextPage endCursor }
       }
@@ -131,7 +140,7 @@ async function fetchObjectsOfType(structType: string): Promise<Array<{ objectId:
     const j = await res.json() as {
       data?: {
         objects?: {
-          nodes?: Array<{ address: string; asMoveObject?: { contents?: { json?: Record<string, unknown> } } }>;
+          nodes?: Array<{ address: string; asMoveObject?: { contents?: { type?: { repr?: string }; json?: Record<string, unknown> } } }>;
           pageInfo?: { hasNextPage: boolean; endCursor?: string };
         };
       };
@@ -139,8 +148,9 @@ async function fetchObjectsOfType(structType: string): Promise<Array<{ objectId:
     const nodes = j.data?.objects?.nodes ?? [];
     for (const n of nodes) {
       const fields = n.asMoveObject?.contents?.json;
+      const typeRepr = n.asMoveObject?.contents?.type?.repr ?? "";
       if (n.address && fields) {
-        results.push({ objectId: n.address, fields });
+        results.push({ objectId: n.address, fields, typeRepr });
       }
     }
     const pageInfo = j.data?.objects?.pageInfo;
@@ -151,9 +161,16 @@ async function fetchObjectsOfType(structType: string): Promise<Array<{ objectId:
   return results;
 }
 
+/** Extract the coin type from an SRPPolicy<T> type repr.
+ *  e.g. 'PKG::ship_reimbursement::SRPPolicy<0xCOIN::EVE::EVE>' → '0xCOIN::EVE::EVE' */
+function extractCoinTypeFromPolicyType(typeRepr: string): string | null {
+  const m = typeRepr.match(/SRPPolicy<([^>]+)>/);
+  return m ? m[1].trim() : null;
+}
+
 async function fetchPolicies(): Promise<SRPPolicyState[]> {
   const items = await fetchObjectsOfType(SRP_POLICY_TYPE);
-  return items.map(({ objectId, fields }) => {
+  return items.map(({ objectId, fields, typeRepr }) => {
     const fundField = fields["fund"] as { fields?: { balance?: string | number } } | undefined;
     const fundBalance = BigInt(String(fundField?.fields?.balance ?? 0));
     return {
@@ -168,6 +185,7 @@ async function fetchPolicies(): Promise<SRPPolicyState[]> {
       validUntilMs:   numish(fields["valid_until_ms"]) ?? 0,
       disputeWindowMs: numish(fields["dispute_window_ms"]) ?? 86_400_000,
       status:         numish(fields["status"]) ?? 0,
+      coinType:       extractCoinTypeFromPolicyType(typeRepr) ?? "",
     };
   });
 }
@@ -339,6 +357,43 @@ export function SRPPanel() {
     staleTime: 30_000,
   });
 
+  // ── Tribe filter ───────────────────────────────────────────────────────────
+  // Default view: only show policies sponsored by this user's tribe AND
+  // denominated in the current server's coin type. The original SRPPanel
+  // showed every policy on chain, which leaked Utopia policies into the
+  // Stillness build and other-tribe policies into your tribe's view. The
+  // 'show all' toggle restores the original cross-tribe view for users who
+  // want to browse public-marketplace SRP offerings.
+  const [showAllPolicies, setShowAllPolicies] = useState(false);
+
+  const { data: myTribeId } = useQuery<number | null>({
+    queryKey: ["srp-my-tribe", account?.address],
+    queryFn: () => account ? fetchCharacterTribeId(account.address) : Promise.resolve(null),
+    enabled: !!account?.address,
+    staleTime: 60_000,
+  });
+
+  const { data: tribeMembers } = useQuery<string[]>({
+    queryKey: ["srp-tribe-members", myTribeId],
+    queryFn: async () => {
+      if (!myTribeId) return [];
+      const members = await fetchTribeMembersByTribeId(myTribeId);
+      return members
+        .map(m => (m.characterAddress ?? "").toLowerCase())
+        .filter(addr => addr.length > 0);
+    },
+    enabled: !!myTribeId,
+    staleTime: 5 * 60_000,  // tribe membership changes infrequently
+  });
+
+  // Always include the connected wallet itself, so a solo-pilot policy is
+  // visible even before tribe membership is resolved.
+  const tribeMemberSet = (() => {
+    const s = new Set(tribeMembers ?? []);
+    if (account?.address) s.add(account.address.toLowerCase());
+    return s;
+  })();
+
   // ── Section 2: Submit Claim ────────────────────────────────────────────────
   const [claimPolicyId, setClaimPolicyId]       = useState("");
   const [killmailInput, setKillmailInput]       = useState("");
@@ -370,7 +425,25 @@ export function SRPPanel() {
 
   const now = Date.now();
 
-  const activePolicies = (policies ?? []).filter(p => p.status === POLICY_ACTIVE);
+  // Active policy filter applies in this order:
+  //   1. status === ACTIVE (drained / closed policies hidden)
+  //   2. coinType matches active server's EVE_COIN_TYPE (unless 'show all')
+  //   3. sponsor is in the user's tribe member set (unless 'show all')
+  const allActivePolicies = (policies ?? []).filter(p => p.status === POLICY_ACTIVE);
+  const activePolicies = showAllPolicies
+    ? allActivePolicies
+    : allActivePolicies.filter(p => {
+        // Coin gate: must match this server's coin type. Empty coinType
+        // falls through (legacy data without parsed phantom-T) to the
+        // sponsor gate so we don't accidentally hide good data.
+        const coinOk = !p.coinType || p.coinType === EVE_COIN_TYPE;
+        if (!coinOk) return false;
+        // Tribe gate: sponsor must be in the user's tribe. While tribe
+        // membership is loading, fall back to the connected wallet only.
+        const sponsorLc = p.sponsor.toLowerCase();
+        return tribeMemberSet.has(sponsorLc);
+      });
+  const otherPoliciesCount = allActivePolicies.length - activePolicies.length;
   const myClaims = account
     ? (claims ?? []).filter(c => c.claimant.toLowerCase() === account.address.toLowerCase())
     : [];
@@ -492,10 +565,61 @@ export function SRPPanel() {
 
       {/* ── Section 1: Active Policies ─────────────────────────────────────── */}
       <div style={sectionBox}>
-        <div style={sectionTitle}>ACTIVE POLICIES</div>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
+        }}>
+          <div style={sectionTitle}>
+            ACTIVE POLICIES
+            {!showAllPolicies && account && (
+              <span style={{
+                marginLeft: 10,
+                fontSize: 10,
+                color: "rgba(100,180,255,0.8)",
+                letterSpacing: "0.08em",
+                fontWeight: 700,
+              }}>
+                · MY TRIBE
+              </span>
+            )}
+          </div>
+          {/* View toggle: tribe-only vs all on-chain. Hidden until policies
+              load so the toggle doesn't flicker on first render. */}
+          {!policiesLoading && account && (otherPoliciesCount > 0 || showAllPolicies) && (
+            <button
+              onClick={() => setShowAllPolicies(v => !v)}
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(255,71,0,0.4)",
+                color: "#FF4700",
+                padding: "4px 12px",
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.10em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+              title={showAllPolicies
+                ? "Show only my tribe's policies on this server"
+                : `Show all on-chain policies (${otherPoliciesCount} more from other tribes / servers)`}
+            >
+              {showAllPolicies
+                ? "← MY TRIBE ONLY"
+                : `SHOW ALL (+${otherPoliciesCount})`}
+            </button>
+          )}
+        </div>
         {policiesLoading && <div style={muted}>Loading policies…</div>}
         {!policiesLoading && activePolicies.length === 0 && (
-          <div style={muted}>No active policies found.</div>
+          <div style={muted}>
+            {showAllPolicies
+              ? "No active policies found anywhere on chain."
+              : "No active policies in your tribe yet. Create one below, or click SHOW ALL to browse other tribes' policies."}
+          </div>
         )}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {activePolicies.map(p => {
