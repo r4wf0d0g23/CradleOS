@@ -17,7 +17,8 @@ import {
   type PlayerStructure,
   type LocationGroup,
 } from "../lib";
-import { StatusLight, CcpToggle, PowerBlockedGlyph } from "./ccp";
+import { StructureRow } from "./dashboard/StructureRow";
+import { sortByFamily } from "./dashboard/sortByFamily";
 
 // Node EP capacity. The on-chain Move object does not expose this as a field
 // today (the in-game default is 1000 GJ/h output) so we hard-code it. If CCP
@@ -1129,204 +1130,37 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                   </span>
                 </div>
 
-                {/* Connected structures — card grid with action buttons */}
+                {/* Connected structures — dense rows with toggle, status LED, EP gate */}
                 {children.length > 0 ? (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, paddingLeft: 8 }}>
-                    {[...children].sort((a, b) => {
-                      // Online first, then group by typeName/label
-                      if (a.isOnline !== b.isOnline) return a.isOnline ? -1 : 1;
-                      const typeA = a.typeName ?? a.label;
-                      const typeB = b.typeName ?? b.label;
-                      if (typeA !== typeB) return typeA.localeCompare(typeB);
-                      return a.displayName.localeCompare(b.displayName);
-                    }).map(child => {
-                      const isChildFocused = focused?.objectId === child.objectId;
-                      const color = kindColor(child);
-                      const btnStyle = (bg: string, fg: string): React.CSSProperties => ({
-                        background: bg, color: fg, border: "none", padding: "3px 8px",
-                        fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
-                        letterSpacing: "0.06em", flex: 1, textAlign: "center",
-                      });
-                      return (
-                        <div
-                          key={child.objectId}
-                          onMouseEnter={() => setFocused(child)}
-                          onMouseLeave={() => setFocused(null)}
-                          onClick={() => openDApp(child)}
-                          style={{
-                            cursor: "pointer",
-                            width: 130,
-                            display: "flex", flexDirection: "column",
-                            border: `2px solid ${child.isOnline ? (isChildFocused ? "#00ff96" : "rgba(0,255,150,0.3)") : (isChildFocused ? "#ff4444" : "rgba(255,68,68,0.3)")}`,
-                            background: isChildFocused ? `${color}0a` : "rgba(5,3,2,0.95)",
-                            transition: "all 0.15s",
-                            opacity: child.isOnline ? 1 : 0.65,
-                            overflow: "hidden",
-                          }}
-                        >
-                          {/* Header — flex grow to push buttons down */}
-                          <div style={{ padding: "8px 8px 4px", textAlign: "center", flex: 1 }}>
-                            {/* Glowing status LED + kind icon */}
-                            <div style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: 6,
-                            }}>
-                              <StatusLight
-                                on={child.isOnline}
-                                size={9}
-                                ariaLabel={`${child.displayName} ${child.isOnline ? "online" : "offline"}`}
-                              />
-                              <span style={{ fontSize: 15 }}>{kindIcon(child)}</span>
-                            </div>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: "#ddd", marginTop: 2, lineHeight: 1.2 }}>
-                              {child.displayName.length > 14 ? child.displayName.slice(0, 14) + "…" : child.displayName}
-                            </div>
-                            <div style={{ fontSize: 8, color: "rgba(255,255,255,0.55)" }}>
-                              {child.typeName ?? child.label}
-                            </div>
-                            {child.energyCost !== undefined && child.energyCost > 0 && (() => {
-                              const cost = child.energyCost;
-                              const blocked = !child.isOnline && cost > 0 && cost > epAvailable;
-                              return (
-                                <div style={{
-                                  fontSize: 9,
-                                  color: blocked ? "#FFB54A" : "rgba(255,180,50,0.7)",
-                                  fontWeight: blocked ? 700 : 400,
-                                  marginTop: 1,
-                                }}>
-                                  {cost} EP
-                                </div>
-                              );
-                            })()}
-                          </div>
-                          {/* Action buttons — toggle + secondary actions */}
-                          {(() => {
-                            // EP gate: an offline structure cannot be turned on if its energyCost
-                            // exceeds the node's currently available budget.
-                            const cost = child.energyCost ?? 0;
-                            const epBlocked = !child.isOnline && cost > 0 && cost > epAvailable;
-                            // Pre-existing fuel/online gate from the production flow:
-                            const fuelBlocked = !child.isOnline && !nodeCanPowerChildren;
-                            const blocked = epBlocked || fuelBlocked;
-                            const blockedReason = epBlocked
-                              ? `Insufficient energy: needs ${cost} EP, ${epAvailable} available (short by ${cost - epAvailable})`
-                              : fuelBlocked
-                                ? "Node must be online with fuel before structures can power up"
-                                : undefined;
-                            const busy = actionBusy === child.objectId;
-                            return (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  gap: 6,
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  marginTop: 4,
-                                  padding: "4px 4px",
-                                  background: "rgba(0,0,0,0.25)",
-                                }}
-                                onClick={e => e.stopPropagation()}
-                              >
-                                {epBlocked && (
-                                  <PowerBlockedGlyph
-                                    ariaLabel={`Power blocked: ${blockedReason}`}
-                                    tooltip={`INSUFFICIENT POWER — ${blockedReason}`}
-                                  />
-                                )}
-                                <CcpToggle
-                                  on={child.isOnline}
-                                  onChange={() => {
-                                    if (busy) return;
-                                    if (child.isOnline) handleOffline(child);
-                                    else handleOnline(child);
-                                  }}
-                                  ariaLabel={`${child.displayName} power`}
-                                  disabled={blocked || busy}
-                                  disabledReason={blockedReason}
-                                />
-                              </div>
-                            );
-                          })()}
-                          {/* Secondary action buttons */}
-                          <div style={{ display: "flex", gap: 1, marginTop: 1 }}>
-                            <button
-                              style={btnStyle("rgba(255,255,255,0.06)", "rgba(255,255,255,0.5)")}
-                              onClick={(e) => { e.stopPropagation(); handleRename(child); }}
-                              title="Edit name"
-                            >
-                              EDIT
-                            </button>
-                            {/* Delegate/Revoke for turrets and gates */}
-                            {isDelegatable(child) && (
-                              <button
-                                style={btnStyle(
-                                  isDelegated(child) ? "rgba(255,180,50,0.15)" : "rgba(0,200,255,0.12)",
-                                  isDelegated(child) ? "rgba(255,180,50,0.9)" : "#00ccff"
-                                )}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (isDelegated(child)) handleRevoke(child);
-                                  else if (tribeVaultId) handleDelegate(child, tribeVaultId);
-                                  else setActionErr("No tribe vault found. Create one in the Tribe Vault tab first.");
-                                }}
-                                title={isDelegated(child) ? "Revoke tribe policy" : "Apply tribe policy"}
-                              >
-                                {isDelegated(child) ? "⊘" : "⚑"}
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Gate link/unlink section */}
-                          {child.kind === "Gate" && isChildFocused && (() => {
-                            const gateStatus = gateActionState?.gateId === child.objectId ? gateActionState.status : null;
-                            const isLinked = !!child.linkedGateId;
-                            return (
-                              <div style={{ padding: "6px 8px", background: "rgba(0,200,255,0.04)", borderTop: "1px solid rgba(0,200,255,0.1)" }}
-                                onClick={e => e.stopPropagation()}
-                              >
-                                {gateStatus ? (
-                                  <div style={{ fontSize: 9, color: gateStatus.startsWith("✓") ? "#00ff96" : gateStatus.startsWith("✗") ? "#ff4444" : "#00ccff", fontStyle: "italic" }}>{gateStatus}</div>
-                                ) : isLinked ? (
-                                  <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                                    <span style={{ fontSize: 8, color: "#00ff96", flex: 1 }}>⛩ linked</span>
-                                    <button
-                                      style={{ ...btnStyle("rgba(255,68,68,0.15)", "#ff6644"), fontSize: 8, padding: "2px 6px" }}
-                                      onClick={() => handleUnlinkGate(child)}
-                                    >UNLINK</button>
-                                  </div>
-                                ) : (
-                                  <div style={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
-                                    <span style={{ fontSize: 8, color: "rgba(255,255,255,0.4)" }}>Link to:</span>
-                                    <select
-                                      style={{ flex: 1, background: "rgba(0,0,0,0.6)", color: "#ddd", border: "1px solid rgba(0,200,255,0.3)", fontSize: 8, padding: "1px 2px", fontFamily: "inherit" }}
-                                      onClick={e => e.stopPropagation()}
-                                      onChange={e => {
-                                        const destId = e.target.value;
-                                        if (destId) handleLinkGate(child, destId);
-                                        e.target.value = "";
-                                      }}
-                                      defaultValue=""
-                                    >
-                                      <option value="" disabled>select gate…</option>
-                                      {allGates
-                                        .filter(g => g.objectId !== child.objectId && !g.linkedGateId)
-                                        .map(g => (
-                                          <option key={g.objectId} value={g.objectId}>
-                                            {g.displayName} ({g.gameItemId ?? g.objectId.slice(0, 8)})
-                                          </option>
-                                        ))
-                                      }
-                                    </select>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      );
-                    })}
+                  <div style={{ borderTop: "1px solid rgba(250,250,229,0.10)" }}>
+                    {sortByFamily(children).map((child, i) => (
+                      <StructureRow
+                        key={child.objectId}
+                        structure={child}
+                        index={i}
+                        epAvailable={epAvailable}
+                        fuelBlocked={!nodeCanPowerChildren}
+                        onOnline={handleOnline}
+                        onOffline={handleOffline}
+                        onRename={handleRename}
+                        onDelegate={s => {
+                          if (tribeVaultId) handleDelegate(s, tribeVaultId);
+                          else setActionErr("No tribe vault found. Create one in the Tribe Vault tab first.");
+                        }}
+                        onRevoke={handleRevoke}
+                        onLinkGate={handleLinkGate}
+                        onUnlinkGate={handleUnlinkGate}
+                        onOpenDApp={openDApp}
+                        onFocus={setFocused}
+                        isFocused={focused?.objectId === child.objectId}
+                        actionBusy={actionBusy}
+                        isDelegatable={isDelegatable(child)}
+                        isDelegated={isDelegated(child)}
+                        availableGateLinkTargets={allGates}
+                        gateActionStatus={gateActionState?.gateId === child.objectId ? gateActionState.status : null}
+                        kindIcon={kindIcon}
+                      />
+                    ))}
                   </div>
                 ) : (
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", paddingLeft: 8, fontStyle: "italic" }}>
