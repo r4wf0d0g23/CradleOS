@@ -41,6 +41,7 @@ import {
 } from "../lib";
 import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, EVE_COIN_TYPE, KEEPER_SHRINE } from "../constants";
 import { buildStructureOnlineTransaction, buildStructureOfflineTransaction, buildBatchOnlineTransaction, buildBatchOfflineTransaction } from "../lib";
+import { getEveVaultAuthHeaders } from "../eveVaultAuth";
 import { WORLD_API, SERVER_LABEL } from "../constants";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -268,42 +269,17 @@ function sanitizeMessage(text: string): { sanitized: string; wasBlocked: boolean
 // ── Jump history via EVE Vault JWT ────────────────────────────────────────────
 
 async function fetchJumpHistory(worldApiBase: string): Promise<{ jumps: JumpRecord[]; total: number } | null> {
-  return new Promise((resolve) => {
-    const requestId = `keeper_auth_${Date.now()}`;
-    const timeout = setTimeout(() => {
-      window.removeEventListener("message", handler);
-      resolve(null); // EVE Vault not present or timed out
-    }, 4000);
-
-    const handler = (event: MessageEvent) => {
-      const d = event.data;
-      if (!d || d.__from !== "Eve Vault") return;
-      // auth_success carries the JWT token
-      if ((d.type === "auth_success" || d.type === "AUTH_SUCCESS") && d.token?.id_token) {
-        clearTimeout(timeout);
-        window.removeEventListener("message", handler);
-        const idToken = d.token.id_token as string;
-        // Now fetch jump history from World API
-        fetch(`${worldApiBase}/v2/characters/me/jumps?limit=20`, {
-          headers: { Authorization: `Bearer ${idToken}` },
-        })
-          .then(r => r.ok ? r.json() : null)
-          .then((data: { data: JumpRecord[]; metadata: { total: number } } | null) => {
-            if (data?.data) {
-              resolve({ jumps: data.data, total: data.metadata?.total ?? data.data.length });
-            } else {
-              resolve(null);
-            }
-          })
-          .catch(() => resolve(null));
-      }
-    };
-
-    window.addEventListener("message", handler);
-
-    // Request auth from EVE Vault via postMessage
-    window.postMessage({ __to: "Eve Vault", action: "dapp_login", id: requestId }, "*");
-  });
+  // Uses the shared eveVaultAuth helper so the postMessage envelope stays
+  // aligned with every other dApp surface that needs EVE Vault auth.
+  const headers = await getEveVaultAuthHeaders();
+  if (!headers) return null;
+  try {
+    const r = await fetch(`${worldApiBase}/v2/characters/me/jumps?limit=20`, { headers });
+    if (!r.ok) return null;
+    const data = await r.json() as { data?: JumpRecord[]; metadata?: { total?: number } } | null;
+    if (!data?.data) return null;
+    return { jumps: data.data, total: data.metadata?.total ?? data.data.length };
+  } catch { return null; }
 }
 
 // ── Data fetching ─────────────────────────────────────────────────────────────

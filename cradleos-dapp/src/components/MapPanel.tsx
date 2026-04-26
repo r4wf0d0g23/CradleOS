@@ -26,6 +26,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { WORLD_API } from "../constants";
 import { fetchPlayerStructures } from "../lib";
+import { getEveVaultAuthHeaders } from "../eveVaultAuth";
 
 const CACHE_KEY     = "cradleos:starmap:v5";
 const LS_LAST_SYS   = "cradleos:last-system";
@@ -176,40 +177,24 @@ interface JumpRecord {
   ship: { typeId: number; instanceId: number };
 }
 
+/** Fetch the connected pilot's most recent jump destination via EVE Vault
+ *  authentication. Returns null when the extension is unreachable, the
+ *  pilot has no jump history, or the World API request fails. */
 async function fetchLastJumpSystem(): Promise<{ id: number; name: string } | null> {
-  return new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      window.removeEventListener("message", handler);
-      resolve(null);
-    }, 4000);
-
-    const handler = (event: MessageEvent) => {
-      const d = event.data as { __from?: string; type?: string; token?: { id_token?: string } };
-      if (!d || d.__from !== "Eve Vault") return;
-      if ((d.type === "auth_success" || d.type === "AUTH_SUCCESS") && d.token?.id_token) {
-        clearTimeout(timeout);
-        window.removeEventListener("message", handler);
-        const idToken = d.token.id_token;
-
-        fetch(`${WORLD_API}/v2/characters/me/jumps?limit=1`, {
-          headers: { Authorization: `Bearer ${idToken}` },
-        })
-          .then(r => r.ok ? r.json() : null)
-          .then((data: { data: JumpRecord[] } | null) => {
-            if (data?.data?.[0]) {
-              const dest = data.data[0].destination;
-              resolve({ id: dest.id, name: dest.name });
-            } else {
-              resolve(null);
-            }
-          })
-          .catch(() => resolve(null));
-      }
-    };
-
-    window.addEventListener("message", handler);
-    window.postMessage({ __from: "CradleOS", type: "REQUEST_AUTH" }, "*");
-  });
+  // Use the shared eveVaultAuth helper. Previous in-line implementation
+  // posted { __from: 'CradleOS', type: 'REQUEST_AUTH' } which the EVE Vault
+  // extension does not recognize, causing every locate-me to silently time
+  // out after 4s even when the user was authenticated. Fixed 2026-04-25.
+  const headers = await getEveVaultAuthHeaders();
+  if (!headers) return null;
+  try {
+    const r = await fetch(`${WORLD_API}/v2/characters/me/jumps?limit=1`, { headers });
+    if (!r.ok) return null;
+    const data = await r.json() as { data?: JumpRecord[] };
+    const first = data?.data?.[0];
+    if (!first) return null;
+    return { id: first.destination.id, name: first.destination.name };
+  } catch { return null; }
 }
 
 // ── System detail fetch ────────────────────────────────────────────────────────
