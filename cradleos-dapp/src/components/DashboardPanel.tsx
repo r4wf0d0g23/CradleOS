@@ -17,6 +17,12 @@ import {
   type PlayerStructure,
   type LocationGroup,
 } from "../lib";
+import { StatusLight, CcpToggle, PowerBlockedGlyph } from "./ccp";
+
+// Node EP capacity. The on-chain Move object does not expose this as a field
+// today (the in-game default is 1000 GJ/h output) so we hard-code it. If CCP
+// adds variable-capacity nodes, swap this for a node-derived value.
+const NODE_EP_MAX = 1000;
 
 // ── EVE Frontier official dApp base
 // Stillness = dapps.evefrontier.com, Utopia = uat.dapps.evefrontier.com
@@ -1017,6 +1023,9 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
             const isNodeFocused = focused?.objectId === node.objectId;
             const totalEnergyCost = children.reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
             const onlineEnergyCost = children.filter(c => c.isOnline).reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
+            // Live EP budget remaining at this node — used to gate offline
+            // structures' power-on toggles when their cost would exceed budget.
+            const epAvailable = Math.max(0, NODE_EP_MAX - onlineEnergyCost);
             // Node must be online + have fuel to bring children online (ENotProducing otherwise)
             const nodeCanPowerChildren = node.isOnline && (node.fuelLevelPct ?? 0) > 0;
 
@@ -1157,7 +1166,18 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                         >
                           {/* Header — flex grow to push buttons down */}
                           <div style={{ padding: "8px 8px 4px", textAlign: "center", flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            {/* Glowing status LED + kind icon */}
+                            <div style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: 6,
+                            }}>
+                              <StatusLight
+                                on={child.isOnline}
+                                size={9}
+                                ariaLabel={`${child.displayName} ${child.isOnline ? "online" : "offline"}`}
+                              />
                               <span style={{ fontSize: 15 }}>{kindIcon(child)}</span>
                             </div>
                             <div style={{ fontSize: 11, fontWeight: 600, color: "#ddd", marginTop: 2, lineHeight: 1.2 }}>
@@ -1166,25 +1186,71 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                             <div style={{ fontSize: 8, color: "rgba(255,255,255,0.55)" }}>
                               {child.typeName ?? child.label}
                             </div>
-                            {child.energyCost !== undefined && child.energyCost > 0 && (
-                              <div style={{ fontSize: 9, color: "rgba(255,180,50,0.7)", marginTop: 1 }}>
-                                {child.energyCost} EP
-                              </div>
-                            )}
+                            {child.energyCost !== undefined && child.energyCost > 0 && (() => {
+                              const cost = child.energyCost;
+                              const blocked = !child.isOnline && cost > 0 && cost > epAvailable;
+                              return (
+                                <div style={{
+                                  fontSize: 9,
+                                  color: blocked ? "#FFB54A" : "rgba(255,180,50,0.7)",
+                                  fontWeight: blocked ? 700 : 400,
+                                  marginTop: 1,
+                                }}>
+                                  {cost} EP
+                                </div>
+                              );
+                            })()}
                           </div>
-                          {/* Action buttons */}
-                          <div style={{ display: "flex", gap: 1, marginTop: 4 }}>
-                            <button
-                              disabled={!child.isOnline && !nodeCanPowerChildren}
-                              style={{
-                                ...btnStyle(child.isOnline ? "rgba(255,68,68,0.15)" : "rgba(0,255,150,0.15)", child.isOnline ? "#ff4444" : "#00ff96"),
-                                ...(!child.isOnline && !nodeCanPowerChildren ? { opacity: 0.35, cursor: "not-allowed" } : {}),
-                              }}
-                              onClick={(e) => { e.stopPropagation(); child.isOnline ? handleOffline(child) : handleOnline(child); }}
-                              title={!child.isOnline && !nodeCanPowerChildren ? "Node must be online with fuel before structures can power up" : (child.isOnline ? "Take offline" : "Bring online")}
-                            >
-                              {child.isOnline ? "OFF" : "ON"}
-                            </button>
+                          {/* Action buttons — toggle + secondary actions */}
+                          {(() => {
+                            // EP gate: an offline structure cannot be turned on if its energyCost
+                            // exceeds the node's currently available budget.
+                            const cost = child.energyCost ?? 0;
+                            const epBlocked = !child.isOnline && cost > 0 && cost > epAvailable;
+                            // Pre-existing fuel/online gate from the production flow:
+                            const fuelBlocked = !child.isOnline && !nodeCanPowerChildren;
+                            const blocked = epBlocked || fuelBlocked;
+                            const blockedReason = epBlocked
+                              ? `Insufficient energy: needs ${cost} EP, ${epAvailable} available (short by ${cost - epAvailable})`
+                              : fuelBlocked
+                                ? "Node must be online with fuel before structures can power up"
+                                : undefined;
+                            const busy = actionBusy === child.objectId;
+                            return (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: 6,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  marginTop: 4,
+                                  padding: "4px 4px",
+                                  background: "rgba(0,0,0,0.25)",
+                                }}
+                                onClick={e => e.stopPropagation()}
+                              >
+                                {epBlocked && (
+                                  <PowerBlockedGlyph
+                                    ariaLabel={`Power blocked: ${blockedReason}`}
+                                    tooltip={`INSUFFICIENT POWER — ${blockedReason}`}
+                                  />
+                                )}
+                                <CcpToggle
+                                  on={child.isOnline}
+                                  onChange={() => {
+                                    if (busy) return;
+                                    if (child.isOnline) handleOffline(child);
+                                    else handleOnline(child);
+                                  }}
+                                  ariaLabel={`${child.displayName} power`}
+                                  disabled={blocked || busy}
+                                  disabledReason={blockedReason}
+                                />
+                              </div>
+                            );
+                          })()}
+                          {/* Secondary action buttons */}
+                          <div style={{ display: "flex", gap: 1, marginTop: 1 }}>
                             <button
                               style={btnStyle("rgba(255,255,255,0.06)", "rgba(255,255,255,0.5)")}
                               onClick={(e) => { e.stopPropagation(); handleRename(child); }}

@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import type { FixtureNode, FixtureStructure, StructureKind } from "./fixture";
+import { StatusLight, CcpToggle, PowerBlockedGlyph } from "../components/ccp";
 
 type Summary = { structures: number; online: number; systems: number; hidden: number };
 type Props = { nodes: FixtureNode[]; summary: Summary };
@@ -19,7 +20,6 @@ const N   = "#FAFAE5";
 const N80 = "rgba(250,250,229,0.80)";
 const N60 = "rgba(250,250,229,0.60)";
 const N40 = "rgba(250,250,229,0.40)";
-const N20 = "rgba(250,250,229,0.20)";
 const N10 = "rgba(250,250,229,0.10)";
 const N05 = "rgba(250,250,229,0.05)";
 const M   = "#FF2800";
@@ -470,33 +470,6 @@ function StructureRow({ structure, index, isOn, onToggle, epAvailable }: {
  * 'destructive action' — the user can fix this by freeing up EP, so it's
  * not an error, it's a constraint.
  */
-function PowerBlockedGlyph({ ariaLabel, tooltip }: {
-  ariaLabel: string;
-  tooltip: string;
-}) {
-  return (
-    <span
-      role="img"
-      aria-label={ariaLabel}
-      title={tooltip}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 18,
-        height: 18,
-        border: "1px solid #FFB54A",
-        color: "#FFB54A",
-        fontSize: 11,
-        fontWeight: 700,
-        lineHeight: 1,
-        cursor: "help",
-        background: "rgba(255,181,74,0.10)",
-      }}
-    >!</span>
-  );
-}
-
 function BarChip({ label, pct, right, color }: {
   label: string; pct: number; right: string; color: string;
 }) {
@@ -550,172 +523,6 @@ function Segmented({ value, color, segments, width }: {
  * Pulses slowly when on (1.6s cycle) so the eye picks up live state
  * across a long list of structures even in peripheral vision.
  */
-function StatusLight({ on, size = 12, ariaLabel }: {
-  on: boolean;
-  size?: number;
-  ariaLabel?: string;
-}) {
-  const ON_CORE  = "#5DFF9A";
-  const ON_GLOW  = "rgba(93,255,154,0.55)";
-  const ON_HALO  = "rgba(93,255,154,0.18)";
-  const OFF_CORE = "#FF2800";
-  const OFF_GLOW = "rgba(255,40,0,0.45)";
-  const OFF_HALO = "rgba(255,40,0,0.14)";
-  const core = on ? ON_CORE  : OFF_CORE;
-  const glow = on ? ON_GLOW  : OFF_GLOW;
-  const halo = on ? ON_HALO  : OFF_HALO;
-  return (
-    <span
-      role="img"
-      aria-label={ariaLabel ?? (on ? "online" : "offline")}
-      style={{
-        display: "inline-block",
-        width: size,
-        height: size,
-        borderRadius: "50%",
-        background: `radial-gradient(circle at 35% 30%, ${core} 0%, ${core} 35%, ${glow} 70%, ${halo} 100%)`,
-        boxShadow: `
-          0 0 ${size * 0.6}px ${glow},
-          0 0 ${size * 1.4}px ${halo},
-          inset 0 0 ${Math.max(2, size * 0.3)}px rgba(255,255,255,0.35)
-        `,
-        animation: on ? "ccp-led-pulse-on 1.6s ease-in-out infinite" : "ccp-led-pulse-off 2.4s ease-in-out infinite",
-        flexShrink: 0,
-      }}
-    />
-  );
-}
-
-/**
- * CcpToggle — left/right power toggle following the CCP design-system
- * toggle component (per the official component-form sheet, 2026-04-25).
- *
- * Anatomy:
- *   Track: dark pill, hairline Martian-Red border. Inside the track sits
- *          a single "chip" knob that is wide enough to hold its own label,
- *          and a separate dim label on the opposite (inactive) terminal.
- *   Chip:  the active indicator. When ON, the chip is Martian-Red filled
- *          and reads bright "ON" in dark ink, sitting at the right terminal.
- *          When OFF, the chip is dark with a neutral-40 border and reads
- *          "OFF" in bright neutral ink, sitting at the left terminal.
- *   Inactive terminal label: small, neutral-20, in the empty half of the
- *          track. Tells the user what the OTHER state would be.
- *
- * This avoids the previous bug where the active label and the knob were
- * the same Martian-Red — the chip is now the carrier of the active label,
- * which means the chip and its label can't visually fight each other.
- *
- * Click anywhere on the track flips state.
- */
-function CcpToggle({ on, onChange, ariaLabel, disabled = false, disabledReason }: {
-  on: boolean;
-  onChange: (next: boolean) => void;
-  ariaLabel?: string;
-  disabled?: boolean;
-  disabledReason?: string;
-}) {
-  const W = 84;       // total track width
-  const H = 26;
-  const PAD = 2;      // inner padding from track edge to chip
-  const CHIP_W = 38;  // active chip is roughly half the track
-  const CHIP_H = H - PAD * 2;
-  const inactiveLabelLeft  = on ? PAD + 6 : W - CHIP_W - PAD;
-  const inactiveLabelText  = on ? "OFF" : "ON";
-  const inactiveAlign      = on ? "flex-start" : "flex-end";
-  const inactivePadX       = on ? "0 0 0 6px" : "0 6px 0 0";
-
-  // Disabled palette — per the CCP design system disabled-state spec from
-  // the components-form sheet, disabled controls go to neutral fills with
-  // muted borders and no glow on hover.
-  const trackBorder = disabled ? N40 : M;
-  const chipBorder  = disabled ? N40 : (on ? M : N40);
-  const chipBg      = disabled ? "#1A1A1A" : (on ? M : "#1A1A1A");
-  const chipText    = disabled ? N40 : (on ? "#0A0A0A" : N);
-  const labelColor  = disabled ? N20 : N20;
-
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      aria-label={ariaLabel}
-      aria-disabled={disabled}
-      title={disabled && disabledReason ? disabledReason : undefined}
-      onClick={() => { if (!disabled) onChange(!on); }}
-      style={{
-        position: "relative",
-        width: W,
-        height: H,
-        background: "#0A0A0A",
-        border: `1px solid ${trackBorder}`,
-        borderRadius: 0,
-        padding: 0,
-        cursor: disabled ? "not-allowed" : "pointer",
-        flexShrink: 0,
-        opacity: disabled ? 0.55 : 1,
-        transition: "box-shadow 120ms ease, opacity 140ms ease",
-        fontFamily: "inherit",
-      }}
-      onMouseEnter={e => {
-        if (disabled) return;
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 0 2px rgba(255,40,0,0.20)";
-      }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
-      }}
-    >
-      {/* Inactive-terminal label — sits in the empty half of the track
-          and tells the user what flipping would do. */}
-      <span
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          left: inactiveLabelLeft,
-          width: W - CHIP_W - PAD * 2 - 4,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: inactiveAlign,
-          padding: inactivePadX,
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: "0.14em",
-          color: labelColor,
-          transition: "left 140ms ease, color 140ms ease",
-          pointerEvents: "none",
-        }}
-      >{inactiveLabelText}</span>
-
-      {/* The active chip — the knob carries the active state's label */}
-      <span
-        aria-hidden
-        style={{
-          position: "absolute",
-          top: PAD,
-          left: on ? W - CHIP_W - PAD : PAD,
-          width: CHIP_W,
-          height: CHIP_H,
-          background: chipBg,
-          border: `1px solid ${chipBorder}`,
-          color: chipText,
-          transition: "left 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: "0.14em",
-          // Inset shadow to read as a physical chip over the track
-          boxShadow: on
-            ? "inset 0 0 0 1px rgba(0,0,0,0.30)"
-            : "inset 0 0 0 1px rgba(255,255,255,0.06)",
-        }}
-      >{on ? "ON" : "OFF"}</span>
-    </button>
-  );
-}
-
 function CcpBtn({ children, small, variant, accent }: {
   children: React.ReactNode;
   small?: boolean;
