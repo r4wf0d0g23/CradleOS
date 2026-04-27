@@ -3267,3 +3267,58 @@ export function buildSetMintRatioTx(cvId: string, tribeVaultId: string, newRatio
   });
   return tx;
 }
+
+// ──────────────────────────────────────────────────────────────────────────
+// Shared-SSU synthesizer (added 2026-04-26)
+//
+// Build a PlayerStructure-shaped record for an SSU the caller does NOT own
+// but DOES have shared access to via cradleos::ssu_access. Used by
+// InventoryPanel to render shared SSUs alongside owned ones. ownerCapId is
+// intentionally an empty string — the existing rendering already treats
+// empty/undefined ownerCapId as "non-owner" and exposes only the
+// tribemate-withdraw path (no batch ALL→SHARED, no rename, no online/
+// offline buttons).
+// ──────────────────────────────────────────────────────────────────────────
+export async function synthesizeSharedSsuStructure(ssuObjectId: string): Promise<PlayerStructure | null> {
+  const fields = await rpcGetObject(ssuObjectId);
+  if (fields._deleted || !Object.keys(fields).length) return null;
+
+  const locFields = asRecord(readPath(fields, "location", "fields")) ?? {};
+  const locationHashBytes = (locFields["location_hash"] as number[] | undefined) ?? [];
+  const locationHash = locationHashBytes
+    .map((b: number) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  const statusVariant = readPath(fields, "status", "fields", "status", "variant");
+  const isOnline = statusVariant === "ONLINE";
+
+  const metaName = stringish(readPath(fields, "metadata", "fields", "name")).trim();
+  const hasCustomName = metaName.length > 0;
+
+  const typeId = numish(fields["type_id"]) ?? undefined;
+
+  const keyFields = asRecord(readPath(fields, "key", "fields")) ?? {};
+  const gameItemId = stringish(keyFields["item_id"]) || undefined;
+
+  // Resolve type name lazily so the synthesizer stays cheap when called for
+  // many SSUs in parallel — the caller is expected to call fetchTypeNames()
+  // once and patch typeName/displayName afterward. We provide a sane
+  // fallback label so the card has *something* to display before the type
+  // map resolves.
+  const fallbackLabel = "Storage Unit (shared)";
+  const displayName = metaName || fallbackLabel;
+
+  return {
+    objectId: ssuObjectId,
+    ownerCapId: "", // explicit non-owner sentinel
+    kind: "StorageUnit",
+    typeFull: `${WORLD_PKG}::storage_unit::StorageUnit`,
+    label: "Storage Unit",
+    displayName,
+    hasCustomName,
+    isOnline,
+    locationHash,
+    typeId,
+    gameItemId,
+  };
+}

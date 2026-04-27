@@ -50,7 +50,69 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //
 // v2 deployed 2026-03-25 (Reapers_v2)
 export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
-export const CRADLEOS_PKG      = "0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce";
+// CRADLEOS_PKG v12 (2026-04-27): adds shared_withdraw_to_owned (preferred
+// tribemate-withdraw primitive: routes Item directly to caller's
+// per-character partition instead of wallet, so item stays in-game-visible).
+// v11 (2026-04-26) added recover_to_owned + recover_to_shared for items
+// already stranded in wallets via the legacy shared_withdraw_to_character.
+// Tx digests: v11 8aevQ9uu..., v12 6aaYV3Yhayse8KoHNTTt24AR6MXNLEM2qB3jSFRhYpb
+export const CRADLEOS_PKG      = "0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f";
+// Previous: 0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce (v9)
+
+// ── SSU shared-access feature (cradleos::ssu_access) ─────────────────────────
+//
+// IMPORTANT: ssu_access takes `&StorageUnit` and `&OwnerCap<StorageUnit>` as
+// Move parameters, which means the module is hard-linked to a specific world
+// package lineage at publish time. It cannot accept world objects from a
+// different lineage. We publish ssu_access as a SEPARATE single-module package
+// per server so each lineage has its own correctly-linked binding.
+//
+//   Stillness (production):  pkg = 0x7d85b7c5... (linked to world 0x28b497559d)
+//   Utopia (legacy):         no publish — feature disabled on Utopia
+//
+// Active CradleOS state (TribeVaults, defense_policy, turret_delegation, etc.)
+// remains on the Utopia CradleOS package for current players. ssu_access is a
+// *new* feature shipping production-first on Stillness only.
+// v2   (2026-04-26 multi-tribe alliance) — fresh publish with vector<u32> tribe_ids
+// v2.1 (2026-04-26 PUBLIC mode upgrade) — added MODE_PUBLIC=4 + set_public()
+// v3   (2026-04-27 wallet recovery) — added shared_withdraw_to_owned (preferred
+//      tribemate-withdraw primitive: routes Item directly into caller's per-character
+//      partition on the same SSU instead of wallet limbo) and recover_to_owned /
+//      recover_to_shared (rescue items already stranded in wallet via legacy
+//      shared_withdraw_to_character). Tx digest: 81fNb5DK8peXPS6UADooPfoLPaWqjaM4YXauj5WYei8p
+//
+// IMPORTANT: Sui split-package convention
+//   moveCall targets and type-arg paths must use `published-at` (latest version)
+//   event/type queries (suix_queryEvents MoveEventType, etc.) must use `original-id`
+//   Mixing them up breaks upgraded packages silently. See MEMORY.md 2026-03-25.
+
+// Latest upgrade target — use for moveCall targets and SsuAuth type-arg.
+// v4 (2026-04-27 promote_ephemeral_to_shared): adds promote_ephemeral_to_shared which lets
+// a non-owner character move items from their per-character partition to the shared open pool.
+// Uses withdraw_by_owner<Character> with the character's own OwnerCap. Tx digest: 3SpS84N3i57jiPwx19JsdbUEfKYUWgP3XsxGfAWucc5t
+export const SSU_ACCESS_PKG_STILLNESS    = "0x6ea83a3e990892331b799f8ff516835bc8362793c635403db19a87ca9b81aeb8";
+// Original-id (publish v1) — use for event queries and shared-object type tags.
+export const SSU_ACCESS_ORIGINAL_STILLNESS = "0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e";
+// Registry — shared object id is unchanged across upgrades.
+export const SSU_POLICY_REGISTRY_STILLNESS = "0x59bbda885ae86d8c10033959d64c1375ff83b2a1a77966e7721da5c6005f402e";
+//
+// Archived ssu_access packages (do NOT use):
+//   v1   (2026-04-26 single-tribe):    pkg=0x7d85b7c5524ffa0b0b029bdf77bb4f68d263f1b995f772272b04697520304a33
+//                                      registry=0x3a5c99ffebc11b092822df63ff088cf0689c8290c8c60d44607e8c6cea8478ff
+//                                      (replaced because struct field changes (tribe_id u32 → tribe_ids vector<u32>)
+//                                       are not backward-compatible under Sui upgrade rules; only state was Raw's empty
+//                                       policy 0x29dbc5d7... — regenerable)
+//   v2.1 (2026-04-26 multi-tribe + PUBLIC mode):  pkg=0x14cd86a1b95fedc2f40ee46691271d03e9c333412c74f825dd79812cd942c51e
+//                                      (superseded by v3 wallet-recovery upgrade 2026-04-27)
+
+/** Active ssu_access package (LATEST upgrade target) for moveCall targets and SsuAuth type-arg. */
+export const SSU_ACCESS_PKG: string = _serverEnv === "stillness" ? SSU_ACCESS_PKG_STILLNESS : "";
+/** Original-id of ssu_access for event queries and type tags. */
+export const SSU_ACCESS_ORIGINAL: string = _serverEnv === "stillness" ? SSU_ACCESS_ORIGINAL_STILLNESS : "";
+/** Active SsuPolicyRegistry, or empty string when feature is unavailable. */
+export const SSU_POLICY_REGISTRY: string = _serverEnv === "stillness" ? SSU_POLICY_REGISTRY_STILLNESS : "";
+/** Convenience: is the SSU shared-access feature available on the active server? */
+export const SSU_ACCESS_AVAILABLE: boolean = SSU_ACCESS_PKG !== "";
 //
 // ── ARCHIVED PACKAGE IDS (do NOT use) ─────────────────────────────────────────
 // v1 (2026-03-24 clean-slate):  0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4

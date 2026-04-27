@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
@@ -20,6 +21,7 @@ import {
 import { StructureRow } from "./dashboard/StructureRow";
 import { StructureRowHeader } from "./dashboard/StructureRowHeader";
 import { NodeHeader } from "./dashboard/NodeHeader";
+import { StructureRowList } from "./dashboard/StructureRowList";
 import { sortByFamily } from "./dashboard/sortByFamily";
 
 // Node EP capacity. The on-chain Move object does not expose this as a field
@@ -667,12 +669,35 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
     finally { setActionBusy(null); }
   };
 
-  const handleRename = async (s: PlayerStructure) => {
-    const name = prompt("New name:", s.displayName);
-    if (!name?.trim()) return;
+  // In-game webview rendering: window.prompt() is BLOCKED in the EVE Vault
+  // Mobile / Stillness embedded Chrome. Native browser dialogs (prompt /
+  // confirm / alert) all silently no-op in that context. Replace with an
+  // in-app modal rendered via React portal so the EDIT flow works both in
+  // standalone Chrome AND in-game.
+  // (Discovered 2026-04-26 from Raw's screenshot: dApp opens a Chrome
+  // dialog out-of-game but does nothing in-game.)
+  const [renameTarget, setRenameTarget] = useState<PlayerStructure | null>(null);
+  const [renameInput, setRenameInput] = useState("");
+
+  const handleRename = (s: PlayerStructure) => {
+    setRenameInput(s.displayName);
+    setRenameTarget(s);
+  };
+
+  const closeRenameModal = () => {
+    setRenameTarget(null);
+    setRenameInput("");
+  };
+
+  const submitRename = async () => {
+    const s = renameTarget;
+    if (!s) return;
+    const name = renameInput.trim();
+    if (!name) return;
     setActionBusy(s.objectId); setActionErr(null);
+    closeRenameModal();
     try {
-      const tx = buildRenameTransaction(s, characterId, name.trim());
+      const tx = buildRenameTransaction(s, characterId, name);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       onRefresh();
@@ -915,6 +940,127 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
     });
   }, [groups]);
 
+  // Portal-mounted rename modal. Rendered into document.body so it works
+  // regardless of which level branch (systems / nodes / structures) is
+  // currently mounted, AND survives the in-game webview which blocks
+  // window.prompt(). Uses the existing dApp dark/orange visual language
+  // so it doesn't feel jarring next to the rest of the UI.
+  const renameModal = renameTarget ? createPortal(
+    <div
+      onClick={closeRenameModal}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.78)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9000,
+        backdropFilter: "blur(2px)",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#0d0d0d",
+          border: "1px solid rgba(255,71,0,0.4)",
+          padding: 20,
+          minWidth: 320,
+          maxWidth: 460,
+          width: "90%",
+          fontFamily: "monospace",
+        }}
+      >
+        <div
+          style={{
+            color: "#FF4700",
+            fontWeight: 700,
+            fontSize: 13,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            marginBottom: 4,
+          }}
+        >
+          Rename {renameTarget.label}
+        </div>
+        <div
+          style={{
+            color: "rgba(107,107,94,0.7)",
+            fontSize: 10,
+            marginBottom: 14,
+            wordBreak: "break-all",
+          }}
+        >
+          #{renameTarget.objectId.slice(-12)}
+        </div>
+        <input
+          autoFocus
+          type="text"
+          value={renameInput}
+          onChange={(e) => setRenameInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submitRename();
+            else if (e.key === "Escape") closeRenameModal();
+          }}
+          maxLength={64}
+          placeholder="New name"
+          style={{
+            width: "100%",
+            background: "rgba(0,0,0,0.5)",
+            border: "1px solid rgba(255,71,0,0.3)",
+            color: "#fff",
+            fontFamily: "monospace",
+            fontSize: 13,
+            padding: "8px 10px",
+            outline: "none",
+            boxSizing: "border-box",
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 8,
+            marginTop: 14,
+          }}
+        >
+          <button
+            onClick={closeRenameModal}
+            style={{
+              fontSize: 10,
+              fontFamily: "monospace",
+              letterSpacing: "0.1em",
+              background: "transparent",
+              border: "1px solid rgba(107,107,94,0.4)",
+              color: "rgba(180,180,170,0.85)",
+              padding: "6px 14px",
+              cursor: "pointer",
+            }}
+          >
+            CANCEL
+          </button>
+          <button
+            onClick={submitRename}
+            disabled={!renameInput.trim() || renameInput.trim() === renameTarget.displayName}
+            style={{
+              fontSize: 10,
+              fontFamily: "monospace",
+              letterSpacing: "0.1em",
+              background: "transparent",
+              border: "1px solid rgba(255,71,0,0.6)",
+              color: (!renameInput.trim() || renameInput.trim() === renameTarget.displayName) ? "rgba(255,71,0,0.4)" : "#FF4700",
+              padding: "6px 14px",
+              cursor: (!renameInput.trim() || renameInput.trim() === renameTarget.displayName) ? "default" : "pointer",
+            }}
+          >
+            SAVE
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  ) : null;
+
   // ── LEVEL 0: Systems ──
   if (level === "systems") {
     // Split into exposed (has location/system) vs hidden (unknown system)
@@ -970,6 +1116,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
           )}
         </div>
         <BubbleGrid items={items} title="YOUR SYSTEMS" />
+        {renameModal}
       </div>
     );
   }
@@ -1141,7 +1288,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                     so the user can still see status and operate the node power. */}
                 {!isCollapsed && (
                   children.length > 0 ? (
-                    <div>
+                    <StructureRowList>
                       <StructureRowHeader />
                       {sortByFamily(children).map((child, i) => (
                         <StructureRow
@@ -1172,7 +1319,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                           kindIcon={kindIcon}
                         />
                       ))}
-                    </div>
+                    </StructureRowList>
                   ) : (
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", paddingLeft: 8, fontStyle: "italic" }}>
                       No structures connected to this node
@@ -1252,6 +1399,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
             <span style={{ fontSize: 10, color: "rgba(255,71,0,0.5)", marginLeft: "auto" }}>click bubble to open controls</span>
           </div>
         )}
+        {renameModal}
       </div>
     );
 
@@ -1283,16 +1431,19 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
     }));
 
     return (
-      <BubbleGrid
-        items={items}
-        title={nodeName}
-        breadcrumb={["Systems", sys.tabLabel]}
-        onBack={() => { setLevel("nodes"); setSelectedNode(null); }}
-      />
+      <>
+        <BubbleGrid
+          items={items}
+          title={nodeName}
+          breadcrumb={["Systems", sys.tabLabel]}
+          onBack={() => { setLevel("nodes"); setSelectedNode(null); }}
+        />
+        {renameModal}
+      </>
     );
   }
 
-  return null;
+  return renameModal;
 }
 export function DashboardPanel({ onNavigate }: { onNavigate?: (tab: string) => void } = {}) {
   const account = useCurrentAccount();

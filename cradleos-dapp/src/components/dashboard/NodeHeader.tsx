@@ -1,8 +1,14 @@
 /**
  * NodeHeader — production dashboard Network Node header bar.
  *
- * Replaces the previous inline node header with the AD playground design:
- *   [▶] [icon] [NAME · meta line]  FUEL [bar] X% Yu   EP [bar] N/1000   🟢 [OFF│ON] EDIT DEFENSE GATES
+ * Two-row layout (designed to fit narrow in-game iframe widths):
+ *
+ *   Row 1: [▶] [◆] [NAME · N STRUCT · N↑ N↓]              [🟢] [OFF│ON] EDIT DEFENSE GATES
+ *   Row 2:                          FUEL [████▒▒▒] X% Yu     EP [████▒▒▒] N/1000
+ *
+ * History: previous single-row layout pushed EDIT/DEFENSE/GATES off the
+ * right edge in the in-game iframe. "NETWORK NODE" type descriptor
+ * removed — redundant inside the Hidden Structures node section header.
  *
  * Stays visible when the node is collapsed so health and power are
  * always reachable. Click the chevron to collapse/expand. Click the
@@ -111,124 +117,159 @@ export function NodeHeader({
       onMouseLeave={() => onFocus?.(null)}
       onClick={onOpenDApp}
       style={{
-        display: "grid",
-        gridTemplateColumns: "auto 1fr auto auto auto",
-        alignItems: "center",
-        gap: 14,
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
         padding: "12px 18px",
         background: isFocused ? "rgba(255,40,0,0.04)" : N05,
         borderBottom: collapsed ? "none" : `1px solid ${N10}`,
         cursor: "pointer",
       }}
     >
-      {/* Chevron + kind glyph cluster — its own click target so the rest of
-          the header still opens the in-game dApp. */}
-      <button
-        type="button"
-        onClick={e => {
-          e.stopPropagation();
-          onToggleCollapsed();
-        }}
-        aria-label={collapsed ? `Expand ${node.displayName}` : `Collapse ${node.displayName}`}
-        aria-expanded={!collapsed}
-        title={collapsed ? "Expand" : "Collapse"}
-        style={{
-          background: "transparent",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-          color: N60,
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          fontFamily: "inherit",
-        }}
-      >
-        <span
-          aria-hidden
-          style={{
-            display: "inline-block",
-            width: 16,
-            fontSize: 16,
-            lineHeight: 1,
-            transform: collapsed ? "rotate(0deg)" : "rotate(90deg)",
-            transition: "transform 140ms ease, color 140ms ease",
-            color: M,
-          }}
-        >▶</span>
-        <span style={{ color: N40, fontSize: 14 }}>◆</span>
-      </button>
-
-      {/* Name + meta */}
-      <span style={{
-        color: N,
-        fontWeight: 700,
-        fontSize: 16,
-        letterSpacing: "0.06em",
-        textTransform: "uppercase",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
+      {/* ── Row 1: identity + actions ── */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        flexWrap: "wrap",
       }}>
-        {node.displayName}
-        <span style={{
-          color: N40,
-          fontWeight: 400,
-          fontSize: 11,
-          marginLeft: 12,
-          letterSpacing: "0.10em",
-        }}>
-          {(node.typeName ?? "Network Node").toUpperCase()} · {childCount} STRUCT · {childOnline}↑ {childOffline > 0 ? `${childOffline}↓` : ""}
-          {collapsed ? " · COLLAPSED" : ""}
-        </span>
-      </span>
-
-      {/* FUEL bar — only shown when fuel data is available */}
-      {node.fuelLevelPct !== undefined ? (
-        <BarChip label="FUEL" pct={fuelPct} right={fuelRightLabel} color={fuelColor} />
-      ) : <span />}
-
-      {/* EP bar — live, computed from online children's energyCost sum */}
-      <BarChip
-        label="EP"
-        pct={consumedPct}
-        right={`${consumedEp}/${epMax}`}
-        color={epColor}
-      />
-
-      {/* STATUS LED + power toggle + action chips, all clustered at right.
-          Clicks here stop propagation so the header's openDApp doesn't
-          fire from them. */}
-      <span
-        style={{
-          display: "flex",
-          gap: 10,
-          alignItems: "center",
-          justifyContent: "flex-end",
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <StatusLight on={node.isOnline} size={14} ariaLabel={`${node.displayName} status`} />
-        <CcpToggle
-          on={node.isOnline}
-          onChange={() => { if (!busy) onTogglePower(); }}
-          ariaLabel={`${node.displayName} power`}
-          disabled={busy}
-        />
-        <button type="button" onClick={onEdit} title="Rename" style={ghostBtn(M)}>
-          EDIT
+        {/* Chevron + kind glyph cluster — its own click target so the rest of
+            the header still opens the in-game dApp. */}
+        <button
+          type="button"
+          onClick={e => {
+            e.stopPropagation();
+            onToggleCollapsed();
+          }}
+          aria-label={collapsed ? `Expand ${node.displayName}` : `Collapse ${node.displayName}`}
+          aria-expanded={!collapsed}
+          title={collapsed ? "Expand" : "Collapse"}
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: N60,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            fontFamily: "inherit",
+            flexShrink: 0,
+            // Suppress webview UA focus/active styling. The in-game
+            // embedded Chrome was painting a default blue focus ring +
+            // tap-highlight on this button after click, which Raw saw as a
+            // "blue dropdown arrow" that doesn't match the orange theme.
+            outline: "none",
+            WebkitTapHighlightColor: "transparent",
+            WebkitAppearance: "none" as const,
+            appearance: "none" as const,
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              display: "inline-block",
+              width: 16,
+              fontSize: 16,
+              lineHeight: 1,
+              transform: collapsed ? "rotate(0deg)" : "rotate(90deg)",
+              transition: "transform 140ms ease, color 140ms ease",
+              color: M,
+            }}
+          >▶</span>
+          <span style={{ color: N40, fontSize: 14 }}>◆</span>
         </button>
-        {onDefense && (
-          <button type="button" onClick={onDefense} title="Defense policy" style={ghostBtn(M)}>
-            DEFENSE
+
+        {/* Name + tribe-meta
+            ("NETWORK NODE" type descriptor removed — the parent section header
+            already identifies this as the Hidden Structures node group) */}
+        <span style={{
+          color: N,
+          fontWeight: 700,
+          fontSize: 16,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          flex: 1,
+          minWidth: 0,
+        }}>
+          {node.displayName}
+          <span style={{
+            color: N40,
+            fontWeight: 400,
+            fontSize: 11,
+            marginLeft: 12,
+            letterSpacing: "0.10em",
+          }}>
+            {childCount} STRUCT · {childOnline}↑ {childOffline > 0 ? `${childOffline}↓` : ""}
+            {collapsed ? " · COLLAPSED" : ""}
+          </span>
+        </span>
+
+        {/* STATUS LED + power toggle + action chips. Click-stop so header's
+            openDApp doesn't fire when interacting with these. */}
+        <span
+          style={{
+            display: "flex",
+            gap: 10,
+            alignItems: "center",
+            justifyContent: "flex-end",
+            flexWrap: "wrap",
+            flexShrink: 0,
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <StatusLight on={node.isOnline} size={14} ariaLabel={`${node.displayName} status`} />
+          <CcpToggle
+            on={node.isOnline}
+            onChange={() => { if (!busy) onTogglePower(); }}
+            ariaLabel={`${node.displayName} power`}
+            disabled={busy}
+          />
+          <button type="button" onClick={onEdit} title="Rename" style={ghostBtn(M)}>
+            EDIT
           </button>
+          {onDefense && (
+            <button type="button" onClick={onDefense} title="Defense policy" style={ghostBtn(M)}>
+              DEFENSE
+            </button>
+          )}
+          {onGates && (
+            <button type="button" onClick={onGates} title="Gate policy" style={ghostBtn(M)}>
+              GATES
+            </button>
+          )}
+        </span>
+      </div>
+
+      {/* ── Row 2: FUEL + EP bars ──
+          Indented under the name to align with the typography rhythm. */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 18,
+        flexWrap: "wrap",
+        paddingLeft: 40, // chevron(16) + gap(8) + glyph(14) + gap(2) ≈ 40px
+      }}>
+        {/* FUEL bar — only shown when fuel data is available */}
+        {node.fuelLevelPct !== undefined && (
+          <div style={{ minWidth: 220, flex: "1 1 220px" }}>
+            <BarChip label="FUEL" pct={fuelPct} right={fuelRightLabel} color={fuelColor} />
+          </div>
         )}
-        {onGates && (
-          <button type="button" onClick={onGates} title="Gate policy" style={ghostBtn(M)}>
-            GATES
-          </button>
-        )}
-      </span>
+
+        {/* EP bar — live, computed from online children's energyCost sum */}
+        <div style={{ minWidth: 220, flex: "1 1 220px" }}>
+          <BarChip
+            label="EP"
+            pct={consumedPct}
+            right={`${consumedEp}/${epMax}`}
+            color={epColor}
+          />
+        </div>
+      </div>
     </div>
   );
 }

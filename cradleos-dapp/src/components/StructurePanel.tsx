@@ -214,10 +214,8 @@ function StructureRow({
       // Try sponsored transaction first (zero gas, EVE Vault only)
       // Pass minimal assembly shape — hook only needs item_id
       await sendSponsoredTx({
-        // @ts-expect-error — UPDATE_METADATA pending SDK update
         txAction: SponsoredTransactionActions.UPDATE_METADATA,
         assembly: { item_id: structure.typeId ?? 0 } as any,
-        // @ts-expect-error — metadata field pending SDK update
         metadata: { url },
       });
       setSettingUrl(false);
@@ -238,8 +236,33 @@ function StructureRow({
     } finally { setBusy(false); }
   };
 
+  // 2-step in-place confirmation, replacing window.confirm() which is
+  // BLOCKED in the EVE Vault Mobile / Stillness embedded Chrome webview.
+  // First click arms confirmRemoveUrl=true and the button changes label
+  // to "CONFIRM REMOVE". Second click executes. Auto-disarms after 4s
+  // so a stale armed state doesn't fire on a much-later click.
+  // (Discovered 2026-04-26 from Raw's screenshot: dApp opens a Chrome
+  // dialog out-of-game but does nothing in-game.)
+  const [confirmRemoveUrl, setConfirmRemoveUrl] = useState(false);
+  const confirmRemoveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (confirmRemoveTimerRef.current) clearTimeout(confirmRemoveTimerRef.current);
+    };
+  }, []);
+
   const handleRemoveUrl = async () => {
-    if (!confirm("Remove the dApp/protocol from this structure? This clears the metadata URL on-chain.")) return;
+    if (!confirmRemoveUrl) {
+      setConfirmRemoveUrl(true);
+      if (confirmRemoveTimerRef.current) clearTimeout(confirmRemoveTimerRef.current);
+      confirmRemoveTimerRef.current = setTimeout(() => setConfirmRemoveUrl(false), 4000);
+      return;
+    }
+    if (confirmRemoveTimerRef.current) {
+      clearTimeout(confirmRemoveTimerRef.current);
+      confirmRemoveTimerRef.current = null;
+    }
+    setConfirmRemoveUrl(false);
     setBusy(true); setErr(null);
     try {
       const tx = buildSetUrlTransaction(structure, characterId, "");
@@ -489,14 +512,18 @@ function StructureRow({
               <button
                 onClick={handleRemoveUrl}
                 disabled={busy}
-                title="Remove dApp / clear protocol URL from this structure"
+                title={confirmRemoveUrl
+                  ? "Click again within 4s to confirm. This clears the metadata URL on-chain."
+                  : "Remove dApp / clear protocol URL from this structure"}
                 style={{
-                  background: "rgba(255,50,50,0.08)", border: "1px solid rgba(255,50,50,0.3)",
-                  color: "#ff5555", borderRadius: "0", fontSize: "11px", fontWeight: 600,
+                  background: confirmRemoveUrl ? "rgba(255,50,50,0.25)" : "rgba(255,50,50,0.08)",
+                  border: `1px solid ${confirmRemoveUrl ? "#ff5555" : "rgba(255,50,50,0.3)"}`,
+                  color: confirmRemoveUrl ? "#fff" : "#ff5555", borderRadius: "0",
+                  fontSize: "11px", fontWeight: 600,
                   padding: "3px 10px", cursor: "pointer", letterSpacing: "0.04em",
                 }}
               >
-                ✕ Remove dApp
+                {confirmRemoveUrl ? "CONFIRM REMOVE" : "✕ Remove dApp"}
               </button>
             </div>
           </div>

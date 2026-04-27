@@ -622,6 +622,63 @@ function AppInner() {
 
   return (
     <main className="app-shell">
+      {/* ── Kiosk-mode back bar ──
+          When the dApp was opened from an in-game structure URL (e.g.
+          #/defense, #/gates, #/tribe), the full chrome (topbar, title,
+          tab nav) is hidden so the panel fills the in-game iframe. That
+          leaves no visible way to navigate back to the structure
+          dashboard. This kiosk toolbar fixes that with a slim, themed
+          back link + active-tab label.
+
+          We do NOT show this on `#/dashboard` itself — there's nothing
+          to go back to from there in kiosk mode. */}
+      {kioskMode && activeTab !== "dashboard" && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          padding: "8px 14px",
+          background: "rgba(5,3,2,0.92)",
+          borderBottom: "1px solid rgba(255,71,0,0.25)",
+          fontFamily: "monospace",
+        }}>
+          <button
+            type="button"
+            onClick={() => setActiveTab("dashboard")}
+            title="Back to structure dashboard"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "transparent",
+              border: "1px solid rgba(255,71,0,0.5)",
+              color: "#FF4700",
+              padding: "5px 12px",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.10em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            ← Dashboard
+          </button>
+          <span style={{
+            fontSize: 10,
+            color: "rgba(250,250,229,0.45)",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}>
+            {activeTab.replace(/_/g, " ")}
+          </span>
+        </div>
+      )}
+
       {/* ── Topbar: era/cycle left, wallet right ── */}
       {!kioskMode && <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -829,7 +886,14 @@ function AppInner() {
         )}
       </div>}
 
-      {/* Main nav tabs — CCP design system: sharp, uppercase, red active indicator */}
+      {/* Main nav tabs — CCP design system: sharp, uppercase, red active indicator.
+
+          Contrast tuning: against the dot-grid GIF background, low-alpha text
+          (rgba 160,150,130,0.7) was disappearing into the noise. Boosted
+          inactive label to high-alpha pale neutral (rgba 250,250,229,0.92),
+          raised cell background opacity to 0.88 so labels sit on a stable
+          plate, and added a small dark text-shadow for legibility against
+          any background pixels that bleed through during transitions. */}
       {!kioskMode && <div style={{
         display: "flex", flexWrap: "wrap", gap: "0", marginBottom: "20px",
         borderBottom: "1px solid rgba(255,71,0,0.2)",
@@ -841,6 +905,11 @@ function AppInner() {
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
+          // Centralized colors so hover handlers stay in sync with rest state.
+          const inactiveColor = "rgba(250,250,229,0.92)";
+          const inactiveBg = "rgba(8,5,2,0.88)";
+          const hoverColor = "#FF4700";
+          const hoverBg = "rgba(20,12,6,0.94)";
           return (
             <button
               key={tab}
@@ -850,19 +919,20 @@ function AppInner() {
                 border: "none",
                 borderBottom: active ? "2px solid #FF4700" : "2px solid transparent",
                 borderRight: "1px solid rgba(255,71,0,0.1)",
-                background: active ? "rgba(20,12,6,0.92)" : "rgba(8,5,2,0.60)",
-                color: active ? "#FF4700" : "rgba(160,150,130,0.7)",
+                background: active ? "rgba(20,12,6,0.94)" : inactiveBg,
+                color: active ? "#FF4700" : inactiveColor,
                 cursor: "pointer",
                 fontSize: compact ? "8px" : "11px",
                 fontWeight: 700,
                 letterSpacing: compact ? "0.06em" : "0.14em",
                 textTransform: "uppercase",
+                textShadow: "0 1px 2px rgba(0,0,0,0.85)",
                 transition: "color 0.1s, background 0.1s, border-color 0.1s",
                 marginBottom: "-1px",
                 fontFamily: "inherit",
               }}
-              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,71,0,0.8)"; (e.currentTarget as HTMLButtonElement).style.background = "#151515"; } }}
-              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = "rgba(160,150,130,0.7)"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(8,5,2,0.60)"; } }}
+              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = hoverColor; (e.currentTarget as HTMLButtonElement).style.background = hoverBg; } }}
+              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLButtonElement).style.color = inactiveColor; (e.currentTarget as HTMLButtonElement).style.background = inactiveBg; } }}
             >
               {compact
                 ? (tab === "structures" ? "Structs"

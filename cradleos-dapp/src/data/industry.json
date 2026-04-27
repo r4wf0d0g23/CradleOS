@@ -6446,6 +6446,7 @@
     {
       "name": "Mummified Clone",
       "facility": "refinery",
+      "salvage": true,
       "time": 3,
       "inputs": [
         {
@@ -6461,6 +6462,10 @@
         {
           "typeID": 88783,
           "quantity": 1
+        },
+        {
+          "typeID": 78423,
+          "quantity": 50
         }
       ]
     },
@@ -6530,6 +6535,7 @@
     {
       "name": "Salvaged Materials",
       "facility": "refinery",
+      "salvage": true,
       "time": 4,
       "inputs": [
         {
@@ -6707,11 +6713,11 @@
       "inputs": [
         {
           "typeID": 77801,
-          "quantity": 20
+          "quantity": 6
         },
         {
           "typeID": 77805,
-          "quantity": 60
+          "quantity": 20
         }
       ],
       "outputs": [
@@ -9244,7 +9250,7 @@
     {
       "name": "Packaged Reinforced Alloys",
       "facility": "printer",
-      "time": 15,
+      "time": 32,
       "inputs": [
         {
           "typeID": 84204,
@@ -9261,7 +9267,7 @@
     {
       "name": "Packaged Carbon Weave",
       "facility": "printer",
-      "time": 15,
+      "time": 37,
       "inputs": [
         {
           "typeID": 88841,
@@ -9278,7 +9284,7 @@
     {
       "name": "Packaged Thermal Composites",
       "facility": "printer",
-      "time": 15,
+      "time": 32,
       "inputs": [
         {
           "typeID": 88843,
@@ -9295,7 +9301,7 @@
     {
       "name": "Packaged Printed Circuits",
       "facility": "printer",
-      "time": 15,
+      "time": 24,
       "inputs": [
         {
           "typeID": 88839,
@@ -9323,6 +9329,123 @@
         {
           "typeID": 88839,
           "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Coilgun Ammo 1 (M)",
+      "facility": "printer",
+      "time": 13,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 7
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82134,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "EU-90 Fuel",
+      "facility": "printer",
+      "time": 35,
+      "inputs": [
+        {
+          "typeID": 78516,
+          "quantity": 600
+        },
+        {
+          "typeID": 83899,
+          "quantity": 60
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78437,
+          "quantity": 600
+        }
+      ]
+    },
+    {
+      "name": "Equilibrium Program Frame",
+      "facility": "printer",
+      "time": 126,
+      "inputs": [
+        {
+          "typeID": 88565,
+          "quantity": 1
+        },
+        {
+          "typeID": 88780,
+          "quantity": 1
+        },
+        {
+          "typeID": 88782,
+          "quantity": 1347
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 78422,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "name": "Howitzer Ammo 1 (M)",
+      "facility": "printer",
+      "time": 13,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 6
+        },
+        {
+          "typeID": 88234,
+          "quantity": 400
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82140,
+          "quantity": 100
+        }
+      ]
+    },
+    {
+      "name": "Rapid Plasma Ammo 1 (M)",
+      "facility": "printer",
+      "time": 13,
+      "inputs": [
+        {
+          "typeID": 84182,
+          "quantity": 4
+        },
+        {
+          "typeID": 88234,
+          "quantity": 400
+        },
+        {
+          "typeID": 77801,
+          "quantity": 1000
+        },
+        {
+          "typeID": 99001,
+          "quantity": 700
+        },
+        {
+          "typeID": 77811,
+          "quantity": 100
+        }
+      ],
+      "outputs": [
+        {
+          "typeID": 82132,
+          "quantity": 100
         }
       ]
     }

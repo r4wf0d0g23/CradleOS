@@ -1,11 +1,9 @@
 [package]
-name = "cradleos"
+name = "cradleos_ssu_access"
 edition = "2024"
-published-at = "0xe468d971c0705da10c8a8a7849c36adc4e64e6de2592326b50d1888a298312e1"
 
 [dependencies]
 world = { local = "../world-contracts/contracts/world" }
 
 [environments]
-testnet_utopia = "4c78adac"
 testnet_stillness = "4c78adac"

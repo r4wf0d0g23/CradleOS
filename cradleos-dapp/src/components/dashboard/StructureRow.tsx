@@ -17,6 +17,15 @@
 import React from "react";
 import type { PlayerStructure } from "../../lib";
 import { StatusLight, CcpToggle, PowerBlockedGlyph } from "../ccp";
+import {
+  useDensity,
+  gridTemplateFor,
+  rowPaddingFor,
+  rowGapFor,
+  showObjId,
+  showEp,
+  compactActions,
+} from "./useDensity";
 
 export interface StructureRowProps {
   structure: PlayerStructure;
@@ -117,6 +126,10 @@ export function StructureRow({
       ? "Node must be online with fuel before structures can power up"
       : undefined;
   const busy = actionBusy === s.objectId;
+  const density = useDensity();
+  const dShowEp = showEp(density);
+  const dShowObjId = showObjId(density);
+  const dCompact = compactActions(density);
 
   const zebra = index % 2 === 0 ? "rgba(0,0,0,0)" : "rgba(255,255,255,0.025)";
   const focusedBg = isFocused ? "rgba(255,40,0,0.05)" : zebra;
@@ -127,18 +140,19 @@ export function StructureRow({
       onMouseEnter={() => onFocus?.(s)}
       onMouseLeave={() => onFocus?.(null)}
       style={{
-        // Fixed column widths so EP / OBJ ID / actions all line up between
-        // every row of every node. The actions cluster is fixed width too
-        // because the EDIT/DELEGATE buttons would otherwise jump rightward
-        // on rows where DELEGATE is hidden.
+        // Density-driven column widths so the row reflows when CradleOS is
+        // embedded in the in-game browser at narrow widths. All rows share
+        // the same template (via useDensity) so columns line up between
+        // nodes, and the header strip stays in lockstep. minmax(0,1fr) on
+        // NAME is what enables ellipsis to actually trigger.
         display: "grid",
-        gridTemplateColumns: "32px 1fr 90px 90px 320px",
+        gridTemplateColumns: gridTemplateFor(density),
         alignItems: "center",
-        gap: 12,
-        padding: "9px 18px",
+        gap: rowGapFor(density),
+        padding: rowPaddingFor(density),
         background: focusedBg,
         borderBottom: `1px solid ${N10}`,
-        fontSize: 13,
+        fontSize: density === "tiny" ? 11 : 13,
         transition: "background 80ms ease",
       }}
     >
@@ -147,57 +161,75 @@ export function StructureRow({
         {kindIcon(s)}
       </span>
 
-      {/* Name — clickable; opens the in-game dApp iframe */}
-      <button
-        type="button"
-        onClick={() => onOpenDApp(s)}
-        title="Open in EVE dApp"
-        style={{
-          background: "transparent",
-          border: "none",
-          padding: 0,
-          textAlign: "left",
-          cursor: "pointer",
-          color: N,
-          fontFamily: "inherit",
-          fontSize: 13,
-          letterSpacing: "0.02em",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {s.displayName}
+      {/* Name — clickable; opens the in-game dApp iframe.
+          The wrapper span owns the min-width:0 so the button's ellipsis can
+          actually fire inside the grid track. The kind subtitle is hidden
+          at compact/tiny densities to give the name itself more room. */}
+      <span style={{ minWidth: 0, overflow: "hidden" }} title={s.displayName}>
+        <button
+          type="button"
+          onClick={() => onOpenDApp(s)}
+          title="Open in EVE dApp"
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            textAlign: "left",
+            cursor: "pointer",
+            color: N,
+            fontFamily: "inherit",
+            fontSize: density === "tiny" ? 11 : 13,
+            letterSpacing: "0.02em",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            display: "block",
+            width: "100%",
+          }}
+        >
+          {s.displayName}
+          {!dCompact && (
+            <span style={{
+              fontSize: 10,
+              color: N40,
+              marginLeft: 8,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+            }}>{s.typeName ?? s.label}</span>
+          )}
+        </button>
+      </span>
+
+      {/* EP cost (amber + bold when blocked) — hidden at tiny density.
+          We always emit a span so the grid column count stays stable across
+          density tiers; gridTemplateFor() collapses the column to 0px when
+          the data is hidden. */}
+      {dShowEp ? (
         <span style={{
-          fontSize: 10,
+          color: epColor,
+          textAlign: "right",
+          fontVariantNumeric: "tabular-nums",
+          letterSpacing: "0.02em",
+          fontWeight: epBlocked ? 700 : 400,
+          fontSize: density === "compact" ? 11 : 13,
+        }}>
+          {cost > 0 ? `${cost} EP` : "—"}
+        </span>
+      ) : <span />}
+
+      {/* Object ID short — hidden at compact / tiny density. The user can
+          still see it on hover (focused panel) and via the dApp iframe. */}
+      {dShowObjId ? (
+        <span style={{
           color: N40,
-          marginLeft: 8,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}>{s.typeName ?? s.label}</span>
-      </button>
-
-      {/* EP cost (amber + bold when blocked) */}
-      <span style={{
-        color: epColor,
-        textAlign: "right",
-        fontVariantNumeric: "tabular-nums",
-        letterSpacing: "0.02em",
-        fontWeight: epBlocked ? 700 : 400,
-      }}>
-        {cost > 0 ? `${cost} EP` : "—"}
-      </span>
-
-      {/* Object ID short */}
-      <span style={{
-        color: N40,
-        fontSize: 10,
-        textAlign: "right",
-        fontVariantNumeric: "tabular-nums",
-        letterSpacing: "0.04em",
-      }}>
-        {s.objectId.slice(-6)}
-      </span>
+          fontSize: 10,
+          textAlign: "right",
+          fontVariantNumeric: "tabular-nums",
+          letterSpacing: "0.04em",
+        }}>
+          {s.objectId.slice(-6)}
+        </span>
+      ) : <span />}
 
       {/* Status + actions cluster. Order: warning glyph (when blocked) is
           to the LEFT of the LED — user reads 'why is this blocked?' before
@@ -205,10 +237,11 @@ export function StructureRow({
           actions. */}
       <span style={{
         display: "flex",
-        gap: 8,
+        gap: dCompact ? 4 : 8,
         alignItems: "center",
         justifyContent: "flex-end",
         flexWrap: "nowrap",
+        minWidth: 0,
       }}>
         {epBlocked && (
           <PowerBlockedGlyph
@@ -216,7 +249,11 @@ export function StructureRow({
             tooltip={`INSUFFICIENT POWER — ${blockedReason}`}
           />
         )}
-        <StatusLight on={s.isOnline} size={12} ariaLabel={`${s.displayName} status`} />
+        {/* Status LED hidden at tiny density — the toggle's own state already
+            communicates ON/OFF and the LED was the cheapest pixel to drop. */}
+        {density !== "tiny" && (
+          <StatusLight on={s.isOnline} size={12} ariaLabel={`${s.displayName} status`} />
+        )}
         <CcpToggle
           on={s.isOnline}
           onChange={() => {
@@ -234,7 +271,7 @@ export function StructureRow({
           title="Rename"
           style={ghostBtn(N40)}
         >
-          EDIT
+          {dCompact ? "✎" : "EDIT"}
         </button>
         {/* DELEGATE / REVOKE: REVOKE always available when delegated
             (only needs the local delegation-obj key, not the vault).
@@ -252,7 +289,9 @@ export function StructureRow({
             title={isDelegated ? "Revoke tribe policy" : "Apply tribe policy"}
             style={ghostBtn(isDelegated ? AMBR : "#00ccff")}
           >
-            {isDelegated ? "⊘ REVOKE" : "⚑ DELEGATE"}
+            {dCompact
+              ? (isDelegated ? "⊘" : "⚑")
+              : (isDelegated ? "⊘ REVOKE" : "⚑ DELEGATE")}
           </button>
         )}
         {/* Gate link / unlink, inline */}

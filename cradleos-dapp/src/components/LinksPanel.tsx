@@ -30,10 +30,23 @@ interface ServiceDef {
   secret?: boolean;
 }
 
+// Service catalog — mirrors the Tab list in App.tsx (sans dev-only `flappy`).
+// Hash slugs map 1:1 to ROUTE_MAP in App.tsx. When you add a new tab there,
+// add it here too so the kiosk picker stays in sync.
+//
+// Order: most-likely-useful-as-public-kiosk first.
 const SERVICES: ServiceDef[] = [
+  // ── Top-level overviews ──
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    description: "Structure topology — your nodes, attached structures, and energy grid.",
+    url: `${BASE}/#/dashboard`,
+    icon: "🌐",
+  },
   {
     id: "intel",
-    label: "Intel Dashboard",
+    label: "Intel",
     description: "Live kill feed, security heatmap, and infrastructure overview.",
     url: `${BASE}/#/intel`,
     icon: "🔍",
@@ -46,6 +59,15 @@ const SERVICES: ServiceDef[] = [
     icon: "⚔",
   },
   {
+    id: "map",
+    label: "Star Map",
+    description: "System topology, gate links, and constellation navigation.",
+    url: `${BASE}/#/map`,
+    icon: "🗺",
+  },
+
+  // ── Tribe operations ──
+  {
     id: "tribe",
     label: "Tribe Vault",
     description: "Treasury, EVE balances, and tribe administration.",
@@ -53,33 +75,88 @@ const SERVICES: ServiceDef[] = [
     icon: "🏛",
   },
   {
-    id: "fitting",
-    label: "Ship Fitting",
-    description: "Ship stats, fitting calculator, and comparison tool.",
-    url: `${BASE}/#/fitting`,
-    icon: "🚀",
+    id: "hierarchy",
+    label: "Hierarchy",
+    description: "Tribe org chart, roles, and member directory.",
+    url: `${BASE}/#/hierarchy`,
+    icon: "👥",
   },
   {
-    id: "wiki",
-    label: "Knowledge Base",
-    description: "EVE Frontier game mechanics, structures, and ship guides.",
-    url: `${BASE}/#/wiki`,
-    icon: "📚",
+    id: "assets",
+    label: "Asset Ledger",
+    description: "Tribe infra, token supply, treasury, and DEX.",
+    url: `${BASE}/#/assets`,
+    icon: "📊",
   },
   {
-    id: "map",
-    label: "Star Map",
-    description: "System topology, gate links, and constellation navigation.",
-    url: `${BASE}/#/map`,
-    icon: "🗺",
+    id: "announcements",
+    label: "Announcements",
+    description: "Tribe broadcast board — pinned posts and feed.",
+    url: `${BASE}/#/announcements`,
+    icon: "📢",
   },
   {
-    id: "industry",
-    label: "Industry",
-    description: "Manufacturing queues, blueprints, and production chains.",
-    url: `${BASE}/#/industry`,
-    icon: "⚙",
+    id: "recruiting",
+    label: "Recruiting",
+    description: "Open recruiting terminal — applications and intake.",
+    url: `${BASE}/#/recruiting`,
+    icon: "📝",
   },
+  {
+    id: "calendar",
+    label: "Calendar",
+    description: "Fleet ops schedule, timers, and event planner.",
+    url: `${BASE}/#/calendar`,
+    icon: "📅",
+  },
+
+  // ── Structure & inventory management ──
+  {
+    id: "structures",
+    label: "Structures",
+    description: "Manage all your deployed structures — online/offline, rename, policy.",
+    url: `${BASE}/#/structures`,
+    icon: "⬢",
+  },
+  {
+    id: "inventory",
+    label: "SSU Storage",
+    description: "Browse items across your storage units.",
+    url: `${BASE}/#/storage`,
+    icon: "🗄",
+  },
+
+  // ── Policy & access ──
+  {
+    id: "defense",
+    label: "Defense Policy",
+    description: "Turret targeting policy — standings, ROE, and KOS list.",
+    url: `${BASE}/#/defense`,
+    icon: "🛡",
+  },
+  {
+    id: "gates",
+    label: "Gate Policy",
+    description: "Tribe gate access profiles — tolls and whitelists.",
+    url: `${BASE}/#/gates`,
+    icon: "⛩",
+  },
+  {
+    id: "registry",
+    label: "Tribe Registry",
+    description: "Tribe ownership claims, challenges, and attestor verification.",
+    url: `${BASE}/#/registry`,
+    icon: "📜",
+  },
+  {
+    id: "succession",
+    label: "Succession",
+    description: "Will & testament — time-locked deeds for tribe leadership succession.",
+    url: `${BASE}/#/succession`,
+    icon: "⚗",
+  },
+
+  // ── Economy & contracts ──
   {
     id: "bounties",
     label: "Bounties",
@@ -97,38 +174,42 @@ const SERVICES: ServiceDef[] = [
   {
     id: "cargo",
     label: "Cargo Contracts",
-    description: "Hauling contracts and cargo courier listings.",
+    description: "Trustless hauling contracts with EVE escrow.",
     url: `${BASE}/#/cargo`,
     icon: "📦",
   },
   {
-    id: "defense",
-    label: "Defense Policy",
-    description: "Standing orders, rules of engagement, and KOS list.",
-    url: `${BASE}/#/defense`,
-    icon: "🛡",
+    id: "industry",
+    label: "Industry",
+    description: "Manufacturing queues, blueprints, and production chains.",
+    url: `${BASE}/#/industry`,
+    icon: "⚙",
+  },
+
+  // ── Knowledge & tools ──
+  {
+    id: "fitting",
+    label: "Ship Fitting",
+    description: "Ship stats, fitting calculator, and comparison tool.",
+    url: `${BASE}/#/fitting`,
+    icon: "🚀",
   },
   {
-    id: "hierarchy",
-    label: "Hierarchy",
-    description: "Tribe org chart, roles, and member directory.",
-    url: `${BASE}/#/hierarchy`,
-    icon: "👥",
-  },
-  {
-    id: "calendar",
-    label: "Calendar",
-    description: "Fleet ops schedule, timers, and event planner.",
-    url: `${BASE}/#/calendar`,
-    icon: "📅",
+    id: "wiki",
+    label: "Knowledge Base",
+    description: "EVE Frontier game mechanics, structures, and ship guides.",
+    url: `${BASE}/#/wiki`,
+    icon: "📚",
   },
   {
     id: "query",
-    label: "Query",
-    description: "Live on-chain data query and explorer.",
+    label: "Chain Query",
+    description: "Search characters and tribes by name, ticker, or wallet.",
     url: `${BASE}/#/query`,
     icon: "🔎",
   },
+
+  // ── Keeper (easter egg — unlabeled in dropdown via `secret: true`) ──
   {
     id: "keeper",
     label: "",            // intentionally blank — easter egg

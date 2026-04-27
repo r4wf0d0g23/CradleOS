@@ -98,7 +98,7 @@ export function GatePolicyPanel() {
 
       // Fallback: EVE Vault hook handles everything
       // Note: requires wallet to be fully connected (not just installed) on this page
-      const result = await sendSponsoredTx({ txAction: action, assembly: makeAssembly(), chain: "sui:testnet" as `sui:${string}`, tenant: "utopia" });
+      const result = await sendSponsoredTx({ txAction: action, assembly: makeAssembly(), tenant: "utopia" });
       onSuccess(result.digest);
     } catch (e) {
       onError(e);

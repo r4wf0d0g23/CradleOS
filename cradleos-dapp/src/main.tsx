@@ -17,6 +17,15 @@ import "./main.css";
 import "./styles/ccp-tokens.css";
 import "@radix-ui/themes/styles.css";
 
+// Inject BASE_URL into a CSS custom property so main.css can build a
+// base-aware url() for the global app background. Vite only rewrites
+// url() refs from /src; assets in /public live at BASE_URL/<path>, which
+// differs between dev (/) and prod (/CradleOS/). This makes both work.
+document.documentElement.style.setProperty(
+  "--app-bg-url",
+  `url(${import.meta.env.BASE_URL}bg/eve-frontier-bg.gif)`,
+);
+
 import { QueryClient } from "@tanstack/react-query";
 import App from "./App";
 import { EveFrontierProvider } from "@evefrontier/dapp-kit";

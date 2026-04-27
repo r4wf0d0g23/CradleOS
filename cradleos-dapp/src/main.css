@@ -30,7 +30,14 @@
 html {
   margin: 0;
   min-height: 100%;
-  background: url(/lineagewar-corridor.jpg) center 30% / cover fixed #0a0704;
+  /* EVE Frontier official animated dot-grid world map.
+     Sourced from dapps.evefrontier.com canonical bundle (background-DODSHPqT.gif).
+     Replaces the previous lineagewar corridor JPG so CradleOS visually matches
+     the in-game / official Frontier dApp aesthetic.
+     Saved locally at /bg/eve-frontier-bg.gif (1920x1080, ~1.8 MB, 250 frames).
+     --app-bg-url is injected from main.tsx using import.meta.env.BASE_URL so
+     it works in both dev (/) and prod (/CradleOS/). */
+  background: var(--app-bg-url) center center / cover fixed #030201;
 }
 
 html, body, #root { margin: 0; min-height: 100%; }
@@ -42,7 +49,23 @@ body {
   color: var(--ccp-fg);
 }
 
-button { font: inherit; cursor: pointer; }
+button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* Kill the UA default focus ring (blue in most webviews) on mouse-click
+   focus while preserving keyboard focus rings via :focus-visible. The
+   in-game Stillness embedded Chrome was painting blue rings on chevron
+   buttons + role=button divs after Raw clicked them, which clashed with
+   the orange theme. Reported 2026-04-26 with screenshot showing blue
+   "dropdown arrows". Applies to button + div[role=button] + tabbable
+   span/a/div. Keyboard focus rings preserved via :focus-visible. */
+button:focus,
+[role="button"]:focus,
+[tabindex]:focus { outline: none; }
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible { outline: 2px solid var(--ccp-red); outline-offset: 1px; }
+/* Suppress webview tap-highlight everywhere (was producing a faint blue
+   flash on tap that made interactive elements look blue when zoomed). */
+button, [role="button"], a, [tabindex] { -webkit-tap-highlight-color: transparent; }
 code { display: block; overflow-wrap: anywhere; color: var(--ccp-red); }
 h1, h2, h3, p { margin: 0; }
 

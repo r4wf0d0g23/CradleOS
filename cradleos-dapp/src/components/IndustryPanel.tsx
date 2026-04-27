@@ -19,6 +19,10 @@ interface Blueprint {
   time: number;
   materials: BlueprintMaterial[];
   products: BlueprintMaterial[];
+  /** True for blueprints/recipes that consume salvage drops ("Salvaged Materials",
+   *  "Mummified Clone", etc.). Salvage paths can be excluded from the supply
+   *  chain via the IndustryPanel toggle since they're rare in practice. */
+  salvage?: boolean;
 }
 
 interface Recipe {
@@ -27,6 +31,9 @@ interface Recipe {
   time: number;
   inputs: BlueprintMaterial[];
   outputs: BlueprintMaterial[];
+  /** True for salvage-class refinery recipes. Excluded from supply chain
+   *  resolution by default — see IndustryPanel `includeSalvage` toggle. */
+  salvage?: boolean;
 }
 
 interface TreeNode {
@@ -63,6 +70,7 @@ const recipes = (industryData as { recipes?: Recipe[] }).recipes ?? [];
 
 // Convert recipes into blueprint-like entries for unified supply chain resolution.
 // Recipe key format: "r_<index>" to avoid collisions with numeric blueprint keys.
+// Salvage flag propagates from recipe → blueprint shape so resolution can filter.
 const recipeBps: Record<string, Blueprint> = {};
 for (let i = 0; i < recipes.length; i++) {
   const r = recipes[i];
@@ -71,6 +79,7 @@ for (let i = 0; i < recipes.length; i++) {
     time: r.time,
     materials: r.inputs,
     products: r.outputs,
+    salvage: r.salvage === true,
   };
 }
 
@@ -81,28 +90,48 @@ for (const [key, rbp] of Object.entries(recipeBps)) {
   allBlueprints[key] = rbp;
 }
 
-// Build productToBp: typeID (number) → blueprint/recipe key (string)
-// Assembly blueprints first (higher priority), then recipes fill gaps.
-const productToBp = new Map<number, string>();
-for (const [key, bp] of Object.entries(blueprints)) {
-  for (const prod of bp.products) {
-    productToBp.set(prod.typeID, key);
-  }
-}
-for (const [key, bp] of Object.entries(recipeBps)) {
-  for (const prod of bp.products) {
-    if (!productToBp.has(prod.typeID)) {
-      productToBp.set(prod.typeID, key);
+/** Build a typeID → blueprint-key lookup, optionally excluding salvage recipes.
+ *  When salvage is excluded, salvage recipe outputs only register as producers
+ *  if NO non-salvage producer exists for that output (so the toggle is
+ *  authoritative — if you turn it off, salvage paths disappear entirely from
+ *  the resolver, even if they were the first registered producer). */
+function buildProductToBp(includeSalvage: boolean): Map<number, string> {
+  const map = new Map<number, string>();
+  // Assembly blueprints first (highest priority — always non-salvage).
+  for (const [key, bp] of Object.entries(blueprints)) {
+    for (const prod of bp.products) {
+      map.set(prod.typeID, key);
     }
   }
+  // Then non-salvage recipes (only fill gaps).
+  for (const [key, bp] of Object.entries(recipeBps)) {
+    if (bp.salvage) continue;
+    for (const prod of bp.products) {
+      if (!map.has(prod.typeID)) {
+        map.set(prod.typeID, key);
+      }
+    }
+  }
+  // Finally salvage recipes, only if explicitly included AND no non-salvage
+  // producer was found above.
+  if (includeSalvage) {
+    for (const [key, bp] of Object.entries(recipeBps)) {
+      if (!bp.salvage) continue;
+      for (const prod of bp.products) {
+        if (!map.has(prod.typeID)) {
+          map.set(prod.typeID, key);
+        }
+      }
+    }
+  }
+  return map;
 }
 
-// Collect all producible typeIDs (products of blueprints + recipes)
-const producibleTypeIds = new Set<number>();
-for (const bp of Object.values(allBlueprints)) {
-  for (const prod of bp.products) {
-    producibleTypeIds.add(prod.typeID);
-  }
+/** Set of typeIDs producible under a given includeSalvage setting. Items
+ *  whose only producers are salvage recipes drop out of this set when salvage
+ *  is excluded — they then surface as raw inputs in the supply chain. */
+function buildProducibleSet(productToBp: Map<number, string>): Set<number> {
+  return new Set(productToBp.keys());
 }
 
 function getTypeInfo(typeId: number): TypeInfo {
@@ -121,7 +150,8 @@ function buildSupplyTree(
   productTypeId: number,
   qty: number,
   depth: number,
-  visited: Set<number>
+  visited: Set<number>,
+  productToBp: Map<number, string>,
 ): TreeNode {
   const info = getTypeInfo(productTypeId);
   const bpKey = productToBp.get(productTypeId);
@@ -151,7 +181,7 @@ function buildSupplyTree(
 
   const children: TreeNode[] = bp.materials.map(mat => {
     const childQty = mat.quantity * runs;
-    return buildSupplyTree(mat.typeID, childQty, depth + 1, newVisited);
+    return buildSupplyTree(mat.typeID, childQty, depth + 1, newVisited, productToBp);
   });
 
   const selfTime = bp.time * runs;
@@ -536,8 +566,27 @@ export function IndustryPanel() {
   const [maxDepth, setMaxDepth] = useState<number | null>(null);
   const [shoppingListOpen, setShoppingListOpen] = useState(true);
   const [mfgTimeOpen, setMfgTimeOpen] = useState(true);
+  /** Toggle: include salvage refinery recipes (Salvaged Materials,
+   *  Mummified Clone) in supply chain resolution. Off by default — those
+   *  drops are too rare in practice to anchor large bills of materials, and
+   *  the calculator's default behavior should bottom out at base materials
+   *  (Carbon Weave, Reinforced Alloys, etc.) so the user can source them
+   *  via market or non-salvage refining instead. */
+  const [includeSalvage, setIncludeSalvage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Recompute productToBp whenever the salvage toggle flips. When salvage
+  // is excluded, salvage-recipe-only products (e.g. Carbon Weave) drop out
+  // of the producible set and surface as raw inputs in the tree.
+  const productToBp = useMemo(
+    () => buildProductToBp(includeSalvage),
+    [includeSalvage],
+  );
+  const producibleTypeIds = useMemo(
+    () => buildProducibleSet(productToBp),
+    [productToBp],
+  );
 
   // All producible products sorted by category then name
   const products = useMemo(() => {
@@ -551,7 +600,7 @@ export function IndustryPanel() {
       if (catCmp !== 0) return catCmp;
       return a.info.name.localeCompare(b.info.name);
     });
-  }, []);
+  }, [producibleTypeIds]);
 
   // Filtered products (category pill + text search)
   const filtered = useMemo(() => {
@@ -579,12 +628,14 @@ export function IndustryPanel() {
     return map;
   }, [filtered]);
 
-  // Build supply chain tree
+  // Build supply chain tree. Re-runs when salvage toggle flips because
+  // productToBp changes — e.g. Carbon Weave goes from "resolves to Salvaged
+  // Materials" to "raw input" when includeSalvage flips false.
   const tree = useMemo(() => {
     if (selectedTypeId === null) return null;
     const qty = Math.max(1, Math.floor(quantity));
-    return buildSupplyTree(selectedTypeId, qty, 0, new Set());
-  }, [selectedTypeId, quantity]);
+    return buildSupplyTree(selectedTypeId, qty, 0, new Set(), productToBp);
+  }, [selectedTypeId, quantity, productToBp]);
 
   // Auto-expand root and first-level children when tree changes
   useEffect(() => {
@@ -957,7 +1008,7 @@ export function IndustryPanel() {
       {/* ── Supply Chain Tree ── */}
       {tree && (
         <div>
-          {/* Level filter pills */}
+          {/* Level filter pills + salvage toggle */}
           <div style={{
             display: "flex",
             gap: "4px",
@@ -982,6 +1033,42 @@ export function IndustryPanel() {
                 />
               );
             })}
+            {/* Vertical divider */}
+            <span style={{
+              width: 1, height: 16, marginLeft: 8, marginRight: 4,
+              background: "rgba(255,71,0,0.2)",
+            }} />
+            {/* Salvage toggle: when off (default) Carbon Weave / Reinforced
+                Alloys / Thermal Composites surface as raw inputs instead of
+                resolving through the rare Salvaged Materials drop. Tooltip
+                explains the trade-off. */}
+            <span style={{
+              fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
+              color: "rgba(255,71,0,0.35)", marginRight: "4px",
+            }}>
+              Sources:
+            </span>
+            <button
+              onClick={() => setIncludeSalvage(s => !s)}
+              title={
+                includeSalvage
+                  ? "Salvage recipes ON — Carbon Weave, Reinforced Alloys, Thermal Composites, and Aromatic Carbon Weave will resolve through Salvaged Materials / Mummified Clone drops when no other path exists. Click to exclude salvage and treat those base materials as terminal raw inputs."
+                  : "Salvage recipes OFF — base materials produced only by salvage (Carbon Weave, Reinforced Alloys, Thermal Composites) surface as raw inputs to be sourced directly. Click to include salvage drops in the supply chain."
+              }
+              style={{
+                fontSize: 9,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "3px 8px",
+                border: `1px solid ${includeSalvage ? "rgba(255,71,0,0.6)" : "rgba(255,71,0,0.2)"}`,
+                background: includeSalvage ? "rgba(255,71,0,0.18)" : "transparent",
+                color: includeSalvage ? "#FF4700" : "rgba(180,160,140,0.5)",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Salvage: {includeSalvage ? "on" : "off"}
+            </button>
           </div>
 
           {/* Tree container */}
