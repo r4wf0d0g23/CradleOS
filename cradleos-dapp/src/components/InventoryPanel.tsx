@@ -2888,19 +2888,57 @@ export function InventoryPanel() {
         // caller-name stamp above). Concurrency-2 + 250ms grace so we
         // don't compete with inventory loads. Cards re-render as each
         // operator resolves.
+        //
+        // Diagnostic logging (2026-05-01) to trace why shared SSUs end
+        // up stuck under "Resolving…" group: Raw screenshot showed 4
+        // shared SSUs (Tribe Stash, Mini Storage #b4542a, Transfer
+        // Station, Depot) successfully discovered + inventory-loaded
+        // but never operator-resolved. The function works in isolation
+        // (verified via direct RPC calls earlier). Logging will reveal
+        // whether this block runs, whether resolveSsuOperator returns
+        // null, or whether setInventories runs but findIndex misses.
         sharedDiscoveryPromise.then(async (sharedInvs) => {
+          // eslint-disable-next-line no-console
+          console.log("[op-resolve] sharedDiscoveryPromise resolved", {
+            cancelled,
+            sharedInvsCount: sharedInvs.length,
+            ids: sharedInvs.map(s => s.ssu.objectId.slice(0, 10) + "…"),
+          });
           if (cancelled || sharedInvs.length === 0) return;
           await new Promise(r => setTimeout(r, 250));
-          if (cancelled) return;
+          if (cancelled) {
+            // eslint-disable-next-line no-console
+            console.log("[op-resolve] cancelled during 250ms grace; aborting");
+            return;
+          }
+          // eslint-disable-next-line no-console
+          console.log("[op-resolve] starting pMap for shared SSU operators", sharedInvs.length);
           await pMap(
             sharedInvs.map(s => s.ssu.objectId),
             async (id) => {
               if (cancelled) return null;
-              const op = await resolveSsuOperator(id).catch(() => null);
-              if (cancelled || !op) return null;
+              // eslint-disable-next-line no-console
+              console.log("[op-resolve] resolving", id.slice(0, 10) + "…");
+              const op = await resolveSsuOperator(id).catch((e) => {
+                // eslint-disable-next-line no-console
+                console.warn("[op-resolve] error", id.slice(0, 10), e);
+                return null;
+              });
+              if (cancelled) return null;
+              if (!op) {
+                // eslint-disable-next-line no-console
+                console.warn("[op-resolve] resolveSsuOperator returned null for", id.slice(0, 10));
+                return null;
+              }
+              // eslint-disable-next-line no-console
+              console.log("[op-resolve] resolved", id.slice(0, 10), "->", op.name);
               setInventories(prev => {
                 const idx = prev.findIndex(p => p.ssu.objectId === id);
-                if (idx === -1) return prev;
+                if (idx === -1) {
+                  // eslint-disable-next-line no-console
+                  console.warn("[op-resolve] findIndex miss for", id.slice(0, 10), "in", prev.length, "inventories");
+                  return prev;
+                }
                 const next = [...prev];
                 next[idx] = { ...next[idx], operator: op };
                 return next;
@@ -2909,6 +2947,8 @@ export function InventoryPanel() {
             },
             2,
           );
+          // eslint-disable-next-line no-console
+          console.log("[op-resolve] pMap complete");
         });
 
         // Load each OWNED SSU inventory with bounded concurrency. Pull
