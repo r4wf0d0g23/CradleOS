@@ -93,6 +93,12 @@ type SSUInventory = {
   error?: string;
   maxCapacity: number;
   usedCapacity: number;
+  /** True after the first successful inventory fetch for this SSU.
+   *  Used by the lazy-load gate in the expand handler so we only load
+   *  contents the first time a card opens (and when the user explicitly
+   *  hits REFRESH). Without this flag we'd re-fetch on every collapse/
+   *  expand cycle, defeating the lazy-load goal of minimizing RPC. */
+  hasLoadedContents?: boolean;
   /** cradleos::ssu_access policy attached to this SSU, if any.
    *  undefined = not yet resolved; { policyId: null, mode: "none" } = no policy. */
   policy?: LoadedPolicy;
@@ -2639,6 +2645,9 @@ export function InventoryPanel() {
           error: undefined,
           // Preserve previous policy if re-fetch failed; only overwrite on success.
           policy: policyResult ?? next[idx].policy,
+          // Mark contents loaded so the lazy-load gate in toggleCollapse
+          // doesn't re-fetch on subsequent expand cycles.
+          hasLoadedContents: true,
         };
         return next;
       });
@@ -2701,19 +2710,34 @@ export function InventoryPanel() {
 
         setTransferState(prev => ({ ...prev, characterId, ownerCaps, charOwnerCapId }));
 
-        // Initialize loading placeholders for OWNED SSUs only. Shared SSUs
-        // will be appended below once discovery completes; we render owned
-        // ones first because they're the common case and we want first paint
-        // to be fast.
+        // Initialize empty placeholders for OWNED SSUs only. Shared SSUs
+        // will be appended below once discovery completes.
+        //
+        // 2026-05-01: SSU contents (items + capacity) are now loaded
+        // lazily on first expand, NOT eagerly on mount. Eagerly loading
+        // 11+ SSUs at once burned through the public Sui RPC's rate
+        // limit, producing a 'Failed to fetch' cascade and a stuck
+        // 'Resolving…' header (operator resolution starved by the
+        // inventory loads competing for the same window). With lazy
+        // load, only the SSUs the user actually opens hit the RPC,
+        // and they hit it in serial (one card at a time clicked) so
+        // there's no parallel pressure. The eager pMap(ownedSsus, ...)
+        // and the per-shared-SSU inventory loop are both removed below.
+        // Operator resolution and shared-SSU discovery still run on
+        // mount because both are critical for the grouping/filter UI.
+        // `loading: false` here means 'waiting for user expand', not
+        // 'actively loading'. The expand handler in SSUCard kicks off
+        // the actual fetch via onRefresh when needed.
         const ssus: PlayerStructure[] = [...ownedSsus];
         setInventories(
           ssus.map(ssu => ({
             ssu,
             items: [],
             resolvedNames: new Map(),
-            loading: true,
+            loading: false,
             maxCapacity: 0,
             usedCapacity: 0,
+            hasLoadedContents: false,
           }))
         );
         setGlobalLoading(false);
@@ -2822,9 +2846,14 @@ export function InventoryPanel() {
               ssu: structure,
               items: [] as InventoryItem[],
               resolvedNames: new Map<number, string>(),
-              loading: true,
+              // loading: false — waiting for user to expand; lazy-load
+              // pattern (see initial setInventories above for full
+              // rationale). hasLoadedContents starts false; flips true
+              // after the first successful refreshSSU call.
+              loading: false,
               maxCapacity: 0,
               usedCapacity: 0,
+              hasLoadedContents: false,
               policy: { policyId: discovered.policyId, mode: discovered.mode } as LoadedPolicy,
               sharedFrom: sharedFromOf(discovered.mode.kind),
             }));
@@ -2833,47 +2862,14 @@ export function InventoryPanel() {
           }
         })();
 
-        // Append discovered shared-SSU placeholders to the inventories list
-        // as soon as discovery resolves (separate from inventory load to
-        // keep the owned-SSU first-paint fast).
+        // Append discovered shared-SSU placeholders to the inventories
+        // list as soon as discovery resolves. Contents stay empty until
+        // the user expands a card (lazy-load pattern — see the owned-SSU
+        // setInventories above for full rationale).
         sharedDiscoveryPromise.then(sharedInvs => {
           if (cancelled || sharedInvs.length === 0) return;
-          // Track the indices these new entries land at so the per-card
-          // inventory loaders below can target them by ssu.objectId.
           ssus.push(...sharedInvs.map(s => s.ssu));
           setInventories(prev => [...prev, ...sharedInvs]);
-          // Kick off inventory load for each shared SSU. We cannot reuse
-          // the parallel block below because that one captures `ssus` by
-          // index closure; here we look up by objectId post-hoc.
-          for (const inv of sharedInvs) {
-            (async () => {
-              try {
-                const { items, maxCapacity, usedCapacity } = await fetchSSUInventory(inv.ssu.objectId);
-                const resolvedNames = new Map<number, string>();
-                await Promise.all(items.map(async item => {
-                  const name = await resolveItemName(item.typeId, WORLD_API, nameCache.current);
-                  resolvedNames.set(item.typeId, name);
-                }));
-                if (cancelled) return;
-                setInventories(prev => {
-                  const idx = prev.findIndex(p => p.ssu.objectId === inv.ssu.objectId);
-                  if (idx === -1) return prev;
-                  const next = [...prev];
-                  next[idx] = { ...next[idx], items, resolvedNames, maxCapacity, usedCapacity, loading: false };
-                  return next;
-                });
-              } catch (err: any) {
-                if (cancelled) return;
-                setInventories(prev => {
-                  const idx = prev.findIndex(p => p.ssu.objectId === inv.ssu.objectId);
-                  if (idx === -1) return prev;
-                  const next = [...prev];
-                  next[idx] = { ...next[idx], loading: false, error: err?.message ?? String(err) };
-                  return next;
-                });
-              }
-            })();
-          }
         });
 
         // After shared discovery has completed, kick off operator
@@ -2904,83 +2900,14 @@ export function InventoryPanel() {
           );
         });
 
-        // Load each OWNED SSU inventory with bounded concurrency. Pull
-        // ssu_access policy alongside inventory so the deposit/withdraw UI
-        // can detect tribe-shared SSUs on first paint without a second
-        // round-trip per card. Policy lookup is best-effort — RPC failure
-        // here must NOT block inventory display.
-        //
-        // We look up entries by objectId (not array index) because shared-SSU
-        // discovery may append additional entries to `inventories` between
-        // when this loop starts and when each item resolves. An index-based
-        // write would race against that append and clobber the wrong card.
-        //
-        // Concurrency=1 (sequential). Earlier we tried concurrency=3 but
-        // an SSU with many items (each item adds RPC calls for type-name
-        // resolution + per-partition fetches) burns through enough rate-
-        // limit budget that the next 1-2 SSUs in the wave still fail. The
-        // public Sui testnet fullnode is the bottleneck; serializing SSU
-        // loads with a small inter-SSU delay drains the rate-limit window
-        // between cards. Trade-off: longer total load time, but no
-        // "Failed to fetch" cascade.
-        await pMap(ownedSsus, async (ssu, idx) => {
-          // Tiny stagger between SSUs to give the rate limiter a beat to
-          // recover. Skip the delay on the very first SSU so first paint
-          // isn't artificially delayed.
-          if (idx > 0) await new Promise(r => setTimeout(r, 250));
-            try {
-              const [{ items, maxCapacity, usedCapacity }, policyResult] = await Promise.all([
-                fetchSSUInventory(ssu.objectId),
-                SSU_ACCESS_AVAILABLE
-                  ? loadPolicyForSsu(ssu.objectId).catch(() => undefined)
-                  : Promise.resolve(undefined),
-              ]);
-
-              // Resolve names for all type IDs (bounded concurrency —
-              // World API also benefits from not being hammered all at
-              // once, even though resolveItemName is cached).
-              const resolvedNames = new Map<number, string>();
-              await pMap(items, async item => {
-                const name = await resolveItemName(
-                  item.typeId,
-                  WORLD_API,
-                  nameCache.current
-                );
-                resolvedNames.set(item.typeId, name);
-              }, 4);
-
-              if (cancelled) return;
-
-              setInventories(prev => {
-                const idx = prev.findIndex(p => p.ssu.objectId === ssu.objectId);
-                if (idx === -1) return prev;
-                const next = [...prev];
-                next[idx] = {
-                  ...next[idx],
-                  items,
-                  resolvedNames,
-                  maxCapacity,
-                  usedCapacity,
-                  loading: false,
-                  policy: policyResult,
-                };
-                return next;
-              });
-            } catch (err: any) {
-              if (cancelled) return;
-              setInventories(prev => {
-                const idx = prev.findIndex(p => p.ssu.objectId === ssu.objectId);
-                if (idx === -1) return prev;
-                const next = [...prev];
-                next[idx] = {
-                  ...next[idx],
-                  loading: false,
-                  error: err?.message ?? String(err),
-                };
-                return next;
-              });
-            }
-          }, 1); // concurrency=1 (sequential)
+        // OWNED SSU inventory loads are now lazy — see refreshSSU /
+        // SSUCard expand handler. The eager pMap(ownedSsus, ...) loop
+        // that previously lived here was removed 2026-05-01 to fix the
+        // 'Failed to fetch' cascade and stuck 'Resolving…' header.
+        // Critical paths still run on mount: shared-SSU discovery (so
+        // the panel knows what to show), operator resolution (so the
+        // grouping/filter UI works). Per-SSU contents and policy load
+        // when the user expands a card.
       } catch (err: any) {
         if (!cancelled) {
           setGlobalError(err?.message ?? String(err));
@@ -3026,6 +2953,31 @@ export function InventoryPanel() {
     } catch { setCollapsedIds(new Set()); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress]);
+  // 2026-05-01: lazy-load means SSUs default to collapsed. When new
+  // SSUs arrive (initial mount, shared discovery completes, refresh),
+  // auto-add them to collapsedIds so users see a clean list of headers
+  // and explicitly opt in to loading per-card. SSUs already in
+  // collapsedIds (from localStorage or prior state) are unchanged.
+  // Once an SSU has been expanded once this session and content has
+  // loaded (hasLoadedContents=true), we leave it alone — the user has
+  // expressed intent and we respect it.
+  useEffect(() => {
+    if (inventories.length === 0) return;
+    const newlyArrived = inventories.filter(
+      inv => !collapsedIds.has(inv.ssu.objectId) && !inv.hasLoadedContents,
+    );
+    if (newlyArrived.length === 0) return;
+    setCollapsedIds(prev => {
+      const next = new Set(prev);
+      for (const inv of newlyArrived) next.add(inv.ssu.objectId);
+      return next;
+    });
+    // Intentionally only depend on inventories.length so we don't loop
+    // when collapsedIds itself updates. New SSUs always change the
+    // length.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inventories.length]);
+
   // Persist on every change.
   useEffect(() => {
     try {
@@ -3038,13 +2990,51 @@ export function InventoryPanel() {
   const toggleCollapse = (ssuId: string) => {
     setCollapsedIds(prev => {
       const next = new Set(prev);
-      if (next.has(ssuId)) next.delete(ssuId);
+      const wasCollapsed = next.has(ssuId);
+      if (wasCollapsed) next.delete(ssuId);
       else next.add(ssuId);
+      // Lazy-load: when a card transitions from collapsed → expanded
+      // AND its contents haven't been loaded yet AND it's not
+      // currently loading AND there's no prior error to surface,
+      // kick off the inventory fetch. Refresh button on the card
+      // (refreshSSU) is the explicit re-fetch path; this gate is the
+      // implicit first-time fetch on user intent. We schedule it via
+      // setTimeout(0) so the setCollapsedIds state update commits
+      // first — keeps React rendering deterministic and avoids the
+      // 'setState during render' warning.
+      if (wasCollapsed) {
+        const inv = inventories.find(i => i.ssu.objectId === ssuId);
+        if (inv && !inv.hasLoadedContents && !inv.loading && !inv.error) {
+          setTimeout(() => { refreshSSU(ssuId); }, 0);
+        }
+      }
       return next;
     });
   };
   const collapseAll = () => setCollapsedIds(new Set(inventories.map(i => i.ssu.objectId)));
-  const expandAll = () => setCollapsedIds(new Set());
+  // Expand-all triggers lazy-load for every not-yet-loaded SSU. We
+  // serialize the loads (one at a time) via refreshSSU to stay under
+  // the public Sui RPC rate limit; even if the user expands all 11+
+  // SSUs at once, the loads queue rather than fire in parallel and
+  // re-create the original 'Failed to fetch' cascade. Cards already
+  // loaded are skipped.
+  const expandAll = () => {
+    setCollapsedIds(new Set());
+    const toLoad = inventories.filter(
+      i => !i.hasLoadedContents && !i.loading && !i.error,
+    );
+    if (toLoad.length === 0) return;
+    // Fire-and-forget serial chain: await between loads so we never
+    // pile up requests. refreshSSU sets loading:true synchronously
+    // (in setInventories) so a re-entrant toggleCollapse during the
+    // chain won't double-fire. Errors per-SSU are swallowed by
+    // refreshSSU's own try/catch — they show in the card error slot.
+    (async () => {
+      for (const inv of toLoad) {
+        await refreshSSU(inv.ssu.objectId);
+      }
+    })();
+  };
 
   // ── Operator grouping + filter (Phase 2) ────────────────────────
   // Once Phase 1 resolves an operator name + key on each SSUInventory,
