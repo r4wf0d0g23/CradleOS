@@ -1362,33 +1362,52 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                 <span style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.55)" }}>⊘ Unlinked Structures</span>
                 <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{sys.orphans.length} structures with no parent node</span>
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12, paddingLeft: 8 }}>
-                {sys.orphans.map(s => {
-                  const color = kindColor(s);
-                  const isFoc = focused?.objectId === s.objectId;
-                  return (
-                    <div
-                      key={s.objectId}
-                      onMouseEnter={() => setFocused(s)}
-                      onMouseLeave={() => setFocused(null)}
-                      onClick={() => openDApp(s)}
-                      style={{
-                        width: 100, minHeight: 100, borderRadius: "50%",
-                        border: `2px solid ${isFoc ? color : `${color}33`}`,
-                        background: "rgba(5,3,2,0.95)",
-                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", opacity: 0.5, padding: "8px 4px",
-                        transition: "all 0.15s",
-                      }}
-                    >
-                      <span style={{ fontSize: 18 }}>{kindIcon(s)}</span>
-                      <span style={{ fontSize: 10, color, textAlign: "center" }}>
-                        {s.displayName.length > 10 ? s.displayName.slice(0, 10) + "…" : s.displayName}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Orphan structures: render the same StructureRow table that
+                  node-attached children use, so users can rename / online /
+                  offline / delegate / openDApp on them just like normal
+                  structures. Without this, orphans were limited to a
+                  click-to-openDApp circle bubble with no per-row controls.
+                  Orphans have no visible parent node (the on-chain location
+                  for the parent NetworkNode wasn't exposed), so:
+                    epAvailable: 0 — we can't read the missing node's EP
+                    fuelBlocked: false — the structure may still be online
+                                          on-chain even if we can't see its
+                                          parent's fuel; respect that
+                  Online/offline transitions for orphans build PTBs that
+                  reference s.energySourceId directly, so they still work
+                  even when the node isn't in our local view. */}
+              <StructureRowList>
+                <StructureRowHeader />
+                {sortByFamily(sys.orphans).map((s, i) => (
+                  <StructureRow
+                    key={s.objectId}
+                    structure={s}
+                    index={i}
+                    epAvailable={0}
+                    fuelBlocked={false}
+                    onOnline={handleOnline}
+                    onOffline={handleOffline}
+                    onRename={handleRename}
+                    onDelegate={x => {
+                      if (tribeVaultId) handleDelegate(x, tribeVaultId);
+                      else setActionErr("No tribe vault found. Create one in the Tribe Vault tab first.");
+                    }}
+                    onRevoke={handleRevoke}
+                    onLinkGate={handleLinkGate}
+                    onUnlinkGate={handleUnlinkGate}
+                    onOpenDApp={openDApp}
+                    onFocus={setFocused}
+                    isFocused={focused?.objectId === s.objectId}
+                    actionBusy={actionBusy}
+                    tribeVaultAvailable={!!tribeVaultId}
+                    isDelegatable={isDelegatable(s)}
+                    isDelegated={isDelegated(s)}
+                    availableGateLinkTargets={allGates}
+                    gateActionStatus={gateActionState?.gateId === s.objectId ? gateActionState.status : null}
+                    kindIcon={kindIcon}
+                  />
+                ))}
+              </StructureRowList>
             </div>
           )}
         </div>
