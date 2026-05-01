@@ -1241,22 +1241,23 @@ async function _handleWithdraw(item: InventoryItem) {
         </span>
         {/* Operator badge — the resolved Character name of whoever owns
             this SSU. Shown for ALL cards (owned + shared) so the user can
-            scan the list and see operator at a glance. Subtle styling so
-            the SHARED · TRIBE badge still stands out for shared SSUs. */}
-        {inv.operator && (
-          <span
-            title={`SSU operator: ${inv.operator.name} (${inv.operator.key.slice(0, 6)}\u2026${inv.operator.key.slice(-4)})`}
-            style={{
-              marginLeft: 6,
-              fontSize: 10,
-              fontFamily: "monospace",
-              color: "rgba(200,200,180,0.65)",
-              letterSpacing: "0.05em",
-            }}
-          >
-            · {inv.operator.name}
-          </span>
-        )}
+            scan the list and see operator at a glance. While resolving,
+            shows a subtle ellipsis so users see resolution progress
+            instead of nothing. */}
+        <span
+          title={inv.operator
+            ? `SSU operator: ${inv.operator.name} (${inv.operator.key.slice(0, 6)}\u2026${inv.operator.key.slice(-4)})`
+            : "Resolving SSU operator…"}
+          style={{
+            marginLeft: 6,
+            fontSize: 10,
+            fontFamily: "monospace",
+            color: inv.operator ? "rgba(200,200,180,0.65)" : "rgba(200,200,180,0.25)",
+            letterSpacing: "0.05em",
+          }}
+        >
+          · {inv.operator?.name ?? "…"}
+        </span>
         {/* SHARED badge — indicates the caller does NOT own this SSU but
             has access to it via a shared-access policy. Color-coded by
             policy mode for at-a-glance recognition. */}
