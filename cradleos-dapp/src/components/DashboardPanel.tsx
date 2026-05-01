@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { playPowerOn, playPowerOff } from "../lib/sound";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
@@ -23,6 +24,7 @@ import { StructureRowHeader } from "./dashboard/StructureRowHeader";
 import { NodeHeader } from "./dashboard/NodeHeader";
 import { StructureRowList } from "./dashboard/StructureRowList";
 import { sortByFamily } from "./dashboard/sortByFamily";
+import { translateTxError } from "../lib/txError";
 
 // Node EP capacity. The on-chain Move object does not expose this as a field
 // today (the in-game default is 1000 GJ/h output) so we hard-code it. If CCP
@@ -210,25 +212,27 @@ function StructureCard({
 
   const handleOnline = async () => {
     setBusy(true); setErr(null);
+    playPowerOn();
     try {
       const tx = await buildStructureOnlineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       onRefresh();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
   const handleOffline = async () => {
     setBusy(true); setErr(null);
+    playPowerOff();
     try {
       const tx = await buildStructureOfflineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       onRefresh();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -245,7 +249,7 @@ function StructureCard({
       setDescInput("");
       onRefresh();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -453,24 +457,28 @@ function _StructureGroup({
 // Level 1: Nodes in selected system
 // Level 2: Structures attached to selected node
 
+// KIND_COLORS / KIND_ICONS keys MUST match the `label` field on
+// PlayerStructure (defined in constants.ts STRUCTURE_TYPES). The five
+// real kinds are: "Network Node", "Gate", "Assembly", "Turret",
+// "Storage Unit". Anything else ("Smart Gate", "Manufacturing",
+// "Refinery") was legacy and never matched, so every non-Node /
+// non-Assembly structure fell back to the gray default color in the
+// system topology bubbles + legend. (2026-05-01: Raw flagged the
+// legend mismatch + ellipse vs circle shape inconsistency.)
 const KIND_COLORS: Record<string, string> = {
   "Network Node": "#FF4700",
-  "Smart Gate": "#00ccff",
-  "Smart Turret": "#ff4444",
-  "Smart Storage Unit": "#ffd700",
-  "Manufacturing": "#88cc44",
-  "Refinery": "#cc88ff",
-  "Assembly": "#ff8844",
+  "Gate":         "#00ccff",
+  "Turret":       "#ff4444",
+  "Storage Unit": "#ffd700",
+  "Assembly":     "#88cc44",
 };
 
 const KIND_ICONS: Record<string, string> = {
   "Network Node": "⚡",
-  "Smart Gate": "⛩",
-  "Smart Turret": "⊕",
-  "Smart Storage Unit": "◫",
-  "Manufacturing": "⚙",
-  "Refinery": "⬡",
-  "Assembly": "⊞",
+  "Gate":         "⛩",
+  "Turret":       "⊕",
+  "Storage Unit": "▫",
+  "Assembly":     "⊞",
 };
 
 type BubbleItem = {
@@ -531,7 +539,14 @@ function BubbleGrid({ items, title, breadcrumb, onBack }: {
               onMouseEnter={() => setHovered(item.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                width: bubbleSize, minHeight: bubbleSize,
+                // Square aspect — width === height so borderRadius:50% is
+                // a circle, not an ellipse. Previous version used
+                // minHeight which let content stretch the box vertically;
+                // small bubbles (count=1) had taller content than
+                // bubbleSize and rendered as ellipses while large bubbles
+                // (count=27) stayed circular. Locking to a square fixes
+                // the inconsistency.
+                width: bubbleSize, height: bubbleSize,
                 borderRadius: "50%",
                 border: `2.5px solid ${isHov ? item.color : `${item.color}66`}`,
                 background: isHov
@@ -631,10 +646,14 @@ function BubbleGrid({ items, title, breadcrumb, onBack }: {
 
       {/* Legend */}
       <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 12, flexWrap: "wrap" }}>
+        {/* Legend — keys map directly to KIND_COLORS / typeDots so the
+            colors here match the dots in the bubble rings 1:1. No more
+            "Smart " prefix stripping; legend labels are the canonical
+            structure labels. */}
         {Object.entries(KIND_COLORS).map(([kind, color]) => (
           <span key={kind} style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", display: "flex", alignItems: "center", gap: 4 }}>
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, display: "inline-block", opacity: 0.7 }} />
-            {kind.replace("Smart ", "")}
+            {kind}
           </span>
         ))}
       </div>
@@ -649,6 +668,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
 
   const handleOnline = async (s: PlayerStructure) => {
     setActionBusy(s.objectId); setActionErr(null);
+    playPowerOn();
     try {
       const tx = await buildStructureOnlineTransaction(s, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
@@ -660,6 +680,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
 
   const handleOffline = async (s: PlayerStructure) => {
     setActionBusy(s.objectId); setActionErr(null);
+    playPowerOff();
     try {
       const tx = await buildStructureOfflineTransaction(s, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
@@ -985,7 +1006,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
         </div>
         <div
           style={{
-            color: "rgba(107,107,94,0.7)",
+            color: "rgba(175,175,155,0.7)",
             fontSize: 10,
             marginBottom: 14,
             wordBreak: "break-all",
@@ -1031,7 +1052,7 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
               fontFamily: "monospace",
               letterSpacing: "0.1em",
               background: "transparent",
-              border: "1px solid rgba(107,107,94,0.4)",
+              border: "1px solid rgba(175,175,155,0.4)",
               color: "rgba(180,180,170,0.85)",
               padding: "6px 14px",
               cursor: "pointer",
@@ -1473,7 +1494,7 @@ export function DashboardPanel({ onNavigate }: { onNavigate?: (tab: string) => v
         setCharacterId(charInfo?.characterId ?? "");
         setLoadedFor(address);
       } catch (e) {
-        setErr(e instanceof Error ? e.message : String(e));
+        setErr(translateTxError(e));
       } finally {
         setLoading(false);
       }
