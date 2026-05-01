@@ -443,12 +443,16 @@ function CapacityBar({ used, max }: { used: number; max: number }) {
   );
 }
 
-// Column layout: ITEM NAME (flex) | TYPE_ID | QTY | VOL EACH | TOTAL VOL | ACTION
+// Column layout: ITEM NAME (flex) | QTY | VOL EACH | TOTAL VOL | ACTION
 // All numeric columns right-align both header and data so digits line up
 // vertically. ITEM NAME left-aligns. Widths picked to fit largest realistic
-// values: TYPE_ID 6 digits, QTY 7 digits w/ commas, VOL EACH 8 chars, TOTAL VOL 11 chars.
+// values: QTY 7 digits w/ commas, VOL EACH 8 chars, TOTAL VOL 11 chars.
+// (TYPE_ID column removed 2026-05-01 — Raw flagged it as eating real
+// estate without giving players information they actually use. Type id
+// is still available via the resolveItemName fallback when name lookup
+// fails ["type_id 88565"], and the SSU's own typeId still shows in the
+// card header chip.)
 const COL_NAME = { flex: "1 1 180px", minWidth: 0, textAlign: "left" as const };
-const COL_TID  = { width: 72,  flexShrink: 0, textAlign: "right" as const };
 const COL_QTY  = { width: 88,  flexShrink: 0, textAlign: "right" as const };
 const COL_VOL  = { width: 72,  flexShrink: 0, textAlign: "right" as const };
 const COL_TOT  = { width: 96,  flexShrink: 0, textAlign: "right" as const };
@@ -1456,7 +1460,6 @@ async function _handleWithdraw(item: InventoryItem) {
             >
               {[
                 { label: "ITEM NAME", style: COL_NAME },
-                { label: "TYPE_ID",   style: COL_TID  },
                 { label: "QTY",       style: COL_QTY  },
                 { label: "VOL EACH",  style: COL_VOL  },
                 { label: "TOTAL VOL", style: COL_TOT  },
@@ -1578,16 +1581,6 @@ async function _handleWithdraw(item: InventoryItem) {
                           {partitionBadge.label}
                         </span>
                       )}
-                    </div>
-                    <div
-                      style={{
-                        ...COL_TID,
-                        fontFamily: "monospace",
-                        fontSize: 12,
-                        color: "rgba(175,175,155,0.55)",
-                      }}
-                    >
-                      {item.typeId}
                     </div>
                     <div
                       style={{
