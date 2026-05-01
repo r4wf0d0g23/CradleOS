@@ -1383,7 +1383,17 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                     key={s.objectId}
                     structure={s}
                     index={i}
-                    epAvailable={0}
+                    // EP is UNKNOWN for orphans (parent node's location
+                    // isn't exposed on-chain so we can't read its EP
+                    // budget). Pass Infinity so the row's EP gate
+                    // doesn't pre-block the ON button — the on-chain
+                    // online_* call references the missing node
+                    // directly via s.energySourceId and the chain will
+                    // reject if power is genuinely unavailable, which
+                    // surfaces through actionErr. Previous value of 0
+                    // mistakenly disabled ON for any orphan with
+                    // energyCost > 0 (which is most kinds).
+                    epAvailable={Infinity}
                     fuelBlocked={false}
                     onOnline={handleOnline}
                     onOffline={handleOffline}
