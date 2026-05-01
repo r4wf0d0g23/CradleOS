@@ -343,7 +343,14 @@ function StructureCard({
           Assembly and Gate don't render the metadata.url as a kiosk
           screen, so attaching a service there would never display.
           Gate has its own link semantics (gate-to-gate jump pairs);
-          Assembly has no kiosk surface at all. */}
+          Assembly has no kiosk surface at all.
+
+          As of 2026-05-01 the parent panel pre-filters non-kiosk
+          kinds out of `allStructures` before this card renders, so
+          the false branch below is effectively unreachable in
+          practice. Kept as defense-in-depth: if a future change adds
+          a non-kiosk kind to KIOSK_CAPABLE_KINDS by mistake, this
+          guard renders a clear explanation instead of a broken picker. */}
       {(s.kind === "NetworkNode" || s.kind === "Turret" || s.kind === "StorageUnit") ? (
       <div style={{ padding: "10px 14px" }}>
         {currentUrl ? (
@@ -535,7 +542,18 @@ export function LinksPanel() {
     });
   }, [account?.address]);
 
-  const allStructures: PlayerStructure[] = (groups ?? []).flatMap(g => g.structures);
+  // Only structures whose `kind` has a kiosk display surface in-game
+  // are surfaced here. Assembly has no kiosk surface; Gate uses its
+  // own gate-to-gate link semantics (managed elsewhere). Filtering at
+  // the data level keeps the topology view clean — a node with 5
+  // Assembly children and 1 Turret renders just the Turret here, not
+  // the Assembly noise. (2026-05-01: was previously showing Assembly
+  // rows with an explanatory note, but Raw flagged the repetition as
+  // visual clutter on dense layouts.)
+  const KIOSK_CAPABLE_KINDS = new Set(["NetworkNode", "Turret", "StorageUnit"]);
+  const allStructures: PlayerStructure[] = (groups ?? [])
+    .flatMap(g => g.structures)
+    .filter(s => KIOSK_CAPABLE_KINDS.has(s.kind));
 
   const handleLink = async (structure: PlayerStructure, url: string) => {
     if (!characterId) return;
