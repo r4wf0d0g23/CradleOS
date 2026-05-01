@@ -399,7 +399,24 @@ export type CharacterInfo = {
   tribeId: number;
 };
 
-/** Try to find a PlayerProfile owned by walletAddress for a given world package. */
+/** Try to find a PlayerProfile owned by walletAddress for a given world package.
+ *
+ * Robustness: CCP's `delete_character` (and `update_address`) intentionally do NOT
+ * clean up wallet-owned PlayerProfiles. When a player destroys + remakes a character,
+ * the old PlayerProfile lingers on the wallet, pointing at a now-deleted Character
+ * object. Naively picking `data[0]` causes CradleOS to operate on the dead character
+ * (no structures visible, vault unreachable). World API fix is unrelated to this:
+ * the bug is purely in client-side discovery.
+ *
+ * Strategy: fetch ALL PlayerProfiles on the wallet, dereference each linked Character
+ * in parallel, drop any whose Character object is deleted on chain, and return the
+ * surviving one. If multiple live characters exist (multi-character wallet — rare),
+ * tiebreak on Sui object `version` (newest wins; version strictly increases per
+ * object so it correlates with creation/state recency).
+ *
+ * Tribe is NEVER used to filter or score. NPC-tribe players (tribe_id in the 1000xxx
+ * range, e.g. Clonebank 86 = 1000167) are valid CradleOS users and must have full
+ * access. Tribe is read off the live Character and returned as-is to the caller. */
 async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Promise<CharacterInfo | null> {
   const ppRes = await fetch(SUI_TESTNET_RPC, {
     method: "POST",
@@ -410,19 +427,66 @@ async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Prom
       params: [
         walletAddress,
         { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showContent: true } },
-        null, 5,
+        null, 50,
       ],
     }),
   });
   const ppJson = await ppRes.json() as {
     result: { data: Array<{ data: { objectId: string; content: { fields: { character_id: string } } } }> }
   };
-  const pp = ppJson.result?.data?.[0];
-  if (!pp?.data?.content?.fields?.character_id) return null;
-  const charId = pp.data.content.fields.character_id;
-  const charFields = await rpcGetObject(charId);
-  const tribeId = numish(charFields["tribe_id"]) ?? 0;
-  return { characterId: charId, tribeId };
+  const profiles = ppJson.result?.data ?? [];
+  if (profiles.length === 0) return null;
+
+  // Dereference each PlayerProfile's Character in parallel.
+  // We need version for the tiebreaker, so we hit sui_getObject directly here
+  // (rpcGetObject helper strips version). We still rely on the same `_deleted`
+  // semantics: missing/null Character data == deleted.
+  type Resolved = { characterId: string; tribeId: number; version: number };
+  const resolved: Resolved[] = (await Promise.all(
+    profiles.map(async (pp): Promise<Resolved | null> => {
+      const charId = pp?.data?.content?.fields?.character_id;
+      if (!charId) return null;
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "sui_getObject",
+          params: [charId, { showContent: true, showOwner: true }],
+        }),
+      });
+      const json = await res.json() as {
+        result?: {
+          data?: {
+            version?: string;
+            content?: { fields?: Record<string, unknown> } | null;
+          } | null;
+        };
+      };
+      const data = json.result?.data;
+      // Deleted/non-existent: sui_getObject returns null data (or null content).
+      // This is THE ONLY filter we apply. Do not filter on tribe_id.
+      if (!data?.content?.fields) return null;
+      const tribeId = numish(data.content.fields["tribe_id"]) ?? 0;
+      const version = Number(data.version ?? 0);
+      return { characterId: charId, tribeId, version };
+    })
+  )).filter((x): x is Resolved => x !== null);
+
+  if (resolved.length === 0) return null;
+  if (resolved.length === 1) {
+    return { characterId: resolved[0].characterId, tribeId: resolved[0].tribeId };
+  }
+
+  // Multi-character wallet: prefer newest by Sui object version.
+  resolved.sort((a, b) => b.version - a.version);
+  if (typeof console !== "undefined" && console.warn) {
+    console.warn(
+      `[findPlayerProfileForPkg] wallet ${walletAddress.slice(0, 10)}\u2026 has ${resolved.length} live characters on pkg ${pkg.slice(0, 10)}\u2026; using newest`,
+      resolved.map(r => ({ id: r.characterId.slice(0, 10) + "\u2026", tribe: r.tribeId, ver: r.version })),
+    );
+  }
+  return { characterId: resolved[0].characterId, tribeId: resolved[0].tribeId };
 }
 
 export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
@@ -3321,4 +3385,411 @@ export async function synthesizeSharedSsuStructure(ssuObjectId: string): Promise
     typeId,
     gameItemId,
   };
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Resolve partition owners → character names
+//
+// Storage Unit inventory partitions are keyed by OwnerCap object IDs:
+//   - owner_main partition → keyed by SSU's OwnerCap<StorageUnit> id (held
+//     by the SSU operator wallet; that wallet has a Character)
+//   - per-character lockboxes → keyed by depositor's OwnerCap<Character> id
+//     (parented to the depositor's Character object)
+//   - open partition → keyed by blake2b256(ssu_id || "open_inventory"); not
+//     resolved here, callers should skip these.
+//
+// `resolvePartitionOwnerNames` takes a set of partition keys and returns a
+// Map<key, displayName> with the best-effort character name for each.
+// Callers can render this next to items in the UI instead of the generic
+// "owner" / "locked" badges.
+//
+// Module-level cache so we don't refetch the same OwnerCap → name lookup on
+// every render. Cache is keyed by partitionKey and never expires within a
+// session (character names rarely change; the worst case is a stale name
+// across a rename, which is acceptable).
+// ──────────────────────────────────────────────────────────────────────────
+
+const _partitionOwnerNameCache = new Map<string, string>();
+
+// ── Local helpers (mirrored from InventoryPanel) ─────────────────────────
+//
+// `fetchWithRetry` and `_pMap` mirror the same patterns used in
+// `InventoryPanel.tsx` so partition-owner resolution stays robust under
+// public-fullnode rate limits and doesn't fan out unbounded RPC calls.
+// Kept as private module-local copies to avoid widening the public lib API
+// surface and to keep the resolver self-contained.
+
+async function _ssuFetchWithRetry(
+  url: string,
+  init: RequestInit,
+  retries = 2,
+  backoffMs = 600,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, init);
+      // Retry on 429 (rate limit) and 5xx (server transient).
+      if ((res.status === 429 || res.status >= 500) && attempt < retries) {
+        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
+        continue;
+      }
+      return res;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
+        continue;
+      }
+    }
+  }
+  throw lastErr;
+}
+
+async function _ssuPMap<T, R>(
+  items: T[],
+  fn: (item: T, idx: number) => Promise<R>,
+  concurrency = 3,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (true) {
+      const i = cursor++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return out;
+}
+
+// Fetch a Character object directly by id and return its on-chain metadata
+// name (or a `Rider XXXX` fallback). Uses fetchWithRetry. Returns null when
+// the object is deleted/missing.
+async function _fetchCharacterName(charObjectId: string): Promise<string | null> {
+  try {
+    const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "sui_getObject",
+        params: [charObjectId, { showContent: true, showOwner: true }],
+      }),
+    });
+    const json = await res.json() as {
+      result?: { data?: { content?: { fields?: Record<string, unknown> } | null } | null };
+    };
+    const fields = json.result?.data?.content?.fields;
+    if (!fields) return null;
+    const name = stringish(readPath(fields, "metadata", "fields", "name")).trim();
+    if (name && name !== "—") return name;
+    const charId = stringish(readPath(fields, "key", "fields", "item_id"));
+    if (charId && charId !== "—") return `Rider ${charId.slice(-4)}`;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// Find the active Character object id for a wallet on a given world package,
+// using the SAME multi-character / version-tiebreak strategy as
+// `findPlayerProfileForPkg`: fetch all PlayerProfiles, dereference each
+// linked Character in parallel, drop deleted, prefer newest by Sui object
+// version. Returns the Character object id (so callers can read `metadata.name`).
+async function _findCharacterObjectIdForPkg(
+  walletAddress: string,
+  pkg: string,
+): Promise<string | null> {
+  let ppRes: Response;
+  try {
+    ppRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_getOwnedObjects",
+        params: [
+          walletAddress,
+          { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showContent: true } },
+          null, 50,
+        ],
+      }),
+    });
+  } catch {
+    return null;
+  }
+  const ppJson = await ppRes.json() as {
+    result?: { data?: Array<{ data?: { content?: { fields?: { character_id?: string } } } }> };
+  };
+  const profiles = ppJson.result?.data ?? [];
+  if (profiles.length === 0) return null;
+
+  type Resolved = { characterObjectId: string; version: number };
+  const resolved: Resolved[] = (await _ssuPMap(
+    profiles,
+    async (pp): Promise<Resolved | null> => {
+      const charId = pp?.data?.content?.fields?.character_id;
+      if (!charId) return null;
+      try {
+        const r = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1,
+            method: "sui_getObject",
+            params: [charId, { showContent: true, showOwner: true }],
+          }),
+        });
+        const json = await r.json() as {
+          result?: { data?: { version?: string; content?: { fields?: Record<string, unknown> } | null } | null };
+        };
+        const data = json.result?.data;
+        // Deleted/non-existent: filter out (matches findPlayerProfileForPkg).
+        if (!data?.content?.fields) return null;
+        const version = Number(data.version ?? 0);
+        return { characterObjectId: charId, version };
+      } catch {
+        return null;
+      }
+    },
+    3,
+  )).filter((x): x is Resolved => x !== null);
+
+  if (resolved.length === 0) return null;
+  if (resolved.length === 1) return resolved[0].characterObjectId;
+
+  // Multi-character wallet: prefer newest by Sui object version.
+  resolved.sort((a, b) => b.version - a.version);
+  if (typeof console !== "undefined" && console.warn) {
+    console.warn(
+      `[resolvePartitionOwnerNames] wallet ${walletAddress.slice(0, 10)}\u2026 has ${resolved.length} live characters on pkg ${pkg.slice(0, 10)}\u2026; using newest`,
+      resolved.map(r => ({ id: r.characterObjectId.slice(0, 10) + "\u2026", ver: r.version })),
+    );
+  }
+  return resolved[0].characterObjectId;
+}
+
+async function _resolveSinglePartitionKey(partitionKey: string): Promise<string | null> {
+  // Cached?
+  if (_partitionOwnerNameCache.has(partitionKey)) {
+    return _partitionOwnerNameCache.get(partitionKey) ?? null;
+  }
+
+  let resolved: string | null = null;
+  try {
+    // Get the OwnerCap object — we need its type and owner. Use fetchWithRetry
+    // so we ride out 429/5xx bursts when many partitions resolve at once.
+    const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "sui_getObject",
+        params: [partitionKey, { showType: true, showOwner: true }],
+      }),
+    });
+    const json = await res.json() as {
+      result?: {
+        data?: {
+          type?: string;
+          owner?:
+            | { AddressOwner?: string }
+            | { ObjectOwner?: string }
+            | { Shared?: unknown }
+            | string;
+        } | null;
+      };
+    };
+    const data = json.result?.data;
+    if (!data) {
+      _partitionOwnerNameCache.set(partitionKey, "");
+      return null;
+    }
+    const objType = data.type ?? "";
+    const owner = data.owner;
+
+    // Branch A: partitionKey is itself a Character shared object.
+    // On Stillness (and any tenant where SSU partitions are keyed by
+    // character_id directly rather than by OwnerCap), the partition key
+    // resolves to a `::character::Character` object whose `metadata.name`
+    // is what we want. This is the most direct case — try it first.
+    //
+    // Detection: type ends in `::character::Character` (no `OwnerCap<` prefix).
+    if (
+      objType.endsWith("::character::Character") ||
+      /::character::Character$/.test(objType)
+    ) {
+      // Read metadata.name directly from the object content. Use a single
+      // RPC call — we don't need to walk an OwnerCap chain because the
+      // Character itself is the partition key.
+      try {
+        const charRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "sui_getObject",
+            params: [partitionKey, { showContent: true }],
+          }),
+        });
+        const charJson = await charRes.json() as {
+          result?: {
+            data?: {
+              content?: {
+                fields?: {
+                  metadata?: { fields?: { name?: string } };
+                };
+              };
+            };
+          };
+        };
+        const name = charJson.result?.data?.content?.fields?.metadata?.fields?.name?.trim();
+        if (name) {
+          resolved = name;
+        }
+      } catch {
+        // Fall through — leave resolved null, caller falls back to badge.
+      }
+    } else if (objType.includes("::access::OwnerCap<") && objType.includes("::character::Character>")) {
+      // Branch B: OwnerCap<Character>. Owner can be either:
+      //   (1) the parent Character object (ObjectOwner) — walk to it, or
+      //   (2) a wallet address (AddressOwner) — the cap was transferred
+      //       directly to a wallet without being attached to a Character.
+      //       In this case the cap's `authorized_object_id` field points
+      //       to the Character (or to the wallet itself, in which case we
+      //       need to resolve via wallet→Character lookup). Try cap field
+      //       first, then fall back to wallet→PlayerProfile.
+      const parentChar =
+        owner && typeof owner === "object" && "ObjectOwner" in owner
+          ? (owner as { ObjectOwner?: string }).ObjectOwner
+          : null;
+      if (parentChar) {
+        resolved = await _fetchCharacterName(parentChar);
+      } else if (owner && typeof owner === "object" && "AddressOwner" in owner) {
+        const walletAddr = (owner as { AddressOwner?: string }).AddressOwner ?? null;
+        // Re-fetch the cap with showContent to read authorized_object_id.
+        try {
+          const capRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: 1,
+              method: "sui_getObject",
+              params: [partitionKey, { showContent: true }],
+            }),
+          });
+          const capJson = await capRes.json() as {
+            result?: {
+              data?: {
+                content?: {
+                  fields?: { authorized_object_id?: string };
+                };
+              };
+            };
+          };
+          const authorizedId = capJson.result?.data?.content?.fields?.authorized_object_id;
+          // If authorized_object_id is the wallet itself, fall through to
+          // wallet→Character lookup. Otherwise treat it as a Character id.
+          if (authorizedId && walletAddr && authorizedId.toLowerCase() !== walletAddr.toLowerCase()) {
+            resolved = await _fetchCharacterName(authorizedId);
+          }
+        } catch {
+          // Ignore — fall through to wallet lookup below.
+        }
+        // Fallback: wallet→PlayerProfile→Character (current world pkg, then
+        // Utopia v1). Mirrors the OwnerCap<StorageUnit> branch.
+        if (!resolved && walletAddr) {
+          let charObjectId =
+            await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
+          if (!charObjectId) {
+            charObjectId =
+              await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG_UTOPIA_V1);
+          }
+          if (charObjectId) {
+            resolved = await _fetchCharacterName(charObjectId);
+          }
+          // If still unresolved, leave null — caller renders the generic
+          // "locked" badge rather than a hex string for OwnerCap<Character>.
+        }
+      }
+    } else if (objType.includes("::access::OwnerCap<") && objType.includes("::storage_unit::StorageUnit>")) {
+      // OwnerCap<StorageUnit> — owner is a wallet address. Resolve to the
+      // wallet's active Character using the same multi-character / version-
+      // tiebreak strategy as findPlayerProfileForPkg, trying current world
+      // package first then the v1 (Utopia) fallback. This matches the rest
+      // of CradleOS so SSU operators see the same name CradleOS shows them.
+      const walletAddr =
+        owner && typeof owner === "object" && "AddressOwner" in owner
+          ? (owner as { AddressOwner?: string }).AddressOwner
+          : null;
+      if (walletAddr) {
+        let charObjectId =
+          await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
+        if (!charObjectId) {
+          charObjectId =
+            await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG_UTOPIA_V1);
+        }
+        if (charObjectId) {
+          const name = await _fetchCharacterName(charObjectId);
+          if (name) {
+            resolved = name;
+          } else {
+            resolved = `${walletAddr.slice(0, 6)}\u2026${walletAddr.slice(-4)}`;
+          }
+        } else {
+          resolved = `${walletAddr.slice(0, 6)}\u2026${walletAddr.slice(-4)}`;
+        }
+      }
+    }
+  } catch {
+    // Swallow — return null and the UI keeps the generic badge label.
+  }
+
+  _partitionOwnerNameCache.set(partitionKey, resolved ?? "");
+  return resolved;
+}
+
+/**
+ * Resolve a set of inventory partition keys to display names for their owners.
+ *
+ * Skip the open-partition key (caller should not pass it). For each key we:
+ *   - fetch the underlying OwnerCap object,
+ *   - inspect its type (OwnerCap<Character> vs OwnerCap<StorageUnit>),
+ *   - walk to the controlling Character object (multi-char / version-tiebreak
+ *     for wallet-typed OwnerCaps, matching findPlayerProfileForPkg),
+ *   - return its on-chain `metadata.name` (or a `Rider XXXX` / `0xabcd…1234`
+ *     fallback).
+ *
+ * Concurrency-capped at 3 simultaneous resolutions to stay under public Sui
+ * fullnode rate limits, mirroring the InventoryPanel `pMap` strategy. Each
+ * resolution itself uses `fetchWithRetry` so transient 429/5xx don't bubble
+ * up as missing names.
+ *
+ * Returns a Map<partitionKey, displayName>. Keys we couldn't resolve are
+ * intentionally absent from the map so callers can fall back to the generic
+ * badge label.
+ */
+export async function resolvePartitionOwnerNames(
+  partitionKeys: string[],
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  const unique = Array.from(new Set(partitionKeys));
+  if (!unique.length) return out;
+
+  // Concurrency-cap at 3 — matches InventoryPanel pMap default and prevents
+  // resolver fan-out from compounding with the panel's own RPC traffic.
+  const results = await _ssuPMap(
+    unique,
+    async (k) => [k, await _resolveSinglePartitionKey(k)] as const,
+    3,
+  );
+  for (const [k, name] of results) {
+    if (name) out.set(k, name);
+  }
+  return out;
 }
