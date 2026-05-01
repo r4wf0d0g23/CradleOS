@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
-import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames } from "../lib";
+import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator } from "../lib";
 import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE } from "../constants";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -12,7 +12,7 @@ import {
   canWithdrawVia,
   modeLabel,
   appendSharedDeposit,
-  appendSharedDepositItemArg,
+  appendOwnerDepositToOpen,
   appendSharedWithdrawReturningItem,
   // appendSharedWithdrawToCharacter is intentionally NOT imported anymore:
   // v12 of cradleos::ssu_access introduced shared_withdraw_to_owned, which
@@ -48,6 +48,11 @@ type InventoryItem = {
   /** Which partition of the SSU this item is stored in. Determines whether
    *  shared_withdraw_to_character can pull it. */
   partition: InventoryPartition;
+  /** The dynamic-field key this item was stored under. For "unknown"
+   *  partitions this equals the depositor's `OwnerCap<Character>` id
+   *  (per-accessor lockbox), so we can identify which lockbox an item
+   *  belongs to and only show DEPOSIT controls to its rightful owner. */
+  partitionKey: string;
 };
 
 /** Compute the deterministic dynamic-field key Sui uses for an SSU's open
@@ -94,6 +99,12 @@ type SSUInventory = {
    *  not the owner). The card renders a SHARED badge and ALL→SHARED / rename
    *  controls are hidden because the caller has no OwnerCap. */
   sharedFrom?: "tribe" | "allowlist" | "hybrid" | "public";
+  /** Resolved operator (Character) of this SSU. `name` is the display
+   *  string (e.g., "raw", "Zasar"). `key` is the lowercased on-chain
+   *  address used as a stable grouping/filter key (Phase 2). For
+   *  Stillness this is the Character object id. Undefined while still
+   *  resolving or when resolution failed. */
+  operator?: { name: string; key: string };
 };
 
 type TransferState = {
@@ -117,6 +128,58 @@ type WalletItem = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/**
+ * Concurrency-limited Promise.all replacement. Public Sui testnet RPC
+ * (`fullnode.testnet.sui.io`) rate-limits aggressively and was producing
+ * "Failed to fetch" bursts on initial load when N SSUs all fanned out
+ * with `Promise.all` (each SSU itself does 2 + (k partitions) RPC calls,
+ * so 10 SSUs ≈ 40-60 simultaneous calls). Cap concurrency at a sane
+ * default and process in waves. (2026-04-28.)
+ */
+async function pMap<T, R>(items: T[], fn: (item: T, idx: number) => Promise<R>, concurrency = 3): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (true) {
+      const i = cursor++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return out;
+}
+
+/**
+ * Wrap fetch() with retries on network/transient errors. Sui public
+ * fullnode rate-limits aggressively, especially right after an SSU with
+ * many items burned through the budget; multiple retries with growing
+ * backoff convert those rate-limit windows into eventual success.
+ * Also retries on HTTP 429 (Too Many Requests) explicitly.
+ */
+async function fetchWithRetry(url: string, init: RequestInit, retries = 2, backoffMs = 600): Promise<Response> {
+  let lastErr: any;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, init);
+      // Retry on 429 (rate limit) and 5xx (server transient).
+      if ((res.status === 429 || res.status >= 500) && attempt < retries) {
+        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
+        continue;
+      }
+      return res;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < retries) {
+        // Exponential backoff: 600ms, 1200ms, 2400ms…
+        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
+        continue;
+      }
+    }
+  }
+  throw lastErr;
+}
+
 type SSUInventoryResult = {
   items: InventoryItem[];
   maxCapacity: number;
@@ -131,7 +194,7 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
   //    Items in any other DF key are tagged "unknown" and treated as
   //    non-shared-withdrawable for safety.
   const [dfJson, ssuJson] = await Promise.all([
-    fetch(SUI_TESTNET_RPC, {
+    fetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -141,7 +204,7 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
         params: [ssuId, null, 20],
       }),
     }).then(r => r.json()),
-    fetch(SUI_TESTNET_RPC, {
+    fetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -172,15 +235,17 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
   type RawItem = {
     typeId: number; quantity: number; volume: number; itemId: string;
     partition: InventoryPartition;
+    partitionKey: string;
   };
   const rawItems: RawItem[] = [];
   let maxCapacity = 0;
   let usedCapacity = 0;
 
   // 2. For each partition key, fetch contents + capacity, tagging each
-  //    item with its source partition.
+  //    item with its source partition. Sequential to keep per-SSU RPC
+  //    pressure low — the outer pMap already gates SSU-level concurrency.
   for (const key of keys) {
-    const invRes = await fetch(SUI_TESTNET_RPC, {
+    const invRes = await fetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -201,6 +266,7 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
       }
     }
     const partition = classify(key);
+    const partitionKey = normalizeId(key);
     const contents = invFields?.items?.fields?.contents ?? [];
     for (const entry of contents) {
       const val = entry?.fields?.value?.fields;
@@ -211,6 +277,7 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
           volume: Number(val.volume),
           itemId: String(val.item_id),
           partition,
+          partitionKey,
         });
       }
     }
@@ -220,10 +287,14 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
   // partitions surfaces as two rows — the open row will get a WITHDRAW
   // button, the owner_main row won't. Sort: open first (actionable),
   // then by quantity desc.
+  // Aggregate by (typeId, partition, partitionKey) so per-character
+  // lockboxes (different DF keys, same "unknown" partition tag) stay as
+  // separate rows — that lets the UI gate the DEPOSIT button on lockbox
+  // ownership instead of pooling items across all accessors.
   type AggKey = string;
   const map = new Map<AggKey, RawItem>();
   for (const item of rawItems) {
-    const k: AggKey = `${item.typeId}│${item.partition}`;
+    const k: AggKey = `${item.typeId}│${item.partition}│${item.partitionKey}`;
     const existing = map.get(k);
     if (existing) {
       existing.quantity += item.quantity;
@@ -371,14 +442,16 @@ function CapacityBar({ used, max }: { used: number; max: number }) {
   );
 }
 
-const COL_NAME = { flex: "1 1 180px", minWidth: 0 };
-const COL_TID  = { width: 80,  flexShrink: 0, textAlign: "right" as const };
-const COL_QTY  = { width: 70,  flexShrink: 0, textAlign: "right" as const };
-const COL_VOL  = { width: 80,  flexShrink: 0, textAlign: "right" as const };
-const COL_TOT  = { width: 90,  flexShrink: 0, textAlign: "right" as const };
-// COL_ACT widened from 90→30px to fit the qty input (44px) + 4px gap + WITHDRAW
-// button (~75px) without overlapping the TOTAL VOL column. Without this the
-// qty input visually sits on top of the total-vol value.
+// Column layout: ITEM NAME (flex) | TYPE_ID | QTY | VOL EACH | TOTAL VOL | ACTION
+// All numeric columns right-align both header and data so digits line up
+// vertically. ITEM NAME left-aligns. Widths picked to fit largest realistic
+// values: TYPE_ID 6 digits, QTY 7 digits w/ commas, VOL EACH 8 chars, TOTAL VOL 11 chars.
+const COL_NAME = { flex: "1 1 180px", minWidth: 0, textAlign: "left" as const };
+const COL_TID  = { width: 72,  flexShrink: 0, textAlign: "right" as const };
+const COL_QTY  = { width: 88,  flexShrink: 0, textAlign: "right" as const };
+const COL_VOL  = { width: 72,  flexShrink: 0, textAlign: "right" as const };
+const COL_TOT  = { width: 96,  flexShrink: 0, textAlign: "right" as const };
+// COL_ACT fits qty input (44px) + 4px gap + button (~80px) without overlap.
 const COL_ACT  = { width: 140, flexShrink: 0, textAlign: "right" as const };
 
 // EVE Frontier on-chain volumes are stored as u64 with an implicit ×100
@@ -428,6 +501,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
   const [withdrawQty, setWithdrawQty] = useState<Map<string, string>>(new Map());
   // True while a batch "Move All to Shared" tx is in flight.
   const [batchMovingAll, setBatchMovingAll] = useState(false);
+  const [batchWithdrawingAll, setBatchWithdrawingAll] = useState(false);
 
   // Resolve the user's *current* tribe_id from chain (Character object).
   // Used to pre-populate ssu_access tribe-policy editors and badge own tribe.
@@ -444,18 +518,40 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
     return () => { cancelled = true; };
   }, [walletAddress]);
 
-  // Auto-refresh inventory state every 30s. Each card runs its own timer
-  // to avoid coupling SSU cards together. Skips refresh while loading or
-  // a withdraw/deposit is mid-flight so we don't double-fire onRefresh.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!loading && withdrawingTypeId === null) {
-        onRefresh(ssu.objectId);
-      }
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [ssu.objectId, loading, withdrawingTypeId, onRefresh]);
+  // Auto-refresh disabled (2026-04-28) — the per-card 30s polling loop
+  // was producing "failed to fetch" errors when many SSU cards were
+  // mounted (each card spamming the Sui RPC on its own timer). Refresh
+  // still happens after every deposit/withdraw via the explicit
+  // onRefresh(ssuId) call in handle*() flows, and on initial mount when
+  // the InventoryPanel discovers structures. Users can also manually
+  // refresh by toggling the card collapsed state.
+  // (Was: setInterval(() => onRefresh(ssu.objectId), 30000) per card.)
 
+  // Resolve display names for the OwnerCap object IDs that key the SSU's
+  // owner_main + per-character lockbox partitions. Used to render "Pilot Foo"
+  // next to items instead of the generic "owner" / "locked" badges.
+  // Skips the open partition (no specific owner) and items already aggregated
+  // for it. Re-runs whenever the items list changes — the resolver caches
+  // results module-wide so this is cheap on re-renders.
+  const [partitionOwnerNames, setPartitionOwnerNames] = useState<Map<string, string>>(new Map());
+  useEffect(() => {
+    const keys = items
+      .filter(i => i.partition !== "open" && i.quantity > 0 && i.partitionKey)
+      .map(i => i.partitionKey);
+    if (keys.length === 0) {
+      setPartitionOwnerNames(new Map());
+      return;
+    }
+    let cancelled = false;
+    resolvePartitionOwnerNames(keys)
+      .then(m => { if (!cancelled) setPartitionOwnerNames(m); })
+      .catch(() => { /* keep generic badges on failure */ });
+    return () => { cancelled = true; };
+    // Depend on a stable signature of the partition keys so we don't re-fetch
+    // on every unrelated re-render, but DO re-fetch when a new partition key
+    // appears (e.g. after a tribemate deposits into their lockbox).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.map(i => `${i.partition}|${i.partitionKey}`).sort().join(",")]);
 
   const ownerCapId = ownerCaps.get(ssu.objectId);
 
@@ -474,18 +570,24 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
 
   // Owner can move items from owner_main → open partition iff:
   //   1. They are the SSU owner (ownerCapId resolved on this Character)
-  //   2. A policy is attached (policyId resolved)
-  //   3. The policy permits THIS owner's character to deposit (canDepositVia).
-  //      `mode == none` blocks the move; the owner must enable a real mode
-  //      first (TRIBE / ALLOWLIST / HYBRID / PUBLIC) so check_access returns
-  //      true. The button text encodes the consequence of skipping this
-  //      gate ("requires shared mode" tooltip).
+  //   2. A policy is attached (policyId resolved) AND mode != none
+  //
+  // Critically, we do NOT run canDepositVia here — the SSU owner is
+  // implicitly authorized to deposit to their own SSU's shared partition
+  // regardless of allowlist/hybrid/tribe membership. The owner-path uses
+  // `appendOwnerDepositToOpen` which goes around `shared_deposit`'s policy
+  // gate via the public `new_auth()` witness + direct
+  // `deposit_to_open_inventory<SsuAuth>` call. The on-chain authorization
+  // is OwnerCap possession, not policy membership.
+  //
+  // Bug history: previously this was canDepositVia()-gated, which silently
+  // disabled the button in MODE_ALLOWLIST unless the owner had added
+  // themselves to their own allowlist. Tribe/hybrid usually worked by
+  // accident because the owner's tribe is normally in `tribe_ids`.
   const canMoveOwnerToShared: boolean = (() => {
     if (!ownerCapId || !characterId || !policy?.policyId) return false;
-    return canDepositVia(policy.mode, {
-      characterObjectId: characterId,
-      ownTribeId,
-    });
+    if (policy.mode.kind === "none") return false;
+    return true;
   })();
 
   // Non-owner: can promote items from their per-character partition → shared open
@@ -503,6 +605,18 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       ownTribeId,
     });
   })();
+
+  // Per-item ownership check for "unknown" (per-accessor lockbox) partitions.
+  // The lockbox DF key equals the depositor's `OwnerCap<Character>` id
+  // (storage_unit::deposit_to_open_inventory keys by `character.owner_cap_id()`).
+  // If the row's partitionKey matches the caller's charOwnerCapId, they
+  // deposited it and may move it to shared; otherwise it belongs to another
+  // tribemate and must render as "locked" (no DEPOSIT button).
+  function isOwnLockbox(item: InventoryItem): boolean {
+    if (item.partition !== "unknown") return false;
+    if (!charOwnerCapId) return false;
+    return normalizeId(item.partitionKey) === normalizeId(charOwnerCapId);
+  }
 
   // Shared-path withdraw — calls cradleos::ssu_access::shared_withdraw_to_character.
   // The Move function moves the Item directly into the caller's Character
@@ -696,10 +810,12 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         ],
       });
 
-      // Deposit immediately into open partition via cradleos::ssu_access
-      appendSharedDepositItemArg(tx, {
+      // Deposit directly into open partition via the OWNER-PATH (no
+      // policy gate). Possessing OwnerCap<StorageUnit> + having already
+      // borrowed it earlier in this PTB is sufficient proof of ownership;
+      // we don't run check_access against ourselves.
+      appendOwnerDepositToOpen(tx, {
         ssuObjectId: ssu.objectId,
-        policyId: policy.policyId,
         characterObjectId: characterId,
         itemArg: withdrawn,
       });
@@ -783,9 +899,8 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
             tx.pure.u32(row.quantity),
           ],
         });
-        appendSharedDepositItemArg(tx, {
+        appendOwnerDepositToOpen(tx, {
           ssuObjectId: ssu.objectId,
-          policyId: policy.policyId,
           characterObjectId: characterId,
           itemArg: withdrawn,
         });
@@ -813,6 +928,123 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       setTxError(err?.message ?? String(err));
     } finally {
       setBatchMovingAll(false);
+    }
+  }
+
+  // Batch "Withdraw All" from shared partition. Mirror of
+  // handleMoveAllOwnerToShared. For each open-partition stack:
+  //
+  //   OWNER branch: shared_withdraw → deposit_by_owner (owner_main).
+  //   Item never hits the wallet, lands back in this SSU's owner-private
+  //   partition, in-game-client visible.
+  //
+  //   TRIBEMATE branch: shared_withdraw_to_owned (v12+). Item lands in
+  //   the caller's per-character partition on this SSU. In-game-client
+  //   visible there.
+  //
+  // Both branches use one signature for the whole batch. OwnerCap is
+  // borrowed/returned ONCE on the owner branch.
+  //
+  // PTB command budget: owner branch costs 2 commands per row (withdraw
+  // + deposit) plus 2 fixed (borrow + return). Tribemate branch costs
+  // 1 command per row. Same 100-row soft cap as the deposit batch.
+  async function handleWithdrawAllShared() {
+    if (!characterId || !policy?.policyId) return;
+    const sharedRows = items.filter(i => i.partition === "open" && i.quantity > 0);
+    if (sharedRows.length === 0) {
+      setTxError("No shared-partition items to withdraw.");
+      return;
+    }
+    if (sharedRows.length > BATCH_MOVE_ALL_LIMIT) {
+      setTxError(
+        `Too many shared stacks (${sharedRows.length}). Sui PTB command budget ` +
+        `forces a per-tx cap of ${BATCH_MOVE_ALL_LIMIT} type_ids. Run the batch ` +
+        `twice (it will pick up whatever's left after the first refresh).`
+      );
+      return;
+    }
+    setBatchWithdrawingAll(true);
+    setTxStatus(null);
+    setTxError(null);
+    try {
+      const tx = new Transaction();
+
+      if (ownerCapId) {
+        // OWNER branch: borrow OwnerCap once, withdraw each shared stack,
+        // deposit_by_owner back into owner_main, return OwnerCap once.
+        const [cap, receipt] = tx.moveCall({
+          target: `${WORLD_PKG}::character::borrow_owner_cap`,
+          typeArguments: [`${WORLD_PKG}::storage_unit::StorageUnit`],
+          arguments: [
+            tx.object(characterId),
+            tx.object(ownerCapId),
+          ],
+        });
+
+        let totalMoved = 0;
+        for (const row of sharedRows) {
+          const withdrawn = appendSharedWithdrawReturningItem(tx, {
+            ssuObjectId: ssu.objectId,
+            policyId: policy.policyId,
+            characterObjectId: characterId,
+            typeId: row.typeId,
+            quantity: row.quantity,
+          });
+          tx.moveCall({
+            target: `${WORLD_PKG}::storage_unit::deposit_by_owner`,
+            typeArguments: [`${WORLD_PKG}::storage_unit::StorageUnit`],
+            arguments: [
+              tx.object(ssu.objectId),
+              withdrawn,
+              tx.object(characterId),
+              cap,
+            ],
+          });
+          totalMoved += row.quantity;
+        }
+
+        tx.moveCall({
+          target: `${WORLD_PKG}::character::return_owner_cap`,
+          typeArguments: [`${WORLD_PKG}::storage_unit::StorageUnit`],
+          arguments: [
+            tx.object(characterId),
+            cap,
+            receipt,
+          ],
+        });
+
+        const signer = new CurrentAccountSigner(dAppKit);
+        await signer.signAndExecuteTransaction({ transaction: tx });
+        setTxStatus(
+          `Withdrew ${totalMoved.toLocaleString()} item(s) across ${sharedRows.length} stack(s) → owner partition`
+        );
+      } else {
+        // TRIBEMATE / allowlisted / public-mode branch: shared_withdraw_to_owned
+        // routes each item into the caller's per-character partition on this
+        // SSU. No OwnerCap needed (and they don't have one anyway).
+        let totalMoved = 0;
+        for (const row of sharedRows) {
+          appendSharedWithdrawToOwned(tx, {
+            ssuObjectId: ssu.objectId,
+            policyId: policy.policyId,
+            characterObjectId: characterId,
+            typeId: row.typeId,
+            quantity: row.quantity,
+          });
+          totalMoved += row.quantity;
+        }
+
+        const signer = new CurrentAccountSigner(dAppKit);
+        await signer.signAndExecuteTransaction({ transaction: tx });
+        setTxStatus(
+          `Withdrew ${totalMoved.toLocaleString()} item(s) across ${sharedRows.length} stack(s) → your partition`
+        );
+      }
+      setTimeout(() => onRefresh(ssu.objectId), 1500);
+    } catch (err: any) {
+      setTxError(err?.message ?? String(err));
+    } finally {
+      setBatchWithdrawingAll(false);
     }
   }
 
@@ -993,7 +1225,7 @@ async function _handleWithdraw(item: InventoryItem) {
         >
           {ssu.displayName}
         </span>
-        <span style={{ color: "rgba(107,107,94,0.5)", fontFamily: "monospace", fontSize: 10 }}>
+        <span style={{ color: "rgba(175,175,155,0.5)", fontFamily: "monospace", fontSize: 10 }}>
           #{suffix}
         </span>
         <span
@@ -1007,6 +1239,24 @@ async function _handleWithdraw(item: InventoryItem) {
         >
           {ssu.isOnline ? "ONLINE" : "OFFLINE"}
         </span>
+        {/* Operator badge — the resolved Character name of whoever owns
+            this SSU. Shown for ALL cards (owned + shared) so the user can
+            scan the list and see operator at a glance. Subtle styling so
+            the SHARED · TRIBE badge still stands out for shared SSUs. */}
+        {inv.operator && (
+          <span
+            title={`SSU operator: ${inv.operator.name} (${inv.operator.key.slice(0, 6)}\u2026${inv.operator.key.slice(-4)})`}
+            style={{
+              marginLeft: 6,
+              fontSize: 10,
+              fontFamily: "monospace",
+              color: "rgba(200,200,180,0.65)",
+              letterSpacing: "0.05em",
+            }}
+          >
+            · {inv.operator.name}
+          </span>
+        )}
         {/* SHARED badge — indicates the caller does NOT own this SSU but
             has access to it via a shared-access policy. Color-coded by
             policy mode for at-a-glance recognition. */}
@@ -1039,7 +1289,7 @@ async function _handleWithdraw(item: InventoryItem) {
               marginLeft: "auto",
               fontSize: 9,
               fontFamily: "monospace",
-              color: "rgba(107,107,94,0.4)",
+              color: "rgba(175,175,155,0.4)",
               letterSpacing: "0.08em",
             }}
           >
@@ -1055,7 +1305,7 @@ async function _handleWithdraw(item: InventoryItem) {
           items.some(i => i.partition === "owner_main" && i.quantity > 0) && (
           <button
             onClick={(e) => { e.stopPropagation(); handleMoveAllOwnerToShared(); }}
-            disabled={batchMovingAll || withdrawingTypeId !== null}
+            disabled={batchMovingAll || batchWithdrawingAll || withdrawingTypeId !== null}
             title={`Move ALL owner-private stacks → shared partition in a single signature. Tribemates with shared access (${policy ? modeLabel(policy.mode) : "shared"}) will then be able to withdraw any of them.`}
             style={{
               marginLeft: ssu.typeId !== undefined ? 8 : "auto",
@@ -1066,11 +1316,44 @@ async function _handleWithdraw(item: InventoryItem) {
               border: "1px solid rgba(255,200,80,0.5)",
               color: batchMovingAll ? "rgba(255,200,80,0.4)" : "#ffc850",
               padding: "2px 6px",
-              cursor: (batchMovingAll || withdrawingTypeId !== null) ? "wait" : "pointer",
+              cursor: (batchMovingAll || batchWithdrawingAll || withdrawingTypeId !== null) ? "wait" : "pointer",
               whiteSpace: "nowrap",
             }}
           >
             {batchMovingAll ? "… batch" : "↪ ALL→SHARED"}
+          </button>
+        )}
+        {/* Batch "Withdraw All Shared" button. Renders when:
+            (a) caller is owner OR has shared-withdraw access (canWithdrawShared),
+            (b) at least one open-partition row has nonzero qty.
+            Owner branch lands items back in owner_main via deposit_by_owner.
+            Non-owner branch lands items in caller's per-character partition
+            via shared_withdraw_to_owned. Both: one signature, batched. */}
+        {(ownerCapId || canWithdrawShared) &&
+          items.some(i => i.partition === "open" && i.quantity > 0) && (
+          <button
+            onClick={(e) => { e.stopPropagation(); handleWithdrawAllShared(); }}
+            disabled={batchWithdrawingAll || batchMovingAll || withdrawingTypeId !== null}
+            title={ownerCapId
+              ? `Withdraw ALL shared-partition stacks → owner-private partition in a single signature. Items stay on this SSU, in-game-client visible.`
+              : `Withdraw ALL shared-partition stacks → your per-character partition on this SSU in a single signature. In-game-client visible under your character.`
+            }
+            style={{
+              marginLeft: 8,
+              fontSize: 9,
+              fontFamily: "monospace",
+              letterSpacing: "0.08em",
+              background: "transparent",
+              border: "1px solid rgba(120,200,255,0.5)",
+              color: batchWithdrawingAll ? "rgba(120,200,255,0.4)" : "#78c8ff",
+              padding: "2px 6px",
+              cursor: (batchWithdrawingAll || batchMovingAll || withdrawingTypeId !== null) ? "wait" : "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {batchWithdrawingAll
+              ? "… batch"
+              : ownerCapId ? "↩ ALL→OWNED" : "↩ WITHDRAW ALL"}
           </button>
         )}
         {/* Manual refresh button. Always rendered to give a guaranteed
@@ -1081,7 +1364,10 @@ async function _handleWithdraw(item: InventoryItem) {
           disabled={loading}
           title="Refresh this SSU's inventory and policy state from chain"
           style={{
-            marginLeft: (canMoveOwnerToShared && items.some(i => i.partition === "owner_main" && i.quantity > 0))
+            marginLeft: (
+              (canMoveOwnerToShared && items.some(i => i.partition === "owner_main" && i.quantity > 0)) ||
+              ((ownerCapId || canWithdrawShared) && items.some(i => i.partition === "open" && i.quantity > 0))
+            )
               ? 8
               : (ssu.typeId !== undefined ? 8 : "auto"),
             fontSize: 9,
@@ -1121,7 +1407,7 @@ async function _handleWithdraw(item: InventoryItem) {
           style={{
             fontSize: 10,
             fontFamily: "monospace",
-            color: "rgba(107,107,94,0.55)",
+            color: "rgba(175,175,155,0.55)",
             letterSpacing: "0.08em",
           }}
         >
@@ -1135,7 +1421,7 @@ async function _handleWithdraw(item: InventoryItem) {
         {loading ? (
           <div
             style={{
-              color: "rgba(107,107,94,0.4)",
+              color: "rgba(175,175,155,0.4)",
               fontFamily: "monospace",
               fontSize: 11,
               padding: "10px 0",
@@ -1172,7 +1458,13 @@ async function _handleWithdraw(item: InventoryItem) {
                 { label: "QTY",       style: COL_QTY  },
                 { label: "VOL EACH",  style: COL_VOL  },
                 { label: "TOTAL VOL", style: COL_TOT  },
-                ...(ownerCapId ? [{ label: "ACTION", style: COL_ACT }] : []),
+                // Always render the ACTION header. Every item row renders
+                // a COL_ACT cell regardless of caller role (owner-only label,
+                // WITHDRAW button, DEPOSIT button, locked label, em-dash, etc.),
+                // so the header must match the row column count or the flex
+                // layout shifts every numeric header rightward by 140px on
+                // non-owner SSUs and breaks vertical alignment with the data.
+                { label: "ACTION", style: COL_ACT },
               ].map(({ label, style }) => (
                 <div
                   key={label}
@@ -1180,8 +1472,9 @@ async function _handleWithdraw(item: InventoryItem) {
                     ...style,
                     fontSize: 10,
                     fontFamily: "monospace",
-                    color: "rgba(107,107,94,0.55)",
-                    letterSpacing: "0.1em",
+                    color: "rgba(200,200,184,0.85)",
+                    letterSpacing: "0.12em",
+                    fontWeight: 600,
                     textTransform: "uppercase",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -1197,7 +1490,7 @@ async function _handleWithdraw(item: InventoryItem) {
             {nonZero.length === 0 ? (
               <div
                 style={{
-                  color: "rgba(107,107,94,0.3)",
+                  color: "rgba(175,175,155,0.3)",
                   fontFamily: "monospace",
                   fontSize: 11,
                   padding: "8px 0",
@@ -1215,12 +1508,31 @@ async function _handleWithdraw(item: InventoryItem) {
                 // so key the spinner on (typeId, partition).
                 const isWithdrawing =
                   withdrawingTypeId === item.typeId && item.partition === "open";
+                // Prefer the resolved on-chain character name over generic
+                // "owner" / "locked" labels when we have one. Color/tip still
+                // reflect the partition kind so users can see at a glance
+                // whether items are withdrawable by tribemates.
+                const resolvedOwnerName = item.partition !== "open"
+                  ? partitionOwnerNames.get(item.partitionKey)
+                  : undefined;
                 const partitionBadge: { label: string; color: string; tip: string } | null =
                   item.partition === "open"
                     ? { label: "shared",  color: "rgba(0,255,150,0.55)",  tip: "Open partition — tribe/allowlist members with shared access can withdraw." }
                     : item.partition === "owner_main"
-                    ? { label: "owner",   color: "rgba(255,200,80,0.55)", tip: "Owner-private partition (deposited via in-game client). Not withdrawable by tribemates." }
-                    : { label: "locked",  color: "rgba(255,255,255,0.25)", tip: "Non-shared partition (per-accessor lockbox or unrecognized). Not withdrawable by tribemates." };
+                    ? {
+                        label: resolvedOwnerName ?? "owner",
+                        color: "rgba(255,200,80,0.55)",
+                        tip: resolvedOwnerName
+                          ? `Owner-private partition — deposited by ${resolvedOwnerName} via the in-game client. Not withdrawable by tribemates.`
+                          : "Owner-private partition (deposited via in-game client). Not withdrawable by tribemates.",
+                      }
+                    : {
+                        label: resolvedOwnerName ?? "locked",
+                        color: "rgba(255,255,255,0.25)",
+                        tip: resolvedOwnerName
+                          ? `Per-character lockbox — owned by ${resolvedOwnerName}. Only they (or themselves via PROMOTE) can move it into the shared pool.`
+                          : "Non-shared partition (per-accessor lockbox or unrecognized). Not withdrawable by tribemates.",
+                      };
                 return (
                   <div
                     key={`${item.typeId}│${item.partition}`}
@@ -1270,7 +1582,7 @@ async function _handleWithdraw(item: InventoryItem) {
                         ...COL_TID,
                         fontFamily: "monospace",
                         fontSize: 12,
-                        color: "rgba(107,107,94,0.55)",
+                        color: "rgba(175,175,155,0.55)",
                       }}
                     >
                       {item.typeId}
@@ -1290,7 +1602,7 @@ async function _handleWithdraw(item: InventoryItem) {
                         ...COL_VOL,
                         fontFamily: "monospace",
                         fontSize: 12,
-                        color: "rgba(107,107,94,0.7)",
+                        color: "rgba(175,175,155,0.7)",
                       }}
                     >
                       {formatVolume(item.volume)}
@@ -1404,7 +1716,7 @@ async function _handleWithdraw(item: InventoryItem) {
                           </span>
                         )
                       ) : item.partition === "unknown" ? (
-                        canPromoteToShared ? (
+                        canPromoteToShared && isOwnLockbox(item) ? (
                           // Per-character (ephemeral) partition items the caller can promote to shared.
                           // Uses promote_ephemeral_to_shared (v4 cradleos_ssu_access) which calls
                           // withdraw_by_owner<Character> + deposit_to_open_inventory<SsuAuth>.
@@ -1425,7 +1737,7 @@ async function _handleWithdraw(item: InventoryItem) {
                                 });
                               }}
                               disabled={withdrawingTypeId === item.typeId}
-                              title={`Quantity to promote to shared pool (max ${item.quantity}). Leave blank for full stack.`}
+                              title={`Quantity to deposit into shared pool (max ${item.quantity}). Leave blank for full stack.`}
                               style={{
                                 width: 44,
                                 fontSize: 10,
@@ -1441,7 +1753,7 @@ async function _handleWithdraw(item: InventoryItem) {
                             <button
                               onClick={() => handlePromoteToShared(item)}
                               disabled={withdrawingTypeId === item.typeId}
-                              title={`Move ${item.quantity}× from your locked/ephemeral partition into the shared open pool. Others with access (${policy ? modeLabel(policy.mode) : "shared"}) can then withdraw.`}
+                              title={`Deposit ${item.quantity}× from your locked/ephemeral partition into the shared open pool. Others with access (${policy ? modeLabel(policy.mode) : "shared"}) can then withdraw.`}
                               style={{
                                 fontSize: 10,
                                 fontFamily: "monospace",
@@ -1454,7 +1766,7 @@ async function _handleWithdraw(item: InventoryItem) {
                                 whiteSpace: "nowrap",
                               }}
                             >
-                              {withdrawingTypeId === item.typeId ? "…" : "↑ PROMOTE"}
+                              {withdrawingTypeId === item.typeId ? "…" : "↓ DEPOSIT"}
                             </button>
                           </div>
                         ) : (
@@ -2053,7 +2365,7 @@ function WalletItemsSection({
           style={{
             fontSize: 10,
             fontFamily: "monospace",
-            color: "rgba(107,107,94,0.5)",
+            color: "rgba(175,175,155,0.5)",
             letterSpacing: "0.08em",
           }}
         >
@@ -2063,13 +2375,13 @@ function WalletItemsSection({
 
       <div style={{ padding: "8px 14px 10px" }}>
         {loading ? (
-          <div style={{ color: "rgba(107,107,94,0.4)", fontFamily: "monospace", fontSize: 11 }}>
+          <div style={{ color: "rgba(175,175,155,0.4)", fontFamily: "monospace", fontSize: 11 }}>
             loading wallet items…
           </div>
         ) : walletItems.length === 0 ? (
           <div
             style={{
-              color: "rgba(107,107,94,0.3)",
+              color: "rgba(175,175,155,0.3)",
               fontFamily: "monospace",
               fontSize: 11,
               fontStyle: "italic",
@@ -2107,7 +2419,7 @@ function WalletItemsSection({
                   style={{
                     fontFamily: "monospace",
                     fontSize: 11,
-                    color: "rgba(107,107,94,0.5)",
+                    color: "rgba(175,175,155,0.5)",
                     width: 60,
                     textAlign: "right",
                   }}
@@ -2359,6 +2671,25 @@ export function InventoryPanel() {
         );
         setGlobalLoading(false);
 
+        // Resolve operator (owner Character) for every owned SSU. The
+        // resolver is cached at module scope so repeated owners (the
+        // common case for owned SSUs — they're all yours) only do one
+        // RPC pair. Updates state per-SSU as each resolves; first paint
+        // doesn't wait for any of these.
+        for (const ssu of ownedSsus) {
+          (async () => {
+            const op = await resolveSsuOperator(ssu.objectId).catch(() => null);
+            if (cancelled || !op) return;
+            setInventories(prev => {
+              const idx = prev.findIndex(p => p.ssu.objectId === ssu.objectId);
+              if (idx === -1) return prev;
+              const next = [...prev];
+              next[idx] = { ...next[idx], operator: op };
+              return next;
+            });
+          })();
+        }
+
         // ── Shared-SSU discovery (cradleos::ssu_access) ────────────────
         // Surface SSUs the caller does NOT own but DOES have access to via
         // a shared policy (TRIBE / ALLOWLIST / HYBRID / PUBLIC). This is
@@ -2456,6 +2787,23 @@ export function InventoryPanel() {
           // inventory loaders below can target them by ssu.objectId.
           ssus.push(...sharedInvs.map(s => s.ssu));
           setInventories(prev => [...prev, ...sharedInvs]);
+          // Kick off operator resolution for each shared SSU in parallel
+          // with the inventory fetch below. Resolves the SSU's owner_cap_id
+          // → OwnerCap → Character.metadata.name so the card can render the
+          // operator's name (e.g., "Zasar", "Coolphone1984") in its header.
+          for (const inv of sharedInvs) {
+            (async () => {
+              const op = await resolveSsuOperator(inv.ssu.objectId).catch(() => null);
+              if (cancelled || !op) return;
+              setInventories(prev => {
+                const idx = prev.findIndex(p => p.ssu.objectId === inv.ssu.objectId);
+                if (idx === -1) return prev;
+                const next = [...prev];
+                next[idx] = { ...next[idx], operator: op };
+                return next;
+              });
+            })();
+          }
           // Kick off inventory load for each shared SSU. We cannot reuse
           // the parallel block below because that one captures `ssus` by
           // index closure; here we look up by objectId post-hoc.
@@ -2490,18 +2838,30 @@ export function InventoryPanel() {
           }
         });
 
-        // Load each OWNED SSU inventory in parallel. Pull ssu_access policy
-        // alongside inventory so the deposit/withdraw UI can detect
-        // tribe-shared SSUs on first paint without a second round-trip per
-        // card. Policy lookup is best-effort — RPC failure here must NOT
-        // block inventory display.
+        // Load each OWNED SSU inventory with bounded concurrency. Pull
+        // ssu_access policy alongside inventory so the deposit/withdraw UI
+        // can detect tribe-shared SSUs on first paint without a second
+        // round-trip per card. Policy lookup is best-effort — RPC failure
+        // here must NOT block inventory display.
         //
         // We look up entries by objectId (not array index) because shared-SSU
         // discovery may append additional entries to `inventories` between
         // when this loop starts and when each item resolves. An index-based
         // write would race against that append and clobber the wrong card.
-        await Promise.all(
-          ownedSsus.map(async (ssu) => {
+        //
+        // Concurrency=1 (sequential). Earlier we tried concurrency=3 but
+        // an SSU with many items (each item adds RPC calls for type-name
+        // resolution + per-partition fetches) burns through enough rate-
+        // limit budget that the next 1-2 SSUs in the wave still fail. The
+        // public Sui testnet fullnode is the bottleneck; serializing SSU
+        // loads with a small inter-SSU delay drains the rate-limit window
+        // between cards. Trade-off: longer total load time, but no
+        // "Failed to fetch" cascade.
+        await pMap(ownedSsus, async (ssu, idx) => {
+          // Tiny stagger between SSUs to give the rate limiter a beat to
+          // recover. Skip the delay on the very first SSU so first paint
+          // isn't artificially delayed.
+          if (idx > 0) await new Promise(r => setTimeout(r, 250));
             try {
               const [{ items, maxCapacity, usedCapacity }, policyResult] = await Promise.all([
                 fetchSSUInventory(ssu.objectId),
@@ -2510,18 +2870,18 @@ export function InventoryPanel() {
                   : Promise.resolve(undefined),
               ]);
 
-              // Resolve names for all type IDs
+              // Resolve names for all type IDs (bounded concurrency —
+              // World API also benefits from not being hammered all at
+              // once, even though resolveItemName is cached).
               const resolvedNames = new Map<number, string>();
-              await Promise.all(
-                items.map(async item => {
-                  const name = await resolveItemName(
-                    item.typeId,
-                    WORLD_API,
-                    nameCache.current
-                  );
-                  resolvedNames.set(item.typeId, name);
-                })
-              );
+              await pMap(items, async item => {
+                const name = await resolveItemName(
+                  item.typeId,
+                  WORLD_API,
+                  nameCache.current
+                );
+                resolvedNames.set(item.typeId, name);
+              }, 4);
 
               if (cancelled) return;
 
@@ -2554,8 +2914,7 @@ export function InventoryPanel() {
                 return next;
               });
             }
-          })
-        );
+          }, 1); // concurrency=1 (sequential)
       } catch (err: any) {
         if (!cancelled) {
           setGlobalError(err?.message ?? String(err));
@@ -2698,7 +3057,7 @@ export function InventoryPanel() {
       {!walletAddress && (
         <div
           style={{
-            color: "rgba(107,107,94,0.5)",
+            color: "rgba(175,175,155,0.5)",
             fontFamily: "monospace",
             fontSize: 12,
             padding: "24px 0",
@@ -2713,7 +3072,7 @@ export function InventoryPanel() {
       {walletAddress && globalLoading && (
         <div
           style={{
-            color: "rgba(107,107,94,0.4)",
+            color: "rgba(175,175,155,0.4)",
             fontFamily: "monospace",
             fontSize: 11,
             padding: "16px 0",
@@ -2741,7 +3100,7 @@ export function InventoryPanel() {
       {walletAddress && !globalLoading && !globalError && inventories.length === 0 && (
         <div
           style={{
-            color: "rgba(107,107,94,0.4)",
+            color: "rgba(175,175,155,0.4)",
             fontFamily: "monospace",
             fontSize: 12,
             padding: "16px 0",
@@ -2766,7 +3125,7 @@ export function InventoryPanel() {
             letterSpacing: "0.08em",
           }}
         >
-          <span style={{ color: "rgba(107,107,94,0.5)", alignSelf: "center" }}>
+          <span style={{ color: "rgba(175,175,155,0.5)", alignSelf: "center" }}>
             {inventories.length} storage{inventories.length === 1 ? "" : "s"} · {collapsedIds.size} collapsed
           </span>
           <button

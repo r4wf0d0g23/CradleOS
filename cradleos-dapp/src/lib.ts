@@ -3387,6 +3387,117 @@ export async function synthesizeSharedSsuStructure(ssuObjectId: string): Promise
   };
 }
 
+/**
+ * Resolve the operator (owner) of a Storage Unit to a display name + a
+ * stable grouping key. Mirrors the partition-owner resolver behavior so
+ * names match what shows on inventory partition rows.
+ *
+ * Strategy:
+ *   1. Read the SSU object's `owner_cap_id` field.
+ *   2. Fetch that OwnerCap, extract its `AddressOwner` (the operator's
+ *      wallet/character address). This is the grouping key.
+ *   3. Resolve the OwnerCap via the same `_resolveSinglePartitionKey`
+ *      logic used for inventory partitions — covers Stillness's
+ *      Character-as-shared-object pattern, OwnerCap-attached-to-Character
+ *      pattern, and wallet→PlayerProfile fallback.
+ *
+ * Returns { name, key } on success. `name` is the resolved display
+ * string (Character.metadata.name or `Rider XXXX` or abbreviated
+ * address as last resort). `key` is the lowercased AddressOwner of the
+ * cap, used by the UI to group SSUs by operator.
+ *
+ * Returns null when the SSU has no readable `owner_cap_id` or the cap
+ * itself doesn't exist on chain (e.g., deleted SSU). Callers should
+ * fall back to leaving the operator field undefined in that case.
+ *
+ * Cached at module scope via the shared partition-owner cache so the
+ * same operator across many SSUs only resolves once per session.
+ */
+export async function resolveSsuOperator(
+  ssuObjectId: string,
+): Promise<{ name: string; key: string } | null> {
+  // Step 1: read SSU object to get owner_cap_id.
+  let capId: string | null = null;
+  try {
+    const ssuRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "sui_getObject",
+        params: [ssuObjectId, { showContent: true }],
+      }),
+    });
+    const ssuJson = (await ssuRes.json()) as {
+      result?: {
+        data?: {
+          content?: { fields?: { owner_cap_id?: string } };
+        };
+      };
+    };
+    capId = ssuJson.result?.data?.content?.fields?.owner_cap_id ?? null;
+  } catch {
+    return null;
+  }
+  if (!capId) return null;
+
+  // Step 2: fetch the cap to get AddressOwner (the grouping key).
+  let key: string | null = null;
+  try {
+    const capRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "sui_getObject",
+        params: [capId, { showOwner: true }],
+      }),
+    });
+    const capJson = (await capRes.json()) as {
+      result?: {
+        data?: {
+          owner?:
+            | { AddressOwner?: string }
+            | { ObjectOwner?: string }
+            | { Shared?: unknown }
+            | string;
+        };
+      };
+    };
+    const owner = capJson.result?.data?.owner;
+    if (owner && typeof owner === "object") {
+      if ("AddressOwner" in owner) {
+        key = (owner as { AddressOwner?: string }).AddressOwner ?? null;
+      } else if ("ObjectOwner" in owner) {
+        key = (owner as { ObjectOwner?: string }).ObjectOwner ?? null;
+      }
+    }
+  } catch {
+    return null;
+  }
+  if (!key) return null;
+
+  // Step 3: resolve the cap to a display name. Reuses the partition-owner
+  // resolver's full logic + cache.
+  const name = await _resolveSinglePartitionKey(capId);
+  if (name) {
+    return { name, key: key.toLowerCase() };
+  }
+
+  // Resolver returned null — fall back to wallet→Character one more time
+  // (it might have hit a transient RPC error). Worst case: abbreviated key.
+  const fallbackName = await _fetchCharacterName(key);
+  if (fallbackName) {
+    return { name: fallbackName, key: key.toLowerCase() };
+  }
+  return {
+    name: `${key.slice(0, 6)}\u2026${key.slice(-4)}`,
+    key: key.toLowerCase(),
+  };
+}
+
 // ──────────────────────────────────────────────────────────────────────────
 // Resolve partition owners → character names
 //
