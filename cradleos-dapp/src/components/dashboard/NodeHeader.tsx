@@ -189,10 +189,17 @@ export function NodeHeader({
 
         {/* Name + tribe-meta
             ("NETWORK NODE" type descriptor removed — the parent section header
-            already identifies this as the Hidden Structures node group) */}
+            already identifies this as the Hidden Structures node group)
+            paddingLeft: 6 prevents the first letter from sitting flush
+            against the chevron-glyph cluster's right edge — with bold
+            uppercase + letter-spacing the leftmost glyph's bearing is
+            already tight, and visually it read as 'OT THE NODE' on
+            narrow widths because the N hugged the diamond glyph.
+            fontWeight: 800 (was 700) per Raw — makes the node identity
+            stand out from the surrounding chrome. */}
         <span style={{
           color: N,
-          fontWeight: 700,
+          fontWeight: 800,
           fontSize: 16,
           letterSpacing: "0.06em",
           textTransform: "uppercase",
@@ -201,6 +208,7 @@ export function NodeHeader({
           whiteSpace: "nowrap",
           flex: 1,
           minWidth: 0,
+          paddingLeft: 6,
         }}>
           {node.displayName}
           <span style={{
