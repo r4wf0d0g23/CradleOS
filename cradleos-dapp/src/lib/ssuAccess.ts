@@ -100,6 +100,42 @@ export function decodeAllowEntry(raw: any): AllowEntry {
 // ──────────────────────────────────────────────────────────────────────────
 
 /**
+ * Wrap fetch() with retries on 429 / 5xx / network errors. Public Sui
+ * fullnode rate-limits aggressively when the inventory panel fans out
+ * RPCs in parallel (per-SSU inventory loads + operator resolution +
+ * policy walks all hit the same window). Without retries, a transient
+ * 429 silently breaks discovery: page walks return partial data,
+ * loadPolicyForSsu returns null, and shared SSUs disappear from the
+ * UI. This helper restores discovery's robustness without changing
+ * the surrounding logic.
+ */
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  retries = 3,
+  backoffMs = 600,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, init);
+      if ((res.status === 429 || res.status >= 500) && attempt < retries) {
+        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
+        continue;
+      }
+      return res;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
+        continue;
+      }
+    }
+  }
+  throw lastErr ?? new Error("fetch failed after retries");
+}
+
+/**
  * Memoize the policies-table id. Registry layout never changes, so the
  * Table<ID, ID> id is stable for the lifetime of the deployed package.
  */
@@ -112,7 +148,7 @@ export async function getPoliciesTableId(): Promise<string | null> {
   if (!SSU_ACCESS_AVAILABLE || !SSU_POLICY_REGISTRY) return null;
   _policiesTableIdInflight = (async () => {
     try {
-      const res = await fetch(SUI_TESTNET_RPC, {
+      const res = await fetchWithRetry(SUI_TESTNET_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -148,7 +184,7 @@ export async function resolvePolicyId(
   const tableId = await getPoliciesTableId();
   if (!tableId) return null;
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
+    const res = await fetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -178,7 +214,7 @@ export async function fetchPolicy(
   policyId: string,
 ): Promise<AccessMode | null> {
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
+    const res = await fetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -402,6 +438,66 @@ export type SharedDepositItemArgArgs = {
    */
   itemArg: ReturnType<Transaction["moveCall"]> | any;
 };
+
+export type OwnerDepositToOpenArgs = {
+  ssuObjectId: string;
+  characterObjectId: string;
+  itemArg: ReturnType<Transaction["moveCall"]> | any;
+};
+
+/**
+ * OWNER-PATH shared deposit (no policy gate).
+ *
+ * The standard `shared_deposit` path runs `check_access(policy, character, ...)`
+ * which in MODE_ALLOWLIST returns false for the SSU owner unless they
+ * explicitly added themselves to their own allowlist. That's a footgun —
+ * the owner controls the SSU and should always be able to deposit to its
+ * shared partition regardless of policy mode.
+ *
+ * This helper bypasses `check_access` entirely by going around
+ * `ssu_access::shared_deposit` and calling `world::storage_unit::
+ * deposit_to_open_inventory<SsuAuth>` directly. The witness comes from
+ * the public `ssu_access::new_auth()` constructor; `SsuAuth` only needs
+ * `drop`, has no internal state, and the SSU has already authorized the
+ * extension at policy-init time, so this is safe and equivalent to what
+ * `shared_deposit` does on the inside, minus the policy check.
+ *
+ * Use this only when the caller is the SSU owner (verified upstream by
+ * possession of `OwnerCap<StorageUnit>`). Non-owners must continue to use
+ * the policy-gated `appendSharedDeposit` / `appendSharedDepositItemArg`.
+ *
+ * NOTE: no SharedDepositEvent is emitted by this path. The event chain
+ * remains owned by `shared_deposit`. If we want owner deposits visible in
+ * the activity feed, we should add a Move-side `owner_deposit_to_shared`
+ * function later that emits the event explicitly. For now the deposit is
+ * still observable through SSU inventory state.
+ */
+export function appendOwnerDepositToOpen(
+  tx: Transaction,
+  args: OwnerDepositToOpenArgs,
+): void {
+  if (!SSU_ACCESS_AVAILABLE) {
+    throw new Error("ssu_access feature not available on this server.");
+  }
+  // Mint an SsuAuth witness. The constructor is intentionally public on
+  // the cradleos::ssu_access module — the security boundary is the SSU's
+  // `authorize_extension<SsuAuth>` call (done at policy init time), not
+  // the witness constructor.
+  const witness = tx.moveCall({
+    target: `${SSU_ACCESS_PKG}::ssu_access::new_auth`,
+  });
+  // Deposit directly to the SSU's open partition.
+  tx.moveCall({
+    target: `${WORLD_PKG}::storage_unit::deposit_to_open_inventory`,
+    typeArguments: [`${SSU_ACCESS_PKG}::ssu_access::SsuAuth`],
+    arguments: [
+      tx.object(args.ssuObjectId),
+      tx.object(args.characterObjectId),
+      args.itemArg,
+      witness,
+    ],
+  });
+}
 
 /**
  * Variant of {@link appendSharedDeposit} that consumes an `Item` produced
@@ -784,7 +880,7 @@ export async function discoverSharedSsus(
   for (let page = 0; page < 20; page++) {
     let json: any;
     try {
-      const res = await fetch(SUI_TESTNET_RPC, {
+      const res = await fetchWithRetry(SUI_TESTNET_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
-import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator } from "../lib";
+import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator, fetchCharacterDisplayName } from "../lib";
 import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE } from "../constants";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -2672,18 +2672,32 @@ export function InventoryPanel() {
         );
         setGlobalLoading(false);
 
-        // Operator resolution for owned SSUs is deferred until AFTER
-        // shared-SSU discovery has had its first cut at the public Sui
-        // RPC budget. Reason: discoverSharedSsus walks the policies
-        // table + does per-policy round trips, and Phase 1's per-SSU
-        // operator resolution pushed the total parallel RPC count past
-        // the public fullnode's burst threshold, intermittently
-        // starving shared-discovery (returning 0 shared SSUs even when
-        // the caller has access). Operator resolution is non-load-
-        // bearing — cards work fine without it — so we let critical
-        // paths run first.
-        //
-        // Implementation lives below, after sharedDiscoveryPromise.
+        // Stamp every owned SSU with the caller's character name in a
+        // SINGLE RPC. We already know `characterId` from
+        // findCharacterForWallet above; one fetchCharacterDisplayName
+        // call gets the display string. This avoids paying a per-SSU
+        // resolveSsuOperator round-trip (3 RPCs each) for SSUs whose
+        // operator we already know is the caller. Critical for not
+        // starving discoverSharedSsus on the public Sui fullnode.
+        if (characterId) {
+          (async () => {
+            const name = await fetchCharacterDisplayName(characterId).catch(() => null);
+            if (cancelled || !name) return;
+            const ownedKey = characterId.toLowerCase();
+            setInventories(prev => {
+              const next = [...prev];
+              for (let i = 0; i < next.length; i++) {
+                // Only stamp owned SSUs (those without sharedFrom set).
+                // Shared SSUs get their own resolveSsuOperator pass
+                // below since their operator is NOT the caller.
+                if (!next[i].sharedFrom && !next[i].operator) {
+                  next[i] = { ...next[i], operator: { name, key: ownedKey } };
+                }
+              }
+              return next;
+            });
+          })();
+        }
 
         // ── Shared-SSU discovery (cradleos::ssu_access) ────────────────
         // Surface SSUs the caller does NOT own but DOES have access to via
@@ -2816,24 +2830,17 @@ export function InventoryPanel() {
           }
         });
 
-        // After shared discovery has completed (success or empty), kick
-        // off operator resolution for ALL SSUs (owned + shared) using a
-        // concurrency cap so we don't hammer the public Sui RPC. This
-        // runs in the background; cards re-render as each operator
-        // resolves. Critical paths (discoverSharedSsus and per-SSU
-        // inventory loads below) get first crack at the RPC budget.
+        // After shared discovery has completed, kick off operator
+        // resolution for SHARED SSUs ONLY (owned ones already got the
+        // caller-name stamp above). Concurrency-2 + 250ms grace so we
+        // don't compete with inventory loads. Cards re-render as each
+        // operator resolves.
         sharedDiscoveryPromise.then(async (sharedInvs) => {
-          if (cancelled) return;
-          // Wait one tick to let inventory loads also kick off and
-          // subscribe to their RPC budget before we add more load.
+          if (cancelled || sharedInvs.length === 0) return;
           await new Promise(r => setTimeout(r, 250));
           if (cancelled) return;
-          const allSsuObjectIds = [
-            ...ownedSsus.map(s => s.objectId),
-            ...sharedInvs.map(s => s.ssu.objectId),
-          ];
           await pMap(
-            allSsuObjectIds,
+            sharedInvs.map(s => s.ssu.objectId),
             async (id) => {
               if (cancelled) return null;
               const op = await resolveSsuOperator(id).catch(() => null);
@@ -2847,7 +2854,7 @@ export function InventoryPanel() {
               });
               return op;
             },
-            2, // concurrency cap — Phase 1 was unbounded which starved discoverSharedSsus
+            2,
           );
         });
 
@@ -3099,6 +3106,44 @@ export function InventoryPanel() {
     return grp?.label ?? null;
   }, [operatorFilter, operatorGroups]);
 
+  // Effective collapse count: only count collapsedIds that refer to SSUs
+  // currently in the inventories list. Stale ids from previous sessions
+  // (when shared discovery returned different SSUs) would otherwise inflate
+  // the count to e.g. "11 collapsed" against "7 storages".
+  const effectiveCollapsedCount = useMemo(() => {
+    if (collapsedIds.size === 0) return 0;
+    let n = 0;
+    for (const inv of inventories) {
+      if (collapsedIds.has(inv.ssu.objectId)) n++;
+    }
+    return n;
+  }, [collapsedIds, inventories]);
+
+  // GC stale collapse ids when inventories change. Don't run while still
+  // loading (inventories.length === 0 immediately after wallet change),
+  // and avoid pruning when shared discovery hasn't completed yet — its
+  // SSUs may legitimately appear in collapsedIds from a previous session.
+  // Threshold: prune when there's been a stable inventory snapshot for at
+  // least one render and at least one stale id is detected.
+  useEffect(() => {
+    if (inventories.length === 0) return;
+    if (collapsedIds.size === 0) return;
+    const liveIds = new Set(inventories.map(i => i.ssu.objectId));
+    const stale = [...collapsedIds].filter(id => !liveIds.has(id));
+    if (stale.length === 0) return;
+    // Only prune ids that have been stale for >5 seconds since the last
+    // inventory change — this gives shared discovery + slow operator
+    // resolution time to surface their SSUs without us pruning them.
+    const t = setTimeout(() => {
+      setCollapsedIds(prev => {
+        const next = new Set(prev);
+        for (const id of stale) next.delete(id);
+        return next;
+      });
+    }, 5000);
+    return () => clearTimeout(t);
+  }, [collapsedIds, inventories]);
+
   return (
     <div style={{ padding: "0 0 24px" }}>
       {/* Panel title */}
@@ -3248,8 +3293,8 @@ export function InventoryPanel() {
         >
           <span style={{ color: "rgba(175,175,155,0.5)" }}>
             {operatorFilter === "__all__"
-              ? <>{inventories.length} storage{inventories.length === 1 ? "" : "s"} · {collapsedIds.size} collapsed</>
-              : <>{visibleCount} of {inventories.length} storages · filtered: {filteredLabel} · {collapsedIds.size} collapsed</>}
+              ? <>{inventories.length} storage{inventories.length === 1 ? "" : "s"} · {effectiveCollapsedCount} collapsed</>
+              : <>{visibleCount} of {inventories.length} storages · filtered: {filteredLabel} · {effectiveCollapsedCount} collapsed</>}
           </span>
           {/* Operator filter — only render when 2+ distinct groups exist.
               With a single operator (the user's own SSUs only, no shared)
@@ -3280,28 +3325,28 @@ export function InventoryPanel() {
           )}
           <button
             onClick={collapseAll}
-            disabled={collapsedIds.size === inventories.length}
+            disabled={effectiveCollapsedCount === inventories.length}
             title="Collapse every storage card. Affects ALL SSUs, not just the filtered view."
             style={{
               fontSize: 9, fontFamily: "monospace", letterSpacing: "0.08em",
               background: "transparent",
               border: "1px solid rgba(255,71,0,0.3)",
-              color: collapsedIds.size === inventories.length ? "rgba(255,71,0,0.3)" : "#FF4700",
+              color: effectiveCollapsedCount === inventories.length ? "rgba(255,71,0,0.3)" : "#FF4700",
               padding: "2px 8px",
-              cursor: collapsedIds.size === inventories.length ? "default" : "pointer",
+              cursor: effectiveCollapsedCount === inventories.length ? "default" : "pointer",
             }}
           >COLLAPSE ALL</button>
           <button
             onClick={expandAll}
-            disabled={collapsedIds.size === 0}
+            disabled={effectiveCollapsedCount === 0}
             title="Expand every storage card. Affects ALL SSUs, not just the filtered view."
             style={{
               fontSize: 9, fontFamily: "monospace", letterSpacing: "0.08em",
               background: "transparent",
               border: "1px solid rgba(255,71,0,0.3)",
-              color: collapsedIds.size === 0 ? "rgba(255,71,0,0.3)" : "#FF4700",
+              color: effectiveCollapsedCount === 0 ? "rgba(255,71,0,0.3)" : "#FF4700",
               padding: "2px 8px",
-              cursor: collapsedIds.size === 0 ? "default" : "pointer",
+              cursor: effectiveCollapsedCount === 0 ? "default" : "pointer",
             }}
           >EXPAND ALL</button>
         </div>

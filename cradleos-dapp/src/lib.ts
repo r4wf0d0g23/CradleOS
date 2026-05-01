@@ -3575,6 +3575,21 @@ async function _ssuPMap<T, R>(
   return out;
 }
 
+/**
+ * Public helper: fetch a Character object directly by id and return its
+ * on-chain metadata.name (or a `Rider XXXX` fallback when the character
+ * has no display name). Returns null when the object is deleted/missing.
+ *
+ * Used by InventoryPanel to stamp the caller's character name on owned
+ * SSUs without paying a per-SSU `resolveSsuOperator` RPC pair (the owned
+ * SSUs are all by the same character, so one fetch is enough).
+ */
+export async function fetchCharacterDisplayName(
+  charObjectId: string,
+): Promise<string | null> {
+  return _fetchCharacterName(charObjectId);
+}
+
 // Fetch a Character object directly by id and return its on-chain metadata
 // name (or a `Rider XXXX` fallback). Uses fetchWithRetry. Returns null when
 // the object is deleted/missing.
