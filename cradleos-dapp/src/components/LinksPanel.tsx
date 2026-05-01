@@ -338,7 +338,13 @@ function StructureCard({
         </div>
       </div>
 
-      {/* Service picker */}
+      {/* Service picker — only available on kinds that have a kiosk
+          display surface in-game (NetworkNode, Turret, StorageUnit).
+          Assembly and Gate don't render the metadata.url as a kiosk
+          screen, so attaching a service there would never display.
+          Gate has its own link semantics (gate-to-gate jump pairs);
+          Assembly has no kiosk surface at all. */}
+      {(s.kind === "NetworkNode" || s.kind === "Turret" || s.kind === "StorageUnit") ? (
       <div style={{ padding: "10px 14px" }}>
         {currentUrl ? (
           // Currently linked
@@ -481,6 +487,23 @@ function StructureCard({
           </div>
         )}
       </div>
+      ) : (
+        // Kind has no kiosk display surface — explain instead of
+        // showing a non-functional service picker.
+        <div style={{
+          padding: "10px 14px",
+          fontSize: 10,
+          color: "rgba(175,175,155,0.45)",
+          fontStyle: "italic",
+          letterSpacing: "0.04em",
+        }}>
+          {s.kind === "Gate"
+            ? "Gates link to other gates (jump pairs) — not to kiosk services. Use the dashboard or starmap to manage gate links."
+            : s.kind === "Assembly"
+              ? "Assembly structures have no kiosk display surface in-game. CradleOS services can only be attached to Network Nodes, Turrets, and Storage Units."
+              : `${s.kind} structures cannot host kiosk services.`}
+        </div>
+      )}
     </div>
   );
 }
