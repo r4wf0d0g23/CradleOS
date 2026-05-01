@@ -20,6 +20,7 @@ import { RecruitingPanel } from "./components/RecruitingPanel";
 import { TribeHierarchyPanel } from "./components/TribeHierarchyPanel";
 import { AssetLedgerPanel } from "./components/AssetLedgerPanel";
 import { EventCalendarPanel } from "./components/EventCalendarPanel";
+import { FanfestPanel } from "./components/FanfestPanel";
 import { LoreWikiPanel } from "./components/LoreWikiPanel";
 import { ShipFittingPanel } from "./components/ShipFittingPanel";
 import { QueryPanel } from "./components/QueryPanel";
@@ -34,6 +35,7 @@ import { IndustryPanel } from "./components/IndustryPanel";
 import KeeperOrb from "./components/KeeperOrb";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
+import { isMuted, toggleMuted } from "./lib/sound";
 
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
@@ -189,7 +191,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "fanfest" | "wiki" | "fitting" | "query" | "keeper" | "dashboard" | "war" | "industry" | "flappy";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -220,6 +222,7 @@ const ROUTE_MAP: Record<string, Tab> = {
   "hierarchy":     "hierarchy",
   "assets":        "assets",
   "calendar":      "calendar",
+  "fanfest":       "fanfest",
   "keeper":        "keeper",
 };
 
@@ -319,7 +322,8 @@ function AppInner() {
   const { isVerified, isVerifying, verificationError } = useVerifiedAccountContext();
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war", "industry"]);
+  const [muted, setMutedState] = useState<boolean>(() => isMuted());
+  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war", "industry", "fanfest"]);
   const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "war"); // default to war — visible without wallet
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
@@ -504,6 +508,17 @@ function AppInner() {
         "Use the Announcements tab to broadcast events to tribe members",
       ],
     },
+    fanfest: {
+      title: "EVE Fanfest 2026 planner — Reykjavik, 14–16 May",
+      steps: [
+        "Schedule view: block-style hourly grid by stage (Eldborg / Norðurljós / Kaldalón / Þríund / Special)",
+        "List view: flat sortable list with all filters applied",
+        "My Plan: starred events grouped by day with conflict and gap detection",
+        "Filter by stage, topic, or 'free time' window to see only what fits your schedule",
+        "Star events to build your personal plan — saved per wallet, no on-chain footprint",
+        "Export My Plan as Markdown to share with your tribe",
+      ],
+    },
     wiki: {
       title: "Community lore wiki — on-chain knowledge base for EVE Frontier",
       steps: [
@@ -581,7 +596,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", war: "war", industry: "industry", flappy: "flappy",
+      calendar: "calendar", fanfest: "fanfest", keeper: "keeper", war: "war", industry: "industry", flappy: "flappy",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -622,60 +637,152 @@ function AppInner() {
 
   return (
     <main className="app-shell">
-      {/* ── Kiosk-mode back bar ──
-          When the dApp was opened from an in-game structure URL (e.g.
+      {/* ── Kiosk-mode navigation bar ──
+          When the dApp is opened from an in-game structure URL (e.g.
           #/defense, #/gates, #/tribe), the full chrome (topbar, title,
-          tab nav) is hidden so the panel fills the in-game iframe. That
-          leaves no visible way to navigate back to the structure
-          dashboard. This kiosk toolbar fixes that with a slim, themed
-          back link + active-tab label.
+          tab nav) is hidden so the panel fills the in-game iframe.
+          Without navigation, kiosk users were trapped on whatever page
+          the in-game URL pointed at and had no way to reach other
+          CradleOS panels.
 
-          We do NOT show this on `#/dashboard` itself — there's nothing
-          to go back to from there in kiosk mode. */}
-      {kioskMode && activeTab !== "dashboard" && (
+          This bar provides full cross-kiosk navigation:
+            - "← Dashboard" pill on the left (one-tap return to home),
+              hidden when already on dashboard.
+            - Horizontally scrollable tab strip with all kiosk-reachable
+              tabs. Active tab gets the accent border and color. Strip
+              scrolls horizontally on narrow iframes; no row break so
+              the bar stays slim.
+            - Public tabs visible without a wallet (PUBLIC_TABS); gated
+              tabs hidden until the user connects a wallet, matching
+              the desktop tab strip behavior.
+          Tab order matches the desktop tab strip so the mental model
+          carries over from main app to kiosk view. */}
+      {kioskMode && (
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          padding: "8px 14px",
-          background: "rgba(5,3,2,0.92)",
-          borderBottom: "1px solid rgba(255,71,0,0.25)",
+          gap: 8,
+          padding: "6px 10px",
+          background: "rgba(5,3,2,0.94)",
+          borderBottom: "1px solid rgba(255,71,0,0.28)",
           fontFamily: "monospace",
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
         }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab("dashboard")}
-            title="Back to structure dashboard"
+          {/* Back-to-dashboard pill (hidden on dashboard itself) */}
+          {activeTab !== "dashboard" && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("dashboard")}
+              title="Back to structure dashboard"
+              style={{
+                flexShrink: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                background: "transparent",
+                border: "1px solid rgba(255,71,0,0.5)",
+                color: "#FF4700",
+                padding: "4px 10px",
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.10em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              ← Home
+            </button>
+          )}
+
+          {/* Horizontally-scrolling tab strip */}
+          <div
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              background: "transparent",
-              border: "1px solid rgba(255,71,0,0.5)",
-              color: "#FF4700",
-              padding: "5px 12px",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.10em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              fontFamily: "inherit",
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              gap: 2,
+              overflowX: "auto",
+              overflowY: "hidden",
+              scrollbarWidth: "thin",
+              WebkitOverflowScrolling: "touch",
             }}
+            // Hide the scrollbar in webkit while keeping scroll. The thin
+            // scrollbar above is for Firefox; the inline className-less
+            // approach keeps this self-contained.
           >
-            ← Dashboard
-          </button>
-          <span style={{
-            fontSize: 10,
-            color: "rgba(250,250,229,0.45)",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}>
-            {activeTab.replace(/_/g, " ")}
-          </span>
+            {((): Tab[] => {
+              // Same ordering as the desktop tab strip so users have one
+              // consistent mental model. structures/registry/announcements/
+              // keeper/flappy intentionally omitted (not in the desktop
+              // tab strip; structures opens via the dashboard, keeper has
+              // its own orb, etc.).
+              const ORDER: Tab[] = [
+                "war", "dashboard", "inventory", "tribe", "defense",
+                "bounties", "srp", "cargo", "gates", "succession",
+                "intel", "recruiting", "hierarchy", "assets", "calendar",
+                "fanfest", "wiki", "fitting", "map", "query", "industry",
+              ];
+              const KIOSK_PUBLIC = new Set<Tab>([
+                "map", "wiki", "fitting", "query", "intel",
+                "war", "industry", "fanfest",
+              ]);
+              return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
+            })().map(tab => {
+              const active = activeTab === tab;
+              // Compact labels — monospace, all caps, brief.
+              const label =
+                tab === "war"         ? "WAR"
+                : tab === "dashboard"  ? "DASH"
+                : tab === "inventory"  ? "INV"
+                : tab === "tribe"      ? "TRIBE"
+                : tab === "defense"    ? "DEFENSE"
+                : tab === "bounties"   ? "BOUNTY"
+                : tab === "srp"        ? "SRP"
+                : tab === "cargo"      ? "CARGO"
+                : tab === "gates"      ? "GATES"
+                : tab === "succession" ? "WILL"
+                : tab === "intel"      ? "INTEL"
+                : tab === "recruiting" ? "RECRUIT"
+                : tab === "hierarchy"  ? "ROLES"
+                : tab === "assets"     ? "ASSETS"
+                : tab === "calendar"   ? "CAL"
+                : tab === "fanfest"    ? "FF26"
+                : tab === "wiki"       ? "WIKI"
+                : tab === "fitting"    ? "FIT"
+                : tab === "map"        ? "MAP"
+                : tab === "query"      ? "QUERY"
+                : tab === "industry"   ? "IND"
+                : tab.toUpperCase();
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  title={`Go to ${label}`}
+                  style={{
+                    flexShrink: 0,
+                    background: active ? "rgba(255,71,0,0.15)" : "transparent",
+                    border: active
+                      ? "1px solid rgba(255,71,0,0.7)"
+                      : "1px solid rgba(255,71,0,0.18)",
+                    color: active ? "#FF4700" : "rgba(250,250,229,0.72)",
+                    padding: "4px 8px",
+                    fontSize: 10,
+                    fontWeight: active ? 700 : 500,
+                    letterSpacing: "0.08em",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -701,10 +808,22 @@ function AppInner() {
               ERR: {connectError.slice(0,40)}
             </span>
           )}
+          {/* Sound mute toggle */}
+          <button
+            onClick={() => setMutedState(toggleMuted())}
+            title={muted ? "Sound muted — click to unmute" : "Sound on — click to mute"}
+            style={{
+              background: "transparent", border: "1px solid rgba(255,71,0,0.25)", borderRadius: 0,
+              padding: "4px 8px", fontSize: "11px", fontFamily: "inherit", cursor: "pointer",
+              color: muted ? "rgba(175,175,155,0.55)" : "#FF4700",
+              letterSpacing: "0.08em",
+            }}
+            aria-label={muted ? "Unmute UI sounds" : "Mute UI sounds"}
+          >{muted ? "\u{1F507}" : "\u{1F50A}"}</button>
           <div style={{
             border: "1px solid rgba(255,71,0,0.25)", borderRadius: "0",
             padding: "6px 12px", fontSize: "11px", fontFamily: "inherit",
-            color: account ? "#FF4700" : "rgba(107,107,94,0.7)", letterSpacing: "0.08em",
+            color: account ? "#FF4700" : "rgba(175,175,155,0.7)", letterSpacing: "0.08em",
             fontWeight: 700, background: "#111111",
             textTransform: "uppercase",
           }}>
@@ -733,7 +852,7 @@ function AppInner() {
             <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-end" }}>
               <div style={{ fontSize: "10px", color: "#FF4700", letterSpacing: "0.12em", fontWeight:700, textTransform:"uppercase" }}>⚠ EVE VAULT NOT DETECTED</div>
               <a
-                href="https://github.com/evefrontier/evevault/releases/download/v0.0.6/eve-vault-chrome.zip"
+                href="https://github.com/evefrontier/evevault/releases/latest/download/eve-vault-chrome.zip"
                 target="_blank" rel="noreferrer"
                 style={{
                   display: "inline-flex", alignItems: "center", gap: "5px",
@@ -742,7 +861,7 @@ function AppInner() {
                   color: "#FF4700", textDecoration: "none", letterSpacing: "0.08em",
                   textTransform: "uppercase",
                 }}
-              >⬇ Install EVE Vault v0.0.6</a>
+              >⬇ Install EVE Vault</a>
             </div>
           ) : (
             <button className="accent-button" style={{ padding: "7px 18px", fontSize: "12px" }}
@@ -766,7 +885,7 @@ function AppInner() {
         <div style={{ maxWidth: "600px" }}>
           <p style={{
             fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase",
-            color: "rgba(107,107,94,0.8)", marginBottom: "14px", fontFamily: "inherit",
+            color: "rgba(175,175,155,0.8)", marginBottom: "14px", fontFamily: "inherit",
             fontWeight: 400,
           }}>
             EVE FRONTIER &nbsp;·&nbsp; SUI TESTNET &nbsp;·&nbsp; HACKATHON 2026
@@ -795,13 +914,13 @@ function AppInner() {
           </div>
           <p style={{
             fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase",
-            color: "rgba(107,107,94,0.65)", fontFamily: "inherit", margin: "0 0 4px", fontWeight: 400,
+            color: "rgba(175,175,155,0.65)", fontFamily: "inherit", margin: "0 0 4px", fontWeight: 400,
           }}>
             Tribe Economy &nbsp;·&nbsp; Defense &nbsp;·&nbsp; Intel &nbsp;·&nbsp; Bounties &nbsp;·&nbsp; Cargo
           </p>
           <p style={{
             fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase",
-            color: "rgba(107,107,94,0.45)", fontFamily: "inherit", margin: "0 0 10px", fontWeight: 400,
+            color: "rgba(175,175,155,0.45)", fontFamily: "inherit", margin: "0 0 10px", fontWeight: 400,
           }}>
             Gates &nbsp;·&nbsp; Succession &nbsp;·&nbsp; Recruiting &nbsp;·&nbsp; Wiki &nbsp;·&nbsp; Ship Fitting &nbsp;·&nbsp; Starmap
           </p>
@@ -858,7 +977,7 @@ function AppInner() {
           style={{
             width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "9px 14px", background: "none", border: "none", cursor: "pointer",
-            color: briefOpen ? "#FF4700" : "rgba(107,107,94,0.5)",
+            color: briefOpen ? "#FF4700" : "rgba(175,175,155,0.5)",
           }}
         >
           <span style={{ fontSize: "11px", letterSpacing: "0.07em", fontWeight: 700 }}>
@@ -874,7 +993,7 @@ function AppInner() {
           <div style={{ padding: "4px 14px 12px 28px", borderTop: "1px solid rgba(255,71,0,0.08)" }}>
             <ol style={{ margin: 0, paddingLeft: "16px", display: "flex", flexDirection: "column", gap: "5px" }}>
               {brief.steps.map((s, i) => (
-                <li key={i} style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px", lineHeight: 1.5 }}>{s}</li>
+                <li key={i} style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px", lineHeight: 1.5 }}>{s}</li>
               ))}
             </ol>
             {lastDigest && (
@@ -899,9 +1018,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["war", "dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
+        {(["war", "dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "fanfest", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "war", "industry"]);
+          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "war", "industry", "fanfest"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -951,6 +1070,7 @@ function AppInner() {
                   : tab === "hierarchy"  ? "Roles"
                   : tab === "assets"     ? "Assets"
                   : tab === "calendar"   ? "Cal"
+                  : tab === "fanfest"    ? "FF26"
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
@@ -974,6 +1094,7 @@ function AppInner() {
                   : tab === "hierarchy"     ? "Hierarchy"
                   : tab === "assets"        ? "Assets"
                   : tab === "calendar"      ? "Calendar"
+                  : tab === "fanfest"       ? "Fanfest 2026"
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
@@ -992,7 +1113,7 @@ function AppInner() {
 
       {/* Wallet gate — show connect prompt for protected tabs without wallet */}
       {!account && !PUBLIC_TABS.has(activeTab) && (
-        <div style={{ textAlign: "center", padding: "60px 24px", color: "rgba(107,107,94,0.6)" }}>
+        <div style={{ textAlign: "center", padding: "60px 24px", color: "rgba(175,175,155,0.6)" }}>
           <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.4 }}>⚓</div>
           <div style={{ fontSize: 14, color: "rgba(200,190,170,0.7)", marginBottom: 8 }}>Wallet required</div>
           <div style={{ fontSize: 12, marginBottom: 20 }}>Connect EVE Vault to access tribe features.</div>
@@ -1028,6 +1149,7 @@ function AppInner() {
           {activeTab === "hierarchy"     && <div style={{ background: "transparent" }} className="content-panel"><TribeHierarchyPanel /></div>}
           {activeTab === "assets"        && <div style={{ background: "transparent" }} className="content-panel"><AssetLedgerPanel /></div>}
           {activeTab === "calendar"      && <div style={{ background: "transparent" }} className="content-panel"><EventCalendarPanel /></div>}
+          {activeTab === "fanfest"       && <div style={{ background: "transparent" }} className="content-panel"><FanfestPanel /></div>}
           {activeTab === "wiki"          && <div style={{ background: "transparent", height: "calc(100vh - 260px)", minHeight: 500, display: "flex", flexDirection: "column" }}><LoreWikiPanel /></div>}
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
