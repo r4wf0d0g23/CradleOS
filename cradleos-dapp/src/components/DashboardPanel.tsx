@@ -1419,26 +1419,14 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
           <div style={{ padding: "6px 12px", background: "rgba(0,200,255,0.06)", border: "1px solid rgba(0,200,255,0.2)", fontSize: 11, color: "#00ccff", fontStyle: "italic" }}>⛩ {gateActionState.status}</div>
         )}
 
-        {/* Hover tooltip */}
-        {focused && focused.kind !== "NetworkNode" && (
-          <div style={{
-            marginTop: 12, padding: "10px 14px",
-            background: "rgba(255,71,0,0.04)", border: "1px solid rgba(255,71,0,0.2)",
-            display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap",
-          }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: kindColor(focused) }}>
-              {kindIcon(focused)} {focused.displayName}
-            </span>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{focused.typeName ?? focused.label}</span>
-            <span style={{ color: focused.isOnline ? "#00ff96" : "#ff4444", fontWeight: 600, fontSize: 12 }}>
-              {focused.isOnline ? "● ONLINE" : "○ OFFLINE"}
-            </span>
-            {focused.energyCost !== undefined && focused.energyCost > 0 && (
-              <span style={{ fontSize: 11, color: "rgba(255,180,50,0.8)" }}>{focused.energyCost} EP</span>
-            )}
-            <span style={{ fontSize: 10, color: "rgba(255,71,0,0.5)", marginLeft: "auto" }}>click bubble to open controls</span>
-          </div>
-        )}
+        {/* Hover tooltip removed 2026-05-01 — orphan structures now
+            render with full StructureRow tables (same as node-attached
+            children), so all the info this tooltip surfaced (name,
+            type, online/offline, EP cost) is already visible inline.
+            The tooltip also flickered visibly when cursor moved across
+            StructureRow child elements because onFocus(s) / onFocus(null)
+            fired in rapid succession. Removing the block eliminates the
+            flicker and the redundant info. */}
         {renameModal}
       </div>
     );
