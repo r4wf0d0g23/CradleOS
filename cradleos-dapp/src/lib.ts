@@ -3655,23 +3655,29 @@ async function _resolveSinglePartitionKey(partitionKey: string): Promise<string 
         // Fall through — leave resolved null, caller falls back to badge.
       }
     } else if (objType.includes("::access::OwnerCap<") && objType.includes("::character::Character>")) {
-      // Branch B: OwnerCap<Character>. Owner can be either:
-      //   (1) the parent Character object (ObjectOwner) — walk to it, or
-      //   (2) a wallet address (AddressOwner) — the cap was transferred
-      //       directly to a wallet without being attached to a Character.
-      //       In this case the cap's `authorized_object_id` field points
-      //       to the Character (or to the wallet itself, in which case we
-      //       need to resolve via wallet→Character lookup). Try cap field
-      //       first, then fall back to wallet→PlayerProfile.
+      // Branch B: OwnerCap<Character>. Three sub-shapes observed:
+      //   B.1 Owner is the parent Character object (ObjectOwner) — cap
+      //       attached to its character, walk to it.
+      //   B.2 Owner is an address (AddressOwner) and the cap's
+      //       `authorized_object_id` field is a Character object id.
+      //       This is the Stillness pattern — character_address and
+      //       AddressOwner happen to match because Character objects
+      //       and wallets share the same address space, but the field
+      //       still resolves as a Character. Always try this fetch.
+      //   B.3 Owner is a wallet (AddressOwner) and authorized_object_id
+      //       is the wallet itself, with a separate Character object
+      //       elsewhere. Fall back to wallet→PlayerProfile lookup.
       const parentChar =
         owner && typeof owner === "object" && "ObjectOwner" in owner
           ? (owner as { ObjectOwner?: string }).ObjectOwner
           : null;
       if (parentChar) {
+        // B.1
         resolved = await _fetchCharacterName(parentChar);
       } else if (owner && typeof owner === "object" && "AddressOwner" in owner) {
         const walletAddr = (owner as { AddressOwner?: string }).AddressOwner ?? null;
-        // Re-fetch the cap with showContent to read authorized_object_id.
+        // Read authorized_object_id from cap content.
+        let authorizedId: string | null = null;
         try {
           const capRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
             method: "POST",
@@ -3692,17 +3698,27 @@ async function _resolveSinglePartitionKey(partitionKey: string): Promise<string 
               };
             };
           };
-          const authorizedId = capJson.result?.data?.content?.fields?.authorized_object_id;
-          // If authorized_object_id is the wallet itself, fall through to
-          // wallet→Character lookup. Otherwise treat it as a Character id.
-          if (authorizedId && walletAddr && authorizedId.toLowerCase() !== walletAddr.toLowerCase()) {
-            resolved = await _fetchCharacterName(authorizedId);
-          }
+          authorizedId =
+            capJson.result?.data?.content?.fields?.authorized_object_id ?? null;
         } catch {
-          // Ignore — fall through to wallet lookup below.
+          // Ignore — fall through.
         }
-        // Fallback: wallet→PlayerProfile→Character (current world pkg, then
-        // Utopia v1). Mirrors the OwnerCap<StorageUnit> branch.
+
+        // B.2: ALWAYS try authorized_object_id as a Character first.
+        // Stillness uses Character objects whose addresses overlap with
+        // wallet space, so equality between authorizedId and walletAddr
+        // does NOT mean it isn't a Character. Let _fetchCharacterName
+        // verify by reading the object type.
+        if (authorizedId) {
+          resolved = await _fetchCharacterName(authorizedId);
+        }
+
+        // B.3: If authorized_object_id wasn't a Character, try the wallet
+        // address itself as a Character (some tenants), then fall back
+        // to wallet→PlayerProfile lookup.
+        if (!resolved && walletAddr) {
+          resolved = await _fetchCharacterName(walletAddr);
+        }
         if (!resolved && walletAddr) {
           let charObjectId =
             await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
@@ -3718,30 +3734,39 @@ async function _resolveSinglePartitionKey(partitionKey: string): Promise<string 
         }
       }
     } else if (objType.includes("::access::OwnerCap<") && objType.includes("::storage_unit::StorageUnit>")) {
-      // OwnerCap<StorageUnit> — owner is a wallet address. Resolve to the
-      // wallet's active Character using the same multi-character / version-
-      // tiebreak strategy as findPlayerProfileForPkg, trying current world
-      // package first then the v1 (Utopia) fallback. This matches the rest
-      // of CradleOS so SSU operators see the same name CradleOS shows them.
+      // Branch C: OwnerCap<StorageUnit>. Owner is a wallet (AddressOwner).
+      // Two resolution strategies in order:
+      //   C.1 Try the wallet address itself as a Character object id.
+      //       This is the Stillness pattern — the SSU operator's
+      //       Character is a shared object whose id matches the wallet
+      //       address (same address space).
+      //   C.2 Wallet→PlayerProfile→Character lookup, current world pkg
+      //       first then Utopia v1 fallback. This is the
+      //       multi-character / version-tiebreak strategy from
+      //       findPlayerProfileForPkg.
+      // Only abbreviate the address as a last resort.
       const walletAddr =
         owner && typeof owner === "object" && "AddressOwner" in owner
           ? (owner as { AddressOwner?: string }).AddressOwner
           : null;
       if (walletAddr) {
-        let charObjectId =
-          await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
-        if (!charObjectId) {
-          charObjectId =
-            await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG_UTOPIA_V1);
-        }
-        if (charObjectId) {
-          const name = await _fetchCharacterName(charObjectId);
-          if (name) {
-            resolved = name;
-          } else {
-            resolved = `${walletAddr.slice(0, 6)}\u2026${walletAddr.slice(-4)}`;
+        // C.1
+        resolved = await _fetchCharacterName(walletAddr);
+        // C.2
+        if (!resolved) {
+          let charObjectId =
+            await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
+          if (!charObjectId) {
+            charObjectId =
+              await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG_UTOPIA_V1);
           }
-        } else {
+          if (charObjectId) {
+            resolved = await _fetchCharacterName(charObjectId);
+          }
+        }
+        // Last resort: abbreviated address. Some SSU operators are not
+        // game players (deployer-only wallets) and have no Character.
+        if (!resolved) {
           resolved = `${walletAddr.slice(0, 6)}\u2026${walletAddr.slice(-4)}`;
         }
       }
