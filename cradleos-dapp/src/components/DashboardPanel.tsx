@@ -14,6 +14,7 @@ import {
   buildStructureOnlineTransaction,
   buildStructureOfflineTransaction,
   buildRenameTransaction,
+  buildSetUrlTransaction,
   findCharacterForWallet,
   discoverVaultIdForTribe,
   type PlayerStructure,
@@ -36,6 +37,12 @@ const NODE_EP_MAX = 1000;
 const EVE_DAPP_BASE = SERVER_ENV === "stillness"
   ? "https://dapps.evefrontier.com/"
   : "https://uat.dapps.evefrontier.com/";
+
+// CradleOS dashboard kiosk URL — set as a Network Node's metadata.url
+// to attach the dashboard kiosk display to that node in-game. Mirrors
+// the BASE used in LinksPanel.tsx; kept in sync there.
+const CRADLEOS_BASE = "https://r4wf0d0g23.github.io/CradleOS";
+const CRADLEOS_DASHBOARD_URL = `${CRADLEOS_BASE}/#/dashboard`;
 
 /* openInDApp removed — structure names now link to embedded iframe */
 
@@ -661,7 +668,10 @@ function BubbleGrid({ items, title, breadcrumb, onBack }: {
   );
 }
 
-function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups: LocationGroup[]; characterId: string; onRefresh: () => void; onNavigate?: (tab: string) => void }) {
+// onNavigate prop removed 2026-05-01 — was only used by the per-node
+// DEFENSE / GATES shortcuts which have been replaced by the kiosk nav
+// bar (every kiosk page can reach Defense + Gates via the top nav).
+function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGroup[]; characterId: string; onRefresh: () => void }) {
   const dAppKit = useDAppKit();
   const [actionBusy, setActionBusy] = useState<string | null>(null);
   const [actionErr, setActionErr] = useState<string | null>(null);
@@ -719,6 +729,23 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
     closeRenameModal();
     try {
       const tx = buildRenameTransaction(s, characterId, name);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      onRefresh();
+    } catch (e) { setActionErr(e instanceof Error ? e.message : String(e)); }
+    finally { setActionBusy(null); }
+  };
+
+  // Install the CradleOS dashboard kiosk on a Network Node by writing
+  // CRADLEOS_DASHBOARD_URL to the node's metadata.url field on-chain.
+  // The in-game kiosk reads metadata.url to decide what page to render
+  // when a player walks up to the node, so this is the canonical way
+  // to attach the dashboard. The same pattern is used by LinksPanel
+  // for Turret / StorageUnit kiosks.
+  const handleInstallCradleOS = async (n: PlayerStructure) => {
+    setActionBusy(n.objectId); setActionErr(null);
+    try {
+      const tx = buildSetUrlTransaction(n, characterId, CRADLEOS_DASHBOARD_URL);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       onRefresh();
@@ -1248,8 +1275,8 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
                   onTogglePower={() => node.isOnline ? handleOffline(node) : handleOnline(node)}
                   busy={actionBusy === node.objectId}
                   onEdit={() => handleRename(node)}
-                  onDefense={onNavigate ? () => onNavigate("defense") : undefined}
-                  onGates={onNavigate ? () => onNavigate("gates") : undefined}
+                  onInstallCradleOS={() => handleInstallCradleOS(node)}
+                  cradleOSInstalled={(node.metadataUrl ?? "").startsWith(CRADLEOS_DASHBOARD_URL)}
                 />
 
                 {/* Bulk-assign strip — appears when the user has a tribe vault
@@ -1483,7 +1510,10 @@ function TopologyGraph({ groups, characterId, onRefresh, onNavigate }: { groups:
 
   return renameModal;
 }
-export function DashboardPanel({ onNavigate }: { onNavigate?: (tab: string) => void } = {}) {
+// 2026-05-01: onNavigate prop dropped — was only used by the per-node
+// DEFENSE / GATES shortcuts in NodeHeader, which were removed in favor
+// of the kiosk nav bar.
+export function DashboardPanel() {
   const account = useCurrentAccount();
   const dAppKit = useDAppKit();
   const [groups, setGroups] = useState<LocationGroup[]>([]);
@@ -1619,7 +1649,7 @@ export function DashboardPanel({ onNavigate }: { onNavigate?: (tab: string) => v
 
       {/* Topology drill-down view */}
       {dashTab === "structures" && !loading && groups.length > 0 && (
-        <TopologyGraph groups={groups} characterId={characterId} onRefresh={handleRefresh} onNavigate={onNavigate} />
+        <TopologyGraph groups={groups} characterId={characterId} onRefresh={handleRefresh} />
       )}
 
       {/* Transfer Ownership tab */}

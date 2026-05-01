@@ -52,8 +52,15 @@ export interface NodeHeaderProps {
   busy: boolean;
   /** Secondary action handlers. */
   onEdit: () => void;
-  onDefense?: () => void;
-  onGates?: () => void;
+  /** Install the CradleOS dashboard kiosk on this node (sets the
+   *  metadata.url to the dashboard URL via update_metadata_url).
+   *  Only rendered when the node does NOT already have the dashboard
+   *  installed; once installed the button is replaced with an
+   *  INSTALLED indicator. Removed when undefined. */
+  onInstallCradleOS?: () => void;
+  /** True when node.metadata.url already matches the dashboard URL.
+   *  Drives the install-vs-installed display in the header. */
+  cradleOSInstalled?: boolean;
 }
 
 const M = "#FF2800";
@@ -88,8 +95,8 @@ export function NodeHeader({
   onTogglePower,
   busy,
   onEdit,
-  onDefense,
-  onGates,
+  onInstallCradleOS,
+  cradleOSInstalled,
 }: NodeHeaderProps) {
   const fuelPct = Math.min(100, Math.max(0, node.fuelLevelPct ?? 0));
   const fuelColor = fuelPct < 15 ? "#FFB54A"
@@ -231,15 +238,43 @@ export function NodeHeader({
           <button type="button" onClick={onEdit} title="Rename" style={ghostBtn(M)}>
             EDIT
           </button>
-          {onDefense && (
-            <button type="button" onClick={onDefense} title="Defense policy" style={ghostBtn(M)}>
-              DEFENSE
+          {/* CradleOS install state — either offers the install action
+              when the node has no kiosk URL set yet, or shows a quiet
+              INSTALLED chip once attached. The DEFENSE / GATES buttons
+              that used to live here were removed 2026-05-01 in favor
+              of the kiosk nav bar (Defense + Gates are reachable from
+              every kiosk page, so per-node shortcuts were redundant
+              real estate). */}
+          {onInstallCradleOS && !cradleOSInstalled && (
+            <button
+              type="button"
+              onClick={onInstallCradleOS}
+              disabled={busy}
+              title="Attach the CradleOS dashboard kiosk to this Network Node"
+              style={{
+                ...ghostBtn("#00ff96"),
+                opacity: busy ? 0.4 : 1,
+              }}
+            >
+              INSTALL CRADLEOS
             </button>
           )}
-          {onGates && (
-            <button type="button" onClick={onGates} title="Gate policy" style={ghostBtn(M)}>
-              GATES
-            </button>
+          {cradleOSInstalled && (
+            <span
+              title="CradleOS dashboard kiosk is installed on this node"
+              style={{
+                fontSize: 9,
+                fontFamily: "monospace",
+                letterSpacing: "0.12em",
+                color: "rgba(0,255,150,0.55)",
+                border: "1px solid rgba(0,255,150,0.3)",
+                padding: "3px 8px",
+                borderRadius: 2,
+                whiteSpace: "nowrap",
+              }}
+            >
+              ◉ INSTALLED
+            </span>
           )}
         </span>
       </div>
