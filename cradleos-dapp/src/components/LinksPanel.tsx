@@ -9,12 +9,14 @@ import { useState, useEffect } from "react";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useQuery } from "@tanstack/react-query";
+import { translateTxError } from "../lib/txError";
 import {
   fetchPlayerStructures,
   buildSetUrlTransaction,
   findCharacterForWallet,
   type PlayerStructure,
 } from "../lib";
+import { PortalSelect } from "./PortalSelect";
 
 // ── Service definitions ───────────────────────────────────────────────────────
 
@@ -261,18 +263,9 @@ function StructureCard({
   const pendingSvcId = selectedService[s.objectId] ?? "";
   const pendingSvc = DROPDOWN_SERVICES.find(sv => sv.id === pendingSvcId);
 
-  const selectStyle: React.CSSProperties = {
-    flex: 1,
-    padding: "5px 8px",
-    fontSize: 11,
-    background: "#1a1a1a",
-    color: "#e0e0d0",
-    border: "1px solid rgba(255,71,0,0.25)",
-    borderRadius: 2,
-    fontFamily: "inherit",
-    cursor: "pointer",
-    outline: "none",
-  };
+  // selectStyle removed 2026-05-01 — native <select> replaced with
+  // PortalSelect; styles now live inline at the call site below.
+
 
   return (
     <div style={{
@@ -297,7 +290,7 @@ function StructureCard({
           <div style={{ fontSize: 12, fontWeight: 700, color: "#e0e0d0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {s.displayName}
           </div>
-          <div style={{ fontSize: 9, fontFamily: "monospace", color: "rgba(107,107,94,0.5)" }}>
+          <div style={{ fontSize: 9, fontFamily: "monospace", color: "rgba(175,175,155,0.5)" }}>
             {s.kind} · #{s.gameItemId ?? s.objectId.slice(0, 8)}
           </div>
         </div>
@@ -328,7 +321,7 @@ function StructureCard({
           {currentUrl && matchedService?.secret && (
             <span style={{
               fontSize: 12, padding: "3px 8px", borderRadius: 3,
-              background: "rgba(255,255,255,0.04)", color: "rgba(107,107,94,0.6)",
+              background: "rgba(255,255,255,0.04)", color: "rgba(175,175,155,0.6)",
               border: "1px solid rgba(255,255,255,0.06)",
             }}>⚓</span>
           )}
@@ -372,31 +365,50 @@ function StructureCard({
         ) : (
           // Unlinked — dropdown + custom URL
           <div>
-            <div style={{ fontSize: 10, color: "rgba(107,107,94,0.5)", marginBottom: 8, letterSpacing: "0.08em" }}>
+            <div style={{ fontSize: 10, color: "rgba(175,175,155,0.5)", marginBottom: 8, letterSpacing: "0.08em" }}>
               ATTACH SERVICE
             </div>
 
-            {/* Dropdown row */}
+            {/* Dropdown row — PortalSelect (NOT native <select>) so the
+                option list renders correctly inside the EVE Vault Mobile
+                / Stillness embedded webview. See TOOLS.md "CradleOS
+                Webview Dialog + Native Overlay Ban". */}
             <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 8 }}>
-              <select
-                value={pendingSvcId}
-                onChange={e => onServiceSelect(s.objectId, e.target.value)}
-                disabled={isBusy}
-                style={selectStyle}
-              >
-                <option value="" style={{ background: "#1a1a1a", color: "#e0e0d0" }}>
-                  Select a service…
-                </option>
-                {DROPDOWN_SERVICES.map(svc => (
-                  <option
-                    key={svc.id}
-                    value={svc.id}
-                    style={{ background: "#1a1a1a", color: "#e0e0d0" }}
-                  >
-                    {svc.icon} {svc.label}
-                  </option>
-                ))}
-              </select>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <PortalSelect
+                  value={pendingSvcId}
+                  onChange={(v) => onServiceSelect(s.objectId, v)}
+                  disabled={isBusy}
+                  placeholder="Select a service…"
+                  options={[
+                    { value: "", label: "Select a service…" },
+                    ...DROPDOWN_SERVICES.map(svc => ({
+                      value: svc.id,
+                      label: `${svc.icon} ${svc.label}`,
+                    })),
+                  ]}
+                  buttonStyle={{
+                    width: "100%",
+                    padding: "5px 8px",
+                    fontSize: 11,
+                    background: "#1a1a1a",
+                    color: "#e0e0d0",
+                    border: "1px solid rgba(255,71,0,0.25)",
+                    borderRadius: 2,
+                    fontFamily: "inherit",
+                    minWidth: 0,
+                    fontWeight: 400,
+                    letterSpacing: "normal",
+                  }}
+                  panelStyle={{
+                    fontSize: 11,
+                    letterSpacing: "normal",
+                  }}
+                  optionStyle={{
+                    padding: "6px 10px",
+                  }}
+                />
+              </div>
 
               {pendingSvc && (
                 <button
@@ -453,7 +465,7 @@ function StructureCard({
                   style={{
                     padding: "3px 8px", fontSize: 13, cursor: "pointer", borderRadius: 2,
                     background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
-                    color: "rgba(107,107,94,0.3)", fontFamily: "inherit",
+                    color: "rgba(175,175,155,0.3)", fontFamily: "inherit",
                     opacity: isBusy ? 0.4 : 1,
                   }}
                 >
@@ -513,7 +525,7 @@ export function LinksPanel() {
       setSelectedService(p => { const n = { ...p }; delete n[structure.objectId]; return n; });
       refetch();
     } catch (e) {
-      setErr(e instanceof Error ? e.message.slice(0, 120) : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(null); }
   };
 
@@ -613,10 +625,10 @@ export function LinksPanel() {
         </p>
       </div>
 
-      {isLoading && <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>Loading structures…</div>}
+      {isLoading && <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>Loading structures…</div>}
 
       {!isLoading && allStructures.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>
           No structures found. Deploy a Network Node or other structure in-game first.
         </div>
       )}
@@ -692,7 +704,7 @@ export function LinksPanel() {
                 ))}
 
                 {children.length === 0 && (
-                  <div style={{ marginLeft: 24, fontSize: 10, color: "rgba(107,107,94,0.4)", padding: "4px 0 8px" }}>
+                  <div style={{ marginLeft: 24, fontSize: 10, color: "rgba(175,175,155,0.4)", padding: "4px 0 8px" }}>
                     No anchored structures on this node.
                   </div>
                 )}
@@ -716,14 +728,14 @@ export function LinksPanel() {
             <div style={{
               padding: "5px 14px",
               marginBottom: 8,
-              background: "rgba(107,107,94,0.06)",
-              border: "1px solid rgba(107,107,94,0.15)",
+              background: "rgba(175,175,155,0.06)",
+              border: "1px solid rgba(175,175,155,0.15)",
               borderRadius: 3,
             }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(107,107,94,0.7)", letterSpacing: "0.12em" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(175,175,155,0.7)", letterSpacing: "0.12em" }}>
                 ◈ UNANCHORED
               </div>
-              <div style={{ fontSize: 9, color: "rgba(107,107,94,0.4)", marginTop: 1 }}>
+              <div style={{ fontSize: 9, color: "rgba(175,175,155,0.4)", marginTop: 1 }}>
                 Structures not connected to a Network Node
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { createPortal } from "react-dom";
+import { PortalSelect } from "./PortalSelect";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator, fetchCharacterDisplayName } from "../lib";
 import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE } from "../constants";
@@ -2530,23 +2530,13 @@ function WalletItemsSection({
 //                     now route through the truly-shared partition.
 const SSU_ADVISORY_KEY = "cradleos.ssu_lockbox_advisory.v2";
 
-// ── Custom dropdown for operator filter ───────────────────────────
-// Native <select> elements render their popout at the top-left of the
-// iframe inside the EVE Vault Mobile / Stillness embedded webview, and
-// dismiss instantly on focus loss — same class of bug as the
-// window.prompt / window.confirm no-op (see AGENTS.md Webview Dialog
-// Ban). This component renders a button anchored in normal DOM flow,
-// then portal-mounts the option list to document.body using
-// getBoundingClientRect() coordinates. Click-outside + Escape close it.
-// No native popout, no focus loss.
-//
-// Behavior:
-//   - Click button toggles list open/closed
-//   - Click an option fires onChange and closes
-//   - Click anywhere else closes (no selection change)
-//   - Escape closes
-//   - Selected option gets accent border
-//   - Active option gets accent color
+// ── Operator filter dropdown ──────────────────────────────────────
+// Thin wrapper around shared <PortalSelect> (../components/PortalSelect.tsx).
+// Native <select> popouts render outside the iframe in the embedded
+// webview and dismiss instantly; the portal-mounted dropdown is the
+// safe replacement (see TOOLS.md "CradleOS Webview Dialog + Native
+// Overlay Ban"). Kept as a tiny named wrapper so the call site stays
+// readable in InventoryPanel's render path.
 function OperatorFilterDropdown({
   value,
   onChange,
@@ -2558,157 +2548,37 @@ function OperatorFilterDropdown({
   groups: Array<{ key: string; label: string; inventories: { length: number } }>;
   totalCount: number;
 }) {
-  const [open, setOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [anchor, setAnchor] = useState<{ left: number; top: number; width: number } | null>(null);
-
-  // Resolve the current selection's display label.
-  const currentLabel = useMemo(() => {
-    if (value === "__all__") return `ALL OPERATORS (${totalCount})`;
-    const grp = groups.find(g => g.key === value);
-    return grp ? `${grp.label.toUpperCase()} (${grp.inventories.length})` : `ALL OPERATORS (${totalCount})`;
-  }, [value, groups, totalCount]);
-
-  // Recompute anchor position when opening.
-  useEffect(() => {
-    if (!open) return;
-    const update = () => {
-      const r = buttonRef.current?.getBoundingClientRect();
-      if (!r) return;
-      setAnchor({
-        left: r.left,
-        top: r.bottom + 2,
-        width: Math.max(r.width, 180),
-      });
-    };
-    update();
-    window.addEventListener("resize", update);
-    window.addEventListener("scroll", update, true);
-    return () => {
-      window.removeEventListener("resize", update);
-      window.removeEventListener("scroll", update, true);
-    };
-  }, [open]);
-
-  // Close on Escape or outside click.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    const onClick = (e: MouseEvent) => {
-      const target = e.target as Node | null;
-      // Click on the button itself: let the button handler toggle.
-      if (buttonRef.current && target && buttonRef.current.contains(target)) return;
-      // Click on the portal panel: ignore (option click handles itself).
-      const panel = document.getElementById("opfilter-panel");
-      if (panel && target && panel.contains(target)) return;
-      setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("mousedown", onClick);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("mousedown", onClick);
-    };
-  }, [open]);
-
-  const baseBtnStyle: React.CSSProperties = {
-    fontSize: 9,
-    fontFamily: "monospace",
-    letterSpacing: "0.08em",
-    background: "transparent",
-    border: "1px solid rgba(255,71,0,0.3)",
-    color: "#FF4700",
-    padding: "2px 8px",
-    cursor: "pointer",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    minWidth: 140,
-    justifyContent: "space-between",
-  };
-
+  const options = useMemo(
+    () => [
+      { value: "__all__", label: `ALL OPERATORS (${totalCount})` },
+      ...groups.map(g => ({
+        value: g.key,
+        label: `${g.label.toUpperCase()} (${g.inventories.length})`,
+      })),
+    ],
+    [groups, totalCount],
+  );
   return (
-    <>
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        title="Filter SSUs by operator (the Character that owns each SSU). Selection persists across reloads."
-        style={baseBtnStyle}
-      >
-        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {currentLabel}
-        </span>
-        <span style={{ opacity: 0.7, fontSize: 8 }}>{open ? "▲" : "▼"}</span>
-      </button>
-      {open && anchor && createPortal(
-        <div
-          id="opfilter-panel"
-          style={{
-            position: "fixed",
-            left: anchor.left,
-            top: anchor.top,
-            width: anchor.width,
-            background: "rgba(5,3,2,0.98)",
-            border: "1px solid rgba(255,71,0,0.6)",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
-            zIndex: 9999,
-            maxHeight: 320,
-            overflowY: "auto",
-            fontFamily: "monospace",
-            fontSize: 9,
-            letterSpacing: "0.08em",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => { onChange("__all__"); setOpen(false); }}
-            style={{
-              display: "block",
-              width: "100%",
-              textAlign: "left",
-              padding: "5px 10px",
-              background: value === "__all__" ? "rgba(255,71,0,0.15)" : "transparent",
-              border: "none",
-              borderBottom: "1px solid rgba(255,71,0,0.15)",
-              color: value === "__all__" ? "#FF4700" : "rgba(250,250,229,0.85)",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontSize: "inherit",
-              letterSpacing: "inherit",
-            }}
-          >
-            ALL OPERATORS ({totalCount})
-          </button>
-          {groups.map(g => (
-            <button
-              key={g.key}
-              type="button"
-              onClick={() => { onChange(g.key); setOpen(false); }}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "5px 10px",
-                background: value === g.key ? "rgba(255,71,0,0.15)" : "transparent",
-                border: "none",
-                borderBottom: "1px solid rgba(255,71,0,0.05)",
-                color: value === g.key ? "#FF4700" : "rgba(250,250,229,0.85)",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                fontSize: "inherit",
-                letterSpacing: "inherit",
-              }}
-            >
-              {g.label.toUpperCase()} ({g.inventories.length})
-            </button>
-          ))}
-        </div>,
-        document.body,
-      )}
-    </>
+    <PortalSelect
+      value={value}
+      onChange={onChange}
+      options={options}
+      title="Filter SSUs by operator (the Character that owns each SSU). Selection persists across reloads."
+      buttonStyle={{
+        fontSize: 9,
+        letterSpacing: "0.08em",
+        padding: "2px 8px",
+        minWidth: 140,
+        borderColor: "rgba(255,71,0,0.3)",
+      }}
+      panelStyle={{
+        fontSize: 9,
+        letterSpacing: "0.08em",
+      }}
+      optionStyle={{
+        padding: "5px 10px",
+      }}
+    />
   );
 }
 
