@@ -2672,24 +2672,18 @@ export function InventoryPanel() {
         );
         setGlobalLoading(false);
 
-        // Resolve operator (owner Character) for every owned SSU. The
-        // resolver is cached at module scope so repeated owners (the
-        // common case for owned SSUs — they're all yours) only do one
-        // RPC pair. Updates state per-SSU as each resolves; first paint
-        // doesn't wait for any of these.
-        for (const ssu of ownedSsus) {
-          (async () => {
-            const op = await resolveSsuOperator(ssu.objectId).catch(() => null);
-            if (cancelled || !op) return;
-            setInventories(prev => {
-              const idx = prev.findIndex(p => p.ssu.objectId === ssu.objectId);
-              if (idx === -1) return prev;
-              const next = [...prev];
-              next[idx] = { ...next[idx], operator: op };
-              return next;
-            });
-          })();
-        }
+        // Operator resolution for owned SSUs is deferred until AFTER
+        // shared-SSU discovery has had its first cut at the public Sui
+        // RPC budget. Reason: discoverSharedSsus walks the policies
+        // table + does per-policy round trips, and Phase 1's per-SSU
+        // operator resolution pushed the total parallel RPC count past
+        // the public fullnode's burst threshold, intermittently
+        // starving shared-discovery (returning 0 shared SSUs even when
+        // the caller has access). Operator resolution is non-load-
+        // bearing — cards work fine without it — so we let critical
+        // paths run first.
+        //
+        // Implementation lives below, after sharedDiscoveryPromise.
 
         // ── Shared-SSU discovery (cradleos::ssu_access) ────────────────
         // Surface SSUs the caller does NOT own but DOES have access to via
@@ -2788,23 +2782,6 @@ export function InventoryPanel() {
           // inventory loaders below can target them by ssu.objectId.
           ssus.push(...sharedInvs.map(s => s.ssu));
           setInventories(prev => [...prev, ...sharedInvs]);
-          // Kick off operator resolution for each shared SSU in parallel
-          // with the inventory fetch below. Resolves the SSU's owner_cap_id
-          // → OwnerCap → Character.metadata.name so the card can render the
-          // operator's name (e.g., "Zasar", "Coolphone1984") in its header.
-          for (const inv of sharedInvs) {
-            (async () => {
-              const op = await resolveSsuOperator(inv.ssu.objectId).catch(() => null);
-              if (cancelled || !op) return;
-              setInventories(prev => {
-                const idx = prev.findIndex(p => p.ssu.objectId === inv.ssu.objectId);
-                if (idx === -1) return prev;
-                const next = [...prev];
-                next[idx] = { ...next[idx], operator: op };
-                return next;
-              });
-            })();
-          }
           // Kick off inventory load for each shared SSU. We cannot reuse
           // the parallel block below because that one captures `ssus` by
           // index closure; here we look up by objectId post-hoc.
@@ -2837,6 +2814,41 @@ export function InventoryPanel() {
               }
             })();
           }
+        });
+
+        // After shared discovery has completed (success or empty), kick
+        // off operator resolution for ALL SSUs (owned + shared) using a
+        // concurrency cap so we don't hammer the public Sui RPC. This
+        // runs in the background; cards re-render as each operator
+        // resolves. Critical paths (discoverSharedSsus and per-SSU
+        // inventory loads below) get first crack at the RPC budget.
+        sharedDiscoveryPromise.then(async (sharedInvs) => {
+          if (cancelled) return;
+          // Wait one tick to let inventory loads also kick off and
+          // subscribe to their RPC budget before we add more load.
+          await new Promise(r => setTimeout(r, 250));
+          if (cancelled) return;
+          const allSsuObjectIds = [
+            ...ownedSsus.map(s => s.objectId),
+            ...sharedInvs.map(s => s.ssu.objectId),
+          ];
+          await pMap(
+            allSsuObjectIds,
+            async (id) => {
+              if (cancelled) return null;
+              const op = await resolveSsuOperator(id).catch(() => null);
+              if (cancelled || !op) return null;
+              setInventories(prev => {
+                const idx = prev.findIndex(p => p.ssu.objectId === id);
+                if (idx === -1) return prev;
+                const next = [...prev];
+                next[idx] = { ...next[idx], operator: op };
+                return next;
+              });
+              return op;
+            },
+            2, // concurrency cap — Phase 1 was unbounded which starved discoverSharedSsus
+          );
         });
 
         // Load each OWNED SSU inventory with bounded concurrency. Pull
