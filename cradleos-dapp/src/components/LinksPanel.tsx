@@ -44,14 +44,14 @@ const SERVICES: ServiceDef[] = [
     label: "Dashboard",
     description: "Structure topology — your nodes, attached structures, and energy grid.",
     url: `${BASE}/#/dashboard`,
-    icon: "🌐",
+    icon: "◉",
   },
   {
     id: "intel",
     label: "Intel",
     description: "Live kill feed, security heatmap, and infrastructure overview.",
     url: `${BASE}/#/intel`,
-    icon: "🔍",
+    icon: "◎",
   },
   {
     id: "war",
@@ -65,7 +65,7 @@ const SERVICES: ServiceDef[] = [
     label: "Star Map",
     description: "System topology, gate links, and constellation navigation.",
     url: `${BASE}/#/map`,
-    icon: "🗺",
+    icon: "✦",
   },
 
   // ── Tribe operations ──
@@ -74,42 +74,42 @@ const SERVICES: ServiceDef[] = [
     label: "Tribe Vault",
     description: "Treasury, EVE balances, and tribe administration.",
     url: `${BASE}/#/tribe`,
-    icon: "🏛",
+    icon: "▣",
   },
   {
     id: "hierarchy",
     label: "Hierarchy",
     description: "Tribe org chart, roles, and member directory.",
     url: `${BASE}/#/hierarchy`,
-    icon: "👥",
+    icon: "≡",
   },
   {
     id: "assets",
     label: "Asset Ledger",
     description: "Tribe infra, token supply, treasury, and DEX.",
     url: `${BASE}/#/assets`,
-    icon: "📊",
+    icon: "▤",
   },
   {
     id: "announcements",
     label: "Announcements",
     description: "Tribe broadcast board — pinned posts and feed.",
     url: `${BASE}/#/announcements`,
-    icon: "📢",
+    icon: "◆",
   },
   {
     id: "recruiting",
     label: "Recruiting",
     description: "Open recruiting terminal — applications and intake.",
     url: `${BASE}/#/recruiting`,
-    icon: "📝",
+    icon: "✎",
   },
   {
     id: "calendar",
     label: "Calendar",
     description: "Fleet ops schedule, timers, and event planner.",
     url: `${BASE}/#/calendar`,
-    icon: "📅",
+    icon: "▦",
   },
 
   // ── Structure & inventory management ──
@@ -125,7 +125,7 @@ const SERVICES: ServiceDef[] = [
     label: "SSU Storage",
     description: "Browse items across your storage units.",
     url: `${BASE}/#/storage`,
-    icon: "🗄",
+    icon: "▥",
   },
 
   // ── Policy & access ──
@@ -134,21 +134,21 @@ const SERVICES: ServiceDef[] = [
     label: "Defense Policy",
     description: "Turret targeting policy — standings, ROE, and KOS list.",
     url: `${BASE}/#/defense`,
-    icon: "🛡",
+    icon: "⛨",
   },
   {
     id: "gates",
     label: "Gate Policy",
     description: "Tribe gate access profiles — tolls and whitelists.",
     url: `${BASE}/#/gates`,
-    icon: "⛩",
+    icon: "⊞",
   },
   {
     id: "registry",
     label: "Tribe Registry",
     description: "Tribe ownership claims, challenges, and attestor verification.",
     url: `${BASE}/#/registry`,
-    icon: "📜",
+    icon: "◇",
   },
   {
     id: "succession",
@@ -164,21 +164,21 @@ const SERVICES: ServiceDef[] = [
     label: "Bounties",
     description: "Active bounty board — post and claim targets.",
     url: `${BASE}/#/bounties`,
-    icon: "🎯",
+    icon: "◯",
   },
   {
     id: "srp",
     label: "Insurance / SRP",
     description: "Ship replacement program submissions and payouts.",
     url: `${BASE}/#/srp`,
-    icon: "🛡",
+    icon: "⊕",
   },
   {
     id: "cargo",
     label: "Cargo Contracts",
     description: "Trustless hauling contracts with EVE escrow.",
     url: `${BASE}/#/cargo`,
-    icon: "📦",
+    icon: "▭",
   },
   {
     id: "industry",
@@ -194,21 +194,21 @@ const SERVICES: ServiceDef[] = [
     label: "Ship Fitting",
     description: "Ship stats, fitting calculator, and comparison tool.",
     url: `${BASE}/#/fitting`,
-    icon: "🚀",
+    icon: "▲",
   },
   {
     id: "wiki",
     label: "Knowledge Base",
     description: "EVE Frontier game mechanics, structures, and ship guides.",
     url: `${BASE}/#/wiki`,
-    icon: "📚",
+    icon: "≣",
   },
   {
     id: "query",
     label: "Chain Query",
     description: "Search characters and tribes by name, ticker, or wallet.",
     url: `${BASE}/#/query`,
-    icon: "🔎",
+    icon: "?",
   },
 
   // ── Keeper (easter egg — unlabeled in dropdown via `secret: true`) ──
@@ -217,7 +217,7 @@ const SERVICES: ServiceDef[] = [
     label: "",            // intentionally blank — easter egg
     description: "",
     url: KEEPER_URL,
-    icon: "🔒",
+    icon: "❖",
     secret: true,
   },
 ];
