@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator } from "../lib";
 import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE } from "../constants";
@@ -2981,6 +2981,112 @@ export function InventoryPanel() {
   const collapseAll = () => setCollapsedIds(new Set(inventories.map(i => i.ssu.objectId)));
   const expandAll = () => setCollapsedIds(new Set());
 
+  // ── Operator grouping + filter (Phase 2) ────────────────────────
+  // Once Phase 1 resolves an operator name + key on each SSUInventory,
+  // group the cards by operator so users with many shared SSUs can
+  // navigate by who deployed each one. Self-pinned at top so the user's
+  // own SSUs are always reachable without scrolling. Filter dropdown
+  // (persisted in localStorage) lets users focus on a single operator.
+  const FILTER_KEY = walletAddress
+    ? `cradleos:invpanel:opfilter:${walletAddress}`
+    : "cradleos:invpanel:opfilter:_";
+  const [operatorFilter, setOperatorFilter] = useState<string>(() => {
+    try {
+      const v = typeof window !== "undefined"
+        ? localStorage.getItem(FILTER_KEY)
+        : null;
+      return v ?? "__all__";
+    } catch { return "__all__"; }
+  });
+  // Re-read filter when the wallet address changes (account swap).
+  useEffect(() => {
+    try {
+      const v = typeof window !== "undefined"
+        ? localStorage.getItem(FILTER_KEY)
+        : null;
+      setOperatorFilter(v ?? "__all__");
+    } catch { setOperatorFilter("__all__"); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      localStorage.setItem(FILTER_KEY, operatorFilter);
+    } catch { /* quota / disabled storage — silently ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [operatorFilter, walletAddress]);
+
+  type OperatorGroup = {
+    /** Stable group identifier. operator.key for resolved operators,
+     *  __self__ for the caller's own SSUs, __unresolved__ for SSUs
+     *  whose operator hasn't resolved yet. */
+    key: string;
+    /** Display string shown in the section header and filter dropdown. */
+    label: string;
+    /** True iff this group represents the caller's own SSUs. */
+    isSelf: boolean;
+    inventories: SSUInventory[];
+  };
+
+  const operatorGroups = useMemo<OperatorGroup[]>(() => {
+    const ownCharKey = transferState.characterId?.toLowerCase() ?? null;
+    const buckets = new Map<string, OperatorGroup>();
+    for (const inv of inventories) {
+      let key: string;
+      let label: string;
+      let isSelf = false;
+      if (!inv.operator) {
+        key = "__unresolved__";
+        label = "Resolving…";
+      } else if (ownCharKey && inv.operator.key === ownCharKey) {
+        key = "__self__";
+        label = `${inv.operator.name} (you)`;
+        isSelf = true;
+      } else {
+        key = inv.operator.key;
+        label = inv.operator.name;
+      }
+      if (!buckets.has(key)) {
+        buckets.set(key, { key, label, isSelf, inventories: [] });
+      }
+      buckets.get(key)!.inventories.push(inv);
+    }
+    // Sort: self first, then alphabetical by label, unresolved last.
+    return [...buckets.values()].sort((a, b) => {
+      if (a.isSelf && !b.isSelf) return -1;
+      if (!a.isSelf && b.isSelf) return 1;
+      if (a.key === "__unresolved__" && b.key !== "__unresolved__") return 1;
+      if (b.key === "__unresolved__" && a.key !== "__unresolved__") return -1;
+      return a.label.localeCompare(b.label);
+    });
+  }, [inventories, transferState.characterId]);
+
+  // Garbage-collect a stale filter selection when the operator it points
+  // at is no longer in any group (operator unshared an SSU, or this is a
+  // fresh load that hasn't seen the previously-cached operator yet).
+  // Reset to "__all__" so the user isn't stuck with an invisible filter.
+  useEffect(() => {
+    if (operatorFilter === "__all__") return;
+    if (inventories.length === 0) return; // still loading; don't reset
+    const exists = operatorGroups.some(g => g.key === operatorFilter);
+    if (!exists) setOperatorFilter("__all__");
+  }, [operatorFilter, operatorGroups, inventories.length]);
+
+  const visibleGroups = useMemo<OperatorGroup[]>(() => {
+    if (operatorFilter === "__all__") return operatorGroups;
+    return operatorGroups.filter(g => g.key === operatorFilter);
+  }, [operatorGroups, operatorFilter]);
+
+  const visibleCount = useMemo(
+    () => visibleGroups.reduce((sum, g) => sum + g.inventories.length, 0),
+    [visibleGroups],
+  );
+  const filteredLabel = useMemo(() => {
+    if (operatorFilter === "__all__") return null;
+    const grp = operatorGroups.find(g => g.key === operatorFilter);
+    return grp?.label ?? null;
+  }, [operatorFilter, operatorGroups]);
+
   return (
     <div style={{ padding: "0 0 24px" }}>
       {/* Panel title */}
@@ -3112,27 +3218,58 @@ export function InventoryPanel() {
         </div>
       )}
 
-      {/* Collapse / Expand all controls. Only render when there are 2+
-          SSUs to manage; with one card the buttons are noise. */}
+      {/* Toolbar: operator filter + collapse/expand controls. Only render
+          when there are 2+ SSUs; with one card the controls are noise. */}
       {inventories.length >= 2 && (
         <div
           style={{
             display: "flex",
             justifyContent: "flex-end",
+            alignItems: "center",
             gap: 8,
             marginBottom: 8,
             fontFamily: "monospace",
             fontSize: 9,
             letterSpacing: "0.08em",
+            flexWrap: "wrap",
           }}
         >
-          <span style={{ color: "rgba(175,175,155,0.5)", alignSelf: "center" }}>
-            {inventories.length} storage{inventories.length === 1 ? "" : "s"} · {collapsedIds.size} collapsed
+          <span style={{ color: "rgba(175,175,155,0.5)" }}>
+            {operatorFilter === "__all__"
+              ? <>{inventories.length} storage{inventories.length === 1 ? "" : "s"} · {collapsedIds.size} collapsed</>
+              : <>{visibleCount} of {inventories.length} storages · filtered: {filteredLabel} · {collapsedIds.size} collapsed</>}
           </span>
+          {/* Operator filter — only render when 2+ distinct groups exist.
+              With a single operator (the user's own SSUs only, no shared)
+              the dropdown adds noise without value. */}
+          {operatorGroups.length >= 2 && (
+            <select
+              value={operatorFilter}
+              onChange={e => setOperatorFilter(e.target.value)}
+              title="Filter SSUs by operator (the Character that owns each SSU). Selection persists across reloads."
+              style={{
+                fontSize: 9,
+                fontFamily: "monospace",
+                letterSpacing: "0.08em",
+                background: "transparent",
+                border: "1px solid rgba(255,71,0,0.3)",
+                color: "#FF4700",
+                padding: "2px 6px",
+                cursor: "pointer",
+              }}
+            >
+              <option value="__all__">ALL OPERATORS ({inventories.length})</option>
+              {operatorGroups.map(g => (
+                <option key={g.key} value={g.key}>
+                  {g.label.toUpperCase()} ({g.inventories.length})
+                </option>
+              ))}
+            </select>
+          )}
           <button
             onClick={collapseAll}
             disabled={collapsedIds.size === inventories.length}
-            title="Collapse every storage card. Useful when you have many SSUs and need to scroll past them to find the active one."
+            title="Collapse every storage card. Affects ALL SSUs, not just the filtered view."
             style={{
               fontSize: 9, fontFamily: "monospace", letterSpacing: "0.08em",
               background: "transparent",
@@ -3145,7 +3282,7 @@ export function InventoryPanel() {
           <button
             onClick={expandAll}
             disabled={collapsedIds.size === 0}
-            title="Expand every storage card."
+            title="Expand every storage card. Affects ALL SSUs, not just the filtered view."
             style={{
               fontSize: 9, fontFamily: "monospace", letterSpacing: "0.08em",
               background: "transparent",
@@ -3158,22 +3295,47 @@ export function InventoryPanel() {
         </div>
       )}
 
-      {/* SSU cards */}
-      {inventories.map(inv => (
-        <SSUCard
-          key={inv.ssu.objectId}
-          inv={inv}
-          characterId={transferState.characterId}
-          ownerCaps={transferState.ownerCaps}
-          dAppKit={dAppKit}
-          walletAddress={walletAddress}
-          allSsuIds={allSsuIds}
-          onRefresh={refreshSSU}
-          collapsed={collapsedIds.has(inv.ssu.objectId)}
-          onToggleCollapse={() => toggleCollapse(inv.ssu.objectId)}
-          charOwnerCapId={transferState.charOwnerCapId}
-        />
-      ))}
+      {/* SSU cards — grouped by operator. When the user has selected a
+          specific operator from the filter, only that group renders. The
+          group section header is suppressed when there's only one group
+          visible (no point in a header for a single section). */}
+      {visibleGroups.map(group => {
+        const showHeader = operatorFilter === "__all__" && operatorGroups.length >= 2;
+        return (
+          <div key={group.key} style={{ marginBottom: showHeader ? 14 : 0 }}>
+            {showHeader && (
+              <div
+                style={{
+                  padding: "6px 0 4px",
+                  borderBottom: "1px solid rgba(255,255,255,0.08)",
+                  marginBottom: 4,
+                  fontFamily: "monospace",
+                  fontSize: 10,
+                  letterSpacing: "0.12em",
+                  color: group.isSelf ? "#FF4700" : "rgba(200,200,180,0.55)",
+                }}
+              >
+                ── {group.label.toUpperCase()} ({group.inventories.length}) ──
+              </div>
+            )}
+            {group.inventories.map(inv => (
+              <SSUCard
+                key={inv.ssu.objectId}
+                inv={inv}
+                characterId={transferState.characterId}
+                ownerCaps={transferState.ownerCaps}
+                dAppKit={dAppKit}
+                walletAddress={walletAddress}
+                allSsuIds={allSsuIds}
+                onRefresh={refreshSSU}
+                collapsed={collapsedIds.has(inv.ssu.objectId)}
+                onToggleCollapse={() => toggleCollapse(inv.ssu.objectId)}
+                charOwnerCapId={transferState.charOwnerCapId}
+              />
+            ))}
+          </div>
+        );
+      })}
 
       {/* Wallet STUCK Items section — recovery for items left in wallet by
           legacy `shared_withdraw_to_character`. Self-hides when nothing to
