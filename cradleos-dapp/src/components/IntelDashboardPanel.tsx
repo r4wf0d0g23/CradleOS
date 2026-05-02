@@ -397,6 +397,14 @@ interface ExposedAssembly {
   isOnlineChain?: boolean | null;
   assemblyTypeId?: string;
   assemblyItemId?: string;  // key.item_id from the assembly object
+  // On-chain metadata.name (works for any structure type — NetworkNode,
+  // StorageUnit, Assembly). Previously the panel only read names from
+  // the NetworkNode list, so SSUs / mini-SSUs / non-node structures all
+  // rendered as 'unnamed' even when they had real on-chain names.
+  assemblyName?: string;
+  // Move type tag short form (e.g., "StorageUnit", "NetworkNode",
+  // "Assembly") for display.
+  assemblyKind?: string;
 }
 
 async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
@@ -445,14 +453,34 @@ async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [entry.assemblyId, { showContent: true }] }),
       });
-      const json = await res.json() as { result: { data?: { content?: { fields?: { owner_cap_id?: string; type_id?: string; status?: any } } } } };
-      const fields = json?.result?.data?.content?.fields as any;
+      const json = await res.json() as { result: { data?: { type?: string; content?: { fields?: { owner_cap_id?: string; type_id?: string; status?: any; metadata?: any } } } } };
+      const data = json?.result?.data;
+      const fields = data?.content?.fields as any;
       const capId = fields?.owner_cap_id;
       if (capId) { ownerCapMap.set(entry.assemblyId, capId); }
       if (fields?.type_id) entry.assemblyTypeId = fields.type_id;
       // Get the assembly's own item_id for the dApp link
       const itemId = fields?.key?.fields?.item_id ?? fields?.key?.item_id;
       if (itemId) entry.assemblyItemId = String(itemId);
+      // Read on-chain metadata.name. Sui returns metadata as either a
+      // direct field or wrapped in `{ fields: { name: ... } }` depending
+      // on whether the struct is a Move struct vs a generic object
+      // result. Try both shapes.
+      const meta = fields?.metadata;
+      const metaName: string | undefined =
+        (meta && typeof meta === "object" && "fields" in meta && (meta as any).fields?.name) ||
+        (meta && typeof meta === "object" && (meta as any).name) ||
+        undefined;
+      if (metaName && typeof metaName === "string" && metaName.length > 0) {
+        entry.assemblyName = metaName;
+      }
+      // Derive a short kind from the Move type tag for display.
+      const t = data?.type ?? "";
+      if (t.includes("::storage_unit::StorageUnit")) entry.assemblyKind = "StorageUnit";
+      else if (t.includes("::network_node::NetworkNode")) entry.assemblyKind = "NetworkNode";
+      else if (t.includes("::assembly::")) entry.assemblyKind = "Assembly";
+      else if (t.includes("::turret::")) entry.assemblyKind = "Turret";
+      else if (t.includes("::gate::")) entry.assemblyKind = "Gate";
       const sf = fields?.status as any;
       const variant =
         sf?.fields?.status?.variant ??     // StorageUnit/Assembly format
@@ -822,7 +850,13 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
                           const online: boolean | null = n
                             ? n.status?.status?.["@variant"] === "ONLINE"
                             : e.isOnlineChain ?? null;
-                          const name = n?.metadata?.name && n.metadata.name !== "" ? n.metadata.name : null;
+                          // Prefer the assembly's own on-chain metadata.name (works
+                          // for SSUs / mini-SSUs / Assemblies / Turrets), fall back
+                          // to the NetworkNode list entry's name (legacy path), then
+                          // null → 'unnamed'.
+                          const name =
+                            (e.assemblyName && e.assemblyName !== "" ? e.assemblyName : null) ??
+                            (n?.metadata?.name && n.metadata.name !== "" ? n.metadata.name : null);
                           // Use the assembly's own item_id (fetched during EXPOSED load), not the nodeData's key
                           const itemId = e.assemblyItemId ?? n?.key?.item_id;
                           const dappUrl = itemId ? `https://${SERVER_ENV === 'stillness' ? 'dapps' : 'uat.dapps'}.evefrontier.com/?itemId=${itemId}&tenant=${SERVER_ENV}` : null;
