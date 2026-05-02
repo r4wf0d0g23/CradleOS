@@ -558,15 +558,17 @@ async function resolveWorld(
   failures: KeeperPerception["failures"]
 ): Promise<Perceived<WorldSnapshot>> {
   try {
-    const res = await fetch(`${WORLD_API}/v2/tribes?limit=200`);
+    // limit=1000 to capture full tribe set (Stillness has ~412 as of Apr 2026).
+    // Previous limit=200 caused tribeCount to be wrong and truncated tribeNames.
+    const res = await fetch(`${WORLD_API}/v2/tribes?limit=1000`);
     if (!res.ok) throw new Error(`world api ${res.status}`);
-    const j = (await res.json()) as { data?: Array<{ name?: string }>; total?: number };
+    const j = (await res.json()) as { data?: Array<{ name?: string }>; total?: number; metadata?: { total?: number } };
     const tribeNames = (j.data ?? []).map((t) => t.name ?? "").filter(Boolean);
     return {
       status: "loaded",
       value: {
         serverName,
-        tribeCount: j.total ?? tribeNames.length,
+        tribeCount: j.metadata?.total ?? j.total ?? tribeNames.length,
         tribeNames: tribeNames.slice(0, 50),
       },
       resolvedAt: Date.now(),

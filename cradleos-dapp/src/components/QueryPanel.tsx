@@ -91,7 +91,10 @@ async function fetchAllCharacters(): Promise<CharacterResult[]> {
 }
 
 async function fetchAllTribes(): Promise<TribeResult[]> {
-  const res = await fetch(`${WORLD_API}/v2/tribes?limit=200`);
+  // Stillness has ~412 tribes (Apr 2026); limit=1000 covers full set with headroom.
+  // Previous limit=200 truncated player tribes (id >= 98M) — players past the
+  // first 200 entries (sorted by some default order) silently disappeared.
+  const res = await fetch(`${WORLD_API}/v2/tribes?limit=1000`);
   const json = await res.json() as { data?: Array<{ id: number; name: string; nameShort: string; description: string; taxRate: number; tribeUrl: string }> };
   return (json.data ?? []).map(t => ({ id: t.id, name: t.name, ticker: t.nameShort, description: t.description, taxRate: t.taxRate, url: t.tribeUrl }));
 }
@@ -170,7 +173,7 @@ function CopyButton({ value }: { value: string }) {
   return (
     <button
       onClick={() => { copyToClipboard(value); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-      style={{ background: "none", border: "none", color: copied ? "#00ff96" : "rgba(107,107,94,0.5)", cursor: "pointer", fontSize: 10, padding: "0 4px" }}
+      style={{ background: "none", border: "none", color: copied ? "#00ff96" : "rgba(175,175,155,0.5)", cursor: "pointer", fontSize: 10, padding: "0 4px" }}
     >{copied ? "✓" : "⎘"}</button>
   );
 }
@@ -279,9 +282,9 @@ export function QueryPanel() {
             charsLoading
               ? <div style={{ color: "#aaa", fontSize: 12 }}>Loading characters… {filteredChars.length > 0 ? `(${filteredChars.length} so far)` : ""}</div>
               : filteredChars.length === 0
-              ? <div style={{ color: "rgba(107,107,94,0.55)", fontSize: 12 }}>
+              ? <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>
                   No characters found for "{query}"
-                  {characters ? <span style={{ color: "rgba(107,107,94,0.4)" }}> — searched {characters.length} indexed characters</span> : " (index still loading)"}
+                  {characters ? <span style={{ color: "rgba(175,175,155,0.4)" }}> — searched {characters.length} indexed characters</span> : " (index still loading)"}
                 </div>
               : filteredChars.map(c => (
                 <div key={c.objectId} onClick={() => setSelectedChar(c)} style={{ ...S.card, cursor: "pointer" }}
@@ -293,7 +296,7 @@ export function QueryPanel() {
                       {tribeForId(c.tribeId)?.ticker ?? `tribe ${c.tribeId}`}
                     </span>
                   </div>
-                  <div style={{ fontSize: 10, color: "rgba(107,107,94,0.55)", fontFamily: "monospace", marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginTop: 2 }}>
                     {short(c.characterAddress, 14)} · item {c.itemId}
                   </div>
                 </div>
@@ -301,7 +304,7 @@ export function QueryPanel() {
           )}
           {mode === "tribe" && (
             filteredTribes.length === 0
-              ? <div style={{ color: "rgba(107,107,94,0.55)", fontSize: 12 }}>No tribes found for "{query}"</div>
+              ? <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>No tribes found for "{query}"</div>
               : filteredTribes.map(t => (
                 <div key={t.id} onClick={() => setSelectedTribe(t)} style={{ ...S.card, cursor: "pointer" }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,71,0,0.4)")}
@@ -310,7 +313,7 @@ export function QueryPanel() {
                     <span style={{ fontWeight: 700, fontSize: 14, color: "#e0e0d0" }}>{t.name}</span>
                     <span style={S.tag("#FF4700")}>{t.ticker}</span>
                   </div>
-                  <div style={{ fontSize: 10, color: "rgba(107,107,94,0.55)", marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", marginTop: 2 }}>
                     Tribe ID: {t.id}{vaultForTribe(t.id) ? ` · CradleOS: ${vaultForTribe(t.id)!.coinSymbol}` : ""}
                   </div>
                 </div>
@@ -332,7 +335,7 @@ export function QueryPanel() {
       )}
 
       {!showResults && !selectedChar && !selectedTribe && (
-        <div style={{ color: "rgba(107,107,94,0.4)", fontSize: 12, marginTop: 8 }}>
+        <div style={{ color: "rgba(175,175,155,0.4)", fontSize: 12, marginTop: 8 }}>
           Type a name to search, or <strong style={{ color: "#FF4700" }}>*</strong> to list all. {characters ? `${characters.length} characters` : ""} {tribes ? `· ${tribes.length} tribes` : ""} indexed.
         </div>
       )}
@@ -382,7 +385,7 @@ function CharacterDetail({ char, tribe, vault, onBack }: {
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
               <span style={S.tag("#00ff96")}>{vault.coinSymbol}</span>
               <span style={{ fontSize: 12, color: "#aaa" }}>{vault.coinName}</span>
-              <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(107,107,94,0.6)" }}>{short(vault.vaultId)}</span>
+              <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(175,175,155,0.6)" }}>{short(vault.vaultId)}</span>
               <CopyButton value={vault.vaultId} />
             </div>
           </div>
@@ -429,7 +432,7 @@ function TribeDetail({ tribe, vault, characters, onBack }: {
               {characters.map(c => (
                 <div key={c.objectId} style={{ display: "flex", gap: 10, fontSize: 12, alignItems: "center" }}>
                   <span style={{ fontWeight: 600, color: "#e0e0d0", minWidth: 120 }}>{c.name || "—"}</span>
-                  <span style={{ fontFamily: "monospace", fontSize: 10, color: "rgba(107,107,94,0.6)", flex: 1 }}>{short(c.characterAddress, 14)}</span>
+                  <span style={{ fontFamily: "monospace", fontSize: 10, color: "rgba(175,175,155,0.6)", flex: 1 }}>{short(c.characterAddress, 14)}</span>
                   <CopyButton value={c.characterAddress} />
                 </div>
               ))}
