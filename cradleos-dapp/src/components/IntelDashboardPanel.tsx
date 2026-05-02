@@ -551,7 +551,7 @@ async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
   return results;
 }
 
-type InfraView = "OVERVIEW" | "NODES" | "EXPOSED";
+type InfraView = "NODES" | "EXPOSED";
 
 const isOnline = (n: any) => n.status?.status?.["@variant"] === "ONLINE";
 const fuelQty = (n: any) => parseInt(n.fuel?.quantity ?? "0", 10);
@@ -711,7 +711,7 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
     for (const n of nodes) m.set(n.objectId, n);
     return m;
   }, [nodes]);
-  const [view, setView] = useState<InfraView>("OVERVIEW");
+  const [view, setView] = useState<InfraView>("NODES");
 
   // ── Aggregate stats ──
   // Cross-reference node item_ids against killmail solar_system_ids for location intel
@@ -744,36 +744,19 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
   if (loading) return <div style={S.loading}>[ scanning infrastructure lattice... ]</div>;
 
   return (
-    <div>
-      {/* ── View tabs ── */}
-      <div style={{ marginBottom: 10 }}>
-        {(["OVERVIEW", "NODES", "EXPOSED"] as InfraView[]).map(v => (
-          <button key={v} style={S.pill(view === v)} onClick={() => setView(v)}>{v}</button>
-        ))}
-      </div>
-
-      {view === "OVERVIEW" && (
-        <div>
-          {stats.critical > 0 && <div style={S.warn}>⚠ {stats.critical} nodes critically low on fuel</div>}
-          {/* Stat cards */}
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
-            <StatCard label="Online" value={stats.online} color="#00ff96" />
-            <StatCard label="Offline" value={stats.offline} color={stats.offline > 0 ? "#ff4444" : "#666"} />
-            <StatCard label="Total Nodes" value={nodes.length} />
-            <StatCard label="Owners" value={stats.ownerCount} color="rgba(100,180,255,0.8)" />
-          </div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
-            <StatCard label="Structures Connected" value={stats.totalConns.toLocaleString()} sub={`across ${nodes.length} nodes`} />
-            <StatCard label="Total Energy" value={`${stats.totalEnergy.toLocaleString()} EP`} />
-            <StatCard label="Fuel Burning" value={stats.burning} color={stats.burning > 0 ? "#FF4700" : "#666"} />
-            <StatCard label="Global Fuel" value={stats.totalFuelMax > 0 ? `${((stats.totalFuel / stats.totalFuelMax) * 100).toFixed(1)}%` : "—"} color={stats.totalFuel / (stats.totalFuelMax || 1) > 0.3 ? "#00ff96" : "#ffd700"} sub={`${stats.totalFuel.toLocaleString()} / ${stats.totalFuelMax.toLocaleString()}`} />
-          </div>
+    <div style={{ display: "flex", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+      {/* ── Main column (NODES / EXPOSED) ── */}
+      <div style={{ flex: "1 1 600px", minWidth: 0 }}>
+        {/* View tabs */}
+        <div style={{ marginBottom: 10 }}>
+          {(["NODES", "EXPOSED"] as InfraView[]).map(v => (
+            <button key={v} style={S.pill(view === v)} onClick={() => setView(v)}>{v}</button>
+          ))}
         </div>
-      )}
 
-      {view === "NODES" && (
-        <NodesView nodes={nodes} charMap={charMap} sysMap={sysMap} nodeSystemMap={nodeSystemMap} />
-      )}
+        {view === "NODES" && (
+          <NodesView nodes={nodes} charMap={charMap} sysMap={sysMap} nodeSystemMap={nodeSystemMap} />
+        )}
       {view === "EXPOSED" && (
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
@@ -892,6 +875,25 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
           )}
         </div>
       )}
+      </div>
+
+      {/* ── Right rail: OVERVIEW (always visible) ── */}
+      <aside style={{ flex: "0 0 220px", minWidth: 220, maxWidth: 260 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(100,180,255,0.7)", marginBottom: 8, padding: "3px 8px", borderLeft: "2px solid rgba(100,180,255,0.4)", background: "rgba(100,180,255,0.04)" }}>
+          OVERVIEW
+        </div>
+        {stats.critical > 0 && <div style={S.warn}>⚠ {stats.critical} nodes critically low on fuel</div>}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
+          <StatCard label="Online" value={stats.online} color="#00ff96" />
+          <StatCard label="Offline" value={stats.offline} color={stats.offline > 0 ? "#ff4444" : "#666"} />
+          <StatCard label="Total Nodes" value={nodes.length} />
+          <StatCard label="Owners" value={stats.ownerCount} color="rgba(100,180,255,0.8)" />
+          <StatCard label="Structures Connected" value={stats.totalConns.toLocaleString()} sub={`across ${nodes.length} nodes`} />
+          <StatCard label="Total Energy" value={`${stats.totalEnergy.toLocaleString()} EP`} />
+          <StatCard label="Fuel Burning" value={stats.burning} color={stats.burning > 0 ? "#FF4700" : "#666"} />
+          <StatCard label="Global Fuel" value={stats.totalFuelMax > 0 ? `${((stats.totalFuel / stats.totalFuelMax) * 100).toFixed(1)}%` : "—"} color={stats.totalFuel / (stats.totalFuelMax || 1) > 0.3 ? "#00ff96" : "#ffd700"} sub={`${stats.totalFuel.toLocaleString()} / ${stats.totalFuelMax.toLocaleString()}`} />
+        </div>
+      </aside>
     </div>
   );
 }
