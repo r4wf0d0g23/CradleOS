@@ -3535,11 +3535,22 @@ async function _ssuFetchWithRetry(
   init: RequestInit,
   retries = 2,
   backoffMs = 600,
+  perAttemptTimeoutMs = 8000,
 ): Promise<Response> {
+  // Per-attempt timeout via AbortController. Browser `fetch()` has no
+  // default timeout, so a stalled connection (common in the in-game
+  // webview when the public Sui RPC chokes) would otherwise hang the
+  // resolver indefinitely — leaving SSUs stuck in the 'Resolving…'
+  // group. With a per-attempt timeout, an aborted fetch surfaces as
+  // an AbortError caught below, which triggers retry/backoff like any
+  // other transient failure.
   let lastErr: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), perAttemptTimeoutMs);
     try {
-      const res = await fetch(url, init);
+      const res = await fetch(url, { ...init, signal: ctrl.signal });
+      clearTimeout(timer);
       // Retry on 429 (rate limit) and 5xx (server transient).
       if ((res.status === 429 || res.status >= 500) && attempt < retries) {
         await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
@@ -3547,6 +3558,7 @@ async function _ssuFetchWithRetry(
       }
       return res;
     } catch (err) {
+      clearTimeout(timer);
       lastErr = err;
       if (attempt < retries) {
         await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));

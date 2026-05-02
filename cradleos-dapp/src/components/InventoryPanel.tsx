@@ -2885,16 +2885,26 @@ export function InventoryPanel() {
             sharedInvs.map(s => s.ssu.objectId),
             async (id) => {
               if (cancelled) return null;
+              // resolveSsuOperator() returns null only when the upstream
+              // SSU object read itself fails (network/RPC). In that case
+              // we still need to clear the 'Resolving…' state — stamp a
+              // synthetic 'Unknown' operator so the row leaves the
+              // unresolved bucket instead of hanging forever. The user
+              // can hit REFRESH on the card to retry.
               const op = await resolveSsuOperator(id).catch(() => null);
-              if (cancelled || !op) return null;
+              if (cancelled) return null;
+              const finalOp = op ?? {
+                name: `Unknown (${id.slice(0, 6)}…${id.slice(-4)})`,
+                key: `__unresolved_${id.toLowerCase()}`,
+              };
               setInventories(prev => {
                 const idx = prev.findIndex(p => p.ssu.objectId === id);
                 if (idx === -1) return prev;
                 const next = [...prev];
-                next[idx] = { ...next[idx], operator: op };
+                next[idx] = { ...next[idx], operator: finalOp };
                 return next;
               });
-              return op;
+              return finalOp;
             },
             2,
           );
