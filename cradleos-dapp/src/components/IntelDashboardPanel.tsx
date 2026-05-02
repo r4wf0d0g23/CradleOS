@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { WORLD_API, SERVER_ENV } from "../constants";
 import { bcs } from "@mysten/sui/bcs";
 import { deriveDynamicFieldID } from "@mysten/sui/utils";
+import { rpcFetchWithRetry, rpcPMap } from "../lib";
 
 const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
 const SUI_RPC = "https://fullnode.testnet.sui.io:443";
@@ -399,12 +400,13 @@ interface ExposedAssembly {
 }
 
 async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
-  // Step 1: collect all LocationRevealedEvents
+  // Step 1: collect all LocationRevealedEvents (sequential pagination,
+  // one request at a time — cursor depends on previous response).
   const results: ExposedAssembly[] = [];
   const seen = new Set<string>();
   let cursor: string | null = null;
   do {
-    const res = await fetch(SUI_RPC, {
+    const res = await rpcFetchWithRetry(SUI_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -427,11 +429,18 @@ async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
     cursor = json.result.hasNextPage ? json.result.nextCursor : null;
   } while (cursor);
 
-  // Step 2: fetch each assembly object individually (Sui RPC doesn't support batch)
+  // Step 2: fetch each assembly object individually. Sui RPC doesn't
+  // support batch reads, so we have to fan out — but bare `Promise.all`
+  // floods the public testnet endpoint and produces silent 429 cascades
+  // (the prior version returned mostly empty fields, which is why ~99%
+  // of structures rendered as 'unnamed OFF' even though they had real
+  // names and statuses on-chain). Use rpcPMap concurrency=3 + retry +
+  // 8s timeout per attempt.
   const ownerCapMap = new Map<string, string>(); // assemblyId → owner_cap_id
-  await Promise.all(results.map(async (entry) => {
+  let assemblyFailures = 0;
+  await rpcPMap(results, async (entry) => {
     try {
-      const res = await fetch(SUI_RPC, {
+      const res = await rpcFetchWithRetry(SUI_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [entry.assemblyId, { showContent: true }] }),
@@ -450,38 +459,55 @@ async function fetchExposedAssemblies(): Promise<ExposedAssembly[]> {
         sf?.status?.["@variant"] ??          // NetworkNode format
         null;
       entry.isOnlineChain = variant !== null ? variant === "ONLINE" : null;
-    } catch { /* skip */ }
-  }));
+    } catch {
+      assemblyFailures++;
+    }
+  }, 3);
+  if (assemblyFailures > 0) {
+    console.warn(`[exposed-fetch] ${assemblyFailures}/${results.length} assembly reads failed after retries`);
+  }
 
   // Step 3: fetch each OwnerCap individually to find its owner
   const capIds = [...ownerCapMap.values()];
   const capOwnerMap = new Map<string, string>();
-  await Promise.all(capIds.map(async (capId) => {
+  let capFailures = 0;
+  await rpcPMap(capIds, async (capId) => {
     try {
-      const res = await fetch(SUI_RPC, {
+      const res = await rpcFetchWithRetry(SUI_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"sui_getObject", params:[capId, {showOwner:true}] }),
       });
       const json = await res.json() as { result: { data?: { owner?: { AddressOwner?: string } } } };
       const owner = json?.result?.data?.owner?.AddressOwner;
       if (owner) capOwnerMap.set(capId, owner);
-    } catch { /* skip */ }
-  }));
+    } catch {
+      capFailures++;
+    }
+  }, 3);
+  if (capFailures > 0) {
+    console.warn(`[exposed-fetch] ${capFailures}/${capIds.length} owner-cap reads failed after retries`);
+  }
 
   // Step 4: fetch Character objects individually to get key.item_id
   const charAddresses = [...new Set(capOwnerMap.values())];
   const charItemIdMap = new Map<string, string>();
-  await Promise.all(charAddresses.map(async (addr) => {
+  let charFailures = 0;
+  await rpcPMap(charAddresses, async (addr) => {
     try {
-      const res = await fetch(SUI_RPC, {
+      const res = await rpcFetchWithRetry(SUI_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"sui_getObject", params:[addr, {showContent:true}] }),
       });
       const json = await res.json() as { result: { data?: { content?: { fields?: { key?: { fields?: { item_id?: string } } } } } } };
       const itemId = json?.result?.data?.content?.fields?.key?.fields?.item_id;
       if (itemId) charItemIdMap.set(addr, itemId);
-    } catch { /* skip */ }
-  }));
+    } catch {
+      charFailures++;
+    }
+  }, 3);
+  if (charFailures > 0) {
+    console.warn(`[exposed-fetch] ${charFailures}/${charAddresses.length} character reads failed after retries`);
+  }
 
   // Enrich results with ownerCharId
   for (const r of results) {

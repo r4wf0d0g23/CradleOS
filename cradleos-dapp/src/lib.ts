@@ -3530,6 +3530,25 @@ const _partitionOwnerNameCache = new Map<string, string>();
 // Kept as private module-local copies to avoid widening the public lib API
 // surface and to keep the resolver self-contained.
 
+/** Public alias for the private `_ssuFetchWithRetry` helper.
+ *  Use this in any panel that fans out >5 RPCs to the public Sui testnet
+ *  endpoint. Adds AbortController per-attempt timeout (default 8s),
+ *  exponential backoff on 429/5xx, and retry on network error.
+ *
+ *  Pair with `rpcPMap` for concurrency control. The public testnet
+ *  endpoint will rate-limit anything more than ~3 simultaneous in-flight
+ *  requests; do NOT use bare `Promise.all(...map)` for >5 RPC calls.
+ */
+export function rpcFetchWithRetry(
+  url: string,
+  init: RequestInit,
+  retries = 2,
+  backoffMs = 600,
+  perAttemptTimeoutMs = 8000,
+): Promise<Response> {
+  return _ssuFetchWithRetry(url, init, retries, backoffMs, perAttemptTimeoutMs);
+}
+
 async function _ssuFetchWithRetry(
   url: string,
   init: RequestInit,
@@ -3567,6 +3586,19 @@ async function _ssuFetchWithRetry(
     }
   }
   throw lastErr;
+}
+
+/** Public alias for the private `_ssuPMap` helper.
+ *  Concurrency-limited Promise.all replacement. Default concurrency=3 is
+ *  safe for the public Sui testnet RPC endpoint. Lower (2) for
+ *  fan-outs >100 items.
+ */
+export function rpcPMap<T, R>(
+  items: T[],
+  fn: (item: T, idx: number) => Promise<R>,
+  concurrency = 3,
+): Promise<R[]> {
+  return _ssuPMap(items, fn, concurrency);
 }
 
 async function _ssuPMap<T, R>(
