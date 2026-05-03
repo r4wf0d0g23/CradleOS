@@ -496,7 +496,7 @@ function KillFeedTab({
     <div>
       {/* ── Time-window picker (top row) ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "rgba(100,180,255,0.55)" }}>
+        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "rgba(107, 107, 94, 0.85)" }}>
           WINDOW
         </span>
         {(["1H", "24H", "7D", "30D", "ALL"] as KillWindow[]).map(w => (
@@ -627,8 +627,8 @@ function KillFeedTab({
                   }
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.background = "rgba(100,180,255,0.06)";
-                  (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(100,180,255,0.5)";
+                  (e.currentTarget as HTMLDivElement).style.background = "rgba(255, 71, 0, 0.06)";
+                  (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(255, 71, 0, 0.55)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLDivElement).style.background = "";
@@ -655,12 +655,13 @@ function KillFeedTab({
                     onClick={(tid) => setTribeFilter(tid)}
                   />
                 </span>
-                <span style={{ color: "rgba(100,180,255,0.7)", fontSize: "12px" }}>{sysMap.get(sysId) || `sys-${sysId}`}</span>
+                <span style={{ color: "rgba(250, 250, 229, 0.75)", fontSize: "12px" }}>{sysMap.get(sysId) || `sys-${sysId}`}</span>
                 <span
                   style={{
                     ...S.muted,
                     marginLeft: "auto",
-                    color: "rgba(100,180,255,0.5)",
+                    color: "#FF4700",
+                    fontWeight: 700,
                   }}
                   title="Open killcard"
                 >
@@ -730,9 +731,9 @@ function TribeBadge({
         fontWeight: 700,
         letterSpacing: "0.06em",
         padding: "1px 5px",
-        background: "rgba(100,180,255,0.08)",
-        border: "1px solid rgba(100,180,255,0.3)",
-        color: "rgba(100,180,255,0.85)",
+        background: "rgba(107, 107, 94, 0.12)",
+        border: "1px solid rgba(107, 107, 94, 0.45)",
+        color: "rgba(186, 185, 167, 0.95)",
         cursor: "pointer",
         borderRadius: 1,
       }}

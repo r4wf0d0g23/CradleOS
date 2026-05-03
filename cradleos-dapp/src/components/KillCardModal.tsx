@@ -60,23 +60,31 @@ interface KillCardModalProps {
 }
 
 // ── Color tokens (EVE Frontier-esque) ─────────────────────────────────────────
+// CCP Design System palette — Crude/Neutral/Martian Red/Secondary olive.
+// Legacy slot names (cyan/cyanDim/cyanFaint) now route to the Secondary
+// olive-gray tokens so existing references render as informational chrome.
+// Use C.accent for Martian Red highlights.
 const C = {
-  bg: "#04060a",
-  panel: "rgba(8, 12, 18, 0.96)",
-  border: "rgba(100, 180, 255, 0.28)",
-  borderHot: "rgba(255, 71, 0, 0.45)",
-  cyan: "rgba(100, 180, 255, 0.95)",
-  cyanDim: "rgba(100, 180, 255, 0.55)",
-  cyanFaint: "rgba(100, 180, 255, 0.22)",
-  amber: "rgba(255, 200, 0, 0.85)",
+  bg: "#0B0B0B",                              // Crude
+  panel: "rgba(11, 11, 11, 0.96)",            // Crude 96%
+  fg: "#FAFAE5",                              // Neutral
+  fgDim: "rgba(250, 250, 229, 0.55)",
+  fgFaint: "rgba(250, 250, 229, 0.30)",
+  accent: "#FF4700",                          // Martian Red
+  accentDim: "rgba(255, 71, 0, 0.65)",
+  accentFaint: "rgba(255, 71, 0, 0.30)",
+  border: "rgba(107, 107, 94, 0.42)",         // Secondary 42%
+  borderHot: "rgba(255, 71, 0, 0.55)",
+  divider: "rgba(107, 107, 94, 0.18)",        // Secondary 18%
+  green: "#00ff96",                           // KILL / online
+  red: "#ff4444",                             // LOSS / offline
+  amber: "rgba(255, 200, 0, 0.85)",           // self-report / warning
   amberDim: "rgba(255, 200, 0, 0.5)",
-  green: "#00ff96",
-  red: "#ff4444",
-  orange: "#FF4700",
-  fg: "#d4dce6",
-  fgDim: "rgba(212, 220, 230, 0.55)",
-  fgFaint: "rgba(212, 220, 230, 0.28)",
-  divider: "rgba(100, 180, 255, 0.12)",
+  orange: "#FF4700",                          // SHIP loss — same as accent
+  // Secondary olive-gray (informational chrome)
+  cyan: "rgba(186, 185, 167, 0.95)",          // brighter Secondary tint
+  cyanDim: "rgba(107, 107, 94, 0.85)",        // Secondary primary
+  cyanFaint: "rgba(107, 107, 94, 0.35)",      // Secondary subtle
 };
 
 // ── Glyphs (monospace-safe, per TOOLS.md) ─────────────────────────────────────
@@ -122,7 +130,7 @@ const monoId: React.CSSProperties = {
 };
 
 const linkStyle: React.CSSProperties = {
-  color: C.cyan,
+  color: C.accent,
   textDecoration: "none",
   fontSize: 10,
   fontFamily: "ui-monospace, SFMono-Regular, monospace",
@@ -136,7 +144,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
         position: "relative",
         padding: "10px 12px 12px",
         marginBottom: 8,
-        background: "rgba(100, 180, 255, 0.03)",
+        background: "rgba(107, 107, 94, 0.03)",
         border: `1px solid ${C.divider}`,
       }}
     >
@@ -188,7 +196,7 @@ function Combatant({
             textShadow: `0 0 8px ${highlight === C.green ? "rgba(0,255,150,0.4)" : "rgba(255,68,68,0.4)"}`,
             cursor: onClick ? "pointer" : "default",
             textDecoration: onClick ? "underline" : "none",
-            textDecorationColor: "rgba(100,180,255,0.4)",
+            textDecorationColor: "rgba(255, 71, 0, 0.55)",
             textUnderlineOffset: 3,
           }}
         >
@@ -203,14 +211,14 @@ function Combatant({
               fontWeight: 700,
               letterSpacing: "0.08em",
               padding: "1px 5px",
-              background: "rgba(100,180,255,0.08)",
-              border: "1px solid rgba(100,180,255,0.35)",
-              color: "rgba(100,180,255,0.95)",
+              background: "rgba(107, 107, 94,0.08)",
+              border: "1px solid rgba(107, 107, 94,0.35)",
+              color: "rgba(107, 107, 94,0.95)",
             }}
           >
             {tribeInfo.ticker}
           </span>
-          <span style={{ fontSize: 10, color: "rgba(100,180,255,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: 10, color: "rgba(107, 107, 94,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {tribeInfo.name}
           </span>
         </div>
@@ -379,14 +387,14 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
           maxWidth: 540,
           width: "100%",
           color: C.fg,
-          boxShadow: `0 0 0 1px rgba(100,180,255,0.04), 0 24px 48px rgba(0,0,0,0.7), 0 0 80px rgba(100,180,255,0.08)`,
+          boxShadow: `0 0 0 1px rgba(107, 107, 94, 0.18), 0 24px 48px rgba(0, 0, 0, 0.75), 0 0 60px rgba(255, 71, 0, 0.08)`,
         }}
       >
-        {/* Frame corner brackets */}
-        <span style={{ position: "absolute", top: -2, left: -2, width: 12, height: 12, borderTop: `2px solid ${C.cyan}`, borderLeft: `2px solid ${C.cyan}` }} />
-        <span style={{ position: "absolute", top: -2, right: -2, width: 12, height: 12, borderTop: `2px solid ${C.cyan}`, borderRight: `2px solid ${C.cyan}` }} />
-        <span style={{ position: "absolute", bottom: -2, left: -2, width: 12, height: 12, borderBottom: `2px solid ${C.cyan}`, borderLeft: `2px solid ${C.cyan}` }} />
-        <span style={{ position: "absolute", bottom: -2, right: -2, width: 12, height: 12, borderBottom: `2px solid ${C.cyan}`, borderRight: `2px solid ${C.cyan}` }} />
+        {/* Frame corner brackets — Martian Red accent */}
+        <span style={{ position: "absolute", top: -2, left: -2, width: 12, height: 12, borderTop: `2px solid ${C.accent}`, borderLeft: `2px solid ${C.accent}` }} />
+        <span style={{ position: "absolute", top: -2, right: -2, width: 12, height: 12, borderTop: `2px solid ${C.accent}`, borderRight: `2px solid ${C.accent}` }} />
+        <span style={{ position: "absolute", bottom: -2, left: -2, width: 12, height: 12, borderBottom: `2px solid ${C.accent}`, borderLeft: `2px solid ${C.accent}` }} />
+        <span style={{ position: "absolute", bottom: -2, right: -2, width: 12, height: 12, borderBottom: `2px solid ${C.accent}`, borderRight: `2px solid ${C.accent}` }} />
 
         {/* ── Header ── */}
         <div
@@ -396,7 +404,7 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
             justifyContent: "space-between",
             padding: "12px 14px 10px",
             borderBottom: `1px solid ${C.divider}`,
-            background: `linear-gradient(180deg, rgba(100,180,255,0.06) 0%, transparent 100%)`,
+            background: `linear-gradient(180deg, rgba(255, 71, 0, 0.05) 0%, transparent 100%)`,
           }}
         >
           <div style={{ minWidth: 0 }}>
@@ -526,7 +534,7 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
                   whiteSpace: "nowrap",
                   cursor: onOpenPlayer && reporterId ? "pointer" : "default",
                   textDecoration: onOpenPlayer && reporterId ? "underline" : "none",
-                  textDecorationColor: "rgba(100,180,255,0.3)",
+                  textDecorationColor: "rgba(255, 71, 0, 0.45)",
                   textUnderlineOffset: 3,
                 }}
               >
@@ -540,14 +548,14 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
                       fontWeight: 700,
                       letterSpacing: "0.08em",
                       padding: "1px 5px",
-                      background: "rgba(100,180,255,0.08)",
-                      border: "1px solid rgba(100,180,255,0.35)",
-                      color: "rgba(100,180,255,0.95)",
+                      background: "rgba(107, 107, 94,0.08)",
+                      border: "1px solid rgba(107, 107, 94,0.35)",
+                      color: "rgba(107, 107, 94,0.95)",
                     }}
                   >
                     {reporterTribeInfo.ticker}
                   </span>
-                  <span style={{ fontSize: 10, color: "rgba(100,180,255,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 10, color: "rgba(107, 107, 94,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {reporterTribeInfo.name}
                   </span>
                 </div>
@@ -672,7 +680,7 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
             color: C.fgFaint,
             letterSpacing: "0.1em",
             textAlign: "center",
-            background: "rgba(100,180,255,0.02)",
+            background: "rgba(107, 107, 94,0.02)",
           }}
         >
           ESC OR CLICK OUTSIDE TO CLOSE

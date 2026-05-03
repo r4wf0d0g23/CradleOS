@@ -26,21 +26,26 @@ function formatRelative(secondsAgo: number): string {
 }
 
 // ── Color tokens (mirror KillCardModal) ───────────────────────────────────────
+// CCP Design System palette — Crude/Neutral/Martian Red/Secondary olive.
 const C = {
-  panel: "rgba(8, 12, 18, 0.96)",
-  border: "rgba(100, 180, 255, 0.28)",
-  cyan: "rgba(100, 180, 255, 0.95)",
-  cyanDim: "rgba(100, 180, 255, 0.55)",
-  cyanFaint: "rgba(100, 180, 255, 0.22)",
-  amber: "rgba(255, 200, 0, 0.85)",
-  amberDim: "rgba(255, 200, 0, 0.5)",
+  bg: "#0B0B0B",
+  panel: "rgba(11, 11, 11, 0.96)",
+  fg: "#FAFAE5",
+  fgDim: "rgba(250, 250, 229, 0.55)",
+  fgFaint: "rgba(250, 250, 229, 0.30)",
+  accent: "#FF4700",
+  accentDim: "rgba(255, 71, 0, 0.65)",
+  accentFaint: "rgba(255, 71, 0, 0.30)",
+  border: "rgba(107, 107, 94, 0.42)",
+  divider: "rgba(107, 107, 94, 0.18)",
   green: "#00ff96",
   red: "#ff4444",
+  amber: "rgba(255, 200, 0, 0.85)",
+  amberDim: "rgba(255, 200, 0, 0.5)",
   orange: "#FF4700",
-  fg: "#d4dce6",
-  fgDim: "rgba(212, 220, 230, 0.55)",
-  fgFaint: "rgba(212, 220, 230, 0.28)",
-  divider: "rgba(100, 180, 255, 0.12)",
+  cyan: "rgba(186, 185, 167, 0.95)",
+  cyanDim: "rgba(107, 107, 94, 0.85)",
+  cyanFaint: "rgba(107, 107, 94, 0.35)",
 };
 
 // ── Glyphs ────────────────────────────────────────────────────────────────────
@@ -79,7 +84,7 @@ const monoId: React.CSSProperties = {
 };
 
 const linkStyle: React.CSSProperties = {
-  color: C.cyan,
+  color: C.accent,
   textDecoration: "none",
   fontSize: 10,
   fontFamily: "ui-monospace, SFMono-Regular, monospace",
@@ -93,7 +98,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
         position: "relative",
         padding: "10px 12px 12px",
         marginBottom: 8,
-        background: "rgba(100, 180, 255, 0.03)",
+        background: "rgba(107, 107, 94, 0.03)",
         border: `1px solid ${C.divider}`,
       }}
     >
@@ -110,7 +115,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 // ── Stat tile ─────────────────────────────────────────────────────────────────
 function Stat({ label, value, color, sub }: { label: string; value: string | number; color?: string; sub?: string }) {
   return (
-    <div style={{ flex: "1 1 90px", minWidth: 80, padding: "6px 8px", background: "rgba(100,180,255,0.04)", border: `1px solid ${C.divider}` }}>
+    <div style={{ flex: "1 1 90px", minWidth: 80, padding: "6px 8px", background: "rgba(107, 107, 94,0.04)", border: `1px solid ${C.divider}` }}>
       <div style={{ fontSize: 8, letterSpacing: "0.12em", color: C.fgFaint, textTransform: "uppercase" as const, marginBottom: 2 }}>{label}</div>
       <div style={{ fontSize: 16, fontWeight: 700, color: color ?? C.fg }}>{value}</div>
       {sub && <div style={{ fontSize: 9, color: C.fgFaint, marginTop: 2 }}>{sub}</div>}
@@ -354,14 +359,14 @@ export function PlayerCardModal({
           maxWidth: 600,
           width: "100%",
           color: C.fg,
-          boxShadow: `0 0 0 1px rgba(100,180,255,0.04), 0 24px 48px rgba(0,0,0,0.7), 0 0 80px rgba(100,180,255,0.08)`,
+          boxShadow: `0 0 0 1px rgba(107, 107, 94, 0.18), 0 24px 48px rgba(0, 0, 0, 0.75), 0 0 60px rgba(255, 71, 0, 0.08)`,
         }}
       >
-        {/* Frame corner brackets */}
-        <span style={{ position: "absolute", top: -2, left: -2, width: 12, height: 12, borderTop: `2px solid ${C.cyan}`, borderLeft: `2px solid ${C.cyan}` }} />
-        <span style={{ position: "absolute", top: -2, right: -2, width: 12, height: 12, borderTop: `2px solid ${C.cyan}`, borderRight: `2px solid ${C.cyan}` }} />
-        <span style={{ position: "absolute", bottom: -2, left: -2, width: 12, height: 12, borderBottom: `2px solid ${C.cyan}`, borderLeft: `2px solid ${C.cyan}` }} />
-        <span style={{ position: "absolute", bottom: -2, right: -2, width: 12, height: 12, borderBottom: `2px solid ${C.cyan}`, borderRight: `2px solid ${C.cyan}` }} />
+        {/* Frame corner brackets — Martian Red accent */}
+        <span style={{ position: "absolute", top: -2, left: -2, width: 12, height: 12, borderTop: `2px solid ${C.accent}`, borderLeft: `2px solid ${C.accent}` }} />
+        <span style={{ position: "absolute", top: -2, right: -2, width: 12, height: 12, borderTop: `2px solid ${C.accent}`, borderRight: `2px solid ${C.accent}` }} />
+        <span style={{ position: "absolute", bottom: -2, left: -2, width: 12, height: 12, borderBottom: `2px solid ${C.accent}`, borderLeft: `2px solid ${C.accent}` }} />
+        <span style={{ position: "absolute", bottom: -2, right: -2, width: 12, height: 12, borderBottom: `2px solid ${C.accent}`, borderRight: `2px solid ${C.accent}` }} />
 
         {/* Header */}
         <div
@@ -371,13 +376,13 @@ export function PlayerCardModal({
             justifyContent: "space-between",
             padding: "12px 14px 10px",
             borderBottom: `1px solid ${C.divider}`,
-            background: `linear-gradient(180deg, rgba(100,180,255,0.06) 0%, transparent 100%)`,
+            background: `linear-gradient(180deg, rgba(255, 71, 0, 0.05) 0%, transparent 100%)`,
           }}
         >
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
               <span style={{ color: C.cyan, fontSize: 18, lineHeight: 1 }}>{G.player}</span>
-              <span style={{ color: C.fg, fontSize: 16, fontWeight: 700, letterSpacing: "0.04em", textShadow: "0 0 10px rgba(100,180,255,0.3)" }}>
+              <span style={{ color: C.fg, fontSize: 16, fontWeight: 700, letterSpacing: "0.04em", textShadow: "0 0 10px rgba(255, 71, 0, 0.35)" }}>
                 {playerName}
               </span>
               {tribeInfo && (
@@ -387,9 +392,9 @@ export function PlayerCardModal({
                     fontWeight: 700,
                     letterSpacing: "0.08em",
                     padding: "2px 6px",
-                    background: "rgba(100,180,255,0.08)",
-                    border: "1px solid rgba(100,180,255,0.4)",
-                    color: "rgba(100,180,255,0.95)",
+                    background: "rgba(107, 107, 94,0.08)",
+                    border: "1px solid rgba(107, 107, 94,0.4)",
+                    color: "rgba(107, 107, 94,0.95)",
                   }}
                 >
                   {tribeInfo.ticker}
@@ -529,7 +534,7 @@ export function PlayerCardModal({
                           cursor: onOpenKill ? "pointer" : "default",
                           alignItems: "baseline",
                         }}
-                        onMouseEnter={(e) => (e.currentTarget as HTMLDivElement).style.background = "rgba(100,180,255,0.05)"}
+                        onMouseEnter={(e) => (e.currentTarget as HTMLDivElement).style.background = "rgba(107, 107, 94,0.05)"}
                         onMouseLeave={(e) => (e.currentTarget as HTMLDivElement).style.background = ""}
                       >
                         <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: isKill ? C.green : C.red, width: 36 }}>
@@ -573,7 +578,7 @@ export function PlayerCardModal({
                 </div>
                 <div style={{ display: "flex", gap: 4, flexWrap: "wrap", fontSize: 10 }}>
                   {[...structureSummary.byKind.entries()].sort((a, b) => b[1] - a[1]).map(([kind, count]) => (
-                    <span key={kind} style={{ padding: "2px 6px", background: "rgba(100,180,255,0.05)", border: `1px solid ${C.divider}`, color: C.fgDim, letterSpacing: "0.04em" }}>
+                    <span key={kind} style={{ padding: "2px 6px", background: "rgba(107, 107, 94,0.05)", border: `1px solid ${C.divider}`, color: C.fgDim, letterSpacing: "0.04em" }}>
                       {count}× {kind}
                     </span>
                   ))}
@@ -631,7 +636,7 @@ export function PlayerCardModal({
             color: C.fgFaint,
             letterSpacing: "0.1em",
             textAlign: "center",
-            background: "rgba(100,180,255,0.02)",
+            background: "rgba(107, 107, 94,0.02)",
           }}
         >
           ESC OR CLICK OUTSIDE TO CLOSE
@@ -671,7 +676,7 @@ function PlayerLink({
       onMouseLeave={(e) => (e.currentTarget as HTMLDivElement).style.opacity = "1"}
       title={`Open ${name} (#${itemId})`}
     >
-      <span style={{ fontSize: 11, color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: "underline", textDecorationColor: "rgba(100,180,255,0.3)", textUnderlineOffset: 2 }}>
+      <span style={{ fontSize: 11, color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: "underline", textDecorationColor: "rgba(255, 71, 0, 0.45)", textUnderlineOffset: 2 }}>
         {name}
       </span>
       <span style={{ fontSize: 9, color: C.fgFaint }}>×{count}</span>
