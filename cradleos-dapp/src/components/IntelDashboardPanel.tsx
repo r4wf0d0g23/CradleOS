@@ -399,6 +399,93 @@ const KILL_WINDOW_LABEL: Record<KillWindow, string> = {
   "ALL": "all time (capped)",
 };
 
+// ── Shared kill-feed window picker (used by both KILL FEED and SECURITY tabs) ──
+// Lifted out of KillFeedTab so the SECURITY tab can re-render the same
+// controls without round-tripping back to KILL FEED. State is owned by the
+// parent IntelDashboardPanel; this is purely a controlled component.
+function KillWindowPicker({
+  window: killWindow,
+  onWindowChange,
+  onRefresh,
+  loading,
+  loadProgress,
+  count,
+  countLabel = "kills",
+  lastFetchedAt,
+  shipCount,
+  structCount,
+}: {
+  window: KillWindow;
+  onWindowChange: (w: KillWindow) => void;
+  onRefresh: () => void;
+  loading: boolean;
+  loadProgress: number;
+  count: number;
+  countLabel?: string;
+  lastFetchedAt: number | null;
+  shipCount?: number;
+  structCount?: number;
+}) {
+  return (
+    <>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "rgba(107, 107, 94, 0.85)" }}>
+          WINDOW
+        </span>
+        {(["1H", "24H", "7D", "30D", "ALL"] as KillWindow[]).map((w) => (
+          <button
+            key={w}
+            style={{
+              ...S.pill(killWindow === w),
+              opacity: loading ? 0.5 : 1,
+              cursor: loading ? "wait" : "pointer",
+            }}
+            onClick={() => !loading && onWindowChange(w)}
+            disabled={loading}
+          >
+            {w}
+          </button>
+        ))}
+        <button
+          style={{
+            ...S.pill(false),
+            opacity: loading ? 0.5 : 1,
+            cursor: loading ? "wait" : "pointer",
+            marginLeft: "auto",
+          }}
+          onClick={() => !loading && onRefresh()}
+          disabled={loading}
+          title="Refresh kill feed"
+        >
+          ↻ REFRESH
+        </button>
+      </div>
+      {loading ? (
+        <div style={{ ...S.loading, marginBottom: 10 }}>
+          [ fetching kill feed{loadProgress > 0 ? ` — ${loadProgress} loaded` : ""}… ]
+        </div>
+      ) : (
+        <div style={{ ...S.statRow, alignItems: "baseline", flexWrap: "wrap" }}>
+          <span>
+            <span style={S.statVal}>{count}</span> {countLabel} covering {KILL_WINDOW_LABEL[killWindow]}
+          </span>
+          {shipCount !== undefined && (
+            <span><span style={S.statVal}>{shipCount}</span> ship</span>
+          )}
+          {structCount !== undefined && (
+            <span><span style={S.statVal}>{structCount}</span> structure</span>
+          )}
+          {lastFetchedAt && (
+            <span style={{ marginLeft: "auto", fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>
+              FETCHED {formatTimestamp(String(Math.floor(lastFetchedAt / 1000)))}
+            </span>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
 function KillFeedTab({
   kills,
   charMap,
@@ -494,63 +581,18 @@ function KillFeedTab({
 
   return (
     <div>
-      {/* ── Time-window picker (top row) ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "rgba(107, 107, 94, 0.85)" }}>
-          WINDOW
-        </span>
-        {(["1H", "24H", "7D", "30D", "ALL"] as KillWindow[]).map(w => (
-          <button
-            key={w}
-            style={{
-              ...S.pill(killWindow === w),
-              opacity: loading ? 0.5 : 1,
-              cursor: loading ? "wait" : "pointer",
-            }}
-            onClick={() => !loading && onWindowChange(w)}
-            disabled={loading}
-          >
-            {w}
-          </button>
-        ))}
-        <button
-          style={{
-            ...S.pill(false),
-            opacity: loading ? 0.5 : 1,
-            cursor: loading ? "wait" : "pointer",
-            marginLeft: "auto",
-          }}
-          onClick={() => !loading && onRefresh()}
-          disabled={loading}
-          title="Refresh kill feed"
-        >
-          ↻ REFRESH
-        </button>
-      </div>
-
-      {/* ── Status / counts row ── */}
-      {loading ? (
-        <div style={{ ...S.loading, marginBottom: 10 }}>
-          [ fetching kill feed{loadProgress > 0 ? ` — ${loadProgress} loaded` : ""}… ]
-        </div>
-      ) : (
-        <div style={{ ...S.statRow, alignItems: "baseline", flexWrap: "wrap" }}>
-          <span>
-            <span style={S.statVal}>{kills.length}</span> kills covering {KILL_WINDOW_LABEL[killWindow]}
-          </span>
-          <span>
-            <span style={S.statVal}>{shipCount}</span> ship
-          </span>
-          <span>
-            <span style={S.statVal}>{structCount}</span> structure
-          </span>
-          {lastFetchedAt && (
-            <span style={{ marginLeft: "auto", fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>
-              FETCHED {formatTimestamp(String(Math.floor(lastFetchedAt / 1000)))}
-            </span>
-          )}
-        </div>
-      )}
+      <KillWindowPicker
+        window={killWindow}
+        onWindowChange={onWindowChange}
+        onRefresh={onRefresh}
+        loading={loading}
+        loadProgress={loadProgress}
+        count={kills.length}
+        countLabel="kills"
+        lastFetchedAt={lastFetchedAt}
+        shipCount={shipCount}
+        structCount={structCount}
+      />
 
       <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
         {(["ALL", "SHIP", "STRUCTURE"] as KillFilter[]).map((f) => (
@@ -1268,12 +1310,24 @@ function SecurityTab({
   charMap,
   sysMap,
   loading,
+  killsWindow,
+  killsLoading,
+  killsLoadProgress,
+  killsLastFetchedAt,
+  onWindowChange,
+  onRefreshKills,
 }: {
   kills: any[];
   nodes: any[];
   charMap: Map<string, string>;
   sysMap: Map<string, string>;
   loading: boolean;
+  killsWindow: KillWindow;
+  killsLoading: boolean;
+  killsLoadProgress: number;
+  killsLastFetchedAt: number | null;
+  onWindowChange: (w: KillWindow) => void;
+  onRefreshKills: () => void;
 }) {
   const topKillers = useMemo(() => {
     const counts = new Map<string, number>();
@@ -1415,6 +1469,19 @@ function SecurityTab({
 
   return (
     <div>
+      {/* Same window picker as KILL FEED — changes here propagate via
+          shared parent state, so flipping windows on SECURITY immediately
+          re-aggregates topKillers/topVictims/topSystems below. */}
+      <KillWindowPicker
+        window={killsWindow}
+        onWindowChange={onWindowChange}
+        onRefresh={onRefreshKills}
+        loading={killsLoading}
+        loadProgress={killsLoadProgress}
+        count={kills.length}
+        countLabel="kills"
+        lastFetchedAt={killsLastFetchedAt}
+      />
       <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
         {/* Top Killers */}
         <div style={{ flex: 1, minWidth: 180 }}>
@@ -1780,6 +1847,17 @@ export function IntelDashboardPanel() {
           charMap={charMap}
           sysMap={sysMap}
           loading={securityLoading}
+          killsWindow={killsWindow}
+          killsLoading={killsLoading}
+          killsLoadProgress={killsLoadProgress}
+          killsLastFetchedAt={killsLastFetchedAt}
+          onWindowChange={(w) => {
+            setKillsWindow(w);
+            void loadKills(w);
+          }}
+          onRefreshKills={() => {
+            void loadKills(killsWindow);
+          }}
         />
       )}
     </div>

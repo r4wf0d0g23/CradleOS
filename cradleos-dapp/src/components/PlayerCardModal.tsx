@@ -1,8 +1,89 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { SERVER_ENV } from "../constants";
-import { fetchPlayerStructures, type LocationGroup } from "../lib";
+import { SERVER_ENV, WORLD_PKG } from "../constants";
+import { fetchPlayerStructures, rpcFetchWithRetry, type LocationGroup } from "../lib";
 import { type KillRecord } from "./KillCardModal";
+
+// ── Local kill-history fetcher (event-paginated, scoped to one player) ─────────
+// Inlined here (rather than imported from IntelDashboardPanel) to avoid a
+// circular dep — IntelDashboardPanel already imports PlayerCardModal.
+// Walks KillmailCreatedEvent newest-first; client-side filter to keep only
+// kills that involve the target character (as killer / victim / reporter).
+async function fetchPlayerKills(
+  characterItemId: string,
+  windowSeconds: number,
+  maxPages = 60,
+): Promise<KillRecord[]> {
+  const eventType = `${WORLD_PKG}::killmail::KillmailCreatedEvent`;
+  const stopAt = Math.floor(Date.now() / 1000) - windowSeconds;
+  const SUI_RPC = "https://fullnode.testnet.sui.io:443";
+  const out: KillRecord[] = [];
+  let cursor: any = null;
+
+  for (let page = 0; page < maxPages; page++) {
+    const body = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "suix_queryEvents",
+      params: [{ MoveEventType: eventType }, cursor, 50, true],
+    };
+    let json: any;
+    try {
+      const res = await rpcFetchWithRetry(SUI_RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      json = await res.json();
+    } catch {
+      break;
+    }
+    const result = json?.result;
+    if (!result || !Array.isArray(result.data)) break;
+
+    let pageHasOldEvent = false;
+    for (const e of result.data) {
+      const pj = e.parsedJson ?? {};
+      const ts = parseInt(String(pj.kill_timestamp ?? "0"), 10);
+      if (ts < stopAt) {
+        pageHasOldEvent = true;
+        continue;
+      }
+      const killerId = pj.killer_id?.item_id ?? "";
+      const victimId = pj.victim_id?.item_id ?? "";
+      const reporterId = pj.reported_by_character_id?.item_id ?? "";
+      if (
+        killerId !== characterItemId &&
+        victimId !== characterItemId &&
+        reporterId !== characterItemId
+      ) {
+        continue;
+      }
+      const txd = e.id?.txDigest ?? "";
+      const seq = e.id?.eventSeq ?? "0";
+      const synthId = txd ? `evt:${txd}:${seq}` : `evt:unknown:${out.length}`;
+      out.push({
+        objectId: synthId,
+        key: pj.key,
+        kill_timestamp: pj.kill_timestamp,
+        killer_id: pj.killer_id,
+        victim_id: pj.victim_id,
+        solar_system_id: pj.solar_system_id,
+        reported_by_character_id: pj.reported_by_character_id,
+        loss_type: pj.loss_type
+          ? { "@variant": pj.loss_type.variant, fields: pj.loss_type.fields }
+          : undefined,
+        _txDigest: e.id?.txDigest,
+        _blockTimeMs: e.timestampMs ? parseInt(e.timestampMs, 10) : undefined,
+      } as KillRecord);
+    }
+
+    if (pageHasOldEvent) break;
+    if (!result.hasNextPage || !result.nextCursor) break;
+    cursor = result.nextCursor;
+  }
+  return out;
+}
 
 // ── Suiscan URL helpers ───────────────────────────────────────────────────────
 const SUISCAN_BASE = "https://suiscan.xyz/testnet";
@@ -213,6 +294,78 @@ export function PlayerCardModal({
     };
   }, [characterItemId, walletAddr]);
 
+  // ── Lazy combat fetch when no kill list was passed in ─────
+  // QueryPanel opens player cards without a kill list; the killcard path
+  // already has one. Default window: 7 days for a useful recent picture.
+  const [lazyKills, setLazyKills] = useState<KillRecord[] | null>(null);
+  const [lazyKillsLoading, setLazyKillsLoading] = useState(false);
+  const needsLazyKills = allKills.length === 0;
+
+  useEffect(() => {
+    if (!needsLazyKills) return;
+    let cancelled = false;
+    setLazyKillsLoading(true);
+    fetchPlayerKills(characterItemId, 7 * 86400, 60)
+      .then((kills) => {
+        if (!cancelled) setLazyKills(kills);
+      })
+      .catch(() => {
+        if (!cancelled) setLazyKills([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLazyKillsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [characterItemId, needsLazyKills]);
+
+  const effectiveKills = needsLazyKills ? (lazyKills ?? []) : allKills;
+
+  // ── Lazy sys-name resolution for any system ids in the lazy kill list ─────
+  const [lazySysMap, setLazySysMap] = useState<Map<string, string>>(new Map());
+  useEffect(() => {
+    if (!needsLazyKills || effectiveKills.length === 0) return;
+    const ids = new Set<string>();
+    for (const k of effectiveKills) {
+      const id = k.solar_system_id?.item_id;
+      if (id && !sysMap.has(id) && !lazySysMap.has(id)) ids.add(id);
+    }
+    if (ids.size === 0) return;
+    let cancelled = false;
+    (async () => {
+      const next = new Map(lazySysMap);
+      const WORLD_API = SERVER_ENV === "stillness"
+        ? "https://world-api-stillness.live.tech.evefrontier.com"
+        : "https://world-api-utopia.uat.pub.evefrontier.com";
+      const idArr = [...ids];
+      const slots = 3;
+      let cursor = 0;
+      await Promise.all(Array.from({ length: slots }, async () => {
+        while (cursor < idArr.length) {
+          const i = cursor++;
+          const id = idArr[i];
+          try {
+            const res = await fetch(`${WORLD_API}/v2/solarsystems/${id}`);
+            if (res.ok) {
+              const d = (await res.json()) as { name?: string };
+              if (d.name) next.set(id, d.name);
+            }
+          } catch { /* ignore */ }
+        }
+      }));
+      if (!cancelled) setLazySysMap(next);
+    })();
+    return () => { cancelled = true; };
+  }, [effectiveKills, needsLazyKills, sysMap, lazySysMap]);
+
+  // Combined sys-name map: passed-in sysMap takes precedence; lazy fills gaps.
+  const mergedSysMap = useMemo(() => {
+    const m = new Map(sysMap);
+    for (const [k, v] of lazySysMap) if (!m.has(k)) m.set(k, v);
+    return m;
+  }, [sysMap, lazySysMap]);
+
   // ── Lazy structure fetch (only when wallet resolves) ─────
   const [structures, setStructures] = useState<LocationGroup[] | null>(null);
   const [structuresLoading, setStructuresLoading] = useState(false);
@@ -245,7 +398,7 @@ export function PlayerCardModal({
   const tribeId = charTribeMap?.get(characterItemId);
   const tribeInfo = tribeId ? tribeInfoMap?.get(tribeId) : undefined;
 
-  // Combat history derived from the kill list in scope
+  // Combat history derived from the kill list in scope (passed-in or lazy)
   const combat = useMemo(() => {
     let killsAsAggressor = 0;
     let lossesAsVictim = 0;
@@ -258,7 +411,7 @@ export function PlayerCardModal({
     const killsList: KillRecord[] = [];
     const lossesList: KillRecord[] = [];
 
-    for (const k of allKills) {
+    for (const k of effectiveKills) {
       const killerId = k.killer_id?.item_id ?? "";
       const victimId = k.victim_id?.item_id ?? "";
       const reporterId = k.reported_by_character_id?.item_id ?? "";
@@ -309,7 +462,7 @@ export function PlayerCardModal({
       killsList,
       lossesList,
     };
-  }, [allKills, characterItemId]);
+  }, [effectiveKills, characterItemId]);
 
   // Structure aggregation
   const structureSummary = useMemo(() => {
@@ -435,25 +588,33 @@ export function PlayerCardModal({
         {/* Body */}
         <div style={{ padding: 14 }}>
           {/* Combat record */}
-          <Section label={`${G.combat}  COMBAT RECORD (current window)`}>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
-              <Stat label="Kills" value={combat.killsAsAggressor} color={C.green} />
-              <Stat label="Losses" value={combat.lossesAsVictim} color={C.red} />
-              <Stat label="K/D" value={combat.kdRatio} color={C.amber} />
-              <Stat label="Reports" value={combat.reportsFiled} color={C.cyan} sub="3rd-party" />
-              <Stat label="Engagements" value={combat.totalEngagements} />
-            </div>
-            {combat.lastKillTs && (
-              <div style={{ fontSize: 10, color: C.fgDim, marginTop: 4 }}>
-                Last kill {formatRelative(nowSec - combat.lastKillTs)}
-                {combat.firstKillTs && combat.firstKillTs !== combat.lastKillTs &&
-                  ` · first ${formatRelative(nowSec - combat.firstKillTs)}`}
-              </div>
-            )}
-            {combat.totalEngagements === 0 && (
+          <Section label={`${G.combat}  COMBAT RECORD${needsLazyKills ? "  (last 7 days)" : "  (current window)"}`}>
+            {lazyKillsLoading ? (
               <div style={{ fontSize: 11, color: C.fgFaint, fontStyle: "italic" }}>
-                No combat activity in current window.
+                Scanning kill events from last 7 days…
               </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+                  <Stat label="Kills" value={combat.killsAsAggressor} color={C.green} />
+                  <Stat label="Losses" value={combat.lossesAsVictim} color={C.red} />
+                  <Stat label="K/D" value={combat.kdRatio} color={C.amber} />
+                  <Stat label="Reports" value={combat.reportsFiled} color={C.cyan} sub="3rd-party" />
+                  <Stat label="Engagements" value={combat.totalEngagements} />
+                </div>
+                {combat.lastKillTs && (
+                  <div style={{ fontSize: 10, color: C.fgDim, marginTop: 4 }}>
+                    Last kill {formatRelative(nowSec - combat.lastKillTs)}
+                    {combat.firstKillTs && combat.firstKillTs !== combat.lastKillTs &&
+                      ` · first ${formatRelative(nowSec - combat.firstKillTs)}`}
+                  </div>
+                )}
+                {combat.totalEngagements === 0 && (
+                  <div style={{ fontSize: 11, color: C.fgFaint, fontStyle: "italic" }}>
+                    No combat activity in {needsLazyKills ? "last 7 days" : "current window"}.
+                  </div>
+                )}
+              </>
             )}
           </Section>
 
@@ -499,7 +660,7 @@ export function PlayerCardModal({
                   combat.topSystems.map(([sysId, count]) => (
                     <div key={sysId} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
                       <span style={{ fontSize: 11, color: C.cyan, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {sysMap.get(sysId) ?? `sys-${sysId}`}
+                        {mergedSysMap.get(sysId) ?? `sys-${sysId}`}
                       </span>
                       <span style={{ fontSize: 9, color: C.fgFaint }}>{count}</span>
                     </div>
@@ -544,7 +705,7 @@ export function PlayerCardModal({
                           {charMap.get(otherId) ?? `#${otherId.slice(-6)}`}
                         </span>
                         <span style={{ fontSize: 10, color: C.cyanDim }}>
-                          {sysMap.get(sysId) ?? `sys-${sysId}`}
+                          {mergedSysMap.get(sysId) ?? `sys-${sysId}`}
                         </span>
                         <span style={{ fontSize: 9, color: C.fgFaint }}>
                           {formatRelative(nowSec - ts)}
