@@ -1,0 +1,182 @@
+[
+  {
+    "char": "A",
+    "file": "glyphs/letter_A.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "B",
+    "file": "glyphs/letter_B.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "C",
+    "file": "glyphs/letter_C.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "D",
+    "file": "glyphs/letter_D.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "E",
+    "file": "glyphs/letter_E.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "F",
+    "file": "glyphs/letter_F.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "G",
+    "file": "glyphs/letter_G.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "H",
+    "file": "glyphs/letter_H.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "I",
+    "file": "glyphs/letter_I.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "J",
+    "file": "glyphs/letter_J.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "K",
+    "file": "glyphs/letter_K.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "L",
+    "file": "glyphs/letter_L.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "M",
+    "file": "glyphs/letter_M.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "N",
+    "file": "glyphs/letter_N.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "O",
+    "file": "glyphs/letter_O.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "P",
+    "file": "glyphs/letter_P.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "Q",
+    "file": "glyphs/letter_Q.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "R",
+    "file": "glyphs/letter_R.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "S",
+    "file": "glyphs/letter_S.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "T",
+    "file": "glyphs/letter_T.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "U",
+    "file": "glyphs/letter_U.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "V",
+    "file": "glyphs/letter_V.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "W",
+    "file": "glyphs/letter_W.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "X",
+    "file": "glyphs/letter_X.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "Y",
+    "file": "glyphs/letter_Y.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "Z",
+    "file": "glyphs/letter_Z.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "1",
+    "file": "glyphs/digit_1.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "2",
+    "file": "glyphs/digit_2.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "3",
+    "file": "glyphs/digit_3.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "4",
+    "file": "glyphs/digit_4.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "5",
+    "file": "glyphs/digit_5.png",
+    "unconfirmed": false
+  },
+  {
+    "char": "6",
+    "file": "glyphs/digit_6.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "7",
+    "file": "glyphs/digit_7.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "8",
+    "file": "glyphs/digit_8.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "9",
+    "file": "glyphs/digit_9.png",
+    "unconfirmed": true
+  },
+  {
+    "char": "0",
+    "file": "glyphs/digit_0.png",
+    "unconfirmed": false
+  }
+]
