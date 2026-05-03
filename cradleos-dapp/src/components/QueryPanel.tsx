@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
+import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL, SERVER_ENV } from "../constants";
 import { numish, isTribeOnActiveServer } from "../lib";
 import { PlayerCardModal } from "./PlayerCardModal";
 
@@ -80,7 +80,36 @@ async function fetchCharactersByPkg(charType: string): Promise<CharacterResult[]
   return results;
 }
 
+// ── localStorage TTL cache ────────────────────────────────────────────────────
+// Cold-load fetchAllCharacters takes 5-15s for 3000+ paginated GraphQL
+// objects(). 15-minute TTL captures repeat-visit speedup without going
+// stale enough to badly mislead. Cache key includes SERVER_ENV so a
+// stillness/utopia toggle doesn't poison the cache.
+const LS_TTL_MS = 15 * 60_000;
+const LS_KEY = (name: string) => `cradleos:querycache:${SERVER_ENV}:${name}`;
+
+function lsCacheGet<T>(name: string): T | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY(name));
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw) as { ts: number; data: T };
+    if (Date.now() - ts > LS_TTL_MS) return null;
+    return data;
+  } catch { return null; }
+}
+function lsCacheSet<T>(name: string, data: T): void {
+  try {
+    localStorage.setItem(LS_KEY(name), JSON.stringify({ ts: Date.now(), data }));
+  } catch {
+    // Quota exceeded or storage disabled — silently skip.
+    // Worst case: next visit re-fetches, same as today.
+  }
+}
+
 async function fetchAllCharacters(): Promise<CharacterResult[]> {
+  const cached = lsCacheGet<CharacterResult[]>("characters");
+  if (cached && cached.length > 0) return cached;
+
   // Fetch from both world pkg versions — characters created before v0.0.21 are typed against v1
   const [v2, v1] = await Promise.all([
     fetchCharactersByPkg(`${WORLD_PKG}::character::Character`),
@@ -88,16 +117,23 @@ async function fetchAllCharacters(): Promise<CharacterResult[]> {
   ]);
   // Deduplicate by objectId
   const seen = new Set<string>();
-  return [...v2, ...v1].filter(c => { if (seen.has(c.objectId)) return false; seen.add(c.objectId); return true; });
+  const merged = [...v2, ...v1].filter(c => { if (seen.has(c.objectId)) return false; seen.add(c.objectId); return true; });
+  lsCacheSet("characters", merged);
+  return merged;
 }
 
 async function fetchAllTribes(): Promise<TribeResult[]> {
+  const cached = lsCacheGet<TribeResult[]>("tribes");
+  if (cached && cached.length > 0) return cached;
+
   // Stillness has ~412 tribes (Apr 2026); limit=1000 covers full set with headroom.
   // Previous limit=200 truncated player tribes (id >= 98M) — players past the
   // first 200 entries (sorted by some default order) silently disappeared.
   const res = await fetch(`${WORLD_API}/v2/tribes?limit=1000`);
   const json = await res.json() as { data?: Array<{ id: number; name: string; nameShort: string; description: string; taxRate: number; tribeUrl: string }> };
-  return (json.data ?? []).map(t => ({ id: t.id, name: t.name, ticker: t.nameShort, description: t.description, taxRate: t.taxRate, url: t.tribeUrl }));
+  const tribes = (json.data ?? []).map(t => ({ id: t.id, name: t.name, ticker: t.nameShort, description: t.description, taxRate: t.taxRate, url: t.tribeUrl }));
+  lsCacheSet("tribes", tribes);
+  return tribes;
 }
 
 async function fetchCradleOSVaults(): Promise<CradleOSVault[]> {

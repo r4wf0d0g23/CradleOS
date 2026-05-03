@@ -888,7 +888,7 @@ function AppInner() {
             color: "rgba(175,175,155,0.8)", marginBottom: "14px", fontFamily: "inherit",
             fontWeight: 400,
           }}>
-            EVE FRONTIER &nbsp;·&nbsp; SUI TESTNET &nbsp;·&nbsp; HACKATHON 2026
+            EVE FRONTIER &nbsp;·&nbsp; SUI TESTNET &nbsp;·&nbsp; HACKATHON 2026 WINNER
           </p>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"20px", margin:"0 0 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
@@ -897,7 +897,7 @@ function AppInner() {
                 fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 800, letterSpacing: "0.06em",
                 color: "#FF4700", margin: 0,
               }}>
-                C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS <span style={{ fontSize: "0.4em", verticalAlign: "super", opacity: 0.6, letterSpacing: "0.08em" }}>v2</span>
+                C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS
               </h1>
               <KeeperOrb size={48} onClick={() => setActiveTab("keeper")} title="Open Keeper" />
             </div>
