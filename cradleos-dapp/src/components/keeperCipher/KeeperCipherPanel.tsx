@@ -1,20 +1,24 @@
 /**
- * KeeperCipherPanel — the daily Keeper transmission decoder + expedition
- * verification surface.
+ * KeeperCipherPanel — daily Keeper transmission rendered in the canonical
+ * Keeper alphabet, with optional in-game expeditions.
  *
- * Two interleaved loops (see design doc in repo):
- *   Loop A (sedentary): decode today's Keeper fragment using a substitution
- *           cipher whose seed is derived from the UTC date plus the latest
- *           killmail tx digest. Solve = unlock the plaintext.
- *   Loop B (active): if the fragment carries an expedition, the Keeper
- *           issues a target system. Player must travel there in-game and
- *           reveal a NetworkNode at that location. Verification is a
- *           client-side scan of LocationRevealedEvents that match the
- *           target system + post-issue timestamp + the player's character.
+ * v0.2 mechanic change (2026-05-02):
+ *   The substitution cipher is gone. Fragments are now displayed as glyphs
+ *   from the canonical Keeper alphabet (sourced from CCP video releases,
+ *   used with permission). The puzzle is to READ the message — i.e., to
+ *   internalize the alphabet over time. Reveal modes:
+ *     - TRAINING: each glyph has its Latin letter underneath (full help)
+ *     - SCAFFOLDED: hover or click a glyph to see its letter (one at a time)
+ *     - RAW: glyphs only; no Latin reveal at all
+ *   Player chooses the mode; harder modes unlock streak rewards in v1.
  *
- * Visual language mirrors KillCardModal/PlayerCardModal — CCP palette
- * (Crude / Neutral / Martian Red / Secondary olive), corner brackets,
- * monospace, all glyphs webview-safe.
+ *   Unconfirmed glyphs (12 of 36) are rendered with a dashed orange border
+ *   and a small "?" so we're transparent about which mappings are derived
+ *   vs canonical. These are visible in TRAINING mode but the player should
+ *   know the source ambiguity.
+ *
+ * Loop B (expeditions) unchanged — same on-chain verification path as
+ * v0.1. See selectors.ts.
  */
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -28,11 +32,12 @@ import {
   type KeeperExpedition,
 } from "./fragments";
 import {
-  encryptFragment,
-  scoreAttempt,
-  previewDecryption,
-  type CipherPuzzle,
-} from "./cipher";
+  GLYPHS,
+  glyphUrl,
+  tokenize,
+  type GlyphMeta,
+  type GlyphToken,
+} from "./glyphs";
 import {
   buildDailySeed,
   selectBloodiestSystem,
@@ -42,7 +47,7 @@ import {
   type LocationReveal,
 } from "./selectors";
 
-// ── CCP palette (mirror KillCardModal) ────────────────────────────────────────
+// ── CCP palette ───────────────────────────────────────────────────────────────
 const C = {
   bg: "#0B0B0B",
   panel: "rgba(11, 11, 11, 0.96)",
@@ -67,23 +72,32 @@ const G = {
   fragment: "❖",
   intercept: "≡",
   cipher: "▣",
-  hint: "✦",
   expedition: "◉",
-  sentinel: "▲",
   link: "↗",
   bullet: "▪",
   unsolved: "◇",
   solved: "◆",
-  refresh: "↻",
+};
+
+type ReadMode = "training" | "scaffolded" | "raw";
+const READ_MODE_LABEL: Record<ReadMode, string> = {
+  training: "TRAINING",
+  scaffolded: "SCAFFOLDED",
+  raw: "RAW",
+};
+const READ_MODE_DESC: Record<ReadMode, string> = {
+  training: "Each glyph shown with its Latin letter beneath. Use to memorize the alphabet.",
+  scaffolded: "Hover any glyph to peek its letter. Click to lock it open.",
+  raw: "Glyphs only. Read the Keeper's tongue or do not.",
 };
 
 // ── localStorage state ────────────────────────────────────────────────────────
 type CompletionRecord = {
   fragmentId: number;
-  solvedAtMs: number;
-  /** Optional: txDigest of the LocationRevealedEvent that proved the
-   *  expedition. Absent for fragments without an expedition or where the
-   *  expedition was skipped. */
+  /** Which read mode the player solved/read it in (highest difficulty wins). */
+  readMode: ReadMode;
+  archivedAtMs: number;
+  /** txDigest of the LocationRevealedEvent that proved the optional expedition. */
   expeditionProofTx?: string;
 };
 
@@ -100,14 +114,13 @@ interface ActiveExpedition {
 const LS_COMPLETIONS = "cradleos:keeper-cipher:completions";
 const LS_ACTIVE_EXPEDITION = "cradleos:keeper-cipher:active-expedition";
 const LS_LAST_COMPLETED_SYSTEM = "cradleos:keeper-cipher:last-system";
+const LS_READ_MODE = "cradleos:keeper-cipher:read-mode";
 
 function loadCompletions(): CompletionRecord[] {
   try {
     const raw = localStorage.getItem(LS_COMPLETIONS);
     return raw ? (JSON.parse(raw) as CompletionRecord[]) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 function saveCompletions(list: CompletionRecord[]): void {
   try { localStorage.setItem(LS_COMPLETIONS, JSON.stringify(list)); } catch { /* quota */ }
@@ -124,8 +137,16 @@ function saveActiveExpedition(e: ActiveExpedition | null): void {
     else localStorage.removeItem(LS_ACTIVE_EXPEDITION);
   } catch { /* quota */ }
 }
+function loadReadMode(): ReadMode {
+  const raw = (() => { try { return localStorage.getItem(LS_READ_MODE); } catch { return null; } })();
+  if (raw === "training" || raw === "scaffolded" || raw === "raw") return raw;
+  return "training";
+}
+function saveReadMode(m: ReadMode): void {
+  try { localStorage.setItem(LS_READ_MODE, m); } catch { /* quota */ }
+}
 
-// ── Section frame (re-used pattern) ───────────────────────────────────────────
+// ── Section frame ─────────────────────────────────────────────────────────────
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div
@@ -149,20 +170,204 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
+// ── Single glyph render ───────────────────────────────────────────────────────
+const GLYPH_PX = 36; // base size; can be scaled via prop
+const GLYPH_PX_LARGE = 44;
+
+function GlyphSprite({
+  meta,
+  size = GLYPH_PX,
+  showLatin,
+  reveal,
+  onPeek,
+  isLocked,
+}: {
+  meta: GlyphMeta;
+  size?: number;
+  /** TRAINING mode: always show Latin letter beneath. */
+  showLatin: boolean;
+  /** SCAFFOLDED mode: this glyph is currently being peeked at. */
+  reveal: boolean;
+  /** SCAFFOLDED mode: click handler to toggle lock-open. */
+  onPeek?: (locked: boolean) => void;
+  /** SCAFFOLDED mode: this glyph has been clicked to stay revealed. */
+  isLocked?: boolean;
+}) {
+  const [hover, setHover] = useState(false);
+  const showLetter = showLatin || reveal || hover || isLocked;
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={onPeek ? () => onPeek(!isLocked) : undefined}
+      style={{
+        display: "inline-flex",
+        flexDirection: "column",
+        alignItems: "center",
+        cursor: onPeek ? "pointer" : "default",
+        margin: "0 2px",
+      }}
+      title={onPeek ? `${meta.char}${meta.unconfirmed ? " (unconfirmed)" : ""} — click to ${isLocked ? "hide" : "lock open"}` : meta.char}
+    >
+      <div
+        style={{
+          position: "relative",
+          width: size,
+          height: size,
+          background: "rgba(255, 71, 0, 0.04)",
+          border: meta.unconfirmed
+            ? `1px dashed rgba(255, 71, 0, 0.45)`
+            : `1px solid rgba(107, 107, 94, 0.32)`,
+          padding: 2,
+          imageRendering: "pixelated", // keep the angular character of the source art
+        }}
+      >
+        <img
+          src={glyphUrl(meta)}
+          alt={meta.char}
+          draggable={false}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            // The source PNG is amber on near-black; the panel background is
+            // already near-black so it composites cleanly. No filter applied
+            // so we preserve the canonical look.
+          }}
+        />
+        {meta.unconfirmed && (
+          <span
+            style={{
+              position: "absolute",
+              top: 1,
+              right: 2,
+              fontSize: 8,
+              color: C.accent,
+              fontFamily: "ui-monospace, monospace",
+              fontWeight: 700,
+            }}
+          >
+            ?
+          </span>
+        )}
+      </div>
+      {showLetter && (
+        <span
+          style={{
+            fontSize: 9,
+            color: showLatin ? C.fgDim : C.accent,
+            fontFamily: "ui-monospace, monospace",
+            letterSpacing: "0.06em",
+            marginTop: 2,
+            fontWeight: 700,
+            minHeight: 12,
+          }}
+        >
+          {meta.char}
+        </span>
+      )}
+      {!showLetter && (
+        <span style={{ minHeight: 12 + 2 }} />
+      )}
+    </div>
+  );
+}
+
+// ── Glyph stream renderer ─────────────────────────────────────────────────────
+function GlyphStream({
+  tokens,
+  mode,
+  glyphSize = GLYPH_PX,
+  lockedGlyphs,
+  onToggleLock,
+}: {
+  tokens: GlyphToken[];
+  mode: ReadMode;
+  glyphSize?: number;
+  lockedGlyphs: Set<string>;
+  onToggleLock: (char: string, locked: boolean) => void;
+}) {
+  const showLatin = mode === "training";
+  // group tokens into words for wrapping
+  const words: GlyphToken[][] = [];
+  let buf: GlyphToken[] = [];
+  for (const t of tokens) {
+    if (t.type === "space") {
+      if (buf.length) { words.push(buf); buf = []; }
+      words.push([{ type: "space" }]);
+    } else if (t.type === "newline") {
+      if (buf.length) { words.push(buf); buf = []; }
+      words.push([{ type: "newline" }]);
+    } else {
+      buf.push(t);
+    }
+  }
+  if (buf.length) words.push(buf);
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: "4px 0", lineHeight: 1.2 }}>
+      {words.map((w, wi) => {
+        if (w.length === 1 && w[0].type === "space") {
+          return <span key={wi} style={{ display: "inline-block", width: glyphSize * 0.4, minHeight: glyphSize }} />;
+        }
+        if (w.length === 1 && w[0].type === "newline") {
+          return <div key={wi} style={{ flexBasis: "100%", height: 8 }} />;
+        }
+        return (
+          <span key={wi} style={{ display: "inline-flex", alignItems: "flex-start", marginRight: 2 }}>
+            {w.map((t, ti) => {
+              if (t.type === "literal") {
+                return (
+                  <span
+                    key={ti}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: glyphSize / 2,
+                      height: glyphSize,
+                      color: C.fgDim,
+                      fontFamily: "ui-monospace, monospace",
+                      fontSize: glyphSize * 0.5,
+                    }}
+                  >
+                    {t.char}
+                  </span>
+                );
+              }
+              if (t.type === "glyph") {
+                const isLocked = lockedGlyphs.has(t.meta.char);
+                return (
+                  <GlyphSprite
+                    key={ti}
+                    meta={t.meta}
+                    size={glyphSize}
+                    showLatin={showLatin}
+                    reveal={false}
+                    isLocked={mode === "scaffolded" && isLocked}
+                    onPeek={mode === "scaffolded" ? (locked) => onToggleLock(t.meta.char, locked) : undefined}
+                  />
+                );
+              }
+              return null;
+            })}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Main panel ────────────────────────────────────────────────────────────────
 export function KeeperCipherPanel() {
   const account = useCurrentAccount();
   const wallet = account?.address ?? null;
 
-  // ── Player character resolution (only needed for expedition verify) ─────
   const [playerChar, setPlayerChar] = useState<CharacterInfo | null>(null);
   const [playerTribeName, setPlayerTribeName] = useState<string | null>(null);
   useEffect(() => {
-    if (!wallet) {
-      setPlayerChar(null);
-      setPlayerTribeName(null);
-      return;
-    }
+    if (!wallet) { setPlayerChar(null); setPlayerTribeName(null); return; }
     let cancelled = false;
     findCharacterForWallet(wallet)
       .then(async info => {
@@ -173,17 +378,17 @@ export function KeeperCipherPanel() {
           if (!cancelled && tribe) setPlayerTribeName(tribe.nameShort || tribe.name);
         }
       })
-      .catch(() => { /* leave null; expedition verify will warn */ });
+      .catch(() => { /* silent */ });
     return () => { cancelled = true; };
   }, [wallet]);
 
-  // ── Today's puzzle ────────────────────────────────────────────────────
   const [seed, setSeed] = useState<string | null>(null);
   const [fragment, setFragment] = useState<KeeperFragment | null>(null);
-  const [puzzle, setPuzzle] = useState<CipherPuzzle | null>(null);
   const [loading, setLoading] = useState(true);
   const [completions, setCompletions] = useState<CompletionRecord[]>(() => loadCompletions());
   const [activeExpedition, setActiveExpedition] = useState<ActiveExpedition | null>(() => loadActiveExpedition());
+  const [readMode, setReadMode] = useState<ReadMode>(() => loadReadMode());
+  const [lockedGlyphs, setLockedGlyphs] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -193,61 +398,49 @@ export function KeeperCipherPanel() {
         if (cancelled) return;
         setSeed(s);
         const completedIds = completions.map(c => c.fragmentId);
-        const f = pickFragmentForSeed(s, completedIds);
-        setFragment(f);
-        setPuzzle(encryptFragment(f.plaintext, f.cipher_strength, s));
+        setFragment(pickFragmentForSeed(s, completedIds));
         setLoading(false);
       })
-      .catch(() => {
-        if (!cancelled) setLoading(false);
-      });
+      .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, []); // intentionally only on mount; refresh button to retrigger
+  }, []); // mount-only
 
-  // ── Player guesses (glyph → letter) ───────────────────────────────────
-  const [guess, setGuess] = useState<Map<string, string>>(new Map());
-  // Reset guess when fragment changes; pre-populate free hints.
+  const tokens = useMemo(() => fragment ? tokenize(fragment.plaintext) : [], [fragment]);
+  const isPreviouslyArchived = fragment ? completions.some(c => c.fragmentId === fragment.id) : false;
+
+  // ── Mark current fragment archived once the player has read it (any mode) ──
+  // We define "read" as: the player has spent at least 5 seconds with the fragment open
+  // AND has either selected a non-default mode, peeked a glyph, or solved an expedition.
+  // Simpler v0.2: treat opening the fragment as reading; archive on first view if not
+  // already archived. The streak/scoring system can refine this in v1.
   useEffect(() => {
-    if (!puzzle) return;
-    const initial = new Map<string, string>();
-    for (const h of puzzle.freeHints) initial.set(h.glyph, h.letter);
-    setGuess(initial);
-  }, [puzzle]);
+    if (!fragment) return;
+    if (completions.some(c => c.fragmentId === fragment.id)) return;
+    const t = setTimeout(() => {
+      const next = [
+        ...completions,
+        {
+          fragmentId: fragment.id,
+          readMode,
+          archivedAtMs: Date.now(),
+        },
+      ];
+      setCompletions(next);
+      saveCompletions(next);
+    }, 5000); // 5s grace period
+    return () => clearTimeout(t);
+  }, [fragment, readMode, completions]);
 
-  const score = useMemo(() => {
-    if (!puzzle) return null;
-    return scoreAttempt(puzzle.decryptionMap, guess);
-  }, [puzzle, guess]);
-
-  const livePreview = useMemo(() => {
-    if (!puzzle) return "";
-    return previewDecryption(puzzle.ciphertext, puzzle.decryptionMap, guess);
-  }, [puzzle, guess]);
-
-  const isSolved = score?.isComplete ?? false;
-  const isPreviouslySolved = fragment ? completions.some(c => c.fragmentId === fragment.id) : false;
-
-  // ── Persist solve event ─────────────────────────────────────────────
-  useEffect(() => {
-    if (!isSolved || !fragment) return;
-    if (completions.some(c => c.fragmentId === fragment.id)) return; // already recorded
-    const next = [...completions, { fragmentId: fragment.id, solvedAtMs: Date.now() }];
-    setCompletions(next);
-    saveCompletions(next);
-  }, [isSolved, fragment, completions]);
-
-  // ── Glyph selection state for the cipher key ──────────────────────────
-  const [activeGlyph, setActiveGlyph] = useState<string | null>(null);
-  const setLetterFor = (glyph: string, letter: string) => {
-    setGuess(prev => {
-      const next = new Map(prev);
-      if (letter === "") next.delete(glyph);
-      else next.set(glyph, letter);
+  const handleToggleLock = (ch: string, locked: boolean) => {
+    setLockedGlyphs(prev => {
+      const next = new Set(prev);
+      if (locked) next.add(ch);
+      else next.delete(ch);
       return next;
     });
   };
 
-  // ── Expedition flow ───────────────────────────────────────────────────
+  // ── Expedition flow (unchanged from v0.1) ────────────────────────────────
   const [issuingExpedition, setIssuingExpedition] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
@@ -257,18 +450,10 @@ export function KeeperCipherPanel() {
     try {
       let target: number | null = null;
       switch (exp.targetSelector.kind) {
-        case "fixed":
-          target = exp.targetSelector.systemId;
-          break;
-        case "bloodiest_24h":
-          target = await selectBloodiestSystem(86400, 30);
-          break;
-        case "bloodiest_7d":
-          target = await selectBloodiestSystem(7 * 86400, 60);
-          break;
-        case "unsettled":
-          target = await selectUnsettledSystem(40);
-          break;
+        case "fixed": target = exp.targetSelector.systemId; break;
+        case "bloodiest_24h": target = await selectBloodiestSystem(86400, 30); break;
+        case "bloodiest_7d": target = await selectBloodiestSystem(7 * 86400, 60); break;
+        case "unsettled": target = await selectUnsettledSystem(40); break;
         case "adjacent_to_previous": {
           const last = parseInt(localStorage.getItem(LS_LAST_COMPLETED_SYSTEM) ?? "0", 10);
           if (last > 0) target = await selectAdjacentSystem(last);
@@ -277,17 +462,13 @@ export function KeeperCipherPanel() {
         }
       }
       if (!target) {
-        setVerifyError("Lattice silent. Selector returned no candidate. Try another fragment.");
+        setVerifyError("Lattice silent. No target candidate available right now.");
         return;
       }
-      // Resolve system name (best effort).
       let name: string | undefined;
       try {
         const res = await fetch(`${WORLD_API}/v2/solarsystems/${target}`);
-        if (res.ok) {
-          const j = (await res.json()) as { name?: string };
-          if (j.name) name = j.name;
-        }
+        if (res.ok) { const j = (await res.json()) as { name?: string }; if (j.name) name = j.name; }
       } catch { /* ignore */ }
 
       const newExp: ActiveExpedition = {
@@ -316,39 +497,31 @@ export function KeeperCipherPanel() {
         playerCharacterObjectId: playerChar.characterId,
       });
       if (!reveal) {
-        setVerifyError(
-          "No matching reveal found. Ensure your sentinel is anchored in the target system AFTER the mission was issued.",
-        );
+        setVerifyError("No matching reveal found. Anchor a sentinel in the target system AFTER the mission was issued, then try again.");
         return;
       }
-      const completed: ActiveExpedition = {
-        ...activeExpedition,
-        proofTxDigest: reveal.txDigest,
-        completedAtMs: Date.now(),
-      };
+      const completed: ActiveExpedition = { ...activeExpedition, proofTxDigest: reveal.txDigest, completedAtMs: Date.now() };
       setActiveExpedition(completed);
       saveActiveExpedition(completed);
 
-      // Mark fragment completion with proof tx + remember last system.
       const updated = completions
         .filter(c => c.fragmentId !== activeExpedition.fragmentId)
         .concat({
           fragmentId: activeExpedition.fragmentId,
-          solvedAtMs: Date.now(),
+          readMode,
+          archivedAtMs: Date.now(),
           expeditionProofTx: reveal.txDigest,
         });
       setCompletions(updated);
       saveCompletions(updated);
-      try {
-        localStorage.setItem(LS_LAST_COMPLETED_SYSTEM, String(activeExpedition.targetSystemId));
-      } catch { /* quota */ }
+      try { localStorage.setItem(LS_LAST_COMPLETED_SYSTEM, String(activeExpedition.targetSystemId)); } catch { /* quota */ }
 
-      // Reward: pick next fragment immediately.
+      // Reward: skip to next fragment
       if (seed) {
         const completedIds = updated.map(c => c.fragmentId);
         const next = pickFragmentForSeed(seed + ":" + activeExpedition.fragmentId, completedIds);
         setFragment(next);
-        setPuzzle(encryptFragment(next.plaintext, next.cipher_strength, seed));
+        setLockedGlyphs(new Set());
       }
     } catch (err) {
       setVerifyError(err instanceof Error ? err.message : String(err));
@@ -358,13 +531,12 @@ export function KeeperCipherPanel() {
   };
 
   const abandonExpedition = () => {
-    if (!confirmInline("Abandon this expedition?")) return;
     setActiveExpedition(null);
     saveActiveExpedition(null);
   };
 
   // ── Render ────────────────────────────────────────────────────────────
-  if (loading || !fragment || !puzzle) {
+  if (loading || !fragment) {
     return (
       <div style={{ padding: 16, color: C.fgDim, fontFamily: "ui-monospace, monospace" }}>
         [ resolving lattice signal… ]
@@ -373,207 +545,116 @@ export function KeeperCipherPanel() {
   }
 
   return (
-    <div style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: C.fg, maxWidth: 880, margin: "0 auto" }}>
+    <div style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", color: C.fg, maxWidth: 1000, margin: "0 auto" }}>
       {/* Header */}
       <Section label={`${G.keeper}  KEEPER TRANSMISSION  \u2014  FRAGMENT #${fragment.id}`}>
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 12, marginBottom: 6 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 12, marginBottom: 4 }}>
           <span style={{ color: C.accent, fontWeight: 700, letterSpacing: "0.06em", fontSize: 13 }}>
             {fragment.intercept_label}
           </span>
           <span style={{ fontSize: 10, color: C.secondaryDim, letterSpacing: "0.1em" }}>
-            CIPHER STRENGTH {fragment.cipher_strength}/5
-          </span>
-          <span style={{ fontSize: 10, color: C.secondaryDim, letterSpacing: "0.1em" }}>
-            {completions.length} FRAGMENT{completions.length === 1 ? "" : "S"} ARCHIVED
-            {" / "}
-            {FRAGMENTS.length} KNOWN
+            {completions.length} / {FRAGMENTS.length} ARCHIVED
           </span>
           {playerTribeName && (
             <span style={{ fontSize: 10, color: C.secondaryDim, letterSpacing: "0.1em" }}>
               SENTINEL · {playerTribeName}
             </span>
           )}
-        </div>
-        {isPreviouslySolved && (
-          <div style={{ fontSize: 10, color: C.amber, marginTop: 4, letterSpacing: "0.06em" }}>
-            {G.solved} You have already decoded this fragment. The transcript stands as your record.
-          </div>
-        )}
-      </Section>
-
-      {/* Encrypted payload + live preview */}
-      <Section label={`${G.intercept}  ENCRYPTED PAYLOAD`}>
-        <div
-          style={{
-            background: "rgba(0,0,0,0.55)",
-            padding: "10px 12px",
-            border: `1px solid ${C.divider}`,
-            fontFamily: "ui-monospace, monospace",
-            fontSize: 14,
-            letterSpacing: "0.04em",
-            wordBreak: "break-word",
-            color: C.secondary,
-            whiteSpace: "pre-wrap",
-            marginBottom: 8,
-          }}
-        >
-          {puzzle.ciphertext}
-        </div>
-        <div style={{ fontSize: 9, color: C.secondaryDim, letterSpacing: "0.1em", marginBottom: 4 }}>
-          DECODED PREVIEW
-        </div>
-        <div
-          style={{
-            background: "rgba(255, 71, 0, 0.04)",
-            padding: "10px 12px",
-            border: `1px solid ${C.accentFaint}`,
-            fontFamily: "ui-monospace, monospace",
-            fontSize: 14,
-            letterSpacing: "0.04em",
-            wordBreak: "break-word",
-            color: isSolved ? C.accent : C.fg,
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {livePreview}
+          {isPreviouslyArchived && (
+            <span style={{ fontSize: 10, color: C.amber, letterSpacing: "0.06em" }}>
+              {G.solved} ARCHIVED
+            </span>
+          )}
         </div>
       </Section>
 
-      {/* Cipher key */}
-      <Section label={`${G.cipher}  CIPHER KEY  \u2014  ${score?.correctLetters ?? 0} / ${score?.totalLetters ?? 0} RESOLVED`}>
-        <div style={{ fontSize: 10, color: C.secondaryDim, marginBottom: 8 }}>
-          Click a glyph, then a letter. Free hints are pre-filled. Decoded text updates live.
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
-          {puzzle.glyphsInPuzzle.map(glyph => {
-            const guessLetter = guess.get(glyph);
-            const isCorrect = guessLetter && puzzle.decryptionMap.get(glyph) === guessLetter;
-            const isFree = puzzle.freeHints.some(h => h.glyph === glyph);
-            const isActive = activeGlyph === glyph;
+      {/* Read mode picker */}
+      <Section label={`${G.cipher}  READ MODE`}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 6 }}>
+          {(["training", "scaffolded", "raw"] as ReadMode[]).map(m => {
+            const active = readMode === m;
             return (
-              <div
-                key={glyph}
-                onClick={() => !isFree && setActiveGlyph(activeGlyph === glyph ? null : glyph)}
+              <button
+                key={m}
+                onClick={() => { setReadMode(m); saveReadMode(m); setLockedGlyphs(new Set()); }}
                 style={{
-                  cursor: isFree ? "default" : "pointer",
-                  width: 56,
-                  padding: "6px 4px",
-                  textAlign: "center",
-                  border: `1px solid ${
-                    isActive ? C.accent : isCorrect ? C.green : isFree ? C.amber : C.secondaryFaint
-                  }`,
-                  background: isActive ? "rgba(255,71,0,0.08)" : "rgba(107,107,94,0.06)",
-                  position: "relative",
+                  padding: "4px 10px",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.1em",
+                  background: active ? "rgba(255,71,0,0.12)" : "rgba(107,107,94,0.06)",
+                  border: `1px solid ${active ? C.accent : C.secondaryFaint}`,
+                  color: active ? C.accent : C.secondary,
+                  fontFamily: "inherit",
+                  cursor: "pointer",
                 }}
-                title={isFree ? "Free hint — confirmed by Keeper" : "Click to assign a letter"}
               >
-                <div style={{ fontSize: 18, lineHeight: 1, color: isCorrect ? C.green : C.fg }}>
-                  {glyph}
-                </div>
-                <div style={{ fontSize: 11, color: guessLetter ? (isCorrect ? C.green : C.accent) : C.fgFaint, marginTop: 4, fontWeight: 700, letterSpacing: "0.08em", minHeight: 14 }}>
-                  {guessLetter ?? "_"}
-                </div>
-                {isFree && (
-                  <div style={{ fontSize: 7, color: C.amber, position: "absolute", top: 2, right: 4, letterSpacing: "0.1em" }}>
-                    HINT
-                  </div>
-                )}
-              </div>
+                {READ_MODE_LABEL[m]}
+              </button>
             );
           })}
         </div>
-        {activeGlyph && !puzzle.freeHints.some(h => h.glyph === activeGlyph) && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, padding: "8px 6px", background: "rgba(255,71,0,0.04)", border: `1px dashed ${C.accentFaint}` }}>
-            <div style={{ width: "100%", fontSize: 9, color: C.accentDim, letterSpacing: "0.12em", marginBottom: 6 }}>
-              ASSIGN A LETTER TO {activeGlyph}
-            </div>
-            {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(letter => {
-              const isUsed = [...guess.values()].includes(letter) && guess.get(activeGlyph) !== letter;
-              return (
-                <button
-                  key={letter}
-                  disabled={isUsed}
-                  onClick={() => {
-                    setLetterFor(activeGlyph, letter);
-                    setActiveGlyph(null);
-                  }}
-                  style={{
-                    width: 26,
-                    height: 26,
-                    background: isUsed ? "rgba(0,0,0,0.3)" : "rgba(107,107,94,0.1)",
-                    border: `1px solid ${C.secondaryFaint}`,
-                    color: isUsed ? C.fgFaint : C.fg,
-                    fontFamily: "inherit",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: isUsed ? "not-allowed" : "pointer",
-                  }}
-                  title={isUsed ? "Letter already assigned to another glyph" : `Assign ${letter}`}
-                >
-                  {letter}
-                </button>
-              );
-            })}
-            <button
-              onClick={() => {
-                setLetterFor(activeGlyph, "");
-                setActiveGlyph(null);
-              }}
-              style={{
-                marginLeft: "auto",
-                padding: "0 8px",
-                height: 26,
-                background: "transparent",
-                border: `1px solid ${C.accentFaint}`,
-                color: C.accentDim,
-                fontFamily: "inherit",
-                fontSize: 10,
-                cursor: "pointer",
-                letterSpacing: "0.08em",
-              }}
-            >
-              CLEAR
-            </button>
+        <div style={{ fontSize: 10, color: C.fgDim, lineHeight: 1.5 }}>
+          {READ_MODE_DESC[readMode]}
+        </div>
+      </Section>
+
+      {/* The transmission itself */}
+      <Section label={`${G.intercept}  INTERCEPT`}>
+        <div
+          style={{
+            background: "rgba(0,0,0,0.55)",
+            padding: "14px 14px",
+            border: `1px solid ${C.accentFaint}`,
+            minHeight: 80,
+          }}
+        >
+          <GlyphStream
+            tokens={tokens}
+            mode={readMode}
+            glyphSize={GLYPH_PX_LARGE}
+            lockedGlyphs={lockedGlyphs}
+            onToggleLock={handleToggleLock}
+          />
+        </div>
+        {readMode === "scaffolded" && (
+          <div style={{ fontSize: 9, color: C.fgFaint, marginTop: 6, letterSpacing: "0.08em" }}>
+            HOVER TO PEEK · CLICK TO LOCK OPEN · {lockedGlyphs.size} GLYPH{lockedGlyphs.size === 1 ? "" : "S"} REVEALED
           </div>
         )}
       </Section>
 
-      {/* Solved transcript + expedition */}
-      {isSolved && (
-        <Section label={`${G.fragment}  TRANSCRIPT`}>
-          <div
-            style={{
-              padding: "12px 14px",
-              background: "rgba(255, 71, 0, 0.06)",
-              border: `1px solid ${C.accent}`,
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: C.accent,
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              textShadow: "0 0 10px rgba(255, 71, 0, 0.25)",
-            }}
-          >
-            {fragment.plaintext}
-          </div>
-
-          {fragment.expedition && (
-            <ExpeditionSection
-              fragment={fragment}
-              expedition={fragment.expedition}
-              activeExpedition={activeExpedition}
-              issuingExpedition={issuingExpedition}
-              verifying={verifying}
-              verifyError={verifyError}
-              playerCharResolved={!!playerChar}
-              walletConnected={!!wallet}
-              onIssue={() => issueExpedition(fragment, fragment.expedition!)}
-              onVerify={verifyExpedition}
-              onAbandon={abandonExpedition}
-            />
-          )}
+      {/* Expedition */}
+      {fragment.expedition && (
+        <Section label={`${G.expedition}  EXPEDITION ORDER`}>
+          <ExpeditionBlock
+            fragment={fragment}
+            expedition={fragment.expedition}
+            activeExpedition={activeExpedition}
+            issuingExpedition={issuingExpedition}
+            verifying={verifying}
+            verifyError={verifyError}
+            playerCharResolved={!!playerChar}
+            walletConnected={!!wallet}
+            onIssue={() => issueExpedition(fragment, fragment.expedition!)}
+            onVerify={verifyExpedition}
+            onAbandon={abandonExpedition}
+          />
         </Section>
       )}
+
+      {/* Alphabet reference */}
+      <Section label={`${G.cipher}  ALPHABET REFERENCE`}>
+        <div style={{ fontSize: 10, color: C.fgDim, marginBottom: 8 }}>
+          {GLYPHS.filter(g => !g.unconfirmed).length} confirmed glyphs · {" "}
+          {GLYPHS.filter(g => g.unconfirmed).length} unconfirmed (dashed border, marked with ?)
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(50px, 1fr))", gap: 4 }}>
+          {GLYPHS.map(g => (
+            <GlyphSprite key={g.char} meta={g} size={36} showLatin={true} reveal={false} />
+          ))}
+        </div>
+      </Section>
 
       {/* Archive */}
       {completions.length > 0 && (
@@ -596,12 +677,15 @@ export function KeeperCipherPanel() {
                     gap: 6,
                     alignItems: "baseline",
                   }}
-                  title={`Solved ${new Date(c.solvedAtMs).toUTCString()}${c.expeditionProofTx ? ` · expedition proof ${c.expeditionProofTx.slice(0, 10)}…` : ""}`}
+                  title={`Archived ${new Date(c.archivedAtMs).toUTCString()} · mode ${c.readMode}${c.expeditionProofTx ? ` · expedition proof ${c.expeditionProofTx.slice(0, 10)}…` : ""}`}
                 >
                   <span style={{ color: c.expeditionProofTx ? C.green : C.amber }}>
                     {c.expeditionProofTx ? G.solved : G.unsolved}
                   </span>
                   <span>#{c.fragmentId} {label}</span>
+                  <span style={{ color: C.fgFaint, fontSize: 8 }}>
+                    {c.readMode.slice(0, 4).toUpperCase()}
+                  </span>
                 </div>
               );
             })}
@@ -609,16 +693,15 @@ export function KeeperCipherPanel() {
         </Section>
       )}
 
-      {/* Footer note */}
       <div style={{ marginTop: 12, fontSize: 9, color: C.fgFaint, letterSpacing: "0.1em", textAlign: "center" }}>
-        DAILY SEED REFRESHES AT 00:00 UTC · CIPHER MAPPINGS ARE CLIENT-SIDE · EXPEDITIONS VERIFIED ON-CHAIN
+        DAILY SEED REFRESHES AT 00:00 UTC · CANONICAL KEEPER ALPHABET (CCP, USED WITH PERMISSION)
       </div>
     </div>
   );
 }
 
-// ── Expedition section (split out for readability) ────────────────────────────
-function ExpeditionSection({
+// ── Expedition block ──────────────────────────────────────────────────────────
+function ExpeditionBlock({
   fragment,
   expedition,
   activeExpedition,
@@ -647,14 +730,10 @@ function ExpeditionSection({
     activeExpedition !== null &&
     activeExpedition.fragmentId === fragment.id &&
     activeExpedition.expeditionId === expedition.id;
-  const isCompleted =
-    isThisExpedition && activeExpedition.completedAtMs !== undefined;
+  const isCompleted = isThisExpedition && activeExpedition.completedAtMs !== undefined;
 
   return (
-    <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(255, 71, 0, 0.03)", border: `1px solid ${C.accentFaint}` }}>
-      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: C.accent, marginBottom: 8 }}>
-        {G.expedition}  EXPEDITION ORDER
-      </div>
+    <div>
       <div style={{ fontSize: 12, color: C.fg, lineHeight: 1.6, marginBottom: 10, fontStyle: "italic" }}>
         {expedition.brief}
       </div>
@@ -676,16 +755,9 @@ function ExpeditionSection({
             onClick={onIssue}
             disabled={issuingExpedition || (activeExpedition !== null && activeExpedition.fragmentId !== fragment.id)}
             style={{
-              padding: "6px 14px",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              background: "rgba(255, 71, 0, 0.1)",
-              border: `1px solid ${C.accent}`,
-              color: C.accent,
-              fontFamily: "inherit",
-              cursor: issuingExpedition ? "wait" : "pointer",
-              opacity: issuingExpedition ? 0.5 : 1,
+              padding: "6px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+              background: "rgba(255, 71, 0, 0.1)", border: `1px solid ${C.accent}`, color: C.accent,
+              fontFamily: "inherit", cursor: issuingExpedition ? "wait" : "pointer", opacity: issuingExpedition ? 0.5 : 1,
             }}
           >
             {issuingExpedition ? "CONSULTING THE LATTICE…" : "RECEIVE TARGET"}
@@ -706,7 +778,7 @@ function ExpeditionSection({
           </div>
           <div style={{ fontSize: 10, color: C.secondaryDim, marginBottom: 10, lineHeight: 1.6 }}>
             {G.bullet} Travel to the target system in EVE Frontier.<br />
-            {G.bullet} Anchor a Network Node there (deploy fresh, or move + redeploy an existing one).<br />
+            {G.bullet} Anchor a Network Node there (deploy fresh, or move + redeploy).<br />
             {G.bullet} Return here and verify. Verification scans on-chain LocationRevealedEvents
             after {new Date(activeExpedition.issuedAtMs).toUTCString()}.
           </div>
@@ -722,15 +794,9 @@ function ExpeditionSection({
               onClick={onVerify}
               disabled={verifying || !playerCharResolved}
               style={{
-                padding: "6px 14px",
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.1em",
-                background: "rgba(255, 71, 0, 0.12)",
-                border: `1px solid ${C.accent}`,
-                color: C.accent,
-                fontFamily: "inherit",
-                cursor: verifying ? "wait" : playerCharResolved ? "pointer" : "not-allowed",
+                padding: "6px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                background: "rgba(255, 71, 0, 0.12)", border: `1px solid ${C.accent}`, color: C.accent,
+                fontFamily: "inherit", cursor: verifying ? "wait" : playerCharResolved ? "pointer" : "not-allowed",
                 opacity: verifying ? 0.5 : playerCharResolved ? 1 : 0.5,
               }}
               title={playerCharResolved ? "Scan on-chain LocationRevealedEvents for proof" : "Resolving your character — wait a moment"}
@@ -740,15 +806,9 @@ function ExpeditionSection({
             <button
               onClick={onAbandon}
               style={{
-                padding: "6px 14px",
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.1em",
-                background: "transparent",
-                border: `1px solid ${C.secondaryFaint}`,
-                color: C.secondaryDim,
-                fontFamily: "inherit",
-                cursor: "pointer",
+                padding: "6px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                background: "transparent", border: `1px solid ${C.secondaryFaint}`, color: C.secondaryDim,
+                fontFamily: "inherit", cursor: "pointer",
               }}
             >
               ABANDON
@@ -779,12 +839,4 @@ function ExpeditionSection({
       )}
     </div>
   );
-}
-
-// ── Inline confirm (no native dialogs in webview per TOOLS.md) ────────────────
-function confirmInline(_msg: string): boolean {
-  // For v0 we just always allow abandon; a portal-mounted confirm modal can
-  // be added in v1 if abuse becomes an issue. The action is reversible
-  // (player can re-issue from the same fragment).
-  return true;
 }
