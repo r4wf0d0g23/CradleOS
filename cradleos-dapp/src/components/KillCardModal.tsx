@@ -54,6 +54,8 @@ interface KillCardModalProps {
   tribeInfoMap?: Map<number, { name: string; ticker: string }>;
   /** All recent kills, used for context intel (recent-system, killer-streak, victim-losses) */
   allKills: KillRecord[];
+  /** When provided, killer/victim/reporter names become clickable and open a PlayerCard. */
+  onOpenPlayer?: (characterItemId: string) => void;
   onClose: () => void;
 }
 
@@ -157,6 +159,7 @@ function Combatant({
   itemId,
   highlight,
   tribeInfo,
+  onClick,
 }: {
   role: string;
   glyph: string;
@@ -164,6 +167,7 @@ function Combatant({
   itemId: string;
   highlight: string;
   tribeInfo?: { name: string; ticker: string };
+  onClick?: () => void;
 }) {
   return (
     <div style={{ flex: 1, minWidth: 0 }}>
@@ -171,6 +175,8 @@ function Combatant({
       <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 2 }}>
         <span style={{ color: highlight, fontSize: 14, fontWeight: 700 }}>{glyph}</span>
         <span
+          onClick={onClick}
+          title={onClick ? `Open ${name} player card` : undefined}
           style={{
             color: highlight,
             fontSize: 14,
@@ -180,6 +186,10 @@ function Combatant({
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             textShadow: `0 0 8px ${highlight === C.green ? "rgba(0,255,150,0.4)" : "rgba(255,68,68,0.4)"}`,
+            cursor: onClick ? "pointer" : "default",
+            textDecoration: onClick ? "underline" : "none",
+            textDecorationColor: "rgba(100,180,255,0.4)",
+            textUnderlineOffset: 3,
           }}
         >
           {name}
@@ -211,7 +221,7 @@ function Combatant({
 }
 
 // ── Main modal ────────────────────────────────────────────────────────────────
-export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMap, allKills, onClose }: KillCardModalProps) {
+export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMap, allKills, onOpenPlayer, onClose }: KillCardModalProps) {
   // ── Escape key + body scroll lock ─────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -452,6 +462,7 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
                 itemId={killerId}
                 highlight={C.green}
                 tribeInfo={killerTribeInfo}
+                onClick={onOpenPlayer && killerId ? () => onOpenPlayer(killerId) : undefined}
               />
               <div
                 style={{
@@ -488,6 +499,7 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
                 itemId={victimId}
                 highlight={C.red}
                 tribeInfo={victimTribeInfo}
+                onClick={onOpenPlayer && victimId ? () => onOpenPlayer(victimId) : undefined}
               />
             </div>
           </Section>
@@ -503,6 +515,8 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
 
             <Section label={`${G.reporter}  REPORTED BY`}>
               <div
+                onClick={onOpenPlayer && reporterId ? () => onOpenPlayer(reporterId) : undefined}
+                title={onOpenPlayer && reporterId ? `Open ${reporterName} player card` : undefined}
                 style={{
                   fontSize: 12,
                   fontWeight: 600,
@@ -510,6 +524,10 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
+                  cursor: onOpenPlayer && reporterId ? "pointer" : "default",
+                  textDecoration: onOpenPlayer && reporterId ? "underline" : "none",
+                  textDecorationColor: "rgba(100,180,255,0.3)",
+                  textUnderlineOffset: 3,
                 }}
               >
                 {reporterName}

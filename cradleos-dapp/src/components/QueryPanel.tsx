@@ -6,6 +6,7 @@ import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL } from "../constants";
 import { numish, isTribeOnActiveServer } from "../lib";
+import { PlayerCardModal } from "./PlayerCardModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -192,6 +193,7 @@ export function QueryPanel() {
   const [mode, setMode] = useState<"character" | "tribe">("character");
   const [selectedChar, setSelectedChar] = useState<CharacterResult | null>(null);
   const [selectedTribe, setSelectedTribe] = useState<TribeResult | null>(null);
+  const [openPlayer, setOpenPlayer] = useState<{ itemId: string; objectId: string; wallet: string } | null>(null);
 
   const { data: characters, isLoading: charsLoading } = useQuery({
     queryKey: ["allCharacters"],
@@ -324,8 +326,17 @@ export function QueryPanel() {
 
       {/* Character detail */}
       {selectedChar && (
-        <CharacterDetail char={selectedChar} tribe={tribeForId(selectedChar.tribeId) ?? null} vault={vaultForTribe(selectedChar.tribeId) ?? null}
-          onBack={() => setSelectedChar(null)} />
+        <CharacterDetail
+          char={selectedChar}
+          tribe={tribeForId(selectedChar.tribeId) ?? null}
+          vault={vaultForTribe(selectedChar.tribeId) ?? null}
+          onBack={() => setSelectedChar(null)}
+          onOpenPlayerCard={() => setOpenPlayer({
+            itemId: selectedChar.itemId,
+            objectId: selectedChar.objectId,
+            wallet: selectedChar.characterAddress,
+          })}
+        />
       )}
 
       {/* Tribe detail */}
@@ -339,23 +350,87 @@ export function QueryPanel() {
           Type a name to search, or <strong style={{ color: "#FF4700" }}>*</strong> to list all. {characters ? `${characters.length} characters` : ""} {tribes ? `· ${tribes.length} tribes` : ""} indexed.
         </div>
       )}
+
+      {/* Player card modal (opened from character detail "Open player card" button) */}
+      {openPlayer && (() => {
+        // Build minimal maps from the data already fetched by this panel.
+        // PlayerCardModal will lazy-load structures itself; we provide names
+        // and tribe info so the header populates immediately.
+        const charMap = new Map<string, string>();
+        for (const c of (characters ?? [])) {
+          if (c.itemId && c.name) charMap.set(c.itemId, c.name);
+        }
+        const charTribeMap = new Map<string, number>();
+        for (const c of (characters ?? [])) {
+          if (c.itemId && c.tribeId && c.tribeId > 0) charTribeMap.set(c.itemId, c.tribeId);
+        }
+        const tribeInfoMap = new Map<number, { name: string; ticker: string }>();
+        for (const t of (tribes ?? [])) {
+          if (t.id) tribeInfoMap.set(t.id, { name: t.name, ticker: t.ticker });
+        }
+        return (
+          <PlayerCardModal
+            characterItemId={openPlayer.itemId}
+            characterObjectId={openPlayer.objectId}
+            characterWallet={openPlayer.wallet}
+            charMap={charMap}
+            sysMap={new Map()}
+            charTribeMap={charTribeMap}
+            tribeInfoMap={tribeInfoMap}
+            allKills={[]}
+            onClose={() => setOpenPlayer(null)}
+            onOpenPlayer={(itemId) => {
+              const target = (characters ?? []).find(c => c.itemId === itemId);
+              if (target) {
+                setOpenPlayer({
+                  itemId: target.itemId,
+                  objectId: target.objectId,
+                  wallet: target.characterAddress,
+                });
+              }
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }
 
 // ── Character detail view ──────────────────────────────────────────────────
 
-function CharacterDetail({ char, tribe, vault, onBack }: {
+function CharacterDetail({ char, tribe, vault, onBack, onOpenPlayerCard }: {
   char: CharacterResult;
   tribe: TribeResult | null;
   vault: CradleOSVault | null;
   onBack: () => void;
+  onOpenPlayerCard?: () => void;
 }) {
   return (
     <div>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: "#FF4700", cursor: "pointer", fontSize: 12, marginBottom: 12, padding: 0 }}>
-        ← Back to results
-      </button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, gap: 8, flexWrap: "wrap" }}>
+        <button onClick={onBack} style={{ background: "none", border: "none", color: "#FF4700", cursor: "pointer", fontSize: 12, padding: 0 }}>
+          ← Back to results
+        </button>
+        {onOpenPlayerCard && (
+          <button
+            onClick={onOpenPlayerCard}
+            style={{
+              background: "rgba(100,180,255,0.08)",
+              border: "1px solid rgba(100,180,255,0.4)",
+              color: "rgba(100,180,255,0.95)",
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              padding: "4px 10px",
+              fontFamily: "inherit",
+            }}
+            title="Open full on-chain player card with combat history and infrastructure"
+          >
+            ◉ OPEN PLAYER CARD
+          </button>
+        )}
+      </div>
       <div style={S.card}>
         <div style={{ fontWeight: 700, fontSize: 18, color: "#e0e0d0", marginBottom: 12 }}>{char.name || "Unnamed"}</div>
         {char.description && <div style={{ fontSize: 12, color: "#aaa", marginBottom: 12 }}>{char.description}</div>}

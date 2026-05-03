@@ -4,6 +4,7 @@ import { bcs } from "@mysten/sui/bcs";
 import { deriveDynamicFieldID } from "@mysten/sui/utils";
 import { rpcFetchWithRetry, rpcPMap, fetchTribeInfo } from "../lib";
 import { KillCardModal, type KillRecord } from "./KillCardModal";
+import { PlayerCardModal } from "./PlayerCardModal";
 
 const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
 const SUI_RPC = "https://fullnode.testnet.sui.io:443";
@@ -426,6 +427,7 @@ function KillFeedTab({
   const [filter, setFilter] = useState<KillFilter>("ALL");
   const [nameSearch, setNameSearch] = useState("");
   const [openKill, setOpenKill] = useState<KillRecord | null>(null);
+  const [openPlayer, setOpenPlayer] = useState<string | null>(null);
   // Tribe filter: null = all tribes, otherwise a tribe_id. Only kills where
   // killer OR victim belongs to the selected tribe pass.
   const [tribeFilter, setTribeFilter] = useState<number | null>(null);
@@ -677,7 +679,24 @@ function KillFeedTab({
           charTribeMap={charTribeMap}
           tribeInfoMap={tribeInfoMap}
           allKills={kills as KillRecord[]}
+          onOpenPlayer={(itemId) => setOpenPlayer(itemId)}
           onClose={() => setOpenKill(null)}
+        />
+      )}
+      {openPlayer && (
+        <PlayerCardModal
+          characterItemId={openPlayer}
+          charMap={charMap}
+          sysMap={sysMap}
+          charTribeMap={charTribeMap}
+          tribeInfoMap={tribeInfoMap}
+          allKills={kills as KillRecord[]}
+          onClose={() => setOpenPlayer(null)}
+          onOpenPlayer={(itemId) => setOpenPlayer(itemId)}
+          onOpenKill={(k) => {
+            setOpenPlayer(null);
+            setOpenKill(k);
+          }}
         />
       )}
     </div>
