@@ -693,9 +693,6 @@ export function KeeperCipherPanel() {
         </Section>
       )}
 
-      <div style={{ marginTop: 12, fontSize: 9, color: C.fgFaint, letterSpacing: "0.1em", textAlign: "center" }}>
-        DAILY SEED REFRESHES AT 00:00 UTC · CANONICAL KEEPER ALPHABET (CCP, USED WITH PERMISSION)
-      </div>
     </div>
   );
 }
