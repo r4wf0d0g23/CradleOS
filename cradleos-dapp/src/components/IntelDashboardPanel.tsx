@@ -3,6 +3,7 @@ import { WORLD_API, SERVER_ENV } from "../constants";
 import { bcs } from "@mysten/sui/bcs";
 import { deriveDynamicFieldID } from "@mysten/sui/utils";
 import { rpcFetchWithRetry, rpcPMap } from "../lib";
+import { KillCardModal, type KillRecord } from "./KillCardModal";
 
 const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
 const SUI_RPC = "https://fullnode.testnet.sui.io:443";
@@ -113,10 +114,9 @@ function formatTimestamp(ts: string): string {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
 }
 
-function truncateAddr(addr: string, front = 6, back = 4): string {
-  if (!addr || addr.length <= front + back + 2) return addr;
-  return `${addr.slice(0, front)}...${addr.slice(-back)}`;
-}
+// (truncateAddr removed 2026-05-02 — row no longer shows truncated
+// killmail object id; clicking the row opens the KillCardModal which
+// renders the full addresses with Suiscan links.)
 
 // Solar system name cache (shared across component lifetime)
 const sysNameCache = new Map<string, string>();
@@ -264,6 +264,7 @@ function KillFeedTab({
 }) {
   const [filter, setFilter] = useState<KillFilter>("ALL");
   const [nameSearch, setNameSearch] = useState("");
+  const [openKill, setOpenKill] = useState<KillRecord | null>(null);
 
   const filtered = useMemo(() => {
     const sorted = [...kills].sort(
@@ -345,7 +346,33 @@ function KillFeedTab({
             const lossType: string = k.loss_type?.["@variant"] ?? "UNKNOWN";
             const badgeColor = lossType === "SHIP" ? "#FF4700" : "#ff4444";
             return (
-              <div key={k.objectId} style={S.row}>
+              <div
+                key={k.objectId}
+                style={{
+                  ...S.row,
+                  cursor: "pointer",
+                  transition: "background 80ms ease, border-color 80ms ease",
+                  borderLeft: "2px solid transparent",
+                }}
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpenKill(k as KillRecord)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setOpenKill(k as KillRecord);
+                  }
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.background = "rgba(100,180,255,0.06)";
+                  (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(100,180,255,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.background = "";
+                  (e.currentTarget as HTMLDivElement).style.borderLeftColor = "transparent";
+                }}
+                title="Click to open killcard"
+              >
                 <span style={S.muted}>{formatTimestamp(k.kill_timestamp)}</span>
                 <span style={S.badge(badgeColor)}>{lossType}</span>
                 <span style={{ color: "#00ff96" }}>
@@ -359,23 +386,26 @@ function KillFeedTab({
                 <span
                   style={{
                     ...S.muted,
-                    cursor: "pointer",
-                    textDecoration: "underline",
                     marginLeft: "auto",
+                    color: "rgba(100,180,255,0.5)",
                   }}
-                  title={k.objectId}
-                  onClick={() => {
-                    try {
-                      navigator.clipboard.writeText(k.objectId);
-                    } catch {}
-                  }}
+                  title="Open killcard"
                 >
-                  {truncateAddr(k.objectId)}
+                  ↗ OPEN
                 </span>
               </div>
             );
           })}
         </div>
+      )}
+      {openKill && (
+        <KillCardModal
+          kill={openKill}
+          charMap={charMap}
+          sysMap={sysMap}
+          allKills={kills as KillRecord[]}
+          onClose={() => setOpenKill(null)}
+        />
       )}
     </div>
   );

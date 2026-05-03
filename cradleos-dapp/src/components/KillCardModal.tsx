@@ -1,0 +1,582 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { SERVER_ENV } from "../constants";
+
+// ── Suiscan URL helper ────────────────────────────────────────────────────────
+const SUISCAN_BASE = "https://suiscan.xyz/testnet";
+const suiscanObject = (id: string) => `${SUISCAN_BASE}/object/${id}`;
+const suiscanTx = (digest: string) => `${SUISCAN_BASE}/tx/${digest}`;
+
+// ── Time formatting ───────────────────────────────────────────────────────────
+function formatRelative(secondsAgo: number): string {
+  if (secondsAgo < 60) return `${secondsAgo}s ago`;
+  const m = Math.floor(secondsAgo / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+}
+
+function formatAbsoluteUTC(ts: string): string {
+  const ms = parseInt(ts, 10) * 1000;
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} UTC`;
+}
+
+function truncate(addr: string, front = 8, back = 6): string {
+  if (!addr || addr.length <= front + back + 3) return addr;
+  return `${addr.slice(0, front)}…${addr.slice(-back)}`;
+}
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+export interface KillRecord {
+  objectId: string;
+  kill_timestamp: string;
+  killer_id?: { item_id: string };
+  victim_id?: { item_id: string };
+  solar_system_id?: { item_id: string };
+  loss_type?: { ["@variant"]: string };
+  reported_by_character_id?: { item_id: string };
+  key?: { item_id: string };
+  /** populated lazily: tx digest from sui_getObject previousTransaction */
+  _txDigest?: string;
+}
+
+interface KillCardModalProps {
+  kill: KillRecord;
+  charMap: Map<string, string>;
+  sysMap: Map<string, string>;
+  /** All recent kills, used for context intel (recent-system, killer-streak, victim-losses) */
+  allKills: KillRecord[];
+  onClose: () => void;
+}
+
+// ── Color tokens (EVE Frontier-esque) ─────────────────────────────────────────
+const C = {
+  bg: "#04060a",
+  panel: "rgba(8, 12, 18, 0.96)",
+  border: "rgba(100, 180, 255, 0.28)",
+  borderHot: "rgba(255, 71, 0, 0.45)",
+  cyan: "rgba(100, 180, 255, 0.95)",
+  cyanDim: "rgba(100, 180, 255, 0.55)",
+  cyanFaint: "rgba(100, 180, 255, 0.22)",
+  amber: "rgba(255, 200, 0, 0.85)",
+  amberDim: "rgba(255, 200, 0, 0.5)",
+  green: "#00ff96",
+  red: "#ff4444",
+  orange: "#FF4700",
+  fg: "#d4dce6",
+  fgDim: "rgba(212, 220, 230, 0.55)",
+  fgFaint: "rgba(212, 220, 230, 0.28)",
+  divider: "rgba(100, 180, 255, 0.12)",
+};
+
+// ── Glyphs (monospace-safe, per TOOLS.md) ─────────────────────────────────────
+const G = {
+  killmail: "⊕",
+  aggressor: "▶",
+  victim: "◀",
+  reporter: "▷",
+  location: "◆",
+  chain: "≣",
+  intel: "✦",
+  link: "↗",
+  close: "×",
+  divider: "─",
+  bullet: "▪",
+  corner_tl: "⌜",
+  corner_tr: "⌝",
+  corner_bl: "⌞",
+  corner_br: "⌟",
+};
+
+// ── Styled bits ───────────────────────────────────────────────────────────────
+const sectionLabel: React.CSSProperties = {
+  fontSize: 9,
+  fontWeight: 700,
+  letterSpacing: "0.18em",
+  color: C.cyanDim,
+  marginBottom: 6,
+};
+
+const fieldLabel: React.CSSProperties = {
+  fontSize: 9,
+  letterSpacing: "0.12em",
+  color: C.fgFaint,
+  textTransform: "uppercase" as const,
+};
+
+const monoId: React.CSSProperties = {
+  fontFamily: "ui-monospace, SFMono-Regular, monospace",
+  fontSize: 10,
+  color: C.fgDim,
+  letterSpacing: "0.04em",
+};
+
+const linkStyle: React.CSSProperties = {
+  color: C.cyan,
+  textDecoration: "none",
+  fontSize: 10,
+  fontFamily: "ui-monospace, SFMono-Regular, monospace",
+};
+
+// ── Section wrapper with EVE-esque corner brackets ────────────────────────────
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        padding: "10px 12px 12px",
+        marginBottom: 8,
+        background: "rgba(100, 180, 255, 0.03)",
+        border: `1px solid ${C.divider}`,
+      }}
+    >
+      {/* corner accents */}
+      <span style={{ position: "absolute", top: -1, left: -1, width: 6, height: 6, borderTop: `1px solid ${C.cyan}`, borderLeft: `1px solid ${C.cyan}` }} />
+      <span style={{ position: "absolute", top: -1, right: -1, width: 6, height: 6, borderTop: `1px solid ${C.cyan}`, borderRight: `1px solid ${C.cyan}` }} />
+      <span style={{ position: "absolute", bottom: -1, left: -1, width: 6, height: 6, borderBottom: `1px solid ${C.cyan}`, borderLeft: `1px solid ${C.cyan}` }} />
+      <span style={{ position: "absolute", bottom: -1, right: -1, width: 6, height: 6, borderBottom: `1px solid ${C.cyan}`, borderRight: `1px solid ${C.cyan}` }} />
+      <div style={sectionLabel}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+// ── Combatant (killer/victim) block ───────────────────────────────────────────
+function Combatant({
+  role,
+  glyph,
+  name,
+  itemId,
+  highlight,
+}: {
+  role: string;
+  glyph: string;
+  name: string;
+  itemId: string;
+  highlight: string;
+}) {
+  return (
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ ...fieldLabel, marginBottom: 4 }}>{role}</div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 2 }}>
+        <span style={{ color: highlight, fontSize: 14, fontWeight: 700 }}>{glyph}</span>
+        <span
+          style={{
+            color: highlight,
+            fontSize: 14,
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            textShadow: `0 0 8px ${highlight === C.green ? "rgba(0,255,150,0.4)" : "rgba(255,68,68,0.4)"}`,
+          }}
+        >
+          {name}
+        </span>
+      </div>
+      <div style={{ ...monoId, color: C.fgFaint }}>#{itemId}</div>
+    </div>
+  );
+}
+
+// ── Main modal ────────────────────────────────────────────────────────────────
+export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: KillCardModalProps) {
+  // ── Escape key + body scroll lock ─────────
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  // ── Lazy-fetch tx digest from previousTransaction ─────────
+  const [txDigest, setTxDigest] = useState<string | null>(kill._txDigest ?? null);
+  useEffect(() => {
+    if (txDigest) return;
+    let cancelled = false;
+    fetch("https://fullnode.testnet.sui.io:443", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "sui_getObject",
+        params: [kill.objectId, { showPreviousTransaction: true }],
+      }),
+    })
+      .then((r) => r.json())
+      .then((j: { result?: { data?: { previousTransaction?: string } } }) => {
+        if (cancelled) return;
+        const tx = j?.result?.data?.previousTransaction;
+        if (tx) setTxDigest(tx);
+      })
+      .catch(() => {
+        /* silent — tx digest is best-effort */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [kill.objectId, txDigest]);
+
+  // ── Derived display values ─────────
+  const killerId = kill.killer_id?.item_id ?? "";
+  const victimId = kill.victim_id?.item_id ?? "";
+  const sysId = kill.solar_system_id?.item_id ?? "";
+  const reporterId = kill.reported_by_character_id?.item_id ?? "";
+  const killmailItemId = kill.key?.item_id ?? "";
+  const lossType = kill.loss_type?.["@variant"] ?? "UNKNOWN";
+
+  const killerName = charMap.get(killerId) ?? `Unknown #${killerId.slice(-6)}`;
+  const victimName = charMap.get(victimId) ?? `Unknown #${victimId.slice(-6)}`;
+  const reporterName = charMap.get(reporterId) ?? `Unknown #${reporterId.slice(-6)}`;
+  const systemName = sysMap.get(sysId) ?? `sys-${sysId}`;
+
+  // Reporter classification
+  let reporterTag = "third-party";
+  let reporterTagColor = C.cyanDim;
+  if (reporterId && reporterId === victimId) {
+    reporterTag = "self-report";
+    reporterTagColor = C.amber;
+  } else if (reporterId && reporterId === killerId) {
+    reporterTag = "killer-claim";
+    reporterTagColor = C.orange;
+  }
+
+  // Time
+  const killTs = parseInt(kill.kill_timestamp, 10);
+  const nowSec = Math.floor(Date.now() / 1000);
+  const secondsAgo = Math.max(0, nowSec - killTs);
+
+  // ── Context intel ─────────
+  const intel = useMemo(() => {
+    const dayAgoSec = nowSec - 86400;
+    const hourAgoSec = nowSec - 3600;
+
+    const recent24h = allKills.filter((k) => parseInt(k.kill_timestamp, 10) >= dayAgoSec);
+
+    const sameSystem24h = recent24h.filter(
+      (k) => k.solar_system_id?.item_id === sysId && k.objectId !== kill.objectId,
+    ).length;
+    const sameSystem1h = recent24h.filter(
+      (k) =>
+        k.solar_system_id?.item_id === sysId &&
+        k.objectId !== kill.objectId &&
+        parseInt(k.kill_timestamp, 10) >= hourAgoSec,
+    ).length;
+
+    const killerKills24h = recent24h.filter(
+      (k) => k.killer_id?.item_id === killerId && k.objectId !== kill.objectId,
+    ).length;
+
+    const victimLosses24h = recent24h.filter(
+      (k) => k.victim_id?.item_id === victimId && k.objectId !== kill.objectId,
+    ).length;
+
+    // Has the killer killed this victim before?
+    const repeatTarget = recent24h.filter(
+      (k) =>
+        k.killer_id?.item_id === killerId &&
+        k.victim_id?.item_id === victimId &&
+        k.objectId !== kill.objectId,
+    ).length;
+
+    return { sameSystem24h, sameSystem1h, killerKills24h, victimLosses24h, repeatTarget };
+  }, [allKills, sysId, killerId, victimId, kill.objectId, nowSec]);
+
+  // ── Render via portal ─────────
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0, 6, 12, 0.84)",
+        backdropFilter: "blur(4px)",
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        zIndex: 9500,
+        padding: "5vh 16px 16px",
+        overflowY: "auto",
+        fontFamily: "ui-monospace, SFMono-Regular, 'Menlo', 'Consolas', monospace",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: "relative",
+          background: C.panel,
+          border: `1px solid ${C.border}`,
+          maxWidth: 540,
+          width: "100%",
+          color: C.fg,
+          boxShadow: `0 0 0 1px rgba(100,180,255,0.04), 0 24px 48px rgba(0,0,0,0.7), 0 0 80px rgba(100,180,255,0.08)`,
+        }}
+      >
+        {/* Frame corner brackets */}
+        <span style={{ position: "absolute", top: -2, left: -2, width: 12, height: 12, borderTop: `2px solid ${C.cyan}`, borderLeft: `2px solid ${C.cyan}` }} />
+        <span style={{ position: "absolute", top: -2, right: -2, width: 12, height: 12, borderTop: `2px solid ${C.cyan}`, borderRight: `2px solid ${C.cyan}` }} />
+        <span style={{ position: "absolute", bottom: -2, left: -2, width: 12, height: 12, borderBottom: `2px solid ${C.cyan}`, borderLeft: `2px solid ${C.cyan}` }} />
+        <span style={{ position: "absolute", bottom: -2, right: -2, width: 12, height: 12, borderBottom: `2px solid ${C.cyan}`, borderRight: `2px solid ${C.cyan}` }} />
+
+        {/* ── Header ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            padding: "12px 14px 10px",
+            borderBottom: `1px solid ${C.divider}`,
+            background: `linear-gradient(180deg, rgba(100,180,255,0.06) 0%, transparent 100%)`,
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
+              <span style={{ color: lossType === "SHIP" ? C.orange : C.red, fontSize: 18, lineHeight: 1 }}>{G.killmail}</span>
+              <span style={{ color: C.fg, fontSize: 14, fontWeight: 700, letterSpacing: "0.06em" }}>
+                KILLMAIL
+              </span>
+              {killmailItemId && (
+                <span style={{ color: C.cyanDim, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em" }}>#{killmailItemId}</span>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", fontSize: 10, color: C.fgDim, flexWrap: "wrap" }}>
+              <span
+                style={{
+                  padding: "2px 7px",
+                  border: `1px solid ${lossType === "SHIP" ? "rgba(255,71,0,0.4)" : "rgba(255,68,68,0.4)"}`,
+                  color: lossType === "SHIP" ? C.orange : C.red,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                }}
+              >
+                {lossType} LOSS
+              </span>
+              <span style={{ color: C.cyanDim, letterSpacing: "0.1em" }}>
+                {SERVER_ENV.toUpperCase()}
+              </span>
+              <span style={{ color: C.amberDim, letterSpacing: "0.06em" }}>
+                {formatRelative(secondsAgo)}
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              background: "transparent",
+              border: `1px solid ${C.cyanFaint}`,
+              color: C.cyanDim,
+              width: 26,
+              height: 26,
+              fontSize: 16,
+              lineHeight: 1,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              flexShrink: 0,
+            }}
+          >
+            {G.close}
+          </button>
+        </div>
+
+        {/* ── Body ── */}
+        <div style={{ padding: 14 }}>
+          {/* Combatants */}
+          <Section label={`${G.aggressor}  COMBATANTS`}>
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <Combatant
+                role="AGGRESSOR"
+                glyph={G.aggressor}
+                name={killerName}
+                itemId={killerId}
+                highlight={C.green}
+              />
+              <div
+                style={{
+                  alignSelf: "stretch",
+                  display: "flex",
+                  alignItems: "center",
+                  color: C.cyanFaint,
+                  fontSize: 22,
+                  paddingTop: 14,
+                }}
+              >
+                ⟶
+              </div>
+              <Combatant
+                role="VICTIM"
+                glyph={G.victim}
+                name={victimName}
+                itemId={victimId}
+                highlight={C.red}
+              />
+            </div>
+          </Section>
+
+          {/* Location + reporter (side by side) */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <Section label={`${G.location}  LOCATION`}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                <span style={{ color: C.cyan, fontSize: 13, fontWeight: 700 }}>{systemName}</span>
+              </div>
+              <div style={{ ...monoId, marginTop: 3 }}>sys-{sysId}</div>
+            </Section>
+
+            <Section label={`${G.reporter}  REPORTED BY`}>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: C.fg,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {reporterName}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+                <span
+                  style={{
+                    fontSize: 8,
+                    padding: "1px 5px",
+                    border: `1px solid ${reporterTagColor}`,
+                    color: reporterTagColor,
+                    letterSpacing: "0.1em",
+                    fontWeight: 700,
+                    textTransform: "uppercase" as const,
+                  }}
+                >
+                  {reporterTag}
+                </span>
+                <span style={{ ...monoId, color: C.fgFaint }}>#{reporterId}</span>
+              </div>
+            </Section>
+          </div>
+
+          {/* Chain provenance */}
+          <Section label={`${G.chain}  ON-CHAIN PROVENANCE`}>
+            <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "4px 12px", alignItems: "baseline" }}>
+              <span style={fieldLabel}>Killmail</span>
+              <span style={monoId}>{truncate(kill.objectId, 10, 8)}</span>
+              <a
+                href={suiscanObject(kill.objectId)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={linkStyle}
+              >
+                Suiscan {G.link}
+              </a>
+
+              <span style={fieldLabel}>Tx</span>
+              <span style={monoId}>{txDigest ? truncate(txDigest, 10, 8) : "loading…"}</span>
+              {txDigest ? (
+                <a
+                  href={suiscanTx(txDigest)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={linkStyle}
+                >
+                  Suiscan {G.link}
+                </a>
+              ) : (
+                <span style={{ ...monoId, color: C.fgFaint }}>—</span>
+              )}
+
+              <span style={fieldLabel}>Block time</span>
+              <span style={{ ...monoId, gridColumn: "2 / 4" }}>{formatAbsoluteUTC(kill.kill_timestamp)}</span>
+            </div>
+          </Section>
+
+          {/* Context intel */}
+          <Section label={`${G.intel}  CONTEXT INTEL`}>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 11, lineHeight: 1.6 }}>
+              {intel.sameSystem1h > 0 && (
+                <IntelLine
+                  glyph={G.intel}
+                  color={C.orange}
+                  text={`${intel.sameSystem1h} other kill${intel.sameSystem1h !== 1 ? "s" : ""} in ${systemName} in last hour — active engagement`}
+                />
+              )}
+              {intel.sameSystem24h > 0 && intel.sameSystem1h !== intel.sameSystem24h && (
+                <IntelLine
+                  glyph={G.intel}
+                  color={C.amber}
+                  text={`${intel.sameSystem24h} kill${intel.sameSystem24h !== 1 ? "s" : ""} in ${systemName} in last 24h`}
+                />
+              )}
+              {intel.killerKills24h > 0 && (
+                <IntelLine
+                  glyph={G.intel}
+                  color={C.green}
+                  text={`Aggressor has ${intel.killerKills24h + 1} kill${intel.killerKills24h + 1 !== 1 ? "s" : ""} in last 24h${intel.killerKills24h + 1 >= 5 ? " — active hunter" : ""}`}
+                />
+              )}
+              {intel.victimLosses24h > 0 && (
+                <IntelLine
+                  glyph={G.intel}
+                  color={C.red}
+                  text={`Victim has lost ${intel.victimLosses24h + 1} ship${intel.victimLosses24h + 1 !== 1 ? "s" : ""} in last 24h${intel.victimLosses24h + 1 >= 3 ? " — being farmed" : ""}`}
+                />
+              )}
+              {intel.repeatTarget > 0 && (
+                <IntelLine
+                  glyph={G.intel}
+                  color={C.orange}
+                  text={`Aggressor has killed this victim ${intel.repeatTarget + 1}× in last 24h — grudge / serial target`}
+                />
+              )}
+              {intel.sameSystem24h === 0 &&
+                intel.killerKills24h === 0 &&
+                intel.victimLosses24h === 0 && (
+                  <IntelLine
+                    glyph={G.bullet}
+                    color={C.fgFaint}
+                    text="No correlated activity in last 24h. Isolated engagement."
+                  />
+                )}
+            </ul>
+          </Section>
+        </div>
+
+        {/* ── Footer ── */}
+        <div
+          style={{
+            padding: "8px 14px",
+            borderTop: `1px solid ${C.divider}`,
+            fontSize: 9,
+            color: C.fgFaint,
+            letterSpacing: "0.1em",
+            textAlign: "center",
+            background: "rgba(100,180,255,0.02)",
+          }}
+        >
+          ESC OR CLICK OUTSIDE TO CLOSE
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function IntelLine({ glyph, color, text }: { glyph: string; color: string; text: string }) {
+  return (
+    <li style={{ display: "flex", alignItems: "flex-start", gap: 6, color: C.fg }}>
+      <span style={{ color, flexShrink: 0, lineHeight: 1.6 }}>{glyph}</span>
+      <span style={{ color: C.fg }}>{text}</span>
+    </li>
+  );
+}
