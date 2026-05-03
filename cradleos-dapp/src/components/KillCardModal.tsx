@@ -201,9 +201,13 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
   }, [onClose]);
 
   // ── Lazy-fetch tx digest from previousTransaction ─────────
+  // Event-sourced kills already carry _txDigest (free from the event
+  // payload), so this only fires for legacy GraphQL-sourced kills that
+  // have a real Sui object id but no tx digest yet.
   const [txDigest, setTxDigest] = useState<string | null>(kill._txDigest ?? null);
   useEffect(() => {
     if (txDigest) return;
+    if (!kill.objectId || kill.objectId.startsWith("evt:")) return; // synthetic id, can't fetch
     let cancelled = false;
     fetch("https://fullnode.testnet.sui.io:443", {
       method: "POST",
@@ -470,16 +474,23 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
           {/* Chain provenance */}
           <Section label={`${G.chain}  ON-CHAIN PROVENANCE`}>
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: "4px 12px", alignItems: "baseline" }}>
-              <span style={fieldLabel}>Killmail</span>
-              <span style={monoId}>{truncate(kill.objectId, 10, 8)}</span>
-              <a
-                href={suiscanObject(kill.objectId)}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={linkStyle}
-              >
-                Suiscan {G.link}
-              </a>
+              {/* Killmail object id row — only render when we have a real Sui
+                  object id (event-sourced kills carry a synthetic 'evt:...'
+                  id that isn't valid for Suiscan). */}
+              {!kill.objectId.startsWith("evt:") && (
+                <>
+                  <span style={fieldLabel}>Killmail</span>
+                  <span style={monoId}>{truncate(kill.objectId, 10, 8)}</span>
+                  <a
+                    href={suiscanObject(kill.objectId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={linkStyle}
+                  >
+                    Suiscan {G.link}
+                  </a>
+                </>
+              )}
 
               <span style={fieldLabel}>Tx</span>
               <span style={monoId}>{txDigest ? truncate(txDigest, 10, 8) : "loading…"}</span>

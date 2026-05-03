@@ -78,6 +78,95 @@ async function gql(query: string): Promise<any> {
   }
 }
 
+// ── Time-windowed killmail fetch via events (newer-first, stops at window edge) ──
+// Returns kills shaped to match the legacy GraphQL `objects` payload so the rest
+// of the panel doesn't care about the source. Each kill carries:
+//   objectId, key, kill_timestamp, killer_id, victim_id, solar_system_id,
+//   reported_by_character_id, loss_type["@variant"], _txDigest, _blockTimeMs
+//
+// `windowSeconds`: stop pagination once oldest event in the most-recent page
+//   is older than now - windowSeconds. Pass null for ALL (bounded by maxPages).
+// `maxPages`: hard safety cap on pagination (50 events/page is the testnet
+//   server-side limit; 200 pages = 10k events).
+export async function fetchKillsViaEvents(
+  packageId: string,
+  windowSeconds: number | null,
+  maxPages = 200,
+  onProgress?: (loaded: number) => void,
+): Promise<any[]> {
+  const eventType = `${packageId}::killmail::KillmailCreatedEvent`;
+  const stopAt = windowSeconds === null ? 0 : Math.floor(Date.now() / 1000) - windowSeconds;
+  const out: any[] = [];
+  let cursor: any = null;
+
+  for (let page = 0; page < maxPages; page++) {
+    const body = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "suix_queryEvents",
+      // params: [filter, cursor, limit, descending]
+      // Server caps `limit` at 50 even when we ask higher.
+      params: [{ MoveEventType: eventType }, cursor, 50, true],
+    };
+    let json: any;
+    try {
+      const res = await rpcFetchWithRetry(SUI_RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      json = await res.json();
+    } catch {
+      break; // network failure; return what we have
+    }
+    const result = json?.result;
+    if (!result || !Array.isArray(result.data)) break;
+
+    let pageHasOldEvent = false;
+    for (const e of result.data) {
+      const pj = e.parsedJson ?? {};
+      const ts = parseInt(String(pj.kill_timestamp ?? "0"), 10);
+      if (windowSeconds !== null && ts < stopAt) {
+        pageHasOldEvent = true;
+        continue; // skip events outside the window but keep scanning page
+      }
+      // Synthesize a stable React-key id from txDigest+eventSeq when we don't
+      // have the actual Killmail object id (event payload doesn't carry it).
+      // This is sufficient for row keying / dedupe; the modal uses _txDigest
+      // for Suiscan deep-links so missing objectId only loses the "Killmail
+      // object" sub-link, not the more important tx link.
+      const txd = e.id?.txDigest ?? "";
+      const seq = e.id?.eventSeq ?? "0";
+      const synthId = txd ? `evt:${txd}:${seq}` : `evt:unknown:${out.length}`;
+      out.push({
+        objectId: synthId,
+        key: pj.key,
+        kill_timestamp: pj.kill_timestamp,
+        killer_id: pj.killer_id,
+        victim_id: pj.victim_id,
+        solar_system_id: pj.solar_system_id,
+        reported_by_character_id: pj.reported_by_character_id,
+        // Normalize event variant shape to match GraphQL `objects` payload
+        // (which the existing UI code reads as loss_type["@variant"]).
+        loss_type: pj.loss_type
+          ? { "@variant": pj.loss_type.variant, fields: pj.loss_type.fields }
+          : undefined,
+        // Bonus fields we now have for free (modal uses these):
+        _txDigest: e.id?.txDigest,
+        _blockTimeMs: e.timestampMs ? parseInt(e.timestampMs, 10) : undefined,
+      });
+    }
+    onProgress?.(out.length);
+
+    // Stop conditions: window edge crossed, no more pages, or maxPages reached.
+    if (pageHasOldEvent) break;
+    if (!result.hasNextPage || !result.nextCursor) break;
+    cursor = result.nextCursor;
+  }
+
+  return out;
+}
+
 async function fetchAllObjects(type: string, limit = 50, maxTotal = 500): Promise<any[]> {
   const results: any[] = [];
   let after: string | null = null;
@@ -250,17 +339,44 @@ const S = {
 // ── KILL FEED TAB ─────────────────────────────────────────────────────────────
 
 type KillFilter = "ALL" | "SHIP" | "STRUCTURE";
+export type KillWindow = "1H" | "24H" | "7D" | "30D" | "ALL";
+
+export const KILL_WINDOW_SECONDS: Record<KillWindow, number | null> = {
+  "1H": 3600,
+  "24H": 86400,
+  "7D": 7 * 86400,
+  "30D": 30 * 86400,
+  "ALL": null,
+};
+
+const KILL_WINDOW_LABEL: Record<KillWindow, string> = {
+  "1H": "last hour",
+  "24H": "last 24 hours",
+  "7D": "last 7 days",
+  "30D": "last 30 days",
+  "ALL": "all time (capped)",
+};
 
 function KillFeedTab({
   kills,
   charMap,
   sysMap,
   loading,
+  loadProgress,
+  window: killWindow,
+  onWindowChange,
+  onRefresh,
+  lastFetchedAt,
 }: {
   kills: any[];
   charMap: Map<string, string>;
   sysMap: Map<string, string>;
   loading: boolean;
+  loadProgress: number;
+  window: KillWindow;
+  onWindowChange: (w: KillWindow) => void;
+  onRefresh: () => void;
+  lastFetchedAt: number | null;
 }) {
   const [filter, setFilter] = useState<KillFilter>("ALL");
   const [nameSearch, setNameSearch] = useState("");
@@ -298,21 +414,66 @@ function KillFeedTab({
   const resolveName = (charId: string) =>
     charMap.get(charId) || `char#${charId}`;
 
-  if (loading) return <div style={S.loading}>[ fetching kill feed... ]</div>;
-
   return (
     <div>
-      <div style={S.statRow}>
-        <span>
-          <span style={S.statVal}>{kills.length}</span> kills
+      {/* ── Time-window picker (top row) ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "rgba(100,180,255,0.55)" }}>
+          WINDOW
         </span>
-        <span>
-          <span style={S.statVal}>{shipCount}</span> ship
-        </span>
-        <span>
-          <span style={S.statVal}>{structCount}</span> structure
-        </span>
+        {(["1H", "24H", "7D", "30D", "ALL"] as KillWindow[]).map(w => (
+          <button
+            key={w}
+            style={{
+              ...S.pill(killWindow === w),
+              opacity: loading ? 0.5 : 1,
+              cursor: loading ? "wait" : "pointer",
+            }}
+            onClick={() => !loading && onWindowChange(w)}
+            disabled={loading}
+          >
+            {w}
+          </button>
+        ))}
+        <button
+          style={{
+            ...S.pill(false),
+            opacity: loading ? 0.5 : 1,
+            cursor: loading ? "wait" : "pointer",
+            marginLeft: "auto",
+          }}
+          onClick={() => !loading && onRefresh()}
+          disabled={loading}
+          title="Refresh kill feed"
+        >
+          ↻ REFRESH
+        </button>
       </div>
+
+      {/* ── Status / counts row ── */}
+      {loading ? (
+        <div style={{ ...S.loading, marginBottom: 10 }}>
+          [ fetching kill feed{loadProgress > 0 ? ` — ${loadProgress} loaded` : ""}… ]
+        </div>
+      ) : (
+        <div style={{ ...S.statRow, alignItems: "baseline", flexWrap: "wrap" }}>
+          <span>
+            <span style={S.statVal}>{kills.length}</span> kills covering {KILL_WINDOW_LABEL[killWindow]}
+          </span>
+          <span>
+            <span style={S.statVal}>{shipCount}</span> ship
+          </span>
+          <span>
+            <span style={S.statVal}>{structCount}</span> structure
+          </span>
+          {lastFetchedAt && (
+            <span style={{ marginLeft: "auto", fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>
+              FETCHED {formatTimestamp(String(Math.floor(lastFetchedAt / 1000)))}
+            </span>
+          )}
+        </div>
+      )}
+
       <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
         {(["ALL", "SHIP", "STRUCTURE"] as KillFilter[]).map((f) => (
           <button
@@ -1246,11 +1407,79 @@ export function IntelDashboardPanel() {
 
   const [sysMap, setSysMap] = useState<Map<string, string>>(new Map());
   const [killsLoading, setKillsLoading] = useState(false);
+  const [killsLoadProgress, setKillsLoadProgress] = useState(0);
+  const [killsWindow, setKillsWindow] = useState<KillWindow>("24H");
+  const [killsLastFetchedAt, setKillsLastFetchedAt] = useState<number | null>(null);
   const [_charsLoading, setCharsLoading] = useState(false);
   const [nodesLoading, setNodesLoading] = useState(false);
 
   const loadedKillFeed = useRef(false);
+  const killsLoadSeq = useRef(0);
   const loadedInfra = useRef(false);
+
+  // Reusable kill loader — used by initial mount, window-change, refresh,
+  // and the SECURITY tab side-trigger. Cancels stale loads via seq counter.
+  const loadKills = React.useCallback(async (window: KillWindow) => {
+    const mySeq = ++killsLoadSeq.current;
+    setKillsLoading(true);
+    setKillsLoadProgress(0);
+    setCharsLoading(true);
+
+    const k = await fetchKillsViaEvents(
+      WORLD_PKG,
+      KILL_WINDOW_SECONDS[window],
+      window === "ALL" ? 200 : 100,
+      (loaded) => {
+        if (killsLoadSeq.current === mySeq) setKillsLoadProgress(loaded);
+      },
+    );
+    if (killsLoadSeq.current !== mySeq) return; // stale; a newer load is in flight
+    setKills(k);
+    setKillsLastFetchedAt(Date.now());
+    setKillsLoading(false);
+
+    // Phase 2: collect unique character IDs from kills and resolve via address derivation
+    const allCharIds = new Set<string>();
+    let detectedTenant: string | undefined;
+    for (const kill of k) {
+      if (kill.killer_id?.item_id) allCharIds.add(kill.killer_id.item_id);
+      if (kill.victim_id?.item_id) allCharIds.add(kill.victim_id.item_id);
+      if (kill.reported_by_character_id?.item_id) allCharIds.add(kill.reported_by_character_id.item_id);
+      if (!detectedTenant && kill.killer_id?.tenant) detectedTenant = kill.killer_id.tenant;
+    }
+
+    let resolvedMap = await resolveCharactersByItemIds([...allCharIds], detectedTenant);
+    if (killsLoadSeq.current !== mySeq) return;
+
+    // Fallback only if targeted resolution returned literally nothing.
+    if (resolvedMap.size === 0 && allCharIds.size > 0) {
+      const allChars = await fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000);
+      if (killsLoadSeq.current !== mySeq) return;
+      const fallbackMap = new Map<string, string>();
+      for (const c of allChars) {
+        const id = c.key?.item_id;
+        const name = c.metadata?.name?.trim();
+        if (id && name) fallbackMap.set(id, name);
+      }
+      resolvedMap = fallbackMap;
+    }
+
+    const charObjects = [...resolvedMap.entries()].map(([itemId, name]) => ({
+      key: { item_id: itemId },
+      metadata: { name },
+    }));
+    setCharacters(charObjects);
+    setCharsLoading(false);
+
+    // Phase 3: resolve solar system names from World API
+    const sysIds = [...new Set(k.map((kill: any) => kill.solar_system_id?.item_id).filter(Boolean))];
+    if (sysIds.length > 0) {
+      resolveSolarSystemNames(sysIds).then(cache => {
+        if (killsLoadSeq.current !== mySeq) return;
+        setSysMap(new Map(cache));
+      });
+    }
+  }, []);
 
   const charMap = useMemo(() => {
     const m = new Map<string, string>();
@@ -1262,60 +1491,13 @@ export function IntelDashboardPanel() {
     return m;
   }, [characters]);
 
-  // Load kill feed + resolve character names via targeted derivation
+  // Initial load when KILL FEED tab is opened.
   useEffect(() => {
     if (activeTab === "KILL FEED" && !loadedKillFeed.current) {
       loadedKillFeed.current = true;
-      setKillsLoading(true);
-      setCharsLoading(true);
-
-      // Phase 1: load kills only (no more brute-force character fetch)
-      fetchAllObjects(WORLD_PKG + "::killmail::Killmail").then(async (k) => {
-        setKills(k);
-        setKillsLoading(false);
-
-        // Phase 2: collect unique character IDs from kills and resolve via address derivation
-        const allCharIds = new Set<string>();
-        let detectedTenant: string | undefined;
-        for (const kill of k) {
-          if (kill.killer_id?.item_id) allCharIds.add(kill.killer_id.item_id);
-          if (kill.victim_id?.item_id) allCharIds.add(kill.victim_id.item_id);
-          if (!detectedTenant && kill.killer_id?.tenant) detectedTenant = kill.killer_id.tenant;
-        }
-
-        // Targeted resolution — derive addresses, batch-fetch only needed characters
-        let resolvedMap = await resolveCharactersByItemIds([...allCharIds], detectedTenant);
-
-        // Fallback: if targeted resolution fails (0 results), use brute-force fetch
-        if (resolvedMap.size === 0 && allCharIds.size > 0) {
-          const allChars = await fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000);
-          const fallbackMap = new Map<string, string>();
-          for (const c of allChars) {
-            const id = c.key?.item_id;
-            const name = c.metadata?.name?.trim();
-            if (id && name) fallbackMap.set(id, name);
-          }
-          resolvedMap = fallbackMap;
-        }
-
-        // Build character objects for charMap useMemo compatibility
-        const charObjects = [...resolvedMap.entries()].map(([itemId, name]) => ({
-          key: { item_id: itemId },
-          metadata: { name },
-        }));
-        setCharacters(charObjects);
-        setCharsLoading(false);
-
-        // Phase 3: resolve solar system names from World API
-        const sysIds = [...new Set(k.map((kill: any) => kill.solar_system_id?.item_id).filter(Boolean))];
-        if (sysIds.length > 0) {
-          resolveSolarSystemNames(sysIds).then(cache => {
-            setSysMap(new Map(cache));
-          });
-        }
-      });
+      void loadKills(killsWindow);
     }
-  }, [activeTab]);
+  }, [activeTab, killsWindow, loadKills]);
 
   // Load infrastructure nodes
   useEffect(() => {
@@ -1334,28 +1516,7 @@ export function IntelDashboardPanel() {
     if (activeTab === "SECURITY") {
       if (!loadedKillFeed.current) {
         loadedKillFeed.current = true;
-        setKillsLoading(true);
-        setCharsLoading(true);
-        // Fetch kills, then resolve character names via targeted derivation
-        fetchAllObjects(WORLD_PKG + "::killmail::Killmail").then(async (k) => {
-          setKills(k);
-          setKillsLoading(false);
-          const allCharIds2 = new Set<string>();
-          let detectedTenant2: string | undefined;
-          for (const kill of k) {
-            if (kill.killer_id?.item_id) allCharIds2.add(kill.killer_id.item_id);
-            if (kill.victim_id?.item_id) allCharIds2.add(kill.victim_id.item_id);
-            if (!detectedTenant2 && kill.killer_id?.tenant) detectedTenant2 = kill.killer_id.tenant;
-          }
-          const resolvedMap = await resolveCharactersByItemIds([...allCharIds2], detectedTenant2);
-          const charObjects = [...resolvedMap.entries()].map(([itemId, name]) => ({
-            key: { item_id: itemId }, metadata: { name },
-          }));
-          setCharacters(prev => prev.length > 0 ? prev : charObjects);
-          setCharsLoading(false);
-          const sysIds = [...new Set(k.map((kill: any) => kill.solar_system_id?.item_id).filter(Boolean))];
-          if (sysIds.length > 0) resolveSolarSystemNames(sysIds).then(cache => setSysMap(new Map(cache)));
-        });
+        void loadKills(killsWindow);
       }
       if (!loadedInfra.current) {
         loadedInfra.current = true;
@@ -1386,6 +1547,16 @@ export function IntelDashboardPanel() {
           charMap={charMap}
           sysMap={sysMap}
           loading={killsLoading}
+          loadProgress={killsLoadProgress}
+          window={killsWindow}
+          onWindowChange={(w) => {
+            setKillsWindow(w);
+            void loadKills(w);
+          }}
+          onRefresh={() => {
+            void loadKills(killsWindow);
+          }}
+          lastFetchedAt={killsLastFetchedAt}
         />
       )}
       {activeTab === "INFRASTRUCTURE" && (
