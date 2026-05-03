@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { WORLD_API, SERVER_ENV } from "../constants";
 import { bcs } from "@mysten/sui/bcs";
 import { deriveDynamicFieldID } from "@mysten/sui/utils";
-import { rpcFetchWithRetry, rpcPMap } from "../lib";
+import { rpcFetchWithRetry, rpcPMap, fetchTribeInfo } from "../lib";
 import { KillCardModal, type KillRecord } from "./KillCardModal";
 
 const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
@@ -21,10 +21,15 @@ function deriveCharacterAddress(itemId: string, tenant: string): string {
   return deriveDynamicFieldID(OBJECT_REGISTRY, typeTag, key);
 }
 
-async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): Promise<Map<string, string>> {
+// Result of character resolution: map of item_id → { name, tribeId }.
+// `tribeId` may be 0 / undefined for NPC characters or characters with
+// no tribe affiliation; the caller should treat 0 / undefined as "no tribe."
+export type CharResolution = { name: string; tribeId?: number };
+
+async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): Promise<Map<string, CharResolution>> {
   // Try both tenants if not specified — covers cross-env edge cases
   const tenantToUse = tenant ?? SERVER_ENV;
-  const result = new Map<string, string>();
+  const result = new Map<string, CharResolution>();
   if (!itemIds.length) return result;
 
   // Derive Sui addresses
@@ -55,11 +60,47 @@ async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): P
       const json = obj.asMoveObject.contents.json;
       const itemId = json.key?.item_id;
       const name = json.metadata?.name?.trim();
-      if (itemId && name) result.set(itemId, name);
+      const tribeIdRaw = json.tribe_id;
+      const tribeId = typeof tribeIdRaw === "number"
+        ? tribeIdRaw
+        : (tribeIdRaw ? Number(tribeIdRaw) : undefined);
+      if (itemId && name) {
+        result.set(itemId, { name, tribeId: (tribeId && tribeId > 0) ? tribeId : undefined });
+      }
     }
   }
 
   return result;
+}
+
+// Tribe metadata cache (process-lifetime; tribe names rarely change).
+const tribeInfoCache = new Map<number, { name: string; ticker: string }>();
+
+/** Resolve a set of tribe ids to {name, ticker} via the World API.
+ *  Concurrency-3 fan-out with retry already baked into fetchTribeInfo.
+ *  Memoized; repeat calls for the same id are free. */
+async function resolveTribesByIds(tribeIds: number[]): Promise<Map<number, { name: string; ticker: string }>> {
+  const out = new Map<number, { name: string; ticker: string }>();
+  const missing: number[] = [];
+  for (const id of tribeIds) {
+    if (!id || id <= 0) continue;
+    if (tribeInfoCache.has(id)) {
+      out.set(id, tribeInfoCache.get(id)!);
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length === 0) return out;
+
+  await rpcPMap(missing, async (tribeId) => {
+    const info = await fetchTribeInfo(tribeId);
+    if (info) {
+      const entry = { name: info.name, ticker: info.nameShort || `T${tribeId}` };
+      tribeInfoCache.set(tribeId, entry);
+      out.set(tribeId, entry);
+    }
+  }, 3);
+  return out;
 }
 
 async function gql(query: string): Promise<any> {
@@ -361,6 +402,8 @@ function KillFeedTab({
   kills,
   charMap,
   sysMap,
+  charTribeMap,
+  tribeInfoMap,
   loading,
   loadProgress,
   window: killWindow,
@@ -371,6 +414,8 @@ function KillFeedTab({
   kills: any[];
   charMap: Map<string, string>;
   sysMap: Map<string, string>;
+  charTribeMap: Map<string, number>;
+  tribeInfoMap: Map<number, { name: string; ticker: string }>;
   loading: boolean;
   loadProgress: number;
   window: KillWindow;
@@ -381,6 +426,26 @@ function KillFeedTab({
   const [filter, setFilter] = useState<KillFilter>("ALL");
   const [nameSearch, setNameSearch] = useState("");
   const [openKill, setOpenKill] = useState<KillRecord | null>(null);
+  // Tribe filter: null = all tribes, otherwise a tribe_id. Only kills where
+  // killer OR victim belongs to the selected tribe pass.
+  const [tribeFilter, setTribeFilter] = useState<number | null>(null);
+
+  // Set of unique tribe ids present in this kill window (any role).
+  // Used to populate the tribe filter dropdown options.
+  const tribesInWindow = useMemo(() => {
+    const ids = new Set<number>();
+    for (const k of kills) {
+      const kt = charTribeMap.get(k.killer_id?.item_id ?? "");
+      const vt = charTribeMap.get(k.victim_id?.item_id ?? "");
+      if (kt) ids.add(kt);
+      if (vt) ids.add(vt);
+    }
+    return [...ids].sort((a, b) => {
+      const an = tribeInfoMap.get(a)?.ticker ?? `T${a}`;
+      const bn = tribeInfoMap.get(b)?.ticker ?? `T${b}`;
+      return an.localeCompare(bn);
+    });
+  }, [kills, charTribeMap, tribeInfoMap]);
 
   const filtered = useMemo(() => {
     const sorted = [...kills].sort(
@@ -388,19 +453,30 @@ function KillFeedTab({
         parseInt(b.kill_timestamp, 10) - parseInt(a.kill_timestamp, 10)
     );
     let list = filter === "ALL" ? sorted : sorted.filter((k) => k.loss_type?.["@variant"] === filter);
+    if (tribeFilter !== null) {
+      list = list.filter(k => {
+        const kt = charTribeMap.get(k.killer_id?.item_id ?? "");
+        const vt = charTribeMap.get(k.victim_id?.item_id ?? "");
+        return kt === tribeFilter || vt === tribeFilter;
+      });
+    }
     if (nameSearch.trim()) {
       const q = nameSearch.toLowerCase();
       list = list.filter(k => {
         const killer = (charMap.get(k.killer_id?.item_id ?? "") ?? "").toLowerCase();
         const victim = (charMap.get(k.victim_id?.item_id ?? "") ?? "").toLowerCase();
         const sys = (sysMap.get(k.solar_system_id?.item_id ?? "") ?? "").toLowerCase();
+        const ktInfo = tribeInfoMap.get(charTribeMap.get(k.killer_id?.item_id ?? "") ?? 0);
+        const vtInfo = tribeInfoMap.get(charTribeMap.get(k.victim_id?.item_id ?? "") ?? 0);
+        const tribeTickers = `${ktInfo?.ticker ?? ""} ${vtInfo?.ticker ?? ""}`.toLowerCase();
         return killer.includes(q) || victim.includes(q) || sys.includes(q)
+          || tribeTickers.includes(q)
           || (k.killer_id?.item_id ?? "").includes(q)
           || (k.victim_id?.item_id ?? "").includes(q);
       });
     }
     return list;
-  }, [kills, filter, nameSearch, charMap, sysMap]);
+  }, [kills, filter, nameSearch, charMap, sysMap, tribeFilter, charTribeMap, tribeInfoMap]);
 
   const shipCount = useMemo(
     () => kills.filter((k) => k.loss_type?.["@variant"] === "SHIP").length,
@@ -484,9 +560,33 @@ function KillFeedTab({
             {f}
           </button>
         ))}
+        {tribesInWindow.length > 0 && (
+          <select
+            value={tribeFilter ?? ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              setTribeFilter(v === "" ? null : Number(v));
+            }}
+            style={{
+              ...S.input,
+              flex: "0 0 auto",
+              minWidth: 140,
+              marginBottom: 0,
+              cursor: "pointer",
+            }}
+            title="Filter by tribe (killer or victim)"
+          >
+            <option value="">ALL TRIBES ({tribesInWindow.length})</option>
+            {tribesInWindow.map(tid => {
+              const info = tribeInfoMap.get(tid);
+              const label = info ? `[${info.ticker}] ${info.name}` : `tribe ${tid}`;
+              return <option key={tid} value={tid}>{label}</option>;
+            })}
+          </select>
+        )}
         <input
           style={{ ...S.input, flex: 1, minWidth: 140, marginBottom: 0 }}
-          placeholder="Filter by name, system, or ID..."
+          placeholder="Filter by name, tribe ticker, system, or ID..."
           value={nameSearch}
           onChange={e => setNameSearch(e.target.value)}
         />
@@ -536,12 +636,22 @@ function KillFeedTab({
               >
                 <span style={S.muted}>{formatTimestamp(k.kill_timestamp)}</span>
                 <span style={S.badge(badgeColor)}>{lossType}</span>
-                <span style={{ color: "#00ff96" }}>
-                  {resolveName(killerId)}
+                <span style={{ color: "#00ff96", display: "flex", alignItems: "baseline", gap: 5, minWidth: 0 }}>
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveName(killerId)}</span>
+                  <TribeBadge
+                    tribeId={charTribeMap.get(killerId)}
+                    tribeInfo={tribeInfoMap}
+                    onClick={(tid) => setTribeFilter(tid)}
+                  />
                 </span>
                 <span style={S.muted}>killed</span>
-                <span style={{ color: "#ff4444" }}>
-                  {resolveName(victimId)}
+                <span style={{ color: "#ff4444", display: "flex", alignItems: "baseline", gap: 5, minWidth: 0 }}>
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveName(victimId)}</span>
+                  <TribeBadge
+                    tribeId={charTribeMap.get(victimId)}
+                    tribeInfo={tribeInfoMap}
+                    onClick={(tid) => setTribeFilter(tid)}
+                  />
                 </span>
                 <span style={{ color: "rgba(100,180,255,0.7)", fontSize: "12px" }}>{sysMap.get(sysId) || `sys-${sysId}`}</span>
                 <span
@@ -564,11 +674,52 @@ function KillFeedTab({
           kill={openKill}
           charMap={charMap}
           sysMap={sysMap}
+          charTribeMap={charTribeMap}
+          tribeInfoMap={tribeInfoMap}
           allKills={kills as KillRecord[]}
           onClose={() => setOpenKill(null)}
         />
       )}
     </div>
+  );
+}
+
+// ── Tribe badge (used in kill rows; clickable to filter by tribe) ─────────────
+function TribeBadge({
+  tribeId,
+  tribeInfo,
+  onClick,
+}: {
+  tribeId: number | undefined;
+  tribeInfo: Map<number, { name: string; ticker: string }>;
+  onClick?: (tribeId: number) => void;
+}) {
+  if (!tribeId || tribeId <= 0) return null;
+  const info = tribeInfo.get(tribeId);
+  const label = info?.ticker ?? `T${tribeId}`;
+  const fullName = info?.name ?? `tribe ${tribeId}`;
+  return (
+    <span
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(tribeId);
+      }}
+      title={`${fullName} (click to filter)`}
+      style={{
+        flexShrink: 0,
+        fontSize: 9,
+        fontWeight: 700,
+        letterSpacing: "0.06em",
+        padding: "1px 5px",
+        background: "rgba(100,180,255,0.08)",
+        border: "1px solid rgba(100,180,255,0.3)",
+        color: "rgba(100,180,255,0.85)",
+        cursor: "pointer",
+        borderRadius: 1,
+      }}
+    >
+      {label}
+    </span>
   );
 }
 
@@ -1412,6 +1563,9 @@ export function IntelDashboardPanel() {
   const [killsLastFetchedAt, setKillsLastFetchedAt] = useState<number | null>(null);
   const [_charsLoading, setCharsLoading] = useState(false);
   const [nodesLoading, setNodesLoading] = useState(false);
+  // Tribe metadata: tribe_id → { name, ticker }. Populated alongside
+  // charMap during the kill load. Empty until phase 3b completes.
+  const [tribeInfoMap, setTribeInfoMap] = useState<Map<number, { name: string; ticker: string }>>(new Map());
 
   const loadedKillFeed = useRef(false);
   const killsLoadSeq = useRef(0);
@@ -1455,28 +1609,51 @@ export function IntelDashboardPanel() {
     if (resolvedMap.size === 0 && allCharIds.size > 0) {
       const allChars = await fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000);
       if (killsLoadSeq.current !== mySeq) return;
-      const fallbackMap = new Map<string, string>();
+      const fallbackMap = new Map<string, CharResolution>();
       for (const c of allChars) {
         const id = c.key?.item_id;
         const name = c.metadata?.name?.trim();
-        if (id && name) fallbackMap.set(id, name);
+        const tribeIdRaw = c.tribe_id;
+        const tribeId = typeof tribeIdRaw === "number"
+          ? tribeIdRaw
+          : (tribeIdRaw ? Number(tribeIdRaw) : undefined);
+        if (id && name) {
+          fallbackMap.set(id, { name, tribeId: (tribeId && tribeId > 0) ? tribeId : undefined });
+        }
       }
       resolvedMap = fallbackMap;
     }
 
-    const charObjects = [...resolvedMap.entries()].map(([itemId, name]) => ({
+    // Build the legacy char-objects array for charMap useMemo compatibility
+    // (charMap is item_id → name). Also surface tribe membership in a parallel
+    // map for tribe enrichment / filtering.
+    const charObjects = [...resolvedMap.entries()].map(([itemId, info]) => ({
       key: { item_id: itemId },
-      metadata: { name },
+      metadata: { name: info.name },
+      tribe_id: info.tribeId ?? 0,
     }));
     setCharacters(charObjects);
     setCharsLoading(false);
 
-    // Phase 3: resolve solar system names from World API
+    // Phase 3a: resolve solar system names from World API
     const sysIds = [...new Set(k.map((kill: any) => kill.solar_system_id?.item_id).filter(Boolean))];
     if (sysIds.length > 0) {
       resolveSolarSystemNames(sysIds).then(cache => {
         if (killsLoadSeq.current !== mySeq) return;
         setSysMap(new Map(cache));
+      });
+    }
+
+    // Phase 3b: resolve tribe metadata for every unique tribe_id we saw.
+    // Independent of system name resolution; runs in parallel.
+    const allTribeIds = new Set<number>();
+    for (const info of resolvedMap.values()) {
+      if (info.tribeId && info.tribeId > 0) allTribeIds.add(info.tribeId);
+    }
+    if (allTribeIds.size > 0) {
+      resolveTribesByIds([...allTribeIds]).then(infoMap => {
+        if (killsLoadSeq.current !== mySeq) return;
+        setTribeInfoMap(new Map(infoMap));
       });
     }
   }, []);
@@ -1487,6 +1664,18 @@ export function IntelDashboardPanel() {
       const id = c.key?.item_id;
       const name = c.metadata?.name?.trim();
       if (id && name) m.set(id, name);
+    }
+    return m;
+  }, [characters]);
+
+  // Parallel map: character item_id → tribe_id (numeric). Used by tribe
+  // filtering and tribe-badge rendering. 0 / missing means no tribe.
+  const charTribeMap = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const c of characters) {
+      const id = c.key?.item_id;
+      const tid = c.tribe_id ?? 0;
+      if (id && tid && tid > 0) m.set(id, tid);
     }
     return m;
   }, [characters]);
@@ -1546,6 +1735,8 @@ export function IntelDashboardPanel() {
           kills={kills}
           charMap={charMap}
           sysMap={sysMap}
+          charTribeMap={charTribeMap}
+          tribeInfoMap={tribeInfoMap}
           loading={killsLoading}
           loadProgress={killsLoadProgress}
           window={killsWindow}

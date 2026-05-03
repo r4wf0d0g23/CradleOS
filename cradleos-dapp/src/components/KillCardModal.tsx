@@ -48,6 +48,10 @@ interface KillCardModalProps {
   kill: KillRecord;
   charMap: Map<string, string>;
   sysMap: Map<string, string>;
+  /** Character item_id → tribe_id. Empty / missing = no tribe affiliation. */
+  charTribeMap?: Map<string, number>;
+  /** tribe_id → { name, ticker }. Empty until tribe metadata resolves. */
+  tribeInfoMap?: Map<number, { name: string; ticker: string }>;
   /** All recent kills, used for context intel (recent-system, killer-streak, victim-losses) */
   allKills: KillRecord[];
   onClose: () => void;
@@ -152,12 +156,14 @@ function Combatant({
   name,
   itemId,
   highlight,
+  tribeInfo,
 }: {
   role: string;
   glyph: string;
   name: string;
   itemId: string;
   highlight: string;
+  tribeInfo?: { name: string; ticker: string };
 }) {
   return (
     <div style={{ flex: 1, minWidth: 0 }}>
@@ -179,13 +185,33 @@ function Combatant({
           {name}
         </span>
       </div>
+      {tribeInfo && (
+        <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 2, marginBottom: 2 }}>
+          <span
+            style={{
+              fontSize: 9,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              padding: "1px 5px",
+              background: "rgba(100,180,255,0.08)",
+              border: "1px solid rgba(100,180,255,0.35)",
+              color: "rgba(100,180,255,0.95)",
+            }}
+          >
+            {tribeInfo.ticker}
+          </span>
+          <span style={{ fontSize: 10, color: "rgba(100,180,255,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {tribeInfo.name}
+          </span>
+        </div>
+      )}
       <div style={{ ...monoId, color: C.fgFaint }}>#{itemId}</div>
     </div>
   );
 }
 
 // ── Main modal ────────────────────────────────────────────────────────────────
-export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: KillCardModalProps) {
+export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMap, allKills, onClose }: KillCardModalProps) {
   // ── Escape key + body scroll lock ─────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -245,6 +271,24 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
   const victimName = charMap.get(victimId) ?? `Unknown #${victimId.slice(-6)}`;
   const reporterName = charMap.get(reporterId) ?? `Unknown #${reporterId.slice(-6)}`;
   const systemName = sysMap.get(sysId) ?? `sys-${sysId}`;
+
+  // Tribe enrichment (optional; both maps may be empty/undefined)
+  const killerTribeId = charTribeMap?.get(killerId);
+  const victimTribeId = charTribeMap?.get(victimId);
+  const reporterTribeId = charTribeMap?.get(reporterId);
+  const killerTribeInfo = killerTribeId ? tribeInfoMap?.get(killerTribeId) : undefined;
+  const victimTribeInfo = victimTribeId ? tribeInfoMap?.get(victimTribeId) : undefined;
+  const reporterTribeInfo = reporterTribeId ? tribeInfoMap?.get(reporterTribeId) : undefined;
+
+  // Tribe-on-tribe classification (only when both sides have a tribe)
+  let tribeRelation: { label: string; color: string } | null = null;
+  if (killerTribeId && victimTribeId) {
+    if (killerTribeId === victimTribeId) {
+      tribeRelation = { label: "INTRA-TRIBE", color: C.amber };
+    } else {
+      tribeRelation = { label: "INTER-TRIBE", color: C.cyan };
+    }
+  }
 
   // Reporter classification
   let reporterTag = "third-party";
@@ -399,7 +443,7 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
         {/* ── Body ── */}
         <div style={{ padding: 14 }}>
           {/* Combatants */}
-          <Section label={`${G.aggressor}  COMBATANTS`}>
+          <Section label={`${G.aggressor}  COMBATANTS${tribeRelation ? `  —  ${tribeRelation.label}` : ""}`}>
             <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <Combatant
                 role="AGGRESSOR"
@@ -407,18 +451,35 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
                 name={killerName}
                 itemId={killerId}
                 highlight={C.green}
+                tribeInfo={killerTribeInfo}
               />
               <div
                 style={{
                   alignSelf: "stretch",
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  color: C.cyanFaint,
-                  fontSize: 22,
+                  justifyContent: "center",
                   paddingTop: 14,
+                  gap: 4,
                 }}
               >
-                ⟶
+                <span style={{ color: C.cyanFaint, fontSize: 22, lineHeight: 1 }}>⟶</span>
+                {tribeRelation && (
+                  <span
+                    style={{
+                      fontSize: 8,
+                      fontWeight: 700,
+                      letterSpacing: "0.12em",
+                      color: tribeRelation.color,
+                      padding: "1px 4px",
+                      border: `1px solid ${tribeRelation.color}`,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {tribeRelation.label}
+                  </span>
+                )}
               </div>
               <Combatant
                 role="VICTIM"
@@ -426,6 +487,7 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
                 name={victimName}
                 itemId={victimId}
                 highlight={C.red}
+                tribeInfo={victimTribeInfo}
               />
             </div>
           </Section>
@@ -452,6 +514,26 @@ export function KillCardModal({ kill, charMap, sysMap, allKills, onClose }: Kill
               >
                 {reporterName}
               </div>
+              {reporterTribeInfo && (
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 3 }}>
+                  <span
+                    style={{
+                      fontSize: 9,
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      padding: "1px 5px",
+                      background: "rgba(100,180,255,0.08)",
+                      border: "1px solid rgba(100,180,255,0.35)",
+                      color: "rgba(100,180,255,0.95)",
+                    }}
+                  >
+                    {reporterTribeInfo.ticker}
+                  </span>
+                  <span style={{ fontSize: 10, color: "rgba(100,180,255,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {reporterTribeInfo.name}
+                  </span>
+                </div>
+              )}
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
                 <span
                   style={{
