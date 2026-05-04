@@ -173,7 +173,7 @@ export function GatePolicyPanel() {
 
   if (vaultLoading || (tribeId && claimLoading) || !vault) return (
     <div className="card" style={{ textAlign: "center", padding: 32, color: "#888" }}>
-      {vaultLoading || claimLoading ? "Loading…" : "No tribe vault found. Create one in the Tribe Token tab first."}
+      {vaultLoading || claimLoading ? "Loading…" : "No tribe vault found. Create one in the Tribe Vault tab first."}
     </div>
   );
 
@@ -808,26 +808,42 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
             </div>
           )}
 
-          {/* Player overrides */}
+          {/* Legacy Player Overrides (wallet-keyed) — v13 and earlier wrote to */}
+          {/* PlayerGateKey<address> on the policy. v14 enforcement consults */}
+          {/* GateFriendlyCharacterKey<u32> + GateHostileCharacterKey<u32> only. */}
+          {/* Wallet-keyed entries are NOT enforced. UI hidden behind a yellow */}
+          {/* deprecation banner with a clear migration pointer. */}
           {isFounder && (
-            <div style={{ borderTop: "1px solid rgba(255,71,0,0.1)", paddingTop: 14 }}>
-              <div style={{ fontSize: 11, color: "rgba(180,180,160,0.6)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Player Overrides</div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <div style={{ borderTop: "1px solid rgba(255,200,0,0.18)", paddingTop: 14 }}>
+              <div style={{ fontSize: 11, color: "#ffcc00", fontWeight: 700, marginBottom: 4 }}>
+                ⚠ LEGACY PLAYER OVERRIDES (UNENFORCED)
+              </div>
+              <div style={{ fontSize: 10, color: "rgba(255,200,0,0.7)", marginBottom: 10, lineHeight: 1.5 }}>
+                Wallet-keyed entries below are not consulted by gate enforcement — the
+                contract only sees character_id (u32) at jump time, not wallet address.
+                Use the <strong>Gate Friendly Characters</strong> / <strong>Gate Hostile
+                Characters</strong> sections below this card for per-character overrides
+                that actually enforce. This input is kept for cleaning up entries
+                made before v14.
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", opacity: 0.55 }}>
                 <input
                   value={playerInput}
                   onChange={e => setPlayerInput(e.target.value.trim())}
-                  placeholder="0x player wallet address"
-                  style={{ flex: 1, minWidth: 240, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "#aaa", fontSize: 11, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
+                  placeholder="0x player wallet address (legacy / unenforced)"
+                  style={{ flex: 1, minWidth: 240, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,200,0,0.2)", borderRadius: 3, color: "#aaa", fontSize: 11, padding: "5px 8px", fontFamily: "monospace", outline: "none" }}
                 />
                 <button
                   onClick={() => { if (playerInput) { exec(buildSetGatePlayerOverrideTx(policy.objectId, vault.objectId, playerInput, 1)); setPlayerInput(""); } }}
                   disabled={busy || !playerInput}
                   style={{ background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864", borderRadius: 2, fontSize: 11, padding: "5px 10px", cursor: "pointer" }}
+                  title="Writes to chain but is NOT enforced. Migrate to Gate Friendly Characters by character ID."
                 >Allow</button>
                 <button
                   onClick={() => { if (playerInput) { exec(buildSetGatePlayerOverrideTx(policy.objectId, vault.objectId, playerInput, 0)); setPlayerInput(""); } }}
                   disabled={busy || !playerInput}
                   style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444", borderRadius: 2, fontSize: 11, padding: "5px 10px", cursor: "pointer" }}
+                  title="Writes to chain but is NOT enforced. Migrate to Gate Hostile Characters by character ID."
                 >Deny</button>
               </div>
             </div>

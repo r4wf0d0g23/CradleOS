@@ -293,7 +293,7 @@ export function GateProfilePanel() {
   );
   if (!vault) return (
     <div className="card" style={{ textAlign: "center", padding: "32px", color: "#888" }}>
-      No tribe vault found. Create one in the Tribe Token tab first.
+      No tribe vault found. Create one in the Tribe Vault tab first.
     </div>
   );
 
@@ -478,7 +478,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
           <div style={{ color: "#aaa", fontWeight: 600, marginBottom: "12px", fontSize: "14px" }}>
             Gate Profile
           </div>
-          <p style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "20px" }}>
+          <p style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", marginBottom: "20px" }}>
             No gate profile exists for this vault. Create one to declare your tribe's gate stance on-chain.
             Other tribes and pilots can discover this policy to coordinate access.
           </p>
@@ -509,7 +509,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
                   style={{
                     background: "transparent",
                     border: "1px solid rgba(255,255,255,0.1)",
-                    color: "rgba(107,107,94,0.6)",
+                    color: "rgba(175,175,155,0.6)",
                     borderRadius: "0", fontSize: "11px", padding: "4px 12px", cursor: "pointer",
                   }}
                 >
@@ -528,7 +528,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
               style={{
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.1)",
-                color: "rgba(107,107,94,0.6)",
+                color: "rgba(175,175,155,0.6)",
                 borderRadius: "0", fontSize: "11px", padding: "4px 12px", cursor: "pointer",
               }}
             >
@@ -551,7 +551,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
       <div className="card" style={{ marginBottom: "16px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
           <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "18px" }}>Gate Profile</div>
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>v{profile?.version ?? 0}</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>v{profile?.version ?? 0}</div>
           {profile && <PolicyBadge policy={profile.accessPolicy} />}
           {isFounder && (
             <button
@@ -573,7 +573,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {/* Toll */}
             <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-              <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px", minWidth: "80px" }}>TOLL</span>
+              <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px", minWidth: "80px" }}>TOLL</span>
               <span style={{ color: profile.tollFee > 0 ? "#ffaa33" : "#00ff96", fontSize: "13px", fontWeight: 600 }}>
                 {profile.tollFee > 0 ? `${profile.tollFee} EVE` : "Free passage"}
               </span>
@@ -582,7 +582,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
             {/* Notes */}
             {profile.notes && (
               <div style={{ display: "flex", gap: "12px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px", minWidth: "80px", paddingTop: "2px" }}>NOTES</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px", minWidth: "80px", paddingTop: "2px" }}>NOTES</span>
                 <span style={{ color: "#bbb", fontSize: "12px", lineHeight: "1.5" }}>{profile.notes}</span>
               </div>
             )}
@@ -590,8 +590,8 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
             {/* Last updated */}
             {profile.updatedMs > 0 && (
               <div style={{ display: "flex", gap: "12px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px", minWidth: "80px" }}>UPDATED</span>
-                <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px", minWidth: "80px" }}>UPDATED</span>
+                <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
                   {new Date(profile.updatedMs).toLocaleString()}
                 </span>
               </div>
@@ -610,7 +610,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
                   Whitelisted Tribes
                 </div>
                 {profile.whitelist.length === 0 ? (
-                  <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>
+                  <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>
                     No tribes whitelisted yet. Add tribe IDs below.
                   </div>
                 ) : (
@@ -694,7 +694,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
 
             {/* Policy selector */}
             <div style={{ marginBottom: "12px" }}>
-              <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
+              <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
                 ACCESS POLICY
               </div>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -723,7 +723,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
 
             {/* Toll input */}
             <div style={{ marginBottom: "12px" }}>
-              <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
+              <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
                 TOLL (EVE, 0 = free)
               </div>
               <input
@@ -744,7 +744,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
 
             {/* Notes textarea */}
             <div style={{ marginBottom: "14px" }}>
-              <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
+              <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
                 NOTES
               </div>
               <textarea
@@ -776,7 +776,7 @@ function GateProfilePanelInner({ vault }: { vault: TribeVaultState }) {
                 style={{
                   background: "transparent",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  color: "rgba(107,107,94,0.55)",
+                  color: "rgba(175,175,155,0.55)",
                   borderRadius: "0", fontSize: "11px", padding: "5px 12px", cursor: "pointer",
                 }}
               >
@@ -811,12 +811,12 @@ function GateProfileFeed({
       <div style={{ color: "#aaa", fontWeight: 600, fontSize: "14px", marginBottom: "14px" }}>
         All Gate Profiles
       </div>
-      <p style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px", marginBottom: "14px" }}>
+      <p style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px", marginBottom: "14px" }}>
         Declared gate policies from all tribes. These are intent declarations — physical gate linking is CCP-managed.
       </p>
 
       {others.length === 0 ? (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>
           No gate profiles discovered on-chain yet.
         </div>
       ) : (
@@ -837,7 +837,7 @@ function GateProfileFeed({
                 <div style={{ color: "#ccc", fontSize: "12px", fontFamily: "monospace", marginBottom: "3px" }}>
                   Vault: {shortAddr(entry.vaultId)}
                 </div>
-                <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
+                <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
                   Founder: {shortAddr(entry.founder)}
                 </div>
                 {entry.notes && (
@@ -854,7 +854,7 @@ function GateProfileFeed({
                 }}>
                   {entry.tollFee > 0 ? `${entry.tollFee} EVE` : "Free"}
                 </div>
-                <div style={{ color: "rgba(107,107,94,0.45)", fontSize: "10px", marginTop: "2px" }}>
+                <div style={{ color: "rgba(175,175,155,0.45)", fontSize: "10px", marginTop: "2px" }}>
                   v{entry.version}
                 </div>
               </div>

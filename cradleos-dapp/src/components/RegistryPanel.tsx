@@ -293,7 +293,7 @@ export function RegistryPanel() {
               </div>
             )}
             <div style={{ fontSize: "11px", fontWeight: 400, marginTop: 4 }}>
-              Head to the Tribe Token tab to mint your EVE coin. Defense policy is ready in the Defense tab.
+              Head to the Tribe Vault tab to mint your EVE coin. Defense policy is ready in the Defense tab.
             </div>
           </div>
         ) : launchStep === "vault_done" ? (
@@ -304,7 +304,7 @@ export function RegistryPanel() {
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "flex-end" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>TRIBE NAME</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>TRIBE NAME</span>
                 <input
                   value={launchName}
                   onChange={e => setLaunchName(e.target.value)}
@@ -313,7 +313,7 @@ export function RegistryPanel() {
                 />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>TICKER (3-5 chars)</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>TICKER (3-5 chars)</span>
                 <input
                   value={launchTicker}
                   onChange={e => setLaunchTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5))}
@@ -337,14 +337,14 @@ export function RegistryPanel() {
               </button>
             </div>
             {launchErr && <div style={{ color: "#ff6432", fontSize: "11px" }}>⚠ {launchErr}</div>}
-            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+            <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
               Creates vault for Tribe #{tribeId} + a defense policy in two sequential transactions.
             </div>
           </div>
         ) : !account ? (
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>Connect EVE Vault to launch your tribe.</div>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px" }}>Connect EVE Vault to launch your tribe.</div>
         ) : (
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>Loading tribe info…</div>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px" }}>Loading tribe info…</div>
         )}
       </div>
 
@@ -355,22 +355,22 @@ export function RegistryPanel() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "12px" }}>
           <div style={{ display: "flex", gap: "8px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", width: "110px" }}>Tribe ID</span>
+            <span style={{ color: "rgba(175,175,155,0.55)", width: "110px" }}>Tribe ID</span>
             <span style={{ color: "#FF4700" }}>{tribeId ?? "—"}</span>
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", width: "110px" }}>Character</span>
+            <span style={{ color: "rgba(175,175,155,0.55)", width: "110px" }}>Character</span>
             <span style={{ fontFamily: "monospace", color: "#888" }}>{shortAddr(characterId ?? "")}</span>
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", width: "110px" }}>Tribe status</span>
+            <span style={{ color: "rgba(175,175,155,0.55)", width: "110px" }}>Tribe status</span>
             <span style={{ color: vaultExists ? "#00ff96" : "#888" }}>
               {vaultExists ? `✓ registered${existingVaultId ? ` (${existingVaultId.slice(0,10)}…)` : ""}` : "unregistered"}
             </span>
           </div>
           {claimExists && (
             <div style={{ display: "flex", gap: "8px" }}>
-              <span style={{ color: "rgba(107,107,94,0.55)", width: "110px" }}>Founder</span>
+              <span style={{ color: "rgba(175,175,155,0.55)", width: "110px" }}>Founder</span>
               <span style={{ fontFamily: "monospace", color: myClaimActive ? "#00ff96" : "#888" }}>
                 {shortAddr(claim!.claimer)}
                 {myClaimActive && <span style={{ color: "#00ff96", marginLeft: "6px" }}>← you</span>}
@@ -389,11 +389,11 @@ export function RegistryPanel() {
           {claimExists && (
             <div style={{ fontSize: "12px", marginBottom: "10px", display: "flex", flexDirection: "column", gap: "4px" }}>
               <div style={{ display: "flex", gap: "8px" }}>
-                <span style={{ color: "rgba(107,107,94,0.55)", width: "100px" }}>Claim epoch</span>
-                <span style={{ color: "rgba(107,107,94,0.6)" }}>{claim!.claimEpoch}</span>
+                <span style={{ color: "rgba(175,175,155,0.55)", width: "100px" }}>Claim epoch</span>
+                <span style={{ color: "rgba(175,175,155,0.6)" }}>{claim!.claimEpoch}</span>
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
-                <span style={{ color: "rgba(107,107,94,0.55)", width: "100px" }}>Vault</span>
+                <span style={{ color: "rgba(175,175,155,0.55)", width: "100px" }}>Vault</span>
                 <span style={{ color: vaultExists ? "#00ff96" : "#555" }}>
                   {vaultExists ? `✓ yes${existingVaultId ? ` (${existingVaultId.slice(0,10)}…)` : ""}` : "not yet created"}
                 </span>
@@ -402,7 +402,7 @@ export function RegistryPanel() {
           )}
           {!claimExists && tribeId != null && characterId && (
             <>
-              <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px", marginBottom: "10px" }}>
+              <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px", marginBottom: "10px" }}>
                 No claim registered for Tribe #{tribeId}. Stake your claim to prevent squatting.
               </div>
               <button className="accent-button" onClick={handleRegisterClaim} disabled={claimBusy}
@@ -414,12 +414,12 @@ export function RegistryPanel() {
           )}
           {myClaimActive && !vaultExists && (
             <div style={{ color: "#00ff96", fontSize: "12px", marginTop: "8px" }}>
-              ✓ Claim active — go to Tribe Token tab to create your vault.
+              ✓ Claim active — go to Tribe Vault tab to create your vault.
             </div>
           )}
           {myClaimActive && vaultExists && (
             <div style={{ color: "#00ff96", fontSize: "12px", marginTop: "8px" }}>
-              ✓ Claim active — vault confirmed. Switch to Tribe Token tab to manage it.
+              ✓ Claim active — vault confirmed. Switch to Tribe Vault tab to manage it.
             </div>
           )}
           {/* Conflict: someone else claimed, no vault yet — member can challenge */}
@@ -431,7 +431,7 @@ export function RegistryPanel() {
               <div style={{ color: "#ff6432", fontWeight: 600, marginBottom: "4px" }}>
                 ⚠ Tribe #{tribeId} claimed by another wallet — no vault created yet
               </div>
-              <div style={{ color: "rgba(107,107,94,0.6)" }}>
+              <div style={{ color: "rgba(175,175,155,0.6)" }}>
                 If you joined before them, request an epoch attestation from the CradleOS attestor,
                 then use the Challenge section below to reclaim.
               </div>
@@ -462,8 +462,8 @@ export function RegistryPanel() {
               borderRadius: "2px",
             }}>
               <span style={{ color: "#FF4700", fontWeight: 600 }}>Tribe #{att.tribeId}</span>
-              <span style={{ color: "rgba(107,107,94,0.55)" }}>join epoch {att.joinEpoch}</span>
-              <span style={{ fontFamily: "monospace", color: "rgba(107,107,94,0.55)" }}>char {shortAddr(att.characterId)}</span>
+              <span style={{ color: "rgba(175,175,155,0.55)" }}>join epoch {att.joinEpoch}</span>
+              <span style={{ fontFamily: "monospace", color: "rgba(175,175,155,0.55)" }}>char {shortAddr(att.characterId)}</span>
               <button
                 onClick={() => handleChallenge(att.objectId)}
                 disabled={challengeBusy || !challengeVaultId}
@@ -490,32 +490,32 @@ export function RegistryPanel() {
 
           {/* Issue attestation */}
           <div style={{ marginBottom: "18px" }}>
-            <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.05em" }}>
+            <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.05em" }}>
               ISSUE EPOCH ATTESTATION
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "6px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>BENEFICIARY WALLET</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>BENEFICIARY WALLET</span>
                 <input value={issueWallet} onChange={e => setIssueWallet(e.target.value.trim())}
                   placeholder="0x…" style={{ ...inputStyle, width: "180px" }} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>TRIBE ID</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>TRIBE ID</span>
                 <input value={issueTribeId} onChange={e => setIssueTribeId(e.target.value.replace(/\D/g, ""))}
                   placeholder="98000001" style={{ ...inputStyle, width: "100px" }} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>CHARACTER ID</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>CHARACTER ID</span>
                 <input value={issueCharId} onChange={e => setIssueCharId(e.target.value.trim())}
                   placeholder="0x…" style={{ ...inputStyle, width: "160px" }} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>JOIN EPOCH</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>JOIN EPOCH</span>
                 <input value={issueEpoch} onChange={e => setIssueEpoch(e.target.value.replace(/\D/g, ""))}
                   placeholder="epoch #" style={{ ...inputStyle, width: "80px" }} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px", justifyContent: "flex-end" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>&nbsp;</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>&nbsp;</span>
                 <button onClick={handleIssueAttestation} disabled={issueBusy || !issueWallet || !issueTribeId || !issueCharId || !issueEpoch}
                   style={{
                     background: "rgba(0,255,150,0.08)", border: "1px solid #00ff9640",
@@ -530,12 +530,12 @@ export function RegistryPanel() {
 
           {/* Invalidate claim */}
           <div style={{ marginBottom: "18px" }}>
-            <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.05em" }}>
+            <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "8px", letterSpacing: "0.05em" }}>
               INVALIDATE STALE CLAIM
             </div>
             <div style={{ display: "flex", gap: "6px", alignItems: "flex-end" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>TRIBE ID</span>
+                <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>TRIBE ID</span>
                 <input value={invalidateTribeId} onChange={e => setInvalidateTribeId(e.target.value.replace(/\D/g, ""))}
                   placeholder="tribe_id" style={{ ...inputStyle, width: "120px" }} />
               </div>
@@ -560,7 +560,7 @@ export function RegistryPanel() {
           </div>
           <div style={{ display: "flex", gap: "6px", alignItems: "flex-end" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px" }}>NEW ATTESTOR WALLET</span>
+              <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px" }}>NEW ATTESTOR WALLET</span>
               <input value={newAttestor} onChange={e => setNewAttestor(e.target.value.trim())}
                 placeholder="0x…" style={{ ...inputStyle, width: "280px" }} />
             </div>

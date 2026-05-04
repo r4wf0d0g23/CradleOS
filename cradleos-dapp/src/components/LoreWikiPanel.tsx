@@ -200,7 +200,7 @@ const MECHANICS_ARTICLES: BuiltinArticle[] = [
     title: "Smart Gates — Tribe Infrastructure",
     category: "Mechanics",
     tags: ["smartgate", "gate", "infrastructure", "tribe", "access"],
-    content: `Smart Gates are player-deployable stargates built on Smart Storage Units (SSUs).\nThey connect two solar systems and can be configured for access control.\n\nACCESS POLICIES\n  Open     — any rider may use the gate\n  Tribe Only — only tribe members may pass\n  Whitelist  — only addresses on the gate's whitelist may pass\n  Closed   — gate is locked to all traffic\n\nTOLL\n  Tribe operators can set a EVE toll for gate passage.\n  Toll is collected in EVE coin and deposited into the tribe vault.\n\nGATE PROFILES (CradleOS)\n  CradleOS extends gate management with on-chain profiles.\n  Each vault can manage gate access, whitelists, and toll configuration\n  directly from the tribe dashboard.\n\nON-CHAIN DATA\n  Gate passage events (PassageLogged) are recorded on Sui testnet.\n  Query live data via the CradleOS Intel Dashboard.`,
+    content: `Smart Gates are player-deployable stargates built on the Smart Assembly framework. They connect two solar systems and — when configured with a CradleOS extension — can enforce arbitrary on-chain access policies.\n\nACCESS POLICIES (CradleOS gate_policy)\n  OPEN       — any rider may use the gate\n  TRIBE ONLY — only tribe members (by tribe_id) may pass\n  ALLIES     — tribe members + tribes explicitly allowed via tribe_overrides\n  CLOSED     — nobody passes (rare; emergency lockdown)\n\nPRECEDENCE (cradleos::gate_policy::is_allowed)\n  1. Hostile character override — always DENY (overrides everything)\n  2. Friendly character override — always ALLOW (overrides tribe rules)\n  3. Same tribe as policy owner — ALLOW unless access_level == CLOSED\n  4. Tribe-level override (allow/deny) for the rider's tribe\n  5. Default access_level fallback (OPEN allows; everything else denies)\n\nENFORCEMENT (v14+)\n  Gate owners attach CradleOSAuth as the gate's extension type via\n  world::gate::authorize_extension. After that, default jump is rejected;\n  riders must mint a JumpPermit through cradleos::gate_policy::request_jump_permit_entry,\n  which runs is_allowed and only issues a permit if the rider passes.\n  The dApp's Gates tab provides the Request Permit button and the Authorize button.\n\nTOLL\n  gate_profile carries an informational toll declaration. The CradleOSAuth flow\n  doesn't currently enforce a toll — it's a coordination signal between operators.\n\nON-CHAIN DATA\n  ExtensionAuthorizedEvent (world::gate) and JumpPermitIssuedEvent record\n  authorization changes and successful permit mints. Query via the CradleOS\n  Intel Dashboard or Suiscan.`,
     isBuiltin: true,
   },
   {
@@ -216,7 +216,7 @@ const MECHANICS_ARTICLES: BuiltinArticle[] = [
     title: "CradleOS — Tribe Command Stack",
     category: "Mechanics",
     tags: ["cradleos", "eve", "tribe", "sui", "hackathon"],
-    content: `CradleOS is a wallet-native tribe command stack built on Sui Move for EVE Frontier.\n\nCORE MODULES (on-chain, Sui testnet)\n  - tribe_vault       — infra-backed tribe accounting and treasury anchor\n  - defense_policy    — smart gate access control via on-chain policy\n  - bounty_contract   — trustless kill bounties with attestor model\n  - cargo_contract    — escrow cargo delivery contracts\n  - ship_reimbursement — funded loss reimbursement policies\n  - tribe_dex         — tribe coin / EVE order book\n  - gate_profile      — on-chain gate access and toll configuration\n  - inheritance       — succession planning (testament deeds)\n  - announcement_board — on-chain tribe announcements\n  - recruiting_terminal — on-chain application/review system\n  - lore_wiki         — decentralised knowledge base (this wiki)\n\nPACKAGE\n  Deployed on Sui Testnet\n  Package ID: 0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d\n\nDEVELOPMENT\n  CradleOS is actively developed for the EVE Frontier Hackathon 2026.\n  Source: github.com/r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026`,
+    content: `CradleOS is a wallet-native tribe command stack built on Sui Move for EVE Frontier.\n\nCORE MODULES (on-chain, Sui testnet)\n  - tribe_vault         — infra-backed tribe accounting + EVE-collateralized coin\n  - registry            — tribe claim + on-chain identity\n  - corp + treasury     — corp memberships and SUI treasury\n  - tribe_roles         — admin/officer/treasurer/recruiter delegation\n  - tribe_dex           — tribe coin / EVE order book\n  - defense_policy      — turret targeting policy (Friendly + Hostile by character_id)\n  - turret_ext + turret_delegation — turret authorization + per-config policy linkage\n  - gate_policy         — gate access policy (Friendly + Hostile + tribe overrides)\n  - gate_control        — CradleOSAuth witness for world::gate::authorize_extension\n  - gate_profile        — informational gate intent + toll declaration\n  - bounty_contract     — attestor-mediated kill bounties\n  - trustless_bounty    — fully trustless kill bounties (verified by Killmail)\n  - cargo_contract      — escrow cargo delivery contracts\n  - ship_reimbursement  — funded loss reimbursement policies\n  - collateral_vault    — EVE-collateralized supply for tribe coins\n  - keeper_shrine       — lore-aligned offerings\n  - recruiting_terminal — on-chain application + review\n  - announcement_board  — on-chain tribe announcements\n  - inheritance         — succession planning (testament deeds)\n  - ssu_access          — shared SSU access policies + custody\n  - character_registry  — character-id resolution\n  - contributions       — contribution tracking\n  - lore_wiki           — decentralised knowledge base (this wiki)\n\nPACKAGE\n  Deployed on Sui Testnet\n  Latest published-at: 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93 (v14)\n  Original-id: 0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3\n\nDEVELOPMENT\n  CradleOS is actively developed beyond the EVE Frontier Hackathon 2026.\n  Source: github.com/r4wf0d0g23/CradleOS\n  dApp: https://r4wf0d0g23.github.io/CradleOS/`,
     isBuiltin: true,
   },
 ];
@@ -301,16 +301,16 @@ const DEFENSE_ARTICLES: BuiltinArticle[] = [
     id: "builtin-defense-policy-levels",
     title: "Defense Policy Levels",
     category: "Mechanics",
-    tags: ["defense", "alert", "green", "yellow", "red", "aggression", "policy"],
-    content: `The TribeDefensePolicy defines three security alert levels and an aggression mode toggle that govern how tribe turrets and gates respond to incoming ships.\n\nALERT LEVELS\n\nGREEN — Low Alert\n  The default peacetime setting. Turrets are operational but engage only ships explicitly marked HOSTILE in player relations. Neutral players pass freely. Gate access follows configured policy without additional checks.\n\nYELLOW — Caution\n  Elevated readiness. Turrets extend engagement range and may target ships with no explicit FRIENDLY tag. Unknown players (not in tribe or whitelist) are treated with caution. Gate challenges may be issued.\n\nRED — Full Defense\n  Maximum security posture. Turrets engage all ships not explicitly FRIENDLY. Unknown and neutral players are treated as hostile. Gates may lock down to TRIBE ONLY or CLOSED automatically depending on config.\n\nAGGRESSION MODE TOGGLE\nSeparate from alert level, the aggression toggle switches between:\n  PASSIVE — turrets only fire when fired upon (PvE-friendly)\n  ACTIVE  — turrets proactively engage hostile-flagged ships on sight\n\nPOLICY CHANGES\nAlert level and aggression mode are set by tribe admins via the CradleOS tribe dashboard. Changes propagate immediately to all delegated turrets and associated gates.`,
+    tags: ["defense", "security", "green", "yellow", "red", "aggression", "policy"],
+    content: `The TribeDefensePolicy defines a three-level security protocol and an aggression-detect toggle. Together they govern how tribe turrets pick targets when the game's behaviour-change event fires.\n\nSECURITY LEVELS\n\nGREEN — Reactive\n  Turrets only arm against confirmed aggressors. A pilot must be flagged as the aggressor on the TargetCandidate (the world contract emits this when they shoot first or trigger STARTED_ATTACK) before our turret will engage. Best for peacetime.\n\nYELLOW — Active\n  Turrets arm against any HOSTILE-tribe candidates on approach (ENTERED). Pilots from a tribe you've marked HOSTILE in your tribe-relations grid get shot regardless of whether they fire first. Friendly tribes pass freely.\n\nRED — Lockdown\n  Turrets arm against all non-FRIENDLY pilots. Anyone who isn't on your friendly tribe list, friendly character list, or your own tribe gets engaged. Only use during active wartime.\n\nAGGRESSION DETECT TOGGLE\nA separate switch on the policy. When ON, turrets BEHAVE LIKE GREEN regardless of security level — they wait for confirmed aggression before firing. Useful as a safety belt at YELLOW/RED if you want the alert level for tribe-relation behaviour but don't want to provoke neutrals.\n\nPER-CHARACTER OVERRIDES (v13+)\n  Friendly Characters — character_id u32 list. Listed characters are skipped\n    by turrets even if their tribe is HOSTILE or unlisted. Use for cross-tribe\n    allies who must always be safe.\n  Hostile Characters — character_id u32 list. Listed characters are ALWAYS\n    targeted, including same-tribe members (overrides the auto same-tribe\n    protection). Use for KOS targets that have infiltrated your tribe.\n\nSAME-TRIBE PROTECTION\n  Tribe turrets never fire on same-tribe pilots unless they're on the\n  Hostile Characters list. This is hard-coded in the turret extension\n  and runs before the security-level check.\n\nPOLICY CHANGES\nAlert level, aggression toggle, friendly/hostile lists, and tribe relations are\nall configurable from the Defense tab. Changes propagate to every delegated\nturret on the next behaviour-change event the game fires.`,
     isBuiltin: true,
   },
   {
     id: "builtin-defense-player-relations",
-    title: "Player Relations",
+    title: "Friendly + Hostile Characters",
     category: "Mechanics",
-    tags: ["defense", "relations", "hostile", "friendly", "override", "policy"],
-    content: `Player Relations allow per-player HOSTILE or FRIENDLY overrides on the tribe's TribeDefensePolicy, superseding tribe-level defaults for specific riders.\n\nOVERRIDE SYSTEM\nEach player in EVE Frontier has a default relation determined by their tribe membership status and the active alert level. Player Relations allow fine-grained overrides:\n\n  HOSTILE override — this player is always engaged by tribe turrets regardless of alert level or tribe membership\n  FRIENDLY override — this player always passes safely, even at RED alert\n\nUSE CASES\n  - Mark a known pirate HOSTILE permanently\n  - Grant a trusted neutral FRIENDLY status to allow gate passage\n  - Temporarily HOSTILE a disgraced ex-member even after they leave the tribe\n\nPRECEDENCE\nPlayer-level HOSTILE/FRIENDLY overrides take precedence over tribe-level defaults. The override hierarchy is:\n  1. Player-specific override (highest priority)\n  2. Tribe membership status\n  3. Active alert level default behavior\n\nMANAGEMENT\nTribe admins and officers can set player relations via the CradleOS defense policy interface. Changes apply in real time to all delegated turrets.`,
+    tags: ["defense", "friendly", "hostile", "character", "override", "policy"],
+    content: `Per-character overrides on the tribe's TribeDefensePolicy. v13 introduced Friendly Characters; both Friendly and Hostile lists are keyed by in-game character_id (u32) since the world contract's TargetCandidate exposes character_id, not wallet address.\n\nWHY CHARACTER_ID, NOT WALLET\nWhen the game engine fires a behaviour-change event, the world contract hands the turret extension a TargetCandidate struct that includes character_id and character_tribe — nothing else identifies the pilot. Pre-v13 attempts to override by wallet address never enforced because that data path doesn't reach the turret. v13 fixed this by keying overrides on character_id; the dApp resolves character_id from a name search via the Chain Query character directory.\n\nFRIENDLY CHARACTERS (cross-tribe allies)\n  Listed characters are skipped by tribe turrets regardless of their tribe.\n  Use for trusted allies from other tribes who should always be safe near\n  your installations — they get the same protection as a tribe member.\n  Same-tribe pilots are already auto-protected; this entry is for outsiders.\n\nHOSTILE CHARACTERS (same-tribe KOS)\n  Listed characters are ALWAYS targeted, including same-tribe members.\n  Overrides the automatic same-tribe protection. Use for compromised\n  tribe members or KOS infiltrators that must never get a free pass.\n\nPRECEDENCE (turret_ext::get_target_priority_list)\n  1. Same-tribe + on Hostile Characters → ENGAGE (overrides protection)\n  2. Same-tribe + not on Hostile → SKIP (auto same-tribe protection)\n  3. On Friendly Characters → SKIP (cross-tribe friendly override)\n  4. Tribe is FRIENDLY in tribe relations → SKIP\n  5. Otherwise: apply security-level rules (GREEN/YELLOW/RED + aggression mode)\n\nMANAGEMENT\nTribe founders set Friendly/Hostile from the Defense tab. The autocomplete\nsearches the same character directory the Chain Query tab uses, so you can\npick by player name and the dApp resolves the character_id automatically.\nNumeric character_id is also accepted as a fallback (paste from Chain Query).\n\nChanges propagate to every delegated turret on the next behaviour-change\nevent fired by the game engine.`,
     isBuiltin: true,
   },
 ];
@@ -320,8 +320,8 @@ const GATE_ARTICLES: BuiltinArticle[] = [
     id: "builtin-gate-access-control",
     title: "Gate Access Control",
     category: "Mechanics",
-    tags: ["gate", "access", "open", "closed", "tribe", "allies", "delegation"],
-    content: `Smart Gate access is governed by a configurable policy that determines which riders can use a gate to travel between solar systems.\n\nACCESS LEVELS\n\nOPEN\n  Any rider may use the gate. No restrictions. Commonly used for public infrastructure or neutral transit corridors.\n\nTRIBE ONLY\n  Only members registered in the tribe vault may pass. All others are denied. Default for secure tribe logistics routes.\n\nALLIES\n  Tribe members plus explicitly whitelisted players or allied tribes may pass. Useful for coalition logistics where multiple tribes cooperate without making a gate fully public.\n\nCLOSED\n  Gate is locked to all traffic, including tribe members. Used during emergencies, wartime lockdowns, or when a gate is temporarily taken offline.\n\nTRIBE-LEVEL OVERRIDES\nThe tribe vault admin can change the gate's access level at any time via the CradleOS gate_profile module. Changes are enforced on-chain immediately.\n\nPLAYER-LEVEL OVERRIDES\nIndividual players can be whitelisted or blacklisted on a gate regardless of tribe membership. A blacklisted tribe member is denied even at TRIBE ONLY access. A whitelisted outsider is admitted even at TRIBE ONLY.\n\nGATE DELEGATION FLOW\n  1. Gate operator calls the delegation function in gate_profile\n  2. The gate is linked to the tribe vault\n  3. Gate policy is now managed centrally from the tribe dashboard\n  4. Access changes made in the dashboard propagate to the gate immediately\n  5. To revoke: operator calls undelegate; gate returns to owner-only management\n\nTOLL CONFIGURATION\nOptionally, a EVE toll can be set per gate. Toll is collected on passage and deposited into the tribe vault treasury.`,
+    tags: ["gate", "access", "cradleosauth", "jumppermit", "v14", "transit"],
+    content: `Smart Gate access in CradleOS is enforced via the world::gate typed-witness extension pattern. v14 wired this end-to-end so 'OPEN / TRIBE ONLY / ALLIES / CLOSED' actually mean something on chain.\n\nACCESS LEVELS (TribeGatePolicy.access_level)\n  OPEN       — anyone allowed (subject to character-level overrides)\n  TRIBE ONLY — same-tribe only\n  ALLIES     — same-tribe + tribes explicitly allowed via tribe_overrides\n  CLOSED     — nobody, including same-tribe (full lockdown)\n\nDECISION LOGIC (cradleos::gate_policy::is_allowed)\n  1. On Hostile Characters → DENY (overrides everything)\n  2. On Friendly Characters → ALLOW (overrides tribe rules)\n  3. Same tribe as policy owner → ALLOW unless access_level == CLOSED\n  4. Tribe is in tribe_overrides → follow override (allow=1, deny=0)\n  5. Default: OPEN allows; everything else denies\n\nENFORCEMENT FLOW\n  1. Tribe founder creates a TribeGatePolicy via the Gates tab.\n  2. Gate owner clicks 'Authorize CradleOS' on their gate — single PTB\n     wraps borrow_owner_cap + world::gate::authorize_extension<CradleOSAuth>\n     + return_owner_cap. After this, world::gate::jump (default) aborts\n     EExtensionNotAuthorized; the gate requires a CradleOS-issued JumpPermit.\n  3. Pilot opens the Gates tab → Gate Transit card → selects the policy\n     for the gate they want to use → sees a green ALLOWED or red DENIED\n     preflight badge (read-only is_allowed, no gas) → clicks Request Jump\n     Permit if allowed. Contract runs is_allowed; on pass, calls\n     world::gate::issue_jump_permit<CradleOSAuth> which transfers a permit\n     to the pilot's character_address (24h validity, hidden from UX).\n  4. Pilot jumps in-game; the game client uses world::gate::jump_with_permit\n     to consume the permit and complete the jump.\n\nFRIENDLY + HOSTILE CHARACTERS\n  Same primitives as the Defense (turret) panel: per-character_id u32 overrides.\n  Friendly = always allowed; Hostile = always denied. The dApp's autocomplete\n  searches the same character directory the Chain Query tab uses, so founders\n  pick by name and the contract gets the right character_id.\n\nTRIBE OVERRIDES\n  Per-tribe allow/deny entries. Useful for ALLIES mode when you want to\n  whitelist allied tribes by tribe_id without enumerating individuals.\n\nLEGACY PLAYER OVERRIDES (UNENFORCED)\n  Pre-v14 wallet-keyed entries (PlayerGateKey<address>) are still writable but\n  NOT consulted by the contract. The Gates panel surfaces them with a yellow\n  warning so users can clean up old entries. Migrate them to Friendly Characters\n  by character_id.\n\nTOLL\n  gate_profile carries an informational toll (advisory). Not yet enforced by\n  the CradleOSAuth flow.`,
     isBuiltin: true,
   },
 ];
@@ -340,7 +340,7 @@ const TRIBE_ARTICLES: BuiltinArticle[] = [
     title: "Tribe Roles",
     category: "Mechanics",
     tags: ["tribe", "roles", "admin", "officer", "treasurer", "recruiter"],
-    content: `CradleOS implements an on-chain role system for tribe governance, allowing the founder to delegate specific authorities to trusted members.\n\nROLES\n\nADMIN\n  Full control over tribe vault operations, defense policy, gate configurations, and member management. Can assign and revoke all other roles. Highest delegated authority below founder.\n\nOFFICER\n  Can manage defense policy alert levels and player relations. Can configure gate access policies. Cannot modify treasury or member roster directly.\n\nTREASURER\n  Controls EVE token distribution, infra credit allocation, and bounty contract funding. Cannot change defense or access policies.\n\nRECRUITER\n  Can review and approve tribe membership applications submitted via the recruiting terminal. Cannot access treasury or change policy.\n\nINITIALIZING THE ROLE SYSTEM\nThe role system must be explicitly initialized by the founder after vault creation:\n  1. Call initialize_roles() on the tribe_vault module\n  2. This creates the on-chain role registry for the tribe\n  3. The founder is automatically assigned the ADMIN role\n  4. Additional roles can then be assigned to member addresses\n\nDELEGATING ROLES\nThe founder (or current ADMIN) delegates roles to members via the CradleOS tribe dashboard:\n  1. Navigate to Tribe Management → Roles\n  2. Select the member's address\n  3. Assign the appropriate role\n  4. Confirm the transaction — role is recorded on-chain immediately\n\nROVOKING ROLES\nRoles can be revoked at any time by an ADMIN or the founder. Revoked members immediately lose the associated authorities.`,
+    content: `CradleOS implements an on-chain role system for tribe governance, allowing the founder to delegate specific authorities to trusted members.\n\nROLES\n\nADMIN\n  Full control over tribe vault operations, defense policy, gate configurations, and member management. Can assign and revoke all other roles. Highest delegated authority below founder.\n\nOFFICER\n  Can manage defense policy alert levels and player relations. Can configure gate access policies. Cannot modify treasury or member roster directly.\n\nTREASURER\n  Controls EVE token distribution, infra credit allocation, and bounty contract funding. Cannot change defense or access policies.\n\nRECRUITER\n  Can review and approve tribe membership applications submitted via the recruiting terminal. Cannot access treasury or change policy.\n\nINITIALIZING THE ROLE SYSTEM\nThe role system must be explicitly created by the founder after vault creation:\n  1. Call cradleos::tribe_roles::create_roles(vault, ctx)\n  2. This creates the on-chain TribeRoles registry for the tribe\n  3. The founder is implicitly the ADMIN — they can grant roles immediately\n  4. Additional roles are then assigned to member addresses via grant_role\n\nDELEGATING ROLES\nThe founder (or any current ADMIN) delegates roles to members:\n  1. Navigate to the Hierarchy / Roles tab in CradleOS\n  2. Select the member's address\n  3. Assign the appropriate role bitmask\n  4. Confirm — cradleos::tribe_roles::grant_role records it on-chain\n\nREVOKING ROLES\nRoles can be revoked at any time by an ADMIN or the founder via\ncradleos::tribe_roles::revoke_role. Revoked members lose their authorities\nimmediately on the next contract call.`,
     isBuiltin: true,
   },
   {
@@ -806,7 +806,7 @@ const inputStyle: React.CSSProperties = {
 const ghostBtnStyle: React.CSSProperties = {
   background: "transparent",
   border: "1px solid rgba(255,255,255,0.1)",
-  color: "rgba(107,107,94,0.7)",
+  color: "rgba(175,175,155,0.7)",
   borderRadius: "0",
   fontSize: "11px",
   padding: "3px 10px",
@@ -850,7 +850,7 @@ function SourceBadge({ source }: { source: "builtin" | "onchain" }) {
       fontWeight: 700,
       padding: "1px 6px",
       border: "1px solid rgba(255,255,255,0.12)",
-      color: "rgba(107,107,94,0.8)",
+      color: "rgba(175,175,155,0.8)",
       background: "rgba(255,255,255,0.03)",
       letterSpacing: "0.06em",
     }}>
@@ -1119,7 +1119,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
                 textAlign: "left",
                 background: sourceFilter === value ? "rgba(255,71,0,0.12)" : "transparent",
                 border: sourceFilter === value ? "1px solid rgba(255,71,0,0.35)" : "1px solid transparent",
-                color: sourceFilter === value ? "#FF4700" : "rgba(107,107,94,0.7)",
+                color: sourceFilter === value ? "#FF4700" : "rgba(175,175,155,0.7)",
                 borderRadius: "0",
                 fontSize: "12px",
                 padding: "4px 10px",
@@ -1144,7 +1144,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
                 textAlign: "left",
                 background: categoryFilter === cat ? "rgba(255,71,0,0.12)" : "transparent",
                 border: categoryFilter === cat ? "1px solid rgba(255,71,0,0.35)" : "1px solid transparent",
-                color: categoryFilter === cat ? "#FF4700" : "rgba(107,107,94,0.7)",
+                color: categoryFilter === cat ? "#FF4700" : "rgba(175,175,155,0.7)",
                 borderRadius: "0",
                 fontSize: "12px",
                 padding: "4px 10px",
@@ -1161,7 +1161,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
       {/* Moderation */}
       <div>
         <div style={sectionHeadingStyle}>Moderation</div>
-        <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "rgba(107,107,94,0.7)", cursor: "pointer" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "rgba(175,175,155,0.7)", cursor: "pointer" }}>
           <input
             type="checkbox"
             checked={showFlagged}
@@ -1200,10 +1200,10 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
 
       <div style={{ marginTop: "auto" }}>
         <div style={sectionHeadingStyle}>Stats</div>
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px" }}>
           {builtinArticles.length} built-in  |  {(articles ?? []).length} on-chain
         </div>
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px" }}>
           {filtered.length} shown
         </div>
       </div>
@@ -1263,7 +1263,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
             onChange={e => setNewTribeSpecific(e.target.checked)}
             style={{ accentColor: "#FF4700" }}
           />
-          <span style={{ color: "rgba(107,107,94,0.8)", fontSize: "12px" }}>Tribe-specific article</span>
+          <span style={{ color: "rgba(175,175,155,0.8)", fontSize: "12px" }}>Tribe-specific article</span>
         </label>
         {newTribeSpecific && (
           <input
@@ -1278,7 +1278,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
           <div style={sectionHeadingStyle}>Content</div>
-          <div style={{ color: newContent.length > 4000 ? "#ff6432" : "rgba(107,107,94,0.6)", fontSize: "11px" }}>
+          <div style={{ color: newContent.length > 4000 ? "#ff6432" : "rgba(175,175,155,0.6)", fontSize: "11px" }}>
             {newContent.length} / 4000
           </div>
         </div>
@@ -1322,12 +1322,12 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
       paddingRight: "12px",
     }}>
       {isLoading && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", padding: "16px 0" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", padding: "16px 0" }}>
           Loading articles…
         </div>
       )}
       {!isLoading && filtered.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", padding: "16px 0" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", padding: "16px 0" }}>
           No articles found.
         </div>
       )}
@@ -1359,7 +1359,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
               <SourceBadge source={a.source} />
               {a.source === "onchain" ? (
                 <>
-                  <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
+                  <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
                     {shortAddr(a.author)}
                   </span>
                   <span style={{ color: "#00ff96", fontSize: "11px" }}>
@@ -1377,12 +1377,12 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
                       FLAGGED
                     </span>
                   )}
-                  <span style={{ color: "rgba(107,107,94,0.4)", fontSize: "11px" }}>
+                  <span style={{ color: "rgba(175,175,155,0.4)", fontSize: "11px" }}>
                     {formatDate(a.createdMs)}
                   </span>
                 </>
               ) : (
-                <span style={{ color: "rgba(107,107,94,0.4)", fontSize: "11px" }}>
+                <span style={{ color: "rgba(175,175,155,0.4)", fontSize: "11px" }}>
                   CradleOS Knowledge Base
                 </span>
               )}
@@ -1420,7 +1420,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
           </select>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={sectionHeadingStyle}>Content</div>
-            <div style={{ color: editContent.length > 4000 ? "#ff6432" : "rgba(107,107,94,0.6)", fontSize: "11px" }}>
+            <div style={{ color: editContent.length > 4000 ? "#ff6432" : "rgba(175,175,155,0.6)", fontSize: "11px" }}>
               {editContent.length} / 4000
             </div>
           </div>
@@ -1467,7 +1467,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
                 </span>
               )}
             </div>
-            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", display: "flex", gap: "14px", flexWrap: "wrap" }}>
+            <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", display: "flex", gap: "14px", flexWrap: "wrap" }}>
               {selectedArticle.source === "onchain" ? (
                 <>
                   <span>
@@ -1489,8 +1489,8 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
                   <span
                     key={tag}
                     style={{
-                      fontSize: "10px", color: "rgba(107,107,94,0.6)",
-                      border: "1px solid rgba(107,107,94,0.2)",
+                      fontSize: "10px", color: "rgba(175,175,155,0.6)",
+                      border: "1px solid rgba(175,175,155,0.2)",
                       padding: "1px 7px",
                     }}
                   >
@@ -1558,13 +1558,13 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
               )}
 
               {!account && (
-                <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px" }}>
+                <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px" }}>
                   Connect wallet to upvote or contribute
                 </span>
               )}
             </div>
           ) : (
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px", paddingTop: "8px" }}>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px", paddingTop: "8px" }}>
               Built-in reference article
             </div>
           )}
@@ -1579,7 +1579,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
       alignItems: "center",
       justifyContent: "center",
     }}>
-      <div style={{ color: "rgba(107,107,94,0.4)", fontSize: "13px", textAlign: "center" }}>
+      <div style={{ color: "rgba(175,175,155,0.4)", fontSize: "13px", textAlign: "center" }}>
         Select an article to read
       </div>
     </div>

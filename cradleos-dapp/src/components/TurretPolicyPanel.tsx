@@ -341,7 +341,7 @@ export function TurretPolicyPanel() {
   );
   if (vaultLoading || (tribeId && claimLoading) || !vault) return (
     <div className="card" style={{ textAlign: "center", padding: "32px", color: "#888" }}>
-      {vaultLoading || claimLoading ? "Loading vault…" : "No tribe vault found. Create one in the Tribe Token tab first."}
+      {vaultLoading || claimLoading ? "Loading vault…" : "No tribe vault found. Create one in the Tribe Vault tab first."}
     </div>
   );
   return <TurretPolicyPanelInner vault={vault} registryClaimer={registryClaim?.claimer ?? null} />;

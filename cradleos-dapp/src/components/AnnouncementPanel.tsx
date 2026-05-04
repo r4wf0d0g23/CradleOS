@@ -291,7 +291,7 @@ export function AnnouncementPanel() {
   );
   if (vaultLoading || !vault) return (
     <div className="card" style={{ textAlign: "center", padding: "32px", color: "#888" }}>
-      {vaultLoading ? "Loading vault…" : "No tribe vault found. Create one in the Tribe Token tab first."}
+      {vaultLoading ? "Loading vault…" : "No tribe vault found. Create one in the Tribe Vault tab first."}
     </div>
   );
   return <AnnouncementPanelInner vault={vault} />;
@@ -462,7 +462,7 @@ function AnnouncementPanelInner({ vault }: { vault: TribeVaultState }) {
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "16px", marginBottom: "16px", letterSpacing: "0.05em" }}>
           ANNOUNCEMENT BOARD
         </div>
-        <p style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "20px" }}>
+        <p style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", marginBottom: "20px" }}>
           No announcement board exists for this vault. Create one to post updates for your tribe members.
         </p>
         {isFounder && (
@@ -480,7 +480,7 @@ function AnnouncementPanelInner({ vault }: { vault: TribeVaultState }) {
           }}
           style={{
             marginTop: "12px", background: "transparent",
-            border: "1px solid rgba(255,255,255,0.1)", color: "rgba(107,107,94,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)", color: "rgba(175,175,155,0.6)",
             borderRadius: "0", fontSize: "11px", padding: "4px 12px", cursor: "pointer",
             display: "block",
           }}
@@ -572,7 +572,7 @@ function AnnouncementPanelInner({ vault }: { vault: TribeVaultState }) {
                   )}
                   {a.title}
                 </div>
-                <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+                <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
                   {shortAddr(a.author)} · {formatDate(a.createdMs)}
                   {a.editedMs > a.createdMs && (
                     <span style={{ marginLeft: "6px", opacity: 0.7 }}>(edited {formatDate(a.editedMs)})</span>
@@ -625,7 +625,7 @@ function AnnouncementPanelInner({ vault }: { vault: TribeVaultState }) {
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "18px", letterSpacing: "0.04em" }}>
           ANNOUNCEMENT BOARD
         </div>
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>
           {board?.postCount ?? 0} posts total
         </div>
       </div>
@@ -685,7 +685,7 @@ function AnnouncementPanelInner({ vault }: { vault: TribeVaultState }) {
 
       {/* No announcements yet */}
       {sorted.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "13px", padding: "20px 0" }}>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "13px", padding: "20px 0" }}>
           No announcements posted yet.
         </div>
       )}
@@ -708,7 +708,7 @@ function AnnouncementPanelInner({ vault }: { vault: TribeVaultState }) {
         <div>
           {pinnedPosts.length > 0 && (
             <div style={{
-              color: "rgba(107,107,94,0.55)", fontSize: "11px", fontWeight: 700,
+              color: "rgba(175,175,155,0.55)", fontSize: "11px", fontWeight: 700,
               letterSpacing: "0.08em", marginBottom: "8px",
             }}>
               RECENT
@@ -738,7 +738,7 @@ const inputStyle: React.CSSProperties = {
 const ghostBtnStyle: React.CSSProperties = {
   background: "transparent",
   border: "1px solid rgba(255,255,255,0.1)",
-  color: "rgba(107,107,94,0.7)",
+  color: "rgba(175,175,155,0.7)",
   borderRadius: "0",
   fontSize: "11px",
   padding: "3px 10px",

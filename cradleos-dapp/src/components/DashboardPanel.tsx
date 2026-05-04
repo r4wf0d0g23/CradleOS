@@ -1668,6 +1668,12 @@ export function DashboardPanel() {
         <div style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.55)" }}>No structures found for this wallet</div>
       )}
 
+      {/* Dashboard intro — quick guide to what the topology view does, what the */}
+      {/* BULK ASSIGN strip and STANCE strip are for, and how energy budgets work. */}
+      {dashTab === "structures" && !loading && groups.length > 0 && (
+        <DashboardIntro />
+      )}
+
       {/* Topology drill-down view */}
       {dashTab === "structures" && !loading && groups.length > 0 && (
         <TopologyGraph groups={groups} characterId={characterId} onRefresh={handleRefresh} />
@@ -1684,7 +1690,7 @@ export function DashboardPanel() {
           <div style={{ fontSize: 11, padding: "8px 12px", marginBottom: 16, background: "rgba(255,200,0,0.06)", border: "1px solid rgba(255,200,0,0.2)", borderRadius: 3, color: "rgba(255,200,0,0.85)" }}>
             ⚠ Enter the recipient's <strong>Character Object ID</strong> — not their wallet address.<br />
             The OwnerCap is owned by the Character object. The recipient must be identified by their Character's Sui object ID so they can use the cap via their character.<br />
-            <span style={{ opacity: 0.6, fontSize: 10 }}>Character Object ID: found on the Intel tab → Characters, or ask the recipient to share it (starts with 0x, 66 chars).</span>
+            <span style={{ opacity: 0.6, fontSize: 10 }}>Character Object ID: search for the recipient by name on the <strong>Chain Query</strong> tab and copy their Character Object ID, or ask them to share it (starts with 0x, 66 chars).</span>
           </div>
           {allStructures.length === 0 ? (
             <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>No structures found</div>
@@ -1959,3 +1965,105 @@ const stanceBtnInline = (fg: string, disabled: boolean): React.CSSProperties => 
   cursor: disabled ? "default" : "pointer",
   fontFamily: "inherit",
 });
+
+// ── DashboardIntro ─ collapsible quick guide for new users ────────────────────
+//
+// Renders once at the top of the topology view. Persists collapsed state in
+// localStorage so users who've read it don't see the wall of text every time.
+//
+// Goal: cover the four things that aren't obvious at a glance:
+//   1. The view is grouped by solar system → network node → connected children
+//   2. Each NetworkNode has an EP (Energy Production) budget shared by its children
+//   3. The BULK ASSIGN strip wires turrets/gates to the tribe defense + gate policies
+//   4. The STANCE strip flips industry vs defense in one signed PTB, energy-aware
+
+const DASH_INTRO_KEY = "cradleos:dashboard:intro:collapsed";
+
+function DashboardIntro() {
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try { return localStorage.getItem(DASH_INTRO_KEY) === "1"; } catch { return false; }
+  });
+
+  function toggle() {
+    setCollapsed(prev => {
+      const next = !prev;
+      try { localStorage.setItem(DASH_INTRO_KEY, next ? "1" : "0"); } catch { /* */ }
+      return next;
+    });
+  }
+
+  return (
+    <div style={{
+      background: "rgba(255,71,0,0.04)",
+      border: "1px solid rgba(255,71,0,0.18)",
+      borderRadius: 0,
+      padding: "10px 14px",
+      marginBottom: 14,
+    }}>
+      <div
+        onClick={toggle}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          cursor: "pointer", userSelect: "none",
+        }}
+      >
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#FF4700", letterSpacing: "0.06em" }}>
+          📖 DASHBOARD GUIDE
+        </span>
+        <span style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", marginLeft: "auto" }}>
+          {collapsed ? "(click to expand)" : "(click to collapse)"}
+        </span>
+      </div>
+
+      {!collapsed && (
+        <div style={{ marginTop: 10, fontSize: 11, color: "rgba(220,220,200,0.85)", lineHeight: 1.6 }}>
+          <p style={{ margin: "0 0 8px 0" }}>
+            Your structures grouped by <strong>solar system → network node → connected children</strong>.
+            Each Network Node powers its children from a shared EP (Energy Production) budget;
+            online structures consume EP, offline ones don't. The bar in the node header shows
+            current consumption against the cap.
+          </p>
+          <p style={{ margin: "0 0 8px 0" }}>
+            <strong style={{ color: "#ff6432" }}>Per-row controls</strong> on each structure: power toggle,
+            rename ✎, delegate to tribe policy ⚑, transfer ownership, link/unlink (gates).
+            The power toggle is auto-disabled when bringing the structure online would exceed
+            the parent node's available EP — the chain would reject it anyway.
+          </p>
+          <p style={{ margin: "0 0 8px 0" }}>
+            <strong style={{ color: "rgba(255,180,74,0.95)" }}>BULK ASSIGN</strong> strip
+            (only visible when you have a tribe vault and undelegated turrets/gates) wires every
+            unassigned turret or gate at this node to your tribe's defense and gate policies in
+            one signed PTB. Once delegated, your tribe's policy controls who gets shot
+            (Friendly/Hostile in the Defense tab) and who can transit (Friendly/Hostile in the
+            Gates tab).
+          </p>
+          <p style={{ margin: "0 0 8px 0" }}>
+            <strong style={{ color: "#FF4700" }}>STANCE</strong> strip on each node:
+            three buttons that flip the node's posture in a single sequenced PTB
+            (offline phase first to free up EP, online phase second).
+            <br />
+            <strong style={{ color: "#ff6432" }}>⛨ DEFENSE</strong> — offline industry,
+            online turrets (energy-aware: only turrets that fit the post-offline budget come up).
+            <br />
+            <strong style={{ color: "#64b4ff" }}>⚙ PEACETIME</strong> — offline turrets,
+            online industry up to the budget.
+            <br />
+            <strong style={{ color: "#ff4444" }}>▼ ALL OFF</strong> — offline everything
+            connected to this node.
+          </p>
+          <p style={{ margin: "0 0 8px 0" }}>
+            <strong style={{ color: "rgba(255,255,255,0.7)" }}>⊘ Unlinked Structures</strong>:
+            when a structure's parent Network Node isn't visible to the dApp (the node may belong
+            to a different player or not be in your view yet), it appears here with per-row
+            controls only — STANCE buttons can't render without seeing the node's EP budget.
+          </p>
+          <p style={{ margin: "0 0 0 0", color: "rgba(175,175,155,0.6)", fontSize: 10 }}>
+            ℹ Tabs at the top: <strong>Structures</strong> (this view) ·
+            <strong> Links</strong> (gate-linking) ·
+            <strong> Transfer</strong> (move OwnerCap to another character).
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
