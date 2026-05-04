@@ -25,12 +25,22 @@ import {
   buildCreateGatePolicyTx, buildSetGateAccessLevelTx,
   buildSetGateTribeOverrideTx, buildSetGatePlayerOverrideTx,
   buildDelegateGateTx, buildRevokeGateDelegationTx,
-  fetchAllRegisteredTribes, fetchPlayerStructures,
+  fetchAllRegisteredTribes, fetchPlayerStructures, findCharacterForWallet,
   GATE_ACCESS_LABELS,
+  // v14: character-keyed gate friendly/hostile + extension authorization
+  buildSetGateFriendlyCharacterTx, buildSetGateHostileCharacterTx,
+  fetchGateFriendlyCharacters, fetchGateHostileCharacters,
+  buildAuthorizeGateExtensionTx,
+  fetchGateExtensionStatus, fetchOwnedGates,
+  type GateFriendlyCharacter, type GateHostileCharacter,
   type TribeVaultState, type GatePolicyState, type GateDelegationObj, type RegisteredTribe,
   type PlayerStructure,
 } from "../lib";
 import { CLOCK } from "../constants";
+import { translateTxError } from "../lib/txError";
+import { CharacterAutocomplete } from "./CharacterAutocomplete";
+import { useCharacterDirectory, findCharacterById } from "../lib/characterDirectory";
+import { staggeredRefetch } from "../lib/staggeredRefetch";
 
 const ACCESS_LEVELS = [0, 1, 2, 3] as const;
 const LEVEL_COLORS: Record<number, string> = {
@@ -266,12 +276,418 @@ export function GatePolicyPanel() {
         allTribes={allTribes ?? []}
       />
 
+      {/* v14: character-keyed friendly + hostile (mirrors defense_policy UX). */}
+      {/* Hidden when no policy exists yet — founder must create policy first. */}
+      {gatePolicy && (
+        <>
+          <GateFriendlyCharactersSection
+            vault={vault}
+            policyId={gatePolicy.objectId}
+            isFounder={isFounder}
+          />
+          <GateHostileCharactersSection
+            vault={vault}
+            policyId={gatePolicy.objectId}
+            isFounder={isFounder}
+          />
+        </>
+      )}
+
+      {/* v14: per-gate extension authorization — owner authorizes CradleOSAuth */}
+      {/* on each gate they want enforced. Single PTB. Status badge per gate. */}
+      <OwnedGatesCard tribePolicyId={gatePolicy?.objectId ?? null} />
+
       {/* Member delegation */}
       <DelegationCard
         vault={vault}
         delegations={delegations ?? []}
       />
 
+    </div>
+  );
+}
+
+// ── v14: Gate Friendly Characters ───────────────────────────────────────────────
+function GateFriendlyCharactersSection({ vault, policyId, isFounder }: {
+  vault: TribeVaultState;
+  policyId: string;
+  isFounder: boolean;
+}) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const { data: friendly } = useQuery<GateFriendlyCharacter[]>({
+    queryKey: ["gateFriendlyCharacters", vault.objectId],
+    queryFn: () => fetchGateFriendlyCharacters(vault.objectId),
+    staleTime: 5_000,
+  });
+  const { data: directory } = useCharacterDirectory();
+
+  const handleAdd = async (characterId: number) => {
+    if (!account || !characterId) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetGateFriendlyCharacterTx(policyId, vault.objectId, characterId, true);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      const key = ["gateFriendlyCharacters", vault.objectId];
+      queryClient.setQueryData<GateFriendlyCharacter[]>(key, prev => {
+        const existing = prev ?? [];
+        if (existing.some(c => c.characterId === characterId)) return existing;
+        return [...existing, { characterId, friendly: true }];
+      });
+      staggeredRefetch<GateFriendlyCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !!data?.some(c => c.characterId === characterId),
+      });
+    } catch (e) { setErr(translateTxError(e)); throw e; }
+    finally { setBusy(false); }
+  };
+
+  const handleRemove = async (characterId: number) => {
+    if (!account) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetGateFriendlyCharacterTx(policyId, vault.objectId, characterId, false);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      const key = ["gateFriendlyCharacters", vault.objectId];
+      queryClient.setQueryData<GateFriendlyCharacter[]>(key, prev =>
+        (prev ?? []).filter(c => c.characterId !== characterId),
+      );
+      staggeredRefetch<GateFriendlyCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !data?.some(c => c.characterId === characterId),
+      });
+    } catch (e) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div style={{ background: "rgba(0,255,150,0.03)", border: "1px solid rgba(0,200,100,0.18)", borderRadius: 0, padding: 14, marginTop: 14 }}>
+      <div style={{ color: "#00c864", fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
+        Gate Friendly Characters
+        {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: 8, fontSize: 11 }}>read-only</span>}
+      </div>
+      <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
+        Mark specific in-game characters as <strong style={{ color: "#00c864" }}>FRIENDLY</strong> for gate transit.
+        Allowed regardless of their tribe or your default access level. Use this for cross-tribe allies who should always be able to use your gates.
+      </div>
+
+      {(friendly ?? []).length === 0 ? (
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12, marginBottom: isFounder ? 12 : 0 }}>
+          No friendly characters listed.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+          {(friendly ?? []).map(fc => {
+            const known = findCharacterById(directory, fc.characterId);
+            return (
+              <div key={fc.characterId} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
+                <span style={{ flex: 1, color: "#00c864" }}>
+                  {known?.name ? (
+                    <>
+                      <span style={{ fontWeight: 600 }}>{known.name}</span>
+                      <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginLeft: 6 }}>
+                        · #{fc.characterId} · tribe {known.tribeId}
+                      </span>
+                    </>
+                  ) : (
+                    <span style={{ fontFamily: "monospace" }}>Character #{fc.characterId}</span>
+                  )}
+                </span>
+                <span style={{ padding: "2px 8px", borderRadius: 2, fontSize: 11, fontWeight: 600,
+                  background: "rgba(0,200,100,0.12)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864" }}>
+                  FRIENDLY
+                </span>
+                {isFounder && (
+                  <button onClick={() => handleRemove(fc.characterId)} disabled={busy}
+                    style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {isFounder && (
+        <CharacterAutocomplete
+          onSelect={c => handleAdd(c.characterId)}
+          accentColor="#00c864"
+          buttonLabel="+ Add Friendly"
+          placeholder="Search by name (or paste a character ID)…"
+          busy={busy}
+        />
+      )}
+      {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
+// ── v14: Gate Hostile Characters ───────────────────────────────────────────────
+function GateHostileCharactersSection({ vault, policyId, isFounder }: {
+  vault: TribeVaultState;
+  policyId: string;
+  isFounder: boolean;
+}) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const { data: hostile } = useQuery<GateHostileCharacter[]>({
+    queryKey: ["gateHostileCharacters", vault.objectId],
+    queryFn: () => fetchGateHostileCharacters(vault.objectId),
+    staleTime: 5_000,
+  });
+  const { data: directory } = useCharacterDirectory();
+
+  const handleAdd = async (characterId: number) => {
+    if (!account || !characterId) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetGateHostileCharacterTx(policyId, vault.objectId, characterId, true);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      const key = ["gateHostileCharacters", vault.objectId];
+      queryClient.setQueryData<GateHostileCharacter[]>(key, prev => {
+        const existing = prev ?? [];
+        if (existing.some(c => c.characterId === characterId)) return existing;
+        return [...existing, { characterId, hostile: true }];
+      });
+      staggeredRefetch<GateHostileCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !!data?.some(c => c.characterId === characterId),
+      });
+    } catch (e) { setErr(translateTxError(e)); throw e; }
+    finally { setBusy(false); }
+  };
+
+  const handleRemove = async (characterId: number) => {
+    if (!account) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetGateHostileCharacterTx(policyId, vault.objectId, characterId, false);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      const key = ["gateHostileCharacters", vault.objectId];
+      queryClient.setQueryData<GateHostileCharacter[]>(key, prev =>
+        (prev ?? []).filter(c => c.characterId !== characterId),
+      );
+      staggeredRefetch<GateHostileCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !data?.some(c => c.characterId === characterId),
+      });
+    } catch (e) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.12)", borderRadius: 0, padding: 14, marginTop: 14 }}>
+      <div style={{ color: "#ff4444", fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
+        Gate Hostile Characters
+        {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: 8, fontSize: 11 }}>read-only</span>}
+      </div>
+      <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
+        Mark specific in-game characters as <strong style={{ color: "#ff4444" }}>BLOCKED</strong> from gate transit.
+        Denied regardless of their tribe — overrides everything else, including same-tribe membership and friendly tribes. Use this for KOS targets that must never be allowed to transit.
+      </div>
+
+      {(hostile ?? []).length === 0 ? (
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12, marginBottom: isFounder ? 12 : 0 }}>
+          No hostile characters listed.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+          {(hostile ?? []).map(hc => {
+            const known = findCharacterById(directory, hc.characterId);
+            return (
+              <div key={hc.characterId} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
+                <span style={{ flex: 1, color: "#ff4444" }}>
+                  {known?.name ? (
+                    <>
+                      <span style={{ fontWeight: 600 }}>{known.name}</span>
+                      <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginLeft: 6 }}>
+                        · #{hc.characterId} · tribe {known.tribeId}
+                      </span>
+                    </>
+                  ) : (
+                    <span style={{ fontFamily: "monospace" }}>Character #{hc.characterId}</span>
+                  )}
+                </span>
+                <span style={{ padding: "2px 8px", borderRadius: 2, fontSize: 11, fontWeight: 600,
+                  background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444" }}>
+                  BLOCKED
+                </span>
+                {isFounder && (
+                  <button onClick={() => handleRemove(hc.characterId)} disabled={busy}
+                    style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {isFounder && (
+        <CharacterAutocomplete
+          onSelect={c => handleAdd(c.characterId)}
+          accentColor="#ff4444"
+          buttonLabel="+ Block Character"
+          placeholder="Search by name (or paste a character ID)…"
+          busy={busy}
+        />
+      )}
+      {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
+// ── v14: OwnedGatesCard ─ per-gate extension authorization + status badge ──────────────────
+function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState<string | null>(null);
+  const [err, setErr] = useState<Record<string, string>>({});
+
+  // The character object id is needed for the borrow_owner_cap PTB. It's
+  // returned by findCharacterForWallet (the same source fetchPlayerStructures
+  // uses internally) so we resolve it once and cache via React Query.
+  const { data: charInfo } = useQuery({
+    queryKey: ["characterInfo", account?.address],
+    queryFn: () => account ? findCharacterForWallet(account.address) : Promise.resolve(null),
+    enabled: !!account?.address,
+    staleTime: 60_000,
+  });
+  const characterObjectId = charInfo?.characterId ?? null;
+
+  // Discover gates the wallet owns via fetchOwnedGates (filters PlayerStructures).
+  const { data: gates } = useQuery({
+    queryKey: ["ownedGates", account?.address],
+    queryFn: () => account ? fetchOwnedGates(account.address) : Promise.resolve([]),
+    enabled: !!account?.address,
+    staleTime: 30_000,
+  });
+
+  // Per-gate extension status (separate query keyed by gate id).
+  const gateIds = (gates ?? []).map(g => g.objectId).join(",");
+  const { data: extensionStatuses } = useQuery({
+    queryKey: ["gateExtensionStatuses", gateIds],
+    queryFn: async () => {
+      const list = gates ?? [];
+      const statuses = await Promise.all(
+        list.map(async g => ({
+          gateId: g.objectId,
+          status: await fetchGateExtensionStatus(g.objectId),
+        })),
+      );
+      return new Map(statuses.map(s => [s.gateId, s.status]));
+    },
+    enabled: (gates ?? []).length > 0,
+    staleTime: 5_000,
+  });
+
+  if (!account) return null;
+  if ((gates ?? []).length === 0) {
+    return (
+      <div style={{ background: "rgba(100,180,255,0.04)", border: "1px solid rgba(100,180,255,0.18)", borderRadius: 0, padding: 14, marginTop: 14 }}>
+        <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
+          Your Gates
+        </div>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>
+          You don't own any Smart Gates yet. Authorize CradleOS on a gate to enforce this policy.
+        </div>
+      </div>
+    );
+  }
+
+  const handleAuthorize = async (gateId: string, ownerCapId: string) => {
+    if (!characterObjectId) {
+      setErr(prev => ({ ...prev, [gateId]: "Character not found — reload the dApp." }));
+      return;
+    }
+    setBusy(gateId); setErr(prev => ({ ...prev, [gateId]: "" }));
+    try {
+      const tx = buildAuthorizeGateExtensionTx(gateId, ownerCapId, characterObjectId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      // Optimistic flip on extensionStatuses cache.
+      queryClient.setQueryData<Map<string, { authorized: boolean; extensionType: string | null } | null>>(
+        ["gateExtensionStatuses", gateIds],
+        prev => {
+          const next = new Map(prev ?? []);
+          next.set(gateId, { authorized: true, extensionType: "cradleos" });
+          return next;
+        },
+      );
+      staggeredRefetch({
+        queryClient,
+        queryKeys: [["gateExtensionStatuses", gateIds]],
+      });
+    } catch (e) {
+      setErr(prev => ({ ...prev, [gateId]: translateTxError(e) }));
+    } finally { setBusy(null); }
+  };
+
+  return (
+    <div style={{ background: "rgba(100,180,255,0.04)", border: "1px solid rgba(100,180,255,0.18)", borderRadius: 0, padding: 14, marginTop: 14 }}>
+      <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
+        Your Gates — CradleOS Enforcement
+      </div>
+      <div style={{ color: "rgba(175,175,155,0.65)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
+        Click <strong>Authorize</strong> on any gate to enforce {tribePolicyId ? "this tribe's" : "a CradleOS"} policy on transits through it. Once authorized, default jumps are blocked and pilots must request transit through CradleOS (which checks the Friendly/Hostile/Tribe rules above before issuing a permit).
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {(gates ?? []).map(g => {
+          const status = extensionStatuses?.get(g.objectId);
+          const isAuthorized = status?.authorized === true;
+          const isUnknown = status === null;
+          const myErr = err[g.objectId];
+          const myBusy = busy === g.objectId;
+          return (
+            <div key={g.objectId} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, padding: "6px 10px",
+              background: isAuthorized ? "rgba(0,200,100,0.04)" : "rgba(255,200,0,0.04)",
+              border: `1px solid ${isAuthorized ? "rgba(0,200,100,0.2)" : "rgba(255,200,0,0.2)"}`,
+              borderRadius: 2 }}>
+              <span style={{ flex: 1, color: "#e0e0d0", fontWeight: 600 }}>{g.label}</span>
+              <span style={{ fontFamily: "monospace", fontSize: 10, color: "rgba(175,175,155,0.5)" }}>
+                #{g.objectId.slice(-6)}
+              </span>
+              <span style={{ padding: "2px 8px", fontSize: 10, fontWeight: 600, borderRadius: 2,
+                background: isAuthorized ? "rgba(0,200,100,0.15)" : isUnknown ? "rgba(175,175,155,0.1)" : "rgba(255,200,0,0.15)",
+                border: `1px solid ${isAuthorized ? "rgba(0,200,100,0.4)" : isUnknown ? "rgba(175,175,155,0.2)" : "rgba(255,200,0,0.4)"}`,
+                color: isAuthorized ? "#00c864" : isUnknown ? "rgba(175,175,155,0.5)" : "#ffcc00" }}>
+                {isAuthorized ? "✓ ENFORCED" : isUnknown ? "…" : "⚠ OPEN"}
+              </span>
+              {!isAuthorized && (
+                <button
+                  onClick={() => handleAuthorize(g.objectId, g.ownerCapId)}
+                  disabled={myBusy || isUnknown}
+                  style={{ background: "rgba(100,180,255,0.12)", border: "1px solid rgba(100,180,255,0.4)", color: "#64b4ff",
+                    borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: "pointer", fontWeight: 600 }}
+                >
+                  {myBusy ? "Authorizing…" : "Authorize CradleOS"}
+                </button>
+              )}
+              {myErr && <span style={{ color: "#ff6432", fontSize: 10, marginLeft: 4 }}>⚠ {myErr}</span>}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -297,7 +713,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       queryClient.invalidateQueries({ queryKey: ["gatePolicy"] });
-    } catch (e: unknown) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e: unknown) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   }
 
@@ -310,7 +726,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
     <div style={cardStyle}>
       <div style={{ color: "#FF4700", fontWeight: 700, fontSize: 14, marginBottom: 14 }}>
         Gate Access Policy
-        {!isFounder && <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: 11, marginLeft: 8 }}>read-only</span>}
+        {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, fontSize: 11, marginLeft: 8 }}>read-only</span>}
       </div>
 
       {!policy ? (
@@ -328,7 +744,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
             </button>
           </div>
         ) : (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: 12 }}>No gate policy deployed for this tribe.</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>No gate policy deployed for this tribe.</div>
         )
       ) : (
         <div>
@@ -409,7 +825,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
             </div>
           )}
 
-          <div style={{ fontSize: 10, color: "rgba(107,107,94,0.4)", marginTop: 12 }}>
+          <div style={{ fontSize: 10, color: "rgba(175,175,155,0.4)", marginTop: 12 }}>
             Policy v{policy.version} · {short(policy.objectId)}
           </div>
         </div>
@@ -441,7 +857,7 @@ function DelegationCard({ vault, delegations }: {
       await signer.signAndExecuteTransaction({ transaction: tx });
       queryClient.invalidateQueries({ queryKey: ["gateDelegations"] });
       setGateInput("");
-    } catch (e: unknown) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e: unknown) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   }
 
@@ -450,7 +866,7 @@ function DelegationCard({ vault, delegations }: {
       <div style={{ color: "#aaa", fontWeight: 700, fontSize: 14, marginBottom: 14 }}>My Gate Delegations</div>
 
       {myDelegations.length === 0 ? (
-        <div style={{ fontSize: 12, color: "rgba(107,107,94,0.55)", marginBottom: 14 }}>No gates delegated to this tribe policy.</div>
+        <div style={{ fontSize: 12, color: "rgba(175,175,155,0.55)", marginBottom: 14 }}>No gates delegated to this tribe policy.</div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
           {myDelegations.map(d => (

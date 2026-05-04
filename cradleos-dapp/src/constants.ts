@@ -50,22 +50,21 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //
 // v2 deployed 2026-03-25 (Reapers_v2)
 export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
-// CRADLEOS_PKG v13 (2026-05-04): closes the turret friendly-fire bug.
-// Adds FriendlyCharacterKey + set_friendly_character_entry +
-// is_friendly_character + per-character FRIENDLY override branch in
-// turret_ext::get_target_priority_list. Tribe leaders set per-character
-// FRIENDLY (mirrors existing Hostile Characters pattern, inverted) for
-// cross-tribe allies who should never be shot. Also emits a long-missing
-// PlayerRelationRemoved event in remove_player_relation_entry so removed
-// per-player overrides actually disappear from the UI.
-// Old TurretConfig objects pointing at v12 policies still work
-// (TurretConfig stores policy_id by object reference, not type), but
-// to actually USE the friendly-character path users must run the
-// "Reassign Turrets to v13" widget in the Defense panel.
-// Tx digest: v13 HaZwqgiuUFo1ePNTvK31BJnyop1MuREjNX1fcRksGads
+// CRADLEOS_PKG v14 (2026-05-04 PM): closes the gate-access bug class.
+// Adds GateFriendlyCharacterKey + GateHostileCharacterKey + character-keyed
+// entry functions on TribeGatePolicy mirroring the v13 turret-friendly fix.
+// New is_allowed(policy, character_id, character_tribe_id) accessor composes
+// access_level + tribe_overrides + friendly + hostile into a single boolean.
+// New request_jump_permit_entry(policy, src, dest, character, clock) lets a
+// pilot self-mint a JumpPermit when allowed; aborts E_ACCESS_DENIED otherwise.
+// CradleOSAuth witness from gate_control is reused so a single authorize_extension
+// call covers all CradleOS gate enforcement.
+// Tx digest: v14 AAzKpSzqnZtNWcm3oQCZrYpWqX8Ln58XvsDw97hJ7NCR
+// v13 (2026-05-04 AM): turret friendly-fire fix, tx HaZwqgiu...
 // v12 (2026-04-27): shared_withdraw_to_owned, tx 6aaYV3Yha...
 // v11 (2026-04-26): recover_to_owned + recover_to_shared, tx 8aevQ9uu...
-export const CRADLEOS_PKG      = "0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6";
+export const CRADLEOS_PKG      = "0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93";
+// Previous v13: 0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6
 // Previous v12: 0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f
 // Previous v9:  0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce
 
@@ -157,9 +156,10 @@ export const CRADLEOS_UPGRADE_ORIGIN = "0xbf4249b176bf2c7594dbd46615f825b456da4b
 // When a future upgrade introduces a new event struct, append the new
 // package id here. fetchEventAcrossPackages in lib.ts uses this list.
 export const CRADLEOS_EVENT_PKGS: readonly string[] = [
-  CRADLEOS_PKG,             // current latest
+  CRADLEOS_PKG,             // v14 — GateFriendlyCharacterSet, GateHostileCharacterSet, GatePermitIssued
+  "0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6", // v13 — FriendlyCharacterSet, PlayerRelationRemoved
   CRADLEOS_UPGRADE_ORIGIN,  // v4 — collateral_vault et al
-  "0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4", // v5 — HostileCharacterSet
+  "0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4", // v5 — defense_policy::HostileCharacterSet
   CRADLEOS_ORIGINAL,        // v1 — all original-era structs
 ];
 

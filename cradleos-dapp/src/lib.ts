@@ -3008,6 +3008,198 @@ export function buildRevokeGateDelegationTx(delegationObjectId: string): Transac
   return tx;
 }
 
+// ── v14: gate policy character-keyed friendly/hostile (mirrors defense_policy v13) ──
+//
+// The original gate_policy used wallet-keyed PlayerGateKey<address> for
+// per-player overrides which couldn't be enforced (world::gate flow exposes
+// character_id u32, not wallet). v14 adds GateFriendlyCharacterKey<u32> +
+// GateHostileCharacterKey<u32> with the same UX shape as defense_policy.
+// is_allowed() consumes them; request_jump_permit_entry() mints a permit
+// when allowed.
+
+export type GateFriendlyCharacter = { characterId: number; friendly: boolean };
+export type GateHostileCharacter = { characterId: number; hostile: boolean };
+
+export function buildSetGateFriendlyCharacterTx(
+  policyId: string, vaultId: string, characterId: number, friendly: boolean,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${GATE_POLICY_PKG}::gate_policy::set_friendly_character_entry`,
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u32(characterId), tx.pure.bool(friendly)],
+  });
+  return tx;
+}
+
+export function buildSetGateHostileCharacterTx(
+  policyId: string, vaultId: string, characterId: number, hostile: boolean,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${GATE_POLICY_PKG}::gate_policy::set_hostile_character_entry`,
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u32(characterId), tx.pure.bool(hostile)],
+  });
+  return tx;
+}
+
+export async function fetchGateFriendlyCharacters(vaultId: string): Promise<GateFriendlyCharacter[]> {
+  try {
+    const events = await fetchEventAcrossPackages("gate_policy", "GateFriendlyCharacterSet");
+    const map = new Map<number, boolean>();
+    for (const e of events) {
+      if (String(e.parsedJson?.vault_id) !== vaultId) continue;
+      const cid = Number(e.parsedJson?.character_id ?? 0);
+      if (!map.has(cid)) map.set(cid, Boolean(e.parsedJson?.friendly));
+    }
+    return [...map.entries()]
+      .filter(([, friendly]) => friendly)
+      .map(([characterId, friendly]) => ({ characterId, friendly }));
+  } catch { return []; }
+}
+
+export async function fetchGateHostileCharacters(vaultId: string): Promise<GateHostileCharacter[]> {
+  try {
+    const events = await fetchEventAcrossPackages("gate_policy", "GateHostileCharacterSet");
+    const map = new Map<number, boolean>();
+    for (const e of events) {
+      if (String(e.parsedJson?.vault_id) !== vaultId) continue;
+      const cid = Number(e.parsedJson?.character_id ?? 0);
+      if (!map.has(cid)) map.set(cid, Boolean(e.parsedJson?.hostile));
+    }
+    return [...map.entries()]
+      .filter(([, hostile]) => hostile)
+      .map(([characterId, hostile]) => ({ characterId, hostile }));
+  } catch { return []; }
+}
+
+/**
+ * Build a single PTB that:
+ *  1. Borrows the OwnerCap from the gate's owning Character
+ *  2. Calls world::gate::authorize_extension<CradleOSAuth>
+ *  3. Returns the OwnerCap to the Character
+ *
+ * Mirrors `buildAuthorizeExtensionTx` for turrets. After this tx confirms,
+ * the gate requires a CradleOS-issued JumpPermit; default world::gate::jump
+ * is rejected. Pilots get permits via request_jump_permit_entry below.
+ */
+export function buildAuthorizeGateExtensionTx(
+  gateId: string,
+  ownerCapId: string,
+  characterId: string,
+): Transaction {
+  const tx = new Transaction();
+
+  const gateType = `${WORLD_PKG}::gate::Gate`;
+  const [borrowedCap, receipt] = tx.moveCall({
+    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    typeArguments: [gateType],
+    arguments: [tx.object(characterId), tx.object(ownerCapId)],
+  });
+
+  // CradleOSAuth witness comes from gate_control module
+  tx.moveCall({
+    target: `${WORLD_PKG}::gate::authorize_extension`,
+    typeArguments: [`${CRADLEOS_PKG}::gate_control::CradleOSAuth`],
+    arguments: [tx.object(gateId), borrowedCap],
+  });
+
+  tx.moveCall({
+    target: `${WORLD_PKG}::character::return_owner_cap`,
+    typeArguments: [gateType],
+    arguments: [tx.object(characterId), borrowedCap, receipt],
+  });
+
+  return tx;
+}
+
+/**
+ * Pilot's "request transit" tx — runs the policy check on chain and mints
+ * a JumpPermit to the pilot's character_address if `is_allowed` returns true.
+ * If denied the tx aborts with E_ACCESS_DENIED (10) and the pilot sees an
+ * "access denied" wallet error.
+ *
+ * The permit is short-lived (24h hardcoded in the contract) but the dApp
+ * surfaces this as access-state, not time. If a permit expires before the
+ * pilot uses it, they re-request — the access state on chain is what matters.
+ */
+export function buildRequestGatePermitTx(
+  policyId: string,
+  sourceGateId: string,
+  destinationGateId: string,
+  characterId: string,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${GATE_POLICY_PKG}::gate_policy::request_jump_permit_entry`,
+    arguments: [
+      tx.object(policyId),
+      tx.object(sourceGateId),
+      tx.object(destinationGateId),
+      tx.object(characterId),
+      tx.object(CLOCK),
+    ],
+  });
+  return tx;
+}
+
+/**
+ * Query a Gate object's `extension` field to determine whether CradleOSAuth
+ * is currently authorized. Returns:
+ *   - { authorized: true, extensionType }  if any extension is set
+ *   - { authorized: false } if extension is None (default open transit)
+ *   - null if the gate object can't be fetched.
+ *
+ * The dApp surfaces this as a status badge: "✓ CradleOS-enforced" / "⚠ Open transit".
+ */
+export async function fetchGateExtensionStatus(
+  gateId: string,
+): Promise<{ authorized: boolean; extensionType: string | null } | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "sui_getObject",
+        params: [gateId, { showContent: true }],
+      }),
+    });
+    const j = await res.json() as { result?: { data?: { content?: { fields?: Record<string, unknown> } } } };
+    const fields = j.result?.data?.content?.fields ?? {};
+    const ext = fields["extension"] as { fields?: { name?: string }; type?: string } | null | undefined;
+    if (!ext) return { authorized: false, extensionType: null };
+    // Sui represents Option<TypeName> as either null/None or { fields: { name: "<typetag>" } }
+    const inner = (ext as { fields?: { name?: string } })?.fields?.name;
+    if (!inner) return { authorized: false, extensionType: null };
+    return { authorized: true, extensionType: String(inner) };
+  } catch { return null; }
+}
+
+/**
+ * Discover all gates owned by a wallet (via PlayerStructures fetch, filter to
+ * gate kind). Used by the "Authorize CradleOS" widget so pilots can see which
+ * of their gates are currently CradleOS-enforced vs open.
+ */
+export async function fetchOwnedGates(
+  ownerAddress: string,
+): Promise<Array<{ objectId: string; ownerCapId: string; label: string; isOnline: boolean }>> {
+  try {
+    const groups = await fetchPlayerStructures(ownerAddress);
+    const gates: Array<{ objectId: string; ownerCapId: string; label: string; isOnline: boolean }> = [];
+    for (const g of groups ?? []) {
+      for (const s of g.structures ?? []) {
+        if (s.kind === "Gate" && s.ownerCapId) {
+          gates.push({
+            objectId: s.objectId,
+            ownerCapId: s.ownerCapId,
+            label: s.displayName || s.label || `Gate ${s.objectId.slice(-6)}`,
+            isOnline: !!s.isOnline,
+          });
+        }
+      }
+    }
+    return gates;
+  } catch { return []; }
+}
+
 // ── Tribe member roster via on-chain Character objects ────────────────────────
 
 export type CharacterMember = {
