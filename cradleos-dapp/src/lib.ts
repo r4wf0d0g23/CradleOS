@@ -3200,6 +3200,291 @@ export async function fetchOwnedGates(
   } catch { return []; }
 }
 
+// ── v14: Pilot transit ─ discover all CradleOSAuth-authorized gates ──────────────
+//
+// Pilots transit a CradleOS-enforced gate by:
+//   1. Calling cradleos::gate_policy::request_jump_permit_entry to mint a permit
+//      (this fetcher discovers gates the pilot CAN consider transiting)
+//   2. Then jumping in-game with world::gate::jump_with_permit (game client handles)
+//
+// The discovery problem: there's no on-chain index of "all gates with extension X".
+// We solve it by querying world::gate::ExtensionAuthorizedEvent (every authorize
+// emits one) filtered to the CradleOSAuth type, then verifying each gate's current
+// extension still matches CradleOSAuth (in case it was revoked or replaced).
+
+export type CradleOSGate = {
+  objectId: string;
+  label: string;
+  ownerAddress: string | null;        // gate owner's character_address
+  linkedGateId: string | null;        // paired gate (jump destination)
+  isOnline: boolean;
+  extensionAuthorized: boolean;       // current state — still CradleOSAuth
+  authorizedAtMs: number;             // when the authorize tx landed
+};
+
+/** Return true if the TypeName string identifies our CradleOSAuth witness, regardless
+ *  of whether it's the v14 published-at or an earlier upgrade revision. The defining
+ *  package id is what Sui types it under — v14 added the gate-permit flow but the
+ *  CradleOSAuth witness is in gate_control which has been around longer. We compare
+ *  the type tail (`gate_control::CradleOSAuth`) AND require the package id to be one
+ *  of the known CradleOS packages. */
+function isCradleOSAuthType(typeStr: string | null | undefined): boolean {
+  if (!typeStr) return false;
+  // Type format: `<pkgId>::gate_control::CradleOSAuth`
+  if (!typeStr.endsWith("::gate_control::CradleOSAuth")) return false;
+  const pkgPrefix = typeStr.slice(0, typeStr.indexOf("::"));
+  // Strip leading "0x" if present and pad / normalize for comparison.
+  const norm = (s: string) => (s.startsWith("0x") ? s : "0x" + s).toLowerCase();
+  const target = norm(pkgPrefix);
+  for (const pkg of CRADLEOS_EVENT_PKGS) {
+    if (norm(pkg) === target) return true;
+  }
+  return false;
+}
+
+/**
+ * Discover every gate that currently has CradleOSAuth authorized as its
+ * extension. Pilots use this list to decide where they need to request a
+ * permit. We:
+ *  1. Query ExtensionAuthorizedEvent (across all known world packages)
+ *  2. Filter by extension_type == CradleOSAuth
+ *  3. Dedup by gate_id, keeping the latest event
+ *  4. Verify each gate's current extension is still CradleOSAuth (revocations
+ *     emit ExtensionRevokedEvent but it's cheaper to just re-check the field)
+ *  5. Hydrate label / owner / linkedGateId / online state from the gate object
+ */
+export async function fetchCradleOSAuthorizedGates(): Promise<CradleOSGate[]> {
+  // Query ExtensionAuthorizedEvent under both world package versions — same
+  // multi-pkg pattern we use for CradleOS events. world's ExtensionAuthorizedEvent
+  // was defined at the original world publish (so type tag is anchored to that).
+  const worldPkgs = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
+  const eventQueries = worldPkgs.map(pkg =>
+    fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+        params: [{ MoveEventType: `${pkg}::gate::ExtensionAuthorizedEvent` }, null, 500, true],
+      }),
+    }).then(r => r.json()).catch(() => null),
+  );
+  type Evt = { parsedJson?: Record<string, unknown>; timestampMs?: string };
+  const allEvents: Evt[] = [];
+  for (const j of await Promise.all(eventQueries)) {
+    const data = (j as { result?: { data?: Evt[] } } | null)?.result?.data ?? [];
+    for (const e of data) allEvents.push(e);
+  }
+
+  // Latest-event-per-gate wins.
+  const gateLatest = new Map<string, { ext: string; ts: number }>();
+  for (const e of allEvents) {
+    const ts = Number(e.timestampMs ?? 0);
+    const gateId = String(e.parsedJson?.assembly_id ?? "");
+    if (!gateId) continue;
+    // extension_type is parsed as `{ name: "<typestr>" }` by Sui
+    const extObj = e.parsedJson?.extension_type as { name?: string } | string | undefined;
+    const extStr = typeof extObj === "string" ? extObj : (extObj?.name ?? "");
+    const prev = gateLatest.get(gateId);
+    if (!prev || ts > prev.ts) gateLatest.set(gateId, { ext: extStr, ts });
+  }
+
+  // Keep only gates whose latest extension event is for CradleOSAuth.
+  const candidateGateIds = [...gateLatest.entries()]
+    .filter(([, v]) => isCradleOSAuthType(v.ext))
+    .map(([gateId, v]) => ({ gateId, ts: v.ts }));
+
+  if (candidateGateIds.length === 0) return [];
+
+  // Hydrate gate state — batch via multiGetObjects to keep RPC count small.
+  const ids = candidateGateIds.map(c => c.gateId);
+  const idChunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 50) idChunks.push(ids.slice(i, i + 50));
+  const hydrated: Array<{ objectId: string; fields: Record<string, unknown> | null }> = [];
+  for (const chunk of idChunks) {
+    try {
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1, method: "sui_multiGetObjects",
+          params: [chunk, { showContent: true }],
+        }),
+      });
+      const j = await res.json() as { result?: Array<{ data?: { objectId?: string; content?: { fields?: Record<string, unknown> } } }> };
+      for (const entry of j.result ?? []) {
+        hydrated.push({
+          objectId: String(entry.data?.objectId ?? ""),
+          fields: entry.data?.content?.fields ?? null,
+        });
+      }
+    } catch { /* fall through; affected gates will be skipped */ }
+  }
+
+  const tsByGate = new Map(candidateGateIds.map(c => [c.gateId, c.ts]));
+  const out: CradleOSGate[] = [];
+  for (const h of hydrated) {
+    if (!h.fields) continue;
+    // Verify current extension is still CradleOSAuth.
+    const ext = h.fields["extension"] as { fields?: { name?: string } } | null | undefined;
+    const extStr = ext?.fields?.name ?? "";
+    const stillAuthorized = isCradleOSAuthType(extStr);
+    if (!stillAuthorized) continue;
+
+    // Linked gate (jump pair).
+    const linkedRaw = h.fields["linked_gate_id"];
+    let linked: string | null = null;
+    if (linkedRaw && typeof linkedRaw === "object" && "fields" in linkedRaw) {
+      const inner = (linkedRaw as { fields?: { id?: { id?: string } | string } }).fields;
+      const v = inner?.id;
+      if (typeof v === "string") linked = v;
+      else if (v && typeof v === "object" && "id" in v) linked = String((v as { id: string }).id);
+    } else if (typeof linkedRaw === "string" && linkedRaw.length > 0) {
+      linked = linkedRaw;
+    }
+
+    // Owner cap id and online state can be derived from the gate's status field;
+    // for the transit list the pilot only needs the gate id + its linked target.
+    // We expose isOnline best-effort.
+    const status = h.fields["status"] as { fields?: Record<string, unknown> } | undefined;
+    const isOnline = Boolean((status?.fields ?? {})["online"] ?? false);
+
+    // Owner address is stored on the OwnerCap, not on the Gate. We skip it here
+    // (the dApp can show "unknown owner" for arbitrary gates; the pilot only
+    // needs to know the gate id + linked destination + that it's CradleOS-gated).
+    out.push({
+      objectId: h.objectId,
+      label: `Gate ${h.objectId.slice(-6)}`,
+      ownerAddress: null,
+      linkedGateId: linked,
+      isOnline,
+      extensionAuthorized: true,
+      authorizedAtMs: tsByGate.get(h.objectId) ?? 0,
+    });
+  }
+
+  // Newest authorize first.
+  out.sort((a, b) => b.authorizedAtMs - a.authorizedAtMs);
+  return out;
+}
+
+// ── v14: Discover candidate TribeGatePolicy objects + pre-flight is_allowed ──────
+//
+// Pilots requesting a permit must pass a TribeGatePolicy as the first arg. The
+// gate owner could use any policy; there's no on-chain binding gate → policy.
+// We discover candidate policies via GatePolicyCreated events (under v1 origin
+// since that struct was defined there) and let the dApp surface them.
+
+export type GatePolicyCandidate = {
+  policyId: string;
+  vaultId: string;
+  tribeId: number;
+  createdAtMs: number;
+};
+
+export async function fetchAllGatePolicies(): Promise<GatePolicyCandidate[]> {
+  try {
+    const events = await fetchEventAcrossPackages("gate_policy", "GatePolicyCreated", 500);
+    const seen = new Set<string>();
+    const out: GatePolicyCandidate[] = [];
+    for (const e of events) {
+      const pid = String(e.parsedJson?.policy_id ?? "");
+      if (!pid || seen.has(pid)) continue;
+      seen.add(pid);
+      out.push({
+        policyId: pid,
+        vaultId: String(e.parsedJson?.vault_id ?? ""),
+        tribeId: Number(e.parsedJson?.tribe_id ?? 0),
+        createdAtMs: Number(e.timestampMs ?? 0),
+      });
+    }
+    return out;
+  } catch { return []; }
+}
+
+/**
+ * Pre-flight is_allowed check. Replicates cradleos::gate_policy::is_allowed
+ * client-side by reading the policy + its dynamic fields, no signing required.
+ *
+ * Same precedence as the Move source:
+ *   1. Hostile char override → DENY
+ *   2. Friendly char override → ALLOW
+ *   3. Same tribe (unless CLOSED) → ALLOW
+ *   4. Tribe override → follow override
+ *   5. Default access_level (OPEN allows; everything else denies)
+ *
+ * The dApp uses this for a green/red badge BEFORE the pilot signs, so they
+ * don't waste gas on a tx that'll abort with E_ACCESS_DENIED.
+ */
+export async function previewIsAllowed(
+  policyId: string,
+  characterId: number,
+  characterTribeId: number,
+): Promise<{ allowed: boolean; error: string | null }> {
+  try {
+    const fields = await rpcGetObject(policyId);
+    const policyTribeId = numish(fields["tribe_id"]) ?? 0;
+    const accessLevel = numish(fields["access_level"]) ?? 1;
+    const tribeOverridesField = fields["tribe_overrides"] as { fields?: { id?: { id?: string } } } | undefined;
+    const tribeOverridesTableId = tribeOverridesField?.fields?.id?.id ?? "";
+
+    // GateHostileCharacterKey + GateFriendlyCharacterKey were defined in v14.
+    // Sui types dynamic-field keys under the package id where the struct was
+    // first defined — so the lookup must use CRADLEOS_PKG (v14), not
+    // CRADLEOS_ORIGINAL. If a future upgrade redefines them, this needs the
+    // same multi-pkg fan-out the event fetchers use.
+    const [hostile, friendly] = await Promise.all([
+      checkDfBoolKey(policyId, `${CRADLEOS_PKG}::gate_policy::GateHostileCharacterKey`, characterId),
+      checkDfBoolKey(policyId, `${CRADLEOS_PKG}::gate_policy::GateFriendlyCharacterKey`, characterId),
+    ]);
+    if (hostile === true) return { allowed: false, error: null };
+    if (friendly === true) return { allowed: true, error: null };
+    if (characterTribeId !== 0 && characterTribeId === policyTribeId) {
+      return { allowed: accessLevel !== 3 /* CLOSED */, error: null };
+    }
+    if (characterTribeId !== 0 && tribeOverridesTableId) {
+      const v = await checkTribeOverride(tribeOverridesTableId, characterTribeId);
+      if (v !== null) return { allowed: v === 1, error: null };
+    }
+    if (accessLevel === 0 /* OPEN */) return { allowed: true, error: null };
+    return { allowed: false, error: null };
+  } catch (e) {
+    return { allowed: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+async function checkDfBoolKey(
+  parentId: string,
+  keyType: string,
+  characterId: number,
+): Promise<boolean | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "suix_getDynamicFieldObject",
+        params: [parentId, { type: keyType, value: { character_id: characterId } }],
+      }),
+    });
+    const j = await res.json() as { result?: { data?: { content?: { fields?: { value?: boolean } } } }; error?: unknown };
+    if (j.error) return null;
+    const v = j.result?.data?.content?.fields?.value;
+    return typeof v === "boolean" ? v : null;
+  } catch { return null; }
+}
+
+async function checkTribeOverride(tableId: string, tribeId: number): Promise<number | null> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "suix_getDynamicFieldObject",
+        params: [tableId, { type: "u32", value: tribeId }],
+      }),
+    });
+    const j = await res.json() as { result?: { data?: { content?: { fields?: { value?: number | string } } } } };
+    const v = j.result?.data?.content?.fields?.value;
+    return v === undefined ? null : Number(v);
+  } catch { return null; }
+}
+
 // ── Tribe member roster via on-chain Character objects ────────────────────────
 
 export type CharacterMember = {

@@ -26,13 +26,16 @@ import {
   buildSetGateTribeOverrideTx, buildSetGatePlayerOverrideTx,
   buildDelegateGateTx, buildRevokeGateDelegationTx,
   fetchAllRegisteredTribes, fetchPlayerStructures, findCharacterForWallet,
+  rpcGetObject,
   GATE_ACCESS_LABELS,
   // v14: character-keyed gate friendly/hostile + extension authorization
   buildSetGateFriendlyCharacterTx, buildSetGateHostileCharacterTx,
   fetchGateFriendlyCharacters, fetchGateHostileCharacters,
-  buildAuthorizeGateExtensionTx,
+  buildAuthorizeGateExtensionTx, buildRequestGatePermitTx,
   fetchGateExtensionStatus, fetchOwnedGates,
+  fetchCradleOSAuthorizedGates, fetchAllGatePolicies, previewIsAllowed,
   type GateFriendlyCharacter, type GateHostileCharacter,
+  type CradleOSGate, type GatePolicyCandidate,
   type TribeVaultState, type GatePolicyState, type GateDelegationObj, type RegisteredTribe,
   type PlayerStructure,
 } from "../lib";
@@ -296,6 +299,11 @@ export function GatePolicyPanel() {
       {/* v14: per-gate extension authorization — owner authorizes CradleOSAuth */}
       {/* on each gate they want enforced. Single PTB. Status badge per gate. */}
       <OwnedGatesCard tribePolicyId={gatePolicy?.objectId ?? null} />
+
+      {/* v14: pilot transit — lists every CradleOS-enforced gate, runs a */}
+      {/* preflight is_allowed check, and lets the pilot mint a JumpPermit. */}
+      {/* Independent of which tribe vault is rendered — pilot uses gates anywhere. */}
+      <TransitCard pilotTribeId={vault.tribeId} />
 
       {/* Member delegation */}
       <DelegationCard
@@ -901,3 +909,272 @@ function DelegationCard({ vault, delegations }: {
     </div>
   );
 }
+
+// ── v14: TransitCard ─ pilot transit UI for CradleOS-enforced gates ──────────────────
+//
+// Two stages:
+//   1. Discover every gate currently authorized to use CradleOSAuth (across all
+//      tribes, not just this one — pilot might transit anywhere).
+//   2. For each gate, let the pilot pick a TribeGatePolicy (the gate owner's
+//      policy is the natural choice; gates don't carry the binding on chain so
+//      we surface a dropdown of all known policies + a manual entry box).
+//   3. Pre-flight is_allowed check before signing → green/red badge.
+//   4. "Request Jump Permit" button calls request_jump_permit_entry. On success
+//      the permit lands in the pilot's character_address; they then jump
+//      in-game using world::gate::jump_with_permit (the game client handles
+//      the actual jump tx, this UI's job ends at permit issuance).
+//
+// The card only renders when there's at least one CradleOSAuth-authorized gate;
+// otherwise it stays hidden so unaffected players don't see clutter.
+function TransitCard({ pilotTribeId }: { pilotTribeId: number }) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState<string | null>(null); // gateId currently being processed
+  const [err, setErr] = useState<Record<string, string>>({});
+  const [okMsg, setOkMsg] = useState<Record<string, string>>({});
+  const [policySel, setPolicySel] = useState<Record<string, string>>({}); // gateId -> policyId
+
+  // Discover the pilot's character info (id + tribe) for the preflight check.
+  const { data: charInfo } = useQuery({
+    queryKey: ["characterInfo", account?.address],
+    queryFn: () => account ? findCharacterForWallet(account.address) : Promise.resolve(null),
+    enabled: !!account?.address,
+    staleTime: 60_000,
+  });
+
+  // Discover all gates with CradleOSAuth currently authorized.
+  const { data: gates } = useQuery<CradleOSGate[]>({
+    queryKey: ["cradleosAuthorizedGates"],
+    queryFn: fetchCradleOSAuthorizedGates,
+    staleTime: 30_000,
+  });
+
+  // Discover all known TribeGatePolicy objects. Pilot picks one per gate.
+  const { data: policies } = useQuery<GatePolicyCandidate[]>({
+    queryKey: ["allGatePolicies"],
+    queryFn: fetchAllGatePolicies,
+    staleTime: 60_000,
+  });
+
+  // Per-gate preflight is_allowed result, keyed by `${gateId}:${policyId}`.
+  // We rerun whenever the pilot picks a different policy. React Query keeps
+  // a separate cache per key so swaps are instant after first compute.
+  const previewKey = (gateId: string, policyId: string) => ["transitPreview", gateId, policyId, charInfo?.tribeId ?? -1];
+  const usePreview = (gateId: string, policyId: string | null) => {
+    return useQuery({
+      queryKey: previewKey(gateId, policyId ?? ""),
+      queryFn: async () => {
+        if (!policyId || !charInfo) return null;
+        // We need the pilot's character_id (u32 in-game id) for the preflight.
+        // findCharacterForWallet returns the Sui object id; we need the item_id.
+        // Read it from the Character object content.
+        const charFields = await rpcGetObject(charInfo.characterId);
+        const keyField = charFields["key"] as { fields?: { item_id?: string | number } } | undefined;
+        const itemId = Number(keyField?.fields?.item_id ?? 0);
+        if (!itemId) return null;
+        return previewIsAllowed(policyId, itemId, charInfo.tribeId);
+      },
+      enabled: !!policyId && !!charInfo,
+      staleTime: 15_000,
+    });
+  };
+  // We can't call the hook in a loop from a parent → render-time, so instead we
+  // compute previews via a small child renderer per row.
+
+  if (!account) return null;
+  if (!charInfo) {
+    return (
+      <div style={cardWrap}>
+        <div style={cardHeader}>Gate Transit</div>
+        <div style={cardSub}>Connect a verified character to request transit through CradleOS-enforced gates.</div>
+      </div>
+    );
+  }
+  if (!gates || gates.length === 0) {
+    return null; // Hide entirely when nothing's authorized
+  }
+
+  const handleRequest = async (gate: CradleOSGate, policyId: string) => {
+    if (!charInfo || !gate.linkedGateId) return;
+    setBusy(gate.objectId);
+    setErr(prev => ({ ...prev, [gate.objectId]: "" }));
+    setOkMsg(prev => ({ ...prev, [gate.objectId]: "" }));
+    try {
+      const tx = buildRequestGatePermitTx(policyId, gate.objectId, gate.linkedGateId, charInfo.characterId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      const digest = (result as { digest?: string })?.digest ?? "";
+      setOkMsg(prev => ({ ...prev, [gate.objectId]: `✓ Permit issued. You can now jump in-game.${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}` }));
+      // Invalidate gate state in case we want to refresh anything.
+      queryClient.invalidateQueries({ queryKey: ["cradleosAuthorizedGates"] });
+    } catch (e) {
+      setErr(prev => ({ ...prev, [gate.objectId]: translateTxError(e) }));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div style={cardWrap}>
+      <div style={cardHeader}>
+        🚪 Gate Transit (CradleOS-enforced gates)
+      </div>
+      <div style={{ ...cardSub, marginBottom: 8 }}>
+        These gates require a CradleOS-issued <strong>JumpPermit</strong> before you can transit.
+        Click <strong>Request Jump Permit</strong> to mint one — the contract checks the gate's
+        access policy before issuing. <strong>You must request a permit BEFORE jumping in-game</strong>;
+        without a valid permit your in-game jump command will be rejected by the gate.
+      </div>
+      <div style={{ ...cardSub, color: "rgba(255,200,0,0.8)", marginBottom: 14 }}>
+        ⓘ A permit is good for one round-trip (source ↔ destination) and expires after 24 hours.
+        If you don't transit in that window, just request a fresh one — there's no cost beyond gas.
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {gates.map(g => {
+          const selectedPolicy = policySel[g.objectId] ?? "";
+          const myErr = err[g.objectId];
+          const myOk = okMsg[g.objectId];
+          const myBusy = busy === g.objectId;
+          return (
+            <TransitRow
+              key={g.objectId}
+              gate={g}
+              policies={policies ?? []}
+              policyId={selectedPolicy}
+              setPolicyId={pid => setPolicySel(prev => ({ ...prev, [g.objectId]: pid }))}
+              charInfo={charInfo}
+              pilotTribeId={pilotTribeId}
+              onRequest={() => handleRequest(g, selectedPolicy)}
+              busy={myBusy}
+              err={myErr}
+              ok={myOk}
+              usePreview={usePreview}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Per-row renderer so we can use the preview hook (hooks can't run in a parent loop).
+function TransitRow({
+  gate, policies, policyId, setPolicyId, charInfo, pilotTribeId, onRequest, busy, err, ok, usePreview,
+}: {
+  gate: CradleOSGate;
+  policies: GatePolicyCandidate[];
+  policyId: string;
+  setPolicyId: (pid: string) => void;
+  charInfo: { characterId: string; tribeId: number };
+  pilotTribeId: number;
+  onRequest: () => void;
+  busy: boolean;
+  err: string | undefined;
+  ok: string | undefined;
+  usePreview: (gateId: string, policyId: string | null) => { data: { allowed: boolean; error: string | null } | null | undefined; isLoading: boolean };
+}) {
+  const preview = usePreview(gate.objectId, policyId || null);
+  const allowedBadge = !policyId
+    ? null
+    : preview.isLoading
+      ? <span style={badgeStyle("rgba(175,175,155,0.5)", "rgba(175,175,155,0.1)")}>Checking…</span>
+      : preview.data?.allowed === true
+        ? <span style={badgeStyle("#00c864", "rgba(0,200,100,0.15)")}>✓ ALLOWED</span>
+        : preview.data?.allowed === false
+          ? <span style={badgeStyle("#ff4444", "rgba(255,68,68,0.15)")}>✗ DENIED</span>
+          : <span style={badgeStyle("rgba(175,175,155,0.5)", "rgba(175,175,155,0.1)")}>?</span>;
+
+  // Auto-prefer the policy whose tribe matches the pilot's own tribe (best heuristic).
+  useEffect(() => {
+    if (policyId) return;
+    const pilotTribePolicy = policies.find(p => p.tribeId === pilotTribeId);
+    if (pilotTribePolicy) setPolicyId(pilotTribePolicy.policyId);
+    else if (policies.length > 0) setPolicyId(policies[0].policyId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [policies.length, gate.objectId]);
+  void charInfo;
+
+  const linkedShort = gate.linkedGateId ? `#${gate.linkedGateId.slice(-6)}` : "(unlinked)";
+
+  return (
+    <div style={rowStyle}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+        <span style={{ flex: 1, color: "#e0e0d0", fontWeight: 600, fontSize: 12 }}>
+          {gate.label}
+          <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginLeft: 6, fontSize: 10 }}>
+            #{gate.objectId.slice(-6)} → {linkedShort}
+          </span>
+        </span>
+        <span style={badgeStyle("#64b4ff", "rgba(100,180,255,0.15)")}>✓ ENFORCED</span>
+        {allowedBadge}
+      </div>
+
+      <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 6 }}>
+        <span style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", letterSpacing: 0.5, textTransform: "uppercase" }}>Policy</span>
+        <select
+          value={policyId}
+          onChange={e => setPolicyId(e.target.value)}
+          disabled={busy}
+          style={{
+            flex: 1, fontSize: 11, padding: "3px 6px", background: "rgba(0,0,0,0.3)",
+            border: "1px solid rgba(255,255,255,0.1)", color: "#aaa", borderRadius: 2, fontFamily: "monospace",
+          }}
+        >
+          <option value="">— Select gate policy —</option>
+          {policies.map(p => (
+            <option key={p.policyId} value={p.policyId}>
+              Tribe {p.tribeId} · policy #{p.policyId.slice(-6)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button
+        onClick={onRequest}
+        disabled={busy || !policyId || !gate.linkedGateId || preview.data?.allowed === false}
+        style={{
+          width: "100%",
+          padding: "6px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 0.05,
+          background: busy ? "rgba(100,180,255,0.05)" : preview.data?.allowed === false ? "rgba(100,100,100,0.1)" : "rgba(100,180,255,0.12)",
+          border: `1px solid ${preview.data?.allowed === false ? "rgba(100,100,100,0.3)" : "rgba(100,180,255,0.4)"}`,
+          color: busy ? "rgba(100,180,255,0.5)" : preview.data?.allowed === false ? "#666" : "#64b4ff",
+          borderRadius: 2,
+          cursor: busy || !policyId || preview.data?.allowed === false ? "default" : "pointer",
+        }}
+      >
+        {busy
+          ? "Requesting permit…"
+          : preview.data?.allowed === false
+            ? "Access denied — cannot request permit"
+            : !gate.linkedGateId
+              ? "Gate has no linked destination"
+              : "Request Jump Permit"}
+      </button>
+      {ok && <div style={{ color: "#00c864", fontSize: 11, marginTop: 6 }}>{ok}</div>}
+      {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
+const cardWrap: React.CSSProperties = {
+  background: "rgba(100,180,255,0.04)",
+  border: "1px solid rgba(100,180,255,0.18)",
+  borderRadius: 0, padding: 14, marginTop: 14,
+};
+const cardHeader: React.CSSProperties = {
+  color: "#64b4ff", fontWeight: 600, fontSize: 13, marginBottom: 6,
+};
+const cardSub: React.CSSProperties = {
+  color: "rgba(175,175,155,0.7)", fontSize: 11, lineHeight: 1.5,
+};
+const rowStyle: React.CSSProperties = {
+  background: "rgba(0,0,0,0.2)",
+  border: "1px solid rgba(255,255,255,0.05)",
+  borderRadius: 2, padding: 10,
+};
+const badgeStyle = (fg: string, bg: string): React.CSSProperties => ({
+  padding: "2px 8px", fontSize: 10, fontWeight: 600, borderRadius: 2,
+  background: bg, border: `1px solid ${fg}40`, color: fg,
+});
