@@ -1971,11 +1971,10 @@ const stanceBtnInline = (fg: string, disabled: boolean): React.CSSProperties => 
 // Renders once at the top of the topology view. Persists collapsed state in
 // localStorage so users who've read it don't see the wall of text every time.
 //
-// Goal: cover the four things that aren't obvious at a glance:
+// Goal: cover the three things that aren't obvious at a glance:
 //   1. The view is grouped by solar system → network node → connected children
 //   2. Each NetworkNode has an EP (Energy Production) budget shared by its children
-//   3. The BULK ASSIGN strip wires turrets/gates to the tribe defense + gate policies
-//   4. The STANCE strip flips industry vs defense in one signed PTB, energy-aware
+//   3. The STANCE strip flips industry vs defense in one signed PTB, energy-aware
 
 const DASH_INTRO_KEY = "cradleos:dashboard:intro:collapsed";
 
@@ -2028,14 +2027,6 @@ function DashboardIntro() {
             rename ✎, delegate to tribe policy ⚑, transfer ownership, link/unlink (gates).
             The power toggle is auto-disabled when bringing the structure online would exceed
             the parent node's available EP — the chain would reject it anyway.
-          </p>
-          <p style={{ margin: "0 0 8px 0" }}>
-            <strong style={{ color: "rgba(255,180,74,0.95)" }}>BULK ASSIGN</strong> strip
-            (only visible when you have a tribe vault and undelegated turrets/gates) wires every
-            unassigned turret or gate at this node to your tribe's defense and gate policies in
-            one signed PTB. Once delegated, your tribe's policy controls who gets shot
-            (Friendly/Hostile in the Defense tab) and who can transit (Friendly/Hostile in the
-            Gates tab).
           </p>
           <p style={{ margin: "0 0 8px 0" }}>
             <strong style={{ color: "#FF4700" }}>STANCE</strong> strip on each node:
