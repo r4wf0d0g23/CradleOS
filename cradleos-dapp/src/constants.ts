@@ -169,8 +169,24 @@ export const TRIBE_ROLES_PKG      = CRADLEOS_PKG;
 export const GATE_POLICY_PKG      = CRADLEOS_PKG;
 export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
 
-/** Build a MoveEventType string for suix_queryEvents.
- *  Uses ORIGINAL package ID (Sui indexes events by original, not published-at). */
+/**
+ * Build a MoveEventType string for suix_queryEvents using CRADLEOS_ORIGINAL.
+ *
+ * ⚠ SAFE ONLY for events whose struct was first defined in v1
+ * (the original publish). Sui types every event under the package id
+ * where its struct was *first defined* in the upgrade history; structs
+ * introduced in mid-life upgrades have a different defining package.
+ *
+ * For new event consumers, ALWAYS use `fetchEventAcrossPackages` from
+ * `lib.ts` instead. It queries every package id in `CRADLEOS_EVENT_PKGS`
+ * in parallel and merges — robust against future upgrades that introduce
+ * new event structs.
+ *
+ * Audit script: `scripts/cradleos_event_audit.py` walks every event
+ * type queried by the dApp and verifies its defining package is in
+ * `CRADLEOS_EVENT_PKGS`. Run it after any new event-query callsite is
+ * added or any upgrade is published.
+ */
 export function eventType(module: string, event: string): string {
   return `${CRADLEOS_ORIGINAL}::${module}::${event}`;
 }
