@@ -26,6 +26,8 @@ import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRI
 // defense_policy was NEW in v5 — its events index under CRADLEOS_PKG (v5), not CRADLEOS_PKG (v4)
 // tribe_vault events (CoinLaunched) remain under CRADLEOS_PKG (original v4)
 import { translateTxError } from "../lib/txError";
+import { CharacterAutocomplete } from "./CharacterAutocomplete";
+import { useCharacterDirectory, findCharacterById } from "../lib/characterDirectory";
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe, fetchTribeClaim,
@@ -1042,7 +1044,6 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
   const { account } = useVerifiedAccountContext();
   const dAppKit = useDAppKit();
   const queryClient = useQueryClient();
-  const [charInput, setCharInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
@@ -1052,18 +1053,20 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
     staleTime: 30_000,
   });
 
-  const handleAdd = async () => {
-    const charId = parseInt(charInput, 10);
-    if (!account || !policyId || !charId || isNaN(charId)) return;
+  // Character directory drives both autocomplete + row name enrichment, so a
+  // founder reviewing the list sees who each entry is, not just hex ids.
+  const { data: directory } = useCharacterDirectory();
+
+  const handleAdd = async (characterId: number) => {
+    if (!account || !policyId || !characterId) return;
     setBusy(true); setErr("");
     try {
-      const tx = buildSetFriendlyCharacterTx(policyId, vault.objectId, charId, true);
+      const tx = buildSetFriendlyCharacterTx(policyId, vault.objectId, characterId, true);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setCharInput("");
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 2500);
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 6000);
-    } catch (e) { setErr(translateTxError(e)); }
+    } catch (e) { setErr(translateTxError(e)); throw e; }
     finally { setBusy(false); }
   };
 
@@ -1090,9 +1093,10 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
         {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
       </div>
       <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
-        Mark specific in-game characters as <strong style={{ color: "#00c864" }}>FRIENDLY</strong> by character ID.
-        Tribe turrets will skip these targets even when their tribe is hostile or unlisted — use this for allied non-tribemates who should never be shot.
-        Same-tribe members are already auto-protected; this entry is for cross-tribe allies.
+        Mark specific in-game characters as <strong style={{ color: "#00c864" }}>FRIENDLY</strong>. Search by
+        name to pick them — the dApp resolves the character ID for you and writes it on-chain.
+        Tribe turrets will skip these targets even when their tribe is hostile or unlisted (use this
+        for allied non-tribemates). Same-tribe members are already auto-protected.
       </div>
 
       {(friendlyChars ?? []).length === 0 ? (
@@ -1101,45 +1105,49 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: 12 }}>
-          {(friendlyChars ?? []).map(fc => (
-            <div key={fc.characterId} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-              <span style={{ flex: 1, fontFamily: "monospace", color: "#00c864" }}>
-                Character #{fc.characterId}
-              </span>
-              <span style={{
-                padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
-                background: "rgba(0,200,100,0.12)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864",
-              }}>
-                FRIENDLY
-              </span>
-              {isFounder && policyId && (
-                <button
-                  onClick={() => handleRemove(fc.characterId)}
-                  disabled={busy}
-                  style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}
-                >Remove</button>
-              )}
-            </div>
-          ))}
+          {(friendlyChars ?? []).map(fc => {
+            const known = findCharacterById(directory, fc.characterId);
+            return (
+              <div key={fc.characterId} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+                <span style={{ flex: 1, color: "#00c864" }}>
+                  {known?.name ? (
+                    <>
+                      <span style={{ fontWeight: 600 }}>{known.name}</span>
+                      <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginLeft: 6 }}>
+                        · #{fc.characterId} · tribe {known.tribeId}
+                      </span>
+                    </>
+                  ) : (
+                    <span style={{ fontFamily: "monospace" }}>Character #{fc.characterId}</span>
+                  )}
+                </span>
+                <span style={{
+                  padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
+                  background: "rgba(0,200,100,0.12)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864",
+                }}>
+                  FRIENDLY
+                </span>
+                {isFounder && policyId && (
+                  <button
+                    onClick={() => handleRemove(fc.characterId)}
+                    disabled={busy}
+                    style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}
+                  >Remove</button>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {isFounder && policyId && (
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-          <input
-            value={charInput}
-            onChange={e => setCharInput(e.target.value.replace(/\D/g, ""))}
-            placeholder="Character ID (number)"
-            style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0", color: "#aaa", fontSize: "11px", padding: "5px 8px", outline: "none", fontFamily: "monospace" }}
-          />
-          <button
-            onClick={handleAdd}
-            disabled={busy || !charInput}
-            style={{ background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864", borderRadius: "2px", fontSize: "11px", padding: "5px 12px", cursor: "pointer" }}
-          >
-            {busy ? "..." : "+ Add Friendly"}
-          </button>
-        </div>
+        <CharacterAutocomplete
+          onSelect={c => handleAdd(c.characterId)}
+          accentColor="#00c864"
+          buttonLabel="+ Add Friendly"
+          placeholder="Search by name (or paste a character ID)…"
+          busy={busy}
+        />
       )}
       {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
     </div>
@@ -1358,7 +1366,6 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
   const { account } = useVerifiedAccountContext();
   const dAppKit = useDAppKit();
   const queryClient = useQueryClient();
-  const [charInput, setCharInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
@@ -1368,18 +1375,18 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
     staleTime: 30_000,
   });
 
-  const handleAdd = async () => {
-    const charId = parseInt(charInput, 10);
-    if (!account || !policyId || !charId || isNaN(charId)) return;
+  const { data: directory } = useCharacterDirectory();
+
+  const handleAdd = async (characterId: number) => {
+    if (!account || !policyId || !characterId) return;
     setBusy(true); setErr("");
     try {
-      const tx = buildSetHostileCharacterTx(policyId, vault.objectId, charId, true);
+      const tx = buildSetHostileCharacterTx(policyId, vault.objectId, characterId, true);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setCharInput("");
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
-    } catch (e) { setErr(translateTxError(e)); }
+    } catch (e) { setErr(translateTxError(e)); throw e; }
     finally { setBusy(false); }
   };
 
@@ -1407,8 +1414,8 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
       </div>
       <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
         Tribe turrets will <strong style={{ color: "#ff4444" }}>never fire on same-tribe members</strong> unless
-        their character ID is listed here. Use this for KOS (kill-on-sight) characters
-        who are in your tribe but should be treated as hostile.
+        they are listed here. Search by name to add a same-tribe KOS (kill-on-sight) target — the
+        dApp resolves the character ID for you and writes it on-chain.
       </div>
 
       {(hostileChars ?? []).length === 0 ? (
@@ -1417,56 +1424,52 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: 12 }}>
-          {(hostileChars ?? []).map(hc => (
-            <div key={hc.characterId} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-              <span style={{ flex: 1, fontFamily: "monospace", color: "#ff4444" }}>
-                Character #{hc.characterId}
-              </span>
-              <span style={{
-                padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
-                background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444",
-              }}>
-                KOS
-              </span>
-              {isFounder && policyId && (
-                <button
-                  onClick={() => handleRemove(hc.characterId)}
-                  disabled={busy}
-                  style={{
-                    background: "none", border: "1px solid rgba(255,255,255,0.1)",
-                    color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer",
-                  }}
-                >Remove</button>
-              )}
-            </div>
-          ))}
+          {(hostileChars ?? []).map(hc => {
+            const known = findCharacterById(directory, hc.characterId);
+            return (
+              <div key={hc.characterId} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+                <span style={{ flex: 1, color: "#ff4444" }}>
+                  {known?.name ? (
+                    <>
+                      <span style={{ fontWeight: 600 }}>{known.name}</span>
+                      <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginLeft: 6 }}>
+                        · #{hc.characterId} · tribe {known.tribeId}
+                      </span>
+                    </>
+                  ) : (
+                    <span style={{ fontFamily: "monospace" }}>Character #{hc.characterId}</span>
+                  )}
+                </span>
+                <span style={{
+                  padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
+                  background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444",
+                }}>
+                  KOS
+                </span>
+                {isFounder && policyId && (
+                  <button
+                    onClick={() => handleRemove(hc.characterId)}
+                    disabled={busy}
+                    style={{
+                      background: "none", border: "1px solid rgba(255,255,255,0.1)",
+                      color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer",
+                    }}
+                  >Remove</button>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {isFounder && policyId && (
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-          <input
-            value={charInput}
-            onChange={e => setCharInput(e.target.value.replace(/\D/g, ""))}
-            placeholder="Character ID (number)"
-            style={{
-              flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0",
-              color: "#aaa", fontSize: "11px", padding: "5px 8px", outline: "none",
-              fontFamily: "monospace",
-            }}
-          />
-          <button
-            onClick={handleAdd}
-            disabled={busy || !charInput}
-            style={{
-              background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)",
-              color: "#ff4444", borderRadius: "2px", fontSize: "11px", padding: "5px 12px", cursor: "pointer",
-            }}
-          >
-            {busy ? "..." : "+ Add Hostile"}
-          </button>
-        </div>
+        <CharacterAutocomplete
+          onSelect={c => handleAdd(c.characterId)}
+          accentColor="#ff4444"
+          buttonLabel="+ Add Hostile"
+          placeholder="Search by name (or paste a character ID)…"
+          busy={busy}
+        />
       )}
       {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
     </div>
