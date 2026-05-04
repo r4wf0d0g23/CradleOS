@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { translateTxError } from "../lib/txError";
 import {
   fetchMemberCap,
   fetchCorpState,
@@ -14,10 +15,19 @@ import {
   buildWithdrawTransaction,
   getCachedTreasuryId,
   setCachedTreasuryId,
+  // For tribe-token telemetrics parity with TribeVaultPanel
+  fetchTribeVault,
+  fetchCollateralVault,
+  fetchMemberBalance,
+  getCachedVaultId,
+  setCachedVaultId,
+  discoverVaultIdForTribe,
   type MemberCapInfo,
   type CorpState,
   type TreasuryState,
   type TreasuryActivity,
+  type TribeVaultState,
+  type CollateralVaultState,
 } from "../lib";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -65,7 +75,7 @@ function StatBox({ label, value, sub }: { label: string; value: string; sub?: st
     }}>
       <div style={{ color: "#888", fontSize: "11px", letterSpacing: "0.06em", marginBottom: "4px" }}>{label}</div>
       <div style={{ color: "#FF4700", fontSize: "22px", fontWeight: 700 }}>{value}</div>
-      {sub && <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", marginTop: "2px" }}>{sub}</div>}
+      {sub && <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
 }
@@ -87,8 +97,8 @@ function ActivityRow({ item }: { item: TreasuryActivity }) {
       <span style={{ color: isDeposit ? "#00ff96" : "#ff9632", fontWeight: 600, minWidth: "80px" }}>
         {isDeposit ? "+" : "−"}{item.amount.toFixed(4)} SUI
       </span>
-      <span style={{ color: "rgba(107,107,94,0.6)" }}>{shortAddr(item.actor)}</span>
-      <span style={{ marginLeft: "auto", color: "rgba(107,107,94,0.55)" }}>
+      <span style={{ color: "rgba(175,175,155,0.6)" }}>{shortAddr(item.actor)}</span>
+      <span style={{ marginLeft: "auto", color: "rgba(175,175,155,0.55)" }}>
         {new Date(item.timestampMs).toLocaleTimeString()}
       </span>
     </div>
@@ -128,7 +138,7 @@ function CorpSetupForm({ onSuccess }: { onSuccess: () => void }) {
       readDigest(result);
       onSuccess();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -140,7 +150,7 @@ function CorpSetupForm({ onSuccess }: { onSuccess: () => void }) {
       </p>
 
       {tribeLoading ? (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "16px" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", marginBottom: "16px" }}>
           Reading character tribe from chain…
         </div>
       ) : tribeId == null ? (
@@ -159,7 +169,7 @@ function CorpSetupForm({ onSuccess }: { onSuccess: () => void }) {
           <div style={{ color: "#FF4700", fontSize: "16px", fontWeight: 700, fontFamily: "monospace" }}>
             {corpName}
           </div>
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", marginTop: "3px" }}>tribe_id {tribeId} · read from Character on-chain</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", marginTop: "3px" }}>tribe_id {tribeId} · read from Character on-chain</div>
         </div>
       )}
 
@@ -252,7 +262,7 @@ function TreasuryDashboard({
       await signer.signAndExecuteTransaction({ transaction: tx });
       onTxSuccess();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -276,7 +286,7 @@ function TreasuryDashboard({
           <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "18px" }}>
             {corp.name}
           </div>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px" }}>
             {corp.memberCount} member{corp.memberCount !== 1 ? "s" : ""} · Founder: {shortAddr(corp.founder)} · Role: <span style={{ color: "#FF4700" }}>{roleLabel(cap.role)}</span>
           </div>
         </div>
@@ -292,12 +302,16 @@ function TreasuryDashboard({
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats — SUI treasury balance */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
         <StatBox label="TREASURY BALANCE" value={`${suiAmount(treasury.balanceMist)} SUI`} sub="available" />
         <StatBox label="TOTAL DEPOSITED" value={`${suiAmount(treasury.totalDepositedMist)} SUI`} />
         <StatBox label="TOTAL WITHDRAWN" value={`${suiAmount(treasury.totalWithdrawnMist)} SUI`} />
       </div>
+
+      {/* Tribe-token telemetrics — same view TribeVaultPanel renders, surfaced */}
+      {/* here so treasurers see the minted-token state alongside SUI balance.    */}
+      <TokenTelemetricsRow corpName={corp.name} />
 
       {/* Actions */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap" }}>
@@ -341,7 +355,7 @@ function TreasuryDashboard({
           opacity: isDirector ? 1 : 0.4,
         }}>
           <div style={{ color: "#ff9632", fontWeight: 600, marginBottom: "10px", fontSize: "13px" }}>
-            ▼ Withdraw SUI {!isDirector && <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400 }}>(Director only)</span>}
+            ▼ Withdraw SUI {!isDirector && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400 }}>(Director only)</span>}
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
             <input
@@ -374,7 +388,7 @@ function TreasuryDashboard({
           RECENT ACTIVITY
         </div>
         {!activity?.length ? (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No transactions yet</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>No transactions yet</div>
         ) : (
           activity.slice(0, 10).map((item, i) => <ActivityRow key={i} item={item} />)
         )}
@@ -468,3 +482,160 @@ export function TreasuryPanel({ onTxSuccess }: Props) {
     />
   );
 }
+
+// ── Tribe token telemetrics (parity with TribeVaultPanel) ────────────────────
+//
+// Surfaces the same numbers TribeVaultPanel shows in its STAT row + the EVE
+// collateral box: Circulating, Infra Cap, Issuable, Your Balance, Mint Ratio,
+// Floor Price. Treasurers reading this panel see SUI balance AT THE TOP and
+// the minted-token economy DIRECTLY BELOW so the two related-but-distinct
+// pools are obvious.
+//
+// Discovery: corp.name carries the tribeId (set during initialize_corp), so we
+// resolve TribeVault via the same cached → discoverVaultIdFromChain path
+// TribeVaultPanel uses. If a tribe never launched a coin (no vault) the row
+// renders a one-line "no token launched yet" notice and stays out of the way.
+
+function fmtToken(raw: number): string {
+  if (raw <= 0) return "0";
+  const n = raw / 1e9; // tribe tokens use 9 decimals like SUI
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(2) + "k";
+  if (n >= 1) return n.toFixed(2);
+  return n.toFixed(4);
+}
+
+function TokenTelemetricsRow({ corpName }: { corpName: string }) {
+  const { account } = useVerifiedAccountContext();
+
+  // corp.name is the stringified tribe_id (set at corp init). Bail early if
+  // we somehow ended up with a non-numeric name.
+  const tribeId = /^\d+$/.test(corpName) ? parseInt(corpName, 10) : null;
+
+  const { data: vault, isLoading: vaultLoading } = useQuery<TribeVaultState | null>({
+    queryKey: ["tribeVault", "treasury", tribeId],
+    queryFn: async () => {
+      if (!tribeId) return null;
+      let vaultId = getCachedVaultId(tribeId);
+      if (!vaultId) {
+        vaultId = await discoverVaultIdForTribe(tribeId);
+        if (vaultId) setCachedVaultId(tribeId, vaultId);
+      }
+      if (!vaultId) return null;
+      return fetchTribeVault(vaultId);
+    },
+    enabled: !!tribeId,
+    staleTime: 15_000,
+  });
+
+  const { data: cv } = useQuery<CollateralVaultState | null>({
+    queryKey: ["collateralVault", vault?.objectId],
+    queryFn: () => vault ? fetchCollateralVault(vault.objectId) : Promise.resolve(null),
+    enabled: !!vault?.objectId,
+    staleTime: 30_000,
+  });
+
+  const { data: myBalance } = useQuery<number>({
+    queryKey: ["myVaultBalance", "treasury", vault?.objectId, account?.address],
+    queryFn: () => (vault && account) ? fetchMemberBalance(vault.balancesTableId, account.address) : 0,
+    enabled: !!vault?.balancesTableId && !!account?.address,
+    staleTime: 15_000,
+  });
+
+  if (vaultLoading) {
+    return (
+      <div style={teleSectionWrap}>
+        <div style={teleHeader}>Tribe Token</div>
+        <div style={teleSub}>Loading…</div>
+      </div>
+    );
+  }
+
+  if (!vault) {
+    return (
+      <div style={teleSectionWrap}>
+        <div style={teleHeader}>Tribe Token</div>
+        <div style={teleSub}>
+          No token launched for this tribe yet. Initialize one in the <strong>Tribe Token</strong> tab to
+          unlock minting, infra-backed issuance, and EVE-collateralized supply.
+        </div>
+      </div>
+    );
+  }
+
+  const infraCredits = vault.infraCredits ?? 0;
+  const issuable = Math.max(0, infraCredits - vault.totalSupply);
+  const cappedPct = infraCredits > 0 ? Math.min(100, (vault.totalSupply / infraCredits) * 100) : 0;
+
+  return (
+    <div style={teleSectionWrap}>
+      <div style={teleHeader}>Tribe Token — {vault.coinSymbol}</div>
+
+      <div style={{ display: "flex", gap: "10px", marginBottom: cv ? "12px" : "0", flexWrap: "wrap" }}>
+        <StatBox label="CIRCULATING" value={fmtToken(vault.totalSupply)} sub={vault.coinSymbol} />
+        <StatBox
+          label="INFRA CAP"
+          value={fmtToken(infraCredits)}
+          sub={infraCredits > 0 ? `${cappedPct.toFixed(1)}% used` : "no infra registered"}
+        />
+        <StatBox label="ISSUABLE" value={fmtToken(issuable)} sub="remaining cap" />
+        <StatBox label="YOUR BALANCE" value={fmtToken(myBalance ?? 0)} sub={vault.coinSymbol} />
+      </div>
+
+      {cv && (
+        <div style={{
+          display: "flex", gap: 14, padding: "10px 14px",
+          background: "rgba(0,255,150,0.04)", border: "1px solid rgba(0,255,150,0.18)",
+          borderRadius: 0,
+        }}>
+          <div style={{ flex: 1 }}>
+            <div style={teleMiniLabel}>EVE-COLLATERALIZED</div>
+            <div style={{ display: "flex", gap: 18, marginTop: 6 }}>
+              <div>
+                <div style={{ color: "#00ff96", fontSize: 16, fontWeight: 700 }}>{cv.mintRatio}</div>
+                <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 10 }}>
+                  Mint Ratio · 1 EVE = {cv.mintRatio} {vault.coinSymbol}
+                </div>
+              </div>
+              <div>
+                <div style={{ color: "#00ff96", fontSize: 16, fontWeight: 700 }}>
+                  {cv.mintRatio > 0 ? (1 / cv.mintRatio).toFixed(6) : "—"}
+                </div>
+                <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 10 }}>
+                  Floor Price · EVE per {vault.coinSymbol}
+                </div>
+              </div>
+              <div>
+                <div style={{ color: "#00ff96", fontSize: 16, fontWeight: 700 }}>{fmtToken(cv.totalMinted)}</div>
+                <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 10 }}>Total Minted</div>
+              </div>
+              <div>
+                <div style={{ color: "#00ff96", fontSize: 16, fontWeight: 700 }}>{fmtToken(cv.totalRedeemed)}</div>
+                <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 10 }}>Total Redeemed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop: 8, fontSize: 10, color: "rgba(175,175,155,0.45)" }}>
+        Token actions (mint / redeem / issue infra-backed) live in the <strong>Tribe Token</strong> tab.
+      </div>
+    </div>
+  );
+}
+
+const teleSectionWrap: React.CSSProperties = {
+  background: "rgba(255,255,255,0.02)",
+  border: "1px solid rgba(255,71,0,0.12)",
+  borderRadius: 0, padding: "14px 16px", marginBottom: "20px",
+};
+const teleHeader: React.CSSProperties = {
+  color: "#FF4700", fontWeight: 600, fontSize: 13, marginBottom: 12,
+};
+const teleSub: React.CSSProperties = {
+  color: "rgba(175,175,155,0.55)", fontSize: 12, lineHeight: 1.5,
+};
+const teleMiniLabel: React.CSSProperties = {
+  fontSize: 10, color: "rgba(180,180,160,0.6)", letterSpacing: 0.5, textTransform: "uppercase",
+};

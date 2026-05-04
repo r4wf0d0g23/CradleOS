@@ -13,6 +13,8 @@ import {
   fetchPlayerStructures,
   buildStructureOnlineTransaction,
   buildStructureOfflineTransaction,
+  buildBatchOnlineTransaction,
+  buildBatchOfflineTransaction,
   buildRenameTransaction,
   buildSetUrlTransaction,
   findCharacterForWallet,
@@ -1647,6 +1649,17 @@ export function DashboardPanel() {
         <div style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.55)" }}>No structures found for this wallet</div>
       )}
 
+      {/* Quick stance bar — batch on/off by group (Defense / Industry). Lets a */}
+      {/* tribe leader take a defensive posture in two clicks: 'all turrets on' */}
+      {/* + 'all non-turrets off'. Hidden when there are zero structures. */}
+      {dashTab === "structures" && !loading && groups.length > 0 && (
+        <QuickStanceBar
+          groups={groups}
+          characterId={characterId}
+          onRefresh={handleRefresh}
+        />
+      )}
+
       {/* Topology drill-down view */}
       {dashTab === "structures" && !loading && groups.length > 0 && (
         <TopologyGraph groups={groups} characterId={characterId} onRefresh={handleRefresh} />
@@ -1739,3 +1752,191 @@ export function DashboardPanel() {
     </div>
   );
 }
+
+// ── Quick Stance Bar ─ all-on/off batch buttons per defense vs industry group ──
+//
+// Defense   = Turrets only
+// Industry  = NetworkNode, Gate, Assembly, StorageUnit (everything else with
+//             an online/offline state)
+//
+// Each group has TWO buttons: 'All On' / 'All Off'. Each button issues a
+// single PTB that batches every borrow_owner_cap → online/offline → return
+// across every structure in the group. This keeps a defensive-posture switch
+// down to TWO signed txs (one for industry, one for defense) instead of N.
+//
+// Disabled states:
+//   - No matching structures → button hidden entirely (group section hides too)
+//   - Already-online structures excluded from 'All On' (no-op tx)
+//   - Already-offline structures excluded from 'All Off'
+//   - Counts surfaced inline so the user sees how many will move
+//
+// Failure mode: PTB-level. If any single move call aborts (e.g. one structure
+// doesn't have an energy source), the whole batch reverts. The button surfaces
+// the translated error.
+function QuickStanceBar({
+  groups,
+  characterId,
+  onRefresh,
+}: {
+  groups: LocationGroup[];
+  characterId: string;
+  onRefresh: () => void;
+}) {
+  const dAppKit = useDAppKit();
+  const [busy, setBusy] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
+
+  // Flatten everything once per render.
+  const all = groups.flatMap(g => g.structures ?? []);
+  const turrets = all.filter(s => s.kind === "Turret");
+  const industry = all.filter(s =>
+    s.kind === "NetworkNode" || s.kind === "Gate" || s.kind === "Assembly" || s.kind === "StorageUnit"
+  );
+
+  const turretsOnline = turrets.filter(s => s.isOnline);
+  const turretsOffline = turrets.filter(s => !s.isOnline);
+  const industryOnline = industry.filter(s => s.isOnline);
+  const industryOffline = industry.filter(s => !s.isOnline);
+
+  if (turrets.length === 0 && industry.length === 0) return null;
+
+  async function executeOnline(structures: PlayerStructure[], label: string) {
+    if (structures.length === 0 || !characterId) return;
+    setBusy(label); setErr(null); setOkMsg(null);
+    try {
+      const tx = buildBatchOnlineTransaction(structures, characterId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      const digest = (result as { digest?: string })?.digest ?? "";
+      // Sound feedback consistent with single-structure online action.
+      try { playPowerOn(); } catch { /* */ }
+      setOkMsg(`✓ Brought ${structures.length} ${label} online${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}.`);
+      // Refresh structures so the buttons update.
+      setTimeout(onRefresh, 1500);
+    } catch (e) {
+      setErr(translateTxError(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function executeOffline(structures: PlayerStructure[], label: string) {
+    if (structures.length === 0 || !characterId) return;
+    setBusy(label); setErr(null); setOkMsg(null);
+    try {
+      const tx = await buildBatchOfflineTransaction(structures, characterId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      const digest = (result as { digest?: string })?.digest ?? "";
+      try { playPowerOff(); } catch { /* */ }
+      setOkMsg(`✓ Brought ${structures.length} ${label} offline${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}.`);
+      setTimeout(onRefresh, 1500);
+    } catch (e) {
+      setErr(translateTxError(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.02)",
+      border: "1px solid rgba(255,71,0,0.18)",
+      borderRadius: 0, padding: "12px 14px", marginBottom: 14,
+      display: "flex", flexDirection: "column", gap: 10,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.06, color: "#FF4700" }}>
+          QUICK STANCE
+        </span>
+        <span style={{ fontSize: 10, color: "rgba(175,175,155,0.55)" }}>
+          One signed PTB per click — useful for taking a defensive posture quickly
+          (industry off, turrets on) or returning to peacetime (industry on, turrets at rest).
+        </span>
+      </div>
+
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+        {/* Defense (Turrets) */}
+        {turrets.length > 0 && (
+          <div style={stanceGroupStyle("rgba(255,71,0,0.4)")}>
+            <div style={{ fontSize: 11, color: "#ff6432", fontWeight: 700, marginBottom: 6 }}>
+              ⛨ DEFENSE — {turrets.length} turret{turrets.length !== 1 ? "s" : ""}
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              <button
+                onClick={() => executeOnline(turretsOffline, "turrets")}
+                disabled={!!busy || turretsOffline.length === 0 || !characterId}
+                style={stanceBtn("#00c864", busy === "turrets" || turretsOffline.length === 0)}
+                title={turretsOffline.length === 0 ? "All turrets already online" : `Bring ${turretsOffline.length} offline turret${turretsOffline.length !== 1 ? "s" : ""} online`}
+              >
+                {busy === "turrets" ? "Working…" : `▲ ALL TURRETS ON (${turretsOffline.length})`}
+              </button>
+              <button
+                onClick={() => executeOffline(turretsOnline, "turrets")}
+                disabled={!!busy || turretsOnline.length === 0 || !characterId}
+                style={stanceBtn("#ff4444", busy === "turrets" || turretsOnline.length === 0)}
+                title={turretsOnline.length === 0 ? "No turrets currently online" : `Take ${turretsOnline.length} online turret${turretsOnline.length !== 1 ? "s" : ""} offline`}
+              >
+                {busy === "turrets" ? "Working…" : `▼ ALL TURRETS OFF (${turretsOnline.length})`}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Industry (everything else) */}
+        {industry.length > 0 && (
+          <div style={stanceGroupStyle("rgba(100,180,255,0.4)")}>
+            <div style={{ fontSize: 11, color: "#64b4ff", fontWeight: 700, marginBottom: 6 }}>
+              ⚙ INDUSTRY — {industry.length} structure{industry.length !== 1 ? "s" : ""}
+              <span style={{ marginLeft: 6, fontWeight: 400, color: "rgba(175,175,155,0.55)" }}>
+                (Network Nodes, Gates, Assemblies, Storage Units)
+              </span>
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              <button
+                onClick={() => executeOnline(industryOffline, "industry structures")}
+                disabled={!!busy || industryOffline.length === 0 || !characterId}
+                style={stanceBtn("#00c864", busy === "industry structures" || industryOffline.length === 0)}
+                title={industryOffline.length === 0 ? "All industry structures already online" : `Bring ${industryOffline.length} offline structure${industryOffline.length !== 1 ? "s" : ""} online`}
+              >
+                {busy === "industry structures" ? "Working…" : `▲ ALL INDUSTRY ON (${industryOffline.length})`}
+              </button>
+              <button
+                onClick={() => executeOffline(industryOnline, "industry structures")}
+                disabled={!!busy || industryOnline.length === 0 || !characterId}
+                style={stanceBtn("#ff4444", busy === "industry structures" || industryOnline.length === 0)}
+                title={industryOnline.length === 0 ? "No industry structures currently online" : `Take ${industryOnline.length} online structure${industryOnline.length !== 1 ? "s" : ""} offline`}
+              >
+                {busy === "industry structures" ? "Working…" : `▼ ALL INDUSTRY OFF (${industryOnline.length})`}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {okMsg && <div style={{ color: "#00c864", fontSize: 11 }}>{okMsg}</div>}
+      {err && <div style={{ color: "#ff6432", fontSize: 11 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
+const stanceGroupStyle = (border: string): React.CSSProperties => ({
+  flex: 1, minWidth: 280,
+  padding: "10px 12px",
+  border: `1px solid ${border}`,
+  borderRadius: 0,
+  background: "rgba(0,0,0,0.15)",
+});
+
+const stanceBtn = (fg: string, disabled: boolean): React.CSSProperties => ({
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: 0.05,
+  padding: "5px 12px",
+  background: disabled ? "rgba(100,100,100,0.06)" : `${fg}1a`,
+  border: `1px solid ${disabled ? "rgba(100,100,100,0.25)" : `${fg}66`}`,
+  color: disabled ? "rgba(180,180,180,0.4)" : fg,
+  borderRadius: 2,
+  cursor: disabled ? "default" : "pointer",
+});
