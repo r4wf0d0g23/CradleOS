@@ -967,6 +967,186 @@ export async function buildBatchOfflineTransaction(
   return tx;
 }
 
+/**
+ * Build a single PTB that **offlines all `toOffline` structures FIRST**, then
+ * **onlines all `toOnline` structures SECOND**. This ordering matters for
+ * energy management: the network_node primitive's `reserve_energy` aborts
+ * with EInsufficientAvailableEnergy if `available < required`. Inside one
+ * PTB Sui executes commands in order, so reservations released by earlier
+ * `offline()` calls are immediately available for later `online()` calls.
+ *
+ * Use case: a 'defensive stance' click flips industry off + turrets on. If we
+ * issued these as TWO transactions, the user could (e.g. wallet ordering) sign
+ * the online side first while industry was still consuming all the EP, and the
+ * batch would abort. Single sequenced PTB makes the energy bookkeeping
+ * deterministic and atomic.
+ *
+ * The caller is responsible for energy fitting on `toOnline` (use
+ * `selectFitsBudget` below to filter the list before passing it in).
+ */
+export async function buildBatchSequencedTransaction(
+  toOffline: PlayerStructure[],
+  toOnline: PlayerStructure[],
+  characterId: string,
+): Promise<Transaction> {
+  if (!characterId || characterId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+    throw new Error("Character ID not yet resolved — please wait a moment and try again.");
+  }
+  const tx = new Transaction();
+
+  // Phase 1: offline (free up energy reservations + bring children into
+  // expected pre-online state). Emits the same move-call pattern as
+  // buildBatchOfflineTransaction, inlined here so we share one Transaction.
+  for (const s of toOffline) {
+    const wpkg = worldPkgFromType(s.typeFull);
+    const [cap, receipt] = tx.moveCall({
+      target: `${wpkg}::character::borrow_owner_cap`,
+      typeArguments: [s.typeFull],
+      arguments: [tx.object(characterId), tx.object(s.ownerCapId)],
+    });
+
+    if (s.kind === "NetworkNode") {
+      // Bringing a NetworkNode offline cascades to all its connected children.
+      // We rebuild the hot-potato dance the same way buildBatchOfflineTransaction
+      // does. (See the offline path above for the rationale.)
+      const fields = await rpcGetObject(s.objectId);
+      const connectedIds = (fields["connected_assembly_ids"] as string[] | undefined) ?? [];
+      const assemblyMeta: Array<{ id: string; type: string }> = await Promise.all(
+        connectedIds.map(async (id) => {
+          const res = await fetch(SUI_TESTNET_RPC, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [id, { showType: true }] }),
+          });
+          const j = await res.json() as { result: { data: { type: string } } };
+          return { id, type: j.result.data.type };
+        })
+      );
+      let hotPotato = tx.moveCall({
+        target: `${wpkg}::network_node::offline`,
+        arguments: [tx.object(s.objectId), tx.object(FUEL_CONFIG), cap, tx.object(CLOCK)],
+      })[0];
+      for (const { id, type } of assemblyMeta) {
+        const cwpkg = worldPkgFromType(type);
+        if (isGateType(type)) {
+          hotPotato = tx.moveCall({
+            target: `${cwpkg}::gate::offline_connected_gate`,
+            arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
+          })[0];
+        } else if (isAssemblyType(type)) {
+          hotPotato = tx.moveCall({
+            target: `${cwpkg}::assembly::offline_connected_assembly`,
+            arguments: [tx.object(id), hotPotato, tx.object(s.objectId), energyConfigRef(tx)],
+          })[0];
+        }
+      }
+      tx.moveCall({ target: `${wpkg}::network_node::destroy_offline_assemblies`, arguments: [hotPotato] });
+    } else if (s.kind === "Gate") {
+      tx.moveCall({
+        target: `${wpkg}::gate::offline`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    } else if (s.kind === "Assembly") {
+      tx.moveCall({
+        target: `${wpkg}::assembly::offline`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    } else if (s.kind === "Turret") {
+      tx.moveCall({
+        target: `${wpkg}::turret::offline`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    } else if (s.kind === "StorageUnit") {
+      tx.moveCall({
+        target: `${wpkg}::storage_unit::offline`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    }
+
+    tx.moveCall({
+      target: `${wpkg}::character::return_owner_cap`,
+      typeArguments: [s.typeFull],
+      arguments: [tx.object(characterId), cap, receipt],
+    });
+  }
+
+  // Phase 2: online. By here every offline-side reservation has been released
+  // (commands execute strictly in order), so the energy budget is at its
+  // post-offline level. The caller has already pre-filtered toOnline against
+  // (released energy + node max), so reserve_energy assertions will hold.
+  for (const s of toOnline) {
+    const wpkg = worldPkgFromType(s.typeFull);
+    const [cap, receipt] = tx.moveCall({
+      target: `${wpkg}::character::borrow_owner_cap`,
+      typeArguments: [s.typeFull],
+      arguments: [tx.object(characterId), tx.object(s.ownerCapId)],
+    });
+
+    if (s.kind === "NetworkNode") {
+      tx.moveCall({
+        target: `${wpkg}::network_node::online`,
+        arguments: [tx.object(s.objectId), cap, tx.object(CLOCK)],
+      });
+    } else if (s.kind === "Gate") {
+      tx.moveCall({
+        target: `${wpkg}::gate::online`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    } else if (s.kind === "Assembly") {
+      tx.moveCall({
+        target: `${wpkg}::assembly::online`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    } else if (s.kind === "Turret") {
+      tx.moveCall({
+        target: `${wpkg}::turret::online`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    } else if (s.kind === "StorageUnit") {
+      tx.moveCall({
+        target: `${wpkg}::storage_unit::online`,
+        arguments: [tx.object(s.objectId), tx.object(s.energySourceId!), energyConfigRef(tx), cap],
+      });
+    }
+
+    tx.moveCall({
+      target: `${wpkg}::character::return_owner_cap`,
+      typeArguments: [s.typeFull],
+      arguments: [tx.object(characterId), cap, receipt],
+    });
+  }
+
+  return tx;
+}
+
+/**
+ * Greedy-fit selector for batch-online operations: given a list of candidate
+ * structures and an available energy budget, return the subset whose energy
+ * costs sum to <= budget. Picks lowest-cost first to maximise count online.
+ *
+ * Returns `{ fits, skipped }` so the UI can surface 'X structures couldn't
+ * be brought online due to insufficient power' to the user.
+ */
+export function selectFitsBudget(
+  candidates: PlayerStructure[],
+  budget: number,
+): { fits: PlayerStructure[]; skipped: PlayerStructure[] } {
+  // Sort by ascending energy cost so we maximise the count we can fit.
+  const sorted = [...candidates].sort((a, b) => (a.energyCost ?? 0) - (b.energyCost ?? 0));
+  const fits: PlayerStructure[] = [];
+  const skipped: PlayerStructure[] = [];
+  let remaining = budget;
+  for (const s of sorted) {
+    const cost = s.energyCost ?? 0;
+    if (cost <= remaining) {
+      fits.push(s);
+      remaining -= cost;
+    } else {
+      skipped.push(s);
+    }
+  }
+  return { fits, skipped };
+}
+
 // ─── Generic Structure Tx Builders ───────────────────────────────────────────
 
 /** Fetch initialSharedVersion for a Sui object (needed for explicit shared object refs) */

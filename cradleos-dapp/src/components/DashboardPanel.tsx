@@ -13,8 +13,8 @@ import {
   fetchPlayerStructures,
   buildStructureOnlineTransaction,
   buildStructureOfflineTransaction,
-  buildBatchOnlineTransaction,
-  buildBatchOfflineTransaction,
+  buildBatchSequencedTransaction,
+  selectFitsBudget,
   buildRenameTransaction,
   buildSetUrlTransaction,
   findCharacterForWallet,
@@ -1327,10 +1327,26 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
                         }}
                         title="Assign all gates to tribe policy"
                       >
-                        ⚑ ALL GATES
+                        ⛑ ALL GATES
                       </button>
                     )}
                   </div>
+                )}
+
+                {/* Per-node defensive stance strip — quick toggles to flip this */}
+                {/* node's children between defense (turrets up, industry down) and */}
+                {/* peacetime (industry up, turrets at rest). Energy-aware: pre-fits */}
+                {/* the online side against the budget after offline-side releases. */}
+                {!isCollapsed && children.length > 0 && (
+                  <NodeStanceStrip
+                    node={node}
+                    children={children}
+                    epMax={NODE_EP_MAX}
+                    consumedEp={onlineEnergyCost}
+                    nodeCanPowerChildren={nodeCanPowerChildren}
+                    characterId={characterId}
+                    onRefresh={onRefresh}
+                  />
                 )}
 
                 {/* Connected structures — dense rows with toggle, status LED, EP gate.
@@ -1649,17 +1665,6 @@ export function DashboardPanel() {
         <div style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.55)" }}>No structures found for this wallet</div>
       )}
 
-      {/* Quick stance bar — batch on/off by group (Defense / Industry). Lets a */}
-      {/* tribe leader take a defensive posture in two clicks: 'all turrets on' */}
-      {/* + 'all non-turrets off'. Hidden when there are zero structures. */}
-      {dashTab === "structures" && !loading && groups.length > 0 && (
-        <QuickStanceBar
-          groups={groups}
-          characterId={characterId}
-          onRefresh={handleRefresh}
-        />
-      )}
-
       {/* Topology drill-down view */}
       {dashTab === "structures" && !loading && groups.length > 0 && (
         <TopologyGraph groups={groups} characterId={characterId} onRefresh={handleRefresh} />
@@ -1753,32 +1758,46 @@ export function DashboardPanel() {
   );
 }
 
-// ── Quick Stance Bar ─ all-on/off batch buttons per defense vs industry group ──
+// ── NodeStanceStrip ─ per-node defensive stance toggles ──────────────────────
 //
-// Defense   = Turrets only
-// Industry  = NetworkNode, Gate, Assembly, StorageUnit (everything else with
-//             an online/offline state)
+// Lives inside TopologyGraph under each NetworkNode header. Operates ONLY on
+// that node's connected children (Gates, Assemblies, Turrets, StorageUnits) —
+// not the panel-wide structure list.
 //
-// Each group has TWO buttons: 'All On' / 'All Off'. Each button issues a
-// single PTB that batches every borrow_owner_cap → online/offline → return
-// across every structure in the group. This keeps a defensive-posture switch
-// down to TWO signed txs (one for industry, one for defense) instead of N.
+// Three buttons:
+//   1. ⛨ DEFENSIVE STANCE — offline all industry, then online all turrets,
+//      in a single sequenced PTB. Energy-aware: turrets are pre-fitted
+//      against the budget that will be available AFTER the industry offlines
+//      (which is `epMax` since everything else is going offline first).
+//   2. ⚙ PEACETIME — offline all turrets first, then online industry up to
+//      the energy budget, in a single sequenced PTB.
+//   3. ▼ ALL OFF — offline everything connected to this node (turrets +
+//      industry). No online phase, no energy bookkeeping needed.
 //
-// Disabled states:
-//   - No matching structures → button hidden entirely (group section hides too)
-//   - Already-online structures excluded from 'All On' (no-op tx)
-//   - Already-offline structures excluded from 'All Off'
-//   - Counts surfaced inline so the user sees how many will move
+// The buttons are disabled when there's nothing to do (the target state
+// equals the current state). 'X cannot fit' surfaces in a small note when
+// the energy budget excludes some structures.
 //
-// Failure mode: PTB-level. If any single move call aborts (e.g. one structure
-// doesn't have an energy source), the whole batch reverts. The button surfaces
-// the translated error.
-function QuickStanceBar({
-  groups,
+// All three buttons issue ONE signed PTB. Sui executes commands in order
+// inside a PTB, so reservations released by earlier offline calls become
+// available for later online calls within the same tx — no race condition,
+// no two-step UX where the user has to wait for a confirmation.
+
+function NodeStanceStrip({
+  children,
+  epMax,
+  consumedEp,
+  nodeCanPowerChildren,
   characterId,
   onRefresh,
 }: {
-  groups: LocationGroup[];
+  node: PlayerStructure;  // unused but kept on the prop interface so future
+                          // strip extensions (per-node label, kiosk URL) can
+                          // reference it without changing call sites.
+  children: PlayerStructure[];
+  epMax: number;
+  consumedEp: number;
+  nodeCanPowerChildren: boolean;
   characterId: string;
   onRefresh: () => void;
 }) {
@@ -1787,32 +1806,59 @@ function QuickStanceBar({
   const [err, setErr] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
-  // Flatten everything once per render.
-  const all = groups.flatMap(g => g.structures ?? []);
-  const turrets = all.filter(s => s.kind === "Turret");
-  const industry = all.filter(s =>
-    s.kind === "NetworkNode" || s.kind === "Gate" || s.kind === "Assembly" || s.kind === "StorageUnit"
+  // Pre-bucket children by category. Industry = anything that consumes power
+  // and isn't a turret. NetworkNode itself is the energy source — never in
+  // either bucket (it's the node we're operating under).
+  const turrets = children.filter(c => c.kind === "Turret");
+  const industry = children.filter(c =>
+    c.kind === "Gate" || c.kind === "Assembly" || c.kind === "StorageUnit"
   );
-
-  const turretsOnline = turrets.filter(s => s.isOnline);
-  const turretsOffline = turrets.filter(s => !s.isOnline);
-  const industryOnline = industry.filter(s => s.isOnline);
-  const industryOffline = industry.filter(s => !s.isOnline);
 
   if (turrets.length === 0 && industry.length === 0) return null;
 
-  async function executeOnline(structures: PlayerStructure[], label: string) {
-    if (structures.length === 0 || !characterId) return;
+  const onlineTurrets = turrets.filter(c => c.isOnline);
+  const offlineTurrets = turrets.filter(c => !c.isOnline);
+  const onlineIndustry = industry.filter(c => c.isOnline);
+  const offlineIndustry = industry.filter(c => !c.isOnline);
+
+  // Defensive stance budget: after we offline all industry, the post-offline
+  // budget is `epMax` minus whatever turrets are already online. We add the
+  // currently-offline turrets up to that. (Online turrets stay online; their
+  // EP is already counted in consumedEp pre-tx and remains reserved post-tx.)
+  const onlineTurretsEp = onlineTurrets.reduce((s, c) => s + (c.energyCost ?? 0), 0);
+  const defenseBudget = epMax - onlineTurretsEp;
+  const defenseFit = selectFitsBudget(offlineTurrets, defenseBudget);
+
+  // Peacetime budget: after we offline all turrets, the post-offline budget
+  // is `epMax` minus whatever industry is already online. Currently-offline
+  // industry fits up to the remaining budget.
+  const onlineIndustryEp = onlineIndustry.reduce((s, c) => s + (c.energyCost ?? 0), 0);
+  const peacetimeBudget = epMax - onlineIndustryEp;
+  const peacetimeFit = selectFitsBudget(offlineIndustry, peacetimeBudget);
+
+  // For the rendered buttons we need to know if there's anything to do.
+  const defenseHasWork = onlineIndustry.length > 0 || defenseFit.fits.length > 0;
+  const peacetimeHasWork = onlineTurrets.length > 0 || peacetimeFit.fits.length > 0;
+  const allOffHasWork = onlineTurrets.length + onlineIndustry.length > 0;
+
+  // Node must be online with fuel to bring any child online. If it's not we
+  // still allow ALL OFF (offline doesn't need power) but lock the stance ones.
+  const canOnline = nodeCanPowerChildren;
+
+  async function execute(label: string, build: () => Promise<import("@mysten/sui/transactions").Transaction>) {
+    if (!characterId) return;
     setBusy(label); setErr(null); setOkMsg(null);
     try {
-      const tx = buildBatchOnlineTransaction(structures, characterId);
+      const tx = await build();
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
       const digest = (result as { digest?: string })?.digest ?? "";
-      // Sound feedback consistent with single-structure online action.
-      try { playPowerOn(); } catch { /* */ }
-      setOkMsg(`✓ Brought ${structures.length} ${label} online${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}.`);
-      // Refresh structures so the buttons update.
+      try {
+        // Best-guess sound — defense/peacetime mix on/off, all-off is just off.
+        if (label === "all-off") playPowerOff();
+        else { playPowerOn(); }
+      } catch { /* */ }
+      setOkMsg(`✓ ${label} applied${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}.`);
       setTimeout(onRefresh, 1500);
     } catch (e) {
       setErr(translateTxError(e));
@@ -1821,122 +1867,92 @@ function QuickStanceBar({
     }
   }
 
-  async function executeOffline(structures: PlayerStructure[], label: string) {
-    if (structures.length === 0 || !characterId) return;
-    setBusy(label); setErr(null); setOkMsg(null);
-    try {
-      const tx = await buildBatchOfflineTransaction(structures, characterId);
-      const signer = new CurrentAccountSigner(dAppKit);
-      const result = await signer.signAndExecuteTransaction({ transaction: tx });
-      const digest = (result as { digest?: string })?.digest ?? "";
-      try { playPowerOff(); } catch { /* */ }
-      setOkMsg(`✓ Brought ${structures.length} ${label} offline${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}.`);
-      setTimeout(onRefresh, 1500);
-    } catch (e) {
-      setErr(translateTxError(e));
-    } finally {
-      setBusy(null);
-    }
-  }
+  const onDefense = () =>
+    execute("defense", () =>
+      buildBatchSequencedTransaction(onlineIndustry, defenseFit.fits, characterId)
+    );
+
+  const onPeacetime = () =>
+    execute("peacetime", () =>
+      buildBatchSequencedTransaction(onlineTurrets, peacetimeFit.fits, characterId)
+    );
+
+  const onAllOff = () =>
+    execute("all-off", () =>
+      buildBatchSequencedTransaction(
+        [...onlineTurrets, ...onlineIndustry],
+        [],
+        characterId,
+      )
+    );
 
   return (
     <div style={{
-      background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,71,0,0.18)",
-      borderRadius: 0, padding: "12px 14px", marginBottom: 14,
-      display: "flex", flexDirection: "column", gap: 10,
+      display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8,
+      padding: "6px 18px",
+      background: "rgba(255,71,0,0.04)",
+      borderBottom: "1px solid rgba(255,71,0,0.12)",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.06, color: "#FF4700" }}>
-          QUICK STANCE
-        </span>
-        <span style={{ fontSize: 10, color: "rgba(175,175,155,0.55)" }}>
-          One signed PTB per click — useful for taking a defensive posture quickly
-          (industry off, turrets on) or returning to peacetime (industry on, turrets at rest).
-        </span>
-      </div>
+      <span style={{
+        fontSize: 10, color: "#FF4700", letterSpacing: "0.12em", fontWeight: 700, marginRight: 4,
+      }}>STANCE ·</span>
 
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        {/* Defense (Turrets) */}
-        {turrets.length > 0 && (
-          <div style={stanceGroupStyle("rgba(255,71,0,0.4)")}>
-            <div style={{ fontSize: 11, color: "#ff6432", fontWeight: 700, marginBottom: 6 }}>
-              ⛨ DEFENSE — {turrets.length} turret{turrets.length !== 1 ? "s" : ""}
-            </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              <button
-                onClick={() => executeOnline(turretsOffline, "turrets")}
-                disabled={!!busy || turretsOffline.length === 0 || !characterId}
-                style={stanceBtn("#00c864", busy === "turrets" || turretsOffline.length === 0)}
-                title={turretsOffline.length === 0 ? "All turrets already online" : `Bring ${turretsOffline.length} offline turret${turretsOffline.length !== 1 ? "s" : ""} online`}
-              >
-                {busy === "turrets" ? "Working…" : `▲ ALL TURRETS ON (${turretsOffline.length})`}
-              </button>
-              <button
-                onClick={() => executeOffline(turretsOnline, "turrets")}
-                disabled={!!busy || turretsOnline.length === 0 || !characterId}
-                style={stanceBtn("#ff4444", busy === "turrets" || turretsOnline.length === 0)}
-                title={turretsOnline.length === 0 ? "No turrets currently online" : `Take ${turretsOnline.length} online turret${turretsOnline.length !== 1 ? "s" : ""} offline`}
-              >
-                {busy === "turrets" ? "Working…" : `▼ ALL TURRETS OFF (${turretsOnline.length})`}
-              </button>
-            </div>
-          </div>
-        )}
+      {/* Defense */}
+      <button
+        onClick={onDefense}
+        disabled={!!busy || !defenseHasWork || !canOnline}
+        title={
+          !canOnline ? "Node must be online with fuel to bring children online"
+            : !defenseHasWork ? "Already in defensive stance"
+            : `Offline ${onlineIndustry.length} industry · online ${defenseFit.fits.length} turrets${defenseFit.skipped.length ? ` (${defenseFit.skipped.length} skipped: insufficient power)` : ""}`
+        }
+        style={stanceBtnInline("#ff6432", !!busy || !defenseHasWork || !canOnline)}
+      >
+        {busy === "defense" ? "Working…" : `⛨ DEFENSE (-${onlineIndustry.length} industry, +${defenseFit.fits.length} turrets)`}
+      </button>
 
-        {/* Industry (everything else) */}
-        {industry.length > 0 && (
-          <div style={stanceGroupStyle("rgba(100,180,255,0.4)")}>
-            <div style={{ fontSize: 11, color: "#64b4ff", fontWeight: 700, marginBottom: 6 }}>
-              ⚙ INDUSTRY — {industry.length} structure{industry.length !== 1 ? "s" : ""}
-              <span style={{ marginLeft: 6, fontWeight: 400, color: "rgba(175,175,155,0.55)" }}>
-                (Network Nodes, Gates, Assemblies, Storage Units)
-              </span>
-            </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              <button
-                onClick={() => executeOnline(industryOffline, "industry structures")}
-                disabled={!!busy || industryOffline.length === 0 || !characterId}
-                style={stanceBtn("#00c864", busy === "industry structures" || industryOffline.length === 0)}
-                title={industryOffline.length === 0 ? "All industry structures already online" : `Bring ${industryOffline.length} offline structure${industryOffline.length !== 1 ? "s" : ""} online`}
-              >
-                {busy === "industry structures" ? "Working…" : `▲ ALL INDUSTRY ON (${industryOffline.length})`}
-              </button>
-              <button
-                onClick={() => executeOffline(industryOnline, "industry structures")}
-                disabled={!!busy || industryOnline.length === 0 || !characterId}
-                style={stanceBtn("#ff4444", busy === "industry structures" || industryOnline.length === 0)}
-                title={industryOnline.length === 0 ? "No industry structures currently online" : `Take ${industryOnline.length} online structure${industryOnline.length !== 1 ? "s" : ""} offline`}
-              >
-                {busy === "industry structures" ? "Working…" : `▼ ALL INDUSTRY OFF (${industryOnline.length})`}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Peacetime */}
+      <button
+        onClick={onPeacetime}
+        disabled={!!busy || !peacetimeHasWork || !canOnline}
+        title={
+          !canOnline ? "Node must be online with fuel to bring children online"
+            : !peacetimeHasWork ? "Already in peacetime stance"
+            : `Offline ${onlineTurrets.length} turrets · online ${peacetimeFit.fits.length} industry${peacetimeFit.skipped.length ? ` (${peacetimeFit.skipped.length} skipped: insufficient power)` : ""}`
+        }
+        style={stanceBtnInline("#64b4ff", !!busy || !peacetimeHasWork || !canOnline)}
+      >
+        {busy === "peacetime" ? "Working…" : `⚙ PEACETIME (-${onlineTurrets.length} turrets, +${peacetimeFit.fits.length} industry)`}
+      </button>
 
-      {okMsg && <div style={{ color: "#00c864", fontSize: 11 }}>{okMsg}</div>}
-      {err && <div style={{ color: "#ff6432", fontSize: 11 }}>⚠ {err}</div>}
+      {/* All Off */}
+      <button
+        onClick={onAllOff}
+        disabled={!!busy || !allOffHasWork}
+        title={!allOffHasWork ? "Nothing online to offline" : `Offline all ${onlineTurrets.length + onlineIndustry.length} structures connected to this node`}
+        style={stanceBtnInline("#ff4444", !!busy || !allOffHasWork)}
+      >
+        {busy === "all-off" ? "Working…" : `▼ ALL OFF (${onlineTurrets.length + onlineIndustry.length})`}
+      </button>
+
+      {/* EP context */}
+      <span style={{ fontSize: 9, color: "rgba(175,175,155,0.55)", marginLeft: "auto" }}>
+        EP: {consumedEp} / {epMax}
+      </span>
+
+      {okMsg && <div style={{ width: "100%", color: "#00c864", fontSize: 10, marginTop: 4 }}>{okMsg}</div>}
+      {err && <div style={{ width: "100%", color: "#ff6432", fontSize: 10, marginTop: 4 }}>⚠ {err}</div>}
     </div>
   );
 }
 
-const stanceGroupStyle = (border: string): React.CSSProperties => ({
-  flex: 1, minWidth: 280,
-  padding: "10px 12px",
-  border: `1px solid ${border}`,
-  borderRadius: 0,
-  background: "rgba(0,0,0,0.15)",
-});
-
-const stanceBtn = (fg: string, disabled: boolean): React.CSSProperties => ({
-  fontSize: 11,
-  fontWeight: 700,
-  letterSpacing: 0.05,
-  padding: "5px 12px",
-  background: disabled ? "rgba(100,100,100,0.06)" : `${fg}1a`,
-  border: `1px solid ${disabled ? "rgba(100,100,100,0.25)" : `${fg}66`}`,
+const stanceBtnInline = (fg: string, disabled: boolean): React.CSSProperties => ({
+  fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+  padding: "3px 10px",
+  background: disabled ? "rgba(100,100,100,0.05)" : `${fg}1a`,
+  border: `1px solid ${disabled ? "rgba(100,100,100,0.2)" : `${fg}66`}`,
   color: disabled ? "rgba(180,180,180,0.4)" : fg,
   borderRadius: 2,
   cursor: disabled ? "default" : "pointer",
+  fontFamily: "inherit",
 });
