@@ -5,6 +5,7 @@ import {
   CRADLEOS_PKG,
   CRADLEOS_ORIGINAL,
   CRADLEOS_UPGRADE_ORIGIN,
+  CRADLEOS_EVENT_PKGS,
   TRIBE_ROLES_PKG,
   GATE_POLICY_PKG,
   EVE_COIN_TYPE,
@@ -2631,15 +2632,10 @@ export function buildRemovePlayerRelationTx(
 // Sui indexes events under the package id where the emitting struct was
 // FIRST DEFINED, not under the latest published-at. CradleOS has been
 // upgraded many times and several event structs were introduced in mid-life
-// upgrades (e.g. FriendlyCharacterSet was added in v13). Querying only under
-// CRADLEOS_ORIGINAL silently misses every event from upgrade-introduced
-// structs. Fix: query under all known package versions in parallel and merge,
-// timestamp-ordered. Sui guarantees event timestamps even across packages.
-const CRADLEOS_EVENT_PKGS = [
-  CRADLEOS_PKG,             // current latest (v13) — catches FriendlyCharacterSet, PlayerRelationRemoved
-  CRADLEOS_UPGRADE_ORIGIN,  // mid-life origin — catches collateral_vault, keeper_shrine, trustless_bounty events
-  CRADLEOS_ORIGINAL,        // original-id — catches all v1-era structs (PlayerRelationSet, etc.)
-];
+// upgrades (HostileCharacterSet @ v5, FriendlyCharacterSet @ v13, etc.).
+// Querying only under CRADLEOS_ORIGINAL silently misses every event from
+// upgrade-introduced structs. The full list of defining packages is in
+// constants.ts (CRADLEOS_EVENT_PKGS) so it has a single canonical home.
 
 type RawEvent = { parsedJson?: Record<string, unknown>; timestampMs?: string; id?: { txDigest?: string; eventSeq?: string } };
 
@@ -2654,7 +2650,11 @@ async function fetchEventAcrossPackages(
   event: string,
   limit = 200,
 ): Promise<RawEvent[]> {
-  const queries = CRADLEOS_EVENT_PKGS.map(pkg =>
+  // Dedup the package list — some entries may alias each other (CRADLEOS_PKG
+  // could equal CRADLEOS_ORIGINAL early in the lifecycle), and identical
+  // queries waste an RPC round trip.
+  const uniquePkgs = Array.from(new Set(CRADLEOS_EVENT_PKGS));
+  const queries = uniquePkgs.map(pkg =>
     fetch(SUI_TESTNET_RPC, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

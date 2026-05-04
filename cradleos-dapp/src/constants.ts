@@ -136,6 +136,33 @@ export const CRADLEOS_UPGRADE_ORIGIN = "0xbf4249b176bf2c7594dbd46615f825b456da4b
 // Affected modules: collateral_vault, keeper_shrine, trustless_bounty
 // Use CRADLEOS_UPGRADE_ORIGIN (not CRADLEOS_ORIGINAL) for event queries on these.
 
+// All historical CradleOS package ids where event STRUCT types may be defined.
+// Sui types each event under the package id where its struct was *first defined*
+// in the upgrade history — not the latest published-at, not the original-id
+// in general. Multiple struct definitions across the lifetime of the package
+// produce multiple defining package ids, so any robust event fetcher must
+// query all of them and merge.
+//
+// Discovered defining packages (defense_policy struct → first-seen package):
+//   v1  0x70d0797b... — PolicyCreated, RelationChanged, EnforceToggled,
+//                       SecurityLevelSet, AggressionModeSet, PassageLogged,
+//                       PlayerRelationSet
+//   v5  0x38115c06... — HostileCharacterSet (added 2026-03-26)
+//   v13 0x443e4730... — FriendlyCharacterSet, PlayerRelationRemoved
+//                       (added 2026-05-04)
+//
+// CRADLEOS_UPGRADE_ORIGIN (v4 0xbf4249b1) covers an unrelated set of modules
+// (collateral_vault, keeper_shrine, trustless_bounty); included for those.
+//
+// When a future upgrade introduces a new event struct, append the new
+// package id here. fetchEventAcrossPackages in lib.ts uses this list.
+export const CRADLEOS_EVENT_PKGS: readonly string[] = [
+  CRADLEOS_PKG,             // current latest
+  CRADLEOS_UPGRADE_ORIGIN,  // v4 — collateral_vault et al
+  "0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4", // v5 — HostileCharacterSet
+  CRADLEOS_ORIGINAL,        // v1 — all original-era structs
+];
+
 // Backward-compat aliases — all point to published-at for moveCall targets
 export const RECRUITING_PKG       = CRADLEOS_PKG;
 export const TRIBE_ROLES_PKG      = CRADLEOS_PKG;
