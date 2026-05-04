@@ -28,6 +28,7 @@ import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRI
 import { translateTxError } from "../lib/txError";
 import { CharacterAutocomplete } from "./CharacterAutocomplete";
 import { useCharacterDirectory, findCharacterById } from "../lib/characterDirectory";
+import { staggeredRefetch } from "../lib/staggeredRefetch";
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe, fetchTribeClaim,
@@ -396,14 +397,15 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
     queryKey: ["policyState", policyId],
     queryFn: () => policyId ? fetchPolicyState(policyId) : Promise.resolve(null),
     enabled: !!policyId,
-    staleTime: 15_000,
+    // Short staleTime so post-tx invalidate triggers a real refetch.
+    staleTime: 5_000,
   });
 
   const { data: relations } = useQuery<Map<number, boolean>>({
     queryKey: ["policyRelations", policy?.relationsTableId],
     queryFn: () => policy?.relationsTableId ? fetchRelations(policy.relationsTableId) : Promise.resolve(new Map()),
     enabled: !!policy?.relationsTableId,
-    staleTime: 15_000,
+    staleTime: 5_000,
   });
 
   const { data: tribes } = useQuery<KnownTribe[]>({
@@ -427,7 +429,9 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
     queryKey: ["securityConfig", policyId],
     queryFn: () => policyId ? fetchSecurityConfig(policyId) : Promise.resolve({ level: SEC_GREEN, aggressionMode: false }),
     enabled: !!policyId,
-    staleTime: 15_000,
+    // Short staleTime so post-tx invalidation actually triggers a network
+    // refetch instead of returning the cached pre-tx value.
+    staleTime: 5_000,
   });
 
   const handleSetLevel = useCallback(async (level: number) => {
@@ -436,43 +440,57 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
     try {
       const tx = await buildSetSecurityLevelTransaction(policyId, vault.objectId, level);
       const signer = new CurrentAccountSigner(dAppKit);
+      // Optimistic UI: flip the cached security level immediately so the
+      // selected button styling updates without waiting for indexer.
+      const prev = queryClient.getQueryData<SecurityConfig>(["securityConfig", policyId]);
+      if (prev) queryClient.setQueryData<SecurityConfig>(["securityConfig", policyId], { ...prev, level });
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => refetchSec(), 2500);
+      // Staggered reconciliation: refetch at 1/3/6/12/20s, stop early once the
+      // chain confirms the new value matches our optimistic write.
+      staggeredRefetch<SecurityConfig>({
+        queryClient,
+        queryKeys: [["securityConfig", policyId]],
+        predicate: data => data?.level === level,
+      });
+      refetchSec();
     } catch (e) { setSecErr(e instanceof Error ? e.message : String(e)); }
     finally { setSecBusy(false); }
-  }, [policyId, vault.objectId, dAppKit, refetchSec]);
+  }, [policyId, vault.objectId, dAppKit, refetchSec, queryClient]);
 
   const handleToggleAggression = useCallback(async () => {
     if (!policyId || !vault.objectId || !secConfig) return;
     setSecBusy(true); setSecErr(null);
     try {
-      const tx = await buildSetAggressionModeTransaction(policyId, vault.objectId, !secConfig.aggressionMode);
+      const next = !secConfig.aggressionMode;
+      const tx = await buildSetAggressionModeTransaction(policyId, vault.objectId, next);
       const signer = new CurrentAccountSigner(dAppKit);
+      // Optimistic flip — the user sees the toggle move now, not in 3s.
+      const prev = queryClient.getQueryData<SecurityConfig>(["securityConfig", policyId]);
+      if (prev) queryClient.setQueryData<SecurityConfig>(["securityConfig", policyId], { ...prev, aggressionMode: next });
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => refetchSec(), 2500);
+      staggeredRefetch<SecurityConfig>({
+        queryClient,
+        queryKeys: [["securityConfig", policyId]],
+        predicate: data => data?.aggressionMode === next,
+      });
+      refetchSec();
     } catch (e) { setSecErr(e instanceof Error ? e.message : String(e)); }
     finally { setSecBusy(false); }
-  }, [policyId, vault.objectId, secConfig, dAppKit, refetchSec]);
+  }, [policyId, vault.objectId, secConfig, dAppKit, refetchSec, queryClient]);
 
-  // Invalidate after any tx
+  // Invalidate every related query on a staggered schedule. Used for tx flows
+  // where the predicate target varies (create policy, batch relations, etc).
+  // Each invalidation runs once and lets React Query refetch through staleTime.
   const invalidate = () => {
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["policyId"] });
-      queryClient.invalidateQueries({ queryKey: ["policyState"] });
-      queryClient.invalidateQueries({ queryKey: ["policyRelations"] });
-      queryClient.invalidateQueries({ queryKey: ["passageEvents"] });
-    }, 2500);
-    // Extra invalidation passes to handle indexer lag
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["policyId"] });
-      queryClient.invalidateQueries({ queryKey: ["policyState"] });
-      queryClient.invalidateQueries({ queryKey: ["policyRelations"] });
-    }, 6000);
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["policyId"] });
-      queryClient.invalidateQueries({ queryKey: ["policyState"] });
-      queryClient.invalidateQueries({ queryKey: ["policyRelations"] });
-    }, 12000);
+    staggeredRefetch({
+      queryClient,
+      queryKeys: [
+        ["policyId"],
+        ["policyState"],
+        ["policyRelations"],
+        ["passageEvents"],
+      ],
+    });
   };
 
   const handleCreate = async () => {
@@ -541,8 +559,34 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
       const tx = buildSetRelationsBatchTransaction(policyId, vault.objectId, ids, friendly);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
+      // Optimistic update: merge the saved drafts into the cached relations
+      // map so the grid badges flip immediately. Reconcile via staggered refetch.
+      const relKey = ["policyRelations", policy?.relationsTableId];
+      const draftSnapshot = new Map(draft);
+      if (policy?.relationsTableId) {
+        queryClient.setQueryData<Map<number, boolean>>(relKey, prev => {
+          const next = new Map(prev ?? []);
+          for (const [id, val] of draftSnapshot) next.set(id, val);
+          return next;
+        });
+      }
       setDraft(new Map());
-      invalidate();
+      staggeredRefetch<Map<number, boolean>>({
+        queryClient,
+        queryKeys: [
+          relKey,
+          ["policyState", policyId],
+          ["policyId"],
+        ],
+        // Done when every saved id matches the expected value on chain.
+        predicate: data => {
+          if (!data) return false;
+          for (const [id, val] of draftSnapshot) {
+            if (data.get(id) !== val) return false;
+          }
+          return true;
+        },
+      });
     } catch (e) { setSaveErr(e instanceof Error ? e.message : String(e)); }
     finally { setSaveBusy(false); }
   };
@@ -550,10 +594,19 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
   const handleToggleEnforce = async () => {
     if (!account || !policyId || !policy) return;
     try {
-      const tx = buildSetEnforceTransaction(policyId, vault.objectId, !policy.enforce);
+      const next = !policy.enforce;
+      const tx = buildSetEnforceTransaction(policyId, vault.objectId, next);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      invalidate();
+      // Optimistic flip on the policy state cache so the badge updates now.
+      queryClient.setQueryData<PolicyState | null>(["policyState", policyId], prev =>
+        prev ? { ...prev, enforce: next } : prev,
+      );
+      staggeredRefetch<PolicyState | null>({
+        queryClient,
+        queryKeys: [["policyState", policyId]],
+        predicate: data => data?.enforce === next,
+      });
     } catch (e) { setSaveErr(e instanceof Error ? e.message : String(e)); }
   };
 
@@ -1050,7 +1103,9 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
   const { data: friendlyChars } = useQuery<FriendlyCharacter[]>({
     queryKey: ["friendlyCharacters", vault.objectId],
     queryFn: () => fetchFriendlyCharacters(vault.objectId),
-    staleTime: 30_000,
+    // Short staleTime: any post-tx invalidate must hit the network so the row
+    // list reflects the new on-chain state instead of returning the stale cache.
+    staleTime: 5_000,
   });
 
   // Character directory drives both autocomplete + row name enrichment, so a
@@ -1064,8 +1119,19 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
       const tx = buildSetFriendlyCharacterTx(policyId, vault.objectId, characterId, true);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 2500);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 6000);
+      // Optimistic update: append the new entry immediately so the row appears
+      // before the indexer catches up. Reconcile via staggeredRefetch.
+      const key = ["friendlyCharacters", vault.objectId];
+      queryClient.setQueryData<FriendlyCharacter[]>(key, prev => {
+        const existing = prev ?? [];
+        if (existing.some(c => c.characterId === characterId)) return existing;
+        return [...existing, { characterId, friendly: true }];
+      });
+      staggeredRefetch<FriendlyCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !!data?.some(c => c.characterId === characterId),
+      });
     } catch (e) { setErr(translateTxError(e)); throw e; }
     finally { setBusy(false); }
   };
@@ -1077,8 +1143,16 @@ function FriendlyCharactersSection({ vault, policyId, isFounder }: {
       const tx = buildSetFriendlyCharacterTx(policyId, vault.objectId, charId, false);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 2500);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 6000);
+      // Optimistic remove: drop the row immediately, reconcile via refetch.
+      const key = ["friendlyCharacters", vault.objectId];
+      queryClient.setQueryData<FriendlyCharacter[]>(key, prev =>
+        (prev ?? []).filter(c => c.characterId !== charId),
+      );
+      staggeredRefetch<FriendlyCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !data?.some(c => c.characterId === charId),
+      });
     } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
@@ -1171,7 +1245,7 @@ function LegacyPlayerRelationsDisplay({ vault, policyId, isFounder }: {
   const { data: playerRelations } = useQuery<PlayerRelation[]>({
     queryKey: ["playerRelations", vault.objectId],
     queryFn: () => fetchPlayerRelations(vault.objectId),
-    staleTime: 30_000,
+    staleTime: 5_000,
   });
 
   if ((playerRelations ?? []).length === 0) return null;
@@ -1183,8 +1257,17 @@ function LegacyPlayerRelationsDisplay({ vault, policyId, isFounder }: {
       const tx = buildRemovePlayerRelationTx(policyId, vault.objectId, player);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["playerRelations"] }), 2500);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["playerRelations"] }), 6000);
+      // Optimistic remove + staggered reconciliation. Stop early once the
+      // chain confirms the entry is gone.
+      const key = ["playerRelations", vault.objectId];
+      queryClient.setQueryData<PlayerRelation[]>(key, prev =>
+        (prev ?? []).filter(p => p.player !== player),
+      );
+      staggeredRefetch<PlayerRelation[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !data?.some(p => p.player === player),
+      });
     } catch (e: unknown) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   }
@@ -1243,7 +1326,7 @@ function ReassignTurretsSection({ tribePolicyId }: { tribePolicyId: string | nul
     queryKey: ["ownedTurretConfigs", account?.address],
     queryFn: () => account ? fetchOwnedTurretConfigs(account.address) : Promise.resolve([]),
     enabled: !!account?.address,
-    staleTime: 30_000,
+    staleTime: 5_000,
   });
 
   if (!account) return null;
@@ -1270,10 +1353,31 @@ function ReassignTurretsSection({ tribePolicyId }: { tribePolicyId: string | nul
       const tx = buildReassignTurretConfigsTx([...selected], targetPolicyId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setOkMsg(`Retargeted ${selected.size} turret config${selected.size > 1 ? "s" : ""} to policy #${targetPolicyId.slice(-6)}.`);
+      const reassignedIds = [...selected];
+      setOkMsg(`Retargeted ${reassignedIds.length} turret config${reassignedIds.length > 1 ? "s" : ""} to policy #${targetPolicyId.slice(-6)}.`);
       setSelected(new Set());
-      setTimeout(() => { refetchConfigs(); queryClient.invalidateQueries({ queryKey: ["ownedTurretConfigs"] }); }, 2500);
-      setTimeout(() => { refetchConfigs(); queryClient.invalidateQueries({ queryKey: ["ownedTurretConfigs"] }); }, 6000);
+      // Optimistic update: rewrite selected configs to point at the new
+      // policyId immediately. The 'stale' badge clears on render.
+      const key = ["ownedTurretConfigs", account?.address];
+      const reassignedSet = new Set(reassignedIds);
+      queryClient.setQueryData<TurretConfigInfo[]>(key, prev =>
+        (prev ?? []).map(c =>
+          reassignedSet.has(c.configId) ? { ...c, policyId: targetPolicyId } : c,
+        ),
+      );
+      staggeredRefetch<TurretConfigInfo[]>({
+        queryClient,
+        queryKeys: [key],
+        // Done when every reassigned config shows the new policyId.
+        predicate: data => {
+          if (!data) return false;
+          return reassignedIds.every(id => {
+            const c = data.find(x => x.configId === id);
+            return c?.policyId === targetPolicyId;
+          });
+        },
+      });
+      refetchConfigs();
     } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
@@ -1372,7 +1476,7 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
   const { data: hostileChars } = useQuery<HostileCharacter[]>({
     queryKey: ["hostileCharacters", vault.objectId],
     queryFn: () => fetchHostileCharacters(vault.objectId),
-    staleTime: 30_000,
+    staleTime: 5_000,
   });
 
   const { data: directory } = useCharacterDirectory();
@@ -1384,8 +1488,18 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
       const tx = buildSetHostileCharacterTx(policyId, vault.objectId, characterId, true);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
+      // Optimistic add + staggered reconciliation.
+      const key = ["hostileCharacters", vault.objectId];
+      queryClient.setQueryData<HostileCharacter[]>(key, prev => {
+        const existing = prev ?? [];
+        if (existing.some(c => c.characterId === characterId)) return existing;
+        return [...existing, { characterId, hostile: true }];
+      });
+      staggeredRefetch<HostileCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !!data?.some(c => c.characterId === characterId),
+      });
     } catch (e) { setErr(translateTxError(e)); throw e; }
     finally { setBusy(false); }
   };
@@ -1397,8 +1511,15 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
       const tx = buildSetHostileCharacterTx(policyId, vault.objectId, charId, false);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
+      const key = ["hostileCharacters", vault.objectId];
+      queryClient.setQueryData<HostileCharacter[]>(key, prev =>
+        (prev ?? []).filter(c => c.characterId !== charId),
+      );
+      staggeredRefetch<HostileCharacter[]>({
+        queryClient,
+        queryKeys: [key],
+        predicate: data => !data?.some(c => c.characterId === charId),
+      });
     } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
@@ -2033,7 +2154,7 @@ function PersonalPolicySection({
     queryKey: ["securityConfig", personalPolicyId],
     queryFn: () => personalPolicyId ? fetchSecurityConfig(personalPolicyId) : Promise.resolve({ level: SEC_GREEN, aggressionMode: false }),
     enabled: !!personalPolicyId,
-    staleTime: 15_000,
+    staleTime: 5_000,
   });
 
   const step = !personalVaultData
@@ -2159,8 +2280,18 @@ function PersonalPolicySection({
     try {
       const signer = new CurrentAccountSigner(dAppKit);
       const tx = await buildSetSecurityLevelTransaction(personalPolicyId, personalVaultData.objectId, level);
+      // Optimistic flip on the personal security cache (same query key shape
+      // as the tribe-level one, just keyed by personalPolicyId).
+      const secKey = ["securityConfig", personalPolicyId];
+      const prev = queryClient.getQueryData<SecurityConfig>(secKey);
+      if (prev) queryClient.setQueryData<SecurityConfig>(secKey, { ...prev, level });
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => refetchSec(), 2500);
+      staggeredRefetch<SecurityConfig>({
+        queryClient,
+        queryKeys: [secKey],
+        predicate: data => data?.level === level,
+      });
+      refetchSec();
     } catch (e) { setSecErr(e instanceof Error ? e.message : String(e)); }
     finally { setSecBusy(false); }
   };
@@ -2186,7 +2317,14 @@ function PersonalPolicySection({
       const signer = new CurrentAccountSigner(dAppKit);
       const tx = buildSetGateAccessLevelTx(personalGatePolicyId, personalVaultData!.objectId, level);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      setTimeout(() => refetchGatePolicy(), 2500);
+      staggeredRefetch({
+        queryClient,
+        queryKeys: [
+          ["personalGatePolicy", personalGatePolicyId],
+          ["personalGatePolicyId", personalVaultData?.objectId],
+        ],
+      });
+      refetchGatePolicy();
     } catch (e) { setGateErr(e instanceof Error ? e.message : String(e)); }
     finally { setGateBusy(false); }
   };
@@ -2372,7 +2510,7 @@ function PersonalPlayerRelations({ policyId, vaultId }: { policyId: string; vaul
   const { data: playerRelations } = useQuery<PlayerRelation[]>({
     queryKey: ["personalPlayerRelations", vaultId],
     queryFn: () => fetchPlayerRelations(vaultId),
-    staleTime: 30_000,
+    staleTime: 5_000,
   });
 
   const execTx = async (txPromise: ReturnType<typeof buildSetPlayerRelationTx>) => {
@@ -2382,7 +2520,13 @@ function PersonalPlayerRelations({ policyId, vaultId }: { policyId: string; vaul
       const tx = await txPromise;
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      queryClient.invalidateQueries({ queryKey: ["personalPlayerRelations", vaultId] });
+      // Staggered reconciliation — single invalidate would race the indexer.
+      // No optimistic update here because the helper doesn't know whether the
+      // tx was an add (with which value) or a remove without inspecting txPromise.
+      staggeredRefetch({
+        queryClient,
+        queryKeys: [["personalPlayerRelations", vaultId]],
+      });
     } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); setPlayerInput(""); }
   };
