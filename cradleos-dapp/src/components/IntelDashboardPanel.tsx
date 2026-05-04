@@ -965,16 +965,6 @@ const connCount = (n: any) => Array.isArray(n.connected_assembly_ids) ? n.connec
 const nodeName = (n: any) => (n.metadata?.name && n.metadata.name !== "") ? n.metadata.name : `Node #${n.key?.item_id ?? n.objectId}`;
 
 
-function StatCard({ label, value, color, sub }: { label: string; value: string | number; color?: string; sub?: string }) {
-  return (
-    <div style={{ flex: 1, minWidth: 100, padding: "8px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: color ?? "#ddd", fontFamily: "monospace" }}>{value}</div>
-      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
-      {sub && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
-}
-
 // ── NODES VIEW COMPONENT (with filters) ──────────────────────────────────────
 
 type NodeStatusFilter = "ALL" | "ONLINE" | "OFFLINE";
@@ -1117,7 +1107,6 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
   }, [nodes]);
   const [view, setView] = useState<InfraView>("NODES");
 
-  // ── Aggregate stats ──
   // Cross-reference node item_ids against killmail solar_system_ids for location intel
   const nodeSystemMap = useMemo(() => {
     const m = new Map<string, string>(); // item_id → system item_id
@@ -1129,21 +1118,6 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
     }
     return m;
   }, [kills]);
-
-  const stats = useMemo(() => {
-    const online = nodes.filter(isOnline).length;
-    const offline = nodes.length - online;
-    const critical = nodes.filter(n => fuelPct(n) < 0.02 && fuelMax(n) > 0).length;
-    const lowFuel = nodes.filter(n => fuelPct(n) < 0.1 && fuelPct(n) >= 0.02 && fuelMax(n) > 0).length;
-    const totalFuel = nodes.reduce((s, n) => s + fuelQty(n), 0);
-    const totalFuelMax = nodes.reduce((s, n) => s + fuelMax(n), 0);
-    const totalConns = nodes.reduce((s, n) => s + connCount(n), 0);
-    const totalEnergy = nodes.reduce((s, n) => s + parseInt(n.energy_source?.current_energy_production ?? "0", 10), 0);
-    const burning = nodes.filter(n => n.fuel?.is_burning).length;
-    // Unique owners
-    const owners = new Set(nodes.map(n => n.owner_character_id?.item_id ?? "unknown"));
-    return { online, offline, critical, lowFuel, totalFuel, totalFuelMax, totalConns, totalEnergy, burning, ownerCount: owners.size };
-  }, [nodes]);
 
   if (loading) return <div style={S.loading}>[ scanning infrastructure lattice... ]</div>;
 
@@ -1280,24 +1254,6 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
         </div>
       )}
       </div>
-
-      {/* ── Right rail: OVERVIEW (always visible) ── */}
-      <aside style={{ flex: "0 0 220px", minWidth: 220, maxWidth: 260 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(100,180,255,0.7)", marginBottom: 8, padding: "3px 8px", borderLeft: "2px solid rgba(100,180,255,0.4)", background: "rgba(100,180,255,0.04)" }}>
-          OVERVIEW
-        </div>
-        {stats.critical > 0 && <div style={S.warn}>⚠ {stats.critical} nodes critically low on fuel</div>}
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
-          <StatCard label="Online" value={stats.online} color="#00ff96" />
-          <StatCard label="Offline" value={stats.offline} color={stats.offline > 0 ? "#ff4444" : "#666"} />
-          <StatCard label="Total Nodes" value={nodes.length} />
-          <StatCard label="Owners" value={stats.ownerCount} color="rgba(100,180,255,0.8)" />
-          <StatCard label="Structures Connected" value={stats.totalConns.toLocaleString()} sub={`across ${nodes.length} nodes`} />
-          <StatCard label="Total Energy" value={`${stats.totalEnergy.toLocaleString()} EP`} />
-          <StatCard label="Fuel Burning" value={stats.burning} color={stats.burning > 0 ? "#FF4700" : "#666"} />
-          <StatCard label="Global Fuel" value={stats.totalFuelMax > 0 ? `${((stats.totalFuel / stats.totalFuelMax) * 100).toFixed(1)}%` : "—"} color={stats.totalFuel / (stats.totalFuelMax || 1) > 0.3 ? "#00ff96" : "#ffd700"} sub={`${stats.totalFuel.toLocaleString()} / ${stats.totalFuelMax.toLocaleString()}`} />
-        </div>
-      </aside>
     </div>
   );
 }
