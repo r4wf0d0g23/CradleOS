@@ -2628,26 +2628,78 @@ export function buildRemovePlayerRelationTx(
 }
 
 /** Fetch per-player relations from PlayerRelationSet events. */
+// Sui indexes events under the package id where the emitting struct was
+// FIRST DEFINED, not under the latest published-at. CradleOS has been
+// upgraded many times and several event structs were introduced in mid-life
+// upgrades (e.g. FriendlyCharacterSet was added in v13). Querying only under
+// CRADLEOS_ORIGINAL silently misses every event from upgrade-introduced
+// structs. Fix: query under all known package versions in parallel and merge,
+// timestamp-ordered. Sui guarantees event timestamps even across packages.
+const CRADLEOS_EVENT_PKGS = [
+  CRADLEOS_PKG,             // current latest (v13) — catches FriendlyCharacterSet, PlayerRelationRemoved
+  CRADLEOS_UPGRADE_ORIGIN,  // mid-life origin — catches collateral_vault, keeper_shrine, trustless_bounty events
+  CRADLEOS_ORIGINAL,        // original-id — catches all v1-era structs (PlayerRelationSet, etc.)
+];
+
+type RawEvent = { parsedJson?: Record<string, unknown>; timestampMs?: string; id?: { txDigest?: string; eventSeq?: string } };
+
+/**
+ * Query a defense_policy/turret_ext/etc event type under every CradleOS
+ * package version we know about and merge results. Returns events newest-first
+ * (by timestampMs descending) so the caller's "first match wins" loops still
+ * resolve to the latest state.
+ */
+async function fetchEventAcrossPackages(
+  module: string,
+  event: string,
+  limit = 200,
+): Promise<RawEvent[]> {
+  const queries = CRADLEOS_EVENT_PKGS.map(pkg =>
+    fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+        params: [{ MoveEventType: `${pkg}::${module}::${event}` }, null, limit, true],
+      }),
+    }).then(r => r.json()).catch(() => null),
+  );
+  const responses = await Promise.all(queries);
+  const all: RawEvent[] = [];
+  const seen = new Set<string>();
+  for (const j of responses) {
+    const data = (j as { result?: { data?: RawEvent[] } } | null)?.result?.data ?? [];
+    for (const e of data) {
+      // Dedup by (txDigest, eventSeq) in case the same event somehow surfaces
+      // under two type queries (defensive; shouldn't happen in practice).
+      const key = `${e.id?.txDigest ?? ""}#${e.id?.eventSeq ?? ""}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      all.push(e);
+    }
+  }
+  // Newest first.
+  all.sort((a, b) => Number(b.timestampMs ?? 0) - Number(a.timestampMs ?? 0));
+  return all;
+}
+
 export async function fetchPlayerRelations(vaultId: string): Promise<PlayerRelation[]> {
   try {
-    const [setRes, rmRes] = await Promise.all([
-      fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::PlayerRelationSet` }, null, 200, true] }) }).then(r => r.json()),
-      fetch(SUI_TESTNET_RPC, { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::PlayerRelationRemoved` }, null, 200, true] }) }).then(r => r.json()),
+    const [setEvents, rmEvents] = await Promise.all([
+      fetchEventAcrossPackages("defense_policy", "PlayerRelationSet"),
+      fetchEventAcrossPackages("defense_policy", "PlayerRelationRemoved"),
     ]);
-    // Latest-first: build map from events
+    // Newest event per (player) wins.
     const map = new Map<string, number>();
-    for (const e of (setRes?.result?.data ?? []) as Array<{parsedJson?: Record<string,unknown>}>) {
+    for (const e of setEvents) {
       if (String(e.parsedJson?.vault_id) !== vaultId) continue;
       const player = String(e.parsedJson?.player ?? "");
       if (!map.has(player)) map.set(player, Number(e.parsedJson?.value ?? 0));
     }
-    // Remove events (mark as deleted)
+    // Suppress entries that have a NEWER remove event than their last set event.
+    // (Walking timestamp-ordered events would be cleaner, but the current
+    // map-then-suppress matches prior behavior with the new event sources.)
     const removed = new Set<string>();
-    for (const e of (rmRes?.result?.data ?? []) as Array<{parsedJson?: Record<string,unknown>}>) {
+    for (const e of rmEvents) {
       if (String(e.parsedJson?.vault_id) !== vaultId) continue;
       removed.add(String(e.parsedJson?.player ?? ""));
     }
@@ -2689,23 +2741,21 @@ export function buildSetHostileCharactersBatchTx(
   return tx;
 }
 
-/** Fetch hostile characters from HostileCharacterSet events. */
+/** Fetch hostile characters from HostileCharacterSet events.
+ *  HostileCharacterSet was introduced in a mid-life upgrade and may live under
+ *  any of the historical package ids — we query all and merge.
+ */
 export async function fetchHostileCharacters(vaultId: string): Promise<HostileCharacter[]> {
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::HostileCharacterSet` }, null, 200, true] }),
-    });
-    const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
-    // Most recent event per character_id wins (descending order)
+    const events = await fetchEventAcrossPackages("defense_policy", "HostileCharacterSet");
+    // Most recent event per character_id wins (events arrive newest-first).
     const map = new Map<number, boolean>();
-    for (const e of (j.result?.data ?? [])) {
+    for (const e of events) {
       if (String(e.parsedJson?.vault_id) !== vaultId) continue;
       const charId = Number(e.parsedJson?.character_id ?? 0);
       if (!map.has(charId)) map.set(charId, Boolean(e.parsedJson?.hostile));
     }
-    // Only return characters that are currently hostile
+    // Only return characters that are currently hostile.
     return [...map.entries()]
       .filter(([, hostile]) => hostile)
       .map(([characterId, hostile]) => ({ characterId, hostile }));
@@ -2752,17 +2802,17 @@ export function buildSetFriendlyCharactersBatchTx(
   return tx;
 }
 
-/** Fetch friendly characters from FriendlyCharacterSet events. Last event per character_id wins. */
+/** Fetch friendly characters from FriendlyCharacterSet events.
+ *  FriendlyCharacterSet was introduced in v13. Sui types it under the v13
+ *  package id (CRADLEOS_PKG), NOT CRADLEOS_ORIGINAL. The first deploy of this
+ *  fetcher queried only the original and silently returned zero rows even
+ *  though the on-chain state was correct. fetchEventAcrossPackages handles it.
+ */
 export async function fetchFriendlyCharacters(vaultId: string): Promise<FriendlyCharacter[]> {
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::FriendlyCharacterSet` }, null, 200, true] }),
-    });
-    const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
+    const events = await fetchEventAcrossPackages("defense_policy", "FriendlyCharacterSet");
     const map = new Map<number, boolean>();
-    for (const e of (j.result?.data ?? [])) {
+    for (const e of events) {
       if (String(e.parsedJson?.vault_id) !== vaultId) continue;
       const charId = Number(e.parsedJson?.character_id ?? 0);
       if (!map.has(charId)) map.set(charId, Boolean(e.parsedJson?.friendly));
