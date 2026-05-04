@@ -418,7 +418,10 @@ export type CharacterInfo = {
  * range, e.g. Clonebank 86 = 1000167) are valid CradleOS users and must have full
  * access. Tribe is read off the live Character and returned as-is to the caller. */
 async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Promise<CharacterInfo | null> {
-  const ppRes = await fetch(SUI_TESTNET_RPC, {
+  // Use _ssuFetchWithRetry on this critical boot path — a single
+  // transient fetch error here trips both the dashboard "Failed to fetch"
+  // banner and the ServerMismatchBanner "Character Not Found" warning.
+  const ppRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -446,7 +449,7 @@ async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Prom
     profiles.map(async (pp): Promise<Resolved | null> => {
       const charId = pp?.data?.content?.fields?.character_id;
       if (!charId) return null;
-      const res = await fetch(SUI_TESTNET_RPC, {
+      const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -499,11 +502,13 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
   const v1 = await findPlayerProfileForPkg(walletAddress, WORLD_PKG_UTOPIA_V1);
   if (v1) return v1;
 
-  // Last resort: scan CharacterCreatedEvent for both packages
+  // Last resort: scan CharacterCreatedEvent for both packages.
+  // Use _ssuFetchWithRetry so a transient network blip on the very first
+  // load doesn't fail the entire dashboard with "Failed to fetch".
   for (const pkg of [WORLD_PKG, WORLD_PKG_UTOPIA_V1]) {
     let cursor: string | null = null;
     do {
-      const res = await fetch(SUI_TESTNET_RPC, {
+      const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2705,6 +2710,133 @@ export async function fetchHostileCharacters(vaultId: string): Promise<HostileCh
       .filter(([, hostile]) => hostile)
       .map(([characterId, hostile]) => ({ characterId, hostile }));
   } catch { return []; }
+}
+
+// ── Friendly Characters (cross-tribe FRIENDLY override, v13+) ────────────────
+//
+// Mirrors Hostile Characters infrastructure exactly, inverted. Marks an
+// in-game character_id as FRIENDLY — turrets will skip them even when their
+// tribe is hostile or unlisted. This is the data path that fixes the
+// "per-player FRIENDLY did nothing" bug from v12 and earlier: wallet-keyed
+// PlayerRelationKey was structurally unusable (TargetCandidate exposes
+// character_id u32, not wallet address), so v13 added FriendlyCharacterKey<u32>
+// + a new branch in turret_ext::get_target_priority_list that consults it.
+
+export type FriendlyCharacter = { characterId: number; friendly: boolean };
+
+/** Build set_friendly_character_entry transaction (v13+). */
+export function buildSetFriendlyCharacterTx(
+  policyId: string, vaultId: string, characterId: number, friendly: boolean,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::defense_policy::set_friendly_character_entry`,
+    arguments: [tx.object(policyId), tx.object(vaultId), tx.pure.u32(characterId), tx.pure.bool(friendly)],
+  });
+  return tx;
+}
+
+/** Build batch set_friendly_characters_batch_entry transaction (v13+). */
+export function buildSetFriendlyCharactersBatchTx(
+  policyId: string, vaultId: string, characterIds: number[], friendlyFlags: boolean[],
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CRADLEOS_PKG}::defense_policy::set_friendly_characters_batch_entry`,
+    arguments: [
+      tx.object(policyId), tx.object(vaultId),
+      tx.pure.vector("u32", characterIds),
+      tx.pure.vector("bool", friendlyFlags),
+    ],
+  });
+  return tx;
+}
+
+/** Fetch friendly characters from FriendlyCharacterSet events. Last event per character_id wins. */
+export async function fetchFriendlyCharacters(vaultId: string): Promise<FriendlyCharacter[]> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::defense_policy::FriendlyCharacterSet` }, null, 200, true] }),
+    });
+    const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
+    const map = new Map<number, boolean>();
+    for (const e of (j.result?.data ?? [])) {
+      if (String(e.parsedJson?.vault_id) !== vaultId) continue;
+      const charId = Number(e.parsedJson?.character_id ?? 0);
+      if (!map.has(charId)) map.set(charId, Boolean(e.parsedJson?.friendly));
+    }
+    return [...map.entries()]
+      .filter(([, friendly]) => friendly)
+      .map(([characterId, friendly]) => ({ characterId, friendly }));
+  } catch { return []; }
+}
+
+// ── Turret Config discovery + bulk reassignment (v13 migration helper) ────────
+//
+// After a CradleOS package upgrade, existing TurretConfig objects keep working
+// because they reference the policy by *object id* (a shared object, not a
+// type tag). The defense_policy shared object survives upgrades unchanged, so
+// in the common case no turret reassignment is required — v13's bug fix
+// activates immediately on existing on-chain state.
+//
+// Helper below lets a tribe leader bulk-retarget all of their TurretConfigs
+// at one new policy_id in a single signed PTB — useful if they recreated their
+// policy at some point and need to fix stale config references.
+
+export type TurretConfigInfo = {
+  configId: string;
+  turretId: string;
+  policyId: string;
+  preset: number;
+  owner: string;
+};
+
+/** Discover all TurretConfig shared objects created by `owner` via ConfigCreated events. */
+export async function fetchOwnedTurretConfigs(owner: string): Promise<TurretConfigInfo[]> {
+  try {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::turret_ext::ConfigCreated` }, null, 200, true] }),
+    });
+    const j = await res.json() as { result?: { data?: Array<{ parsedJson: Record<string, unknown> }> } };
+    const seen = new Set<string>();
+    const out: TurretConfigInfo[] = [];
+    for (const e of (j.result?.data ?? [])) {
+      if (String(e.parsedJson?.owner) !== owner) continue;
+      const configId = String(e.parsedJson?.config_id ?? "");
+      if (!configId || seen.has(configId)) continue;
+      seen.add(configId);
+      out.push({
+        configId,
+        turretId: String(e.parsedJson?.turret_id ?? ""),
+        policyId: String(e.parsedJson?.policy_id ?? ""),
+        preset: Number(e.parsedJson?.preset ?? 0),
+        owner,
+      });
+    }
+    return out;
+  } catch { return []; }
+}
+
+/**
+ * Build a single PTB that calls `update_policy_entry` on every TurretConfig in
+ * `configIds`, retargeting them all to `newPolicyId`. Caller must own every
+ * TurretConfig (contract enforces with assert!).
+ */
+export function buildReassignTurretConfigsTx(
+  configIds: string[], newPolicyId: string,
+): Transaction {
+  const tx = new Transaction();
+  for (const configId of configIds) {
+    tx.moveCall({
+      target: `${CRADLEOS_PKG}::turret_ext::update_policy_entry`,
+      arguments: [tx.object(configId), tx.pure.address(newPolicyId)],
+    });
+  }
+  return tx;
 }
 
 // ── Gate Policy ───────────────────────────────────────────────────────────────

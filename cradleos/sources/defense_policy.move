@@ -513,6 +513,13 @@ module cradleos::defense_policy {
         }
     }
 
+    /// Emitted when a per-player relation is removed (added v14).
+    public struct PlayerRelationRemoved has copy, drop {
+        vault_id: ID,
+        player: address,
+        set_by: address,
+    }
+
     /// Remove a per-player relation (resets to default/tribe-based behavior).
     public entry fun remove_player_relation_entry(
         policy: &mut TribeDefensePolicy,
@@ -529,7 +536,119 @@ module cradleos::defense_policy {
         if (df::exists_(&policy.id, key)) {
             df::remove<PlayerRelationKey, u8>(&mut policy.id, key);
             policy.version = policy.version + 1;
+            event::emit(PlayerRelationRemoved {
+                vault_id: policy.vault_id,
+                player,
+                set_by: caller,
+            });
         };
+    }
+
+    // ── Character-level FRIENDLY flags (v14, for cross-tribe friendly override) ──
+    //
+    // Mirrors HostileCharacterKey but inverted: marks a specific in-game character
+    // (by character_id u32) as FRIENDLY, so turrets will skip them even when their
+    // tribe is hostile or unlisted. This is the data path the turret extension uses
+    // to enforce per-character friendly status — wallet-keyed PlayerRelationKey is
+    // unusable here because TargetCandidate exposes only character_id, not wallet.
+
+    /// Key for per-character friendly flag (by in-game character_id u32).
+    public struct FriendlyCharacterKey has copy, drop, store { character_id: u32 }
+
+    public struct FriendlyCharacterSet has copy, drop {
+        vault_id: ID,
+        character_id: u32,
+        friendly: bool,
+        set_by: address,
+    }
+
+    /// Mark an in-game character_id as friendly (true) or clear the flag (false).
+    /// When friendly, turrets will skip this character even if their tribe is
+    /// hostile or unlisted.
+    public entry fun set_friendly_character_entry(
+        policy: &mut TribeDefensePolicy,
+        vault: &TribeVault,
+        character_id: u32,
+        friendly: bool,
+        ctx: &mut TxContext,
+    ) {
+        use cradleos::tribe_vault::founder;
+        let caller = tx_context::sender(ctx);
+        assert!(caller == founder(vault), 1);
+        assert!(object::id(vault) == policy.vault_id, 2);
+
+        let key = FriendlyCharacterKey { character_id };
+        if (friendly) {
+            if (df::exists_(&policy.id, key)) {
+                *df::borrow_mut<FriendlyCharacterKey, bool>(&mut policy.id, key) = true;
+            } else {
+                df::add(&mut policy.id, key, true);
+            };
+        } else {
+            if (df::exists_(&policy.id, key)) {
+                df::remove<FriendlyCharacterKey, bool>(&mut policy.id, key);
+            };
+        };
+        policy.version = policy.version + 1;
+
+        event::emit(FriendlyCharacterSet {
+            vault_id: policy.vault_id,
+            character_id,
+            friendly,
+            set_by: caller,
+        });
+    }
+
+    /// Batch-set multiple character friendly flags in one transaction.
+    public entry fun set_friendly_characters_batch_entry(
+        policy: &mut TribeDefensePolicy,
+        vault: &TribeVault,
+        character_ids: vector<u32>,
+        friendly_flags: vector<bool>,
+        ctx: &mut TxContext,
+    ) {
+        use cradleos::tribe_vault::founder;
+        let caller = tx_context::sender(ctx);
+        assert!(caller == founder(vault), 1);
+        assert!(object::id(vault) == policy.vault_id, 2);
+        let len = character_ids.length();
+        assert!(friendly_flags.length() == len, 3);
+
+        let mut i = 0;
+        while (i < len) {
+            let character_id = *character_ids.borrow(i);
+            let friendly = *friendly_flags.borrow(i);
+            let key = FriendlyCharacterKey { character_id };
+            if (friendly) {
+                if (df::exists_(&policy.id, key)) {
+                    *df::borrow_mut<FriendlyCharacterKey, bool>(&mut policy.id, key) = true;
+                } else {
+                    df::add(&mut policy.id, key, true);
+                };
+            } else {
+                if (df::exists_(&policy.id, key)) {
+                    df::remove<FriendlyCharacterKey, bool>(&mut policy.id, key);
+                };
+            };
+            event::emit(FriendlyCharacterSet {
+                vault_id: policy.vault_id,
+                character_id,
+                friendly,
+                set_by: caller,
+            });
+            i = i + 1;
+        };
+        policy.version = policy.version + (len as u64);
+    }
+
+    /// Check if a character_id is flagged as friendly in this policy.
+    public fun is_friendly_character(p: &TribeDefensePolicy, character_id: u32): bool {
+        let key = FriendlyCharacterKey { character_id };
+        if (df::exists_(&p.id, key)) {
+            *df::borrow(&p.id, key)
+        } else {
+            false
+        }
     }
 
 }

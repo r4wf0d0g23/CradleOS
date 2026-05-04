@@ -251,6 +251,17 @@ module cradleos::turret_ext {
                 i_hostile_char = i_hostile_char + 1;
             };
 
+            // ── 0b. Per-character FRIENDLY override (v14) ───────────────────
+            // If this character_id is explicitly flagged FRIENDLY in the policy,
+            // skip them regardless of tribe. This is the cross-tribe friendly
+            // override path — e.g. allied non-tribemates who should never be shot.
+            // Same-tribe members are already protected by branch 0 above; this
+            // primarily covers cross-tribe allies.
+            if (defense_policy::is_friendly_character(policy, char_id)) {
+                i_friendly = i_friendly + 1;
+                continue
+            };
+
             // ── 1. Skip FRIENDLY tribes ──────────────────────────────────────
             // NPCs have tribe == 0; treat as hostile unless explicitly friendly-listed.
             if (tribe != 0 && defense_policy::is_friendly(policy, tribe)) {

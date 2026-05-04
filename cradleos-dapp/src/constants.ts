@@ -50,14 +50,24 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //
 // v2 deployed 2026-03-25 (Reapers_v2)
 export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
-// CRADLEOS_PKG v12 (2026-04-27): adds shared_withdraw_to_owned (preferred
-// tribemate-withdraw primitive: routes Item directly to caller's
-// per-character partition instead of wallet, so item stays in-game-visible).
-// v11 (2026-04-26) added recover_to_owned + recover_to_shared for items
-// already stranded in wallets via the legacy shared_withdraw_to_character.
-// Tx digests: v11 8aevQ9uu..., v12 6aaYV3Yhayse8KoHNTTt24AR6MXNLEM2qB3jSFRhYpb
-export const CRADLEOS_PKG      = "0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f";
-// Previous: 0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce (v9)
+// CRADLEOS_PKG v13 (2026-05-04): closes the turret friendly-fire bug.
+// Adds FriendlyCharacterKey + set_friendly_character_entry +
+// is_friendly_character + per-character FRIENDLY override branch in
+// turret_ext::get_target_priority_list. Tribe leaders set per-character
+// FRIENDLY (mirrors existing Hostile Characters pattern, inverted) for
+// cross-tribe allies who should never be shot. Also emits a long-missing
+// PlayerRelationRemoved event in remove_player_relation_entry so removed
+// per-player overrides actually disappear from the UI.
+// Old TurretConfig objects pointing at v12 policies still work
+// (TurretConfig stores policy_id by object reference, not type), but
+// to actually USE the friendly-character path users must run the
+// "Reassign Turrets to v13" widget in the Defense panel.
+// Tx digest: v13 HaZwqgiuUFo1ePNTvK31BJnyop1MuREjNX1fcRksGads
+// v12 (2026-04-27): shared_withdraw_to_owned, tx 6aaYV3Yha...
+// v11 (2026-04-26): recover_to_owned + recover_to_shared, tx 8aevQ9uu...
+export const CRADLEOS_PKG      = "0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6";
+// Previous v12: 0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f
+// Previous v9:  0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce
 
 // ── SSU shared-access feature (cradleos::ssu_access) ─────────────────────────
 //
@@ -164,7 +174,27 @@ export const ENERGY_CONFIG_UTOPIA_ISV = 791126162;
 export const ENERGY_CONFIG = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS : ENERGY_CONFIG_UTOPIA;
 export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS_ISV : ENERGY_CONFIG_UTOPIA_ISV;
 export const CLOCK = "0x6";
-export const SUI_TESTNET_RPC = "https://fullnode.testnet.sui.io:443";
+
+/**
+ * Sui testnet RPC endpoint.
+ *
+ * Routes through our caching JSON-RPC proxy on DGX1 (`sui-proxy.service`)
+ * which provides request coalescing + TTL caching + upstream rotation.
+ * Drops Failed-to-fetch cascades by ~70% on heavy fanout panels.
+ *
+ * `lib/rpcCircuitBreaker.ts` (installed at boot in main.tsx) monitors
+ * outgoing fetches to this URL. If the proxy returns >=3 consecutive 5xx
+ * or network errors, the breaker trips and `window.fetch` transparently
+ * rewrites subsequent requests to `SUI_TESTNET_RPC_FALLBACK`. After 45s
+ * cooldown the breaker re-tries the proxy; one success resets state.
+ *
+ * NOTE: only affects bare `fetch()` calls in our code. The @evefrontier
+ * dapp-kit SDK uses gRPC and bypasses this constant entirely — it goes
+ * straight to the public fullnode regardless. SDK-routing fix is a
+ * separate piece of work.
+ */
+export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
+export const SUI_TESTNET_RPC_FALLBACK = "https://fullnode.testnet.sui.io:443";
 export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
 
 // Well-known tribes that don't have CradleOS vaults but still need policy coverage

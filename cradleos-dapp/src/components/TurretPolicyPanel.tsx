@@ -25,6 +25,7 @@ import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, WELL_KNOWN_TRI
 
 // defense_policy was NEW in v5 — its events index under CRADLEOS_PKG (v5), not CRADLEOS_PKG (v4)
 // tribe_vault events (CoinLaunched) remain under CRADLEOS_PKG (original v4)
+import { translateTxError } from "../lib/txError";
 import {
   rpcGetObject, numish,
   fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe, fetchTribeClaim,
@@ -35,6 +36,10 @@ import {
   type TribeVaultState, type SecurityConfig, type PlayerStructure,
   fetchPlayerRelations, buildSetPlayerRelationTx, buildRemovePlayerRelationTx, type PlayerRelation,
   fetchHostileCharacters, buildSetHostileCharacterTx, type HostileCharacter,
+  // v13+: per-character FRIENDLY override (cross-tribe friendly support)
+  fetchFriendlyCharacters, buildSetFriendlyCharacterTx, type FriendlyCharacter,
+  // v13 migration: discover + bulk-retarget owned TurretConfig objects
+  fetchOwnedTurretConfigs, buildReassignTurretConfigsTx, type TurretConfigInfo,
   fetchPersonalVaultForWallet, fetchDefensePolicyForVault, fetchGatePolicyForVault,
   buildCreatePersonalVaultTx, buildCreatePersonalDefensePolicyTx, buildCreatePersonalGatePolicyTx,
   buildSetGateAccessLevelTx,
@@ -595,7 +600,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
         <div style={{ color: "#aaa", fontWeight: 600, marginBottom: "16px" }}>
           🛡 Tribe Defense Policy
         </div>
-        <p style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "20px" }}>
+        <p style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", marginBottom: "20px" }}>
           No defense policy exists for this vault. Create one to manage tribe
           diplomatic relations and turret intel logging.
         </p>
@@ -614,7 +619,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
           }}
           style={{
             marginTop: "12px", background: "transparent",
-            border: "1px solid rgba(255,255,255,0.1)", color: "rgba(107,107,94,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)", color: "rgba(175,175,155,0.6)",
             borderRadius: "0", fontSize: "11px", padding: "4px 12px", cursor: "pointer",
           }}
         >
@@ -648,7 +653,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
       {/* Header + enforce toggle */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "18px" }}>🛡 Defense Policy</div>
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>v{policy?.version ?? 0}</div>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>v{policy?.version ?? 0}</div>
         {isFounder && policy && (
           <button
             onClick={handleToggleEnforce}
@@ -734,7 +739,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
               <span style={{ fontSize: "14px" }}>{secConfig?.aggressionMode ? "⚡" : "○"}</span>
               AGGRESSION DETECT
             </button>
-            <span style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px" }}>
+            <span style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px" }}>
               {secConfig?.aggressionMode
                 ? "Turrets observe first — arm only after hostile contact logged"
                 : "Turrets arm immediately based on security level"}
@@ -751,11 +756,11 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
       }}>
         <div style={{ color: "#FF4700", fontWeight: 600, fontSize: "13px", marginBottom: "12px" }}>
           Tribe Relations
-          {!isFounder && <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
+          {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
         </div>
 
         {otherTribes.length === 0 ? (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No other tribes found on-chain yet.</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>No other tribes found on-chain yet.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {otherTribes.map(tribe => {
@@ -776,10 +781,10 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
                   }}>
                     {tribe.coinSymbol}
                   </span>
-                  <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace", flex: 1 }}>
+                  <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", fontFamily: "monospace", flex: 1 }}>
                     tribe #{tribe.tribeId}
                     {WELL_KNOWN_TRIBES.find(w => w.tribeId === tribe.tribeId)?.label && (
-                      <span style={{ color: "rgba(107,107,94,0.7)", marginLeft: "6px", fontFamily: "sans-serif" }}>
+                      <span style={{ color: "rgba(175,175,155,0.7)", marginLeft: "6px", fontFamily: "sans-serif" }}>
                         ({WELL_KNOWN_TRIBES.find(w => w.tribeId === tribe.tribeId)!.label})
                       </span>
                     )}
@@ -826,7 +831,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
               onClick={() => setDraft(new Map())}
               style={{
                 background: "transparent", border: "1px solid rgba(255,255,255,0.1)",
-                color: "rgba(107,107,94,0.55)", borderRadius: "0", fontSize: "11px", padding: "5px 12px", cursor: "pointer",
+                color: "rgba(175,175,155,0.55)", borderRadius: "0", fontSize: "11px", padding: "5px 12px", cursor: "pointer",
               }}
             >
               Discard
@@ -903,11 +908,22 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
         )}
       </div>
 
-      {/* Player Relations — per-address hostile/friendly overrides */}
-      <PlayerRelationsSection vault={vault} policyId={policyId ?? null} isFounder={isFounder} />
+      {/* Friendly Characters (v13+) — cross-tribe FRIENDLY override by character ID. */}
+      {/* Replaces the old wallet-keyed Player Relations panel which never enforced */}
+      {/* on-chain (TargetCandidate exposes character_id, not wallet). v13 fixes this. */}
+      <FriendlyCharactersSection vault={vault} policyId={policyId ?? null} isFounder={isFounder} />
 
       {/* Hostile Characters — same-tribe targeting overrides by character ID */}
       <HostileCharactersSection vault={vault} policyId={policyId ?? null} isFounder={isFounder} />
+
+      {/* Player Relations (legacy, v12 and earlier) — read-only display of */}
+      {/* wallet-keyed entries that were never enforced. Kept visible so users */}
+      {/* can see prior assignments and migrate them to Friendly Characters. */}
+      <LegacyPlayerRelationsDisplay vault={vault} policyId={policyId ?? null} isFounder={isFounder} />
+
+      {/* Reassign Turrets (v13 migration helper) — bulk-retarget all owned */}
+      {/* TurretConfigs to a chosen policy_id in one signed PTB. */}
+      <ReassignTurretsSection tribePolicyId={policyId ?? null} />
 
       {/* Policy members — who has delegated to this policy */}
       <PolicyMembersSection vault={vault} />
@@ -925,7 +941,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
         {logId && (
           <div style={{ marginBottom: "14px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-              <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>TURRET ID</span>
+              <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px" }}>TURRET ID</span>
               <input
                 value={logTurret}
                 onChange={e => setLogTurret(e.target.value)}
@@ -937,7 +953,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-              <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>ENTITY ID (observed)</span>
+              <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px" }}>ENTITY ID (observed)</span>
               <input
                 value={logEntity}
                 onChange={e => setLogEntity(e.target.value)}
@@ -949,7 +965,7 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-              <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>NOTE</span>
+              <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px" }}>NOTE</span>
               <input
                 value={logNote}
                 onChange={e => setLogNote(e.target.value)}
@@ -976,12 +992,12 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
 
         {/* Intel feed */}
         {(passages ?? []).length === 0 ? (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No passage events logged yet.</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>No passage events logged yet.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             <div style={{ display: "flex", gap: "8px", padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: "4px" }}>
               {["#", "TURRET", "ENTITY", "NOTE", "REPORTER", "TIME"].map(h => (
-                <span key={h} style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em", flex: h === "NOTE" ? 2 : 1 }}>{h}</span>
+                <span key={h} style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em", flex: h === "NOTE" ? 2 : 1 }}>{h}</span>
               ))}
             </div>
             {(passages ?? []).map(ev => (
@@ -989,12 +1005,12 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
                 display: "flex", gap: "8px", fontSize: "11px", color: "#888",
                 padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.03)",
               }}>
-                <span style={{ flex: 1, color: "rgba(107,107,94,0.55)" }}>#{ev.entryIndex}</span>
+                <span style={{ flex: 1, color: "rgba(175,175,155,0.55)" }}>#{ev.entryIndex}</span>
                 <span style={{ flex: 1, fontFamily: "monospace" }}>{shortAddr(ev.turretId)}</span>
                 <span style={{ flex: 1, fontFamily: "monospace", color: "#FF4700" }}>{shortAddr(ev.entityId)}</span>
                 <span style={{ flex: 2, color: "#aaa" }}>{ev.note || "—"}</span>
                 <span style={{ flex: 1, fontFamily: "monospace" }}>{shortAddr(ev.reporter)}</span>
-                <span style={{ flex: 1, color: "rgba(107,107,94,0.55)" }}>
+                <span style={{ flex: 1, color: "rgba(175,175,155,0.55)" }}>
                   {ev.timestampMs ? new Date(ev.timestampMs).toLocaleTimeString() : "—"}
                 </span>
               </div>
@@ -1015,7 +1031,10 @@ function TurretPolicyPanelInner({ vault, registryClaimer }: { vault: TribeVaultS
 
 // ── Member: Apply Tribe Policy to your turrets ────────────────────────────────
 
-function PlayerRelationsSection({ vault, policyId, isFounder }: {
+// FriendlyCharactersSection (v13+) — cross-tribe FRIENDLY override by character ID.
+// Replaces the old PlayerRelations wallet-keyed UI which was decorative — the
+// turret targeting kernel only consults character_id, never wallet.
+function FriendlyCharactersSection({ vault, policyId, isFounder }: {
   vault: TribeVaultState;
   policyId: string | null;
   isFounder: boolean;
@@ -1023,52 +1042,79 @@ function PlayerRelationsSection({ vault, policyId, isFounder }: {
   const { account } = useVerifiedAccountContext();
   const dAppKit = useDAppKit();
   const queryClient = useQueryClient();
-  const [playerInput, setPlayerInput] = useState("");
+  const [charInput, setCharInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  // On the unified chain, all policies have player relation support from birth.
 
-  const { data: playerRelations } = useQuery<PlayerRelation[]>({
-    queryKey: ["playerRelations", vault.objectId],
-    queryFn: () => fetchPlayerRelations(vault.objectId),
+  const { data: friendlyChars } = useQuery<FriendlyCharacter[]>({
+    queryKey: ["friendlyCharacters", vault.objectId],
+    queryFn: () => fetchFriendlyCharacters(vault.objectId),
     staleTime: 30_000,
   });
 
-  async function execTx(txPromise: ReturnType<typeof buildSetPlayerRelationTx>) {
+  const handleAdd = async () => {
+    const charId = parseInt(charInput, 10);
+    if (!account || !policyId || !charId || isNaN(charId)) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildSetFriendlyCharacterTx(policyId, vault.objectId, charId, true);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setCharInput("");
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 2500);
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 6000);
+    } catch (e) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  };
+
+  const handleRemove = async (charId: number) => {
     if (!account || !policyId) return;
     setBusy(true); setErr("");
     try {
-      const tx = await txPromise;
+      const tx = buildSetFriendlyCharacterTx(policyId, vault.objectId, charId, false);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
-      queryClient.invalidateQueries({ queryKey: ["playerRelations"] });
-    } catch (e: unknown) { setErr(e instanceof Error ? e.message : String(e)); }
-    finally { setBusy(false); setPlayerInput(""); }
-  }
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 2500);
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["friendlyCharacters"] }), 6000);
+    } catch (e) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  };
 
   return (
-    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.12)", borderRadius: "0", padding: "14px", marginBottom: "20px" }}>
-      <div style={{ color: "#FF4700", fontWeight: 600, fontSize: "13px", marginBottom: "12px" }}>
-        Player Relations
-        {!isFounder && <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
+    <div style={{
+      background: "rgba(0,255,150,0.03)", border: "1px solid rgba(0,200,100,0.18)",
+      borderRadius: "0", padding: "14px", marginBottom: "20px",
+    }}>
+      <div style={{ color: "#00c864", fontWeight: 600, fontSize: "13px", marginBottom: "4px" }}>
+        Friendly Characters (Cross-Tribe Override)
+        {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
+      </div>
+      <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
+        Mark specific in-game characters as <strong style={{ color: "#00c864" }}>FRIENDLY</strong> by character ID.
+        Tribe turrets will skip these targets even when their tribe is hostile or unlisted — use this for allied non-tribemates who should never be shot.
+        Same-tribe members are already auto-protected; this entry is for cross-tribe allies.
       </div>
 
-      {(playerRelations ?? []).length === 0 ? (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", marginBottom: isFounder ? 12 : 0 }}>No individual player overrides set.</div>
+      {(friendlyChars ?? []).length === 0 ? (
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px", marginBottom: isFounder ? 12 : 0 }}>
+          No friendly characters listed.
+        </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: 12 }}>
-          {(playerRelations ?? []).map(pr => (
-            <div key={pr.player} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-              <span style={{ flex: 1, fontFamily: "monospace", color: "#e0e0d0" }}>{pr.player.slice(0, 10)}…{pr.player.slice(-6)}</span>
-              <span style={{ padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
-                background: pr.value === 1 ? "rgba(0,200,100,0.12)" : "rgba(255,68,68,0.12)",
-                border: `1px solid ${pr.value === 1 ? "rgba(0,200,100,0.3)" : "rgba(255,68,68,0.3)"}`,
-                color: pr.value === 1 ? "#00c864" : "#ff4444" }}>
-                {pr.value === 1 ? "FRIENDLY" : "HOSTILE"}
+          {(friendlyChars ?? []).map(fc => (
+            <div key={fc.characterId} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+              <span style={{ flex: 1, fontFamily: "monospace", color: "#00c864" }}>
+                Character #{fc.characterId}
+              </span>
+              <span style={{
+                padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
+                background: "rgba(0,200,100,0.12)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864",
+              }}>
+                FRIENDLY
               </span>
               {isFounder && policyId && (
                 <button
-                  onClick={() => execTx(buildRemovePlayerRelationTx(policyId, vault.objectId, pr.player))}
+                  onClick={() => handleRemove(fc.characterId)}
                   disabled={busy}
                   style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "#666", borderRadius: 2, padding: "2px 6px", fontSize: 10, cursor: "pointer" }}
                 >Remove</button>
@@ -1081,24 +1127,223 @@ function PlayerRelationsSection({ vault, policyId, isFounder }: {
       {isFounder && policyId && (
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
           <input
-            value={playerInput}
-            onChange={e => setPlayerInput(e.target.value.trim())}
-            placeholder="0x player wallet address"
-            style={{ flex: 1, minWidth: 240, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0", color: "#aaa", fontSize: "11px", padding: "5px 8px", outline: "none", fontFamily: "monospace" }}
+            value={charInput}
+            onChange={e => setCharInput(e.target.value.replace(/\D/g, ""))}
+            placeholder="Character ID (number)"
+            style={{ flex: 1, minWidth: 180, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0", color: "#aaa", fontSize: "11px", padding: "5px 8px", outline: "none", fontFamily: "monospace" }}
           />
           <button
-            onClick={() => { if (playerInput) execTx(buildSetPlayerRelationTx(policyId, vault.objectId, playerInput, 1)); }}
-            disabled={busy || !playerInput}
+            onClick={handleAdd}
+            disabled={busy || !charInput}
             style={{ background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", color: "#00c864", borderRadius: "2px", fontSize: "11px", padding: "5px 12px", cursor: "pointer" }}
-          >+ Friendly</button>
-          <button
-            onClick={() => { if (playerInput) execTx(buildSetPlayerRelationTx(policyId, vault.objectId, playerInput, 0)); }}
-            disabled={busy || !playerInput}
-            style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444", borderRadius: "2px", fontSize: "11px", padding: "5px 12px", cursor: "pointer" }}
-          >+ Hostile</button>
+          >
+            {busy ? "..." : "+ Add Friendly"}
+          </button>
         </div>
       )}
       {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
+// LegacyPlayerRelationsDisplay — read-only display of v12-and-earlier wallet-keyed entries.
+// These were never enforced on-chain (TargetCandidate exposes character_id, not wallet).
+// Hidden if there are no legacy entries to surface. Founder can clear them.
+function LegacyPlayerRelationsDisplay({ vault, policyId, isFounder }: {
+  vault: TribeVaultState;
+  policyId: string | null;
+  isFounder: boolean;
+}) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const { data: playerRelations } = useQuery<PlayerRelation[]>({
+    queryKey: ["playerRelations", vault.objectId],
+    queryFn: () => fetchPlayerRelations(vault.objectId),
+    staleTime: 30_000,
+  });
+
+  if ((playerRelations ?? []).length === 0) return null;
+
+  async function handleRemove(player: string) {
+    if (!account || !policyId) return;
+    setBusy(true); setErr("");
+    try {
+      const tx = buildRemovePlayerRelationTx(policyId, vault.objectId, player);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["playerRelations"] }), 2500);
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ["playerRelations"] }), 6000);
+    } catch (e: unknown) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div style={{ background: "rgba(255,200,0,0.04)", border: "1px solid rgba(255,200,0,0.18)", borderRadius: "0", padding: "14px", marginBottom: "20px" }}>
+      <div style={{ color: "#ffcc00", fontWeight: 600, fontSize: "13px", marginBottom: "4px" }}>
+        ⚠ Legacy Player Relations (display only)
+      </div>
+      <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
+        These wallet-keyed entries were stored in v12 and earlier but were <strong>never enforced</strong> by turret targeting (the kernel only sees character_id, not wallet). They have no effect on who turrets fire on. Migrate any FRIENDLY entries to the <strong style={{ color: "#00c864" }}>Friendly Characters</strong> panel above using the player's in-game character ID, then remove the legacy entry here.
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {(playerRelations ?? []).map(pr => (
+          <div key={pr.player} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+            <span style={{ flex: 1, fontFamily: "monospace", color: "rgba(224,224,208,0.6)" }}>{pr.player.slice(0, 10)}…{pr.player.slice(-6)}</span>
+            <span style={{ padding: "2px 8px", borderRadius: "2px", fontSize: "11px", fontWeight: 600,
+              background: pr.value === 1 ? "rgba(0,200,100,0.08)" : "rgba(255,68,68,0.08)",
+              border: `1px solid ${pr.value === 1 ? "rgba(0,200,100,0.2)" : "rgba(255,68,68,0.2)"}`,
+              color: pr.value === 1 ? "rgba(0,200,100,0.7)" : "rgba(255,68,68,0.7)" }}>
+              {pr.value === 1 ? "FRIENDLY (unenforced)" : "HOSTILE (unenforced)"}
+            </span>
+            {isFounder && policyId && (
+              <button
+                onClick={() => handleRemove(pr.player)}
+                disabled={busy}
+                style={{ background: "rgba(255,200,0,0.06)", border: "1px solid rgba(255,200,0,0.25)", color: "#ffcc00", borderRadius: 2, padding: "2px 8px", fontSize: 10, cursor: "pointer" }}
+              >Remove</button>
+            )}
+          </div>
+        ))}
+      </div>
+      {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 6 }}>⚠ {err}</div>}
+    </div>
+  );
+}
+
+// ReassignTurretsSection (v13 migration helper) — bulk-retarget all owned
+// TurretConfigs to a chosen policy_id in one signed PTB. Hidden if the wallet
+// owns no TurretConfigs.
+function ReassignTurretsSection({ tribePolicyId }: { tribePolicyId: string | null }) {
+  const { account } = useVerifiedAccountContext();
+  const dAppKit = useDAppKit();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
+  const [targetPolicyId, setTargetPolicyId] = useState<string>(tribePolicyId ?? "");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (tribePolicyId && !targetPolicyId) setTargetPolicyId(tribePolicyId);
+  }, [tribePolicyId, targetPolicyId]);
+
+  const { data: configs, refetch: refetchConfigs } = useQuery<TurretConfigInfo[]>({
+    queryKey: ["ownedTurretConfigs", account?.address],
+    queryFn: () => account ? fetchOwnedTurretConfigs(account.address) : Promise.resolve([]),
+    enabled: !!account?.address,
+    staleTime: 30_000,
+  });
+
+  if (!account) return null;
+  if ((configs ?? []).length === 0) return null;
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
+    });
+  };
+  const selectAll = () => setSelected(new Set((configs ?? []).map(c => c.configId)));
+  const clearAll = () => setSelected(new Set());
+  const selectStale = () => {
+    if (!tribePolicyId) return;
+    setSelected(new Set((configs ?? []).filter(c => c.policyId !== tribePolicyId).map(c => c.configId)));
+  };
+
+  const handleReassign = async () => {
+    if (!targetPolicyId || selected.size === 0) return;
+    setBusy(true); setErr(null); setOkMsg(null);
+    try {
+      const tx = buildReassignTurretConfigsTx([...selected], targetPolicyId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      setOkMsg(`Retargeted ${selected.size} turret config${selected.size > 1 ? "s" : ""} to policy #${targetPolicyId.slice(-6)}.`);
+      setSelected(new Set());
+      setTimeout(() => { refetchConfigs(); queryClient.invalidateQueries({ queryKey: ["ownedTurretConfigs"] }); }, 2500);
+      setTimeout(() => { refetchConfigs(); queryClient.invalidateQueries({ queryKey: ["ownedTurretConfigs"] }); }, 6000);
+    } catch (e) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  };
+
+  const allSelected = selected.size === (configs ?? []).length;
+  const staleCount = tribePolicyId ? (configs ?? []).filter(c => c.policyId !== tribePolicyId).length : 0;
+
+  return (
+    <div style={{ background: "rgba(100,180,255,0.04)", border: "1px solid rgba(100,180,255,0.18)", borderRadius: "0", padding: "14px", marginBottom: "20px" }}>
+      <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: "13px", marginBottom: "4px" }}>
+        ↻ Reassign Turret Configs (v13 migration)
+      </div>
+      <div style={{ color: "rgba(175,175,155,0.65)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
+        After the v13 contract upgrade, your existing TurretConfigs continue to work because they reference the policy by object id (which doesn't change on upgrade). Use this widget to retarget any of your turret configs at a different policy id — e.g. to consolidate stale references, or to point them at a freshly-created policy. All selected configs are updated in a single signed transaction.
+      </div>
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 10 }}>
+        <span style={{ color: "rgba(175,175,155,0.55)", fontSize: 10 }}>TARGET POLICY</span>
+        <input
+          value={targetPolicyId}
+          onChange={e => setTargetPolicyId(e.target.value.trim())}
+          placeholder="0x... policy id"
+          style={{ flex: 1, minWidth: 240, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 0, color: "#fff", fontSize: 11, padding: "4px 8px", outline: "none", fontFamily: "monospace" }}
+        />
+        {tribePolicyId && (
+          <button
+            onClick={() => setTargetPolicyId(tribePolicyId)}
+            style={{ fontSize: 10, padding: "3px 10px", background: "rgba(100,180,255,0.08)", border: "1px solid rgba(100,180,255,0.25)", color: "#64b4ff", borderRadius: 2, cursor: "pointer" }}
+          >Use tribe policy</button>
+        )}
+      </div>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
+        <button onClick={allSelected ? clearAll : selectAll} style={{ fontSize: 10, padding: "3px 10px", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "#aaa", borderRadius: 2, cursor: "pointer" }}>
+          {allSelected ? "Clear" : `Select all (${(configs ?? []).length})`}
+        </button>
+        {tribePolicyId && staleCount > 0 && (
+          <button onClick={selectStale} style={{ fontSize: 10, padding: "3px 10px", background: "rgba(255,200,0,0.06)", border: "1px solid rgba(255,200,0,0.25)", color: "#ffcc00", borderRadius: 2, cursor: "pointer" }}>
+            Select stale ({staleCount})
+          </button>
+        )}
+        <span style={{ color: "rgba(175,175,155,0.55)", fontSize: 10, marginLeft: "auto" }}>
+          {selected.size} selected
+        </span>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
+        {(configs ?? []).map(c => {
+          const isStale = tribePolicyId !== null && c.policyId !== tribePolicyId;
+          const isSelected = selected.has(c.configId);
+          return (
+            <label key={c.configId} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, padding: "6px 10px", background: isSelected ? "rgba(100,180,255,0.06)" : "transparent", border: `1px solid ${isSelected ? "rgba(100,180,255,0.25)" : "rgba(255,255,255,0.05)"}`, borderRadius: 2, cursor: "pointer" }}>
+              <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(c.configId)} style={{ accentColor: "#64b4ff" }} />
+              <span style={{ flex: 1, fontFamily: "monospace", color: "#e0e0d0" }}>
+                config #{c.configId.slice(-6)} → turret #{c.turretId.slice(-6)}
+              </span>
+              <span style={{ fontFamily: "monospace", fontSize: 10, color: isStale ? "#ffcc00" : "rgba(175,175,155,0.55)" }}>
+                policy #{c.policyId.slice(-6)}{isStale ? " ⚠ stale" : ""}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+
+      <button
+        onClick={handleReassign}
+        disabled={busy || selected.size === 0 || !targetPolicyId}
+        style={{
+          padding: "6px 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", fontFamily: "inherit",
+          background: busy || selected.size === 0 || !targetPolicyId ? "rgba(100,180,255,0.05)" : "rgba(100,180,255,0.12)",
+          border: "1px solid rgba(100,180,255,0.35)", color: busy || selected.size === 0 || !targetPolicyId ? "rgba(100,180,255,0.4)" : "#64b4ff",
+          borderRadius: 2, cursor: busy || selected.size === 0 || !targetPolicyId ? "default" : "pointer",
+        }}
+      >
+        {busy ? "Retargeting…" : `↻ Retarget ${selected.size} config${selected.size === 1 ? "" : "s"} on-chain`}
+      </button>
+      {okMsg && <div style={{ color: "#00c864", fontSize: 11, marginTop: 8 }}>✓ {okMsg}</div>}
+      {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 8 }}>⚠ {err}</div>}
     </div>
   );
 }
@@ -1134,7 +1379,7 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
       setCharInput("");
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
 
@@ -1147,7 +1392,7 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
       await signer.signAndExecuteTransaction({ transaction: tx });
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 2500);
       setTimeout(() => queryClient.invalidateQueries({ queryKey: ["hostileCharacters"] }), 6000);
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
 
@@ -1158,16 +1403,16 @@ function HostileCharactersSection({ vault, policyId, isFounder }: {
     }}>
       <div style={{ color: "#ff4444", fontWeight: 600, fontSize: "13px", marginBottom: "4px" }}>
         Hostile Characters (Same-Tribe Override)
-        {!isFounder && <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
+        {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: "8px", fontSize: "11px" }}>read-only</span>}
       </div>
-      <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
+      <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "12px", lineHeight: 1.5 }}>
         Tribe turrets will <strong style={{ color: "#ff4444" }}>never fire on same-tribe members</strong> unless
         their character ID is listed here. Use this for KOS (kill-on-sight) characters
         who are in your tribe but should be treated as hostile.
       </div>
 
       {(hostileChars ?? []).length === 0 ? (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", marginBottom: isFounder ? 12 : 0 }}>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px", marginBottom: isFounder ? 12 : 0 }}>
           No hostile characters listed. All tribe members are protected from turret fire.
         </div>
       ) : (
@@ -1488,16 +1733,16 @@ function MemberDelegationSection({
           </span>
         )}
       </div>
-      <div style={{ fontSize: "11px", color: "rgba(107,107,94,0.7)", marginBottom: "14px" }}>
+      <div style={{ fontSize: "11px", color: "rgba(175,175,155,0.7)", marginBottom: "14px" }}>
         Delegate your turrets and gates to follow a defense policy. Assigned structures show their active policy type.
       </div>
 
       {isLoading && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>Scanning your structures…</div>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>Scanning your structures…</div>
       )}
 
       {!isLoading && defensiveStructures.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.5)", fontSize: 12 }}>
+        <div style={{ color: "rgba(175,175,155,0.5)", fontSize: 12 }}>
           No turrets or gates found for this wallet.
         </div>
       )}
@@ -1555,7 +1800,7 @@ function MemberDelegationSection({
                 <span style={{ flex: 1, fontSize: 12, color: "#e0e0d0", fontWeight: 600 }}>
                   {s.displayName}
                 </span>
-                <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(107,107,94,0.5)" }}>
+                <span style={{ fontSize: 10, fontFamily: "monospace", color: "rgba(175,175,155,0.5)" }}>
                   #{s.objectId.slice(-6)}
                 </span>
                 {isTribeDelegated && (
@@ -1687,7 +1932,7 @@ function PolicyMembersSection({ vault }: { vault: TribeVaultState }) {
   if (isLoading) {
     return (
       <div style={{ padding: "14px", borderTop: "1px solid rgba(255,71,0,0.12)" }}>
-        <div style={{ color: "rgba(107,107,94,0.5)", fontSize: 12 }}>Loading delegated members…</div>
+        <div style={{ color: "rgba(175,175,155,0.5)", fontSize: 12 }}>Loading delegated members…</div>
       </div>
     );
   }
@@ -1704,19 +1949,19 @@ function PolicyMembersSection({ vault }: { vault: TribeVaultState }) {
       }}>
         Policy Members
         {delegations && delegations.length > 0 && (
-          <span style={{ fontSize: 10, color: "rgba(107,107,94,0.6)", fontWeight: 400, fontFamily: "monospace" }}>
+          <span style={{ fontSize: 10, color: "rgba(175,175,155,0.6)", fontWeight: 400, fontFamily: "monospace" }}>
             {delegations.length} member{delegations.length !== 1 ? "s" : ""} · {delegations.reduce((s, d) => s + d.structures.length, 0)} turret{delegations.reduce((s, d) => s + d.structures.length, 0) !== 1 ? "s" : ""} delegated
           </span>
         )}
       </div>
 
       {(!delegations || delegations.length === 0) ? (
-        <div style={{ color: "rgba(107,107,94,0.5)", fontSize: 12 }}>
+        <div style={{ color: "rgba(175,175,155,0.5)", fontSize: 12 }}>
           No members have delegated their turrets to this policy yet.
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(107,107,94,0.55)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
+          <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(175,175,155,0.55)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
             <span style={{ flex: "1 1 auto" }}>Member</span>
             <span style={{ flex: "0 0 80px", textAlign: "right" }}>Turrets</span>
           </div>
@@ -1885,7 +2130,7 @@ function PersonalPolicySection({
       }
 
       invalidateAll();
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
 
@@ -1900,7 +2145,7 @@ function PersonalPolicySection({
       const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
       if (digest) await extractCreatedPolicyId(digest, personalVaultData.objectId);
       invalidateAll();
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
 
@@ -1943,9 +2188,9 @@ function PersonalPolicySection({
     finally { setGateBusy(false); }
   };
 
-  if (!account) return <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>Connect wallet to manage your defense configuration.</div>;
+  if (!account) return <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>Connect wallet to manage your defense configuration.</div>;
 
-  if (loading) return <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>Loading your defense configuration…</div>;
+  if (loading) return <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>Loading your defense configuration…</div>;
 
   return (
     <div>
@@ -1958,7 +2203,7 @@ function PersonalPolicySection({
       {/* ── No personal setup yet ── */}
       {step === "no-vault" && (
         <div>
-          <div style={{ fontSize: 12, color: "rgba(107,107,94,0.6)", marginBottom: 14, padding: "10px 14px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 2 }}>
+          <div style={{ fontSize: 12, color: "rgba(175,175,155,0.6)", marginBottom: 14, padding: "10px 14px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 2 }}>
             No personal policy configured.
           </div>
           <button
@@ -1974,7 +2219,7 @@ function PersonalPolicySection({
           >
             {busy ? "Setting up…" : "⚡ SET UP MY DEFENSE POLICY"}
           </button>
-          <div style={{ fontSize: 10, color: "rgba(107,107,94,0.5)", marginTop: 8, textAlign: "center" }}>
+          <div style={{ fontSize: 10, color: "rgba(175,175,155,0.5)", marginTop: 8, textAlign: "center" }}>
             Creates a private targeting policy linked only to your wallet.
           </div>
           {err && <div style={{ color: "#ff6432", fontSize: 11, marginTop: 8 }}>⚠ {err}</div>}
@@ -1984,7 +2229,7 @@ function PersonalPolicySection({
       {/* ── Vault exists but no policy ── */}
       {step === "no-policy" && (
         <div>
-          <div style={{ fontSize: 11, color: "rgba(107,107,94,0.6)", marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: "rgba(175,175,155,0.6)", marginBottom: 10 }}>
             Personal setup found — <span style={{ fontFamily: "monospace", color: "#aaa" }}>{personalVaultData?.objectId.slice(0, 10)}…</span>
           </div>
           <button
@@ -2009,7 +2254,7 @@ function PersonalPolicySection({
         <div>
           <div style={{ fontSize: 11, color: "#00ff96", marginBottom: 14 }}>
             ✓ Personal defense policy active
-            <span style={{ fontFamily: "monospace", color: "rgba(107,107,94,0.5)", marginLeft: 8 }}>
+            <span style={{ fontFamily: "monospace", color: "rgba(175,175,155,0.5)", marginLeft: 8 }}>
               #{personalPolicyId.slice(-6)}
             </span>
           </div>
@@ -2058,7 +2303,7 @@ function PersonalPolicySection({
               <div>
                 <div style={{ fontSize: 11, color: "#00ff96", marginBottom: 10 }}>
                   ✓ Gate policy active
-                  <span style={{ fontFamily: "monospace", color: "rgba(107,107,94,0.5)", marginLeft: 8 }}>#{personalGatePolicyId.slice(-6)}</span>
+                  <span style={{ fontFamily: "monospace", color: "rgba(175,175,155,0.5)", marginLeft: 8 }}>#{personalGatePolicyId.slice(-6)}</span>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {Object.entries(GATE_ACCESS_LABELS).map(([lvl, label]) => (
@@ -2080,7 +2325,7 @@ function PersonalPolicySection({
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: 11, color: "rgba(107,107,94,0.6)", marginBottom: 10 }}>
+                <div style={{ fontSize: 11, color: "rgba(175,175,155,0.6)", marginBottom: 10 }}>
                   No gate policy configured. Create one to control who can pass through your gates.
                 </div>
                 <button
@@ -2135,7 +2380,7 @@ function PersonalPlayerRelations({ policyId, vaultId }: { policyId: string; vaul
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       queryClient.invalidateQueries({ queryKey: ["personalPlayerRelations", vaultId] });
-    } catch (e) { setErr(e instanceof Error ? e.message.slice(0, 100) : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); setPlayerInput(""); }
   };
 
@@ -2143,7 +2388,7 @@ function PersonalPlayerRelations({ policyId, vaultId }: { policyId: string; vaul
     <div style={{ marginTop: 12, padding: "12px 14px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(160,80,255,0.12)", borderRadius: 2 }}>
       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", color: "#aaa", marginBottom: 10 }}>PLAYER RELATIONS</div>
       {(playerRelations ?? []).length === 0
-        ? <div style={{ fontSize: 11, color: "rgba(107,107,94,0.6)", marginBottom: 10 }}>No per-player overrides set.</div>
+        ? <div style={{ fontSize: 11, color: "rgba(175,175,155,0.6)", marginBottom: 10 }}>No per-player overrides set.</div>
         : <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
             {(playerRelations ?? []).map(pr => (
               <div key={pr.player} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11 }}>
@@ -2300,7 +2545,7 @@ function TribeRelationsPersonal({ policyId, vaultId }: { policyId: string; vault
           );
         })}
         {allEntries.filter(t => merged.has(t.tribeId) || draft.has(t.tribeId)).length === 0 && (
-          <div style={{ fontSize: 11, color: "rgba(107,107,94,0.5)" }}>No tribe relations set — add from dropdown above.</div>
+          <div style={{ fontSize: 11, color: "rgba(175,175,155,0.5)" }}>No tribe relations set — add from dropdown above.</div>
         )}
       </div>
       {draft.size > 0 && (
