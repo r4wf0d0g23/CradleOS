@@ -3215,8 +3215,11 @@ export async function fetchOwnedGates(
 export type CradleOSGate = {
   objectId: string;
   label: string;
-  ownerAddress: string | null;        // gate owner's character_address
+  ownerAddress: string | null;        // gate owner's character_address (when resolvable)
+  ownerName: string | null;           // gate owner's character name (preferred display)
+  ownerCapId: string | null;          // OwnerCap<Gate> object id (used to resolve owner)
   linkedGateId: string | null;        // paired gate (jump destination)
+  linkedGateOwnerName: string | null; // destination owner's name for human-readable pairing
   isOnline: boolean;
   extensionAuthorized: boolean;       // current state — still CradleOSAuth
   authorizedAtMs: number;             // when the authorize tx landed
@@ -3346,23 +3349,127 @@ export async function fetchCradleOSAuthorizedGates(): Promise<CradleOSGate[]> {
     const status = h.fields["status"] as { fields?: Record<string, unknown> } | undefined;
     const isOnline = Boolean((status?.fields ?? {})["online"] ?? false);
 
-    // Owner address is stored on the OwnerCap, not on the Gate. We skip it here
-    // (the dApp can show "unknown owner" for arbitrary gates; the pilot only
-    // needs to know the gate id + linked destination + that it's CradleOS-gated).
+    // Owner cap id → needed for the second pass (resolve owner Character name).
+    const ownerCapId = String(h.fields["owner_cap_id"] ?? "");
+
     out.push({
       objectId: h.objectId,
       label: `Gate ${h.objectId.slice(-6)}`,
       ownerAddress: null,
+      ownerName: null,
+      ownerCapId: ownerCapId || null,
       linkedGateId: linked,
+      linkedGateOwnerName: null,
       isOnline,
       extensionAuthorized: true,
       authorizedAtMs: tsByGate.get(h.objectId) ?? 0,
     });
   }
 
+  // Second pass: resolve owner Character names for each authorized gate AND
+  // for its linked destination (if any). The destination gate may not itself
+  // be CradleOS-authorized; we just want a display name. Capped at small
+  // parallelism to avoid hammering the public RPC.
+  const enriched = await _ssuPMap(out, async g => {
+    const [ownerName, linkedGateOwnerName] = await Promise.all([
+      g.ownerCapId ? _resolveGateOwnerName(g.ownerCapId) : Promise.resolve(null),
+      g.linkedGateId ? _resolveLinkedGateOwnerName(g.linkedGateId) : Promise.resolve(null),
+    ]);
+    return { ...g, ownerName, linkedGateOwnerName };
+  }, 4);
+
   // Newest authorize first.
-  out.sort((a, b) => b.authorizedAtMs - a.authorizedAtMs);
-  return out;
+  enriched.sort((a, b) => b.authorizedAtMs - a.authorizedAtMs);
+  return enriched;
+}
+
+/** Fetch a Gate object's owner_cap_id, then resolve to the owning character name. */
+async function _resolveLinkedGateOwnerName(gateId: string): Promise<string | null> {
+  try {
+    const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "sui_getObject",
+        params: [gateId, { showContent: true }],
+      }),
+    });
+    const j = await res.json() as {
+      result?: { data?: { content?: { fields?: { owner_cap_id?: string } } } };
+    };
+    const capId = j.result?.data?.content?.fields?.owner_cap_id ?? null;
+    if (!capId) return null;
+    return _resolveGateOwnerName(capId);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Given a Gate's OwnerCap object id, walk to the owning Character and return
+ * the character's display name (or `Rider XXXX` fallback). Returns null when
+ * the cap is missing, owned by something we can't resolve, or the linked
+ * Character has no metadata.
+ *
+ * The cap can be owned three ways depending on whether the gate has been
+ * transferred between characters or sits on a wallet directly. We try them in
+ * order of likelihood:
+ *   A. Cap.authorized_object_id points at a Character object directly
+ *      (most common: gate built by a player)
+ *   B. Cap is owned by a Character object via ObjectOwner (Character holds the
+ *      cap; cap.authorized_object_id is the Gate id, not the character id) —
+ *      we fall through to checking cap owner.
+ *   C. Cap is wallet-owned (AddressOwner) — we look up the wallet's
+ *      PlayerProfile and its Character.
+ */
+async function _resolveGateOwnerName(ownerCapId: string): Promise<string | null> {
+  try {
+    const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "sui_getObject",
+        params: [ownerCapId, { showContent: true, showOwner: true }],
+      }),
+    });
+    const j = await res.json() as {
+      result?: {
+        data?: {
+          owner?: { ObjectOwner?: string; AddressOwner?: string };
+          content?: { fields?: { authorized_object_id?: string } };
+        };
+      };
+    };
+    const data = j.result?.data;
+    if (!data) return null;
+    const authorized = data.content?.fields?.authorized_object_id ?? null;
+    const ownerObj = data.owner?.ObjectOwner ?? null;
+    const ownerAddr = data.owner?.AddressOwner ?? null;
+
+    // (A) Try authorized_object_id as a Character first.
+    if (authorized) {
+      const name = await _fetchCharacterName(authorized);
+      if (name) return name;
+    }
+    // (B) Cap owned by a Character object — try the owner object directly.
+    if (ownerObj) {
+      const name = await _fetchCharacterName(ownerObj);
+      if (name) return name;
+    }
+    // (C) Cap owned by a wallet — look up the wallet's primary Character.
+    if (ownerAddr) {
+      const charInfo = await findCharacterForWallet(ownerAddr);
+      if (charInfo?.characterId) {
+        const name = await _fetchCharacterName(charInfo.characterId);
+        if (name) return name;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 // ── v14: Discover candidate TribeGatePolicy objects + pre-flight is_allowed ──────

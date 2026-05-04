@@ -1096,17 +1096,29 @@ function TransitRow({
   }, [policies.length, gate.objectId]);
   void charInfo;
 
-  const linkedShort = gate.linkedGateId ? `#${gate.linkedGateId.slice(-6)}` : "(unlinked)";
+  // Human-readable origin and destination owner names. Falls back to a hex
+  // short id when the cap chain doesn't resolve to a Character (e.g. legacy
+  // gates owned by a non-Character object).
+  const ownerLabel = gate.ownerName ?? `Gate #${gate.objectId.slice(-6)}`;
+  const destLabel = gate.linkedGateId
+    ? (gate.linkedGateOwnerName ?? `Gate #${gate.linkedGateId.slice(-6)}`)
+    : "(unlinked)";
 
   return (
     <div style={rowStyle}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-        <span style={{ flex: 1, color: "#e0e0d0", fontWeight: 600, fontSize: 12 }}>
-          {gate.label}
-          <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace", marginLeft: 6, fontSize: 10 }}>
-            #{gate.objectId.slice(-6)} → {linkedShort}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <span style={{ color: "#e0e0d0", fontWeight: 600, fontSize: 12 }}>
+            {ownerLabel}'s gate
+            <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: 6 }}>
+              → {destLabel}{gate.linkedGateOwnerName ? "'s gate" : ""}
+            </span>
           </span>
-        </span>
+          <span style={{ color: "rgba(175,175,155,0.45)", fontFamily: "monospace", fontSize: 10 }}>
+            #{gate.objectId.slice(-6)}
+            {gate.linkedGateId ? <> → #{gate.linkedGateId.slice(-6)}</> : null}
+          </span>
+        </div>
         <span style={badgeStyle("#64b4ff", "rgba(100,180,255,0.15)")}>✓ ENFORCED</span>
         {allowedBadge}
       </div>
