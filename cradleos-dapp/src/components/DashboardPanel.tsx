@@ -1403,9 +1403,12 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
               background: "rgba(255,255,255,0.01)",
               border: "1px solid rgba(255,255,255,0.04)",
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                 <span style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.55)" }}>⊘ Unlinked Structures</span>
                 <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{sys.orphans.length} structures with no parent node</span>
+              </div>
+              <div style={{ fontSize: 10, color: "rgba(255,200,0,0.7)", marginBottom: 12, lineHeight: 1.5 }}>
+                ⚠ These structures' parent NetworkNode isn't visible to the dApp. Stance toggles aren't available here — the EP budget can't be computed without seeing the node. Use per-row toggles below for individual on/off; the chain will reject if power is genuinely unavailable.
               </div>
               {/* Orphan structures: render the same StructureRow table that
                   node-attached children use, so users can rename / online /
