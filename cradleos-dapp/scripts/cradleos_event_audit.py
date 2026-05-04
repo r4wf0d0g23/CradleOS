@@ -11,6 +11,7 @@ RPC = "https://fullnode.testnet.sui.io:443"
 # clean-slate lineages). Anything that defines a struct must be in this list.
 KNOWN_CRADLEOS_PKGS = [
     # Live-chain UpgradeCap lineage (most recent first)
+    ("v14", "0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93"),
     ("v13", "0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6"),
     ("v12", "0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f"),
     ("v11_orphan", "0xe468d971c0705da10c8a8a7849c36adc4e64e6de2592326b50d1888a298312e1"),
@@ -21,8 +22,8 @@ KNOWN_CRADLEOS_PKGS = [
     ("v1_original", "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3"),
 ]
 
-# Currently in CRADLEOS_EVENT_PKGS (after morning's fix)
-CURRENT_LIST = {"0x443e4730...", "0xbf4249b1...", "0x38115c06...", "0x70d0797b..."}
+# Currently in CRADLEOS_EVENT_PKGS (after v14 deploy)
+CURRENT_LIST = {"0xb6be32f9...", "0x443e4730...", "0xbf4249b1...", "0x38115c06...", "0x70d0797b..."}
 
 # Every event struct queried by the dApp. Format: (module, struct).
 EVENTS_QUERIED = [
@@ -60,6 +61,10 @@ EVENTS_QUERIED = [
     ("tribe_vault",       "InfraDeregistered"),
     ("trustless_bounty",  "BountyPosted"),
     ("turret_ext",        "ConfigCreated"),
+    # v14 gate events
+    ("gate_policy",       "GateFriendlyCharacterSet"),
+    ("gate_policy",       "GateHostileCharacterSet"),
+    ("gate_policy",       "GatePermitIssued"),
 ]
 
 def rpc(method, params):
