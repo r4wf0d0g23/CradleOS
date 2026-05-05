@@ -149,7 +149,22 @@ const SHIP_ARTICLES: BuiltinArticle[] = [
   },
   {
     id: "builtin-ship-81611", title: "Chumaq — Combat Battlecruiser", category: "Ships", tags: ["battlecruiser", "chumaq", "advanced-fuel", "capital", "no-high", "industrial"],
-    content: `The Chumaq is a Combat Battlecruiser with enormous cargo capacity and no high slots.\n\nSLOT LAYOUT\nHigh: 0  |  Medium: 5  |  Low: 7\n\nFITTING\nCPU: 145 tf  |  Powergrid: 2,520 MW\nCapacitor: 80\n\nCOMBAT STATS\nStructure HP: 6,250 — highest in the game\nMax Velocity: 170 m/s — slowest hull\n\nJUMP STATS\nMass: 1,487,389,952 kg (1,487.4 Mt)\nFuel Capacity: 270,585 (Advanced fuel)\nFull-tank range (D1): ${((270585 * 0.10) / (1e-7 * 1487389952)).toFixed(1)} LY  |  (SOF-80): ${((270585 * 0.80) / (1e-7 * 1487389952)).toFixed(1)} LY\n\nNOTES\nLargest fuel tank in the game (270,585 units). No high slots. 7 low slots enables stacking cargo or armor. The definitive industrial capital.`,
+    content: `The Chumaq is a Combat Battlecruiser with enormous cargo capacity and no high slots.\n\nSLOT LAYOUT\nHigh: 0  |  Medium: 5  |  Low: 7\n\nFITTING\nCPU: 145 tf  |  Powergrid: 2,520 MW\nCapacitor: 80\n\nCOMBAT STATS\nStructure HP: 6,250 — highest in the game\nMax Velocity: 170 m/s — slowest hull\n\nJUMP STATS\nMass: 1,739,489,536 kg (1,739.5 Mt)\nFuel Capacity: 270,585 (Advanced fuel)\nFull-tank range (D1): ${((270585 * 0.10) / (1e-7 * 1739489536)).toFixed(1)} LY  |  (SOF-80): ${((270585 * 0.80) / (1e-7 * 1739489536)).toFixed(1)} LY\n\nNOTES\nLargest fuel tank in the game (270,585 units). No high slots. 7 low slots enables stacking cargo or armor. The definitive industrial capital.`,
+    isBuiltin: true,
+  },
+  {
+    id: "builtin-ship-91107", title: "Carom — Corvette", category: "Ships", tags: ["corvette", "carom", "basic-fuel", "hydrogen", "0.5.12"],
+    content: `The Carom is a Corvette-class vessel added in patch 0.5.12.\n\nSLOT LAYOUT\nHigh: 2  |  Medium: 3  |  Low: 1\n\nFITTING\nCPU: 42 tf  |  Powergrid: 26 MW\n\nCOMBAT STATS\nStructure HP: 1,300\nMax Velocity: 270 m/s\n\nJUMP STATS\nMass: 7,200,000 kg (7.2 Mt)\nFuel Capacity: 3,000 (Basic/Hydrogen fuel)\nFull-tank jump range (D1): ${((3000 * 0.10) / (1e-7 * 7200000)).toFixed(1)} LY\n\nLORE\nA hull shaped for distance and solitude. The proportions are spare, stripped of anything not essential to the crossing. The drive assembly carries unexpected mass — bracing layered over bracing, housings reinforced beyond apparent need, structure filling spaces the original geometry left hollow. What necessity shaped these adaptations remains unclear.\n\nNOTES\n3 mid slots gives more fitting flexibility than Stride. High specific heat (8.5) enables extended jump ranges.`,
+    isBuiltin: true,
+  },
+  {
+    id: "builtin-ship-91106", title: "Stride — Corvette", category: "Ships", tags: ["corvette", "stride", "basic-fuel", "hydrogen", "0.5.12"],
+    content: `The Stride is a Corvette-class vessel added in patch 0.5.12.\n\nSLOT LAYOUT\nHigh: 2  |  Medium: 2  |  Low: 1\n\nFITTING\nCPU: 40 tf  |  Powergrid: 28 MW\n\nCOMBAT STATS\nStructure HP: 1,450\nMax Velocity: 255 m/s\n\nJUMP STATS\nMass: 7,900,000 kg (7.9 Mt)\nFuel Capacity: 3,200 (Basic/Hydrogen fuel)\nFull-tank jump range (D1): ${((3200 * 0.10) / (1e-7 * 7900000)).toFixed(1)} LY\n\nLORE\nA frame stripped for range, built to leap between stars. The design bears apparent alterations — conduits rerouted through spaces that seem improvised, geometries bent into configurations that defy intuition. No signature remains to mark its maker.\n\nNOTES\nStripped-down Corvette with higher specific heat (8.0) for long-range jumps. Larger fuel tank than Carom. Fewer mid slots limits active fitting options.`,
+    isBuiltin: true,
+  },
+  {
+    id: "builtin-ship-82425", title: "LAI — Frigate", category: "Ships", tags: ["frigate", "lai", "advanced-fuel", "combat", "0.5.12"],
+    content: `The LAI is a Frigate-class ultra-lightweight combat vessel added in patch 0.5.12.\n\nSLOT LAYOUT\nHigh: 2  |  Medium: 2  |  Low: 2\n\nFITTING\nCPU: 40 tf  |  Powergrid: 100 MW\n\nCOMBAT STATS\nStructure HP: 2,100\nMax Velocity: 440 m/s — tied for fastest frigate\n\nJUMP STATS\nMass: 18,929,160 kg (18.9 Mt)\nFuel Capacity: 2,400 (Advanced fuel)\nFull-tank range (D1): ${((2400 * 0.10) / (1e-7 * 18929160)).toFixed(1)} LY  |  (SOF-80): ${((2400 * 0.80) / (1e-7 * 18929160)).toFixed(1)} LY\n\nLORE\nAn ultra-lightweight combat vessel designed to focus on striking fast.\n\nNOTES\nLightest frigate by mass. Tied with HAF for max velocity (440 m/s). Balanced 2/2/2 slot layout. Burns crude-class fuels (D1/D2/SOF-40/SOF-80).`,
     isBuiltin: true,
   },
 ];
@@ -168,7 +183,7 @@ const MECHANICS_ARTICLES: BuiltinArticle[] = [
     title: "Fuel Types — Basic vs Advanced",
     category: "Mechanics",
     tags: ["fuel", "d1", "d2", "sof", "eu", "basic", "advanced"],
-    content: `EVE Frontier uses two tiers of jump fuel:\n\nBASIC FUEL (Corvettes and Wend Shuttle only)\n  D1  — quality 0.10\n  D2  — quality 0.15\n\nADVANCED FUEL (Frigates, Destroyers, Cruisers, Battlecruisers)\n  SOF-40 — quality 0.40\n  EU-40  — quality 0.40\n  SOF-80 — quality 0.80\n  EU-90  — quality 0.90\n\nFuel quality directly multiplies jump range. Higher quality = longer jump per unit consumed.\n\nBasic hulls cannot use advanced fuel. Advanced hulls cannot use basic fuel.`,
+    content: `EVE Frontier uses two tiers of jump fuel:\n\nBASIC FUEL (Corvettes and Wend Shuttle only)\n  D1  — quality 0.10\n  D2  — quality 0.15\n\nADVANCED FUEL (Frigates, Destroyers, Cruisers, Battlecruisers)\n  SOF-40 — quality 0.40\n  EU-40  — quality 0.40\n  SOF-80 — quality 0.80\n  EU-90  — quality 0.90\n\nFuel quality directly multiplies jump range. Higher quality = longer jump per unit consumed.\n\nBasic hulls cannot use advanced fuel. Advanced hulls cannot use basic fuel.\n\nCANONICAL ENGINE/HULL MAPPING (0.5.12)\nCorvette-class hulls (Carom, Recurve, Reflex, Reiver, Stride) burn HYDROGEN fuel via Sojourn-class engines.\nFrigate-class and larger (USV, MCF, HAF, LORHA, LAI, TADES, MAUL, Chumaq) burn CRUDE-based fuels (D1/D2/SOF-40/SOF-80) via Velocity, Tempo, and Celerity engines.\nWend (Shuttle) is the basic-fuel exception — burns D1/D2 but is not a Corvette.`,
     isBuiltin: true,
   },
   {
@@ -375,17 +390,18 @@ CONVERSION PIPELINE
 
 AVAILABLE 3D MODELS (20 total)
 
-SHIPS (9 of 14 playable)
+SHIPS (14 hulls — 0.5.12 baseline)
   ✅ LAI        — Dataist frigate, light combat (1.8 MB)
   ✅ HAF        — Dataist frigate, heavy combat (2.4 MB)
-  ✅ Carom      — Dataist frigate, assassination (3.0 MB)
+  ✅ Carom      — Dataist corvette, range combat (3.0 MB)
+  ✅ Stride     — Dataist corvette, range runner (0.5.12 hull)
   ✅ Lorha      — Dataist frigate, hauling (2.2 MB)
-  ✅ Reflex     — Synod frigate, light combat (4.5 MB)
+  ✅ Reflex     — Synod corvette, light combat (4.5 MB)
   ✅ TADES      — Dataist destroyer, heavy combat (4.7 MB)
-  ✅ Maul       — Dataist destroyer, light combat (6.1 MB)
+  ✅ Maul       — Dataist cruiser, heavy combat (6.1 MB)
   ✅ Wend       — Dataist shuttle, transport (4.9 MB)
-  ✅ USV        — Synod shuttle, cargo transport (6.6 MB)
-  ⬜ MCF, Recurve, Stride, Reiver, Chumaq — pending decimation
+  ✅ USV        — Synod frigate, cargo/mining (6.6 MB)
+  ⬜ MCF, Recurve, Reiver, Chumaq — pending decimation
 
 STRUCTURES (9 deployable types)
   ✅ Smart Gate     — dep_stargate_s_01v01 (4.9 MB)
