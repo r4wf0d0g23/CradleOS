@@ -1,4 +1,5 @@
 // Additional attributes beyond CPU/PG — extracted from wiki_attributes screenshots 2026-03-14
+// Updated 2026-05-05 for patch 0.5.12: charge group rename (Compressed Coolant), Small Cutting Laser rich data, Bulky V removed.
 export const MODULE_ATTRIBUTES: Record<string, {
   name: string;
   group?: string;
@@ -19,7 +20,7 @@ export const MODULE_ATTRIBUTES: Record<string, {
     capacity_m3: 5,
     charges_per_cycle: 1,
     activation_time_duration_s: 10.0,
-    used_with_charge_group: "Heat Sink Charge",
+    used_with_charge_group: "Compressed Coolant",
     can_be_fitted_to: "Shuttle, Corvette"
   },
   "heat_exchanger_s": {
@@ -34,7 +35,7 @@ export const MODULE_ATTRIBUTES: Record<string, {
     capacity_m3: 10,
     charges_per_cycle: 2,
     activation_time_duration_s: 10.0,
-    used_with_charge_group: "Heat Sink Charge",
+    used_with_charge_group: "Compressed Coolant",
     can_be_fitted_to: "Frigate, Destroyer"
   },
   "cryogenic_ejector_s": {
@@ -49,7 +50,7 @@ export const MODULE_ATTRIBUTES: Record<string, {
     capacity_m3: 10,
     charges_per_cycle: 10,
     activation_time_duration_s: 5.0,
-    used_with_charge_group: "Heat Sink Charge",
+    used_with_charge_group: "Compressed Coolant",
     can_be_fitted_to: "Frigate, Destroyer"
   },
   "systematic_armor_restorer_iv": {
@@ -320,15 +321,6 @@ export const MODULE_ATTRIBUTES: Record<string, {
     active_kinetic_damage_resistance_pct: -10,
     active_thermal_damage_resistance_pct: -10,
     capacitor_recharge_penalty_gj_s: 0.4,
-    passive_em_damage_resistance_bonus_pct: -50
-  },
-  "bulky_armor_plates_v": {
-    name: "Bulky Armor Plates V",
-    category: "Defensive System",
-    volume_m3: 320,
-    mass_kg: 346370,
-    armor_hitpoint_bonus_hp: 3000,
-    max_modules_of_this_group_allowed: 2,
     passive_em_damage_resistance_bonus_pct: -50
   },
   "bulky_armor_plates_iii": {
@@ -1193,7 +1185,7 @@ export const MODULE_ATTRIBUTES: Record<string, {
   },
   "small_cutting_laser": {
     name: "Small Cutting Laser",
-    category: "Asteroid Mining Laser",
+    group: "Asteroid Mining Laser",
     charge_size: "Small",
     reload_time_s: 1.0,
     mass_kg: 60000,
@@ -1202,14 +1194,15 @@ export const MODULE_ATTRIBUTES: Record<string, {
     volume_m3: 20,
     capacity_m3: 2,
     mining_efficiency_pct: 60,
-    rate_of_fire_s: 4.0,
-    optimal_range_km: 15.0,
+    rate_of_fire_s: 4.00,
+    optimal_range_km: 15.00,
     damage_modifier_x: 1,
-    activation_time_duration_s: 4.0,
-    residue_volume_multiplier_x: 0,
+    activation_time_duration_s: 4.00,
+    residue_volume_multiplier: 0,
     residue_probability_pct: 0,
     used_with_charge_group: "Asteroid Mining Crystal",
-    minimum_yield_m3: 16
+    minimum_yield_m3: 16,
+    can_be_fitted_to: "Frigate, Destroyer"
   },
   "purified_moon_cutting_laser": {
     name: "Purified Moon Cutting Laser",
