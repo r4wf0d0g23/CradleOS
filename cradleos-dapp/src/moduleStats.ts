@@ -1,6 +1,6 @@
 // EVE Frontier module CPU/PG data — extracted from in-game wiki screenshots 2026-03-13
 // cpu: tf (teraflops), pg: MW (megawatts)
-// 123 modules extracted from 123 screenshots
+// 119 modules — patch 0.5.12 baseline (2026-05-05)
 // Note: Synthetic items (shells/implants) are omitted — they have no CPU/PG fitting cost
 // Note: Cargo Grid modules show no CPU usage in-game (cpu: 0 is accurate)
 
@@ -26,9 +26,9 @@ export const MODULE_STATS: Record<string, { cpu: number; pg: number; name: strin
   "cryogenic_ejector_s": { name: "Cryogenic Ejector S", cpu: 3, pg: 12, slot: "low" },
 
   // ── ARMOR REPAIRERS ─────────────────────────────────────────────────────────
-  "systematic_armor_restorer_ii":  { name: "Systematic Armor Restorer II",  cpu: 5, pg: 10,  slot: "medium" },
-  "systematic_armor_restorer_iii": { name: "Systematic Armor Restorer III", cpu: 6, pg: 290, slot: "medium" },
-  "systematic_armor_restorer_iv":  { name: "Systematic Armor Restorer IV",  cpu: 7, pg: 295, slot: "medium" },
+  "systematic_armor_restorer_ii":  { name: "Systematic Armor Restorer II",  cpu: 5, pg: 15,  slot: "medium" },
+  "systematic_armor_restorer_iii": { name: "Systematic Armor Restorer III", cpu: 6, pg: 56,  slot: "medium" },
+  "systematic_armor_restorer_iv":  { name: "Systematic Armor Restorer IV",  cpu: 7, pg: 83,  slot: "medium" },
 
   // ── ARMOR HARDENERS — Nanitic Braces ────────────────────────────────────────
   "thermalnetic_nanitic_brace_ii":      { name: "Thermalnetic Nanitic Brace II",      cpu: 4, pg: 8,  slot: "medium" },
@@ -50,18 +50,18 @@ export const MODULE_STATS: Record<string, { cpu: number; pg: number; name: strin
   "adaptive_nanitic_armor_weave_iv":  { name: "Adaptive Nanitic Armor Weave IV",  cpu: 25, pg: 300, slot: "medium" },
 
   // ── ARMOR PLATES ────────────────────────────────────────────────────────────
-  "bulky_armor_plates_ii":  { name: "Bulky Armor Plates II",  cpu: 4,  pg: 10,   slot: "low" },
-  "bulky_armor_plates_iii": { name: "Bulky Armor Plates III", cpu: 7,  pg: 290,  slot: "low" },
-  "bulky_armor_plates_v":   { name: "Bulky Armor Plates V",   cpu: 12, pg: 2530, slot: "low" }, // no IV screenshot found
-  "coated_armor_plates_ii":  { name: "Coated Armor Plates II",  cpu: 4,  pg: 10,  slot: "low" },
-  "coated_armor_plates_iii": { name: "Coated Armor Plates III", cpu: 7,  pg: 290, slot: "low" },
-  "coated_armor_plates_iv":  { name: "Coated Armor Plates IV",  cpu: 10, pg: 295, slot: "low" },
-  "nimble_armor_plates_ii":  { name: "Nimble Armor Plates II",  cpu: 4,  pg: 10,  slot: "low" },
-  "nimble_armor_plates_iii": { name: "Nimble Armor Plates III", cpu: 7,  pg: 290, slot: "low" },
-  "nimble_armor_plates_iv":  { name: "Nimble Armor Plates IV",  cpu: 10, pg: 295, slot: "low" },
-  "reactive_armor_plates_ii":  { name: "Reactive Armor Plates II",  cpu: 4,  pg: 10,  slot: "low" },
-  "reactive_armor_plates_iii": { name: "Reactive Armor Plates III", cpu: 7,  pg: 290, slot: "low" },
-  "reactive_armor_plates_iv":  { name: "Reactive Armor Plates IV",  cpu: 10, pg: 295, slot: "low" },
+  "bulky_armor_plates_ii":  { name: "Bulky Armor Plates II",  cpu: 4,  pg: 16,  slot: "low" },
+  "bulky_armor_plates_iii": { name: "Bulky Armor Plates III", cpu: 7,  pg: 49,  slot: "low" },
+  "bulky_armor_plates_iv":  { name: "Bulky Armor Plates IV",  cpu: 10, pg: 94,  slot: "low" },
+  "coated_armor_plates_ii":  { name: "Coated Armor Plates II",  cpu: 4,  pg: 15,  slot: "low" },
+  "coated_armor_plates_iii": { name: "Coated Armor Plates III", cpu: 7,  pg: 45,  slot: "low" },
+  "coated_armor_plates_iv":  { name: "Coated Armor Plates IV",  cpu: 10, pg: 83,  slot: "low" },
+  "nimble_armor_plates_ii":  { name: "Nimble Armor Plates II",  cpu: 4,  pg: 8,   slot: "low" },
+  "nimble_armor_plates_iii": { name: "Nimble Armor Plates III", cpu: 7,  pg: 25,  slot: "low" },
+  "nimble_armor_plates_iv":  { name: "Nimble Armor Plates IV",  cpu: 10, pg: 80,  slot: "low" },
+  "reactive_armor_plates_ii":  { name: "Reactive Armor Plates II",  cpu: 4,  pg: 16,  slot: "low" },
+  "reactive_armor_plates_iii": { name: "Reactive Armor Plates III", cpu: 7,  pg: 45,  slot: "low" },
+  "reactive_armor_plates_iv":  { name: "Reactive Armor Plates IV",  cpu: 10, pg: 80,  slot: "low" },
 
   // ── ENERGY LANCE WEAPONS ────────────────────────────────────────────────────
   // Small (S) — turret hardpoint required
@@ -106,12 +106,12 @@ export const MODULE_STATS: Record<string, { cpu: number; pg: number; name: strin
   "tier_3_howitzer_m": { name: "Tier 3 Howitzer (M)", cpu: 17, pg: 260, slot: "high" },
 
   // ── HULL REPAIRER ───────────────────────────────────────────────────────────
-  "hull_repairer": { name: "Hull Repairer", cpu: 2, pg: 3, slot: "low" },
+  "hull_repairer": { name: "Hull Repairer", cpu: 2, pg: 3, slot: "medium" },
 
   // ── PROPULSION — AFTERBURNERS ───────────────────────────────────────────────
-  "afterburner_ii":  { name: "Afterburner II",  cpu: 3,  pg: 6,   slot: "medium" },
-  "afterburner_iii": { name: "Afterburner III", cpu: 12, pg: 210, slot: "medium" },
-  "afterburner_iv":  { name: "Afterburner IV",  cpu: 18, pg: 295, slot: "medium" },
+  "afterburner_ii":  { name: "Afterburner II",  cpu: 3,  pg: 12,  slot: "medium" },
+  "afterburner_iii": { name: "Afterburner III", cpu: 12, pg: 34,  slot: "medium" },
+  "afterburner_iv":  { name: "Afterburner IV",  cpu: 18, pg: 203, slot: "medium" },
 
   // ── PROPULSION — MICROWARPDRIVES (named) ────────────────────────────────────
   "hop":  { name: "Hop",  cpu: 7,  pg: 13, slot: "medium" },
@@ -134,28 +134,28 @@ export const MODULE_STATS: Record<string, { cpu: number; pg: number; name: strin
   "kinetic_field_array_iv":   { name: "Kinetic Field Array IV",   cpu: 4, pg: 1, slot: "medium" },
 
   // ── SHIELD REPAIRERS ────────────────────────────────────────────────────────
-  "shield_restorer_ii":  { name: "Shield Restorer II",  cpu: 4, pg: 4,   slot: "medium" },
-  "shield_restorer_iii": { name: "Shield Restorer III", cpu: 4, pg: 290, slot: "medium" },
-  "shield_restorer_iv":  { name: "Shield Restorer IV",  cpu: 4, pg: 295, slot: "medium" },
+  "shield_restorer_ii":  { name: "Shield Restorer II",  cpu: 4, pg: 8,   slot: "medium" },
+  "shield_restorer_iii": { name: "Shield Restorer III", cpu: 4, pg: 38,  slot: "medium" },
+  "shield_restorer_iv":  { name: "Shield Restorer IV",  cpu: 4, pg: 90,  slot: "medium" },
 
   // ── SHIELD EXTENDERS ────────────────────────────────────────────────────────
-  "attuned_shield_generator_ii":    { name: "Attuned Shield Generator II",    cpu: 4,  pg: 10,  slot: "medium" },
-  "attuned_shield_generator_iii":   { name: "Attuned Shield Generator III",   cpu: 7,  pg: 290, slot: "medium" },
-  "attuned_shield_generator_iv":    { name: "Attuned Shield Generator IV",    cpu: 10, pg: 295, slot: "medium" },
-  "bulwark_shield_generator_ii":    { name: "Bulwark Shield Generator II",    cpu: 4,  pg: 10,  slot: "medium" },
-  "bulwark_shield_generator_iii":   { name: "Bulwark Shield Generator III",   cpu: 7,  pg: 290, slot: "medium" },
-  "bulwark_shield_generator_iv":    { name: "Bulwark Shield Generator IV",    cpu: 10, pg: 295, slot: "medium" },
-  "reinforced_shield_generator_ii":  { name: "Reinforced Shield Generator II",  cpu: 4,  pg: 10,  slot: "medium" },
-  "reinforced_shield_generator_iii": { name: "Reinforced Shield Generator III", cpu: 7,  pg: 290, slot: "medium" },
-  "reinforced_shield_generator_iv":  { name: "Reinforced Shield Generator IV",  cpu: 10, pg: 295, slot: "medium" },
+  "attuned_shield_generator_ii":    { name: "Attuned Shield Generator II",    cpu: 4,  pg: 9,   slot: "low" },
+  "attuned_shield_generator_iii":   { name: "Attuned Shield Generator III",   cpu: 7,  pg: 48,  slot: "low" },
+  "attuned_shield_generator_iv":    { name: "Attuned Shield Generator IV",    cpu: 10, pg: 129, slot: "low" },
+  "bulwark_shield_generator_ii":    { name: "Bulwark Shield Generator II",    cpu: 4,  pg: 8,   slot: "low" },
+  "bulwark_shield_generator_iii":   { name: "Bulwark Shield Generator III",   cpu: 7,  pg: 44,  slot: "low" },
+  "bulwark_shield_generator_iv":    { name: "Bulwark Shield Generator IV",    cpu: 10, pg: 118, slot: "low" },
+  "reinforced_shield_generator_ii":  { name: "Reinforced Shield Generator II",  cpu: 4,  pg: 8,   slot: "low" },
+  "reinforced_shield_generator_iii": { name: "Reinforced Shield Generator III", cpu: 7,  pg: 25,  slot: "low" },
+  "reinforced_shield_generator_iv":  { name: "Reinforced Shield Generator IV",  cpu: 10, pg: 80,  slot: "low" },
 
   // ── CARGO EXPANDERS ─────────────────────────────────────────────────────────
   // Note: Cargo Grid modules display no CPU cost in-game (cpu: 0 is accurate)
-  "cargo_grid_ii":  { name: "Cargo Grid II",  cpu: 0, pg: 10,   slot: "low" },
-  "cargo_grid_iii": { name: "Cargo Grid III", cpu: 0, pg: 290,  slot: "low" },
-  "cargo_grid_iv":  { name: "Cargo Grid IV",  cpu: 0, pg: 295,  slot: "low" },
-  "cargo_grid_v":   { name: "Cargo Grid V",   cpu: 0, pg: 1265, slot: "low" },
-  "cargo_grid_vi":  { name: "Cargo Grid VI",  cpu: 0, pg: 2540, slot: "low" },
+  "cargo_grid_ii":  { name: "Cargo Grid II",  cpu: 0, pg: 8,   slot: "low" },
+  "cargo_grid_iii": { name: "Cargo Grid III", cpu: 0, pg: 25,  slot: "low" },
+  "cargo_grid_iv":  { name: "Cargo Grid IV",  cpu: 0, pg: 80,  slot: "low" },
+  "cargo_grid_v":   { name: "Cargo Grid V",   cpu: 0, pg: 250, slot: "low" },
+  "cargo_grid_vi":  { name: "Cargo Grid VI",  cpu: 0, pg: 408, slot: "low" },
 
   // ── WARP DISRUPTORS — Stasis Net ────────────────────────────────────────────
   "stasis_net_ii":  { name: "Stasis Net II",  cpu: 7, pg: 4, slot: "medium" },
