@@ -8,16 +8,19 @@ import { WORLD_API } from "../constants";
 
 const SHIPS = [
   { id: 87698, name: "Wend",    className: "Shuttle",              slotsH: 1, slotsM: 3, slotsL: 0, cpu: 30,  pg: 30,   structureHP: 750,  shieldHP: 0,  armorHP: 0, maxVelocity: 260, mass: 6800000,    vel: 260, fuelCap: 200,    specificHeat: 2.5, fuelType: "basic" as const },
-  { id: 87846, name: "Recurve", className: "Corvette",             slotsH: 2, slotsM: 3, slotsL: 1, cpu: 35,  pg: 50,   structureHP: 1650, shieldHP: 0,  armorHP: 0, maxVelocity: 405, mass: 10200000,   vel: 405, fuelCap: 970,    specificHeat: 1.0, fuelType: "basic" as const },
+  { id: 87846, name: "Recurve", className: "Corvette",             slotsH: 2, slotsM: 3, slotsL: 1, cpu: 35,  pg: 50,   structureHP: 1650, shieldHP: 0,  armorHP: 0, maxVelocity: 405, mass: 10400000,   vel: 405, fuelCap: 970,    specificHeat: 1.0, fuelType: "basic" as const },
   { id: 87847, name: "Reflex",  className: "Corvette",             slotsH: 2, slotsM: 4, slotsL: 1, cpu: 32,  pg: 35,   structureHP: 1250, shieldHP: 0,  armorHP: 0, maxVelocity: 260, mass: 9750000,    vel: 260, fuelCap: 1750,   specificHeat: 3.0, fuelType: "basic" as const },
-  { id: 87848, name: "Reiver",  className: "Corvette",             slotsH: 2, slotsM: 2, slotsL: 2, cpu: 35,  pg: 50,   structureHP: 1900, shieldHP: 0,  armorHP: 0, maxVelocity: 435, mass: 10400000,   vel: 435, fuelCap: 1416,   specificHeat: 1.0, fuelType: "basic" as const },
+  { id: 87848, name: "Reiver",  className: "Corvette",             slotsH: 2, slotsM: 2, slotsL: 2, cpu: 35,  pg: 50,   structureHP: 1900, shieldHP: 0,  armorHP: 0, maxVelocity: 435, mass: 10200000,   vel: 435, fuelCap: 1416,   specificHeat: 1.0, fuelType: "basic" as const },
+  { id: 91107, name: "Carom",   className: "Corvette",             slotsH: 2, slotsM: 3, slotsL: 1, cpu: 42,  pg: 26,   structureHP: 1300, shieldHP: 0,  armorHP: 0, maxVelocity: 270, mass: 7200000,    vel: 270, fuelCap: 3000,   specificHeat: 8.5, fuelType: "basic" as const },
+  { id: 91106, name: "Stride",  className: "Corvette",             slotsH: 2, slotsM: 2, slotsL: 1, cpu: 40,  pg: 28,   structureHP: 1450, shieldHP: 0,  armorHP: 0, maxVelocity: 255, mass: 7900000,    vel: 255, fuelCap: 3200,   specificHeat: 8.0, fuelType: "basic" as const },
   { id: 81609, name: "USV",     className: "Frigate",              slotsH: 2, slotsM: 3, slotsL: 4, cpu: 30,  pg: 110,  structureHP: 2160, shieldHP: 0,  armorHP: 0, maxVelocity: 280, mass: 30266600,   vel: 280, fuelCap: 2420,   specificHeat: 1.8, fuelType: "advanced" as const },
-  { id: 81904, name: "MCF",     className: "Frigate",              slotsH: 2, slotsM: 3, slotsL: 2, cpu: 60,  pg: 100,  structureHP: 2400, shieldHP: 0,  armorHP: 0, maxVelocity: 410, mass: 52313800,   vel: 410, fuelCap: 6548,   specificHeat: 2.5, fuelType: "advanced" as const },
+  { id: 81904, name: "MCF",     className: "Frigate",              slotsH: 2, slotsM: 3, slotsL: 2, cpu: 60,  pg: 100,  structureHP: 2400, shieldHP: 0,  armorHP: 0, maxVelocity: 410, mass: 52313760,   vel: 410, fuelCap: 6548,   specificHeat: 2.5, fuelType: "advanced" as const },
   { id: 82424, name: "HAF",     className: "Frigate",              slotsH: 2, slotsM: 3, slotsL: 3, cpu: 45,  pg: 140,  structureHP: 2650, shieldHP: 0,  armorHP: 0, maxVelocity: 440, mass: 81883000,   vel: 440, fuelCap: 4184,   specificHeat: 2.5, fuelType: "advanced" as const },
-  { id: 82426, name: "LORHA",   className: "Frigate",              slotsH: 0, slotsM: 2, slotsL: 4, cpu: 32,  pg: 110,  structureHP: 2155, shieldHP: 0,  armorHP: 0, maxVelocity: 450, mass: 42691300,   vel: 450, fuelCap: 2508,   specificHeat: 2.5, fuelType: "advanced" as const },
-  { id: 81808, name: "TADES",   className: "Destroyer",            slotsH: 3, slotsM: 4, slotsL: 2, cpu: 125, pg: 280,  structureHP: 2600, shieldHP: 0,  armorHP: 0, maxVelocity: 420, mass: 74655504,   vel: 420, fuelCap: 5972,   specificHeat: 2.5, fuelType: "advanced" as const },
-  { id: 82430, name: "MAUL",    className: "Cruiser",              slotsH: 4, slotsM: 3, slotsL: 3, cpu: 150, pg: 2450, structureHP: 4400, shieldHP: 0, armorHP: 0, maxVelocity: 400, mass: 548435968,  vel: 400, fuelCap: 24160,  specificHeat: 2.5, fuelType: "advanced" as const },
-  { id: 81611, name: "Chumaq",  className: "Combat Battlecruiser", slotsH: 0, slotsM: 5, slotsL: 7, cpu: 145, pg: 2520, structureHP: 6250, shieldHP: 0, armorHP: 0, maxVelocity: 170, mass: 1487389952, vel: 170, fuelCap: 270585, specificHeat: 3.0, fuelType: "advanced" as const },
+  { id: 82426, name: "LORHA",   className: "Frigate",              slotsH: 0, slotsM: 2, slotsL: 4, cpu: 32,  pg: 110,  structureHP: 2155, shieldHP: 0,  armorHP: 0, maxVelocity: 450, mass: 31369320,   vel: 450, fuelCap: 2508,   specificHeat: 2.5, fuelType: "advanced" as const },
+  { id: 82425, name: "LAI",     className: "Frigate",              slotsH: 2, slotsM: 2, slotsL: 2, cpu: 40,  pg: 100,  structureHP: 2100, shieldHP: 0,  armorHP: 0, maxVelocity: 440, mass: 18929160,   vel: 440, fuelCap: 2400,   specificHeat: 2.5, fuelType: "advanced" as const },
+  { id: 81808, name: "TADES",   className: "Destroyer",            slotsH: 3, slotsM: 4, slotsL: 2, cpu: 125, pg: 280,  structureHP: 2600, shieldHP: 0,  armorHP: 0, maxVelocity: 420, mass: 74655480,   vel: 420, fuelCap: 5972,   specificHeat: 2.5, fuelType: "advanced" as const },
+  { id: 82430, name: "MAUL",    className: "Cruiser",              slotsH: 4, slotsM: 3, slotsL: 3, cpu: 150, pg: 2450, structureHP: 4400, shieldHP: 0, armorHP: 0, maxVelocity: 400, mass: 548435904,  vel: 400, fuelCap: 24160,  specificHeat: 2.5, fuelType: "advanced" as const },
+  { id: 81611, name: "Chumaq",  className: "Combat Battlecruiser", slotsH: 0, slotsM: 5, slotsL: 7, cpu: 145, pg: 2520, structureHP: 6250, shieldHP: 0, armorHP: 0, maxVelocity: 170, mass: 1739489536, vel: 170, fuelCap: 270585, specificHeat: 3.0, fuelType: "advanced" as const },
 ] as const;
 
 type Ship = typeof SHIPS[number];
@@ -1416,11 +1419,11 @@ export function ShipFittingPanel() {
             </div>
             <div style={{ fontSize: 11, marginBottom: 4 }}>
               <span style={S.muted}>cpu cost: </span>
-              {(() => { const s = lookupModuleStats(selectedModule.name); return s ? `${s.cpu} tf` : <span style={{ color: "rgba(107,107,94,0.45)" }}>N/A</span>; })()}
+              {(() => { const s = lookupModuleStats(selectedModule.name); return s ? `${s.cpu} tf` : <span style={{ color: "rgba(175,175,155,0.45)" }}>N/A</span>; })()}
             </div>
             <div style={{ fontSize: 11, marginBottom: 4 }}>
               <span style={S.muted}>pg cost: </span>
-              {(() => { const s = lookupModuleStats(selectedModule.name); return s ? `${s.pg} MW` : <span style={{ color: "rgba(107,107,94,0.45)" }}>N/A</span>; })()}
+              {(() => { const s = lookupModuleStats(selectedModule.name); return s ? `${s.pg} MW` : <span style={{ color: "rgba(175,175,155,0.45)" }}>N/A</span>; })()}
             </div>
             <div style={{ fontSize: 11, marginBottom: 4 }}>
               <span style={S.muted}>Mass impact: </span>
