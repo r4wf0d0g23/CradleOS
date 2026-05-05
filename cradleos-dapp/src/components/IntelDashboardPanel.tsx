@@ -245,6 +245,27 @@ function formatTimestamp(ts: string): string {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
 }
 
+// Compact relative-time formatter for the kill feed row.
+// Examples: "12s", "5m", "2h", "3d", "2w", "3mo". Falls back to date for older entries.
+function formatRelativeTime(ts: string): string {
+  const ms = parseInt(ts, 10) * 1000;
+  if (!Number.isFinite(ms)) return "";
+  const diffSec = Math.max(0, Math.floor((Date.now() - ms) / 1000));
+  if (diffSec < 60) return `${diffSec}s`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 7) return `${diffDay}d`;
+  const diffWk = Math.floor(diffDay / 7);
+  if (diffWk < 5) return `${diffWk}w`;
+  const diffMo = Math.floor(diffDay / 30);
+  if (diffMo < 12) return `${diffMo}mo`;
+  const diffYr = Math.floor(diffDay / 365);
+  return `${diffYr}y`;
+}
+
 // (truncateAddr removed 2026-05-02 — row no longer shows truncated
 // killmail object id; clicking the row opens the KillCardModal which
 // renders the full addresses with Suiscan links.)
@@ -328,7 +349,7 @@ const S = {
   statVal: { color: "#c8c8b4", fontWeight: 700 } as React.CSSProperties,
   row: {
     display: "grid",
-    gridTemplateColumns: "140px 80px minmax(0,1fr) 40px minmax(0,1fr) 90px 100px",
+    gridTemplateColumns: "48px 44px minmax(0,1fr) 40px minmax(0,1fr) 110px 24px",
     alignItems: "center",
     gap: "0 8px",
     padding: "5px 8px",
@@ -639,8 +660,8 @@ function KillFeedTab({
         <div style={S.empty}>No kills recorded on-chain yet</div>
       ) : (
         <div>
-          <div style={{ display: "grid", gridTemplateColumns: "140px 80px minmax(0,1fr) 40px minmax(0,1fr) 90px 100px", gap: "0 8px", padding: "3px 8px 5px", borderBottom: "1px solid rgba(255,255,255,0.12)", marginBottom: 2 }}>
-            {["TIME", "TYPE", "KILLER", "", "VICTIM", "LOCATION", "TX"].map((h, i) => (
+          <div style={{ display: "grid", gridTemplateColumns: "48px 44px minmax(0,1fr) 40px minmax(0,1fr) 110px 24px", gap: "0 8px", padding: "3px 8px 5px", borderBottom: "1px solid rgba(255,255,255,0.12)", marginBottom: 2 }}>
+            {["TIME", "TYPE", "KILLER", "", "VICTIM", "LOCATION", ""].map((h, i) => (
               <span key={i} style={{ color: "rgba(255,255,255,0.3)", fontSize: 9, letterSpacing: "0.12em", fontWeight: 700 }}>{h}</span>
             ))}
           </div>
@@ -678,8 +699,8 @@ function KillFeedTab({
                 }}
                 title="Click to open killcard"
               >
-                <span style={S.muted}>{formatTimestamp(k.kill_timestamp)}</span>
-                <span style={S.badge(badgeColor)}>{lossType}</span>
+                <span style={S.muted} title={formatTimestamp(k.kill_timestamp)}>{formatRelativeTime(k.kill_timestamp)}</span>
+                <span style={S.badge(badgeColor)} title={lossType}>{lossType === "STRUCTURE" ? "STR" : lossType === "SHIP" ? "SHP" : lossType.slice(0, 3)}</span>
                 <span style={{ color: "#00ff96", display: "flex", alignItems: "baseline", gap: 5, minWidth: 0 }}>
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveName(killerId)}</span>
                   <TribeBadge
@@ -704,10 +725,11 @@ function KillFeedTab({
                     marginLeft: "auto",
                     color: "#FF4700",
                     fontWeight: 700,
+                    textAlign: "right",
                   }}
                   title="Open killcard"
                 >
-                  ↗ OPEN
+                  ↗
                 </span>
               </div>
             );
