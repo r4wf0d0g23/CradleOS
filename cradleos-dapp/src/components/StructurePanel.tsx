@@ -51,9 +51,12 @@ import {
   buildBatchOnlineTransaction,
   buildBatchOfflineTransaction,
   buildRenameTransaction, buildSetUrlTransaction,
+  waitForStructureStatus,
   type LocationGroup,
   type PlayerStructure,
 } from "../lib";
+import { playPowerOn, playPowerOff } from "../lib/sound";
+import { translateTxError } from "../lib/txError";
 
 function readDigest(result: unknown): string | undefined {
   if (result && typeof result === "object") {
@@ -272,31 +275,38 @@ function StructureRow({
       setUrlInput("");
       onTxSuccess?.(readDigest(result));
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
+  // Wait for fullnode consistency before signaling success — the onTxSuccess
+  // callback fires a refetch, and an immediate refetch typically returns
+  // stale data because the public Sui RPC pool is eventually consistent.
   const handleOnline = async () => {
     setBusy(true); setErr(null);
+    playPowerOn();
     try {
       const tx = await buildStructureOnlineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      await waitForStructureStatus(structure.objectId, true);
       onTxSuccess?.(readDigest(result));
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
   const handleOffline = async () => {
     setBusy(true); setErr(null);
+    playPowerOff();
     try {
       const tx = await buildStructureOfflineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      await waitForStructureStatus(structure.objectId, false);
       onTxSuccess?.(readDigest(result));
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -311,7 +321,7 @@ function StructureRow({
       setRenaming(false);
       onTxSuccess?.(readDigest(result));
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -372,7 +382,7 @@ function StructureRow({
                 display: "inline-block",
                 fontFamily: "monospace",
                 fontSize: "10px",
-                color: "rgba(107,107,94,0.7)",
+                color: "rgba(175,175,155,0.7)",
                 background: "rgba(255,255,255,0.04)",
                 border: "1px solid rgba(255,255,255,0.07)",
                 borderRadius: "0",
@@ -395,7 +405,7 @@ function StructureRow({
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "rgba(107,107,94,0.55)",
+                  color: "rgba(175,175,155,0.55)",
                   fontSize: "13px",
                   padding: "0 2px",
                   lineHeight: 1,
@@ -411,7 +421,7 @@ function StructureRow({
                 title="Set dApp URL (in-game browser)"
                 style={{
                   background: "none", border: "none", cursor: "pointer",
-                  color: "rgba(107,107,94,0.55)", fontSize: "11px",
+                  color: "rgba(175,175,155,0.55)", fontSize: "11px",
                   padding: "0 2px", lineHeight: 1,
                 }}
               >
@@ -437,7 +447,7 @@ function StructureRow({
                   const signer = new CurrentAccountSigner(dAppKit);
                   const result = await signer.signAndExecuteTransaction({ transaction: tx });
                   onTxSuccess?.(readDigest(result));
-                } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+                } catch (e) { setErr(translateTxError(e)); }
                 finally { setBusy(false); }
               }}
               style={{
@@ -455,7 +465,7 @@ function StructureRow({
             {/* Preset quick-assign buttons */}
             {(DAPP_PRESETS[structure.kind] ?? []).length > 0 && (
               <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ fontSize: "10px", color: "rgba(107,107,94,0.5)", letterSpacing: "0.06em", minWidth: 50 }}>QUICK</span>
+                <span style={{ fontSize: "10px", color: "rgba(175,175,155,0.5)", letterSpacing: "0.06em", minWidth: 50 }}>QUICK</span>
                 {(DAPP_PRESETS[structure.kind] ?? []).map(preset => (
                   <button
                     key={preset.url}
@@ -475,7 +485,7 @@ function StructureRow({
                             setSettingUrl(false);
                             setUrlInput("");
                             onTxSuccess?.(readDigest(result));
-                          } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+                          } catch (e) { setErr(translateTxError(e)); }
                           finally { setBusy(false); }
                         })();
                       }, 0);
@@ -599,7 +609,7 @@ function StructureRow({
           paddingTop: "10px",
           display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap",
         }}>
-          <span style={{ fontSize: "10px", color: "rgba(107,107,94,0.7)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          <span style={{ fontSize: "10px", color: "rgba(175,175,155,0.7)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
             Defense Policy
           </span>
           {delegated ? (
@@ -624,7 +634,7 @@ function StructureRow({
               {delegationBusy ? "…" : "APPLY TRIBE POLICY"}
             </button>
           ) : (
-            <span style={{ fontSize: "10px", color: "rgba(107,107,94,0.5)", fontFamily: "monospace" }}>
+            <span style={{ fontSize: "10px", color: "rgba(175,175,155,0.5)", fontFamily: "monospace" }}>
               No tribe — join a tribe to delegate
             </span>
           )}
@@ -699,15 +709,22 @@ function GroupBatchControls({
   const runBatch = async (targets: PlayerStructure[], action: "online" | "offline") => {
     if (!account || !targets.length) return;
     setBusy(action); setErr(null);
+    if (action === "online") playPowerOn(); else playPowerOff();
     try {
       const tx = action === "online"
         ? buildBatchOnlineTransaction(targets, characterId)
         : await buildBatchOfflineTransaction(targets, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
+      // Wait for every target to surface its new status on the fullnode
+      // before refetching. Slightly longer timeout for batches.
+      const expectedOnline = action === "online";
+      await Promise.all(
+        targets.map(t => waitForStructureStatus(t.objectId, expectedOnline, { timeoutMs: 18_000 })),
+      );
       onAllDone();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally {
       setBusy(null);
     }
@@ -726,7 +743,7 @@ function GroupBatchControls({
       borderRadius: "0",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-        <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", letterSpacing: "0.06em" }}>BATCH</span>
+        <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", letterSpacing: "0.06em" }}>BATCH</span>
 
         <button
           className="accent-button"
@@ -944,7 +961,7 @@ export function StructurePanel({ onTxSuccess }: Props) {
       {/* Structure List */}
       <div>
         {!characterId && (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", padding: "8px 0", fontFamily: "monospace" }}>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", padding: "8px 0", fontFamily: "monospace" }}>
             Resolving character… structure actions will be available shortly.
           </div>
         )}

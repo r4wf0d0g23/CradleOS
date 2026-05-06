@@ -1167,6 +1167,44 @@ export function sharedRef(tx: Transaction, objectId: string, initialSharedVersio
   return tx.sharedObjectRef({ objectId, initialSharedVersion, mutable });
 }
 
+// Poll the public Sui fullnode until a structure object's status field reflects
+// the expected online/offline value, OR the timeout fires. Used after toggle
+// transactions return — `signAndExecuteTransaction` resolves as soon as the
+// wallet submits + receives effects, but the fullnode RPC pool that
+// `fetchPlayerStructures` reads from is eventually consistent and may take a
+// few seconds to surface the new status. Without this wait, an immediate
+// refetch returns stale data and the UI toggle visually reverts.
+//
+// Returns true if status was confirmed within the timeout, false if it timed out.
+export async function waitForStructureStatus(
+  objectId: string,
+  expectedOnline: boolean,
+  opts: { timeoutMs?: number; intervalMs?: number; maxIntervalMs?: number } = {},
+): Promise<boolean> {
+  const timeoutMs = opts.timeoutMs ?? 12_000;
+  const baseIntervalMs = opts.intervalMs ?? 400;
+  const maxIntervalMs = opts.maxIntervalMs ?? 1_500;
+  const start = Date.now();
+  let interval = baseIntervalMs;
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const fields = await rpcGetObject(objectId);
+      // Object deleted (dismantled) — no point waiting any longer.
+      if (fields._deleted) return false;
+      const statusVariant = readPath(fields, "status", "fields", "status", "variant");
+      const isOnline = statusVariant === "ONLINE";
+      if (isOnline === expectedOnline) return true;
+    } catch {
+      // RPC blip — keep polling, the next attempt will retry.
+    }
+    await new Promise(r => setTimeout(r, interval));
+    // Exponential-ish backoff so we don't hammer the fullnode while still
+    // catching the new state quickly when it lands.
+    interval = Math.min(maxIntervalMs, Math.round(interval * 1.4));
+  }
+  return false;
+}
+
 export async function buildStructureOnlineTransaction(
   structure: PlayerStructure,
   characterId: string,

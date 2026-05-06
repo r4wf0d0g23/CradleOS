@@ -19,6 +19,7 @@ import {
   buildSetUrlTransaction,
   findCharacterForWallet,
   discoverVaultIdForTribe,
+  waitForStructureStatus,
   type PlayerStructure,
   type LocationGroup,
 } from "../lib";
@@ -219,6 +220,12 @@ function StructureCard({
 
   // itemId handled inline in name click handler
 
+  // Toggle handlers wait for fullnode consistency before firing onRefresh().
+  // signAndExecuteTransaction returns when the wallet has submitted the tx,
+  // but the public fullnode RPC pool used by fetchPlayerStructures is
+  // eventually consistent — it may take a few seconds to surface the new
+  // status. Without the wait, an immediate refetch returns stale data and
+  // the toggle visually reverts (sometimes permanently, until manual reload).
   const handleOnline = async () => {
     setBusy(true); setErr(null);
     playPowerOn();
@@ -226,6 +233,10 @@ function StructureCard({
       const tx = await buildStructureOnlineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
+      // Poll the fullnode until it reports the new status, then refetch.
+      // If it times out we still refetch — stale state is better than no
+      // update and the next periodic refetch will catch it.
+      await waitForStructureStatus(structure.objectId, true);
       onRefresh();
     } catch (e) {
       setErr(translateTxError(e));
@@ -239,6 +250,7 @@ function StructureCard({
       const tx = await buildStructureOfflineTransaction(structure, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
+      await waitForStructureStatus(structure.objectId, false);
       onRefresh();
     } catch (e) {
       setErr(translateTxError(e));
@@ -678,6 +690,8 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
   const [actionBusy, setActionBusy] = useState<string | null>(null);
   const [actionErr, setActionErr] = useState<string | null>(null);
 
+  // Wait for fullnode consistency before refetching — see StructureCard
+  // handleOnline/handleOffline for the full rationale.
   const handleOnline = async (s: PlayerStructure) => {
     setActionBusy(s.objectId); setActionErr(null);
     playPowerOn();
@@ -685,6 +699,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
       const tx = await buildStructureOnlineTransaction(s, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
+      await waitForStructureStatus(s.objectId, true);
       onRefresh();
     } catch (e) { setActionErr(e instanceof Error ? e.message : String(e)); }
     finally { setActionBusy(null); }
@@ -697,6 +712,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
       const tx = await buildStructureOfflineTransaction(s, characterId);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
+      await waitForStructureStatus(s.objectId, false);
       onRefresh();
     } catch (e) { setActionErr(e instanceof Error ? e.message : String(e)); }
     finally { setActionBusy(null); }
@@ -1854,7 +1870,18 @@ function NodeStanceStrip({
   // still allow ALL OFF (offline doesn't need power) but lock the stance ones.
   const canOnline = nodeCanPowerChildren;
 
-  async function execute(label: string, build: () => Promise<import("@mysten/sui/transactions").Transaction>) {
+  // Stance batch executor: build a single PTB that flips a set of structures
+  // off and another set on, sign+submit, then wait for the public fullnode to
+  // surface every flipped structure's new status before refetching. The tail
+  // structure(s) in the batch tend to take the longest to propagate; polling
+  // each one in parallel until either confirmed or timed out gives the most
+  // reliable post-batch refresh.
+  async function execute(
+    label: string,
+    offlineSet: PlayerStructure[],
+    onlineSet: PlayerStructure[],
+    build: () => Promise<import("@mysten/sui/transactions").Transaction>,
+  ) {
     if (!characterId) return;
     setBusy(label); setErr(null); setOkMsg(null);
     try {
@@ -1868,7 +1895,16 @@ function NodeStanceStrip({
         else { playPowerOn(); }
       } catch { /* */ }
       setOkMsg(`✓ ${label} applied${digest ? ` (tx ${digest.slice(0, 10)}…)` : ""}.`);
-      setTimeout(onRefresh, 1500);
+      // Wait for every affected structure to flip on the public fullnode. We
+      // poll in parallel — the longest-propagating one bounds total wait.
+      // Use a slightly longer timeout for batches because more objects =
+      // more chance one of them lags.
+      const waitOpts = { timeoutMs: 18_000 };
+      await Promise.all([
+        ...offlineSet.map(s => waitForStructureStatus(s.objectId, false, waitOpts)),
+        ...onlineSet.map(s => waitForStructureStatus(s.objectId, true, waitOpts)),
+      ]);
+      onRefresh();
     } catch (e) {
       setErr(translateTxError(e));
     } finally {
@@ -1877,17 +1913,17 @@ function NodeStanceStrip({
   }
 
   const onDefense = () =>
-    execute("defense", () =>
+    execute("defense", onlineIndustry, defenseFit.fits, () =>
       buildBatchSequencedTransaction(onlineIndustry, defenseFit.fits, characterId)
     );
 
   const onPeacetime = () =>
-    execute("peacetime", () =>
+    execute("peacetime", onlineTurrets, peacetimeFit.fits, () =>
       buildBatchSequencedTransaction(onlineTurrets, peacetimeFit.fits, characterId)
     );
 
   const onAllOff = () =>
-    execute("all-off", () =>
+    execute("all-off", [...onlineTurrets, ...onlineIndustry], [], () =>
       buildBatchSequencedTransaction(
         [...onlineTurrets, ...onlineIndustry],
         [],
