@@ -218,7 +218,10 @@ function CopyButton({ value }: { value: string }) {
 const S = {
   card: { background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.15)", borderRadius: 4, padding: "12px 16px", marginBottom: 8 } as React.CSSProperties,
   label: { fontSize: 9, color: "rgba(180,180,160,0.5)", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 2 },
-  value: { fontSize: 12, color: "#e0e0d0", fontFamily: "monospace" as const },
+  // wordBreak so 64-char Sui hashes wrap inside narrow cards (in-game webview
+  // is ~360px wide). minWidth:0 on the wrapper lets the flex child actually
+  // shrink instead of pushing the row wider than its parent.
+  value: { fontSize: 12, color: "#e0e0d0", fontFamily: "monospace" as const, wordBreak: "break-all" as const, minWidth: 0 },
   tag: (color: string) => ({ display: "inline-block", background: `${color}18`, border: `1px solid ${color}44`, color, borderRadius: 3, padding: "1px 7px", fontSize: 10, fontWeight: 600 }),
 };
 
@@ -471,11 +474,16 @@ function CharacterDetail({ char, tribe, vault, onBack, onOpenPlayerCard }: {
         <div style={{ fontWeight: 700, fontSize: 18, color: "#e0e0d0", marginBottom: 12 }}>{char.name || "Unnamed"}</div>
         {char.description && <div style={{ fontSize: 12, color: "#aaa", marginBottom: 12 }}>{char.description}</div>}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px" }}>
+        {/* Long hashes get their own full-width rows so they never overflow on
+            narrow viewports (in-game webview, sidebar, etc); short numeric IDs
+            stay paired side-by-side. */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <Field label="Character Address" value={char.characterAddress} copy />
           <Field label="Character Object ID" value={char.objectId} copy />
-          <Field label="Item ID" value={char.itemId} />
-          <Field label="Tribe ID" value={String(char.tribeId)} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px" }}>
+            <Field label="Item ID" value={char.itemId} />
+            <Field label="Tribe ID" value={String(char.tribeId)} />
+          </div>
         </div>
 
         {tribe && (
@@ -557,10 +565,10 @@ function TribeDetail({ tribe, vault, characters, onBack }: {
 
 function Field({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
   return (
-    <div>
+    <div style={{ minWidth: 0 }}>
       <div style={S.label}>{label}</div>
-      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-        <span style={S.value}>{value || "—"}</span>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 4, minWidth: 0 }}>
+        <span style={{ ...S.value, flex: 1, minWidth: 0 }}>{value || "—"}</span>
         {copy && value && <CopyButton value={value} />}
       </div>
     </div>
