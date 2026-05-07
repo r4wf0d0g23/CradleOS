@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, Fragment } from "react";
 import { PortalSelect } from "./PortalSelect";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator, fetchCharacterDisplayName } from "../lib";
@@ -792,6 +792,24 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       );
       return;
     }
+    // Resolve a custom quantity (mirrors the WITHDRAW input pattern).
+    // Empty/unset → full stack. Validates 1..=item.quantity; bad values
+    // surface as txError without firing a tx.
+    const qtyKey = `${item.typeId}|${item.partition}`;
+    const qtyRaw = withdrawQty.get(qtyKey)?.trim() ?? "";
+    let qty = item.quantity;
+    if (qtyRaw !== "") {
+      const parsed = Number(qtyRaw);
+      if (!Number.isFinite(parsed) || parsed <= 0 || !Number.isInteger(parsed)) {
+        setTxError(`Invalid quantity "${qtyRaw}". Must be a positive integer.`);
+        return;
+      }
+      if (parsed > item.quantity) {
+        setTxError(`Quantity ${parsed} exceeds available ${item.quantity}.`);
+        return;
+      }
+      qty = parsed;
+    }
     setWithdrawingTypeId(item.typeId);
     setTxStatus(null);
     setTxError(null);
@@ -817,7 +835,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
           tx.object(characterId),
           cap,
           tx.pure.u64(item.typeId),
-          tx.pure.u32(item.quantity),
+          tx.pure.u32(qty),
         ],
       });
 
@@ -845,7 +863,12 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       const itemName = resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
-      setTxStatus(`Moved ${item.quantity}× ${itemName} from owner partition to shared`);
+      setTxStatus(`Moved ${qty}× ${itemName} from owner partition to shared`);
+      setWithdrawQty(prev => {
+        const next = new Map(prev);
+        next.delete(qtyKey);
+        return next;
+      });
       setTimeout(() => onRefresh(ssu.objectId), 1500);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
@@ -1115,6 +1138,18 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
   const totalVol = nonZero.reduce((acc, i) => acc + i.volume * i.quantity, 0);
   const usedCap = inv.usedCapacity > 0 ? inv.usedCapacity : totalVol;
   const maxCap = inv.maxCapacity > 0 ? inv.maxCapacity : 2_000_000;
+  // Split capacity by partition so users can see how much of the SSU
+  // is held in the shared (open) pool vs. owner-private + per-character
+  // lockboxes. Computed off the row volumes (volume × qty) regardless of
+  // whether inv.usedCapacity came from the chain — the chain figure is
+  // the aggregate, not split, so we always derive partition splits from
+  // the row sums for consistency with what the user sees in the table.
+  const sharedUsedCap = nonZero
+    .filter(i => i.partition === "open")
+    .reduce((acc, i) => acc + i.volume * i.quantity, 0);
+  const ownerUsedCap = nonZero
+    .filter(i => i.partition !== "open")
+    .reduce((acc, i) => acc + i.volume * i.quantity, 0);
   const suffix = ssu.objectId.slice(-6);
 
   // Withdraw item from SSU to wallet
@@ -1425,6 +1460,30 @@ async function _handleWithdraw(item: InventoryItem) {
         >
           CAPACITY: {formatVolume(usedCap)} / {formatVolume(maxCap)} m³
         </div>
+        {/* Per-partition usage breakdown. "shared" = items in the open pool
+            (tribemates with shared access can withdraw). "owner" = the SSU
+            owner's private partition + any per-character lockboxes. The two
+            cells together always equal usedCap. */}
+        <div
+          style={{
+            display: "flex",
+            gap: 14,
+            fontSize: 9,
+            fontFamily: "monospace",
+            color: "rgba(175,175,155,0.45)",
+            letterSpacing: "0.06em",
+            marginTop: 2,
+          }}
+        >
+          <span title="Volume of items in the open (shared) partition. Tribemates with shared access can withdraw these.">
+            <span style={{ color: "rgba(0,255,150,0.55)" }}>● shared</span>{" "}
+            {formatVolume(sharedUsedCap)} m³
+          </span>
+          <span title="Volume of items in owner-private + per-character lockbox partitions. Only the depositor can move these.">
+            <span style={{ color: "rgba(255,200,80,0.55)" }}>● owner</span>{" "}
+            {formatVolume(ownerUsedCap)} m³
+          </span>
+        </div>
         <CapacityBar used={usedCap} max={maxCap} />
       </div>
 
@@ -1511,10 +1570,26 @@ async function _handleWithdraw(item: InventoryItem) {
                 No items
               </div>
             ) : (
-              nonZero.map((item) => {
+              nonZero.map((item, idx) => {
                 const name =
                   resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
                 const totalItemVol = item.volume * item.quantity;
+                // Visual divider between partition groups. Items are pre-sorted
+                // open → owner_main → unknown (see aggregateInventory()), so a
+                // change in partition between this row and the previous one
+                // marks a group boundary. Skip on idx===0 (no preceding row).
+                const prev = idx > 0 ? nonZero[idx - 1] : null;
+                const showDivider = prev !== null && prev.partition !== item.partition;
+                const dividerLabel = item.partition === "open"
+                  ? "shared partition"
+                  : item.partition === "owner_main"
+                  ? "owner-private partition"
+                  : "per-character lockboxes";
+                const dividerColor = item.partition === "open"
+                  ? "rgba(0,255,150,0.35)"
+                  : item.partition === "owner_main"
+                  ? "rgba(255,200,80,0.35)"
+                  : "rgba(255,255,255,0.18)";
                 // Per-row spinner state: a typeId may exist in BOTH partitions,
                 // so key the spinner on (typeId, partition).
                 const isWithdrawing =
@@ -1545,8 +1620,31 @@ async function _handleWithdraw(item: InventoryItem) {
                           : "Non-shared partition (per-accessor lockbox or unrecognized). Not withdrawable by tribemates.",
                       };
                 return (
+                  <Fragment key={`${item.typeId}│${item.partition}`}>
+                    {showDivider && (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "6px 0 4px",
+                          marginTop: 6,
+                          borderTop: `1px dashed ${dividerColor}`,
+                          fontSize: 9,
+                          fontFamily: "monospace",
+                          color: dividerColor,
+                          letterSpacing: "0.12em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        <span style={{ flex: 1 }} />
+                        <span style={{ padding: "0 6px", whiteSpace: "nowrap" }}>
+                          ── {dividerLabel} ──
+                        </span>
+                        <span style={{ flex: 1 }} />
+                      </div>
+                    )}
                   <div
-                    key={`${item.typeId}│${item.partition}`}
                     style={{
                       display: "flex",
                       gap: 8,
@@ -1677,31 +1775,63 @@ async function _handleWithdraw(item: InventoryItem) {
                         // → return_owner_cap). Otherwise just show the
                         // "owner-only" label as before.
                         canMoveOwnerToShared ? (
-                          <button
-                            onClick={() => handleMoveToShared(item)}
-                            disabled={withdrawingTypeId === item.typeId}
-                            title={`Move ${item.quantity}× from owner-private → shared partition (single signature). Tribemates with shared access (${policy ? modeLabel(policy.mode) : "shared"}) will then be able to withdraw.`}
-                            style={{
-                              fontSize: 10,
-                              fontFamily: "monospace",
-                              letterSpacing: "0.08em",
-                              background: "transparent",
-                              border: "1px solid rgba(255,200,80,0.5)",
-                              color:
-                                withdrawingTypeId === item.typeId
-                                  ? "rgba(255,200,80,0.4)"
-                                  : "#ffc850",
-                              padding: "2px 6px",
-                              cursor:
-                                withdrawingTypeId === item.typeId
-                                  ? "wait"
-                                  : "pointer",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {withdrawingTypeId === item.typeId ? "…" : "↪ SHARED"}
-                          </button>
+                          <div style={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "flex-end" }}>
+                            <input
+                              type="number"
+                              min={1}
+                              max={item.quantity}
+                              placeholder={String(item.quantity)}
+                              value={withdrawQty.get(`${item.typeId}|${item.partition}`) ?? ""}
+                              onChange={e => {
+                                const v = e.target.value;
+                                setWithdrawQty(prev => {
+                                  const next = new Map(prev);
+                                  if (v === "") next.delete(`${item.typeId}|${item.partition}`);
+                                  else next.set(`${item.typeId}|${item.partition}`, v);
+                                  return next;
+                                });
+                              }}
+                              disabled={withdrawingTypeId === item.typeId}
+                              title={`Quantity to move into shared (max ${item.quantity}). Leave blank to move the full stack.`}
+                              style={{
+                                width: 44,
+                                fontSize: 10,
+                                fontFamily: "monospace",
+                                background: "rgba(0,0,0,0.3)",
+                                border: "1px solid rgba(255,200,80,0.25)",
+                                color: "#c8c8b8",
+                                padding: "2px 4px",
+                                textAlign: "right",
+                                MozAppearance: "textfield" as const,
+                              }}
+                            />
+                            <button
+                              onClick={() => handleMoveToShared(item)}
+                              disabled={withdrawingTypeId === item.typeId}
+                              title={`Move from owner-private → shared partition (single signature). Tribemates with shared access (${policy ? modeLabel(policy.mode) : "shared"}) will then be able to withdraw.`}
+                              style={{
+                                fontSize: 10,
+                                fontFamily: "monospace",
+                                letterSpacing: "0.08em",
+                                background: "transparent",
+                                border: "1px solid rgba(255,200,80,0.5)",
+                                color:
+                                  withdrawingTypeId === item.typeId
+                                    ? "rgba(255,200,80,0.4)"
+                                    : "#ffc850",
+                                padding: "2px 6px",
+                                cursor:
+                                  withdrawingTypeId === item.typeId
+                                    ? "wait"
+                                    : "pointer",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {withdrawingTypeId === item.typeId ? "…" : "↪ SHARED"}
+                            </button>
+                          </div>
                         ) : ownerCapId ? (
+
                           <span
                             title="You own this SSU but no shared-access policy is configured (or the active policy doesn't permit your character to deposit). Open Shared Access below to enable TRIBE / ALLOWLIST / HYBRID / PUBLIC mode, then this button will appear."
                             style={{ fontSize: 9, color: "rgba(255,200,80,0.6)", fontStyle: "italic" }}
@@ -1797,6 +1927,7 @@ async function _handleWithdraw(item: InventoryItem) {
                       ) : null}
                     </div>
                   </div>
+                  </Fragment>
                 );
               })
             )}

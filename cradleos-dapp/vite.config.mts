@@ -22,13 +22,17 @@ export default defineConfig({
       "agent-raw-jetson1",
       "agent-raw-jetson1.local",
       "agent-raw-jetson1.tail587192.ts.net",
+      "spark-2def",
+      "spark-2def.tail587192.ts.net",
       ".tail587192.ts.net",
       "localhost",
     ],
     // HMR over Tailscale HTTPS proxy: client connects to the proxy host:port
     // (4173), but websocket protocol must be wss + same host.
+    // Host can be overridden via VITE_HMR_HOST env (set by the systemd unit
+    // on whichever node is hosting the dev server).
     hmr: {
-      host: "agent-raw-jetson1.tail587192.ts.net",
+      host: process.env.VITE_HMR_HOST ?? "spark-2def.tail587192.ts.net",
       port: 4173,
       protocol: "wss",
       clientPort: 4173,
