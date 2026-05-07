@@ -64,21 +64,47 @@ export async function rpcGetObject(objectId: string): Promise<Record<string, unk
   return { ...json.result.data.content.fields, _type: objType, _owner: json.result.data.owner };
 }
 
-async function rpcGetOwnedObjects(owner: string, typeFilter: string, limit = 50): Promise<Array<{ objectId: string; fields: Record<string, unknown> }>> {
-  const res = await fetch(SUI_TESTNET_RPC, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0", id: 1,
-      method: "suix_getOwnedObjects",
-      params: [owner, { filter: { StructType: typeFilter }, options: { showContent: true, showType: true } }, null, limit],
-    }),
-  });
-  const json = await res.json() as { result: { data: Array<{ data: { objectId: string; content: { fields: Record<string, unknown> } } }> } };
-  return (json.result.data ?? []).map(item => ({
-    objectId: item.data.objectId,
-    fields: item.data.content?.fields ?? {},
-  }));
+// Paginates through suix_getOwnedObjects until exhausted (or `maxTotal` is hit
+// as a runaway safety net). The Sui fullnode caps page size at 50 regardless
+// of what the caller asks for, so a wallet/character with >50 caps of one
+// type would previously have its overflow silently dropped. Observed in the
+// wild: Stillness players with 60+ Assemblies losing structures past index 50
+// from the CradleOS dashboard. Fixed 2026-05-07 by adding the pagination loop.
+async function rpcGetOwnedObjects(owner: string, typeFilter: string, maxTotal = 1000): Promise<Array<{ objectId: string; fields: Record<string, unknown> }>> {
+  const out: Array<{ objectId: string; fields: Record<string, unknown> }> = [];
+  let cursor: string | null = null;
+  // Hard page cap to bound RPC fanout even if the fullnode returns a
+  // pathological response. 25 pages * 50 per page = 1250 caps, well above any
+  // realistic structure count for a single character.
+  for (let page = 0; page < 25; page++) {
+    const res = await fetch(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_getOwnedObjects",
+        params: [owner, { filter: { StructType: typeFilter }, options: { showContent: true, showType: true } }, cursor, 50],
+      }),
+    });
+    const json = await res.json() as {
+      result?: {
+        data?: Array<{ data: { objectId: string; content: { fields: Record<string, unknown> } } }>;
+        hasNextPage?: boolean;
+        nextCursor?: string | null;
+      };
+    };
+    const page_data = json.result?.data ?? [];
+    for (const item of page_data) {
+      out.push({
+        objectId: item.data.objectId,
+        fields: item.data.content?.fields ?? {},
+      });
+      if (out.length >= maxTotal) return out;
+    }
+    if (!json.result?.hasNextPage || !json.result?.nextCursor) break;
+    cursor = json.result.nextCursor;
+  }
+  return out;
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -705,7 +731,10 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
         // Build the struct type using the current pkg prefix but override the world pkg
         const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
         const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
-        const caps = await rpcGetOwnedObjects(characterId, ownerCapType, 50);
+        // No explicit limit — default 1000 with pagination handles characters
+        // with large structure counts. Bug 2026-05-07: hard-coded 50 here
+        // silently dropped Assemblies past index 50 (e.g. Jack Sparrow had 64).
+        const caps = await rpcGetOwnedObjects(characterId, ownerCapType);
         for (const { objectId: capId, fields } of caps) {
           const structureId = fields["authorized_object_id"] as string;
           if (structureId && !capEntries.some(e => e.structureId === structureId)) {
@@ -1774,7 +1803,8 @@ export async function fetchOwnerCapsForWallet(walletAddress: string): Promise<{ 
   const allCaps: { capId: string; turretId: string; characterId: string }[] = [];
   for (const wpkg of worldPkgs) {
     const ownerCapType = `${wpkg}::access::OwnerCap<${wpkg}::turret::Turret>`;
-    const caps = await rpcGetOwnedObjects(charInfo.characterId, ownerCapType, 50);
+    // Default 1000 with pagination; same pattern as fetchPlayerStructures.
+    const caps = await rpcGetOwnedObjects(charInfo.characterId, ownerCapType);
     for (const { objectId: capId, fields } of caps) {
       const turretId = String(fields["authorized_object_id"] ?? "");
       if (turretId && !allCaps.some(c => c.turretId === turretId)) {
