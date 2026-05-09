@@ -238,6 +238,37 @@ export const CLOCK = "0x6";
  */
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
 export const SUI_TESTNET_RPC_FALLBACK = "https://fullnode.testnet.sui.io:443";
+
+/**
+ * DIRECT public-fullnode endpoint for CRITICAL-PATH reads only.
+ *
+ * Why this exists separately from `SUI_TESTNET_RPC` and `_FALLBACK`:
+ *   The DGX1 caching proxy is a huge win for high-volume fanout panels
+ *   (inventory, intel, calendar, query, industry, wiki, lore) where 50-200
+ *   parallel RPCs would otherwise rate-limit users. But the proxy is also
+ *   a single point of failure — when DGX1 has a storm/network blip, the
+ *   circuit breaker trips after 3 failures, and during that 3-fail window
+ *   the user's TribeVault and Character lookups can fail with "not found"
+ *   errors. Critical app-shell identity should never depend on DGX uptime.
+ *
+ * Routing rule:
+ *   - Cache-friendly bulk reads → SUI_TESTNET_RPC (proxy, with breaker fallback)
+ *   - App-shell identity reads → SUI_TESTNET_RPC_DIRECT (bypasses DGX entirely)
+ *
+ * Critical helpers (in lib.ts) that use this direct URL:
+ *   - findCharacterForWallet
+ *   - fetchCharacterTribeId
+ *   - fetchTribeInfo
+ *   - fetchTribeVault
+ *   - discoverVaultIdForTribe
+ *   - fetchAllRegisteredTribes
+ *
+ * The circuit breaker (lib/rpcCircuitBreaker.ts) only intercepts URLs that
+ * start with the proxy URL, so direct URLs naturally bypass it. The user
+ * pays slightly higher RPC latency on these calls in exchange for storm
+ * resilience.
+ */
+export const SUI_TESTNET_RPC_DIRECT = "https://fullnode.testnet.sui.io:443";
 export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
 
 // Well-known tribes that don't have CradleOS vaults but still need policy coverage

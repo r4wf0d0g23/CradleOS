@@ -17,6 +17,7 @@ import {
   RAW_NETWORK_NODE_ID,
   RAW_NODE_OWNER_CAP,
   SUI_TESTNET_RPC,
+  SUI_TESTNET_RPC_DIRECT,
   WORLD_API,
   WORLD_PKG,
   WORLD_PKG_UTOPIA_V1,
@@ -46,6 +47,32 @@ type CoreLikeClient = {
   getObject: (options: { objectId: string; include?: Record<string, boolean> }) => Promise<{ object: { objectId: string; type: string; owner?: unknown; json?: Record<string, unknown> | null } }>;
   listOwnedObjects: (options: { owner: string; type?: string; include?: Record<string, boolean>; limit?: number }) => Promise<{ objects: Array<{ objectId: string; type?: string; json?: Record<string, unknown> | null }> }>;
 };
+
+/**
+ * Direct-fullnode variant of rpcGetObject for CRITICAL-PATH reads only.
+ *
+ * Bypasses the DGX1 caching proxy entirely so app-shell identity reads
+ * (TribeVault state, Character object dereference) keep working when
+ * DGX has a storm/network blip. See SUI_TESTNET_RPC_DIRECT in constants.ts
+ * for the full rationale.
+ *
+ * Use sparingly — high-volume reads should still go through the proxy
+ * for caching/coalescing benefits. Reserve this for must-not-fail
+ * boot-path lookups.
+ */
+export async function rpcGetObjectDirect(objectId: string): Promise<Record<string, unknown>> {
+  const res = await fetch(SUI_TESTNET_RPC_DIRECT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id: 1,
+      method: "sui_getObject",
+      params: [objectId, { showContent: true, showType: true, showOwner: true }],
+    }),
+  });
+  const json = await res.json() as { result: { data: { content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } };
+  return (json.result?.data?.content?.fields ?? {}) as Record<string, unknown>;
+}
 
 export async function rpcGetObject(objectId: string): Promise<Record<string, unknown>> {
   const res = await fetch(SUI_TESTNET_RPC, {
@@ -445,10 +472,11 @@ export type CharacterInfo = {
  * range, e.g. Clonebank 86 = 1000167) are valid CradleOS users and must have full
  * access. Tribe is read off the live Character and returned as-is to the caller. */
 async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Promise<CharacterInfo | null> {
-  // Use _ssuFetchWithRetry on this critical boot path — a single
-  // transient fetch error here trips both the dashboard "Failed to fetch"
-  // banner and the ServerMismatchBanner "Character Not Found" warning.
-  const ppRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+  // CRITICAL BOOT PATH — use direct fullnode URL so DGX storms can't break
+  // character lookup. A single transient fetch error here trips both the
+  // dashboard "Failed to fetch" banner and the ServerMismatchBanner
+  // "Character Not Found" warning. Combined with retry for network blips.
+  const ppRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -476,7 +504,8 @@ async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Prom
     profiles.map(async (pp): Promise<Resolved | null> => {
       const charId = pp?.data?.content?.fields?.character_id;
       if (!charId) return null;
-      const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      // CRITICAL BOOT PATH — direct fullnode URL (bypass DGX proxy)
+      const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -530,12 +559,13 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
   if (v1) return v1;
 
   // Last resort: scan CharacterCreatedEvent for both packages.
-  // Use _ssuFetchWithRetry so a transient network blip on the very first
-  // load doesn't fail the entire dashboard with "Failed to fetch".
+  // CRITICAL BOOT PATH — use direct fullnode URL (bypass DGX proxy) plus
+  // retry so a transient network blip doesn't fail the entire dashboard
+  // with "Failed to fetch".
   for (const pkg of [WORLD_PKG, WORLD_PKG_UTOPIA_V1]) {
     let cursor: string | null = null;
     do {
-      const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -574,7 +604,8 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
 export async function fetchCharacterTribeId(walletAddress: string): Promise<number | null> {
   const charInfo = await findCharacterForWallet(walletAddress);
   if (!charInfo) return null;
-  const fields = await rpcGetObject(charInfo.characterId);
+  // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy)
+  const fields = await rpcGetObjectDirect(charInfo.characterId);
   return numish(fields["tribe_id"]);
 }
 
@@ -1707,7 +1738,9 @@ export type CoinIssuedEvent = {
 /** Fetch TribeVault state by shared object ID. */
 export async function fetchTribeVault(vaultId: string): Promise<TribeVaultState | null> {
   try {
-    const fields = await rpcGetObject(vaultId);
+    // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy) so storms
+    // at DGX1 don't make the user's TribeVault "not found".
+    const fields = await rpcGetObjectDirect(vaultId);
     // Extract the balances Table's inner UID so we can query member balances as dynamic fields
     const balancesField = fields["balances"] as { fields?: { id?: { id?: string } } } | undefined;
     const balancesTableId = balancesField?.fields?.id?.id ?? "";
@@ -2622,7 +2655,8 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
   const cached = getCachedVaultId(tribeId);
   if (cached) {
     try {
-      const fields = await rpcGetObject(cached);
+      // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy)
+      const fields = await rpcGetObjectDirect(cached);
       const coinName = String(fields["coin_name"] ?? "");
       if (coinName.length > 0) return cached;
       // Cached vault has no coin_name — stale. Clear and fall through to
@@ -2635,7 +2669,8 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
     }
   }
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
+    // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy)
+    const res = await fetch(SUI_TESTNET_RPC_DIRECT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
