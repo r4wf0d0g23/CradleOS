@@ -2108,7 +2108,7 @@ function PolicyMembersSection({ vault }: { vault: TribeVaultState }) {
 
 // ── Personal Policy Section ────────────────────────────────────────────────────
 
-function PersonalPolicySection({
+export function PersonalPolicySection({
   account,
   characterTribeId,
 }: {

@@ -44,6 +44,7 @@ import { translateTxError } from "../lib/txError";
 import { CharacterAutocomplete } from "./CharacterAutocomplete";
 import { useCharacterDirectory, findCharacterById } from "../lib/characterDirectory";
 import { staggeredRefetch } from "../lib/staggeredRefetch";
+import { PersonalPolicySection } from "./TurretPolicyPanel";
 
 const ACCESS_LEVELS = [0, 1, 2, 3] as const;
 const LEVEL_COLORS: Record<number, string> = {
@@ -60,6 +61,7 @@ export function GatePolicyPanel() {
   const { overrideAccount, overrideTribeId } = useDevOverrides();
   const account = overrideAccount(_acct);
   const rawAccount = useCurrentAccount();
+  const [policyTab, setPolicyTab] = useState<"tribe" | "personal">("tribe");
 
   // ── Gate Linking ───────────────────────────────────────────────────────────
   const { mutateAsync: sendSponsoredTx } = useSponsoredTransaction();
@@ -186,6 +188,31 @@ export function GatePolicyPanel() {
   return (
     <div style={{ padding: "20px", maxWidth: 900, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
+      {/* Policy type tabs — mirrors TurretPolicyPanel UX so users find personal gate policy here too */}
+      <div style={{ display: "flex", borderBottom: "2px solid rgba(0,200,255,0.15)" }}>
+        {([["tribe", "⛩ TRIBE POLICY"], ["personal", "👤 PERSONAL POLICY"]] as const).map(([tab, label]) => (
+          <button key={tab} onClick={() => setPolicyTab(tab)} style={{
+            fontFamily: "inherit", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+            padding: "6px 16px", border: "none", cursor: "pointer",
+            background: policyTab === tab ? "rgba(0,200,255,0.1)" : "transparent",
+            color: policyTab === tab ? "#00ccff" : "rgba(255,255,255,0.3)",
+            borderBottom: policyTab === tab ? "2px solid #00ccff" : "2px solid transparent",
+            marginBottom: -2,
+          }}>{label}</button>
+        ))}
+      </div>
+
+      {policyTab === "personal" && tribeId !== null && (
+        <PersonalPolicySection account={account} characterTribeId={tribeId} />
+      )}
+      {policyTab === "personal" && tribeId === null && (
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12, padding: 16 }}>
+          Loading character tribe…
+        </div>
+      )}
+
+      {policyTab === "tribe" && <>
+
       {/* ── Gate Linking Section ── */}
       {myGates.length > 0 && (
         <div style={{ border: "1px solid rgba(0,200,255,0.2)", background: "rgba(0,200,255,0.03)", padding: 16 }}>
@@ -310,6 +337,8 @@ export function GatePolicyPanel() {
         vault={vault}
         delegations={delegations ?? []}
       />
+
+      </>}
 
     </div>
   );
