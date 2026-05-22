@@ -5,6 +5,7 @@ import { useCurrentAccount, useWallets, useDAppKit } from "@mysten/dapp-kit-reac
 import { VerifiedAccountProvider, useVerifiedAccountContext } from "./contexts/VerifiedAccountContext";
 import { DevModeProvider, DevRoleToggle } from "./contexts/DevModeContext";
 import { ServerMismatchBanner } from "./components/ServerMismatchBanner";
+import MAUFooterPill from "./components/MAUFooterPill";
 import { StructurePanel } from "./components/StructurePanel";
 import { TribeVaultPanel } from "./components/TribeVaultPanel";
 import { TurretPolicyPanel } from "./components/TurretPolicyPanel";
@@ -325,7 +326,12 @@ function AppInner() {
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
   const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war", "industry", "fanfest", "cipher"]);
-  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "war"); // default to war — visible without wallet
+  // Default landing tab:
+  //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
+  //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
+  //   - if no wallet at all on first paint, the wallet-gate UI in the panel area renders
+  //     a clear "Connect EVE Vault" CTA, which is the correct first-touch experience
+  const [activeTab, setActiveTab] = useState<Tab>(() => getHashTab() ?? "dashboard");
   const [briefOpen, setBriefOpen] = useState(true);
   const [kioskMode, setKioskMode] = useState<boolean>(() => getHashTab() !== null);
   // Dev env toggle — only shown in dev mode
@@ -1180,6 +1186,8 @@ function AppInner() {
       {window.location.hash === "#upgrade" && <UpgradePanel />}
       {/* DEV-only role toggle bar — fixed bottom bar, production builds strip this */}
       <DevRoleToggle />
+      {/* Live CradleOS MAU pill (fixed bottom-right, hidden when zero) */}
+      <MAUFooterPill />
     </main>
   );
 }
