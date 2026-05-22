@@ -30,7 +30,6 @@ import { InventoryPanel } from "./components/InventoryPanel";
 import { KeeperPanel } from "./components/KeeperPanel";
 import { UpgradePanel } from "./components/UpgradePanel";
 import { DashboardPanel } from "./components/DashboardPanel";
-import { LineageWarPanel } from "./components/LineageWarPanel";
 // LinksPanel removed — kiosk link controls merged into StructurePanel
 import { IndustryPanel } from "./components/IndustryPanel";
 import KeeperOrb from "./components/KeeperOrb";
@@ -193,7 +192,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "fanfest" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "war" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "fanfest" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -203,7 +202,6 @@ const ROUTE_MAP: Record<string, Tab> = {
   "inventory":     "inventory",
   "structures":    "structures",
   "dashboard":     "dashboard",
-  "war":           "war",
   "links":         "structures",
   "industry":      "industry",
   "flappy":        "flappy",
@@ -325,7 +323,7 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "war", "industry", "fanfest", "cipher"]);
+  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "industry", "fanfest", "cipher"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -563,17 +561,8 @@ function AppInner() {
         "Your data stays on Sui — the Keeper reads only what the lattice reveals",
       ],
     },
-    war: {
-      title: "The Genesis War — live territory control",
-      steps: [
-        "Live countdown to next tick (60-minute intervals on live chain)",
-        "Scoreboard tracks control points per tribe in real time from on-chain data",
-        "Contest a system by deploying the required Assembly type shown on each system card",
-        "Commitment ledger shows every on-chain tick result with snapshot hashes",
-        "Data sourced directly from lineagewar.xyz verifier — refreshes every 30 seconds",
-      ],
-    },
     // links tab removed — merged into StructurePanel KIOSK section
+    // war tab removed 2026-05-22 — LineageWar panel hidden pending refresh
     industry: {
       title: "Industry — supply chain calculator for EVE Frontier manufacturing",
       steps: [
@@ -615,7 +604,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", fanfest: "fanfest", keeper: "keeper", cipher: "cipher", war: "war", industry: "industry", flappy: "flappy",
+      calendar: "calendar", fanfest: "fanfest", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -739,22 +728,21 @@ function AppInner() {
               // tab strip; structures opens via the dashboard, keeper has
               // its own orb, etc.).
               const ORDER: Tab[] = [
-                "war", "dashboard", "inventory", "tribe", "defense",
+                "dashboard", "inventory", "tribe", "defense",
                 "bounties", "srp", "cargo", "gates", "succession",
                 "intel", "cipher", "recruiting", "hierarchy", "assets", "calendar",
                 "fanfest", "wiki", "fitting", "map", "query", "industry",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
                 "map", "wiki", "fitting", "query", "intel", "cipher",
-                "war", "industry", "fanfest",
+                "industry", "fanfest",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
               const active = activeTab === tab;
               // Compact labels — monospace, all caps, brief.
               const label =
-                tab === "war"         ? "WAR"
-                : tab === "dashboard"  ? "DASH"
+                tab === "dashboard"  ? "DASH"
                 : tab === "inventory"  ? "INV"
                 : tab === "tribe"      ? "TRIBE"
                 : tab === "defense"    ? "DEFENSE"
@@ -1038,9 +1026,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["war", "dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "fanfest", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "fanfest", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "war", "industry", "fanfest"]);
+          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "industry", "fanfest"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1094,7 +1082,6 @@ function AppInner() {
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
-                  : tab === "war"        ? "⚔"
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
                   : tab === "cipher"    ? "⊕ Cipher"
@@ -1119,7 +1106,6 @@ function AppInner() {
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
-                  : tab === "war"           ? "⚔ War"
                   : tab === "keeper"        ? "◆ Keeper"
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
@@ -1176,7 +1162,6 @@ function AppInner() {
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
-          {activeTab === "war"           && <div style={{ background: "transparent" }} className="content-panel"><LineageWarPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}

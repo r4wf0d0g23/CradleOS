@@ -54,13 +54,6 @@ const SERVICES: ServiceDef[] = [
     icon: "◎",
   },
   {
-    id: "war",
-    label: "War Board",
-    description: "Lineage War scoreboard, tick countdown, and contested systems.",
-    url: `${BASE}/#/war`,
-    icon: "⚔",
-  },
-  {
     id: "map",
     label: "Star Map",
     description: "System topology, gate links, and constellation navigation.",
@@ -209,6 +202,13 @@ const SERVICES: ServiceDef[] = [
     description: "Search characters and tribes by name, ticker, or wallet.",
     url: `${BASE}/#/query`,
     icon: "?",
+  },
+  {
+    id: "cipher",
+    label: "Keeper Cipher",
+    description: "Daily encrypted Keeper transmission with optional in-game expeditions.",
+    url: `${BASE}/#/cipher`,
+    icon: "⊕",
   },
 
   // ── Keeper (easter egg — unlabeled in dropdown via `secret: true`) ──
