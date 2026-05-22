@@ -73,6 +73,27 @@ export function useVerifiedAccount(): UseVerifiedAccountResult {
       }
 
       setCryptoVerified(true);
+
+      // Fire-and-forget telemetry ping. Server re-verifies sig and logs unique
+      // address per day for MAU tracking. Privacy: only the wallet address
+      // (already public on-chain) is sent. No PII.
+      try {
+        const challengeB64 = btoa(String.fromCharCode(...challenge));
+        // Pass the wallet-format signature (string) for server-side re-verify.
+        // Errors are swallowed — telemetry must NEVER block the user.
+        fetch("https://keeper.reapers.shop/telemetry/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            address: currentAccount.address,
+            signature,
+            challenge: challengeB64,
+          }),
+          keepalive: true,
+        }).catch(() => { /* silent — telemetry is best-effort */ });
+      } catch {
+        /* silent — telemetry is best-effort */
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (
