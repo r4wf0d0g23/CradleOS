@@ -21,7 +21,6 @@ import { RecruitingPanel } from "./components/RecruitingPanel";
 import { TribeHierarchyPanel } from "./components/TribeHierarchyPanel";
 import { AssetLedgerPanel } from "./components/AssetLedgerPanel";
 import { EventCalendarPanel } from "./components/EventCalendarPanel";
-import { FanfestPanel } from "./components/FanfestPanel";
 import { LoreWikiPanel } from "./components/LoreWikiPanel";
 import { ShipFittingPanel } from "./components/ShipFittingPanel";
 import { QueryPanel } from "./components/QueryPanel";
@@ -192,7 +191,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "fanfest" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -222,7 +221,6 @@ const ROUTE_MAP: Record<string, Tab> = {
   "hierarchy":     "hierarchy",
   "assets":        "assets",
   "calendar":      "calendar",
-  "fanfest":       "fanfest",
   "keeper":        "keeper",
 };
 
@@ -323,7 +321,7 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "industry", "fanfest", "cipher"]);
+  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "industry", "cipher"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -513,17 +511,6 @@ function AppInner() {
         "Use the Announcements tab to broadcast events to tribe members",
       ],
     },
-    fanfest: {
-      title: "EVE Fanfest 2026 planner — Reykjavik, 14–16 May",
-      steps: [
-        "Schedule view: block-style hourly grid by stage (Eldborg / Norðurljós / Kaldalón / Þríund / Special)",
-        "List view: flat sortable list with all filters applied",
-        "My Plan: starred events grouped by day with conflict and gap detection",
-        "Filter by stage, topic, or 'free time' window to see only what fits your schedule",
-        "Star events to build your personal plan — saved per wallet, no on-chain footprint",
-        "Export My Plan as Markdown to share with your tribe",
-      ],
-    },
     wiki: {
       title: "Community lore wiki — on-chain knowledge base for EVE Frontier",
       steps: [
@@ -604,7 +591,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", fanfest: "fanfest", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
+      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -731,11 +718,11 @@ function AppInner() {
                 "dashboard", "inventory", "tribe", "defense",
                 "bounties", "srp", "cargo", "gates", "succession",
                 "intel", "cipher", "recruiting", "hierarchy", "assets", "calendar",
-                "fanfest", "wiki", "fitting", "map", "query", "industry",
+                "wiki", "fitting", "map", "query", "industry",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
                 "map", "wiki", "fitting", "query", "intel", "cipher",
-                "industry", "fanfest",
+                "industry",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -756,7 +743,6 @@ function AppInner() {
                 : tab === "hierarchy"  ? "ROLES"
                 : tab === "assets"     ? "ASSETS"
                 : tab === "calendar"   ? "CAL"
-                : tab === "fanfest"    ? "FF26"
                 : tab === "wiki"       ? "WIKI"
                 : tab === "fitting"    ? "FIT"
                 : tab === "map"        ? "MAP"
@@ -1026,9 +1012,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "fanfest", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "industry", "fanfest"]);
+          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "industry"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1078,7 +1064,6 @@ function AppInner() {
                   : tab === "hierarchy"  ? "Roles"
                   : tab === "assets"     ? "Assets"
                   : tab === "calendar"   ? "Cal"
-                  : tab === "fanfest"    ? "FF26"
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
@@ -1102,7 +1087,6 @@ function AppInner() {
                   : tab === "hierarchy"     ? "Hierarchy"
                   : tab === "assets"        ? "Assets"
                   : tab === "calendar"      ? "Calendar"
-                  : tab === "fanfest"       ? "Fanfest 2026"
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
@@ -1157,7 +1141,6 @@ function AppInner() {
           {activeTab === "hierarchy"     && <div style={{ background: "transparent" }} className="content-panel"><TribeHierarchyPanel /></div>}
           {activeTab === "assets"        && <div style={{ background: "transparent" }} className="content-panel"><AssetLedgerPanel /></div>}
           {activeTab === "calendar"      && <div style={{ background: "transparent" }} className="content-panel"><EventCalendarPanel /></div>}
-          {activeTab === "fanfest"       && <div style={{ background: "transparent" }} className="content-panel"><FanfestPanel /></div>}
           {activeTab === "wiki"          && <div style={{ background: "transparent", height: "calc(100vh - 260px)", minHeight: 500, display: "flex", flexDirection: "column" }}><LoreWikiPanel /></div>}
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}

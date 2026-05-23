@@ -80,82 +80,10 @@ const HACKATHON_EVENTS: CommunityEvent[] = [
 
 const HACKATHON_IDS = new Set(HACKATHON_EVENTS.map(e => e.id));
 
-// ── EVE Fanfest 2026 (Reykjavik, 14–16 May) ───────────────────────────────────
-// Source: https://www.eveonline.com/news/view/eve-fanfest-2026-megablog
-// All times local Reykjavik (UTC+0 in May). Posted as Social events, public.
-
-export const FANFEST_EVENTS: CommunityEvent[] = [
-  // ── Thursday 14 May ────────────────────────────────────────────────────────
-  // Norðurljós
-  { id: "ff26-thu-nl-1000", title: "Team Security: Taking the War to Bots and RMT",                   date: "2026-05-14", time: "10:00", description: "Norðurljós · 10:00 · FC Arcade, FC Stinger",                                                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-nl-1200", title: "EVE For EVEryone Panel",                                          date: "2026-05-14", time: "12:00", description: "Norðurljós · 12:00 · FC Moss, FC Okami, FC Eclipse, Kshal, Tyrion Hekki",                                              type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-nl-1300", title: "Life of a Killmail",                                              date: "2026-05-14", time: "13:00", description: "Norðurljós · 13:00 · Squizz Caphinator",                                                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-nl-1400", title: "Alliance Leadership Panel: What Goes Into Running an Alliance?",  date: "2026-05-14", time: "14:00", description: "Norðurljós · 14:00 · FC Swift",                                                                                        type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-nl-1500", title: "From Small-Gang PvPer to YouTube Creator",                        date: "2026-05-14", time: "15:00", description: "Norðurljós · 15:00 · Grunt Kado",                                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-nl-1600", title: "The Frontier: Setting, Story, and World",                         date: "2026-05-14", time: "16:00", description: "Norðurljós · 16:00 · FC Dramaturg, FC Overload, FC Maximum Cats",                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Kaldalön
-  { id: "ff26-thu-kl-1000", title: "An Emergency Physician's Perspective",                            date: "2026-05-14", time: "10:00", description: "Kaldalön · 10:00 · Argus Sorn",                                                                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-kl-1200", title: "Project Discovery: A Decade of Citizen Science",                  date: "2026-05-14", time: "12:00", description: "Kaldalön · 12:00 · FC Edelweiss, Ryan Brinkman, Attila Szantner, Alex Butyaev",                                            type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-kl-1300", title: "Predicting the Future… Responsibly",                              date: "2026-05-14", time: "13:00", description: "Kaldalön · 13:00 · FC Excluded",                                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-kl-1400", title: "R&D — How the Carbon Engine is Strengthening the Wider EVE Universe", date: "2026-05-14", time: "14:00", description: "Kaldalön · 14:00 · FC Rave, FC Serpent, FC Sasquatch, FC Overload",                                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-kl-1500", title: "3rd Party ESI Panel",                                             date: "2026-05-14", time: "15:00", description: "Kaldalön · 15:00 · FC Stroopwafel, FC Pinky, 3rd party developers",                                                    type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-kl-1600", title: "FC ESI Panel: Supporting Developers at Scale",                    date: "2026-05-14", time: "16:00", description: "Kaldalön · 16:00 · FC Stroopwafel, FC Pinky, FC Troglodyte",                                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Þríund
-  { id: "ff26-thu-th-1000", title: "AT Fleet Composition and Theory",                                 date: "2026-05-14", time: "10:00", description: "Þríund · 10:00 · Kevin Grumman",                                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-th-1200", title: "EVE Orbit: Everything But the Girl",                              date: "2026-05-14", time: "12:00", description: "Þríund · 12:00 · FC Troglodyte, FC Graven, FC Rubik, FC Stroopwafel",                                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-th-1300", title: "EVE for EVEryone",                                                date: "2026-05-14", time: "13:00", description: "Þríund · 13:00 · FC Tara",                                                                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-th-1400", title: "Exploring the Psychology Behind Risk vs. Reward",                 date: "2026-05-14", time: "14:00", description: "Þríund · 14:00 · Susurrus Synaesthesia",                                                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-th-1500", title: "Architects of the Frontier: Stories from Founder Access",         date: "2026-05-14", time: "15:00", description: "Þríund · 15:00 · FC Goodfella, Lacal, Ocky",                                                                            type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-th-1600", title: "EVE Galaxy Conquest & EVE Echoes Panel",                          date: "2026-05-14", time: "16:00", description: "Þríund · 16:00 · FC Bjorn, FC 6-pack, FC Deadweight",                                                                    type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Thursday Special Events
-  { id: "ff26-thu-sp-mini", title: "Miniature Painting — Pop Up",                                     date: "2026-05-14", time: "12:00", description: "Special Event · Pop-up sessions at 12:00 & 14:00",                                                                       type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-sp-lava", title: "Lava Tunnel EVE Experience + GIN Pre-Mixer",                      date: "2026-05-14", time: "15:00", description: "Special Event · 15:00–19:30 · Off-site",                                                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-thu-sp-char", title: "Charity Dinner",                                                  date: "2026-05-14", time: "18:00", description: "Special Event · 18:00",                                                                                              type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-
-  // ── Friday 15 May ──────────────────────────────────────────────────────────
-  // Eldborg (Main Stage)
-  { id: "ff26-fri-eb-1000", title: "Opening Ceremony",                                                date: "2026-05-15", time: "10:00", description: "Eldborg (Main Stage) · 10:00 · FC Swift, FC Lumi & FC Larrikin",                                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-eb-1100", title: "Politics, Patches, and Panic — What makes EVE markets move?",     date: "2026-05-15", time: "11:00", description: "Eldborg (Main Stage) · 11:00 · The Oz",                                                                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-eb-1200", title: "How to Die in Space: A Choose-Your-Own Adventure That You Probably Won't Survive", date: "2026-05-15", time: "12:00", description: "Eldborg (Main Stage) · 12:00 · Paul M. Sutters",                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-eb-1300", title: "The Infinite Game",                                               date: "2026-05-15", time: "13:00", description: "Eldborg (Main Stage) · 13:00 · FC Hellmar & Adrian Bolton (Senior Director, DeepMind) · Opening remarks: President of Iceland Halla Tómasdóttir", type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-eb-1445", title: "Space is Beautiful. Space is Dangerous. And Space Doesn't Care if You're Ready.", date: "2026-05-15", time: "14:45", description: "Eldborg (Main Stage) · 14:45 · Dr. Beth Healey",                                                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-eb-1545", title: "Creating Cinematic Content",                                      date: "2026-05-15", time: "15:45", description: "Eldborg (Main Stage) · 15:45 · Warlock Industries",                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-eb-1630", title: "EVE Fanfest Keynote",                                             date: "2026-05-15", time: "16:30", description: "Eldborg (Main Stage) · 16:30",                                                                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Norðurljós (Second Stage)
-  { id: "ff26-fri-nl-1100", title: "Travel and Exploration in the EVE Frontier Galaxy",               date: "2026-05-15", time: "11:00", description: "Norðurljós (Second Stage) · 11:00 · FC Relativistic, FC ConCron, FC Kalirha, FC Hex",                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-nl-1200", title: "Data Team Presentation and Panel",                                date: "2026-05-15", time: "12:00", description: "Norðurljós (Second Stage) · 12:00 · FC Larrikin, FC Data, FC 6-pack, FC Esja",                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-nl-1400", title: "Little Things Panel",                                             date: "2026-05-15", time: "14:00", description: "Norðurljós (Second Stage) · 14:00 · FC karkur, FC Masterplan, FC Mercury, FC Kestrel, FC k1p1",                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-nl-1500", title: "Performance on Trial: Incident Management in EVE Online",          date: "2026-05-15", time: "15:00", description: "Norðurljós (Second Stage) · 15:00 · FC Mayday",                                                                            type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Friday Special Events
-  { id: "ff26-fri-sp-mini", title: "Miniature Painting — Pop Up",                                     date: "2026-05-15", time: "12:00", description: "Special Event · Pop-up sessions at 12:00 & 14:00",                                                                       type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-fri-sp-pub",  title: "Pub Crawl",                                                       date: "2026-05-15", time: "19:30", description: "Special Event · 19:30 · Reykjavik",                                                                                    type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-
-  // ── Saturday 16 May ────────────────────────────────────────────────────────
-  // Eldborg (Main Stage)
-  { id: "ff26-sat-eb-1000", title: "Vanguard Keynote",                                                date: "2026-05-16", time: "10:00", description: "Eldborg (Main Stage) · 10:00 · FC Collins, FC Rattati, FC Jayess",                                                        type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-eb-1100", title: "Blood, Ink, and Immortality: A Capsuleer's Edda",                 date: "2026-05-16", time: "11:00", description: "Eldborg (Main Stage) · 11:00 · Mark Crowther",                                                                            type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-eb-1200", title: "Evolving Empires: Four Sides to Every Story",                     date: "2026-05-16", time: "12:00", description: "Eldborg (Main Stage) · 12:00 · FC Diegetic, FC Burger, FC Jayess",                                                        type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-eb-1300", title: "New Eden in High Fidelity with EVE's Art Team",                   date: "2026-05-16", time: "13:00", description: "Eldborg (Main Stage) · 13:00 · FC Goggi, FC Seaslug",                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-eb-1400", title: "Frontier Keynote",                                                date: "2026-05-16", time: "14:00", description: "Eldborg (Main Stage) · 14:00 · FC Goodfella, FC Maximum Cats, FC Jotunn, FC Bowman, FC Overload",                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-eb-1500", title: "[REDACTED] Expansion Unlocked",                                   date: "2026-05-16", time: "15:00", description: "Eldborg (Main Stage) · 15:00 · FC Okami, FC k1p1, FC Nikon, FC Havran, FC Mercury",                                          type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-eb-1600", title: "Closing Ceremony",                                                date: "2026-05-16", time: "16:00", description: "Eldborg (Main Stage) · 16:00 · FC Jotunn, FC Zelus",                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Norðurljós (Second Stage)
-  { id: "ff26-sat-nl-1000", title: "Connecting Designers to the Players",                             date: "2026-05-16", time: "10:00", description: "Norðurljós (Second Stage) · 10:00 · FC Blaraka, FC Bituman",                                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-nl-1100", title: "Unleashing Fenris",                                               date: "2026-05-16", time: "11:00", description: "Norðurljós (Second Stage) · 11:00 · FC Burger, FC Junison, FC Slingermann",                                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-nl-1200", title: "Sui × EVE Frontier",                                              date: "2026-05-16", time: "12:00", description: "Norðurljós (Second Stage) · 12:00 · FC Bowman, FC Raudur · Fireside w. FC Hellmar and Kevin Boon, President of Mysten Labs",  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-nl-1300", title: "Ship Balance Therapy Session",                                    date: "2026-05-16", time: "13:00", description: "Norðurljós (Second Stage) · 13:00 · FC Trash Panda, FC Kestrel, FC Fozzie",                                                  type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  // Saturday Special Events
-  { id: "ff26-sat-sp-mini", title: "Miniature Painting — Pop Up",                                     date: "2026-05-16", time: "12:00", description: "Special Event · Pop-up sessions at 12:00 & 14:00",                                                                       type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-sp-mix",  title: "Mixer and Drinks (Powered by WorldLine)",                          date: "2026-05-16", time: "19:00", description: "Special Event · 19:00",                                                                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-sp-cre",  title: "Creator Awards",                                                  date: "2026-05-16", time: "19:30", description: "Special Event · 19:30",                                                                                                type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "ff26-sat-sp-prty", title: "Party at the Top of the World",                                   date: "2026-05-16", time: "20:00", description: "Special Event · 20:00 · Harpa · Sponsored by Sui",                                                                      type: "Social", visibility: "public", createdBy: "CCP", createdAt: 0 },
-];
-
-const FANFEST_IDS = new Set(FANFEST_EVENTS.map(e => e.id));
 
 // ── Built-in event IDs (cannot be deleted by users) ───────────────────────────
 
-const BUILTIN_IDS = new Set<string>([...HACKATHON_IDS, ...FANFEST_IDS]);
+const BUILTIN_IDS = new Set<string>([...HACKATHON_IDS]);
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
 
@@ -165,8 +93,8 @@ function loadEvents(vaultId: string): CommunityEvent[] {
     const stored: CommunityEvent[] = raw ? (JSON.parse(raw) as CommunityEvent[]) : [];
     // Merge: built-in events always present, user events after, no duplicates
     const userEvents = stored.filter(e => !BUILTIN_IDS.has(e.id));
-    return [...HACKATHON_EVENTS, ...FANFEST_EVENTS, ...userEvents];
-  } catch { return [...HACKATHON_EVENTS, ...FANFEST_EVENTS]; }
+    return [...HACKATHON_EVENTS, ...userEvents];
+  } catch { return [...HACKATHON_EVENTS]; }
 }
 
 function saveEvents(vaultId: string, events: CommunityEvent[]): void {
@@ -406,9 +334,6 @@ function EventCard({
             <VisibilityBadge visibility={event.visibility ?? "tribe"} />
             {HACKATHON_IDS.has(event.id) && (
               <span style={{ fontSize: 10, color: "#FF4700", border: "1px solid #FF470044", padding: "0px 5px", background: "rgba(255,71,0,0.07)" }}>HACKATHON</span>
-            )}
-            {FANFEST_IDS.has(event.id) && (
-              <span style={{ fontSize: 10, color: "#46d6db", border: "1px solid #46d6db44", padding: "0px 5px", background: "rgba(70,214,219,0.07)" }}>FANFEST 2026</span>
             )}
             <span style={{ color: "#c8c8b8", fontSize: "13px", fontWeight: 600 }}>{event.title}</span>
           </div>
@@ -811,7 +736,7 @@ function EventCalendarPanelInner({ vault }: { vault: TribeVaultState }) {
   };
 
   const handleDelete = (id: string) => {
-    if (BUILTIN_IDS.has(id)) return; // hackathon and Fanfest events are permanent
+    if (BUILTIN_IDS.has(id)) return; // hackathon events are permanent
     const updated = events.filter((e) => e.id !== id);
     setEvents(updated);
     saveEvents(vault.objectId, updated);
