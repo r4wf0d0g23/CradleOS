@@ -15,6 +15,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import KeeperViewport from "./KeeperViewport";
 import { RECIPE_REFERENCE as RECIPE_REF } from "../data/recipes";
 import { buildKeeperPerception, injectJumpHistory, type KeeperPerception } from "../lib/keeperPerception";
+import { playPowerOn, playPowerOff } from "../lib/sound";
 import { buildKeeperSystemPrompt } from "../lib/keeperPrompt";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import type { KeeperViewportProps } from "./KeeperViewport";
@@ -2188,19 +2189,23 @@ async function buildKeeperActionTx(action: KeeperAction, vaultId: string | null,
       if (action.contract === "online_all") {
         const offline = allStructures.filter(s => !s.isOnline);
         if (!offline.length) throw new Error("All structures are already online");
+        playPowerOn();
         return buildBatchOnlineTransaction(offline, charInfo.characterId);
       }
       if (action.contract === "offline_all") {
         const online = allStructures.filter(s => s.isOnline);
         if (!online.length) throw new Error("All structures are already offline");
+        playPowerOff();
         return await buildBatchOfflineTransaction(online, charInfo.characterId);
       }
       const structureId = String(p.structureId ?? "");
       const target = allStructures.find(s => (s as {kind: string; objectId: string; name?: string}).objectId === structureId);
       if (!target) throw new Error(`Structure ${structureId} not found`);
       if (action.contract === "online_structure") {
+        playPowerOn();
         return await buildStructureOnlineTransaction(target, charInfo.characterId);
       }
+      playPowerOff();
       return await buildStructureOfflineTransaction(target, charInfo.characterId);
     }
 
