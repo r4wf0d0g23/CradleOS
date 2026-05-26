@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
+import { translateTxError } from "../lib/txError";
 
 const KEEPER_BASE_URL = "https://keeper.reapers.shop";
 const NOVELTY_STATS_URL = `${KEEPER_BASE_URL}/keeper/novelty-stats`;
@@ -302,7 +303,7 @@ export function TribeLeaderboardPanel({ compact = false }: { compact?: boolean }
       setStats(sorted);
       setLastUpdated(new Date());
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(translateTxError(e));
     } finally {
       setLoading(false);
     }

@@ -46,6 +46,7 @@ import {
 } from "../lib";
 import { SUI_TESTNET_RPC, CRADLEOS_ORIGINAL } from "../constants";
 import { TribeDexPanel } from "./TribeDexPanel";
+import { translateTxError } from "../lib/txError";
 
 // ── Error boundary ────────────────────────────────────────────────────────────
 
@@ -259,7 +260,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
         }, 6000);
       }
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -462,7 +463,7 @@ function IssueFromCapacityForm({ vault, cv, onTxSuccess }: { vault: TribeVaultSt
       setAmt(""); setRecipient("");
       setTimeout(onTxSuccess, 3000);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
     } finally { setBusy(false); }
   };
 
@@ -688,7 +689,7 @@ function CollateralVaultCard({
       await signer.signAndExecuteTransaction({ transaction: tx });
       setTimeout(onTxSuccessWithRefresh, 3000);
     } catch (e) {
-      setResetErr(e instanceof Error ? e.message : String(e));
+      setResetErr(translateTxError(e));
     } finally { setResetBusy(false); }
   };
 

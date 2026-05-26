@@ -10,6 +10,7 @@ import { fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVault
   fetchTribeMembersByTribeId, type CharacterMember, fetchTribeClaim,
 } from "../lib";
 import { fetchTribeMembersEnriched, resolveCharacterNamesForSet, type TribeMember } from "../graphql";
+import { translateTxError } from "../lib/txError";
 
 // Augmented shape — lib.ts may not yet expose all fields; we cast where needed
 interface VaultFull extends TribeVaultState {
@@ -435,7 +436,7 @@ function TribeRolesCard({ vault, roster }: { vault: VaultFull; roster: RosterMem
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       await refetch();
-    } catch (e: unknown) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e: unknown) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   }
 

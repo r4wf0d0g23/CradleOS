@@ -13,6 +13,7 @@ const CAP_OWNER = "0xc80fe7d6043f0c23ee30dc45c8b1036d079e11d149c4eff9ab0cbd03108
 
 // Bytecode compiled from Move sources
 import BYTECODE from "../upgrade-bytecode.json";
+import { translateTxError } from "../lib/txError";
 
 export function UpgradePanel() {
   const account = useCurrentAccount();
@@ -65,7 +66,7 @@ export function UpgradePanel() {
       setTxDigest(digest);
       setStatus("✅ Upgrade successful!");
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(translateTxError(e));
       setStatus("❌ Upgrade failed");
     }
   };

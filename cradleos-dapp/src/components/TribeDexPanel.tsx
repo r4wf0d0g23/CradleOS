@@ -34,6 +34,7 @@ import {
   type TribeVaultState,
 } from "../lib";
 import { SUI_TESTNET_RPC, EVE_COIN_TYPE } from "../constants";
+import { translateTxError } from "../lib/txError";
 
 function shortAddr(a: string | undefined | null) {
   if (!a) return "—";
@@ -116,7 +117,7 @@ function OrderRow({
       await signer.signAndExecuteTransaction({ transaction: tx });
       setFillAmt("");
       onSuccess();
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
 
@@ -127,7 +128,7 @@ function OrderRow({
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       onSuccess();
-    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
+    } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   };
 

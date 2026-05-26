@@ -83,6 +83,7 @@ interface KeeperAction {
 // Keep the type local to Message for ergonomics.
 import type { RagCite } from "../lib/keeperCites";
 import { buildCites as buildCitesLib } from "../lib/keeperCites";
+import { translateTxError } from "../lib/txError";
 
 interface Message {
   role: "user" | "keeper" | "system";
@@ -2239,7 +2240,7 @@ function KeeperActionButton({ action, vaultId, structures, walletAddress }: { ac
       }
       setStatus("done");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(translateTxError(e));
       setStatus("error");
     }
   };
