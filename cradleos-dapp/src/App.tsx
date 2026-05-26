@@ -11,6 +11,8 @@ import { TribeVaultPanel } from "./components/TribeVaultPanel";
 import { TurretPolicyPanel } from "./components/TurretPolicyPanel";
 import { RegistryPanel } from "./components/RegistryPanel";
 import { MapPanel } from "./components/MapPanel";
+import { EFMapPanel } from "./components/EFMapPanel";
+import { CommunityDappsPanel } from "./components/CommunityDappsPanel";
 import { BountyPanel } from "./components/BountyPanel";
 import { CargoContractPanel } from "./components/CargoContractPanel";
 import { GatePolicyPanel } from "./components/GatePolicyPanel";
@@ -191,7 +193,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -215,6 +217,11 @@ const ROUTE_MAP: Record<string, Tab> = {
   "wiki":          "wiki",
   "fitting":       "fitting",
   "map":           "map",
+  "efmap":         "efmap",
+  "ef-map":        "efmap",
+  "dapps":         "dapps",
+  "community":     "dapps",
+  "apps":          "dapps",
   "query":         "query",
   "announcements": "announcements",
   "recruiting":    "recruiting",
@@ -321,7 +328,7 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
-  const PUBLIC_TABS = new Set<Tab>(["map", "wiki", "fitting", "query", "intel", "industry", "cipher"]);
+  const PUBLIC_TABS = new Set<Tab>(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry", "cipher"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -344,6 +351,26 @@ function AppInner() {
         "Hover over any dot to see the system name",
         "Dots are colour-coded by region",
         "Hit ⊡ Fit to reset the view",
+      ],
+    },
+    efmap: {
+      title: "EF-Map — embedded community starmap with Smart Gate routing",
+      steps: [
+        "3D star map of 24 000+ solar systems, powered by ef-map.com",
+        "WASM Dijkstra route optimization across the galaxy",
+        "Smart Gate routing combines ship jumps + player-deployed gates",
+        "Canonical source for jump range, fuel quality, and temperature math",
+        "Click ↗ OPEN FULL for the full ef-map.com UI in a new tab",
+      ],
+    },
+    dapps: {
+      title: "Community dApps — curated registry of player-built tools and apps",
+      steps: [
+        "Cards seeded from CCP's official Community Gallery",
+        "Filter by tag (Governance, PvP, Smart Assemblies, Tools, …)",
+        "Search by title, tagline, author, or tag",
+        "Click any card to open the dApp in a new tab",
+        "Submit new entries via the EVE Frontier Discord or the official Community Gallery",
       ],
     },
     dashboard: {
@@ -589,7 +616,7 @@ function AppInner() {
       bounties: "bounties", srp: "srp", cargo: "cargo", gates: "gates",
       tribe: "tribe", registry: "registry", intel: "intel",
       succession: "succession", wiki: "wiki", fitting: "fitting",
-      map: "map", query: "query", announcements: "announcements",
+      map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
       calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
     };
@@ -718,10 +745,10 @@ function AppInner() {
                 "dashboard", "inventory", "tribe", "defense",
                 "bounties", "srp", "cargo", "gates", "succession",
                 "intel", "cipher", "recruiting", "hierarchy", "assets", "calendar",
-                "wiki", "fitting", "map", "query", "industry",
+                "wiki", "fitting", "map", "efmap", "query", "industry", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "map", "wiki", "fitting", "query", "intel", "cipher",
+                "map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "cipher",
                 "industry",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
@@ -746,6 +773,8 @@ function AppInner() {
                 : tab === "wiki"       ? "WIKI"
                 : tab === "fitting"    ? "FIT"
                 : tab === "map"        ? "MAP"
+                : tab === "efmap"      ? "EF-MAP"
+                : tab === "dapps"      ? "DAPPS"
                 : tab === "query"      ? "QUERY"
                 : tab === "industry"   ? "IND"
                 : tab === "cipher"     ? "CIPHER"
@@ -1012,9 +1041,9 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "query", "industry"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "wiki", "fitting", "query", "intel", "industry"]);
+          const PUBLIC_TABS = new Set(["map", "efmap", "wiki", "fitting", "query", "intel", "industry"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1067,6 +1096,8 @@ function AppInner() {
                   : tab === "wiki"       ? "Wiki"
                   : tab === "fitting"    ? "Fitting"
                   : tab === "query"      ? "Query"
+                  : tab === "efmap"      ? "EF-Map"
+                  : tab === "dapps"      ? "DApps"
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
                   : tab === "cipher"    ? "⊕ Cipher"
@@ -1090,6 +1121,8 @@ function AppInner() {
                   : tab === "wiki"          ? "Wiki"
                   : tab === "fitting"       ? "Ship Fitting"
                   : tab === "query"         ? "Query"
+                  : tab === "efmap"         ? "⬡ EF-Map"
+                  : tab === "dapps"         ? "⧫ Community DApps"
                   : tab === "keeper"        ? "◆ Keeper"
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
@@ -1122,7 +1155,13 @@ function AppInner() {
           <MapPanel />
         </div>
       )}
-      {(account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && (
+      {(account || PUBLIC_TABS.has(activeTab)) && activeTab === "efmap" && (
+        <div style={{ background: "transparent" }} className="content-panel"><EFMapPanel /></div>
+      )}
+      {(account || PUBLIC_TABS.has(activeTab)) && activeTab === "dapps" && (
+        <div style={{ background: "transparent" }} className="content-panel"><CommunityDappsPanel /></div>
+      )}
+      {(account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && activeTab !== "efmap" && activeTab !== "dapps" && (
         <div style={{ background: "transparent", padding: "0" }}>
           {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel    onTxSuccess={setLastDigest} /></div>}
           {activeTab === "dashboard"  && <div style={{ background: "transparent" }} className="content-panel"><DashboardPanel /></div>}
