@@ -11,36 +11,46 @@ import {
   SUI_TESTNET_RPC,
   switchServerAndReload,
 } from "../constants";
+import { rpcFetchWithRetry } from "../lib";
 
 type MismatchState = "checking" | "ok" | "wrong-server" | "not-found" | "error";
 
 const OTHER_ENV: "stillness" | "utopia" = SERVER_ENV === "stillness" ? "utopia" : "stillness";
 const OTHER_SERVER_LABEL = SERVER_ENV === "stillness" ? "UTOPIA (Hackathon)" : "STILLNESS (Live)";
 
-/** Check if a wallet owns a PlayerProfile from a given world package. */
+/** Check if a wallet owns a PlayerProfile from a given world package.
+ *  Uses rpcFetchWithRetry so a single transient network blip on banner
+ *  mount doesn't produce a misleading "Character Not Found" warning. */
 async function hasPlayerProfile(walletAddress: string, pkg: string): Promise<boolean> {
-  const res = await fetch(SUI_TESTNET_RPC, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0", id: 1,
-      method: "suix_getOwnedObjects",
-      params: [
-        walletAddress,
-        { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showType: true } },
-        null, 5,
-      ],
-    }),
-  });
-  const d = await res.json();
-  const objs: Array<unknown> = d?.result?.data ?? [];
-  return objs.length > 0;
+  try {
+    const res = await rpcFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "suix_getOwnedObjects",
+        params: [
+          walletAddress,
+          { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showType: true } },
+          null, 5,
+        ],
+      }),
+    });
+    const d = await res.json();
+    const objs: Array<unknown> = d?.result?.data ?? [];
+    return objs.length > 0;
+  } catch {
+    // Treat unreachable RPC as "unknown" — surface as not-found rather
+    // than throwing the whole banner out, but signal upstream so the
+    // caller can pick error vs not-found.
+    return false;
+  }
 }
 
 /** Scan CharacterCreatedEvent for the wallet address (fallback for zkLogin/sponsored wallets). */
 async function hasCharacterEvent(walletAddress: string, pkg: string): Promise<boolean> {
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
+    const res = await rpcFetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

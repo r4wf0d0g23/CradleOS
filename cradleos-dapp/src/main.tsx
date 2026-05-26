@@ -1,5 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+// Install the RPC circuit breaker BEFORE any module that might fetch.
+// It monkey-patches `window.fetch` to transparently fall back to the
+// public Sui fullnode if our caching proxy returns >=3 consecutive 5xx.
+import { installRpcCircuitBreaker } from "./lib/rpcCircuitBreaker";
+installRpcCircuitBreaker();
 
 // crypto.randomUUID is only available in secure contexts (HTTPS/localhost).
 // The EVE Vault injected.js calls it during wallet connect — polyfill for LAN/http.
