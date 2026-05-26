@@ -1041,7 +1041,7 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
           const PUBLIC_TABS = new Set(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry"]);
           return account || PUBLIC_TABS.has(tab);
