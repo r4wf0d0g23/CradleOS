@@ -513,9 +513,9 @@ function PolicyBadge({
   loading: boolean;
   exists: boolean;
 }) {
-  if (loading) return <span style={badgeStyle("rgba(107,107,94,0.4)")}>loading…</span>;
-  if (!exists) return <span style={badgeStyle("rgba(107,107,94,0.5)")}>OWNER ONLY</span>;
-  if (policy.kind === "none") return <span style={badgeStyle("rgba(107,107,94,0.5)")}>OWNER ONLY</span>;
+  if (loading) return <span style={badgeStyle("rgba(175,175,155,0.4)")}>loading…</span>;
+  if (!exists) return <span style={badgeStyle("rgba(175,175,155,0.5)")}>OWNER ONLY</span>;
+  if (policy.kind === "none") return <span style={badgeStyle("rgba(175,175,155,0.5)")}>OWNER ONLY</span>;
   if (policy.kind === "tribe_alliance") {
     const n = policy.tribeIds.length;
     return <span style={badgeStyle("#00ff96")}>{n <= 1 ? "TRIBE" : `ALLIANCE · ${n}`}</span>;
@@ -596,16 +596,16 @@ function EntryList({ entries }: { entries: AllowEntry[] }) {
             key={i}
             style={{
               display: "flex", gap: 8, fontSize: 11, fontFamily: "monospace",
-              color: expired ? "rgba(107,107,94,0.4)" : "#c8c8b8",
+              color: expired ? "rgba(175,175,155,0.4)" : "#c8c8b8",
               textDecoration: expired ? "line-through" : "none",
             }}
           >
-            <span style={{ color: "rgba(107,107,94,0.55)" }}>{short(e.characterId)}</span>
-            <span style={{ color: "rgba(107,107,94,0.4)" }}>
+            <span style={{ color: "rgba(175,175,155,0.55)" }}>{short(e.characterId)}</span>
+            <span style={{ color: "rgba(175,175,155,0.4)" }}>
               {e.canDeposit ? "↓" : "·"}{e.canWithdraw ? "↑" : "·"}
             </span>
             {e.expiresAt > 0 && (
-              <span style={{ color: "rgba(107,107,94,0.4)" }}>ttl: {fmtExpiry(e.expiresAt)}</span>
+              <span style={{ color: "rgba(175,175,155,0.4)" }}>ttl: {fmtExpiry(e.expiresAt)}</span>
             )}
           </div>
         );
@@ -1393,7 +1393,7 @@ const readTextStyle: React.CSSProperties = {
 };
 const labelStyle: React.CSSProperties = {
   fontSize: 10, fontFamily: "monospace",
-  color: "rgba(107,107,94,0.7)", letterSpacing: "0.05em",
+  color: "rgba(175,175,155,0.7)", letterSpacing: "0.05em",
 };
 const inputStyle: React.CSSProperties = {
   background: "rgba(0,0,0,0.4)",
@@ -1427,7 +1427,7 @@ const primaryButtonStyle: React.CSSProperties = {
 };
 const ghostButtonStyle: React.CSSProperties = {
   background: "transparent",
-  border: "1px solid rgba(107,107,94,0.4)",
+  border: "1px solid rgba(175,175,155,0.4)",
   color: "rgba(200,200,184,0.7)",
   fontFamily: "monospace", fontSize: 10, fontWeight: 600,
   letterSpacing: "0.1em", padding: "4px 10px", cursor: "pointer", borderRadius: 0,

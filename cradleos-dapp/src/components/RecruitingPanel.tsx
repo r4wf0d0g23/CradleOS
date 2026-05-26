@@ -416,7 +416,7 @@ function ApplyForm({
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "16px", marginBottom: "4px" }}>
           Apply to [{entry.coinSymbol}]
         </div>
-        <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "12px", marginBottom: "20px" }}>
+        <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "12px", marginBottom: "20px" }}>
           {entry.requirements || "No specific requirements listed."}
         </div>
         {entry.minInfraCount > 0 && (
@@ -433,7 +433,7 @@ function ApplyForm({
           <>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div>
-                <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>
+                <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>
                   CHARACTER NAME *
                 </div>
                 <input
@@ -444,7 +444,7 @@ function ApplyForm({
                 />
               </div>
               <div>
-                <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>
+                <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>
                   MESSAGE
                 </div>
                 <textarea
@@ -456,7 +456,7 @@ function ApplyForm({
                 />
               </div>
               <div>
-                <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>
+                <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>
                   INFRASTRUCTURE COUNT (self-reported)
                 </div>
                 <input
@@ -563,13 +563,13 @@ function BoardCard({
         </div>
 
         {entry.minInfraCount > 0 && (
-          <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px", marginBottom: "12px" }}>
+          <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px", marginBottom: "12px" }}>
             Min infrastructure: <span style={{ color: "#888" }}>{entry.minInfraCount}</span>
           </div>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ color: "rgba(107,107,94,0.4)", fontSize: "10px", fontFamily: "monospace" }}>
+          <span style={{ color: "rgba(175,175,155,0.4)", fontSize: "10px", fontFamily: "monospace" }}>
             {shortAddr(entry.terminalId)}
           </span>
           {!isOwnTribe && (
@@ -709,7 +709,7 @@ function FounderPanel({
           {terminal.open ? "OPEN" : "CLOSED"}
         </div>
 
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px" }}>
           {terminal.applicationCount} total applications
         </div>
 
@@ -762,7 +762,7 @@ function FounderPanel({
               style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
             />
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>
+              <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.06em" }}>
                 MIN INFRA COUNT
               </div>
               <input
@@ -796,7 +796,7 @@ function FounderPanel({
               {terminal.requirements || <span style={{ color: "#555", fontStyle: "italic" }}>No requirements set.</span>}
             </div>
             {terminal.minInfraCount > 0 && (
-              <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px" }}>
+              <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px" }}>
                 Min infrastructure: <span style={{ color: "#888" }}>{terminal.minInfraCount}</span>
               </div>
             )}
@@ -832,7 +832,7 @@ function FounderPanel({
         </div>
 
         {pending.length === 0 ? (
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>No pending applications.</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>No pending applications.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {pending.map(app => (
@@ -845,13 +845,13 @@ function FounderPanel({
                   <span style={{ color: "#FF4700", fontWeight: 700, fontSize: "13px" }}>
                     {app.characterName}
                   </span>
-                  <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", fontFamily: "monospace" }}>
+                  <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", fontFamily: "monospace" }}>
                     {shortAddr(app.applicant)}
                   </span>
-                  <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>
+                  <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>
                     infra: {app.infraCount}
                   </span>
-                  <span style={{ color: "rgba(107,107,94,0.4)", fontSize: "10px", marginLeft: "auto" }}>
+                  <span style={{ color: "rgba(175,175,155,0.4)", fontSize: "10px", marginLeft: "auto" }}>
                     #{app.applicationId}
                   </span>
                 </div>
@@ -903,7 +903,7 @@ function FounderPanel({
           background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.06)",
           borderRadius: "2px", padding: "12px 14px",
         }}>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontWeight: 700, fontSize: "11px", letterSpacing: "0.06em", marginBottom: "10px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontWeight: 700, fontSize: "11px", letterSpacing: "0.06em", marginBottom: "10px" }}>
             REVIEWED APPLICATIONS
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -913,9 +913,9 @@ function FounderPanel({
                 fontSize: "11px", color: "#666",
                 padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.04)",
               }}>
-                <span style={{ minWidth: "24px", color: "rgba(107,107,94,0.4)", fontFamily: "monospace" }}>#{app.applicationId}</span>
+                <span style={{ minWidth: "24px", color: "rgba(175,175,155,0.4)", fontFamily: "monospace" }}>#{app.applicationId}</span>
                 <span style={{ color: "#888", flex: 1 }}>{app.characterName}</span>
-                <span style={{ fontFamily: "monospace", color: "rgba(107,107,94,0.4)" }}>{shortAddr(app.applicant)}</span>
+                <span style={{ fontFamily: "monospace", color: "rgba(175,175,155,0.4)" }}>{shortAddr(app.applicant)}</span>
                 <StatusBadge status={app.status} />
               </div>
             ))}
@@ -967,7 +967,7 @@ function OwnApplicationsView({ walletAddress }: { walletAddress: string }) {
 
   if (!ownEvents?.length) {
     return (
-      <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px", padding: "8px 0" }}>
+      <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px", padding: "8px 0" }}>
         You have not submitted any applications.
       </div>
     );
@@ -989,7 +989,7 @@ function OwnApplicationsView({ walletAddress }: { walletAddress: string }) {
               <div style={{ color: "#aaa", fontWeight: 600, fontSize: "12px", marginBottom: "2px" }}>
                 {ev.characterName}
               </div>
-              <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", fontFamily: "monospace" }}>
+              <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", fontFamily: "monospace" }}>
                 terminal {shortAddr(ev.terminalId)} · #{ev.applicationId}
               </div>
             </div>
@@ -1135,9 +1135,9 @@ export function RecruitingPanel() {
         </div>
 
         {!boardEntries ? (
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>Loading open terminals…</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>Loading open terminals…</div>
         ) : boardEntries.length === 0 ? (
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>
             No tribes are currently recruiting.
           </div>
         ) : (
@@ -1161,13 +1161,13 @@ export function RecruitingPanel() {
           </div>
 
           {vaultLoading ? (
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>Loading vault…</div>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>Loading vault…</div>
           ) : !vault ? (
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>
               No tribe vault found. Create one in the Tribe Vault tab first.
             </div>
           ) : !isFounder ? (
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>
               Only the tribe founder can manage the recruiting terminal.
             </div>
           ) : !terminalId ? (
@@ -1176,7 +1176,7 @@ export function RecruitingPanel() {
                 No recruiting terminal exists for your vault yet. Set your requirements and launch.
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "14px" }}>
-                <label style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em" }}>
+                <label style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", letterSpacing: "0.07em" }}>
                   REQUIREMENTS
                   <textarea
                     value={createRequirements}
@@ -1186,7 +1186,7 @@ export function RecruitingPanel() {
                     style={{ display: "block", width: "100%", marginTop: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: "12px", padding: "8px", fontFamily: "inherit", resize: "vertical", borderRadius: "0" }}
                   />
                 </label>
-                <label style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em" }}>
+                <label style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", letterSpacing: "0.07em" }}>
                   MIN INFRASTRUCTURE COUNT
                   <input
                     type="number"
@@ -1214,7 +1214,7 @@ export function RecruitingPanel() {
                 }}
                 style={{
                   display: "block", marginTop: "10px", background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.1)", color: "rgba(107,107,94,0.5)",
+                  border: "1px solid rgba(255,255,255,0.1)", color: "rgba(175,175,155,0.5)",
                   borderRadius: "0", fontSize: "11px", padding: "4px 12px", cursor: "pointer",
                 }}
               >
@@ -1222,7 +1222,7 @@ export function RecruitingPanel() {
               </button>
             </div>
           ) : !terminal ? (
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>Loading terminal…</div>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>Loading terminal…</div>
           ) : (
             <FounderPanel
               vault={vault}

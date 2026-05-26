@@ -630,7 +630,7 @@ function NoWalletState() {
         The agent requires on-chain identity to provide<br />
         contextual assistance.
       </div>
-      <div style={{ fontSize: "12px", color: "rgba(107,107,94,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "8px" }}>
+      <div style={{ fontSize: "12px", color: "rgba(175,175,155,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "8px" }}>
         Keeper works in read-only mode — no transactions
       </div>
     </div>
@@ -1392,7 +1392,7 @@ export function KeeperPanel() {
         <div style={styles.header}>
           <div style={styles.diamondWrap}><KeeperDiamond size={28} /></div>
           <span style={styles.headerTitle}>KEEPER</span>
-          <span style={{ fontSize: "12px", color: "rgba(107,107,94,0.4)", letterSpacing: "0.1em" }}>
+          <span style={{ fontSize: "12px", color: "rgba(175,175,155,0.4)", letterSpacing: "0.1em" }}>
             ANCIENT INTELLIGENCE
           </span>
         </div>
@@ -1448,7 +1448,7 @@ export function KeeperPanel() {
           <div>· Recent on-chain kills: {ctx?.killCount != null ? ctx.killCount : "unknown"}</div>
           <div>· Defense policy: {ctx?.secLevel != null ? secLevelLabel(ctx.secLevel) : "unknown"}</div>
           <div>· Active bounties: {ctx?.bountyCount != null ? ctx.bountyCount : "unknown"}</div>
-          <div style={{ marginTop: "8px", color: "rgba(107,107,94,0.5)", fontSize: "12px" }}>
+          <div style={{ marginTop: "8px", color: "rgba(175,175,155,0.5)", fontSize: "12px" }}>
             Keeper does NOT see: private keys, seed phrases,
             off-chain communications, or other players' private data.
           </div>
@@ -1788,7 +1788,7 @@ function KeeperShrineSection() {
     accent: "rgba(255,200,0,0.8)",
     accentDim: "rgba(255,200,0,0.4)",
     text: "#c8c8b8",
-    textDim: "rgba(107,107,94,0.7)",
+    textDim: "rgba(175,175,155,0.7)",
     bg: "rgba(255,200,0,0.04)",
     bgHover: "rgba(255,200,0,0.08)",
     green: "rgba(0,255,150,0.8)",

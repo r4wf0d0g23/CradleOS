@@ -473,7 +473,7 @@ export function BountyPanel() {
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "16px", marginBottom: "10px", fontFamily: "monospace" }}>
           CONTRACT NOT YET DEPLOYED
         </div>
-        <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "12px" }}>
+        <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "12px" }}>
           Set <code style={{ color: "#aaa" }}>TRUSTLESS_BOUNTY_BOARD</code> in{" "}
           <code style={{ color: "#aaa" }}>constants.ts</code> after deploying the trustless_bounty module.
         </div>
@@ -607,7 +607,7 @@ export function BountyPanel() {
 
           {/* Bounty Type Picker */}
           <div style={{ marginBottom: "14px" }}>
-            <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "10px", letterSpacing: "0.05em", marginBottom: "8px" }}>
+            <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "10px", letterSpacing: "0.05em", marginBottom: "8px" }}>
               BOUNTY TYPE
             </div>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -718,10 +718,10 @@ export function BountyPanel() {
         </div>
 
         {isLoading && (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>Loading bounties…</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>Loading bounties…</div>
         )}
         {!isLoading && (bounties ?? []).length === 0 && (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No bounties found.</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>No bounties found.</div>
         )}
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -780,7 +780,7 @@ export function BountyPanel() {
                     <span style={{ color: "#fff", fontWeight: 700, fontSize: "14px", fontFamily: "monospace" }}>
                       {bounty.targetName}
                     </span>
-                    <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", fontFamily: "monospace", marginLeft: "8px" }}>
+                    <span style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", fontFamily: "monospace", marginLeft: "8px" }}>
                       #{bounty.targetCharId}
                     </span>
                   </div>
@@ -843,7 +843,7 @@ export function BountyPanel() {
                   <div>
                     <span style={detailLabelStyle}>EXPIRES </span>
                     <span style={{
-                      color: isExpired ? "#ff6432" : "rgba(107,107,94,0.7)",
+                      color: isExpired ? "#ff6432" : "rgba(175,175,155,0.7)",
                       fontSize: "11px", fontFamily: "monospace",
                     }}>
                       {new Date(bounty.expiresMs).toLocaleDateString()}
@@ -904,7 +904,7 @@ export function BountyPanel() {
                             {canClaimThisKill && (
                               <div style={{ marginTop: 8 }}>
                                 {walletChars.length === 0 ? (
-                                  <span style={{ color: "rgba(107,107,94,0.6)", fontSize: 10 }}>
+                                  <span style={{ color: "rgba(175,175,155,0.6)", fontSize: 10 }}>
                                     No Character found in your wallet to claim.
                                   </span>
                                 ) : (
@@ -922,7 +922,7 @@ export function BountyPanel() {
                                     >
                                       {claimBusy[claimKey] ? "Claiming…" : "Claim Bounty"}
                                     </button>
-                                    <span style={{ color: "rgba(107,107,94,0.6)", fontSize: 10, fontFamily: "monospace" }}>
+                                    <span style={{ color: "rgba(175,175,155,0.6)", fontSize: 10, fontFamily: "monospace" }}>
                                       using char {shortAddr(walletChars[0].objectId)}
                                     </span>
                                   </div>
@@ -945,7 +945,7 @@ export function BountyPanel() {
                     style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap", marginTop: "10px" }}
                     onClick={e => e.stopPropagation()}
                   >
-                    <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", fontFamily: "monospace" }}>TOP UP:</span>
+                    <span style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", fontFamily: "monospace" }}>TOP UP:</span>
                     <input
                       type="number"
                       value={topUpAmounts[bounty.objectId] ?? ""}
@@ -999,7 +999,7 @@ export function BountyPanel() {
       </div>
 
       {!account && (
-        <div style={{ marginTop: "16px", color: "rgba(107,107,94,0.55)", fontSize: "12px", textAlign: "center" }}>
+        <div style={{ marginTop: "16px", color: "rgba(175,175,155,0.55)", fontSize: "12px", textAlign: "center" }}>
           Connect wallet to post bounties or claim kills
         </div>
       )}
@@ -1022,13 +1022,13 @@ const inputStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  color: "rgba(107,107,94,0.7)",
+  color: "rgba(175,175,155,0.7)",
   fontSize: "10px",
   letterSpacing: "0.05em",
 };
 
 const detailLabelStyle: React.CSSProperties = {
-  color: "rgba(107,107,94,0.55)",
+  color: "rgba(175,175,155,0.55)",
   fontSize: "10px",
   letterSpacing: "0.05em",
 };

@@ -44,7 +44,7 @@ const CAT_COLOR: Record<string, string> = {
 };
 
 function catColor(cat: string) {
-  return CAT_COLOR[cat] ?? "rgba(107,107,94,0.6)";
+  return CAT_COLOR[cat] ?? "rgba(175,175,155,0.6)";
 }
 
 interface Props {
@@ -134,13 +134,13 @@ export function ItemTypePicker({ value, onChange, placeholder = "Search items…
           style={{
             ...inputSx,
             cursor: disabled ? "not-allowed" : "pointer",
-            color: selectedType ? "#e0e0d0" : "rgba(107,107,94,0.6)",
+            color: selectedType ? "#e0e0d0" : "rgba(175,175,155,0.6)",
             display: "flex", alignItems: "center", justifyContent: "space-between",
             userSelect: "none",
           }}
         >
           <span>{displayLabel || placeholder}</span>
-          <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>▼</span>
+          <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>▼</span>
         </div>
       )}
 
@@ -153,17 +153,17 @@ export function ItemTypePicker({ value, onChange, placeholder = "Search items…
           boxShadow: "0 8px 24px rgba(0,0,0,0.6)",
         }}>
           {allTypes.length === 0 && (
-            <div style={{ padding: "10px 12px", color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+            <div style={{ padding: "10px 12px", color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
               Loading types…
             </div>
           )}
           {allTypes.length > 0 && q.length < 1 && (
-            <div style={{ padding: "8px 12px", color: "rgba(107,107,94,0.5)", fontSize: "11px" }}>
+            <div style={{ padding: "8px 12px", color: "rgba(175,175,155,0.5)", fontSize: "11px" }}>
               Type to search {allTypes.length} items…
             </div>
           )}
           {results.length === 0 && q.length > 0 && (
-            <div style={{ padding: "8px 12px", color: "rgba(107,107,94,0.5)", fontSize: "11px" }}>
+            <div style={{ padding: "8px 12px", color: "rgba(175,175,155,0.5)", fontSize: "11px" }}>
               No matches for "{query}"
             </div>
           )}
@@ -198,12 +198,12 @@ export function ItemTypePicker({ value, onChange, placeholder = "Search items…
               {/* Name + group */}
               <span style={{ flex: 1, fontSize: "12px", color: "#e0e0d0" }}>
                 {t.name}
-                <span style={{ color: "rgba(107,107,94,0.55)", marginLeft: "6px", fontSize: "11px" }}>
+                <span style={{ color: "rgba(175,175,155,0.55)", marginLeft: "6px", fontSize: "11px" }}>
                   {t.groupName}
                 </span>
               </span>
               {/* ID */}
-              <span style={{ fontSize: "10px", fontFamily: "monospace", color: "rgba(107,107,94,0.55)", flexShrink: 0 }}>
+              <span style={{ fontSize: "10px", fontFamily: "monospace", color: "rgba(175,175,155,0.55)", flexShrink: 0 }}>
                 {t.id}
               </span>
             </div>

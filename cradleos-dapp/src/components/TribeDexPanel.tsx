@@ -51,9 +51,9 @@ function StatBox({ label, value, sub }: { label: string; value: string; sub?: st
       border: "1px solid rgba(255,255,255,0.08)",
       borderRadius: "0", padding: "12px 16px", minWidth: "100px",
     }}>
-      <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>{label}</div>
+      <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "4px" }}>{label}</div>
       <div style={{ color: "#fff", fontWeight: 700, fontSize: "18px" }}>{value}</div>
-      {sub && <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", marginTop: "2px" }}>{sub}</div>}
+      {sub && <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
 }
@@ -140,7 +140,7 @@ function OrderRow({
       borderRadius: "2px", marginBottom: "6px",
     }}>
       {/* Order info */}
-      <div style={{ flex: "0 0 50px", color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
+      <div style={{ flex: "0 0 50px", color: "rgba(175,175,155,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
         #{order.orderId}
       </div>
       <div style={{ flex: "0 0 90px", color: "#FF4700", fontWeight: 600, fontSize: "13px" }}>
@@ -149,7 +149,7 @@ function OrderRow({
       <div style={{ flex: "0 0 110px", color: "#aaa", fontSize: "12px" }}>
         @ {fmtEve(order.pricePerUnit)}/{vault.coinSymbol}
       </div>
-      <div style={{ flex: 1, color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
+      <div style={{ flex: 1, color: "rgba(175,175,155,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
         {isMine ? (
           <span style={{ color: "#FF4700" }}>● yours</span>
         ) : shortAddr(order.seller)}
@@ -172,7 +172,7 @@ function OrderRow({
             }}
           />
           {fillAmt && parseInt(fillAmt) > 0 && (
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", minWidth: "70px" }}>{costCrdl.toLocaleString()} EVE</span>
+            <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", minWidth: "70px" }}>{costCrdl.toLocaleString()} EVE</span>
           )}
           <button
             onClick={handleFill}
@@ -213,9 +213,9 @@ function FillRow({ ev, symbol }: { ev: OrderFilledEvent; symbol: string }) {
     <div style={{
       display: "flex", gap: "10px", padding: "6px 0",
       borderBottom: "1px solid rgba(255,255,255,0.04)",
-      fontSize: "11px", color: "rgba(107,107,94,0.6)",
+      fontSize: "11px", color: "rgba(175,175,155,0.6)",
     }}>
-      <span style={{ minWidth: "40px", color: "rgba(107,107,94,0.55)" }}>#{ev.orderId}</span>
+      <span style={{ minWidth: "40px", color: "rgba(175,175,155,0.55)" }}>#{ev.orderId}</span>
       <span style={{ color: "#00ff96" }}>+{fmtToken(ev.fillAmount)} {symbol}</span>
       <span>@ {fmtEve(ev.pricePerUnit)}</span>
       <span style={{ flex: 1, textAlign: "right", fontFamily: "monospace" }}>
@@ -297,7 +297,7 @@ function DexDashboard({
         <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "20px" }}>
           {vault.coinSymbol} / EVE
         </div>
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>Order Book</div>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>Order Book</div>
         {dex.lastPrice > 0 && (
           <div style={{
             marginLeft: "auto", color: "#00ff96", fontWeight: 700, fontSize: "14px",
@@ -343,7 +343,7 @@ function DexDashboard({
         background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,71,0,0.08)",
         borderRadius: "0", padding: "8px 12px", marginBottom: "16px", flexWrap: "wrap",
       }}>
-        <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.08em" }}>EVE TOKEN</span>
+        <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.08em" }}>EVE TOKEN</span>
         <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#888", flex: 1, wordBreak: "break-all" }}>
           {EVE_COIN_TYPE}
         </span>
@@ -367,13 +367,13 @@ function DexDashboard({
       }}>
         <div style={{ color: "#FF4700", fontWeight: 600, fontSize: "13px", marginBottom: "10px" }}>
           ↓ Post Sell Order
-          <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: "11px", marginLeft: "8px" }}>
+          <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, fontSize: "11px", marginLeft: "8px" }}>
             your balance: {fmtToken(myBalance ?? 0)} {vault.coinSymbol}
           </span>
         </div>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>AMOUNT ({vault.coinSymbol})</span>
+            <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px" }}>AMOUNT ({vault.coinSymbol})</span>
             <input
               type="number"
               value={sellAmt}
@@ -389,7 +389,7 @@ function DexDashboard({
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>PRICE (EVE per {vault.coinSymbol})</span>
+            <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px" }}>PRICE (EVE per {vault.coinSymbol})</span>
             <input
               type="number"
               value={sellPrice}
@@ -405,7 +405,7 @@ function DexDashboard({
           </div>
           {sellAmt && sellPrice && (
             <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-              <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px" }}>TOTAL</span>
+              <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px" }}>TOTAL</span>
               <div style={{
                 padding: "7px 10px", fontSize: "13px", color: "#FF4700", fontFamily: "monospace",
                 background: "#131313", border: "1px solid rgba(255,71,0,0.15)",
@@ -438,7 +438,7 @@ function DexDashboard({
           OPEN ORDERS ({orders?.length ?? 0})
         </div>
         {!orders?.length ? (
-          <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "12px", padding: "12px 0" }}>No open orders</div>
+          <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "12px", padding: "12px 0" }}>No open orders</div>
         ) : (
           orders.map(o => (
             <OrderRow
@@ -588,7 +588,7 @@ export function TribeDexPanel({ vault, onTxSuccess }: Props) {
   }
 
   if (isLoading) {
-    return <div style={{ color: "rgba(107,107,94,0.55)", padding: "32px", textAlign: "center" }}>Loading DEX…</div>;
+    return <div style={{ color: "rgba(175,175,155,0.55)", padding: "32px", textAlign: "center" }}>Loading DEX…</div>;
   }
 
   if (!dex) {
@@ -597,7 +597,7 @@ export function TribeDexPanel({ vault, onTxSuccess }: Props) {
         <div style={{ color: "#aaa", fontWeight: 600, marginBottom: "16px" }}>
           {vault.coinSymbol} / EVE Order Book
         </div>
-        <p style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "20px" }}>
+        <p style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", marginBottom: "20px" }}>
           No DEX found for this vault. Create one to enable on-chain price discovery and TRIBE/EVE trading.
         </p>
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
@@ -612,7 +612,7 @@ export function TribeDexPanel({ vault, onTxSuccess }: Props) {
         {createErr && <div style={{ color: "#ff6432", fontSize: "12px", marginBottom: "12px" }}>⚠ {createErr}</div>}
         {!cachedId && (
           <>
-            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", margin: "12px 0" }}>— or connect existing —</div>
+            <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px", margin: "12px 0" }}>— or connect existing —</div>
             <ConnectDexForm vaultId={vault.objectId} onConnect={id => setManualDexId(id)} />
           </>
         )}

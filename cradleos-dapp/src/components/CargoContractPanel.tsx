@@ -926,7 +926,7 @@ export function CargoContractPanel() {
               <button className="accent-button" onClick={handleCreate} disabled={busy}>
                 {busy ? "Posting…" : "Post Contract"}
               </button>
-              <div style={{ color: "rgba(107,107,94,0.65)", fontSize: "11px", fontFamily: "monospace" }}>
+              <div style={{ color: "rgba(175,175,155,0.65)", fontSize: "11px", fontFamily: "monospace" }}>
                 Blank carrier = open to any pilot. Dispute window default 24h.
               </div>
             </div>
@@ -1048,9 +1048,9 @@ export function CargoContractPanel() {
         {isLoading ? (
           <div style={{ color: "#888", fontSize: "12px" }}>Loading contracts…</div>
         ) : allContracts.length === 0 ? (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No cargo contracts found yet.</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>No cargo contracts found yet.</div>
         ) : sortedContracts.length === 0 ? (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", fontFamily: "monospace" }}>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px", fontFamily: "monospace" }}>
             No contracts match the current filters
             {statusFilter !== "open" || roleFilter !== "all" ? (
               <button

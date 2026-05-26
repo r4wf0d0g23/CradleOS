@@ -168,7 +168,7 @@ function StatBox({ label, value, sub }: { label: string; value: string; sub?: st
     }}>
       <div style={{ color: "#888", fontSize: "11px", letterSpacing: "0.06em", marginBottom: "4px" }}>{label}</div>
       <div style={{ color: "#FF4700", fontSize: "20px", fontWeight: 700 }}>{value}</div>
-      {sub && <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", marginTop: "2px" }}>{sub}</div>}
+      {sub && <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
 }
@@ -186,12 +186,12 @@ function EventRow({ ev }: { ev: CoinIssuedEvent }) {
           <span style={{ color: "#888", fontFamily: "monospace", fontSize: "11px" }}>
             {shortAddr(ev.recipient)}
           </span>
-          <span style={{ marginLeft: "auto", color: "rgba(107,107,94,0.55)" }}>
+          <span style={{ marginLeft: "auto", color: "rgba(175,175,155,0.55)" }}>
             {new Date(ev.timestampMs).toLocaleTimeString()}
           </span>
         </div>
         {ev.reason && (
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginTop: "2px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginTop: "2px" }}>
             "{ev.reason}"
           </div>
         )}
@@ -285,7 +285,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
 
       {/* Tribe ID display */}
       {tribeLoading ? (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "13px", marginBottom: "14px" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "13px", marginBottom: "14px" }}>
           Reading tribe from chain…
         </div>
       ) : tribeId == null ? (
@@ -304,10 +304,10 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
           gap: "12px",
         }}>
           <div>
-            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", letterSpacing: "0.06em" }}>TRIBE</div>
+            <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", letterSpacing: "0.06em" }}>TRIBE</div>
             <div style={{ color: "#FF4700", fontWeight: 700, fontFamily: "monospace" }}>{tribeId}</div>
           </div>
-          <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "18px" }}>→</div>
+          <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "18px" }}>→</div>
           <div style={{ color: "#888", fontSize: "12px" }}>
             Token will be bound to this tribe permanently
           </div>
@@ -316,7 +316,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
 
       <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
         <div style={{ flex: 2 }}>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "4px" }}>TOKEN NAME</div>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "4px" }}>TOKEN NAME</div>
           <input
             value={coinName}
             onChange={e => setCoinName(e.target.value)}
@@ -325,7 +325,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
           />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "4px" }}>SYMBOL</div>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "4px" }}>SYMBOL</div>
           <input
             value={coinSymbol}
             onChange={e => setCoinSymbol(e.target.value.toUpperCase().slice(0, 8))}
@@ -741,12 +741,12 @@ function CollateralVaultCard({
         <div style={{ color: "#00ff96", fontWeight: 600, fontSize: "13px", marginBottom: "8px" }}>
           Initialize Collateral Backing
         </div>
-        <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "12px", marginBottom: "14px" }}>
+        <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "12px", marginBottom: "14px" }}>
           Deposit EVE to back your tribe token with real collateral.
           Members can redeem tokens for EVE at the floor price (1/mint_ratio).
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px" }}>MINT RATIO</div>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px" }}>MINT RATIO</div>
           <input
             type="number"
             value={mintRatioInput}
@@ -755,7 +755,7 @@ function CollateralVaultCard({
             min="1"
             style={{ ...inputStyle, width: "100px" }}
           />
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
             tokens per 1 EVE &nbsp;·&nbsp; floor: 1 {vault.coinSymbol} = {mintRatioInput ? (1 / parseInt(mintRatioInput || "100")).toFixed(4) : "0.01"} EVE
           </div>
         </div>
@@ -768,7 +768,7 @@ function CollateralVaultCard({
           {createBusy ? "Creating…" : "🔒 Create Collateral Vault"}
         </button>
         {!isFounderForCV && account && (
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px", marginTop: "6px" }}>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px", marginTop: "6px" }}>
             ⚠ Only the vault founder can initialize collateral backing
           </div>
         )}
@@ -806,7 +806,7 @@ function CollateralVaultCard({
         }}>
           🔒 EVE-COLLATERALIZED
         </span>
-        <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
+        <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", fontFamily: "monospace" }}>
           {cv.objectId.slice(0, 10)}…
         </span>
       </div>
@@ -819,7 +819,7 @@ function CollateralVaultCard({
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>EVE LOCKED</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{eveLockedDisplay}</div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>EVE</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>EVE</div>
         </div>
         <div style={{
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
@@ -827,7 +827,7 @@ function CollateralVaultCard({
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>MINT RATIO</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{cv.mintRatio}</div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>1 EVE = {cv.mintRatio} {vault.coinSymbol}</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>1 EVE = {cv.mintRatio} {vault.coinSymbol}</div>
         </div>
         <div style={{
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
@@ -835,7 +835,7 @@ function CollateralVaultCard({
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>FLOOR PRICE</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{floorPrice}</div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>EVE per {vault.coinSymbol}</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>EVE per {vault.coinSymbol}</div>
         </div>
         <div style={{
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
@@ -843,7 +843,7 @@ function CollateralVaultCard({
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>TOTAL EVER MINTED</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{fmtToken(cv.totalMinted)}</div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
         </div>
         <div style={{
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
@@ -851,7 +851,7 @@ function CollateralVaultCard({
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>TOTAL EVER REDEEMED</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{fmtToken(cv.totalRedeemed)}</div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>{vault.coinSymbol}</div>
         </div>
         <div style={{
           background: "#131313", border: "1px solid rgba(0,255,150,0.18)",
@@ -859,7 +859,7 @@ function CollateralVaultCard({
         }}>
           <div style={{ color: "#888", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "3px" }}>CAPACITY</div>
           <div style={{ color: "#00ff96", fontSize: "17px", fontWeight: 700 }}>{fmtToken(cv.mintCapacity)}</div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>mintable</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>mintable</div>
         </div>
       </div>
 
@@ -875,7 +875,7 @@ function CollateralVaultCard({
               ▲ Mint Tokens (deposit EVE → mint {vault.coinSymbol})
             </div>
             {mintEveAmt && mintedTokens > 0 && (
-              <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
+              <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "6px" }}>
                 Depositing {mintEveAmt} EVE → minting {fmtToken(mintedTokens * TOKEN_DECIMALS)} {vault.coinSymbol} to {mintRecipient ? shortAddr(mintRecipient) : "[recipient]"}
               </div>
             )}
@@ -946,7 +946,7 @@ function CollateralVaultCard({
               <div style={{ color: "#00ccff", fontSize: "12px", fontWeight: 600, marginBottom: "4px" }}>
                 ✦ Issue Against Capacity
               </div>
-              <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "8px" }}>
+              <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "8px" }}>
                 Mint {vault.coinSymbol} using already-locked EVE collateral (no new deposit needed).
                 Available: {fmtToken(Math.max(0, cv.collateralBalance * cv.mintRatio - vault.totalSupply))} {vault.coinSymbol}
               </div>
@@ -971,7 +971,7 @@ function CollateralVaultCard({
                 min="1"
                 style={{ ...inputStyle, width: "160px" }}
               />
-              <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px" }}>
+              <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px" }}>
                 {newRatioInput ? `1 EVE = ${newRatioInput} ${vault.coinSymbol}` : "tokens per 1 EVE"}
               </span>
               <button
@@ -997,7 +997,7 @@ function CollateralVaultCard({
           ↩ Redeem {vault.coinSymbol} → EVE
         </div>
         {redeemAmt_ > 0 && (
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginBottom: "6px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginBottom: "6px" }}>
             Burning {redeemAmtHuman.toLocaleString()} {vault.coinSymbol} → receiving {redeemEveOut} EVE
           </div>
         )}
@@ -1258,11 +1258,11 @@ function VaultDashboard({
               {vault.coinSymbol}
             </span>
           </div>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "12px", marginTop: "2px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px", marginTop: "2px" }}>
             {tribeInfo ? (
               <span title={tribeInfo.description || undefined}>
                 {tribeInfo.name}
-                <span style={{ color: "rgba(107,107,94,0.55)", marginLeft: "6px" }}>({tribeInfo.nameShort})</span>
+                <span style={{ color: "rgba(175,175,155,0.55)", marginLeft: "6px" }}>({tribeInfo.nameShort})</span>
               </span>
             ) : (
               <span>Tribe {vault.tribeId}</span>
@@ -1304,7 +1304,7 @@ function VaultDashboard({
         borderRadius: "0", padding: "10px 14px", marginBottom: "16px",
         display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap",
       }}>
-        <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
+        <span style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
           TOKEN CONTRACT
         </span>
         <span style={{
@@ -1328,7 +1328,7 @@ function VaultDashboard({
           href={`https://suiscan.xyz/testnet/object/${vault.objectId}`}
           target="_blank"
           rel="noreferrer"
-          style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", textDecoration: "none", whiteSpace: "nowrap" }}
+          style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", textDecoration: "none", whiteSpace: "nowrap" }}
         >
           Explorer ↗
         </a>
@@ -1349,7 +1349,7 @@ function VaultDashboard({
               borderRadius: "0",
             }} />
           </div>
-          <div style={{ fontSize: "10px", color: "rgba(107,107,94,0.55)", marginTop: "3px" }}>
+          <div style={{ fontSize: "10px", color: "rgba(175,175,155,0.55)", marginTop: "3px" }}>
             {fmtToken(vault.totalSupply)} / {fmtToken(infraCredits)} {vault.coinSymbol} issued
           </div>
         </div>
@@ -1517,7 +1517,7 @@ function VaultDashboard({
       }}>
         <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: "13px", marginBottom: "10px" }}>
           ↗ Transfer {vault.coinSymbol}
-          <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: "11px", marginLeft: "8px" }}>
+          <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, fontSize: "11px", marginLeft: "8px" }}>
             your balance: {fmtToken(myBalance ?? 0)}
           </span>
         </div>
@@ -1567,7 +1567,7 @@ function VaultDashboard({
           ISSUANCE HISTORY
         </div>
         {!events?.length ? (
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>No coins issued yet</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>No coins issued yet</div>
         ) : (
           events.slice(0, 15).map((ev, i) => <EventRow key={i} ev={ev} />)
         )}

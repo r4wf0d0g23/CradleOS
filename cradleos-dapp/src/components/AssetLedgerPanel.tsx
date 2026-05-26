@@ -163,7 +163,7 @@ function fmt(n: number): string {
 
 function LoadingRow({ label }: { label: string }) {
   return (
-    <div style={{ color: "rgba(107,107,94,0.45)", fontSize: "12px", padding: "6px 0" }}>
+    <div style={{ color: "rgba(175,175,155,0.45)", fontSize: "12px", padding: "6px 0" }}>
       {label}
     </div>
   );
@@ -171,7 +171,7 @@ function LoadingRow({ label }: { label: string }) {
 
 function EmptyRow({ text }: { text: string }) {
   return (
-    <div style={{ color: "rgba(107,107,94,0.45)", fontSize: "12px" }}>{text}</div>
+    <div style={{ color: "rgba(175,175,155,0.45)", fontSize: "12px" }}>{text}</div>
   );
 }
 
@@ -210,7 +210,7 @@ function SectionCard({
 function KVRow({ label, value, mono = false }: { label: string; value: string | number; mono?: boolean }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "5px" }}>
-      <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px" }}>{label}</span>
+      <span style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px" }}>{label}</span>
       <span style={{
         color: "#c8c8b8", fontSize: "12px",
         fontFamily: mono ? "monospace" : undefined,
@@ -245,8 +245,8 @@ function InfraSection({ vault }: { vault: TribeVaultState }) {
             gap: "4px 8px",
             marginBottom: "10px",
           }}>
-            <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.06em" }}>STRUCTURE ID</span>
-            <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.06em", textAlign: "right" }}>ENERGY</span>
+            <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.06em" }}>STRUCTURE ID</span>
+            <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.06em", textAlign: "right" }}>ENERGY</span>
             {infra.map((e) => (
               <>
                 <span key={e.structureId + "-id"} style={{ fontFamily: "monospace", fontSize: "11px", color: "#888" }}>
@@ -340,7 +340,7 @@ function TreasurySection({ vault }: { vault: TribeVaultState }) {
           <KVRow label="Total withdrawn" value={(Number(treasury.totalWithdrawnMist) / 1e9).toFixed(4)} />
 
           <div style={{ marginTop: "12px" }}>
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "6px" }}>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "6px" }}>
               RECENT ACTIVITY
             </div>
             {actLoading ? (
@@ -361,8 +361,8 @@ function TreasurySection({ vault }: { vault: TribeVaultState }) {
                       {a.kind === "deposit" ? "DEPOSIT" : "WITHDRAW"}
                     </span>
                     <span style={{ color: "#c8c8b8", flex: 1 }}>{a.amount.toFixed(4)} SUI</span>
-                    <span style={{ color: "rgba(107,107,94,0.55)", fontFamily: "monospace" }}>{shortAddr(a.actor)}</span>
-                    <span style={{ color: "rgba(107,107,94,0.4)", fontSize: "10px" }}>
+                    <span style={{ color: "rgba(175,175,155,0.55)", fontFamily: "monospace" }}>{shortAddr(a.actor)}</span>
+                    <span style={{ color: "rgba(175,175,155,0.4)", fontSize: "10px" }}>
                       {a.timestampMs ? new Date(a.timestampMs).toLocaleDateString() : "—"}
                     </span>
                   </div>
@@ -418,7 +418,7 @@ function DexSection({
           <KVRow label="Open orders" value={dex.nextOrderId > 0 ? `${dex.nextOrderId} created` : "0"} />
 
           <div style={{ marginTop: "12px" }}>
-            <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "6px" }}>
+            <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.06em", marginBottom: "6px" }}>
               RECENT TRADES
             </div>
             {tradesLoading ? (
@@ -430,7 +430,7 @@ function DexSection({
                 <div style={{ display: "flex", gap: "8px", marginBottom: "4px" }}>
                   {["ORDER", "BUYER", "AMOUNT", "PRICE", "EVE PAID", "TIME"].map((h) => (
                     <span key={h} style={{
-                      color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.05em",
+                      color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.05em",
                       flex: h === "BUYER" ? 1.5 : 1,
                     }}>{h}</span>
                   ))}
@@ -440,12 +440,12 @@ function DexSection({
                     display: "flex", gap: "8px", fontSize: "11px", color: "#888",
                     borderBottom: "1px solid rgba(255,255,255,0.03)", paddingBottom: "3px",
                   }}>
-                    <span style={{ flex: 1, color: "rgba(107,107,94,0.55)" }}>#{t.orderId}</span>
+                    <span style={{ flex: 1, color: "rgba(175,175,155,0.55)" }}>#{t.orderId}</span>
                     <span style={{ flex: 1.5, fontFamily: "monospace" }}>{shortAddr(t.buyer)}</span>
                     <span style={{ flex: 1, color: "#c8c8b8" }}>{fmt(t.fillAmount)}</span>
                     <span style={{ flex: 1 }}>{fmt(t.pricePerUnit)}</span>
                     <span style={{ flex: 1, color: "#64b4ff" }}>{fmt(t.paymentPaid)}</span>
-                    <span style={{ flex: 1, color: "rgba(107,107,94,0.4)", fontSize: "10px" }}>
+                    <span style={{ flex: 1, color: "rgba(175,175,155,0.4)", fontSize: "10px" }}>
                       {t.timestampMs ? new Date(t.timestampMs).toLocaleDateString() : "—"}
                     </span>
                   </div>
@@ -480,18 +480,18 @@ function MemberBalancesSection({ vault }: { vault: TribeVaultState }) {
       ) : (
         <>
           <div style={{ marginBottom: "10px", display: "flex", gap: "16px" }}>
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+            <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
               {members.length} holder{members.length !== 1 ? "s" : ""}
             </span>
-            <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px" }}>
+            <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px" }}>
               {fmt(totalIssued)} {vault.coinSymbol || "units"} in circulation
             </span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
             <div style={{ display: "flex", gap: "8px", marginBottom: "4px" }}>
-              <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.05em", flex: 3 }}>ADDRESS</span>
-              <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.05em", flex: 1, textAlign: "right" }}>BALANCE</span>
-              <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px", letterSpacing: "0.05em", flex: 1, textAlign: "right" }}>SHARE</span>
+              <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.05em", flex: 3 }}>ADDRESS</span>
+              <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.05em", flex: 1, textAlign: "right" }}>BALANCE</span>
+              <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.05em", flex: 1, textAlign: "right" }}>SHARE</span>
             </div>
             {members.slice(0, 20).map((m, i) => {
               const share = totalIssued > 0 ? ((m.balance / totalIssued) * 100).toFixed(1) : "0.0";
@@ -513,7 +513,7 @@ function MemberBalancesSection({ vault }: { vault: TribeVaultState }) {
               );
             })}
             {members.length > 20 && (
-              <div style={{ color: "rgba(107,107,94,0.4)", fontSize: "11px", padding: "4px 0" }}>
+              <div style={{ color: "rgba(175,175,155,0.4)", fontSize: "11px", padding: "4px 0" }}>
                 + {members.length - 20} more holders
               </div>
             )}
@@ -565,19 +565,19 @@ function AssetLedgerPanelInner({ vault }: { vault: TribeVaultState }) {
         <div>
           <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "15px" }}>
             {vault.coinName || "—"}
-            <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: "12px", marginLeft: "8px" }}>
+            <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, fontSize: "12px", marginLeft: "8px" }}>
               {vault.coinSymbol}
             </span>
           </div>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: "11px", fontFamily: "monospace", marginTop: "2px" }}>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px", fontFamily: "monospace", marginTop: "2px" }}>
             Vault: {shortAddr(vault.objectId)}
           </div>
         </div>
         <div style={{ marginLeft: "auto", textAlign: "right" }}>
           <div style={{ color: "#c8c8b8", fontSize: "13px", fontWeight: 600 }}>
-            {fmt(vault.totalSupply)} <span style={{ color: "rgba(107,107,94,0.55)", fontWeight: 400, fontSize: "11px" }}>total supply</span>
+            {fmt(vault.totalSupply)} <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, fontSize: "11px" }}>total supply</span>
           </div>
-          <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", marginTop: "2px" }}>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", marginTop: "2px" }}>
             Tribe #{vault.tribeId}
           </div>
         </div>
@@ -620,7 +620,7 @@ export function AssetLedgerPanel() {
     return (
       <div className="card" style={{ textAlign: "center", padding: "40px 32px", color: "#888" }}>
         <div style={{ fontSize: "14px", marginBottom: "8px" }}>Connect wallet to view asset ledger</div>
-        <div style={{ fontSize: "11px", color: "rgba(107,107,94,0.4)" }}>
+        <div style={{ fontSize: "11px", color: "rgba(175,175,155,0.4)" }}>
           Requires an in-game character linked to this address
         </div>
       </div>
@@ -629,7 +629,7 @@ export function AssetLedgerPanel() {
 
   if (vaultLoading) {
     return (
-      <div className="card" style={{ textAlign: "center", padding: "40px 32px", color: "rgba(107,107,94,0.45)" }}>
+      <div className="card" style={{ textAlign: "center", padding: "40px 32px", color: "rgba(175,175,155,0.45)" }}>
         Loading vault data…
       </div>
     );
@@ -639,7 +639,7 @@ export function AssetLedgerPanel() {
     return (
       <div className="card" style={{ textAlign: "center", padding: "40px 32px", color: "#888" }}>
         <div style={{ fontSize: "14px", marginBottom: "8px" }}>No tribe vault found</div>
-        <div style={{ fontSize: "11px", color: "rgba(107,107,94,0.4)" }}>
+        <div style={{ fontSize: "11px", color: "rgba(175,175,155,0.4)" }}>
           Create a vault in the Tribe Coin tab first.
         </div>
       </div>

@@ -647,7 +647,7 @@ export function SRPPanel() {
                 placeholder="0x..."
                 style={{ ...inputStyle, width: "440px" }}
               />
-              <span style={{ color: "rgba(107,107,94,0.5)", fontSize: "10px" }}>
+              <span style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px" }}>
                 Find it on suiscan.xyz/testnet or from your killmail notification
               </span>
             </div>
@@ -731,7 +731,7 @@ export function SRPPanel() {
               <div key={policy.objectId} style={{ marginBottom: "20px", paddingBottom: "16px", borderBottom: "1px solid rgba(255,71,0,0.1)" }}>
                 <div style={{ color: "#fff", fontWeight: 700, fontSize: "13px", marginBottom: "10px" }}>
                   {policy.description || shortAddr(policy.objectId)}
-                  <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", marginLeft: "8px" }}>
+                  <span style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", marginLeft: "8px" }}>
                     Fund: {formatEve(policy.fundBalance)}
                   </span>
                 </div>
@@ -766,7 +766,7 @@ export function SRPPanel() {
                 {/* Pending claims against this policy */}
                 {policyClaims.length > 0 && (
                   <div>
-                    <div style={{ color: "rgba(107,107,94,0.7)", fontSize: "11px", letterSpacing: "0.06em", marginBottom: "6px" }}>
+                    <div style={{ color: "rgba(175,175,155,0.7)", fontSize: "11px", letterSpacing: "0.06em", marginBottom: "6px" }}>
                       PENDING CLAIMS ({policyClaims.length})
                     </div>
                     {policyClaims.map(claim => {
@@ -868,7 +868,7 @@ export function SRPPanel() {
       )}
 
       {!account && (
-        <div style={{ marginTop: "16px", color: "rgba(107,107,94,0.55)", fontSize: "12px", textAlign: "center" }}>
+        <div style={{ marginTop: "16px", color: "rgba(175,175,155,0.55)", fontSize: "12px", textAlign: "center" }}>
           Connect wallet to submit claims or create policies
         </div>
       )}
@@ -881,7 +881,7 @@ export function SRPPanel() {
 function InfoCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <span style={{ color: "rgba(107,107,94,0.55)", fontSize: "10px", letterSpacing: "0.05em" }}>{label} </span>
+      <span style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", letterSpacing: "0.05em" }}>{label} </span>
       <span style={{ color: "#ddd", fontSize: "12px", fontFamily: "monospace" }}>{children}</span>
     </div>
   );
@@ -911,13 +911,13 @@ const inputStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  color: "rgba(107,107,94,0.7)",
+  color: "rgba(175,175,155,0.7)",
   fontSize: "10px",
   letterSpacing: "0.05em",
 };
 
 const muted: React.CSSProperties = {
-  color: "rgba(107,107,94,0.55)",
+  color: "rgba(175,175,155,0.55)",
   fontSize: "12px",
 };
 

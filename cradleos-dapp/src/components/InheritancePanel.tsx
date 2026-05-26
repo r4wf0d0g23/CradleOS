@@ -338,13 +338,13 @@ function FounderDeedView({
           ["Executed",     deed.executed ? "Yes" : "No"],
         ].map(([label, value]) => (
           <div key={label} style={{ display: "flex", gap: "12px", fontSize: "12px" }}>
-            <span style={{ color: "rgba(107,107,94,0.6)", minWidth: "110px", fontFamily: "monospace" }}>{label}</span>
+            <span style={{ color: "rgba(175,175,155,0.6)", minWidth: "110px", fontFamily: "monospace" }}>{label}</span>
             <span style={{ color: "#ccc", fontFamily: "monospace" }}>{value}</span>
           </div>
         ))}
         {deed.notes && (
           <div style={{ display: "flex", gap: "12px", fontSize: "12px" }}>
-            <span style={{ color: "rgba(107,107,94,0.6)", minWidth: "110px", fontFamily: "monospace" }}>Notes</span>
+            <span style={{ color: "rgba(175,175,155,0.6)", minWidth: "110px", fontFamily: "monospace" }}>Notes</span>
             <span style={{ color: "#aaa", fontStyle: "italic" }}>{deed.notes}</span>
           </div>
         )}
@@ -394,7 +394,7 @@ function FounderDeedView({
       {/* Update Heir */}
       {!deed.executed && (
         <div style={{ marginBottom: "16px" }}>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "6px" }}>
             UPDATE HEIR
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
@@ -575,7 +575,7 @@ function CreateWillForm({
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <div>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "4px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "4px" }}>
             HEIR ADDRESS
           </div>
           <input
@@ -586,7 +586,7 @@ function CreateWillForm({
           />
         </div>
         <div>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "4px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "4px" }}>
             INACTIVITY TIMEOUT (days)
           </div>
           <input
@@ -598,7 +598,7 @@ function CreateWillForm({
           />
         </div>
         <div>
-          <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "4px" }}>
+          <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "10px", letterSpacing: "0.07em", marginBottom: "4px" }}>
             NOTES (optional — message to heir and tribe)
           </div>
           <textarea
@@ -684,7 +684,7 @@ function HeirView({ address }: { address: string }) {
         borderRadius: "0",
         padding: "14px 16px",
         marginBottom: "20px",
-        color: "rgba(107,107,94,0.55)",
+        color: "rgba(175,175,155,0.55)",
         fontSize: "12px",
       }}>
         No active testaments name your address as heir.
@@ -726,7 +726,7 @@ function HeirView({ address }: { address: string }) {
                 ["Status",     deed.executed ? "Executed" : claimable ? "CLAIMABLE" : `Claimable in ${msToHuman(remainingMs)}`],
               ].map(([lbl, val]) => (
                 <div key={lbl} style={{ display: "flex", gap: "12px", fontSize: "11px" }}>
-                  <span style={{ color: "rgba(107,107,94,0.6)", minWidth: "90px", fontFamily: "monospace" }}>{lbl}</span>
+                  <span style={{ color: "rgba(175,175,155,0.6)", minWidth: "90px", fontFamily: "monospace" }}>{lbl}</span>
                   <span style={{
                     fontFamily: "monospace",
                     color: lbl === "Status" && claimable ? "#ff4444" : "#ccc",
@@ -736,7 +736,7 @@ function HeirView({ address }: { address: string }) {
               ))}
               {deed.notes && (
                 <div style={{ display: "flex", gap: "12px", fontSize: "11px" }}>
-                  <span style={{ color: "rgba(107,107,94,0.6)", minWidth: "90px" }}>Notes</span>
+                  <span style={{ color: "rgba(175,175,155,0.6)", minWidth: "90px" }}>Notes</span>
                   <span style={{ color: "#aaa", fontStyle: "italic" }}>{deed.notes}</span>
                 </div>
               )}
@@ -759,7 +759,7 @@ function HeirView({ address }: { address: string }) {
                 >
                   {execBusy[deed.objectId] ? "Executing…" : "Execute Succession"}
                 </button>
-                <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px" }}>
+                <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px" }}>
                   This marks the deed as executed on-chain. Coordinate with tribe members
                   to complete the vault transfer using the deed as proof of founder intent.
                 </div>
@@ -836,10 +836,10 @@ function PublicRegistry() {
         Succession Deed Registry
       </div>
       {isLoading && (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>Loading…</div>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>Loading…</div>
       )}
       {!isLoading && activeEvents.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px" }}>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px" }}>
           No active testaments found on-chain.
         </div>
       )}
@@ -855,7 +855,7 @@ function PublicRegistry() {
           }}>
             {["VAULT", "FOUNDER", "HEIR", "TIMEOUT"].map(h => (
               <span key={h} style={{
-                color: "rgba(107,107,94,0.6)",
+                color: "rgba(175,175,155,0.6)",
                 fontSize: "10px",
                 letterSpacing: "0.06em",
               }}>{h}</span>
@@ -873,7 +873,7 @@ function PublicRegistry() {
               <span style={{ fontFamily: "monospace", color: "#888" }}>{shortAddr(e.vaultId)}</span>
               <span style={{ fontFamily: "monospace", color: "#888" }}>{shortAddr(e.founder)}</span>
               <span style={{ fontFamily: "monospace", color: "#888" }}>{shortAddr(e.heir)}</span>
-              <span style={{ color: "rgba(107,107,94,0.55)" }}>{Math.round(e.timeoutMs / 86_400_000)}d</span>
+              <span style={{ color: "rgba(175,175,155,0.55)" }}>{Math.round(e.timeoutMs / 86_400_000)}d</span>
             </div>
           ))}
         </>
@@ -944,7 +944,7 @@ export function InheritancePanel() {
       <div style={{ color: "#FF4700", fontWeight: 700, fontSize: "18px", marginBottom: "4px" }}>
         Succession Planning
       </div>
-      <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "11px", marginBottom: "20px" }}>
+      <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "11px", marginBottom: "20px" }}>
         On-chain testament system. Declare an heir and an inactivity timeout.
         If the founder goes silent, the heir may execute the deed as trustless proof of intent.
       </div>
@@ -953,7 +953,7 @@ export function InheritancePanel() {
       {vault && (
         <div style={{ marginBottom: "24px" }}>
           <div style={{
-            color: "rgba(107,107,94,0.7)",
+            color: "rgba(175,175,155,0.7)",
             fontSize: "11px",
             letterSpacing: "0.08em",
             fontWeight: 700,
@@ -999,7 +999,7 @@ export function InheritancePanel() {
             />
           )}
           {!isFounder && !deed && (
-            <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", marginBottom: "16px" }}>
+            <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px", marginBottom: "16px" }}>
               No active testament for this vault.
             </div>
           )}
@@ -1007,7 +1007,7 @@ export function InheritancePanel() {
       )}
 
       {!vault && !vaultLoading && (
-        <div style={{ color: "rgba(107,107,94,0.55)", fontSize: "12px", marginBottom: "20px" }}>
+        <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "12px", marginBottom: "20px" }}>
           No tribe vault found. Create one in the Tribe Vault tab first.
         </div>
       )}
@@ -1015,7 +1015,7 @@ export function InheritancePanel() {
       {/* ── Heir section ────────────────────────────────────────────────── */}
       <div style={{ marginBottom: "24px" }}>
         <div style={{
-          color: "rgba(107,107,94,0.7)",
+          color: "rgba(175,175,155,0.7)",
           fontSize: "11px",
           letterSpacing: "0.08em",
           fontWeight: 700,
@@ -1031,7 +1031,7 @@ export function InheritancePanel() {
       {/* ── Public registry ─────────────────────────────────────────────── */}
       <div>
         <div style={{
-          color: "rgba(107,107,94,0.7)",
+          color: "rgba(175,175,155,0.7)",
           fontSize: "11px",
           letterSpacing: "0.08em",
           fontWeight: 700,

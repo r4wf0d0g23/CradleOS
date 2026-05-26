@@ -217,7 +217,7 @@ const headingStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  color: "rgba(107,107,94,0.6)",
+  color: "rgba(175,175,155,0.6)",
   fontSize: "11px",
   marginBottom: 2,
 };
@@ -261,12 +261,12 @@ function TribeOverviewCard({ vault }: { vault: VaultFull }) {
       <div style={headingStyle}>Tribe Overview</div>
       <div style={{ fontSize: 18, fontWeight: 700, color: "#FF4700", marginBottom: 10 }}>
         {tribeName}
-        {worldInfo?.nameShort && <span style={{ fontSize: 12, color: "rgba(107,107,94,0.6)", marginLeft: 8 }}>[{worldInfo.nameShort}]</span>}
+        {worldInfo?.nameShort && <span style={{ fontSize: 12, color: "rgba(175,175,155,0.6)", marginLeft: 8 }}>[{worldInfo.nameShort}]</span>}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0 32px" }}>
         <Row label="Coin">
           <span style={{ color: "#FF4700", fontWeight: 700 }}>{vault.coinName || "—"}</span>
-          {vault.coinSymbol && <span style={{ color: "rgba(107,107,94,0.6)" }}> [{vault.coinSymbol}]</span>}
+          {vault.coinSymbol && <span style={{ color: "rgba(175,175,155,0.6)" }}> [{vault.coinSymbol}]</span>}
         </Row>
         <Row label="Tribe ID">
           <span style={{ fontFamily: "monospace" }}>{vault.tribeId}</span>
@@ -301,21 +301,21 @@ function MemberRosterCard({
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <div style={headingStyle}>Member Roster</div>
         {roster.length > 0 && (
-          <span style={{ fontSize: 10, color: "rgba(107,107,94,0.6)", fontFamily: "monospace" }}>
+          <span style={{ fontSize: 10, color: "rgba(175,175,155,0.6)", fontFamily: "monospace" }}>
             {roster.length} member{roster.length !== 1 ? "s" : ""}
           </span>
         )}
       </div>
-      {isLoading && <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>Loading members via GraphQL…</div>}
+      {isLoading && <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>Loading members via GraphQL…</div>}
       {!isLoading && roster.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>
           No tribe members found on-chain yet.
         </div>
       )}
       {!isLoading && roster.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {/* header row */}
-          <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(107,107,94,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
+          <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(175,175,155,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
             <span style={{ flex: "0 0 140px" }}>Pilot</span>
             <span style={{ flex: "1 1 auto" }}>Address</span>
             <span style={{ flex: "0 0 90px", textAlign: "right" }}>EVE Balance</span>
@@ -328,17 +328,17 @@ function MemberRosterCard({
                 <span style={{ flex: "0 0 140px", color: m.isFounder ? "#FF4700" : "#e0e0d0", fontWeight: m.isFounder ? 700 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {displayName}
                 </span>
-                <span style={{ flex: "1 1 auto", fontFamily: "monospace", fontSize: 10, color: "rgba(107,107,94,0.6)" }}>
+                <span style={{ flex: "1 1 auto", fontFamily: "monospace", fontSize: 10, color: "rgba(175,175,155,0.6)" }}>
                   {short(m.address)}
                 </span>
-                <span style={{ flex: "0 0 90px", textAlign: "right", color: m.balance > 0 ? "#00ff96" : "rgba(107,107,94,0.3)", fontFamily: "monospace" }}>
+                <span style={{ flex: "0 0 90px", textAlign: "right", color: m.balance > 0 ? "#00ff96" : "rgba(175,175,155,0.3)", fontFamily: "monospace" }}>
                   {m.balance > 0 ? m.balance.toLocaleString() : "—"}
                 </span>
                 <span style={{ flex: "0 0 70px", textAlign: "right" }}>
                   {m.isFounder ? (
                     <span style={{ fontSize: 10, color: "#FF4700", fontWeight: 700, letterSpacing: "0.08em" }}>FOUNDER</span>
                   ) : (
-                    <span style={{ fontSize: 10, color: "rgba(107,107,94,0.5)", letterSpacing: "0.06em" }}>MEMBER</span>
+                    <span style={{ fontSize: 10, color: "rgba(175,175,155,0.5)", letterSpacing: "0.06em" }}>MEMBER</span>
                   )}
                 </span>
               </div>
@@ -379,13 +379,13 @@ function InfraCard({ vaultId }: { vaultId: string }) {
           </div>
         )}
       </div>
-      {loading && <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>Loading infrastructure…</div>}
+      {loading && <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>Loading infrastructure…</div>}
       {!loading && (!entries || entries.length === 0) && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>No registered infrastructure found.</div>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>No registered infrastructure found.</div>
       )}
       {!loading && entries && entries.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(107,107,94,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
+          <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(175,175,155,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
             <span style={{ flex: 1 }}>Structure ID</span>
             <span style={{ flex: "0 0 100px", textAlign: "right" }}>Energy Cost</span>
           </div>
@@ -457,13 +457,13 @@ function TribeRolesCard({ vault, roster }: { vault: VaultFull; roster: RosterMem
             </button>
           </div>
         ) : (
-          <div style={{ fontSize: 12, color: "rgba(107,107,94,0.55)" }}>No role system deployed for this tribe.</div>
+          <div style={{ fontSize: 12, color: "rgba(175,175,155,0.55)" }}>No role system deployed for this tribe.</div>
         )
       ) : (
         <div>
           {/* Current assignments */}
           {roles.assignments.length === 0 ? (
-            <div style={{ fontSize: 12, color: "rgba(107,107,94,0.55)", marginBottom: 10 }}>No roles assigned yet.</div>
+            <div style={{ fontSize: 12, color: "rgba(175,175,155,0.55)", marginBottom: 10 }}>No roles assigned yet.</div>
           ) : (
             <div style={{ marginBottom: 12 }}>
               {roles.assignments.map(a => (
@@ -647,7 +647,7 @@ function ActivityFeedCard({ vaultId }: { vaultId: string }) {
     <div style={cardStyle}>
       <div style={headingStyle}>Recent Activity</div>
       {feed.length === 0 && (
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12 }}>No recent activity found.</div>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12 }}>No recent activity found.</div>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {feed.map((item, i) => (
@@ -668,7 +668,7 @@ function ActivityFeedCard({ vaultId }: { vaultId: string }) {
                 : `${short(item.address ?? "")} — ${numish(item.amount ?? 0)}`
               }
             </span>
-            <span style={{ color: "rgba(107,107,94,0.6)", fontSize: "11px", whiteSpace: "nowrap" }}>
+            <span style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px", whiteSpace: "nowrap" }}>
               {timeAgo(item.timestampMs)}
             </span>
           </div>
@@ -705,7 +705,7 @@ function PublicTribeVaultCard({ vaultId }: { vaultId: string }) {
     staleTime: 300_000,
   });
 
-  if (isLoading) return <div style={{ color: "rgba(107,107,94,0.6)", fontSize: 12, padding: 12 }}>Loading vault…</div>;
+  if (isLoading) return <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12, padding: 12 }}>Loading vault…</div>;
   if (!vault) return <div style={{ color: "#ff6432", fontSize: 12, padding: 12 }}>Vault not found or not a TribeVault object.</div>;
 
   return (
@@ -715,7 +715,7 @@ function PublicTribeVaultCard({ vaultId }: { vaultId: string }) {
         <div style={headingStyle}>Tribe Overview</div>
         {worldInfo?.name && (
           <div style={{ fontSize: 18, fontWeight: 700, color: "#FF4700", marginBottom: 10 }}>{worldInfo.name}
-            {worldInfo.nameShort && <span style={{ fontSize: 12, color: "rgba(107,107,94,0.6)", marginLeft: 8 }}>[{worldInfo.nameShort}]</span>}
+            {worldInfo.nameShort && <span style={{ fontSize: 12, color: "rgba(175,175,155,0.6)", marginLeft: 8 }}>[{worldInfo.nameShort}]</span>}
           </div>
         )}
         {worldInfo?.description && (
@@ -724,7 +724,7 @@ function PublicTribeVaultCard({ vaultId }: { vaultId: string }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0 32px" }}>
           <Row label="Coin">
             <span style={{ color: "#FF4700", fontWeight: 700 }}>{vault.coinName || "—"}</span>
-            {vault.coinSymbol && <span style={{ color: "rgba(107,107,94,0.6)" }}> [{vault.coinSymbol}]</span>}
+            {vault.coinSymbol && <span style={{ color: "rgba(175,175,155,0.6)" }}> [{vault.coinSymbol}]</span>}
           </Row>
           <Row label="Tribe ID"><span style={{ fontFamily: "monospace" }}>{vault.tribeId}</span></Row>
           <Row label="Total Supply"><span style={{ fontFamily: "monospace" }}>{vault.totalSupply?.toLocaleString() ?? "—"}</span></Row>
@@ -748,10 +748,10 @@ function PublicTribeVaultCard({ vaultId }: { vaultId: string }) {
         <div style={cardStyle}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             <div style={headingStyle}>Members</div>
-            <span style={{ fontSize: 10, color: "rgba(107,107,94,0.6)", fontFamily: "monospace" }}>{members.length} on-chain</span>
+            <span style={{ fontSize: 10, color: "rgba(175,175,155,0.6)", fontFamily: "monospace" }}>{members.length} on-chain</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(107,107,94,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
+            <div style={{ display: "flex", gap: 8, fontSize: "10px", color: "rgba(175,175,155,0.6)", paddingBottom: 4, borderBottom: "1px solid rgba(255,71,0,0.08)" }}>
               <span style={{ flex: "0 0 130px" }}>Pilot</span>
               <span style={{ flex: "1 1 auto" }}>Address</span>
               <span style={{ flex: "0 0 90px", textAlign: "right" }}>Balance</span>
@@ -762,12 +762,12 @@ function PublicTribeVaultCard({ vaultId }: { vaultId: string }) {
                 <span style={{ flex: "0 0 130px", color: m.isFounder ? "#FF4700" : "#e0e0d0", fontWeight: m.isFounder ? 700 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {m.charName ?? "—"}
                 </span>
-                <span style={{ flex: "1 1 auto", fontFamily: "monospace", fontSize: 10, color: "rgba(107,107,94,0.5)" }}>{short(m.address)}</span>
-                <span style={{ flex: "0 0 90px", textAlign: "right", fontFamily: "monospace", color: m.balance > 0 ? "#00ff96" : "rgba(107,107,94,0.4)" }}>{m.balance.toLocaleString()}</span>
+                <span style={{ flex: "1 1 auto", fontFamily: "monospace", fontSize: 10, color: "rgba(175,175,155,0.5)" }}>{short(m.address)}</span>
+                <span style={{ flex: "0 0 90px", textAlign: "right", fontFamily: "monospace", color: m.balance > 0 ? "#00ff96" : "rgba(175,175,155,0.4)" }}>{m.balance.toLocaleString()}</span>
                 <span style={{ flex: "0 0 60px", textAlign: "right", fontSize: 10, letterSpacing: "0.06em" }}>
                   {m.isFounder
                     ? <span style={{ color: "#FF4700", fontWeight: 700 }}>FOUNDER</span>
-                    : <span style={{ color: "rgba(107,107,94,0.5)" }}>MEMBER</span>}
+                    : <span style={{ color: "rgba(175,175,155,0.5)" }}>MEMBER</span>}
                 </span>
               </div>
             ))}
@@ -791,7 +791,7 @@ function PublicTribeExplorer() {
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
       <div style={cardStyle}>
         <div style={headingStyle}>Tribe Explorer</div>
-        <div style={{ fontSize: 12, color: "rgba(107,107,94,0.65)", marginBottom: 14 }}>
+        <div style={{ fontSize: 12, color: "rgba(175,175,155,0.65)", marginBottom: 14 }}>
           Browse any tribe's public on-chain data. Paste a vault object ID to view their roster, coin, and infrastructure.
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -818,7 +818,7 @@ function PublicTribeExplorer() {
             VIEW
           </button>
         </div>
-        <div style={{ fontSize: 10, color: "rgba(107,107,94,0.45)", marginTop: 8 }}>
+        <div style={{ fontSize: 10, color: "rgba(175,175,155,0.45)", marginTop: 8 }}>
           Find vault IDs in the Tribe Coin tab or ask a tribe recruiter.
         </div>
       </div>
@@ -923,7 +923,7 @@ export function TribeHierarchyPanel() {
   if (vaultLoading) {
     return (
       <div style={{ ...cardStyle, textAlign: "center", padding: "40px 20px" }}>
-        <div style={{ color: "rgba(107,107,94,0.6)", fontSize: "14px" }}>
+        <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "14px" }}>
           Loading tribe data…
         </div>
       </div>

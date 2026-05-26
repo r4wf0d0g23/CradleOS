@@ -284,11 +284,11 @@ export function FlappyFrontierPanel() {
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 16px", gap: 12 }}>
       <div style={{ display: "flex", gap: 24, marginBottom: 4 }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: 10, letterSpacing: "0.12em" }}>GATES CLEARED</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: 10, letterSpacing: "0.12em" }}>GATES CLEARED</div>
           <div style={{ color: "#FF4700", fontSize: 28, fontWeight: 700, fontFamily: "monospace" }}>{displayScore}</div>
         </div>
         <div style={{ textAlign: "center" }}>
-          <div style={{ color: "rgba(107,107,94,0.5)", fontSize: 10, letterSpacing: "0.12em" }}>BEST RUN</div>
+          <div style={{ color: "rgba(175,175,155,0.5)", fontSize: 10, letterSpacing: "0.12em" }}>BEST RUN</div>
           <div style={{ color: "#00ccff", fontSize: 28, fontWeight: 700, fontFamily: "monospace" }}>{displayBest}</div>
         </div>
       </div>
@@ -305,7 +305,7 @@ export function FlappyFrontierPanel() {
           maxWidth: "100%",
         }}
       />
-      <div style={{ color: "rgba(107,107,94,0.4)", fontSize: 11, letterSpacing: "0.08em" }}>
+      <div style={{ color: "rgba(175,175,155,0.4)", fontSize: 11, letterSpacing: "0.08em" }}>
         CLICK or SPACE to warp · navigate Smart Gates · don't die
       </div>
     </div>

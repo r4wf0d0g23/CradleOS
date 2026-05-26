@@ -1312,13 +1312,13 @@ export function IndustryPanel() {
         <div style={{
           textAlign: "center",
           padding: "60px 24px",
-          color: "rgba(107,107,94,0.4)",
+          color: "rgba(175,175,155,0.4)",
           border: "1px solid rgba(255,71,0,0.06)",
           background: "#0a0a0a",
         }}>
           <div style={{ fontSize: "36px", marginBottom: "12px", opacity: 0.3 }}>⚙</div>
           <div style={{ fontSize: "13px", marginBottom: "6px" }}>Select a product to calculate its supply chain</div>
-          <div style={{ fontSize: "11px", color: "rgba(107,107,94,0.35)" }}>
+          <div style={{ fontSize: "11px", color: "rgba(175,175,155,0.35)" }}>
             {producibleTypeIds.size} buildable items across {Object.keys(blueprints).length} blueprints + {recipes.length} recipes
           </div>
         </div>
