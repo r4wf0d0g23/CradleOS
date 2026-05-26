@@ -183,11 +183,18 @@ export const FRAGMENTS: KeeperFragment[] = [
   },
 ];
 
-/** Pick today's fragment deterministically from a daily seed. */
+/** Pick today's fragment deterministically from a daily seed.
+ *
+ * Only fragments with an expedition are eligible — fragments without an
+ * on-chain task have no path to archive and would deadlock the panel.
+ * Lore-only fragments (no expedition) can be reintroduced once a non-
+ * expedition gate (e.g. glyph-decode threshold) is shipped.
+ */
 export function pickFragmentForSeed(seedHex: string, completedIds: number[]): KeeperFragment {
-  // Cycle through fragments not yet completed (or all if completed all).
-  const pool = FRAGMENTS.filter(f => !completedIds.includes(f.id));
-  const target = pool.length > 0 ? pool : FRAGMENTS;
+  const eligible = FRAGMENTS.filter(f => f.expedition);
+  // Cycle through eligible fragments not yet completed (or all eligible if completed all).
+  const pool = eligible.filter(f => !completedIds.includes(f.id));
+  const target = pool.length > 0 ? pool : eligible;
   // Deterministic index from seed.
   let idx = 0;
   for (let i = 0; i < seedHex.length; i++) {

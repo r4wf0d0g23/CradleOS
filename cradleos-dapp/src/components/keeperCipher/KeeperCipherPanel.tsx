@@ -119,7 +119,15 @@ const LS_READ_MODE = "cradleos:keeper-cipher:read-mode";
 function loadCompletions(): CompletionRecord[] {
   try {
     const raw = localStorage.getItem(LS_COMPLETIONS);
-    return raw ? (JSON.parse(raw) as CompletionRecord[]) : [];
+    if (!raw) return [];
+    const all = JSON.parse(raw) as CompletionRecord[];
+    // Migration: drop any completion lacking an on-chain expedition proof.
+    // Earlier builds auto-archived fragments on view; those records are invalid.
+    const verified = all.filter(c => typeof c.expeditionProofTx === "string" && c.expeditionProofTx.length > 0);
+    if (verified.length !== all.length) {
+      try { localStorage.setItem(LS_COMPLETIONS, JSON.stringify(verified)); } catch { /* quota */ }
+    }
+    return verified;
   } catch { return []; }
 }
 function saveCompletions(list: CompletionRecord[]): void {
@@ -408,28 +416,10 @@ export function KeeperCipherPanel() {
   const tokens = useMemo(() => fragment ? tokenize(fragment.plaintext) : [], [fragment]);
   const isPreviouslyArchived = fragment ? completions.some(c => c.fragmentId === fragment.id) : false;
 
-  // ── Mark current fragment archived once the player has read it (any mode) ──
-  // We define "read" as: the player has spent at least 5 seconds with the fragment open
-  // AND has either selected a non-default mode, peeked a glyph, or solved an expedition.
-  // Simpler v0.2: treat opening the fragment as reading; archive on first view if not
-  // already archived. The streak/scoring system can refine this in v1.
-  useEffect(() => {
-    if (!fragment) return;
-    if (completions.some(c => c.fragmentId === fragment.id)) return;
-    const t = setTimeout(() => {
-      const next = [
-        ...completions,
-        {
-          fragmentId: fragment.id,
-          readMode,
-          archivedAtMs: Date.now(),
-        },
-      ];
-      setCompletions(next);
-      saveCompletions(next);
-    }, 5000); // 5s grace period
-    return () => clearTimeout(t);
-  }, [fragment, readMode, completions]);
+  // ── Archival is gated by verified expedition only ──
+  // Fragments stay un-archived until the player completes the expedition
+  // and `verifyExpeditionReveal` confirms an on-chain LocationRevealedEvent
+  // tied to their character. No passive "read = archived" path.
 
   const handleToggleLock = (ch: string, locked: boolean) => {
     setLockedGlyphs(prev => {
@@ -553,7 +543,7 @@ export function KeeperCipherPanel() {
             {fragment.intercept_label}
           </span>
           <span style={{ fontSize: 10, color: C.secondaryDim, letterSpacing: "0.1em" }}>
-            {completions.length} / {FRAGMENTS.length} ARCHIVED
+            {completions.length} / {FRAGMENTS.filter(f => f.expedition).length} ARCHIVED
           </span>
           {playerTribeName && (
             <span style={{ fontSize: 10, color: C.secondaryDim, letterSpacing: "0.1em" }}>
