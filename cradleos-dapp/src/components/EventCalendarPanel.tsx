@@ -69,13 +69,13 @@ const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // ── Hackathon schedule (always visible, public, not deletable) ────────────────
 
 const HACKATHON_EVENTS: CommunityEvent[] = [
-  { id: "hk-start",    title: "Hackathon Begins",               date: "2026-03-11", time: "", description: "EVE Frontier Hackathon build period opens. All submissions must target Utopia.", type: "Social",   visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "hk-build",    title: "Build Period (Mar 11 – Mar 31)", date: "2026-03-11", time: "", description: "Open build window. Deploy and iterate on Utopia testnet.",                   type: "Industry", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "hk-deadline", title: "Submission Deadline",            date: "2026-03-31", time: "", description: "All hackathon submissions must be in by end of day.",                        type: "CTA",      visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "hk-deploy",   title: "Deploy to Stillness (Optional)", date: "2026-04-01", time: "", description: "Optional: deploy your project into the live Stillness environment (Apr 1–8).", type: "Industry", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "hk-vote",     title: "Community Voting Opens",         date: "2026-04-01", time: "", description: "Community voting period runs April 1–15.",                                   type: "Alliance", visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "hk-judging",  title: "Judging Period",                 date: "2026-04-15", time: "", description: "Official judging by CCP. Runs April 15–22.",                                type: "Defense",  visibility: "public", createdBy: "CCP", createdAt: 0 },
-  { id: "hk-winners",  title: "Winners Announced",              date: "2026-04-24", time: "", description: "Hackathon winners revealed on April 24.",                                    type: "Social",   visibility: "public", createdBy: "CCP", createdAt: 0 },
+  { id: "hk-start",    title: "Hackathon Begins",               date: "2026-03-11", time: "", description: "EVE Frontier Hackathon build period opens. All submissions must target Utopia.", type: "Social",   visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
+  { id: "hk-build",    title: "Build Period (Mar 11 – Mar 31)", date: "2026-03-11", time: "", description: "Open build window. Deploy and iterate on Utopia testnet.",                   type: "Industry", visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
+  { id: "hk-deadline", title: "Submission Deadline",            date: "2026-03-31", time: "", description: "All hackathon submissions must be in by end of day.",                        type: "CTA",      visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
+  { id: "hk-deploy",   title: "Deploy to Stillness (Optional)", date: "2026-04-01", time: "", description: "Optional: deploy your project into the live Stillness environment (Apr 1–8).", type: "Industry", visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
+  { id: "hk-vote",     title: "Community Voting Opens",         date: "2026-04-01", time: "", description: "Community voting period runs April 1–15.",                                   type: "Alliance", visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
+  { id: "hk-judging",  title: "Judging Period",                 date: "2026-04-15", time: "", description: "Official judging by Fenris Creations. Runs April 15–22.",                  type: "Defense",  visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
+  { id: "hk-winners",  title: "Winners Announced",              date: "2026-04-24", time: "", description: "Hackathon winners revealed on April 24.",                                    type: "Social",   visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
 ];
 
 const HACKATHON_IDS = new Set(HACKATHON_EVENTS.map(e => e.id));

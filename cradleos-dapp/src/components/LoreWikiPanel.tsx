@@ -191,7 +191,7 @@ const MECHANICS_ARTICLES: BuiltinArticle[] = [
     title: "Ship Fitting — Slots, CPU, and Powergrid",
     category: "Mechanics",
     tags: ["fitting", "slots", "cpu", "powergrid", "modules"],
-    content: `Every ship has three module slot types:\n\nHIGH SLOTS — weapons and offensive modules\n  Energy Lance, Coilgun, Autocannon, Howitzer, Plasma, Mining Laser\n\nMEDIUM SLOTS — propulsion, shield, and utility modules\n  Afterburners, Engines, Warp Accelerators, Shield Generators,\n  Shield Hardeners, Stasis Webs, Warp Scramblers, Heat Ejectors\n\nLOW SLOTS — armor and cargo modules\n  Armor Plates, Armor Repairers, Nanitic Braces, Cargo Grids, Hull Repairers\n\nFITTING CONSTRAINTS\n  Each module costs CPU (tf) and Powergrid (MW).\n  Total cost must not exceed ship's CPU/PG output.\n  Modules also add mass — reducing jump range.\n\nNote: CPU/PG costs per module are not yet exposed by the CCP API.\n  Module mass impact on jump range is calculable from known module mass values.`,
+    content: `Every ship has three module slot types:\n\nHIGH SLOTS — weapons and offensive modules\n  Energy Lance, Coilgun, Autocannon, Howitzer, Plasma, Mining Laser\n\nMEDIUM SLOTS — propulsion, shield, and utility modules\n  Afterburners, Engines, Warp Accelerators, Shield Generators,\n  Shield Hardeners, Stasis Webs, Warp Scramblers, Heat Ejectors\n\nLOW SLOTS — armor and cargo modules\n  Armor Plates, Armor Repairers, Nanitic Braces, Cargo Grids, Hull Repairers\n\nFITTING CONSTRAINTS\n  Each module costs CPU (tf) and Powergrid (MW).\n  Total cost must not exceed ship's CPU/PG output.\n  Modules also add mass — reducing jump range.\n\nNote: CPU/PG costs per module are not yet exposed by the Fenris Creations API.\n  Module mass impact on jump range is calculable from known module mass values.`,
     isBuiltin: true,
   },
   {
@@ -207,7 +207,7 @@ const MECHANICS_ARTICLES: BuiltinArticle[] = [
     title: "Defense Modules — Tank Types",
     category: "Mechanics",
     tags: ["defense", "armor", "shield", "tank", "fitting"],
-    content: `EVE Frontier ships have three hit point layers: Shield, Armor, and Structure.\nAll three start at base values defined by the ship hull.\nModules modify these values:\n\nSHIELD (Medium slots)\n  Bulwark Shield Generator — adds shield HP\n  Attuned Shield Generator — adds shield HP\n  Reinforced Shield Generator — adds shield HP\n  Shield Restorer — increases shield recharge\n  EM/Thermal/Explosive/Kinetic Field Array — shield resistances\n  Note: Shield regenerates passively. Active regen requires Shield Restorer.\n\nARMOR (Low slots)\n  Bulky Armor Plates — high HP bonus, high mass penalty\n  Coated Armor Plates — balanced HP/mass\n  Reactive Armor Plates — reactive resist bonus\n  Nimble Armor Plates — low mass penalty\n  Systematic Armor Restorer — active armor repair\n  Nanitic Brace variants — armor resist bonuses by damage type\n\nSTRUCTURE (Low slots)\n  Hull Repairer — active structure repair\n  Structure does not regen passively.\n\nNote: Detailed HP values and fitting costs are pending CCP API data exposure.`,
+    content: `EVE Frontier ships have three hit point layers: Shield, Armor, and Structure.\nAll three start at base values defined by the ship hull.\nModules modify these values:\n\nSHIELD (Medium slots)\n  Bulwark Shield Generator — adds shield HP\n  Attuned Shield Generator — adds shield HP\n  Reinforced Shield Generator — adds shield HP\n  Shield Restorer — increases shield recharge\n  EM/Thermal/Explosive/Kinetic Field Array — shield resistances\n  Note: Shield regenerates passively. Active regen requires Shield Restorer.\n\nARMOR (Low slots)\n  Bulky Armor Plates — high HP bonus, high mass penalty\n  Coated Armor Plates — balanced HP/mass\n  Reactive Armor Plates — reactive resist bonus\n  Nimble Armor Plates — low mass penalty\n  Systematic Armor Restorer — active armor repair\n  Nanitic Brace variants — armor resist bonuses by damage type\n\nSTRUCTURE (Low slots)\n  Hull Repairer — active structure repair\n  Structure does not regen passively.\n\nNote: Detailed HP values and fitting costs are pending Fenris Creations API data exposure.`,
     isBuiltin: true,
   },
   {
@@ -616,7 +616,7 @@ function buildModuleGroupArticles(types: StillnessType[]): BuiltinArticle[] {
         title: `${groupName} — Module Group`,
         category: "Mechanics",
         tags: ["module", groupName.toLowerCase().replace(/\s+/g, "-"), slotType],
-        content: `${groupName} modules occupy ${slotType} slots.\n\nKnown modules in this group:\n${chunkNames(names)}\n\nMass range: ${minMass} – ${maxMass} kg per module\n\nNote: Stat effects (CPU cost, PG cost, HP bonus) are pending CCP API data exposure.`,
+        content: `${groupName} modules occupy ${slotType} slots.\n\nKnown modules in this group:\n${chunkNames(names)}\n\nMass range: ${minMass} – ${maxMass} kg per module\n\nNote: Stat effects (CPU cost, PG cost, HP bonus) are pending Fenris Creations API data exposure.`,
         isBuiltin: true,
       } satisfies BuiltinArticle;
     });

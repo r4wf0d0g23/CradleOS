@@ -3366,7 +3366,7 @@ export function InventoryPanel() {
             <div style={{ fontWeight: 700, color: "#FF4700", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>
               Storage Unit — shared inventory mode
             </div>
-            Stock CCP Storage Units partition the &ldquo;open&rdquo; inventory <strong>per accessor</strong>:
+            Stock Fenris Creations Storage Units partition the &ldquo;open&rdquo; inventory <strong>per accessor</strong>:
             tribemate deposits land in private lockboxes the SSU owner cannot see, and capacity
             multiplies per accessor instead of being shared. CradleOS routes deposits and withdrawals
             through <code style={{ color: "#FF8a4d" }}>cradleos::ssu_access</code> when an SSU has a

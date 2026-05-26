@@ -812,7 +812,7 @@ function GateProfileFeed({
         All Gate Profiles
       </div>
       <p style={{ color: "rgba(175,175,155,0.5)", fontSize: "12px", marginBottom: "14px" }}>
-        Declared gate policies from all tribes. These are intent declarations — physical gate linking is CCP-managed.
+        Declared gate policies from all tribes. These are intent declarations — physical gate linking is Fenris Creations-managed.
       </p>
 
       {others.length === 0 ? (

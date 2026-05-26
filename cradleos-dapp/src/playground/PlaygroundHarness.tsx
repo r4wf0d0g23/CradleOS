@@ -8,7 +8,7 @@
  *
  * Variants:
  *   • current    — baseline (today's production layout)
- *   • D          — CCP token correction (Martian Red #FF2800 + Disket type)
+ *   • D          — Fenris Creations token correction (Martian Red #FF2800 + Disket type)
  *   • A          — Tactical Status Rows (dense per-row layout)
  *   • AD         — A + D combined
  *
@@ -27,7 +27,7 @@ type Variant = "current" | "D" | "A" | "AD";
 
 const VARIANTS: Array<{ key: Variant; label: string; tagline: string }> = [
   { key: "current", label: "CURRENT",       tagline: "production baseline" },
-  { key: "D",       label: "VARIANT D",     tagline: "CCP color correction" },
+  { key: "D",       label: "VARIANT D",     tagline: "Fenris Creations color correction" },
   { key: "A",       label: "VARIANT A",     tagline: "tactical status rows" },
   { key: "AD",      label: "VARIANT A + D", tagline: "rows + ccp tokens" },
 ];

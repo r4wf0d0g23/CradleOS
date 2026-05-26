@@ -366,7 +366,7 @@ function AppInner() {
     dapps: {
       title: "Community dApps — curated registry of player-built tools and apps",
       steps: [
-        "Cards seeded from CCP's official Community Gallery",
+        "Cards seeded from Fenris Creations' official Community Gallery",
         "Filter by tag (Governance, PvP, Smart Assemblies, Tools, …)",
         "Search by title, tagline, author, or tag",
         "Click any card to open the dApp in a new tab",

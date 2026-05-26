@@ -1,6 +1,6 @@
 // CommunityDappsPanel — discovery surface for community-built EVE Frontier dApps.
 //
-// First-pass card set seeded from the official CCP Community Gallery
+// First-pass card set seeded from the official Fenris Creations Community Gallery
 // (https://evefrontier.com/en/community-gallery, scraped from __NEXT_DATA__
 // 2026-05-26). Future iterations can pull dynamically from Contentful or a
 // community submission flow.
@@ -22,7 +22,7 @@ interface DAppCard {
   highlight?: boolean;    // pinned/featured
 }
 
-// ─── Seed corpus from CCP Community Gallery (verified 2026-05-26) ──────────
+// ─── Seed corpus from Fenris Creations Community Gallery (verified 2026-05-26) ────
 const SEED_DAPPS: DAppCard[] = [
   {
     id: "cradleos",
@@ -177,8 +177,8 @@ export function CommunityDappsPanel() {
           }}
         >
           A curated registry of community-built EVE Frontier dApps. Cards are
-          seeded from the official CCP Community Gallery; new entries can be
-          proposed via the EVE Frontier Discord or submitted upstream to CCP.
+          seeded from the official Fenris Creations Community Gallery; new entries can be
+          proposed via the EVE Frontier Discord or submitted upstream to Fenris Creations.
           Click any card to open in a new tab.
         </div>
       </div>
