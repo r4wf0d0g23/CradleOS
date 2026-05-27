@@ -1,0 +1,6 @@
+[package]
+name = "cradleos_voting"
+edition = "2024"
+
+[dependencies]
+cradleos = { local = "../cradleos" }
