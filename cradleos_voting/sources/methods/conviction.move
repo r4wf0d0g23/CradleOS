@@ -109,7 +109,7 @@ module cradleos_voting::conviction {
 
         let n_options = vector::length(options);
         // Per-option conviction accumulator in raw integer weight-units.
-        let mut convictions = vector::empty<u128>();
+        let mut convictions = vector[];
         let mut i = 0;
         while (i < n_options) {
             vector::push_back(&mut convictions, 0u128);
@@ -162,7 +162,7 @@ module cradleos_voting::conviction {
             j = j + 1;
         };
 
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         let mut k_idx = 0;
         while (k_idx < n_options) {
             if (*vector::borrow(&convictions, k_idx) == max_conv && max_conv > 0) {
@@ -174,7 +174,7 @@ module cradleos_voting::conviction {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
@@ -182,7 +182,7 @@ module cradleos_voting::conviction {
         let quorum_met = max_conv >= (quorum_threshold as u128);
 
         // Payload: [tally_now_ms:u64][per-option (option_id:u32, conviction:u128)]
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         append_u64(&mut payload, tally_now_ms);
         let mut q = 0;
         while (q < n_options) {
@@ -191,7 +191,7 @@ module cradleos_voting::conviction {
             q = q + 1;
         };
 
-        let rounds = vector::empty<RoundResult>();
+        let rounds = vector[];
         (winners, payload, rounds, total_weight, quorum_met)
     }
 

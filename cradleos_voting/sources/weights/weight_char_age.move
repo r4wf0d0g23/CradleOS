@@ -105,7 +105,7 @@ module cradleos_voting::weight_char_age {
     /// Compute ordinal age weight and mint WeightProof for ORDINAL_VIA_CHARACTER mode.
     /// game_char_id_u64: the raw u64 from in_game_id::item_id (game char ID).
     /// character_id: u32 cast of game_char_id_u64, used as the WeightProof binding.
-    fun mint_ordinal(
+    public fun mint_ordinal(
         election: &Election,
         character_id: u32,
         game_char_id_u64: u64,
@@ -129,7 +129,7 @@ module cradleos_voting::weight_char_age {
 
         let weight = apply_formula(formula, ordinal_age, divisor, cap);
 
-        let mut hbuf = vector::empty<u8>();
+        let mut hbuf = vector[];
         vector::push_back(&mut hbuf, KIND_CHAR_AGE);
         vector::append(&mut hbuf, *params);
         append_u32_le(&mut hbuf, character_id);
@@ -154,7 +154,7 @@ module cradleos_voting::weight_char_age {
 
     /// Compute epoch age weight and mint WeightProof for EPOCH_VIA_REGISTRY mode.
     /// join_epoch: the claim_epoch from CharacterRegistry for the caller's tribe_id.
-    fun mint_epoch(
+    public fun mint_epoch(
         election: &Election,
         character_id: u32,
         join_epoch: u64,
@@ -178,7 +178,7 @@ module cradleos_voting::weight_char_age {
 
         let weight = apply_formula(formula, age_epochs, divisor, cap);
 
-        let mut hbuf = vector::empty<u8>();
+        let mut hbuf = vector[];
         vector::push_back(&mut hbuf, KIND_CHAR_AGE);
         vector::append(&mut hbuf, *params);
         append_u32_le(&mut hbuf, character_id);
@@ -239,71 +239,50 @@ module cradleos_voting::weight_char_age {
 
     // ── Entry functions ───────────────────────────────────────────────────────
 
-    /// PRIMARY — Trustless character age via world Character object.
-    ///
+    /// PRIMARY — Trustless character age via world Character object. Returns WeightProof.
+    /// Use in a PTB: call this, then pass the proof to cast_ballot in the same tx.
     /// weight_params[0] must be 0 (MODE_ORDINAL).
     /// ctx.sender() must equal character.character_address (ownership check).
-    ///
-    /// Reads game_char_id from the Character object:
-    ///   game_char_id = in_game_id::item_id(&character::key(character))  [u64]
-    ///   character_id = game_char_id as u32  (safe: game IDs are u32 at origin)
-    ///
-    /// ordinal_age = max(0, max_id - game_char_id)
-    ///   where max_id = weight_params[2..10] (param1, u64 LE).
-    ///
-    /// Works for every character — no registry claim required.
-    public entry fun prove_char_age_via_character(
+    public fun mint_via_character(
         election: &Election,
         character: &Character,
         ctx: &mut TxContext,
-    ) {
+    ): WeightProof {
         let voter = ctx.sender();
         let params = voting::weight_params(election);
         assert!(vector::length(params) >= 26, E_BAD_PARAMS);
         assert!(*vector::borrow(params, 0) == MODE_ORDINAL, E_INVALID_MODE);
 
-        // Ownership check: only the character's registered wallet can prove its age.
         assert!(character::character_address(character) == voter, E_NOT_CHAR_OWNER);
 
-        // Trustless game ID read via two public (non-test) accessors.
         let game_char_id_u64: u64 = in_game_id::item_id(&character::key(character));
         let character_id: u32 = game_char_id_u64 as u32;
 
-        let proof = mint_ordinal(election, character_id, game_char_id_u64, ctx);
-        transfer::public_transfer(proof, voter);
+        mint_ordinal(election, character_id, game_char_id_u64, ctx)
     }
 
-    /// FALLBACK — Trustless epoch age via CharacterRegistry (tribe founders only).
-    ///
+    /// FALLBACK — Trustless epoch age via CharacterRegistry (tribe founders only). Returns WeightProof.
+    /// Use in a PTB: call this, then pass the proof to cast_ballot in the same tx.
     /// weight_params[0] must be 1 (MODE_EPOCH).
-    /// Caller must hold the active claim for tribe_id in CharacterRegistry.
-    /// join_epoch = claim_epoch stored on-chain for that tribe_id claim.
-    ///
-    /// age_epochs = max(0, ctx.epoch() - join_epoch)
-    ///
-    /// Limitation: only accessible to tribe founders/claimants, not general members.
-    /// General members should use prove_char_age_via_character instead.
-    public entry fun prove_char_age_via_registry(
+    public fun mint_via_registry(
         election: &Election,
         registry: &CharacterRegistry,
         tribe_id: u32,
         character_id: u32,
         ctx: &mut TxContext,
-    ) {
+    ): WeightProof {
         let voter = ctx.sender();
         let params = voting::weight_params(election);
         assert!(vector::length(params) >= 26, E_BAD_PARAMS);
         assert!(*vector::borrow(params, 0) == MODE_EPOCH, E_INVALID_MODE);
 
-        // Verify caller holds the active claim — trustless on-chain check.
         assert!(character_registry::has_claim(registry, tribe_id), E_NO_CLAIM);
         assert!(
             character_registry::claim_claimer(registry, tribe_id) == voter,
             E_NOT_CLAIMER
         );
         let join_epoch = character_registry::claim_epoch(registry, tribe_id);
-        let proof = mint_epoch(election, character_id, join_epoch, ctx);
-        transfer::public_transfer(proof, voter);
+        mint_epoch(election, character_id, join_epoch, ctx)
     }
 
     // ── Encoding helpers ──────────────────────────────────────────────────────

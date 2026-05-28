@@ -102,8 +102,8 @@ module cradleos_voting::weight_composite {
 
         // Consume all child proofs (pop from back → process in reverse order,
         // then we track index from the end for WEIGHTED_AVG coefficient lookup)
-        let mut weights        = vector::empty<u64>();
-        let mut child_inputs   = vector::empty<vector<u8>>();
+        let mut weights        = vector[];
+        let mut child_inputs   = vector<vector<u8>>[];
 
         // Process in index order by reversing first, then popping from back
         vector::reverse(&mut child_proofs);
@@ -111,7 +111,7 @@ module cradleos_voting::weight_composite {
         while (!vector::is_empty(&child_proofs)) {
             let proof = vector::pop_back(&mut child_proofs);
             let (child_eid, child_voter, child_cid, _kind, _pkg, child_weight, child_ih, child_epoch)
-                = voting::extract_weight_proof(proof);
+                = voting::consume_weight_proof(proof);
 
             // Verify all child proofs match this election/voter/character/epoch
             assert!(child_eid == election_id,    E_PROOF_MISMATCH);
@@ -130,7 +130,7 @@ module cradleos_voting::weight_composite {
 
         // inputs_hash: combinator + child_weights + child_inputs_hashes
         // Full audit chain: each child inputs_hash captures its own deterministic inputs.
-        let mut hbuf = vector::empty<u8>();
+        let mut hbuf = vector[];
         vector::push_back(&mut hbuf, KIND_COMPOSITE);
         vector::push_back(&mut hbuf, combinator);
         let mut j: u64 = 0;
@@ -242,24 +242,7 @@ module cradleos_voting::weight_composite {
         (weighted_sum / coeff_sum) as u64
     }
 
-    // ── Entry functions ───────────────────────────────────────────────────────
-
-    /// Entry: combine child proofs and transfer composite proof to voter.
-    ///
-    /// child_proofs: vector of already-minted WeightProofs for the same
-    ///   election/voter/character, all minted in this transaction.
-    ///   Build this vector in your PTB using makeMoveVec([proof_a, proof_b, ...]).
-    ///   Do NOT transfer child proofs to the voter — they are consumed here.
-    public entry fun prove_composite(
-        election: &Election,
-        character_id: u32,
-        child_proofs: vector<WeightProof>,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint(election, character_id, child_proofs, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_composite removed. Use mint() in a PTB and pass result to cast_ballot.
 
     // ── Encoding helpers ──────────────────────────────────────────────────────
 

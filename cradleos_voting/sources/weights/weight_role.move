@@ -86,7 +86,7 @@ module cradleos_voting::weight_role {
         // inputs_hash binds: KIND + all weight params + voter's role mask at proof time.
         // The role_mask is critical for reproducibility: off-chain verifiers must replay
         // TribeRoles state at the ballot's block height to confirm the same mask.
-        let mut hbuf = vector::empty<u8>();
+        let mut hbuf = vector[];
         vector::push_back(&mut hbuf, KIND_ROLE);
         vector::append(&mut hbuf, *params);
         vector::push_back(&mut hbuf, role_mask);
@@ -104,18 +104,7 @@ module cradleos_voting::weight_role {
         )
     }
 
-    /// Entry: prove role weight and transfer proof to voter.
-    /// voter_for_role_lookup = ctx.sender() in non-sponsored mode.
-    public entry fun prove_role(
-        election: &Election,
-        roles: &TribeRoles,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint(election, roles, character_id, voter, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_role removed. Use mint() in a PTB and pass result to cast_ballot directly.
 
     // ── Little-endian u64 decode ──────────────────────────────────────────────
 

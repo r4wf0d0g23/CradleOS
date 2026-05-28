@@ -72,8 +72,8 @@ module cradleos_voting::score {
         let n_options = vector::length(options);
 
         // Per-option (sum_score_weighted, sum_weight_for_raters) accumulators.
-        let mut numerators = vector::empty<u64>();
-        let mut denominators = vector::empty<u64>();
+        let mut numerators = vector[];
+        let mut denominators = vector[];
         let mut i = 0;
         while (i < n_options) {
             vector::push_back(&mut numerators, 0);
@@ -115,8 +115,8 @@ module cradleos_voting::score {
         // and compare. AVG_SCALE = 1_000_000 gives 6 decimal digits of precision,
         // well within u64 (numerator * scale up to ~1e15 for realistic inputs).
         let avg_scale: u64 = 1_000_000;
-        let mut comparator = vector::empty<u64>();
-        let mut has_data = vector::empty<bool>();
+        let mut comparator = vector[];
+        let mut has_data = vector[];
         let mut j = 0;
         while (j < n_options) {
             let num = *vector::borrow(&numerators, j);
@@ -148,7 +148,7 @@ module cradleos_voting::score {
             m = m + 1;
         };
 
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         if (any_data) {
             let mut k = 0;
             while (k < n_options) {
@@ -162,12 +162,12 @@ module cradleos_voting::score {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
         // Payload: [mode:u8][avg_scale:u64][per-option (option_id:u32, num:u64, den:u64)]
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         vector::push_back(&mut payload, mode);
         append_u64(&mut payload, avg_scale);
         let mut q = 0;
@@ -179,7 +179,7 @@ module cradleos_voting::score {
         };
 
         let quorum_met = total_weight > 0;
-        let rounds = vector::empty<RoundResult>();
+        let rounds = vector[];
         (winners, payload, rounds, total_weight, quorum_met)
     }
 
@@ -192,7 +192,7 @@ module cradleos_voting::score {
         let n = vector::length(v);
         assert!(n >= 4, E_BAD_VOTE);
         let count = decode_u32_at(v, 0) as u64;
-        let mut out = vector::empty<ScorePair>();
+        let mut out = vector[];
         let pair_size: u64 = 4 + 1; // u32 + u8
         assert!(4 + count * pair_size <= n, E_BAD_VOTE);
         let mut i: u64 = 0;

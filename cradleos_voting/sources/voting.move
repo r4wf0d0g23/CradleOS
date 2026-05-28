@@ -10,10 +10,15 @@ module cradleos_voting::voting {
     use sui::event;
     use sui::clock::{Self, Clock};
     use sui::hash;
+    use sui::package;
+    use sui::display;
     use std::string::{Self, String};
     use std::option::{Self, Option};
 
     use cradleos_voting::extension::{Self, ExtensionRegistry};
+
+    // ── One-Time Witness for Publisher / Display registration ─────────────────
+    public struct VOTING has drop {}
 
     // ── Method kind constants (kinds 0–63 = built-in) ────────────────────────
     public struct MethodKindMarker has drop {}  // suppress unused-use lints in pure consumers
@@ -203,21 +208,25 @@ module cradleos_voting::voting {
         expiry_ms: u64,
     }
 
-    // ── Proof objects (single-use, in-tx witnesses) ───────────────────────────
+    // ── Proof objects (hot-potato single-use witnesses) ──────────────────────
+    //
+    // No abilities: cannot be stored, transferred, copied, or dropped.
+    // The compiler guarantees they must be consumed (destructured) in the same
+    // transaction they are minted — making cross-tx replay structurally impossible.
 
-    public struct EligibilityProof has key, store {
-        id: UID,
+    /// Hot-potato single-use eligibility proof. No abilities.
+    public struct EligibilityProof {
         election_id: ID,
         voter: address,
         character_id: u32,
         kind: u8,
         provider_package: address,
         eligible: bool,
-        minted_epoch: u64,
+        minted_epoch: u64,   // belt-and-suspenders; structural hot-potato is the real guard
     }
 
-    public struct WeightProof has key, store {
-        id: UID,
+    /// Hot-potato single-use weight proof. No abilities.
+    public struct WeightProof {
         election_id: ID,
         voter: address,
         character_id: u32,
@@ -357,7 +366,7 @@ module cradleos_voting::voting {
 
     // ── DRAFT: create + configure ─────────────────────────────────────────────
 
-    public entry fun create_election(
+    public fun create_election(
         title: vector<u8>,
         description: vector<u8>,
         metadata_uri: vector<u8>,
@@ -409,7 +418,7 @@ module cradleos_voting::voting {
             finalized_ms: 0,
             method_kind,
             method_params,
-            options: vector::empty<Option_>(),
+            options: vector[],
             next_option_id: 0,
             eligibility_kind,
             eligibility_params,
@@ -432,7 +441,7 @@ module cradleos_voting::voting {
         });
     }
 
-    public entry fun add_option(
+    public fun add_option(
         election: &mut Election,
         label: vector<u8>,
         metadata_uri: vector<u8>,
@@ -462,7 +471,7 @@ module cradleos_voting::voting {
         });
     }
 
-    public entry fun remove_option(
+    public fun remove_option(
         election: &mut Election,
         option_id: u32,
         ctx: &mut TxContext,
@@ -488,7 +497,7 @@ module cradleos_voting::voting {
         });
     }
 
-    public entry fun set_schedule(
+    public fun set_schedule(
         election: &mut Election,
         open_ms: u64,
         close_ms: u64,
@@ -509,7 +518,7 @@ module cradleos_voting::voting {
         election.eligibility_snapshot_ms = open_ms;
     }
 
-    public entry fun set_sponsored(
+    public fun set_sponsored(
         election: &mut Election,
         sponsor: address,
         max_ballots_funded: u64,
@@ -547,7 +556,7 @@ module cradleos_voting::voting {
 
     // ── DRAFT → SCHEDULED / CANCELED ──────────────────────────────────────────
 
-    public entry fun publish(
+    public fun publish(
         election: &mut Election,
         clock: &Clock,
         ctx: &mut TxContext,
@@ -568,7 +577,7 @@ module cradleos_voting::voting {
         });
     }
 
-    public entry fun cancel(
+    public fun cancel(
         election: &mut Election,
         clock: &Clock,
         ctx: &mut TxContext,
@@ -583,7 +592,7 @@ module cradleos_voting::voting {
 
     // ── SCHEDULED → OPEN / OPEN → REVEAL or CLOSED ────────────────────────────
 
-    public entry fun advance_to_open(
+    public fun advance_to_open(
         election: &mut Election,
         clock: &Clock,
         _ctx: &mut TxContext,
@@ -594,7 +603,7 @@ module cradleos_voting::voting {
         change_state(election, STATE_OPEN, now_ms);
     }
 
-    public entry fun advance_to_reveal(
+    public fun advance_to_reveal(
         election: &mut Election,
         clock: &Clock,
         _ctx: &mut TxContext,
@@ -606,7 +615,7 @@ module cradleos_voting::voting {
         change_state(election, STATE_REVEAL, now_ms);
     }
 
-    public entry fun advance_to_closed(
+    public fun advance_to_closed(
         election: &mut Election,
         clock: &Clock,
         _ctx: &mut TxContext,
@@ -625,7 +634,7 @@ module cradleos_voting::voting {
     // ── OPEN: cast / commit / reveal ──────────────────────────────────────────
 
     /// Public-privacy ballot. Sponsored if `sponsor_cap` is some.
-    public entry fun cast_ballot(
+    public fun cast_ballot(
         election: &mut Election,
         registry: &ExtensionRegistry,
         voter_address: address,
@@ -701,16 +710,16 @@ module cradleos_voting::voting {
             cast_ms: now_ms,
             weight,
             weight_kind: election.weight_kind,
-            weight_proof_bytes: vector::empty<u8>(),
+            weight_proof_bytes: vector[],
             encoded_vote,
-            commitment: vector::empty<u8>(),
+            commitment: vector[],
             revealed: true,
             revealed_ms: now_ms,
         }, voter_address);
     }
 
     /// Commit-reveal commit phase. Voter holds (salt, vote) off-chain.
-    public entry fun commit_ballot(
+    public fun commit_ballot(
         election: &mut Election,
         registry: &ExtensionRegistry,
         voter_address: address,
@@ -777,8 +786,8 @@ module cradleos_voting::voting {
             cast_ms: now_ms,
             weight,
             weight_kind: election.weight_kind,
-            weight_proof_bytes: vector::empty<u8>(),
-            encoded_vote: vector::empty<u8>(),
+            weight_proof_bytes: vector[],
+            encoded_vote: vector[],
             commitment,
             revealed: false,
             revealed_ms: 0,
@@ -786,7 +795,7 @@ module cradleos_voting::voting {
     }
 
     /// Reveal a previously committed ballot. Must be in REVEAL state.
-    public entry fun reveal_ballot(
+    public fun reveal_ballot(
         election: &mut Election,
         ballot: &mut Ballot,
         salt: vector<u8>,
@@ -803,7 +812,7 @@ module cradleos_voting::voting {
         assert!(now_ms <= election.reveal_deadline_ms, E_REVEAL_TOO_LATE);
 
         // Verify commitment: H(salt || encoded_vote) == ballot.commitment
-        let mut buf = vector::empty<u8>();
+        let mut buf = vector[];
         vector::append(&mut buf, salt);
         vector::append(&mut buf, encoded_vote);
         let computed = hash::keccak256(&buf);
@@ -841,7 +850,6 @@ module cradleos_voting::voting {
         ctx: &TxContext,
     ): u32 {
         let EligibilityProof {
-            id,
             election_id: pe,
             voter,
             character_id,
@@ -850,7 +858,6 @@ module cradleos_voting::voting {
             eligible,
             minted_epoch,
         } = proof;
-        object::delete(id);
 
         assert!(pe == election_id, E_PROOF_MISMATCH);
         assert!(voter == voter_address, E_PROOF_MISMATCH);
@@ -886,7 +893,6 @@ module cradleos_voting::voting {
         ctx: &TxContext,
     ): u64 {
         let WeightProof {
-            id,
             election_id: pe,
             voter,
             character_id,
@@ -896,7 +902,6 @@ module cradleos_voting::voting {
             inputs_hash,
             minted_epoch,
         } = proof;
-        object::delete(id);
 
         assert!(pe == election_id, E_PROOF_MISMATCH);
         assert!(voter == voter_address, E_PROOF_MISMATCH);
@@ -938,7 +943,6 @@ module cradleos_voting::voting {
         ctx: &mut TxContext,
     ): EligibilityProof {
         EligibilityProof {
-            id: object::new(ctx),
             election_id,
             voter,
             character_id,
@@ -960,7 +964,6 @@ module cradleos_voting::voting {
         ctx: &mut TxContext,
     ): WeightProof {
         WeightProof {
-            id: object::new(ctx),
             election_id,
             voter,
             character_id,
@@ -1055,17 +1058,19 @@ module cradleos_voting::voting {
         df::exists_(&e.id, CommitKey { character_id })
     }
 
-    // ── EligibilityProof accessors (used by eligibility_composite) ────────────
-    // NOTE (cross-cutting): these were added as a required companion to the
-    // eligibility_composite module implementation. Sui Move 2024 restricts
-    // struct field access/destructuring to the defining module; composite
-    // cannot read proof fields without these helpers. They are pure read-only
-    // and non-breaking. See open question in the voting-infrastructure design doc.
-    public fun proof_eligible(p: &EligibilityProof): bool           { p.eligible }
-    public fun proof_election_id(p: &EligibilityProof): ID          { p.election_id }
-    public fun proof_voter(p: &EligibilityProof): address           { p.voter }
-    public fun proof_character_id(p: &EligibilityProof): u32        { p.character_id }
-    public fun proof_minted_epoch(p: &EligibilityProof): u64        { p.minted_epoch }
+    // ── EligibilityProof consumer (used by eligibility_composite) ────────────
+    // Hot-potato proofs cannot be accessed by reference from outside this module
+    // (Move restricts struct field access to the defining module). This consume
+    // helper destructures the proof and returns all fields. The composite module
+    // calls this instead of the old five read-only accessors.
+    public(package) fun consume_eligibility_proof(
+        p: EligibilityProof,
+    ): (ID, address, u32, u8, address, bool, u64) {
+        let EligibilityProof {
+            election_id, voter, character_id, kind, provider_package, eligible, minted_epoch
+        } = p;
+        (election_id, voter, character_id, kind, provider_package, eligible, minted_epoch)
+    }
 
     public fun ballot_election_id(b: &Ballot): ID     { b.election_id }
     public fun ballot_character_id(b: &Ballot): u32   { b.character_id }
@@ -1151,21 +1156,19 @@ module cradleos_voting::voting {
     public fun privacy_public(): u8       { PRIVACY_PUBLIC }
     public fun privacy_commit_reveal(): u8 { PRIVACY_COMMIT_REVEAL }
 
-    // ── WeightProof destructuring (package-visible, for weight_composite) ────
+    // ── WeightProof consumer (package-visible, for weight_composite) ──────────
     //
-    // Cross-cutting requirement surfaced by weight_composite: combining child
-    // WeightProofs requires reading their fields, which are private to this module.
-    // This extractor is package-visible (same package only) and consumes the proof
-    // (deletes UID), preventing any reuse. weight_composite verifies election_id,
-    // voter, character_id, and minted_epoch before trusting the returned weight.
+    // Hot-potato WeightProofs cannot be accessed by reference from outside this
+    // module. This consumer destructures the proof and returns all fields.
+    // weight_composite calls this to verify election_id, voter, character_id,
+    // and minted_epoch before trusting the returned weight.
     //
     // Returns: (election_id, voter, character_id, kind, provider_package,
     //           weight, inputs_hash, minted_epoch)
-    public(package) fun extract_weight_proof(
+    public(package) fun consume_weight_proof(
         p: WeightProof,
     ): (ID, address, u32, u8, address, u64, vector<u8>, u64) {
         let WeightProof {
-            id,
             election_id,
             voter,
             character_id,
@@ -1175,8 +1178,81 @@ module cradleos_voting::voting {
             inputs_hash,
             minted_epoch,
         } = p;
-        object::delete(id);
         (election_id, voter, character_id, kind, provider_package, weight, inputs_hash, minted_epoch)
+    }
+
+    // ── Display + Publisher registration ───────────────────────────────────
+    //
+    // Called once at publish time by the Sui runtime. Creates the Publisher and
+    // registers Display<T> for Election, Ballot, and Tally so that Suiscan,
+    // Sui Wallet, and Sui Vision render these objects as cards automatically.
+
+    fun init(otw: VOTING, ctx: &mut TxContext) {
+        let publisher = package::claim(otw, ctx);
+
+        // ── Election display ────────────────────────────────────────────
+        let mut election_display = display::new<Election>(&publisher, ctx);
+        election_display.add(b"name".to_string(),        b"{title}".to_string());
+        election_display.add(b"description".to_string(), b"{description}".to_string());
+        election_display.add(
+            b"image_url".to_string(),
+            b"https://cradleos.xyz/og/election/{id}.png".to_string(),
+        );
+        election_display.add(
+            b"link".to_string(),
+            b"https://r4wf0d0g23.github.io/CradleOS/#/voting/{id}".to_string(),
+        );
+        election_display.add(
+            b"project_url".to_string(),
+            b"https://r4wf0d0g23.github.io/CradleOS/".to_string(),
+        );
+        election_display.add(b"creator".to_string(), b"CradleOS Voting".to_string());
+        election_display.update_version();
+
+        // ── Ballot display ─────────────────────────────────────────────
+        let mut ballot_display = display::new<Ballot>(&publisher, ctx);
+        ballot_display.add(
+            b"name".to_string(),
+            b"Ballot — Election {election_id}".to_string(),
+        );
+        ballot_display.add(
+            b"description".to_string(),
+            b"Soulbound voter receipt. Weight: {weight}.".to_string(),
+        );
+        ballot_display.add(
+            b"image_url".to_string(),
+            b"https://cradleos.xyz/og/ballot/{election_id}.png".to_string(),
+        );
+        ballot_display.add(
+            b"link".to_string(),
+            b"https://r4wf0d0g23.github.io/CradleOS/#/voting/{election_id}".to_string(),
+        );
+        ballot_display.update_version();
+
+        // ── Tally display ─────────────────────────────────────────────
+        let mut tally_display = display::new<Tally>(&publisher, ctx);
+        tally_display.add(
+            b"name".to_string(),
+            b"Tally — Election {election_id}".to_string(),
+        );
+        tally_display.add(
+            b"description".to_string(),
+            b"Computed tally. Total weight: {total_weight}.".to_string(),
+        );
+        tally_display.add(
+            b"image_url".to_string(),
+            b"https://cradleos.xyz/og/tally/{election_id}.png".to_string(),
+        );
+        tally_display.add(
+            b"link".to_string(),
+            b"https://r4wf0d0g23.github.io/CradleOS/#/voting/{election_id}/results".to_string(),
+        );
+        tally_display.update_version();
+
+        transfer::public_transfer(publisher,        ctx.sender());
+        transfer::public_transfer(election_display, ctx.sender());
+        transfer::public_transfer(ballot_display,   ctx.sender());
+        transfer::public_transfer(tally_display,    ctx.sender());
     }
 
     // ── Helpers for off-chain re-runner (read full event payload via events;

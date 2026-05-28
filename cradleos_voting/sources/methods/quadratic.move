@@ -80,7 +80,7 @@ module cradleos_voting::quadratic {
         let n_options = vector::length(options);
         // Per-option score accumulator (Σ weight · sqrt(credits_scaled)).
         // We use u128 to avoid overflow on large elections.
-        let mut scores = vector::empty<u128>();
+        let mut scores = vector[];
         let mut i = 0;
         while (i < n_options) {
             vector::push_back(&mut scores, 0u128);
@@ -101,7 +101,7 @@ module cradleos_voting::quadratic {
             let np = vector::length(&pairs);
             let mut p = 0;
             // Track seen option_ids by linear scan; ballots are small (≤ n_options).
-            let mut seen = vector::empty<u32>();
+            let mut seen = vector[];
             while (p < np) {
                 let pair = vector::borrow(&pairs, p);
                 let oid = pair_oid(pair);
@@ -131,7 +131,7 @@ module cradleos_voting::quadratic {
             if (c > max_score) max_score = c;
             j = j + 1;
         };
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         let mut k = 0;
         while (k < n_options) {
             if (*vector::borrow(&scores, k) == max_score && max_score > 0) {
@@ -143,12 +143,12 @@ module cradleos_voting::quadratic {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
         // Payload: [scale:u8][per-option (option_id:u32, score:u128 as two u64 little-endian)]
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         vector::push_back(&mut payload, credit_scale_log2);
         let mut q = 0;
         while (q < n_options) {
@@ -159,7 +159,7 @@ module cradleos_voting::quadratic {
         };
 
         let quorum_met = total_weight > 0;
-        let rounds = vector::empty<RoundResult>();
+        let rounds = vector[];
         (winners, payload, rounds, total_weight, quorum_met)
     }
 
@@ -203,7 +203,7 @@ module cradleos_voting::quadratic {
         let count = decode_u32_at(v, 0) as u64;
         let pair_size: u64 = 4 + 8; // u32 + u64
         assert!(4 + count * pair_size <= n, E_BAD_VOTE);
-        let mut out = vector::empty<CreditPair>();
+        let mut out = vector[];
         let mut i: u64 = 0;
         while (i < count) {
             let off = 4 + i * pair_size;

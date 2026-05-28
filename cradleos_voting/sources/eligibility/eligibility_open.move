@@ -11,27 +11,10 @@ module cradleos_voting::eligibility_open {
 
     const KIND_OPEN: u8 = 0;
 
+    // Note: prove_open removed. Use mint() in a PTB and pass result to cast_ballot directly.
+
     /// Mint an open-eligibility proof. Caller asserts character_id; proof is
     /// only valid for the same wallet that mints it.
-    public entry fun prove_open(
-        election: &Election,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = voting::mint_eligibility_proof(
-            voting::id(election),
-            voter,
-            character_id,
-            KIND_OPEN,
-            @cradleos_voting,
-            true,                // always eligible under OPEN
-            ctx,
-        );
-        // Transfer proof to caller; they consume it in cast_ballot in same tx.
-        transfer::public_transfer(proof, voter);
-    }
-
     /// Direct-return variant for programmable transactions: caller passes the
     /// proof as input to cast_ballot in the same tx, avoiding a transfer hop.
     public fun mint(

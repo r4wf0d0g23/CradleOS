@@ -131,7 +131,7 @@ module cradleos_voting::eligibility_tribe_ingame {
     /// Create and share the InGameTribeRegistry.
     /// Caller becomes both admin and initial trusted_attestor.
     /// Typically called once at voting package deploy time.
-    public entry fun create_registry(ctx: &mut TxContext) {
+    public fun create_registry(ctx: &mut TxContext) {
         let sender = ctx.sender();
         let uid = object::new(ctx);
         let registry_id = object::uid_to_inner(&uid);
@@ -152,7 +152,7 @@ module cradleos_voting::eligibility_tribe_ingame {
 
     /// Admin-only: replace the trusted attestor address.
     /// Use when rotating keys or upgrading to a multisig attestor.
-    public entry fun set_attestor(
+    public fun set_attestor(
         registry: &mut InGameTribeRegistry,
         new_attestor: address,
         ctx: &mut TxContext,
@@ -170,7 +170,7 @@ module cradleos_voting::eligibility_tribe_ingame {
     }
 
     /// Admin-only: transfer the admin role to a new address.
-    public entry fun set_admin(
+    public fun set_admin(
         registry: &mut InGameTribeRegistry,
         new_admin: address,
         ctx: &mut TxContext,
@@ -184,7 +184,7 @@ module cradleos_voting::eligibility_tribe_ingame {
     /// Record that character_id belongs to tribe_id.
     /// Overwrites any existing entry for this character_id (e.g. tribe change).
     /// Only trusted_attestor may call.
-    public entry fun issue_attestation(
+    public fun issue_attestation(
         registry: &mut InGameTribeRegistry,
         character_id: u32,
         tribe_id: u32,
@@ -220,7 +220,7 @@ module cradleos_voting::eligibility_tribe_ingame {
 
     /// Batch-issue attestations in one transaction (gas-efficient for initial
     /// tribe snapshot uploads). character_ids and tribe_ids must be same length.
-    public entry fun issue_attestations_batch(
+    public fun issue_attestations_batch(
         registry: &mut InGameTribeRegistry,
         character_ids: vector<u32>,
         tribe_ids: vector<u32>,
@@ -267,7 +267,7 @@ module cradleos_voting::eligibility_tribe_ingame {
 
     /// Invalidate an attestation (character left their tribe, fraud detected, etc.).
     /// Either trusted_attestor or admin may revoke.
-    public entry fun revoke_attestation(
+    public fun revoke_attestation(
         registry: &mut InGameTribeRegistry,
         character_id: u32,
         ctx: &mut TxContext,
@@ -323,17 +323,7 @@ module cradleos_voting::eligibility_tribe_ingame {
         )
     }
 
-    /// Entry-point variant: mints and transfers proof to caller.
-    public entry fun prove_ingame(
-        election: &Election,
-        registry: &InGameTribeRegistry,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter  = ctx.sender();
-        let proof  = mint(election, registry, character_id, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_ingame removed. Use mint() in a PTB and pass result to cast_ballot directly.
 
     // ── Public reads ──────────────────────────────────────────────────────────
 

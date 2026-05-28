@@ -110,31 +110,9 @@ module cradleos_voting::eligibility_composite {
         proof
     }
 
-    /// Entry-point AND: mints and transfers composite proof to caller.
-    public entry fun prove_composite_and(
-        election: &Election,
-        mut child_proofs: vector<EligibilityProof>,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = do_composite(election, &mut child_proofs, character_id, OP_AND, ctx);
-        vector::destroy_empty(child_proofs);
-        transfer::public_transfer(proof, voter);
-    }
-
-    /// Entry-point OR: mints and transfers composite proof to caller.
-    public entry fun prove_composite_or(
-        election: &Election,
-        mut child_proofs: vector<EligibilityProof>,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = do_composite(election, &mut child_proofs, character_id, OP_OR, ctx);
-        vector::destroy_empty(child_proofs);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_composite_and and prove_composite_or removed.
+    // Hot-potato EligibilityProofs cannot be transferred. Use mint_and / mint_or
+    // in a PTB and pass the result directly to cast_ballot in the same tx.
 
     // ── Core implementation ───────────────────────────────────────────────────
 
@@ -150,48 +128,33 @@ module cradleos_voting::eligibility_composite {
         let current_epoch = ctx.epoch();
         let child_count   = vector::length(child_proofs);
 
-        // ── Structural guards ─────────────────────────────────────────────────
         assert!(op_kind == OP_AND || op_kind == OP_OR, E_UNKNOWN_OP);
         assert!(child_count > 0,             E_EMPTY_CHILDREN);
         assert!(child_count <= MAX_CHILDREN, E_TOO_MANY_CHILDREN);
 
-        // ── Verify + burn each child proof ────────────────────────────────────
-        //
-        // Read proof fields via voting.move accessor functions.
-        // Sui Move 2024 restricts struct destructuring to the defining module;
-        // these read-only accessors are the required companion (OQ-COMPOSITE).
-        // After verification, proof transferred to @0x0 — permanently unusable.
-
+        // Consume each child hot potato, verify it, accumulate eligibility.
+        // consume_eligibility_proof destructures the proof - no explicit burn needed.
         let mut eligible: bool = if (op_kind == OP_AND) { true } else { false };
         let mut i: u64 = 0;
 
         while (i < child_count) {
-            // Remove from front so ordering is preserved in events.
             let proof = vector::remove(child_proofs, 0);
 
-            let child_election = voting::proof_election_id(&proof);
-            let child_voter    = voting::proof_voter(&proof);
-            let child_char     = voting::proof_character_id(&proof);
-            let child_epoch    = voting::proof_minted_epoch(&proof);
-            let child_eligible = voting::proof_eligible(&proof);
+            let (child_election, child_voter, child_char, _kind, _pkg, child_eligible, child_epoch)
+                = voting::consume_eligibility_proof(proof);
 
-            // Verify the proof matches this voter/election/character.
-            assert!(child_election == election_id,   E_PROOF_ELECTION_MISMATCH);
-            assert!(child_voter    == voter,          E_PROOF_VOTER_MISMATCH);
-            assert!(child_char     == character_id,   E_PROOF_CHARACTER_MISMATCH);
-            assert!(child_epoch    == current_epoch,  E_PROOF_STALE);
+            assert!(child_election == election_id,  E_PROOF_ELECTION_MISMATCH);
+            assert!(child_voter    == voter,         E_PROOF_VOTER_MISMATCH);
+            assert!(child_char     == character_id,  E_PROOF_CHARACTER_MISMATCH);
+            assert!(child_epoch    == current_epoch, E_PROOF_STALE);
 
-            // Accumulate eligibility result.
             if (op_kind == OP_AND) {
                 eligible = eligible && child_eligible;
             } else {
                 eligible = eligible || child_eligible;
             };
 
-            // Burn: send to @0x0. No one can sign for the zero address, so this
-            // proof can never be used again. Same-epoch constraint also prevents
-            // replay within the epoch; @0x0 transfer prevents cross-epoch replay.
-            transfer::public_transfer(proof, @0x0);
+            // Proof consumed by destructuring above - no transfer or burn needed.
             i = i + 1;
         };
 

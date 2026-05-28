@@ -40,7 +40,7 @@
 ///   package on Sui testnet/mainnet, add:
 ///     const EVE_COIN_TYPE: vector<u8> = b"<pkg>::<module>::<CoinType>";
 ///   and a dedicated shortcut entry:
-///     public entry fun prove_eve_balance(election, coin: &Coin<EveCoin>, character_id, ctx)
+///     public fun prove_eve_balance(election, coin: &Coin<EveCoin>, character_id, ctx)
 ///   where EveCoin is the published type. No other code changes needed — the generic
 ///   prove_asset<T> already handles it; the shortcut is ergonomic only.
 module cradleos_voting::weight_asset {
@@ -93,7 +93,7 @@ module cradleos_voting::weight_asset {
         let type_bytes: &vector<u8> = ascii::as_bytes(type_name::borrow_string(&tn));
 
         // inputs_hash: KIND + params + balance_at_mint + type_name_bytes
-        let mut hbuf = vector::empty<u8>();
+        let mut hbuf = vector[];
         vector::push_back(&mut hbuf, KIND_ASSET);
         vector::append(&mut hbuf, *params);
         append_u64_le(&mut hbuf, balance);
@@ -142,19 +142,7 @@ module cradleos_voting::weight_asset {
         x
     }
 
-    /// Entry: prove asset weight for any Coin<T>.
-    /// The coin is borrowed by reference — NOT consumed, locked, or transferred.
-    /// Balance is snapshotted at the current block/epoch.
-    public entry fun prove_asset<T>(
-        election: &Election,
-        coin: &Coin<T>,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint(election, coin, character_id, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_asset removed. Use mint<T>() in a PTB and pass result to cast_ballot directly.
 
     // ── Encoding helpers ──────────────────────────────────────────────────────
 

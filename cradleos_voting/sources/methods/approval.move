@@ -22,7 +22,7 @@ module cradleos_voting::approval {
         } else { 0 };  // 0 = unlimited
 
         let n_options = vector::length(options);
-        let mut counts = vector::empty<u64>();
+        let mut counts = vector[];
         let mut i = 0;
         while (i < n_options) {
             vector::push_back(&mut counts, 0);
@@ -63,7 +63,7 @@ module cradleos_voting::approval {
             j = j + 1;
         };
 
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         let mut k = 0;
         while (k < n_options) {
             if (*vector::borrow(&counts, k) == max_count && max_count > 0) {
@@ -75,11 +75,11 @@ module cradleos_voting::approval {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         let mut p = 0;
         while (p < n_options) {
             append_u32(&mut payload, voting::option_id(vector::borrow(options, p)));
@@ -88,7 +88,7 @@ module cradleos_voting::approval {
         };
 
         let quorum_met = total_weight > 0;
-        let rounds = vector::empty<RoundResult>();
+        let rounds = vector[];
         (winners, payload, rounds, total_weight, quorum_met)
     }
 
@@ -96,7 +96,7 @@ module cradleos_voting::approval {
         let n = vector::length(v);
         assert!(n >= 4, E_BAD_VOTE);
         let count = decode_u32_at(v, 0);
-        let mut out = vector::empty<u32>();
+        let mut out = vector[];
         let mut i: u32 = 0;
         while (i < count) {
             let off = 4 + ((i as u64) * 4);

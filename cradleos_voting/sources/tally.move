@@ -70,7 +70,7 @@ module cradleos_voting::tally {
     /// indexer collects BallotCast/BallotRevealed events and feeds them in;
     /// on-chain verification re-hashes the inputs against `input_hash` so the
     /// orchestrator can verify the caller didn't cheat (see verify_input_hash).
-    public entry fun compute_tally(
+    public fun compute_tally(
         election: &mut Election,
         character_ids: vector<u32>,
         encoded_votes: vector<vector<u8>>,
@@ -147,7 +147,7 @@ module cradleos_voting::tally {
     /// If the new output_hash differs from the existing tally, the new one
     /// replaces it. Anyone can dispute as many times as they want until the
     /// window closes.
-    public entry fun dispute_tally(
+    public fun dispute_tally(
         election: &mut Election,
         old_tally: &mut Tally,
         character_ids: vector<u32>,
@@ -224,7 +224,7 @@ module cradleos_voting::tally {
     }
 
     /// Finalize an election after the dispute window closes.
-    public entry fun finalize(
+    public fun finalize(
         election: &mut Election,
         tally: &Tally,
         clock: &Clock,
@@ -279,7 +279,7 @@ module cradleos_voting::tally {
         encoded_votes: &vector<vector<u8>>,
         weights: &vector<u64>,
     ): vector<u8> {
-        let mut buf = vector::empty<u8>();
+        let mut buf = vector[];
         let n = vector::length(character_ids);
         let mut i = 0;
         while (i < n) {
@@ -294,7 +294,7 @@ module cradleos_voting::tally {
     }
 
     fun compute_output_hash(winners: &vector<u32>, payload: &vector<u8>): vector<u8> {
-        let mut buf = vector::empty<u8>();
+        let mut buf = vector[];
         let n = vector::length(winners);
         let mut i = 0;
         append_u32(&mut buf, (n as u32));
@@ -334,7 +334,7 @@ module cradleos_voting::tally {
     }
 
     fun derive_seed(election_id: ID, ballot_count: u64, close_ms: u64): vector<u8> {
-        let mut buf = vector::empty<u8>();
+        let mut buf = vector[];
         vector::append(&mut buf, object::id_to_bytes(&election_id));
         append_u64(&mut buf, ballot_count);
         append_u64(&mut buf, close_ms);

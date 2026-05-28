@@ -118,31 +118,7 @@ module cradleos_voting::eligibility_tribe_cradleos {
         )
     }
 
-    /// Entry-point variant: mints and transfers the proof to the caller.
-    /// For use outside PTBs (e.g. simple CLI transactions).
-    public entry fun prove_cradleos(
-        election: &Election,
-        vault: &TribeVault,
-        roles: &TribeRoles,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint(election, vault, roles, character_id, ctx);
-        transfer::public_transfer(proof, voter);
-    }
-
-    /// Entry-point founder-only variant.
-    public entry fun prove_cradleos_founder(
-        election: &Election,
-        vault: &TribeVault,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint_founder_only(election, vault, character_id, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_cradleos and prove_cradleos_founder removed. Use mint() / mint_founder_only() in a PTB.
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 

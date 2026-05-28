@@ -25,15 +25,7 @@ module cradleos_voting::weight_one {
         )
     }
 
-    public entry fun prove_one(
-        election: &Election,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint(election, character_id, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_one removed. Use mint() in a PTB and pass result to cast_ballot directly.
 
     public fun kind(): u8 { KIND_ONE }
 }

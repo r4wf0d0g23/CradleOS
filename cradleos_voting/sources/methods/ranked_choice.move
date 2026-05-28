@@ -81,7 +81,7 @@ module cradleos_voting::ranked_choice {
         seed: &vector<u8>,
     ): (vector<u32>, vector<u8>, vector<RoundResult>, u64, bool) {
         let n_options = vector::length(options);
-        let mut scores = vector::empty<u64>();
+        let mut scores = vector[];
         let mut i = 0;
         while (i < n_options) {
             vector::push_back(&mut scores, 0);
@@ -119,7 +119,7 @@ module cradleos_voting::ranked_choice {
             if (s > max_score) max_score = s;
             j = j + 1;
         };
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         let mut k = 0;
         while (k < n_options) {
             if (*vector::borrow(&scores, k) == max_score && max_score > 0) {
@@ -130,11 +130,11 @@ module cradleos_voting::ranked_choice {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         // Tag byte: subtype = Borda
         vector::push_back(&mut payload, SUBTYPE_BORDA);
         let mut p = 0;
@@ -145,7 +145,7 @@ module cradleos_voting::ranked_choice {
         };
 
         let quorum_met = total_weight > 0;
-        (winners, payload, vector::empty<RoundResult>(), total_weight, quorum_met)
+        (winners, payload, vector[], total_weight, quorum_met)
     }
 
     // ── IRV (Instant-Runoff Voting) ───────────────────────────────────────────
@@ -179,7 +179,7 @@ module cradleos_voting::ranked_choice {
         let n_ballots = vector::length(encoded_votes);
 
         // Decode all ballots once into vector<vector<u32>>.
-        let mut all_rankings = vector::empty<vector<u32>>();
+        let mut all_rankings = vector<vector<u32>>[];
         let mut b = 0;
         let mut total_weight: u64 = 0;
         while (b < n_ballots) {
@@ -190,29 +190,29 @@ module cradleos_voting::ranked_choice {
         };
 
         // Track active options by parallel bool vector (true = still active).
-        let mut active = vector::empty<bool>();
+        let mut active = vector[];
         let mut x = 0;
         while (x < n_options) {
             vector::push_back(&mut active, true);
             x = x + 1;
         };
 
-        let mut rounds = vector::empty<RoundResult>();
+        let mut rounds = vector[];
         let mut round_idx: u32 = 0;
 
         // Special case: 0 options → no winner. 1 option → trivial.
         if (n_options == 0) {
-            return (vector::empty<u32>(), vector::empty<u8>(), rounds, total_weight, false)
+            return (vector[], vector[], rounds, total_weight, false)
         };
 
         // Outer loop: at most n_options - 1 eliminations.
         let mut final_winner_option_id: u32 = 0;
         let mut have_winner = false;
-        let mut final_counts: vector<u64> = vector::empty<u64>();
+        let mut final_counts: vector<u64> = vector[];
 
         loop {
             // Count this round.
-            let mut counts = vector::empty<u64>();
+            let mut counts = vector[];
             let mut z = 0;
             while (z < n_options) {
                 vector::push_back(&mut counts, 0);
@@ -268,7 +268,7 @@ module cradleos_voting::ranked_choice {
                     round_idx,
                     0xFFFFFFFFu32,           // sentinel: no elimination
                     counts,
-                    vector::empty<u32>(),
+                    vector[],
                 );
                 vector::push_back(&mut rounds, final_round);
                 break
@@ -294,7 +294,7 @@ module cradleos_voting::ranked_choice {
                     round_idx,
                     0xFFFFFFFFu32,
                     counts,
-                    vector::empty<u32>(),
+                    vector[],
                 );
                 vector::push_back(&mut rounds, final_round);
                 break
@@ -313,8 +313,8 @@ module cradleos_voting::ranked_choice {
             };
 
             // Collect tied option_ids at min_count.
-            let mut tied = vector::empty<u32>();
-            let mut tied_idxs = vector::empty<u64>();
+            let mut tied = vector[];
+            let mut tied_idxs = vector[];
             let mut a3 = 0;
             while (a3 < n_options) {
                 if (*vector::borrow(&active, a3) && *vector::borrow(&counts, a3) == min_count) {
@@ -333,7 +333,7 @@ module cradleos_voting::ranked_choice {
             // Capture who would benefit from redistribution: ballots whose first
             // active was the eliminated option, look at next active in their
             // ranking. We collect the SET of beneficiary option_ids.
-            let mut beneficiaries = vector::empty<u32>();
+            let mut beneficiaries = vector[];
             let mut bj = 0;
             while (bj < n_ballots) {
                 let ranking = vector::borrow(&all_rankings, bj);
@@ -389,13 +389,13 @@ module cradleos_voting::ranked_choice {
             if (round_idx >= (n_options as u32)) break;
         };
 
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         if (have_winner) vector::push_back(&mut winners, final_winner_option_id);
 
         // Payload: [subtype:u8][rounds_count:u32][...] — but rounds already
         // captured in `rounds` return value. Keep payload minimal with final
         // round counts.
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         vector::push_back(&mut payload, SUBTYPE_IRV);
         let nf = vector::length(&final_counts);
         append_u32(&mut payload, (nf as u32));
@@ -432,7 +432,7 @@ module cradleos_voting::ranked_choice {
         let n_options = vector::length(options);
 
         // d[i][j] in flat vector indexed as i * n_options + j.
-        let mut d = vector::empty<u64>();
+        let mut d = vector[];
         let total_cells = n_options * n_options;
         let mut z = 0;
         while (z < total_cells) {
@@ -450,7 +450,7 @@ module cradleos_voting::ranked_choice {
 
             // Map ranking to option indices, in ranked order.
             let nr = vector::length(&ranking);
-            let mut ranked_idxs = vector::empty<u64>();
+            let mut ranked_idxs = vector[];
             let mut r = 0;
             while (r < nr) {
                 let oid = *vector::borrow(&ranking, r);
@@ -494,7 +494,7 @@ module cradleos_voting::ranked_choice {
         };
 
         // Initialize p[i][j] = d[i][j] if d[i][j] > d[j][i] else 0.
-        let mut p = vector::empty<u64>();
+        let mut p = vector[];
         let mut z2 = 0;
         while (z2 < total_cells) {
             vector::push_back(&mut p, 0);
@@ -545,7 +545,7 @@ module cradleos_voting::ranked_choice {
         };
 
         // Winners: i such that ∀ j ≠ i, p[i][j] ≥ p[j][i].
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         let mut ii = 0;
         while (ii < n_options) {
             let mut is_winner = true;
@@ -567,12 +567,12 @@ module cradleos_voting::ranked_choice {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
         // Payload: [subtype:u8][n_options:u32][flattened p matrix as u64 rows]
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         vector::push_back(&mut payload, SUBTYPE_SCHULZE);
         append_u32(&mut payload, (n_options as u32));
         let mut pp = 0;
@@ -582,7 +582,7 @@ module cradleos_voting::ranked_choice {
         };
 
         let quorum_met = total_weight > 0 && vector::length(&winners) > 0;
-        (winners, payload, vector::empty<RoundResult>(), total_weight, quorum_met)
+        (winners, payload, vector[], total_weight, quorum_met)
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -591,7 +591,7 @@ module cradleos_voting::ranked_choice {
         let n = vector::length(v);
         assert!(n >= 4, E_BAD_VOTE);
         let count = decode_u32_at(v, 0);
-        let mut out = vector::empty<u32>();
+        let mut out = vector[];
         let mut i: u32 = 0;
         while (i < count) {
             let off = 4 + ((i as u64) * 4);
@@ -642,7 +642,7 @@ module cradleos_voting::ranked_choice {
 
     fun clone_u64_vec(v: &vector<u64>): vector<u64> {
         let n = vector::length(v);
-        let mut out = vector::empty<u64>();
+        let mut out = vector[];
         let mut i = 0;
         while (i < n) {
             vector::push_back(&mut out, *vector::borrow(v, i));

@@ -29,15 +29,7 @@ module cradleos_voting::eligibility_allowlist {
         )
     }
 
-    public entry fun prove_allowlist(
-        election: &Election,
-        character_id: u32,
-        ctx: &mut TxContext,
-    ) {
-        let voter = ctx.sender();
-        let proof = mint(election, character_id, ctx);
-        transfer::public_transfer(proof, voter);
-    }
+    // Note: prove_allowlist removed. Use mint() in a PTB and pass result to cast_ballot directly.
 
     /// Decode BCS<vector<u32>> and check membership.
     /// Encoding: first 4 bytes = count (little-endian), then 4 bytes per char_id.

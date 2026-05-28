@@ -19,7 +19,7 @@ module cradleos_voting::single_choice {
         seed: &vector<u8>,
     ): (vector<u32>, vector<u8>, vector<RoundResult>, u64, bool) {
         let n_options = vector::length(options);
-        let mut counts = vector::empty<u64>();
+        let mut counts = vector[];
         let mut i = 0;
         while (i < n_options) {
             vector::push_back(&mut counts, 0);
@@ -52,7 +52,7 @@ module cradleos_voting::single_choice {
             j = j + 1;
         };
 
-        let mut winners = vector::empty<u32>();
+        let mut winners = vector[];
         let mut k = 0;
         while (k < n_options) {
             if (*vector::borrow(&counts, k) == max_count && max_count > 0) {
@@ -65,12 +65,12 @@ module cradleos_voting::single_choice {
         if (vector::length(&winners) > 1) {
             let tie_idx = (byte_sum(seed) as u64) % vector::length(&winners);
             let chosen = *vector::borrow(&winners, tie_idx);
-            winners = vector::empty<u32>();
+            winners = vector[];
             vector::push_back(&mut winners, chosen);
         };
 
         // result_payload = serialized vector of (option_id, count) pairs
-        let mut payload = vector::empty<u8>();
+        let mut payload = vector[];
         let mut p = 0;
         while (p < n_options) {
             append_u32(&mut payload, voting::option_id(vector::borrow(options, p)));
@@ -79,7 +79,7 @@ module cradleos_voting::single_choice {
         };
 
         let quorum_met = total_weight > 0;
-        let rounds = vector::empty<RoundResult>();
+        let rounds = vector[];
         (winners, payload, rounds, total_weight, quorum_met)
     }
 
