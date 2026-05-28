@@ -51,8 +51,33 @@ first extension to land on the fresh chain.
 
 This is the trunk. Voting and every other extension depends on it.
 
+**⚠️ CRITICAL findings from the 2026-05-28 failed publish attempt:**
+
+1. **The current production `CRADLEOS_PKG` v14 (`0xb6be32f9...`) is internally linked to the LEGACY testnet world (`0x920e577e...` -> `0x33226d2e...`), NOT to Stillness world.** This was discovered by inspecting v14's linkage table via `sui_tryGetPastObject` with `showBcs=true`. Wipe-day must do a fresh-publish that links cradleos to the NEW Stillness world package (whatever id CCP publishes), not just an upgrade.
+
+2. **Workspace `cradleos/sources/*.move` has drifted from the on-chain v14 bytecode.** A direct publish of voting against on-chain v14 hit `VMVerificationOrDeserializationError` because workspace symbols (TribeVault, TribeRoles, etc.) have signature drift from what's deployed. Wipe-day MUST republish cradleos fresh from workspace source, not try to point voting at the old v14.
+
+3. **The `Published.toml` multi-env pattern is mandatory.** Workspace `cradleos/Published.toml` only had `[published.testnet]` and was stale at v12. Add `[published.testnet_stillness]` and `[published.testnet_utopia]` entries on fresh publish so future builds resolve correctly per env.
+
+**Pre-publish prep (do BEFORE `sui client publish`):**
+
 ```bash
-cd ~/cradleos   # or wherever the DGX checkout lives
+# 1. Make sure the new Stillness world package id is in world-contracts/Published.toml [published.testnet_stillness]
+# 2. Migrate cradleos/Move.toml to multi-env style: remove the single `published-at` field,
+#    let Published.toml handle per-env resolution. Add [environments] block:
+#    [environments]
+#    testnet_stillness = "4c78adac"
+#    testnet_utopia = "4c78adac"
+# 3. CLEAR Published.toml — fresh publish writes a new entry. Old [published.testnet] is stale and misleading.
+```
+
+**Publish command:**
+
+```bash
+ssh rawdata@100.78.161.126
+sui client switch --env testnet_stillness  # CRITICAL
+~/.local/bin/sui client active-env          # verify
+cd ~/cradleos
 ~/.local/bin/sui client publish --gas-budget 500000000 --skip-dependency-verification
 ```
 
@@ -60,11 +85,16 @@ Capture from output:
 - `published-at` (new `CRADLEOS_PKG`)
 - `original-id` (new `CRADLEOS_ORIGINAL`)
 - `UpgradeCap` object id (custody to deploy wallet)
-- `CharacterRegistry` shared object id
+- `CharacterRegistry` shared object id (created by `init` fun)
 
-Update **workspace** `frontier/cradleos/Move.toml` `published-at` field, OR
-migrate cradleos to the multi-env `Published.toml` pattern that world uses
-(preferred — single source of truth across envs).
+**Verify linkage immediately after publish:**
+```bash
+# Confirm the new cradleos links to NEW Stillness world, not legacy testnet world
+curl -s -X POST https://fullnode.testnet.sui.io:443 -H "Content-Type: application/json" \
+  -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"sui_tryGetPastObject\",\"params\":[\"<new_cradleos_pkg>\",1,{\"showBcs\":true}]}" \
+  | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d['result']['details']['bcs']['linkageTable'],indent=2))"
+# Expected: world entry should map to NEW Stillness world's original-id -> upgraded-id.
+# If it links to legacy testnet world (0x920e577e), the publish env was wrong; abort and redo.
 
 ---
 
@@ -194,6 +224,17 @@ phantom-debug objects that no longer exist.
   If it does (red flag), the whole approach changes — pause and ask Raw.
 - **EVE Vault wallet behavior.** zkLogin sessions may persist across wipe.
   Test in-game OAuth re-flow before assuming Raw's mobile vault still works.
+- **Existing CradleOS on-chain state at wipe day** (added 2026-05-28). All
+  TribeVaults, FriendlyCharacterSets, HostileCharacterSets, Treasury balances,
+  bounty boards, SSU policies, etc. minted under the legacy `CRADLEOS_PKG` v14
+  chain become unreachable through the new package's lib helpers. **CRITICAL:
+  if any SSU contains items in shared/ethereal inventory namespace, those items
+  remain on-chain but USERS LOSE ALL UI ACCESS** — the game client doesn't
+  render ethereal-space items, and our new package can't read state from old
+  package id. Items effectively limbo. Standing rule: **announce wipe-day
+  reset BEFORE wipe day** to give users a chance to retrieve items from
+  shared SSUs back to personal storage. Treat this as a pre-wipe user comms
+  obligation, not just a technical step.
 
 ---
 
