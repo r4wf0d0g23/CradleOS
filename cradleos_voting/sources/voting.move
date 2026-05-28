@@ -1055,6 +1055,18 @@ module cradleos_voting::voting {
         df::exists_(&e.id, CommitKey { character_id })
     }
 
+    // ── EligibilityProof accessors (used by eligibility_composite) ────────────
+    // NOTE (cross-cutting): these were added as a required companion to the
+    // eligibility_composite module implementation. Sui Move 2024 restricts
+    // struct field access/destructuring to the defining module; composite
+    // cannot read proof fields without these helpers. They are pure read-only
+    // and non-breaking. See open question in the voting-infrastructure design doc.
+    public fun proof_eligible(p: &EligibilityProof): bool           { p.eligible }
+    public fun proof_election_id(p: &EligibilityProof): ID          { p.election_id }
+    public fun proof_voter(p: &EligibilityProof): address           { p.voter }
+    public fun proof_character_id(p: &EligibilityProof): u32        { p.character_id }
+    public fun proof_minted_epoch(p: &EligibilityProof): u64        { p.minted_epoch }
+
     public fun ballot_election_id(b: &Ballot): ID     { b.election_id }
     public fun ballot_character_id(b: &Ballot): u32   { b.character_id }
     public fun ballot_weight(b: &Ballot): u64         { b.weight }
@@ -1138,6 +1150,34 @@ module cradleos_voting::voting {
     public fun state_finalized(): u8      { STATE_FINALIZED }
     public fun privacy_public(): u8       { PRIVACY_PUBLIC }
     public fun privacy_commit_reveal(): u8 { PRIVACY_COMMIT_REVEAL }
+
+    // ── WeightProof destructuring (package-visible, for weight_composite) ────
+    //
+    // Cross-cutting requirement surfaced by weight_composite: combining child
+    // WeightProofs requires reading their fields, which are private to this module.
+    // This extractor is package-visible (same package only) and consumes the proof
+    // (deletes UID), preventing any reuse. weight_composite verifies election_id,
+    // voter, character_id, and minted_epoch before trusting the returned weight.
+    //
+    // Returns: (election_id, voter, character_id, kind, provider_package,
+    //           weight, inputs_hash, minted_epoch)
+    public(package) fun extract_weight_proof(
+        p: WeightProof,
+    ): (ID, address, u32, u8, address, u64, vector<u8>, u64) {
+        let WeightProof {
+            id,
+            election_id,
+            voter,
+            character_id,
+            kind,
+            provider_package,
+            weight,
+            inputs_hash,
+            minted_epoch,
+        } = p;
+        object::delete(id);
+        (election_id, voter, character_id, kind, provider_package, weight, inputs_hash, minted_epoch)
+    }
 
     // ── Helpers for off-chain re-runner (read full event payload via events;
     //     these helpers expose final state for spot-checks).
