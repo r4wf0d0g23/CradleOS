@@ -20,6 +20,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import {
   CRADLEOS_VOTING_AVAILABLE,
+  CRADLEOS_VOTING_PREVIEW,
+  CRADLEOS_WIPE_DATE_ISO,
   CRADLEOS_VOTING_PKG,
   STATE,
   STATE_LABELS,
@@ -107,6 +109,28 @@ export function VotingPanel() {
 
   return (
     <div>
+      {/* Stillness Preview banner — wipe-day countdown */}
+      {CRADLEOS_VOTING_AVAILABLE && CRADLEOS_VOTING_PREVIEW && (() => {
+        const wipe = new Date(`${CRADLEOS_WIPE_DATE_ISO}T00:00:00Z`).getTime();
+        const days = Math.max(0, Math.ceil((wipe - Date.now()) / 86_400_000));
+        return (
+          <div style={{
+            marginBottom: 14, padding: 12,
+            background: "rgba(255,71,0,0.06)",
+            border: "1px solid rgba(255,71,0,0.4)",
+            fontSize: 12, color: "#FF9966",
+            lineHeight: 1.5,
+          }}>
+            <strong style={{ color: "#FF4700" }}>STILLNESS PREVIEW · RESETS {CRADLEOS_WIPE_DATE_ISO}</strong>
+            <div style={{ marginTop: 4, color: "rgba(255,200,180,0.85)" }}>
+              This voting deployment is a {days}-day preview. The Stillness world package
+              wipes on {CRADLEOS_WIPE_DATE_ISO} and every election created here will become
+              unreachable. Use it for testing, demos, and feedback — not for binding tribe votes.
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Package-not-published banner */}
       {!CRADLEOS_VOTING_AVAILABLE && (
         <div style={{

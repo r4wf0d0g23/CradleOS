@@ -187,6 +187,16 @@ export const CRADLEOS_VOTING_EVENT_PKGS: readonly string[] = [
 export const CRADLEOS_VOTING_AVAILABLE: boolean =
   CRADLEOS_VOTING_PKG !== "0x0000000000000000000000000000000000000000000000000000000000000000";
 
+// ── Stillness wipe-day preview flag ──────────────────────────────────────────
+// June 25, 2026 wipes the Stillness world package; every CradleOS object minted
+// before then becomes orphaned. The voting package shipped during the preview
+// window (pre-Jun 25) is intentionally a throwaway test deployment that lets us
+// validate Hot Potato / AdminCap / Display patterns on real chain and capture
+// real-world feedback before the clean republish. Set false in the post-wipe
+// publish to drop the banner.
+export const CRADLEOS_VOTING_PREVIEW: boolean = true;
+export const CRADLEOS_WIPE_DATE_ISO: string = "2026-06-25";
+
 /**
  * Build a MoveEventType string for suix_queryEvents using CRADLEOS_ORIGINAL.
  *
