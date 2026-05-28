@@ -169,6 +169,24 @@ export const TRIBE_ROLES_PKG      = CRADLEOS_PKG;
 export const GATE_POLICY_PKG      = CRADLEOS_PKG;
 export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
 
+// ── CradleOS Voting ──────────────────────────────────────────────────────────
+// Separate sibling package. NOT YET PUBLISHED — set the published-at id and the
+// shared ExtensionRegistry id here after `sui client publish` lands. Until both
+// are populated, the dApp VotingPanel renders a "package not yet published"
+// banner and disables tx-sending actions. Read-only browsing of any past elections
+// would fail too (no events to query), so all panel surfaces gate on
+// CRADLEOS_VOTING_AVAILABLE.
+export const CRADLEOS_VOTING_PKG: string =
+  "0x0000000000000000000000000000000000000000000000000000000000000000";
+export const CRADLEOS_VOTING_REGISTRY: string =
+  "0x0000000000000000000000000000000000000000000000000000000000000000";
+// Append every upgrade-publish for fetchVotingEventAcrossPackages.
+export const CRADLEOS_VOTING_EVENT_PKGS: readonly string[] = [
+  CRADLEOS_VOTING_PKG,
+];
+export const CRADLEOS_VOTING_AVAILABLE: boolean =
+  CRADLEOS_VOTING_PKG !== "0x0000000000000000000000000000000000000000000000000000000000000000";
+
 /**
  * Build a MoveEventType string for suix_queryEvents using CRADLEOS_ORIGINAL.
  *

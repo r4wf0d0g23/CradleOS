@@ -35,6 +35,7 @@ import { DashboardPanel } from "./components/DashboardPanel";
 import { IndustryPanel } from "./components/IndustryPanel";
 import KeeperOrb from "./components/KeeperOrb";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
+import { VotingPanel } from "./components/VotingPanel";
 import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
@@ -193,7 +194,7 @@ function ChainHealth() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -229,6 +230,9 @@ const ROUTE_MAP: Record<string, Tab> = {
   "assets":        "assets",
   "calendar":      "calendar",
   "keeper":        "keeper",
+  "voting":        "voting",
+  "vote":          "voting",
+  "elections":     "voting",
 };
 
 function getHashTab(): Tab | null {
@@ -604,6 +608,17 @@ function AppInner() {
         "Daily seed combines UTC date + latest killmail tx digest — same puzzle for everyone",
       ],
     },
+    voting: {
+      title: "Elections — generic, plug-in, reproducible on-chain voting",
+      steps: [
+        "Browse Active elections you might be eligible to vote in",
+        "Open the Create wizard — pick eligibility / weight / method / privacy / gas",
+        "All 5 eligibility sources, all 6 methods, all 5 weight modes, all privacy modes are exposed (versatility is the product)",
+        "Cast a ballot — PTB chains eligibility-proof + weight-proof + cast in one tx",
+        "After close: anyone can compute_tally; results page re-runs the tally locally to verify the chain",
+        "Sponsored gas is default — voters pay zero when creators sponsor (Enoki relayer)",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -619,6 +634,7 @@ function AppInner() {
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
       calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
+      voting: "voting",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -745,6 +761,7 @@ function AppInner() {
                 "dashboard", "inventory", "tribe", "defense",
                 "bounties", "srp", "cargo", "gates", "succession",
                 "intel", "cipher", "recruiting", "hierarchy", "assets", "calendar",
+                "voting",
                 "wiki", "fitting", "map", "efmap", "query", "industry", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
@@ -778,6 +795,7 @@ function AppInner() {
                 : tab === "query"      ? "QUERY"
                 : tab === "industry"   ? "IND"
                 : tab === "cipher"     ? "CIPHER"
+                : tab === "voting"     ? "VOTE"
                 : tab.toUpperCase();
               return (
                 <button
@@ -1041,7 +1059,7 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "voting", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
           const PUBLIC_TABS = new Set(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry"]);
           return account || PUBLIC_TABS.has(tab);
@@ -1101,6 +1119,7 @@ function AppInner() {
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
                   : tab === "cipher"    ? "⊕ Cipher"
+                  : tab === "voting"    ? "Vote"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
@@ -1127,6 +1146,7 @@ function AppInner() {
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
+                  : tab === "voting"        ? "◣ Elections"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
@@ -1186,6 +1206,7 @@ function AppInner() {
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
+          {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}
