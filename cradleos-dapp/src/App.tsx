@@ -189,7 +189,96 @@ function ChainHealth() {
       <span title="RPC round-trip latency" style={{ color: latColor }}>
         {metrics.latencyMs !== null ? `${metrics.latencyMs}ms` : "—"} RPC
       </span>
+      <PrivateNodeStatus />
     </div>
+  );
+}
+
+// ── Private Node Status ──────────────────────────────────────────────────────
+// Shows whether our DGX2-hosted Sui fullnode is running and how its sync
+// state compares to public testnet. Polls the `/sui-status` route on the
+// existing Cloudflare-fronted sui-proxy. Silently hides when the endpoint
+// is unreachable or reports disabled — we don't paint scary red dots for
+// our own infra being temporarily down. Power-users can hover for detail.
+
+interface PrivateNodeStatusValue {
+  privateNode: { enabled: boolean; checkpoint: number | null; latencyMs: number | null; url?: string };
+  publicNode: { checkpoint: number | null };
+  gap: number | null;
+  syncing: boolean | null;
+  caughtUp: boolean | null;
+  ts: number;
+}
+
+function PrivateNodeStatus() {
+  const [status, setStatus] = useState<PrivateNodeStatusValue | null>(null);
+  const [unreachable, setUnreachable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const STATUS_URL = "https://keeper.reapers.shop/sui-status";
+    const load = async () => {
+      try {
+        const r = await fetch(STATUS_URL, { method: "GET", cache: "no-store" });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const v = (await r.json()) as PrivateNodeStatusValue;
+        if (cancelled) return;
+        setStatus(v);
+        setUnreachable(false);
+      } catch {
+        if (cancelled) return;
+        setUnreachable(true);
+      }
+    };
+    load();
+    const id = setInterval(load, 30_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
+  if (unreachable) return null;
+  if (!status) return null;
+  if (!status.privateNode.enabled) return null;
+
+  const gap = status.gap;
+  const caughtUp = status.caughtUp === true;
+  const syncing = status.syncing === true;
+
+  const color = caughtUp ? "#00ff96"
+    : syncing && gap !== null && gap < 1000 ? "#ffcc00"
+    : "#5599ff";
+
+  const label = caughtUp ? "CAUGHT UP"
+    : syncing && gap !== null && gap < 1000 ? `syncing (${gap.toLocaleString()})`
+    : syncing && gap !== null ? `syncing (gap ${gap.toLocaleString()})`
+    : "syncing";
+
+  const lat = status.privateNode.latencyMs;
+  const tooltipLines = [
+    `Private node: ${caughtUp ? "caught up" : "syncing"}`,
+    gap !== null ? `Gap behind public testnet: ${gap.toLocaleString()} checkpoints` : null,
+    status.privateNode.checkpoint !== null ? `Local checkpoint: ${status.privateNode.checkpoint.toLocaleString()}` : null,
+    status.publicNode.checkpoint !== null ? `Public checkpoint: ${status.publicNode.checkpoint.toLocaleString()}` : null,
+    lat !== null ? `Probe latency: ${lat}ms` : null,
+    "",
+    "DGX2 fullnode operated by Reality Anchor (CradleOS)",
+  ].filter(Boolean).join("\n");
+
+  return (
+    <span
+      title={tooltipLines}
+      style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
+    >
+      <span style={{ color: "rgba(180,160,140,0.45)" }}>PRIVATE NODE</span>
+      <span
+        style={{
+          display: "inline-block", width: 5, height: 5, borderRadius: "50%",
+          background: color,
+          boxShadow: `0 0 4px ${color}`,
+          verticalAlign: "middle",
+        }}
+      />
+      <span style={{ color }}>{label}</span>
+    </span>
   );
 }
 
