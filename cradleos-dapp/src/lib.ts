@@ -4638,14 +4638,17 @@ async function _ssuFetchWithRetry(
 }
 
 /** Public alias for the private `_ssuPMap` helper.
- *  Concurrency-limited Promise.all replacement. Default concurrency=3 is
- *  safe for the public Sui testnet RPC endpoint. Lower (2) for
- *  fan-outs >100 items.
+ *  Concurrency-limited Promise.all replacement.
+ *  2026-06-01: default raised 3 → 8 after promoting DGX2 private fullnode
+ *  to primary upstream via DGX1 sui-proxy. The proxy enforces its own
+ *  16-slot upstream concurrency cap, so individual callers no longer
+ *  need to be conservative. Use lower (2-3) only for fan-outs >100
+ *  items where you want to be polite to the cache layer itself.
  */
 export function rpcPMap<T, R>(
   items: T[],
   fn: (item: T, idx: number) => Promise<R>,
-  concurrency = 3,
+  concurrency = 8,
 ): Promise<R[]> {
   return _ssuPMap(items, fn, concurrency);
 }
@@ -4653,7 +4656,7 @@ export function rpcPMap<T, R>(
 async function _ssuPMap<T, R>(
   items: T[],
   fn: (item: T, idx: number) => Promise<R>,
-  concurrency = 3,
+  concurrency = 8,
 ): Promise<R[]> {
   const out: R[] = new Array(items.length);
   let cursor = 0;

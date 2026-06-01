@@ -143,7 +143,13 @@ type WalletItem = {
  * so 10 SSUs ≈ 40-60 simultaneous calls). Cap concurrency at a sane
  * default and process in waves. (2026-04-28.)
  */
-async function pMap<T, R>(items: T[], fn: (item: T, idx: number) => Promise<R>, concurrency = 3): Promise<R[]> {
+// 2026-06-01: raised default concurrency 3 → 8 after promoting DGX2 private
+// fullnode to primary upstream. The original `3` was set when the public
+// fullnode rate-limited at ~5 rps per IP and N>10 concurrent fan-outs would
+// cascade into "Failed to fetch". With private node + caching proxy in front,
+// 8 concurrent is well under the 16-slot upstream concurrency cap and gives
+// the inventory panel meaningfully faster load times.
+async function pMap<T, R>(items: T[], fn: (item: T, idx: number) => Promise<R>, concurrency = 8): Promise<R[]> {
   const out: R[] = new Array(items.length);
   let cursor = 0;
   const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
@@ -164,7 +170,11 @@ async function pMap<T, R>(items: T[], fn: (item: T, idx: number) => Promise<R>, 
  * backoff convert those rate-limit windows into eventual success.
  * Also retries on HTTP 429 (Too Many Requests) explicitly.
  */
-async function fetchWithRetry(url: string, init: RequestInit, retries = 2, backoffMs = 600): Promise<Response> {
+// 2026-06-01: dropped backoffMs default 600 → 300 after promoting DGX2 private
+// fullnode to primary upstream. Original 600ms was sized to ride out public
+// fullnode rate-limit windows; with private node + retry-coalescing proxy,
+// 300ms is plenty and total worst-case latency drops from 2.1s to 1.05s.
+async function fetchWithRetry(url: string, init: RequestInit, retries = 2, backoffMs = 300): Promise<Response> {
   let lastErr: any;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -3037,7 +3047,12 @@ export function InventoryPanel() {
               });
               return finalOp;
             },
-            2,
+            // 2026-06-01: raised from 2 → 8 after DGX2 private fullnode
+            // promotion. Operator resolution per-SSU does 2-3 RPCs (read
+            // SSU, read owner_cap, read partition_owner) so 8 concurrent
+            // is ~24 in-flight — well under the 16-slot proxy upstream
+            // concurrency cap, with safe headroom from the cache layer.
+            8,
           );
         });
 

@@ -109,11 +109,16 @@ export function decodeAllowEntry(raw: any): AllowEntry {
  * UI. This helper restores discovery's robustness without changing
  * the surrounding logic.
  */
+// 2026-06-01: backoffMs default dropped 600 → 300 after promoting DGX2
+// private fullnode to primary upstream. Original sizing rode out public
+// fullnode rate-limit windows; with private node + caching proxy, the
+// retry path is now a defensive measure for proxy hiccups rather than a
+// rate-limit absorber, so faster retry is preferred. retries=3 unchanged.
 async function fetchWithRetry(
   url: string,
   init: RequestInit,
   retries = 3,
-  backoffMs = 600,
+  backoffMs = 300,
   perAttemptTimeoutMs = 8000,
 ): Promise<Response> {
   // Per-attempt timeout via AbortController. Browser `fetch()` has no
