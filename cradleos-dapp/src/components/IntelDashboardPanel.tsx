@@ -1467,9 +1467,9 @@ function SecurityTab({
             <div style={S.muted}>No data</div>
           ) : (
             topKillers.map(([id, count], i) => (
-              <div key={id} style={{ ...S.row, padding: "4px 0" }}>
-                <span style={{ color: "#FF4700", minWidth: 16 }}>#{i + 1}</span>
-                <span style={{ flex: 1 }}>{resolveName(id)}</span>
+              <div key={id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <span style={{ color: "#FF4700", minWidth: 18, flexShrink: 0 }}>#{i + 1}</span>
+                <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={resolveName(id)}>{resolveName(id)}</span>
                 <span style={S.badge("#FF4700")}>{count}</span>
               </div>
             ))
@@ -1483,9 +1483,9 @@ function SecurityTab({
             <div style={S.muted}>No data</div>
           ) : (
             topVictims.map(([id, count], i) => (
-              <div key={id} style={{ ...S.row, padding: "4px 0" }}>
-                <span style={{ color: "#ff4444", minWidth: 16 }}>#{i + 1}</span>
-                <span style={{ flex: 1 }}>{resolveName(id)}</span>
+              <div key={id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <span style={{ color: "#ff4444", minWidth: 18, flexShrink: 0 }}>#{i + 1}</span>
+                <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={resolveName(id)}>{resolveName(id)}</span>
                 <span style={S.badge("#ff4444")}>{count}</span>
               </div>
             ))
