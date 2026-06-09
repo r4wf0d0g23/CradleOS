@@ -35,6 +35,7 @@ import { DashboardPanel } from "./components/DashboardPanel";
 import { IndustryPanel } from "./components/IndustryPanel";
 import KeeperOrb from "./components/KeeperOrb";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
+import { VotingPanel } from "./components/VotingPanel";
 import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
@@ -282,42 +283,31 @@ function PrivateNodeStatus() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
+// 2026-06-08 panel slimming: routes for hidden panels (structures, registry,
+// bounties, srp, cargo, succession, announcements, recruiting, hierarchy,
+// assets, wiki, fitting, map, efmap, keeper, cipher, flappy) intentionally
+// removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
   "defense":       "defense",
   "storage":       "inventory",
   "inventory":     "inventory",
-  "structures":    "structures",
   "dashboard":     "dashboard",
-  "links":         "structures",
   "industry":      "industry",
-  "flappy":        "flappy",
-  "bounties":      "bounties",
-  "srp":           "srp",
-  "cargo":         "cargo",
   "gates":         "gates",
   "tribe":         "tribe",
-  "registry":      "registry",
   "intel":         "intel",
-  "succession":    "succession",
-  "wiki":          "wiki",
-  "fitting":       "fitting",
-  "map":           "map",
-  "efmap":         "efmap",
-  "ef-map":        "efmap",
   "dapps":         "dapps",
   "community":     "dapps",
   "apps":          "dapps",
   "query":         "query",
-  "announcements": "announcements",
-  "recruiting":    "recruiting",
-  "hierarchy":     "hierarchy",
-  "assets":        "assets",
   "calendar":      "calendar",
-  "keeper":        "keeper",
+  "voting":        "voting",
+  "vote":          "voting",
+  "elections":     "voting",
 };
 
 function getHashTab(): Tab | null {
@@ -417,7 +407,9 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
-  const PUBLIC_TABS = new Set<Tab>(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry", "cipher"]);
+  // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting/cipher from public set
+  // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
+  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -693,6 +685,17 @@ function AppInner() {
         "Daily seed combines UTC date + latest killmail tx digest — same puzzle for everyone",
       ],
     },
+    voting: {
+      title: "Elections — generic, plug-in, reproducible on-chain voting",
+      steps: [
+        "Browse Active elections you might be eligible to vote in",
+        "Open the Create wizard — pick eligibility / weight / method / privacy / gas",
+        "All 5 eligibility sources, all 6 methods, all 5 weight modes, all privacy modes are exposed (versatility is the product)",
+        "Cast a ballot — PTB chains eligibility-proof + weight-proof + cast in one tx",
+        "After close: anyone can compute_tally; results page re-runs the tally locally to verify the chain",
+        "Sponsored gas is default — voters pay zero when creators sponsor (Enoki relayer)",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -708,6 +711,7 @@ function AppInner() {
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
       calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
+      voting: "voting",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -825,20 +829,18 @@ function AppInner() {
             // approach keeps this self-contained.
           >
             {((): Tab[] => {
-              // Same ordering as the desktop tab strip so users have one
-              // consistent mental model. structures/registry/announcements/
-              // keeper/flappy intentionally omitted (not in the desktop
-              // tab strip; structures opens via the dashboard, keeper has
-              // its own orb, etc.).
+              // 2026-06-08 panel slimming: focused tab set for pre-wipe push.
+              // Hidden: structures, registry, bounties, srp, cargo, succession,
+              // announcements, recruiting, hierarchy, assets, wiki, fitting,
+              // map, efmap, keeper, cipher, flappy. Re-enable by adding back to
+              // ORDER (and KIOSK_PUBLIC if it should work without a wallet).
               const ORDER: Tab[] = [
                 "dashboard", "inventory", "tribe", "defense",
-                "bounties", "srp", "cargo", "gates", "succession",
-                "intel", "cipher", "recruiting", "hierarchy", "assets", "calendar",
-                "wiki", "fitting", "map", "efmap", "query", "industry", "dapps",
+                "gates", "intel", "calendar", "voting",
+                "query", "industry", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "cipher",
-                "industry",
+                "dapps", "query", "intel", "industry",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -867,6 +869,7 @@ function AppInner() {
                 : tab === "query"      ? "QUERY"
                 : tab === "industry"   ? "IND"
                 : tab === "cipher"     ? "CIPHER"
+                : tab === "voting"     ? "VOTE"
                 : tab.toUpperCase();
               return (
                 <button
@@ -1130,9 +1133,16 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry", "dapps"] as Tab[]).filter(tab => {
+        {/* 2026-06-08 panel slimming: focused tab set for pre-wipe push.
+            Hidden: structures, registry, bounties, srp, cargo, succession,
+            announcements, recruiting, hierarchy, assets, wiki, fitting,
+            map, efmap, keeper, cipher, flappy. Panels themselves still
+            render below if active tab is set programmatically; only the
+            nav buttons are removed. Re-enable by adding tab id back to
+            this list (and PUBLIC_TABS if public-without-wallet). */}
+        {(["dashboard", "inventory", "tribe", "defense", "gates", "intel", "calendar", "voting", "query", "industry", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry"]);
+          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1190,6 +1200,7 @@ function AppInner() {
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
                   : tab === "cipher"    ? "⊕ Cipher"
+                  : tab === "voting"    ? "Vote"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
@@ -1216,6 +1227,7 @@ function AppInner() {
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
+                  : tab === "voting"        ? "◣ Elections"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
@@ -1275,6 +1287,7 @@ function AppInner() {
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
+          {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}
