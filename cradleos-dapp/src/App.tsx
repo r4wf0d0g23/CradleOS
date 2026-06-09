@@ -190,7 +190,97 @@ function ChainHealth() {
       <span title="RPC round-trip latency" style={{ color: latColor }}>
         {metrics.latencyMs !== null ? `${metrics.latencyMs}ms` : "—"} RPC
       </span>
+      <PrivateNodeStatus />
     </div>
+  );
+}
+
+// ── Private Node Status ──────────────────────────────────────────────────────
+// Shows whether our DGX2-hosted Sui fullnode is running and how its sync
+// state compares to public testnet. Polls the `/sui-status` route on the
+// existing Cloudflare-fronted sui-proxy. Silently hides when the endpoint
+// is unreachable or reports disabled — we don't paint scary red dots for
+// our own infra being temporarily down. Power-users can hover for detail.
+
+interface PrivateNodeStatusValue {
+  privateNode: { enabled: boolean; checkpoint: number | null; latencyMs: number | null; url?: string };
+  publicNode: { checkpoint: number | null };
+  gap: number | null;
+  syncing: boolean | null;
+  caughtUp: boolean | null;
+  ts: number;
+}
+
+function PrivateNodeStatus() {
+  const [status, setStatus] = useState<PrivateNodeStatusValue | null>(null);
+  const [unreachable, setUnreachable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const STATUS_URL = "https://keeper.reapers.shop/sui-status";
+    const load = async () => {
+      try {
+        const r = await fetch(STATUS_URL, { method: "GET", cache: "no-store" });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const v = (await r.json()) as PrivateNodeStatusValue;
+        if (cancelled) return;
+        setStatus(v);
+        setUnreachable(false);
+      } catch {
+        if (cancelled) return;
+        setUnreachable(true);
+      }
+    };
+    load();
+    const id = setInterval(load, 30_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
+  // Hide entirely if endpoint unreachable or private node reports disabled.
+  if (unreachable) return null;
+  if (!status) return null;
+  if (!status.privateNode.enabled) return null;
+
+  const gap = status.gap;
+  const caughtUp = status.caughtUp === true;
+  const syncing = status.syncing === true;
+
+  const color = caughtUp ? "#00ff96"
+    : syncing && gap !== null && gap < 1000 ? "#ffcc00"
+    : "#5599ff";
+
+  const label = caughtUp ? "CAUGHT UP"
+    : syncing && gap !== null && gap < 1000 ? `syncing (${gap.toLocaleString()})`
+    : syncing && gap !== null ? `syncing (gap ${gap.toLocaleString()})`
+    : "syncing";
+
+  const lat = status.privateNode.latencyMs;
+  const tooltipLines = [
+    `Private node: ${caughtUp ? "caught up" : "syncing"}`,
+    gap !== null ? `Gap behind public testnet: ${gap.toLocaleString()} checkpoints` : null,
+    status.privateNode.checkpoint !== null ? `Local checkpoint: ${status.privateNode.checkpoint.toLocaleString()}` : null,
+    status.publicNode.checkpoint !== null ? `Public checkpoint: ${status.publicNode.checkpoint.toLocaleString()}` : null,
+    lat !== null ? `Probe latency: ${lat}ms` : null,
+    "",
+    "DGX2 fullnode operated by Reality Anchor (CradleOS)",
+  ].filter(Boolean).join("\n");
+
+  return (
+    <span
+      title={tooltipLines}
+      style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
+    >
+      <span style={{ color: "rgba(180,160,140,0.45)" }}>PRIVATE NODE</span>
+      <span
+        style={{
+          display: "inline-block", width: 5, height: 5, borderRadius: "50%",
+          background: color,
+          boxShadow: `0 0 4px ${color}`,
+          verticalAlign: "middle",
+        }}
+      />
+      <span style={{ color }}>{label}</span>
+    </span>
   );
 }
 
@@ -198,38 +288,24 @@ type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map"
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
+// 2026-06-08 panel slimming: routes for hidden panels (structures, registry,
+// bounties, srp, cargo, succession, announcements, recruiting, hierarchy,
+// assets, wiki, fitting, map, efmap, keeper, cipher, flappy) intentionally
+// removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
   "defense":       "defense",
   "storage":       "inventory",
   "inventory":     "inventory",
-  "structures":    "structures",
   "dashboard":     "dashboard",
-  "links":         "structures",
   "industry":      "industry",
-  "flappy":        "flappy",
-  "bounties":      "bounties",
-  "srp":           "srp",
-  "cargo":         "cargo",
   "gates":         "gates",
   "tribe":         "tribe",
-  "registry":      "registry",
   "intel":         "intel",
-  "succession":    "succession",
-  "wiki":          "wiki",
-  "fitting":       "fitting",
-  "map":           "map",
-  "efmap":         "efmap",
-  "ef-map":        "efmap",
   "dapps":         "dapps",
   "community":     "dapps",
   "apps":          "dapps",
   "query":         "query",
-  "announcements": "announcements",
-  "recruiting":    "recruiting",
-  "hierarchy":     "hierarchy",
-  "assets":        "assets",
   "calendar":      "calendar",
-  "keeper":        "keeper",
   "voting":        "voting",
   "vote":          "voting",
   "elections":     "voting",
@@ -332,7 +408,9 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
-  const PUBLIC_TABS = new Set<Tab>(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry", "cipher"]);
+  // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting/cipher from public set
+  // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
+  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -752,21 +830,18 @@ function AppInner() {
             // approach keeps this self-contained.
           >
             {((): Tab[] => {
-              // Same ordering as the desktop tab strip so users have one
-              // consistent mental model. structures/registry/announcements/
-              // keeper/flappy intentionally omitted (not in the desktop
-              // tab strip; structures opens via the dashboard, keeper has
-              // its own orb, etc.).
+              // 2026-06-08 panel slimming: focused tab set for pre-wipe push.
+              // Hidden: structures, registry, bounties, srp, cargo, succession,
+              // announcements, recruiting, hierarchy, assets, wiki, fitting,
+              // map, efmap, keeper, cipher, flappy. Re-enable by adding back to
+              // ORDER (and KIOSK_PUBLIC if it should work without a wallet).
               const ORDER: Tab[] = [
                 "dashboard", "inventory", "tribe", "defense",
-                "bounties", "srp", "cargo", "gates", "succession",
-                "intel", "cipher", "recruiting", "hierarchy", "assets", "calendar",
-                "voting",
-                "wiki", "fitting", "map", "efmap", "query", "industry", "dapps",
+                "gates", "intel", "calendar", "voting",
+                "query", "industry", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "cipher",
-                "industry",
+                "dapps", "query", "intel", "industry",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -1059,9 +1134,16 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.2)",
         background: "transparent",
       }}>
-        {(["dashboard", "inventory", "tribe", "defense", "bounties", "srp", "cargo", "gates", "succession", "intel", "voting", "recruiting", "hierarchy", "assets", "calendar", "wiki", "fitting", "map", "efmap", "query", "industry", "dapps"] as Tab[]).filter(tab => {
+        {/* 2026-06-08 panel slimming: focused tab set for pre-wipe push.
+            Hidden: structures, registry, bounties, srp, cargo, succession,
+            announcements, recruiting, hierarchy, assets, wiki, fitting,
+            map, efmap, keeper, cipher, flappy. Panels themselves still
+            render below if active tab is set programmatically; only the
+            nav buttons are removed. Re-enable by adding tab id back to
+            this list (and PUBLIC_TABS if public-without-wallet). */}
+        {(["dashboard", "inventory", "tribe", "defense", "gates", "intel", "calendar", "voting", "query", "industry", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["map", "efmap", "dapps", "wiki", "fitting", "query", "intel", "industry"]);
+          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
