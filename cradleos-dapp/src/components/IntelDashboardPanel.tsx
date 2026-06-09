@@ -1284,7 +1284,10 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
 
 function SecurityTab({
   kills,
-  nodes,
+  // 2026-06-08: `nodes` retained on the prop interface so future Security
+  // widgets can re-introduce node-derived stats without breaking the parent
+  // wire-up. Currently unused after the Node Health section was removed.
+  nodes: _nodes,
   charMap,
   sysMap,
   loading,
@@ -1432,14 +1435,10 @@ function SecurityTab({
     return { topSysIds, grid, maxCell, sysCounts, hourLabels, totalKills: recentKills.length };
   }, [kills]);
 
-  const isOnline = (n: any) => n.status?.status?.["@variant"] === "ONLINE";
-  const onlinePct =
-    nodes.length > 0
-      ? Math.round((nodes.filter(isOnline).length / nodes.length) * 100)
-      : 0;
-  const lowFuelCount = nodes.filter(
-    (n) => { const q = parseInt(n.fuel?.quantity ?? "0", 10); const m = parseInt(n.fuel?.max_capacity ?? "100000", 10); return m > 0 && q / m < 0.05; }
-  ).length;
+  // 2026-06-08 panel slimming: Node Health section removed at Raw's request
+  // (was shown below the 30-day system-activity grid). Locals isOnline/
+  // onlinePct/lowFuelCount that fed it are also gone. The `nodes` prop is
+  // intentionally left in place for future Security widgets.
 
   if (loading) return <div style={S.loading}>[ computing security overview... ]</div>;
 
@@ -1575,39 +1574,7 @@ function SecurityTab({
 
       </div>
 
-      {/* Node Health */}
-      <div style={S.sectionHead}>NODE HEALTH</div>
-      <div style={S.statRow}>
-        <span>
-          <span style={{ ...S.statVal, color: "#00ff96" }}>{onlinePct}%</span>{" "}
-          online
-        </span>
-        <span>
-          <span style={{ ...S.statVal, color: "#ffd700" }}>{lowFuelCount}</span>{" "}
-          nodes low fuel
-        </span>
-        <span>
-          <span style={S.statVal}>{nodes.length}</span> total
-        </span>
-      </div>
-      {nodes.length > 0 && (
-        <div
-          style={{
-            height: 14,
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: 0,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              width: `${onlinePct}%`,
-              height: "100%",
-              background: "#00ff96",
-            }}
-          />
-        </div>
-      )}
+      {/* Node Health section removed 2026-06-08 — see SecurityTab body comment. */}
     </div>
   );
 }
