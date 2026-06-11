@@ -103,7 +103,7 @@ const SEED_DAPPS: DAppCard[] = [
     id: "efmap",
     title: "EF-Map",
     tagline:
-      "Canonical 3D starmap with WASM Dijkstra routing across 24k+ systems. Also embedded as a CradleOS tab.",
+      "Free 3D starmap and in-browser route planner for 24,000+ systems — WASM routing, Smart Gate edges, and fuel/jump-range optimization. Also embedded as a CradleOS tab.",
     url: "https://ef-map.com/",
     tags: ["Navigation", "Tools", "Map"],
   },
