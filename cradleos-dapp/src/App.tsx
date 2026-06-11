@@ -42,7 +42,7 @@ import { isMuted, toggleMuted } from "./lib/sound";
 
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
-  { label: "STILLNESS", url: "https://world-api-stillness.live.tech.evefrontier.com/v2/tribes?limit=1" },
+  { label: "STILLNESS", url: "https://world-api-stillness.live.pub.evefrontier.com/v2/tribes?limit=1" },
   { label: "UTOPIA",    url: "https://world-api-utopia.uat.pub.evefrontier.com/v2/tribes?limit=1"    },
 ];
 type ServerStatus = "checking" | "online" | "offline";

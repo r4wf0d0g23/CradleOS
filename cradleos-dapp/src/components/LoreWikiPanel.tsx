@@ -61,7 +61,7 @@ type StillnessType = {
 const CATEGORIES = ["Lore", "Mechanics", "Locations", "Factions", "Ships", "Assets", "History"] as const;
 type Category = typeof CATEGORIES[number];
 
-const STILLNESS_API = "https://world-api-stillness.live.tech.evefrontier.com";
+const STILLNESS_API = "https://world-api-stillness.live.pub.evefrontier.com";
 
 const HIGH_GROUPS = new Set([
   "Energy Lance",

@@ -16,7 +16,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 const STILLNESS_TYPES_URL =
-  "https://world-api-stillness.live.tech.evefrontier.com/v2/types?limit=1000";
+  "https://world-api-stillness.live.pub.evefrontier.com/v2/types?limit=1000";
 
 interface EFType {
   id: number;

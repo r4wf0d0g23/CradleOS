@@ -336,7 +336,7 @@ export function PlayerCardModal({
     (async () => {
       const next = new Map(lazySysMap);
       const WORLD_API = SERVER_ENV === "stillness"
-        ? "https://world-api-stillness.live.tech.evefrontier.com"
+        ? "https://world-api-stillness.live.pub.evefrontier.com"
         : "https://world-api-utopia.uat.pub.evefrontier.com";
       const idArr = [...ids];
       const slots = 3;

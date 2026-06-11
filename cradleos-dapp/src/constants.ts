@@ -304,7 +304,7 @@ export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; lab
   { tribeId: 1000167, coinSymbol: "—", label: "Default Spawn Tribe" },
 ];
 export const WORLD_API = SERVER_ENV === "stillness"
-  ? "https://world-api-stillness.live.tech.evefrontier.com"
+  ? "https://world-api-stillness.live.pub.evefrontier.com"
   : "https://world-api-utopia.uat.pub.evefrontier.com";
 
 export const NETWORK_NODE_TYPE = `${WORLD_PKG}::network_node::NetworkNode`;

@@ -9,7 +9,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 // Proxied through keeper.reapers.shop to avoid CORS block on lineagewar.xyz
 const VERIFIER_URL = "https://keeper.reapers.shop/war/latest";
 // Lineage War is Stillness-only — always use Stillness World API regardless of server env
-const WORLD_API = "https://world-api-stillness.live.tech.evefrontier.com";
+const WORLD_API = "https://world-api-stillness.live.pub.evefrontier.com";
 const POLL_INTERVAL_MS = 30_000;
 
 
