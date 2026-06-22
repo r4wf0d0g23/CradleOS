@@ -34,12 +34,21 @@ export const SERVER_ENV = _serverEnv;
 // Derived values — use getters for reactive access
 export const SERVER_LABEL = _serverEnv === "stillness" ? "STILLNESS (Live)" : "UTOPIA (Hackathon)";
 
-// Utopia WORLD_PKG — v2 deployed 2026-03-22 (world-contracts v0.0.21)
-// Original v1: 0xd12a70c74c1e759445d6f209b01d43d860e97fcf2ef72ccbbd00afd828043f75
+// ── World package IDs ─────────────────────────────────────────────────────────
+// Source of truth: src/lib/tenantConfig.ts (vendored from @evefrontier/wallet-core,
+// MIT, last synced 2026-06-22 from HEAD 1b4be23). The vendored table mirrors
+// CCP's authoritative TENANT_CONFIG. Do not hand-edit these values here; update
+// tenantConfig.ts instead. The Utopia v1 id is preserved for historical event
+// queries on objects that pre-date the v2 upgrade.
+import { TENANT_CONFIG, TenantId } from "./lib/tenantConfig";
+
+// v2 (post-upgrade) Utopia world package — used as moveCall target on Utopia.
+// Original v1 retained for event queries on pre-upgrade objects.
 export const WORLD_PKG_UTOPIA    = "0x07e6b810c2dff6df56ea7fbad9ff32f4d84cbee53e496267515887b712924bd1";
-export const WORLD_PKG_UTOPIA_V1 = "0xd12a70c74c1e759445d6f209b01d43d860e97fcf2ef72ccbbd00afd828043f75";
-// Stillness WORLD_PKG — confirmed active, different deployment on same Sui testnet
-export const WORLD_PKG_STILLNESS = "0x28b497559d65ab320d9da4613bf2498d5946b2c0ae3597ccfda3072ce127448c";
+export const WORLD_PKG_UTOPIA_V1 = TENANT_CONFIG[TenantId.UTOPIA].packageId;
+// Stillness world package — read live from canonical TENANT_CONFIG so wipe-day
+// updates are a single-file change.
+export const WORLD_PKG_STILLNESS = TENANT_CONFIG[TenantId.STILLNESS].packageId;
 export const WORLD_PKG = _serverEnv === "stillness" ? WORLD_PKG_STILLNESS : WORLD_PKG_UTOPIA;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 

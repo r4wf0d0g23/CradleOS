@@ -41,7 +41,7 @@ html {
   min-height: 100%;
   /* EVE Frontier official animated dot-grid world map.
      Sourced from dapps.evefrontier.com canonical bundle (background-DODSHPqT.gif).
-     Replaces the previous lineagewar corridor JPG so CradleOS visually matches
+     Background image for CradleOS — visual continuity with
      the in-game / official Frontier dApp aesthetic.
      Saved locally at /bg/eve-frontier-bg.gif (1920x1080, ~1.8 MB, 250 frames).
      --app-bg-url is injected from main.tsx using import.meta.env.BASE_URL so

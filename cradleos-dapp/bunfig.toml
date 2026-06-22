@@ -1,0 +1,21 @@
+# CradleOS dApp — Bun configuration
+#
+# Even though our active package manager is npm, this file exists for two
+# reasons:
+#
+# 1. Supply-chain defense in depth: if anyone (CI, contributor, future me)
+#    ever runs `bun install` in this tree, the minimumReleaseAge guard
+#    forces refusing to install packages younger than 36 hours. This
+#    blocks fast-moving npm worm waves (Mini Shai-Hulud class) during
+#    their typical 24h active windows.
+#
+# 2. Symmetry with @evefrontier/wallet-core, which ships the same setting
+#    upstream. Matching CCP's hygiene posture means our build environment
+#    behaves consistently with theirs.
+#
+# Added: 2026-06-22, wipe-day prep, per bun-security-pass-2026-06-22.md
+
+[install]
+# 36 hours = 129600 seconds. Refuse to install packages published more
+# recently than this. Standing rule, do not lower without explicit Raw approval.
+minimumReleaseAge = 129600

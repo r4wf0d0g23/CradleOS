@@ -1,4 +1,11 @@
 import { Transaction } from "@mysten/sui/transactions";
+import {
+  executeGraphQLQuery,
+  getObjectWithJson,
+} from "@evefrontier/dapp-kit/graphql";
+import { GET_WALLET_CHARACTERS } from "@evefrontier/dapp-kit/graphql";
+import { parseCharacterFromJson } from "@evefrontier/dapp-kit/utils";
+import type { GetWalletCharactersResponse } from "@evefrontier/dapp-kit/graphql";
 import { SUI_GRAPHQL } from "./graphql";
 import {
   CLOCK,
@@ -548,8 +555,48 @@ async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Prom
   return { characterId: resolved[0].characterId, tribeId: resolved[0].tribeId };
 }
 
+/** PRIMARY: resolve wallet → CharacterInfo via dapp-kit GET_WALLET_CHARACTERS GraphQL.
+ *  Tries current WORLD_PKG first, then WORLD_PKG_UTOPIA_V1 for legacy characters.
+ *  Returns null on network error, empty result, or deleted Character (extract path is null).
+ *  Callers fall back to the RPC-based findPlayerProfileForPkg + event-scan path. */
+async function _findCharacterViaGraphQL(walletAddress: string): Promise<CharacterInfo | null> {
+  for (const pkg of [WORLD_PKG, WORLD_PKG_UTOPIA_V1]) {
+    try {
+      const result = await executeGraphQLQuery<GetWalletCharactersResponse>(
+        GET_WALLET_CHARACTERS,
+        {
+          owner: walletAddress,
+          characterPlayerProfileType: `${pkg}::character::PlayerProfile`,
+        },
+      );
+      const nodes = result.data?.address?.objects?.nodes;
+      if (!nodes?.length) continue;
+      // extract path returns null when the Character object has been deleted —
+      // treat that the same as a missing result and try the next package.
+      const charJson =
+        nodes[0]?.contents?.extract?.asAddress?.asObject?.asMoveObject?.contents?.json;
+      if (!charJson) continue;
+      const dkChar = parseCharacterFromJson(charJson);
+      // dkChar.id is the Sui object address of the Character — matches local CharacterInfo.characterId
+      if (!dkChar?.id) continue;
+      return { characterId: dkChar.id, tribeId: dkChar.tribeId };
+    } catch {
+      // Network/GraphQL error — try next package then fall through to RPC
+    }
+  }
+  return null;
+}
+
 export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
-  // Primary: query PlayerProfile owned object — try BOTH world package versions (v2 then v1)
+  // PRIMARY: dapp-kit GraphQL (getWalletCharacters). Reads the live Character object so
+  // tribe_id reflects current state, not creation-time snapshot. Tries both world package
+  // versions to cover characters created before the v0.0.21 upgrade.
+  const graphqlChar = await _findCharacterViaGraphQL(walletAddress);
+  if (graphqlChar) return graphqlChar;
+
+  // SECONDARY (fallback): direct fullnode RPC path.
+  // Used when GraphQL is down or returns nothing ("GraphQL down, RPC up" boot failure mode).
+  // Try BOTH world package versions (v2 then v1)
   // Characters created before the v0.0.21 upgrade have PlayerProfiles from the v1 package.
   const current = await findPlayerProfileForPkg(walletAddress, WORLD_PKG);
   if (current) return current;
@@ -604,7 +651,13 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
 export async function fetchCharacterTribeId(walletAddress: string): Promise<number | null> {
   const charInfo = await findCharacterForWallet(walletAddress);
   if (!charInfo) return null;
-  // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy)
+  // When charInfo came from the GraphQL primary path, tribeId is already populated
+  // from the live Character object — no extra RPC call needed.
+  if (charInfo.tribeId !== 0) return charInfo.tribeId;
+  // SECONDARY fallback: read tribe_id directly from the Character object via RPC.
+  // Preserves the "CRITICAL BOOT PATH — direct fullnode" for when GraphQL was down
+  // and findCharacterForWallet fell through to the event-scan path (which only
+  // returns the creation-time tribe_id via CharacterCreatedEvent, not the current one).
   const fields = await rpcGetObjectDirect(charInfo.characterId);
   return numish(fields["tribe_id"]);
 }
@@ -4690,6 +4743,20 @@ export async function fetchCharacterDisplayName(
 // name (or a `Rider XXXX` fallback). Uses fetchWithRetry. Returns null when
 // the object is deleted/missing.
 async function _fetchCharacterName(charObjectId: string): Promise<string | null> {
+  // PRIMARY: dapp-kit getObjectWithJson + parseCharacterFromJson
+  // Fetches the Character object via GraphQL and normalises its name fields.
+  try {
+    const gqlResult = await getObjectWithJson(charObjectId);
+    const gqlJson = gqlResult.data?.object?.asMoveObject?.contents?.json;
+    if (gqlJson) {
+      const dkChar = parseCharacterFromJson(gqlJson);
+      if (dkChar?.name && dkChar.name !== "—") return dkChar.name;
+      if (dkChar?.characterId) return `Rider ${String(dkChar.characterId).slice(-4)}`;
+    }
+  } catch {
+    // Fall through to RPC
+  }
+  // SECONDARY: direct fullnode RPC ("GraphQL down, RPC up" boot failure mode)
   try {
     const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
