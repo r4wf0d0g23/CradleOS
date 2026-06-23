@@ -26,12 +26,14 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { WORLD_API } from "../constants";
 import { fetchPlayerStructures } from "../lib";
+import { loadSolarSystemCatalog } from "../lib/solarSystems";
 import { getEveVaultAuthHeaders } from "../eveVaultAuth";
 
 const CACHE_KEY     = "cradleos:starmap:v5";
 const LS_LAST_SYS   = "cradleos:last-system";
-const BATCH         = 500;
-const CONCURRENT    = 10;
+// BATCH/CONCURRENT formerly used by per-page paginated cold load; replaced
+// by single static snapshot fetch through loadSolarSystemCatalog().
+// Constants removed (2026-06-23) along with the world-api fan-out.
 const SCALE         = 1 / 3e16;
 const LY_M          = 9.461e15;
 
@@ -219,18 +221,16 @@ async function fetchSystemDetail(id: number): Promise<SystemDetail | null> {
       count,
     }));
     const planetCount = rawPlanets.reduce((sum, [, c]) => sum + c, 0);
-    // Gate connections
+    // Gate connections — resolve names from the static catalog (universe
+    // geometry is fixed; gate destinations are just other systems by id).
     const gateLinks = d.gateLinks ?? [];
-    const connections: Array<{ id: number; name: string }> = [];
-    for (const gid of gateLinks.slice(0, 20)) {
-      try {
-        const gr = await fetch(`${WORLD_API}/v2/solarsystems/${gid}`);
-        if (gr.ok) {
-          const gd = await gr.json() as { id?: number; name?: string };
-          connections.push({ id: gd.id ?? gid, name: gd.name ?? `System ${gid}` });
-        }
-      } catch { /* skip */ }
-    }
+    const catalog = await loadSolarSystemCatalog();
+    const connections: Array<{ id: number; name: string }> = gateLinks
+      .slice(0, 20)
+      .map((gid) => ({
+        id: gid,
+        name: catalog.get(gid)?.name ?? `System ${gid}`,
+      }));
     return {
       id: d.id ?? id,
       name: d.name ?? `System ${id}`,
@@ -593,6 +593,16 @@ export function MapPanel() {
   }, []);
 
   // ── Fetch all systems ──────────────────────────────────────────────────────
+  // Loads the full universe geometry from the bundled static snapshot
+  // (`public/data/solarsystems-<world>.json`, refreshed via
+  // `scripts/refresh-solar-systems.mjs`). Previously paginated 25 batched
+  // world-api calls on cold load — now one HTTP GET, ~1 MB gzipped, then
+  // sessionStorage-cached for repeat visits in the same tab.
+  //
+  // Note: `gateLinks` is intentionally omitted from the static snapshot
+  // (it's dynamic on-chain Smart Gate state, not map geometry). When the
+  // user opens a system detail card, gateLinks are fetched live from the
+  // per-system world-api endpoint.
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
@@ -608,37 +618,32 @@ export function MapPanel() {
         }
       } catch { /* stale */ }
 
-      const first = await fetch(`${WORLD_API}/v2/solarsystems?limit=1`).then(r=>r.json()) as { metadata:{total:number} };
+      const catalog = await loadSolarSystemCatalog();
       if (cancelled) return;
-      const total = first.metadata.total, pages = Math.ceil(total / BATCH);
-      setLoadState({ loaded:0, total, done:false });
+      const total = catalog.size;
+      if (total === 0) {
+        setLoadState({ loaded: 0, total: 0, done: true });
+        return;
+      }
+      setLoadState({ loaded: 0, total, done: false });
 
       const all: SolarSystem[] = [];
-      for (let wave = 0; wave < pages && !cancelled; wave += CONCURRENT) {
-        const fns = [];
-        for (let p = wave; p < Math.min(wave+CONCURRENT, pages); p++) {
-          fns.push(
-            fetch(`${WORLD_API}/v2/solarsystems?limit=${BATCH}&offset=${p*BATCH}`)
-              .then(r => r.json() as Promise<{ data: Array<{
-                id:number; name:string; regionId:number;
-                location:{x:number;y:number;z:number};
-                gateLinks?: number[];
-              }> }>)
-              .then(d => d.data.map(s => ({
-                id: s.id, name: s.name, regionId: s.regionId,
-                x: s.location.x, y: s.location.y, z: s.location.z,
-                gateLinks: s.gateLinks ?? [],
-              })))
-          );
-        }
-        const chunks = await Promise.all(fns); if (cancelled) return;
-        for (const c of chunks) all.push(...c);
-        setLoadState({ loaded:all.length, total, done:false });
+      for (const rec of catalog.values()) {
+        if (rec.x == null || rec.y == null || rec.z == null) continue;
+        all.push({
+          id: rec.id,
+          name: rec.name,
+          regionId: rec.regionId ?? 0,
+          x: rec.x,
+          y: rec.y,
+          z: rec.z,
+          gateLinks: [], // dynamic, fetched live in system detail card
+        });
       }
       if (cancelled) return;
       systemsRef.current = all;
       sortedXRef.current = all.map((s,i) => ({ idx:i, xLY:s.x/LY_M })).sort((a,b) => a.xLY-b.xLY);
-      setLoadState({ loaded:all.length, total, done:true });
+      setLoadState({ loaded:all.length, total:all.length, done:true });
       buildBgPoints(all);
       try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(all)); } catch { /* quota */ }
     };

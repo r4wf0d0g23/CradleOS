@@ -23,6 +23,7 @@ import {
   RAW_CHARACTER_ID,
   RAW_NETWORK_NODE_ID,
   RAW_NODE_OWNER_CAP,
+  SERVER_ENV,
   SUI_TESTNET_RPC,
   SUI_TESTNET_RPC_DIRECT,
   WORLD_API,
@@ -31,6 +32,9 @@ import {
   STRUCTURE_TYPES,
   type StructureKind,
 } from "./constants";
+import { STILLNESS_TYPES, UTOPIA_TYPES, type WorldKey } from "./data/typeCatalog";
+import { getEnergyCostMap as getStaticEnergyCostMap, getEnergyCostSnapshotSize } from "./data/energyCosts";
+import { resolveSolarSystem as resolveStaticSolarSystem } from "./lib/solarSystems";
 
 export type NodeDashboardData = {
   objectId: string;
@@ -394,12 +398,33 @@ export type PlayerStructure = {
 // Cache for type names from World API
 let _typeNameCache: Map<number, string> | null = null;
 
+/**
+ * Return Deployable/Structure type names (used by StructurePanel for
+ * structure displayName resolution).
+ *
+ * Primary source: bundled static catalog (`src/data/typeCatalog.ts`,
+ * refreshed via `scripts/refresh-type-catalog.mjs`). Synchronous,
+ * zero-RPC for all known content. World-api is only hit if the bundled
+ * snapshot for the current world is empty (e.g. Utopia, which we couldn't
+ * snapshot yet because its world-api was down on 2026-06-23).
+ */
 export async function fetchTypeNames(): Promise<Map<number, string>> {
   if (_typeNameCache) return _typeNameCache;
   const m = new Map<number, string>();
+  const world = SERVER_ENV as WorldKey;
+  const catalog = world === "utopia" ? UTOPIA_TYPES : STILLNESS_TYPES;
+  if (catalog.length > 0) {
+    for (const t of catalog) {
+      if (t.categoryName === "Deployable" || t.categoryName === "Structure") {
+        m.set(t.id, t.name);
+      }
+    }
+    _typeNameCache = m;
+    return m;
+  }
+  // Fallback: catalog snapshot missing for this world — hit world-api once.
   try {
-    // Fetch all types (deployables + structures)
-    const url = `${WORLD_API}/v2/types?limit=500`;
+    const url = `${WORLD_API}/v2/types?limit=1000`;
     const res = await fetch(url);
     const data = await res.json() as { data: Array<{ id: number; name: string; categoryName: string }> };
     for (const t of data.data ?? []) {
@@ -414,19 +439,49 @@ export async function fetchTypeNames(): Promise<Map<number, string>> {
   return m;
 }
 
-/** Fetch the EnergyConfig table and return a map: typeId -> energyCost */
+/** Fetch the EnergyConfig table and return a map: typeId -> energyCost.
+ *
+ * Primary source: bundled static snapshot in `src/data/energyCosts.ts`
+ * (refreshed via `scripts/refresh-energy-costs.mjs`). The
+ * EnergyConfig.assembly_energy table changes only when the world
+ * package is upgraded — bundling eliminates ~20 Sui RPCs per cold load.
+ *
+ * Fallback: live RPC against the correct per-world `assembly_energy`
+ * table id (resolved dynamically from EnergyConfig). Used when the
+ * static snapshot is empty for the active world.
+ *
+ * Bug history: the prior implementation hardcoded the Utopia table_id
+ * (`0x885c80a9...`) and silently returned an empty map on Stillness,
+ * which broke energy-cost UX (tier badges, available-energy math,
+ * batch-online affordability) across StructurePanel/DashboardPanel.
+ */
 export async function fetchEnergyCostMap(): Promise<Map<number, number>> {
+  const world = SERVER_ENV as WorldKey;
+  if (getEnergyCostSnapshotSize(world) > 0) {
+    return getStaticEnergyCostMap(world);
+  }
+  // Fallback: live RPC. Resolve the assembly_energy table id from the
+  // EnergyConfig shared object (per-world; cannot be hardcoded).
   const map = new Map<number, number>();
   try {
-    // EnergyConfig assembly_energy table id
-    const TABLE_ID = "0x885c80a9c99b4fd24a0026981cceb73ebdc519b59656adfbbcce0061a87a1ed9";
+    const cfgRes = await fetch(SUI_TESTNET_RPC, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "sui_getObject",
+        params: [ENERGY_CONFIG, { showContent: true }],
+      }),
+    });
+    const cfgJson = await cfgRes.json() as {
+      result: { data: { content: { fields: { assembly_energy: { fields: { id: { id: string } } } } } } };
+    };
+    const TABLE_ID = cfgJson.result.data.content.fields.assembly_energy.fields.id.id;
+
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getDynamicFields", params: [TABLE_ID, null, 50] }),
     });
     const j = await res.json() as { result: { data: Array<{ name: { value: string }; objectId: string }> } };
     const entries = j.result.data;
-    // Fetch all entry values in parallel
     await Promise.all(entries.map(async ({ name, objectId }) => {
       const r = await fetch(SUI_TESTNET_RPC, {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -698,14 +753,9 @@ async function buildLocationEventMap(): Promise<Map<string, number>> {
 }
 
 async function resolveSystemName(solarSystemId: number): Promise<string> {
-  try {
-    const res = await fetch(`${WORLD_API}/v2/solarsystems/${solarSystemId}`);
-    if (res.ok) {
-      const json = await res.json() as { name?: string };
-      if (json.name) return json.name;
-    }
-  } catch { /* fallback */ }
-  return `System ${solarSystemId}`;
+  // Static catalog first — zero RPC for known universe ids.
+  const rec = await resolveStaticSolarSystem(solarSystemId);
+  return rec?.name ?? `System ${solarSystemId}`;
 }
 
 /** Fetch tribe metadata from the World API. Returns null if not found. */
@@ -788,15 +838,24 @@ export async function isTribeOnActiveServer(
   return onServer;
 }
 
-/** Fetch solar system details (name, constellation, region, gateLinks). */
+/**
+ * Fetch solar system details (name, constellation, region).
+ *
+ * Reads from the bundled static catalog (`public/data/solarsystems-<world>.json`)
+ * first — zero RPC for known universe ids. Falls back to world-api inside
+ * `resolveStaticSolarSystem` only on snapshot miss.
+ */
 export async function fetchSolarSystem(systemId: number): Promise<{
   id: number; name: string; constellationId: number; regionId: number;
 } | null> {
-  try {
-    const res = await fetch(`${WORLD_API}/v2/solarsystems/${systemId}`);
-    if (res.ok) return await res.json() as { id: number; name: string; constellationId: number; regionId: number };
-  } catch { /* */ }
-  return null;
+  const rec = await resolveStaticSolarSystem(systemId);
+  if (!rec) return null;
+  return {
+    id: rec.id,
+    name: rec.name,
+    constellationId: rec.constellationId ?? 0,
+    regionId: rec.regionId ?? 0,
+  };
 }
 
 export async function fetchPlayerStructures(walletAddress: string): Promise<LocationGroup[]> {

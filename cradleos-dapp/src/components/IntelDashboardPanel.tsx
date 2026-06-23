@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { WORLD_API, SERVER_ENV } from "../constants";
+import { SERVER_ENV } from "../constants";
 import { bcs } from "@mysten/sui/bcs";
 import { deriveDynamicFieldID } from "@mysten/sui/utils";
 import { rpcFetchWithRetry, rpcPMap, fetchTribeInfo } from "../lib";
+import { resolveSolarSystemsBatch } from "../lib/solarSystems";
 import { KillCardModal, type KillRecord } from "./KillCardModal";
 import { PlayerCardModal } from "./PlayerCardModal";
 
@@ -269,28 +270,21 @@ function formatRelativeTime(ts: string): string {
 // killmail object id; clicking the row opens the KillCardModal which
 // renders the full addresses with Suiscan links.)
 
-// Solar system name cache (shared across component lifetime)
+// Solar system name cache (shared across component lifetime).
+// Backed by the static solar-system catalog (`public/data/solarsystems-<world>.json`)
+// — zero RPC for any id in the catalog. Live world-api fallback inside
+// `resolveSolarSystemsBatch` handles snapshot misses transparently.
 const sysNameCache = new Map<string, string>();
 
 async function resolveSolarSystemNames(sysIds: string[]): Promise<Map<string, string>> {
-  const missing = sysIds.filter(id => id && !sysNameCache.has(id));
-  // Fetch in parallel, max 20 concurrent
-  const batches: string[][] = [];
-  for (let i = 0; i < missing.length; i += 20) {
-    batches.push(missing.slice(i, i + 20));
-  }
-  for (const batch of batches) {
-    const results = await Promise.allSettled(
-      batch.map(id =>
-        fetch(`${WORLD_API}/v2/solarsystems/${id}`)
-          .then(r => r.json())
-          .then((d: { id: number; name?: string }) => ({ id, name: d.name ?? null }))
-      )
-    );
-    for (const r of results) {
-      if (r.status === "fulfilled" && r.value.name) {
-        sysNameCache.set(r.value.id, r.value.name);
-      }
+  const missing = sysIds
+    .filter((id) => id && !sysNameCache.has(id))
+    .map((id) => Number(id))
+    .filter((id) => Number.isFinite(id));
+  if (missing.length > 0) {
+    const resolved = await resolveSolarSystemsBatch(missing);
+    for (const [id, rec] of resolved) {
+      sysNameCache.set(String(id), rec.name);
     }
   }
   return sysNameCache;

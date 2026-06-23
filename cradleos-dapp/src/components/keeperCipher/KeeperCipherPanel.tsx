@@ -24,7 +24,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { findCharacterForWallet, fetchTribeInfo, type CharacterInfo } from "../../lib";
-import { WORLD_API } from "../../constants";
+import { resolveSolarSystemName } from "../../lib/solarSystems";
 import {
   FRAGMENTS,
   pickFragmentForSeed,
@@ -455,11 +455,9 @@ export function KeeperCipherPanel() {
         setVerifyError("Lattice silent. No target candidate available right now.");
         return;
       }
-      let name: string | undefined;
-      try {
-        const res = await fetch(`${WORLD_API}/v2/solarsystems/${target}`);
-        if (res.ok) { const j = (await res.json()) as { name?: string }; if (j.name) name = j.name; }
-      } catch { /* ignore */ }
+      // Static catalog (sync after first load) — zero RPC for known universe ids.
+      const resolvedName = await resolveSolarSystemName(target).catch(() => undefined);
+      const name = resolvedName && resolvedName !== `System ${target}` ? resolvedName : undefined;
 
       const newExp: ActiveExpedition = {
         fragmentId: frag.id,

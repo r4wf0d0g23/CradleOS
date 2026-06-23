@@ -335,23 +335,13 @@ export function PlayerCardModal({
     let cancelled = false;
     (async () => {
       const next = new Map(lazySysMap);
-      const { WORLD_API } = await import("../constants");
-      const idArr = [...ids];
-      const slots = 3;
-      let cursor = 0;
-      await Promise.all(Array.from({ length: slots }, async () => {
-        while (cursor < idArr.length) {
-          const i = cursor++;
-          const id = idArr[i];
-          try {
-            const res = await fetch(`${WORLD_API}/v2/solarsystems/${id}`);
-            if (res.ok) {
-              const d = (await res.json()) as { name?: string };
-              if (d.name) next.set(id, d.name);
-            }
-          } catch { /* ignore */ }
-        }
-      }));
+      // Static catalog — batch-resolve in one pass, no per-id RPC.
+      const { resolveSolarSystemsBatch } = await import("../lib/solarSystems");
+      const numericIds = [...ids]
+        .map((id) => Number(id))
+        .filter((id) => Number.isFinite(id));
+      const resolved = await resolveSolarSystemsBatch(numericIds);
+      for (const [id, rec] of resolved) next.set(String(id), rec.name);
       if (!cancelled) setLazySysMap(next);
     })();
     return () => { cancelled = true; };

@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useMemo, Fragment } from "react";
 import { PortalSelect } from "./PortalSelect";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator, fetchCharacterDisplayName } from "../lib";
-import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE } from "../constants";
+import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE, SERVER_ENV } from "../constants";
+import { getTypeName as getStaticTypeName, type WorldKey } from "../data/typeCatalog";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
@@ -332,12 +333,33 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
   };
 }
 
+/**
+ * Resolve an item name for a given type_id.
+ *
+ * Resolution order:
+ *  1. Session cache (already resolved in this session)
+ *  2. Bundled static catalog (`src/data/typeCatalog.ts`, refreshed via
+ *     `scripts/refresh-type-catalog.mjs` — 392+ Stillness types as of
+ *     2026-06-23). Synchronous, zero-RPC, handles all known content.
+ *  3. Live world-api fallback (handles new content added after last
+ *     catalog refresh; failures degrade to `type_id NNNNN`).
+ *
+ * Previously every name was a world-api call — expand-cargo bursts
+ * could rate-limit and leave rows showing `type_id NNNNN`. The static
+ * catalog eliminates that hot path entirely for known ids.
+ */
 async function resolveItemName(
   typeId: number,
   worldApi: string,
   cache: Map<number, string>
 ): Promise<string> {
   if (cache.has(typeId)) return cache.get(typeId)!;
+  const world = SERVER_ENV as WorldKey;
+  const fromCatalog = getStaticTypeName(world, typeId);
+  if (fromCatalog) {
+    cache.set(typeId, fromCatalog);
+    return fromCatalog;
+  }
   try {
     const res = await fetch(`${worldApi}/v2/types/${typeId}`);
     const json = await res.json();

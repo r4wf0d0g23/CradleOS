@@ -106,6 +106,49 @@ npx tsc --noEmit
 # Expected: exit code 0, no errors
 ```
 
+### 4b. Refresh Static Catalog Snapshots (recommended)
+
+The dApp bundles three static snapshots that eliminate hot-path RPC
+calls. Refresh whenever Fenris ships content/map changes:
+
+1. **Type catalog** (`src/data/typeCatalog.ts`) — item names/volumes/groups
+   for inventory + structure displays. Source: world-api `/v2/types`.
+   Refresh:
+   ```bash
+   node scripts/refresh-type-catalog.mjs
+   ```
+   Expected: `"stillness: N types"` with N matching world-api
+   `metadata.total`. If a world's API is unreachable, the previous
+   snapshot is preserved.
+
+2. **Energy costs** (`src/data/energyCosts.ts`) — per-world `type_id →
+   energy_cost` map for StructurePanel/DashboardPanel energy math.
+   Source: on-chain `EnergyConfig.assembly_energy` table. Refresh:
+   ```bash
+   node scripts/refresh-energy-costs.mjs
+   ```
+   Expected: 19+ entries per world. If a world's table is unreachable,
+   the previous snapshot is preserved.
+
+3. **Solar-system catalog** (`public/data/solarsystems-<world>.json`) —
+   universe geometry (~24,500 systems × {id, name, constellationId,
+   regionId, location}) for MapPanel + every per-system name lookup.
+   Runtime-fetched (NOT JS-bundled — ~1 MB gzipped is too large for the
+   initial boot bundle). Source: world-api `/v2/solarsystems`. Refresh:
+   ```bash
+   node scripts/refresh-solar-systems.mjs
+   ```
+   Expected: `"stillness: 24502 systems"`. If a world's API is
+   unreachable, the previous snapshot is preserved on disk.
+
+If any diff is non-trivial (new content / world package upgrade / map
+changes), commit the regenerated files alongside the deploy.
+
+**Note:** Solar-system gate links (`gateLinks`) are intentionally NOT
+in the static snapshot — they're dynamic on-chain Smart Gate state.
+The per-system detail card fetches gateLinks live from the world-api;
+static catalog only covers fixed map geometry.
+
 ### 5. Git State Is Clean
 
 ```bash
