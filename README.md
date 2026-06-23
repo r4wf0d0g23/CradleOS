@@ -1,15 +1,33 @@
-# CradleOS — EVE Frontier Tribe Economy Stack
+# CradleOS
 
-> **ERA 6: AWAKENING · CYCLE 5: SHROUD OF FEAR**
+<p align="center">
+  <strong>On-chain civilization infrastructure for EVE Frontier — Sui Move package + React dApp.</strong>
+</p>
 
-CradleOS is an on-chain tribe economy and command infrastructure for EVE Frontier, built
-on Sui testnet. It provides tribe founders and members with tools to manage defense policy,
-gate access, roles, treasury, intelligence, cargo contracts, ship insurance, and more — all
-accessible from an in-game browser overlay or the web dApp.
+<p align="center">
+  <a href="https://r4wf0d0g23.github.io/CradleOS/">Live dApp</a> ·
+  <a href="cradleos/README.md">Move source</a> ·
+  <a href="cradleos-dapp/README.md">dApp source</a> ·
+  <a href="cradleos_voting/README.md">Voting</a> ·
+  <a href="cradleos_ssu_access/README.md">SSU shared access</a> ·
+  <a href="cradleos_keeper_seal/README.md">Keeper Seals</a>
+</p>
 
-The current package contains **24 Move modules**, **6,533 lines of code**, and a live **v5
-deployment** with a **34-panel dApp** that runs both on the web and inside EVE Frontier's
-in-game browser.
+---
+
+## What's Here
+
+CradleOS turns the social, economic, defensive, and operational layer of an EVE Frontier
+civilization into wallet-native, composable on-chain systems. The repo contains the full
+stack:
+
+| Package | Modules | LOC | What it does |
+|---|---|---|---|
+| [`cradleos/`](cradleos/README.md) | 25 | 7,619 | Core civilization toolkit — treasury, defense, contracts, governance |
+| [`cradleos-dapp/`](cradleos-dapp/README.md) | 34 panels | — | React + Vite command interface (web + in-game browser) |
+| [`cradleos_voting/`](cradleos_voting/README.md) | 22 | 5,551 | On-chain voting with Hot Potato proofs + Enoki-sponsored gas |
+| [`cradleos_ssu_access/`](cradleos_ssu_access/README.md) | 1 | — | Shared SSU inventory partition policies |
+| [`cradleos_keeper_seal/`](cradleos_keeper_seal/README.md) | 1 | 266 | Soulbound Keeper-issued achievement records |
 
 ---
 
@@ -17,144 +35,99 @@ in-game browser.
 
 | Server | URL |
 |---|---|
-| **Stillness** (Live) | <https://r4wf0d0g23.github.io/CradleOS/> |
-| **Utopia** (Hackathon) | <https://r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026/> |
+| **Stillness** (live) | <https://r4wf0d0g23.github.io/CradleOS/> |
+
+Open in any browser. Wallet connects via EVE Vault (auto-injected in the EVE Frontier
+in-game browser) or Slush / Sui Wallet on the web.
+
+---
+
+## In-Game Use
+
+The dApp runs inside the EVE Frontier in-game browser. Two paths:
+
+1. **Set a structure's metadata URL** to `https://r4wf0d0g23.github.io/CradleOS/` and
+   press **F** near the structure to open it overlaid on the game.
+2. **Bookmark from the web** — `https://r4wf0d0g23.github.io/CradleOS/` works in any
+   browser; the EVE Vault wallet is detected when running in the game client.
 
 ---
 
 ## Architecture
 
-```text
-                        +------------------------------+
-                        |        CradleOS dApp         |
-                        |  34 panels · React + Vite    |
-                        |  EVE Vault wallet · three.js |
-                        +--------------+---------------+
-                                       |
-                        +--------------+---------------+
-                        |     CradleOS Move Package    |
-                        |  24 modules on Sui testnet   |
-                        +--------------+---------------+
-                                       |
-                        +--------------+---------------+
-                        |    EVE Frontier World        |
-                        |  Character · Gate · Turret   |
-                        |  StorageUnit · NetworkNode   |
-                        +------------------------------+
+```
+   ┌──────────────────────────┐
+   │ EVE Frontier in-game     │
+   │ browser  (or web)        │
+   └─────────┬────────────────┘
+             │  EVE Vault wallet (zkLogin)
+             ▼
+   ┌──────────────────────────┐
+   │ CradleOS dApp (cradleos- │
+   │ dapp/) — 34 React panels │
+   └─────────┬────────────────┘
+             │
+             ├──→ Caching JSON-RPC proxy (keeper.reapers.shop/sui)
+             │
+             ▼
+   ┌──────────────────────────┐
+   │ Sui testnet              │
+   │  ├ cradleos/ pkg         │
+   │  ├ cradleos_voting/ pkg  │
+   │  ├ cradleos_ssu_access/  │
+   │  ├ cradleos_keeper_seal/ │
+   │  └ world-contracts/      │ ← EVE Frontier's official package
+   └──────────────────────────┘
+```
+
+Each Move package upgrades independently. The dApp queries them in parallel and stitches
+the results together.
+
+---
+
+## Build
+
+Requires Sui CLI **v1.73.1+**. Each Move package is published independently — see each
+package's README for build instructions.
+
+For the dApp:
+
+```bash
+cd cradleos-dapp
+npm install
+npm run dev        # local dev server at localhost:5173
+```
+
+To deploy to GitHub Pages:
+
+```bash
+VITE_BASE=/CradleOS/ npm run build
+# See cradleos-dapp/DEPLOY.md for the full deploy SOP
 ```
 
 ---
 
-## Repository Structure
+## Why This Matters for Frontier
 
-```
-.
-├── cradleos/                        # Sui Move package (24 modules, 6533 LOC)
-│   ├── sources/
-│   │   ├── tribe_vault.move         # Core tribal economy + vaults
-│   │   ├── defense_policy.move      # Security levels, relations, hostile lists
-│   │   ├── turret_ext.move          # Smart Turret targeting extension
-│   │   ├── cargo_contract.move      # Trustless delivery contracts
-│   │   ├── ship_reimbursement.move  # SRP combat insurance
-│   │   ├── trustless_bounty.move    # Escrowed bounty board
-│   │   ├── collateral_vault.move    # EVE-backed collateral deposits
-│   │   ├── corp.move               # Corporation, membership, commander cap
-│   │   └── ... (24 modules total)
-│   ├── DESIGN.md                    # Architecture + design principles
-│   └── README.md                    # Module map + build instructions
-├── cradleos-dapp/                   # React/TypeScript dApp
-│   ├── src/
-│   │   ├── components/              # 34 panel components
-│   │   ├── lib.ts                   # Sui RPC helpers + tx builders (3,045 lines)
-│   │   ├── constants.ts             # Package IDs + world config
-│   │   └── data/                    # Industry blueprints + recipes
-│   ├── public/                      # Game assets, 3D models, icons
-│   ├── DEPLOY.md                    # Deployment SOP
-│   └── README.md                    # Feature list + dev guide
-├── cradleos-agent-proxy/            # Keeper AI proxy (Nemotron3-Super via vLLM)
-├── oracle_tx.mjs                    # Settlement oracle for contracts + SRP
-└── api.py                           # Intel API + route planning
-```
+EVE Frontier is a Sui-native game. Most third-party tools today are read-only: dashboards
+that show on-chain state but don't write to it. CradleOS proves you can build a full
+on-chain civilization stack — treasury, defense, contracts, governance — that runs
+*inside the EVE Frontier client itself* via the in-game browser, signed by the same wallet
+the player uses to fly ships and operate Smart Assemblies.
+
+The repo is MIT-licensed and structured so other Frontier developers can fork, extend,
+and ship their own civilization stacks.
 
 ---
 
-## On-Chain Status (Sui Testnet)
+## Sister Repos
 
-CradleOS is deployed as a **single unified package** (v5):
-
-| Field | Value |
-|---|---|
-| Published-at | `0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4` |
-| Original-id | `0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3` |
-| Chain | Sui testnet (`4c78adac`) |
-| Version | 5 |
-| Modules | 24 |
-
-All escrow and economy modules use generic `<phantom T>` coin types — works with EVE, LUX,
-or any Sui fungible token.
-
----
-
-## Module Map
-
-### Economy (9)
-`tribe_vault` · `treasury` · `bounty_contract` · `trustless_bounty` · `cargo_contract` · `collateral_vault` · `ship_reimbursement` · `tribe_dex` · `keeper_shrine`
-
-### Defense (5)
-`defense_policy` · `gate_control` · `gate_policy` · `turret_ext` · `turret_delegation`
-
-### Infrastructure (5)
-`registry` · `corp` · `tribe_roles` · `inheritance` · `gate_profile`
-
-### Social (5)
-`character_registry` · `recruiting_terminal` · `announcement_board` · `lore_wiki` · `contributions`
-
----
-
-## dApp Features (34 panels)
-
-- **Dashboard** — tribe overview, vault balances, member count, structure summary
-- **Tribe Vault** — launch tribe economy, deposit/withdraw EVE tokens, member balances
-- **Defense Policy** — security levels (GREEN/YELLOW/RED), tribe relations, hostile character KOS list
-- **Turret Policy** — authorize CradleOS turret extension, apply tribe/personal policies
-- **Gate Policy** — OPEN/TRIBE/ALLIES/CLOSED access control on Smart Gates
-- **Industry** — supply chain calculator (78 blueprints, 7 levels deep), notepad export
-- **Map** — 3D starmap (three.js), proximity luminescence, jump range visualization
-- **Ship Fitting** — EVE-style fitting tool with real module stats, CPU/PG, damage profiles
-- **Intel Dashboard** — structure monitoring, passage events, threat analysis
-- **Bounties** — on-chain bounty board with EVE token escrow
-- **SRP** — ship replacement program, killmail-verified combat insurance
-- **Cargo Contracts** — trustless delivery with proof-of-delivery bonds
-- **Keeper** — AI operations assistant with 72 real manufacturing recipes
-- **Recruiting** — tribe recruitment applications and approval flow
-- **Lore Wiki** — on-chain article publishing
-- **Announcements** — tribe-wide broadcast board
-- **Calendar** — hackathon schedule + custom tribe events
-- **Links** — structure service assignment, node hierarchy
-- **Query** — search all riders and tribes across Sui GraphQL
-- **Leaderboard** · **Hierarchy** · **DEX** · **Inventory** · **Structures** · and more
-
----
-
-## In-Game Browser
-
-Set a structure's metadata URL to the CradleOS dApp URL. Press **F** near the structure
-in EVE Frontier. The dApp loads in the in-game browser with EVE Vault wallet pre-injected —
-no external wallet setup needed.
-
----
-
-## Hackathon
-
-**Event:** EVE Frontier × Sui 2026 Hackathon · March 11–31, 2026  
-**Theme:** *A Toolkit for Civilization*  
-**Tracks:** Utility · Technical Implementation · Creative · Live Frontier Integration  
-**Team:** `@reality_anchor` + `@raw`  
-**DeepSurge:** <https://deepsurge.xyz/projects/d54bf1c2-02dc-4361-8377-0c3eadd2a7f3>
+- **EVE Frontier official world contracts:** <https://github.com/evefrontier/world-contracts>
+- **EVE Frontier wallet-core:** <https://github.com/evefrontier/wallet-core>
+- **CCP's dapp-kit:** `@evefrontier/dapp-kit` on npm
 
 ---
 
 ## License
 
-EVE Frontier intellectual property belongs to CCP Games.
-CradleOS contracts and dApp code are open source under MIT.
+MIT — see [`LICENSE`](LICENSE).
