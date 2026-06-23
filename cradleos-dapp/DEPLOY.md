@@ -101,7 +101,7 @@ curl -s https://fullnode.testnet.sui.io:443 \
 ### 4. TypeScript Compiles Clean
 
 ```bash
-cd /home/agent-raw/.openclaw/workspace/frontier/cradleos-dapp
+cd frontier/cradleos-dapp
 npx tsc --noEmit
 # Expected: exit code 0, no errors
 ```

@@ -318,7 +318,7 @@ Settlement is completed by an oracle process:
 
 - **Oracle script:** `oracle_tx.mjs`
 - **Related service:** `api.py`
-- **Intel / support host:** Jetson1 on port `8899`
+- **Intel / support host:** maintainer-operated server on a configurable port (default `8899`)
 
 The oracle polls for expired claims and submits the finalization transaction on-chain once a
 contract or reimbursement has cleared its waiting period.

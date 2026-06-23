@@ -16,26 +16,21 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5173,
-    // Allow tailnet, LAN, and any *.ts.net hostname for dev preview from
-    // remote devices via Tailscale Serve.
-    allowedHosts: [
-      "agent-raw-jetson1",
-      "agent-raw-jetson1.local",
-      "agent-raw-jetson1.tail587192.ts.net",
-      "spark-2def",
-      "spark-2def.tail587192.ts.net",
-      ".tail587192.ts.net",
-      "localhost",
-    ],
-    // HMR over Tailscale HTTPS proxy: client connects to the proxy host:port
-    // (4173), but websocket protocol must be wss + same host.
-    // Host can be overridden via VITE_HMR_HOST env (set by the systemd unit
-    // on whichever node is hosting the dev server).
-    hmr: {
-      host: process.env.VITE_HMR_HOST ?? "spark-2def.tail587192.ts.net",
-      port: 4173,
-      protocol: "wss",
-      clientPort: 4173,
-    },
+    // Allow LAN + tailnet dev preview hosts. Customize VITE_DEV_HOSTS in env
+    // (comma-separated) when running the dev server behind a remote proxy.
+    allowedHosts: (process.env.VITE_DEV_HOSTS ?? "localhost").split(",")
+      .map((h) => h.trim())
+      .filter(Boolean),
+    // HMR over a remote HTTPS proxy: set VITE_HMR_HOST to the public
+    // hostname terminating the proxy (e.g. via Tailscale Serve). Default
+    // assumes local dev so HMR uses the vite default.
+    hmr: process.env.VITE_HMR_HOST
+      ? {
+          host: process.env.VITE_HMR_HOST,
+          port: Number(process.env.VITE_HMR_PORT ?? 4173),
+          protocol: "wss",
+          clientPort: Number(process.env.VITE_HMR_CLIENT_PORT ?? 4173),
+        }
+      : undefined,
   },
 });

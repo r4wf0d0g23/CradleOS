@@ -26,7 +26,7 @@
 ///
 /// Admin:
 ///   Admin (deployer initially) can set_attestor to any address.
-///   For hackathon: DGX deploy wallet is admin → Raw's wallet is attestor.
+///   The deploy wallet is admin; the maintainer's wallet acts as the initial attestor.
 ///   Post-hackathon: multisig attestor.
 ///
 /// ── Attack surface ────────────────────────────────────────────────────────────

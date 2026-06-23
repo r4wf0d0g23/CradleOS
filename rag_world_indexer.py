@@ -11,7 +11,7 @@ import sys
 import chromadb
 from chromadb.config import Settings
 
-WORLD_API = "https://world-api-stillness.live.tech.evefrontier.com"
+WORLD_API = "https://world-api-stillness.live.pub.evefrontier.com"
 EMBED_URL = "http://localhost:8004/v1/embeddings"
 EMBED_MODEL = "nemotron-embed"
 CHROMA_PATH = "/home/rawdata/rag/chroma_data"
