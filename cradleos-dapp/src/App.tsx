@@ -196,11 +196,21 @@ function ChainHealth() {
 }
 
 // ── Private Node Status ──────────────────────────────────────────────────────
-// Shows whether our DGX2-hosted Sui fullnode is running and how its sync
-// state compares to public testnet. Polls the `/sui-status` route on the
-// existing Cloudflare-fronted sui-proxy. Silently hides when the endpoint
-// is unreachable or reports disabled — we don't paint scary red dots for
-// our own infra being temporarily down. Power-users can hover for detail.
+// Two-tier visibility on the status of the DGX2-hosted Sui fullnode:
+//
+//   PUBLIC TIER — tiny 4px dot, no label, no tooltip. Renders only when the
+//   node is reachable + enabled. Color encodes health (green=caught up,
+//   yellow=syncing close, blue=syncing far). Random visitors don't notice;
+//   the maintainer (Raw) recognizes the color instantly.
+//
+//   MAINTAINER TIER — full PRIVATE NODE [dot] CAUGHT UP / syncing badge with
+//   hover tooltip showing local + public checkpoints, gap, latency. Also
+//   renders failure states (STATUS UNREACHABLE / OFFLINE) so Raw can see
+//   degraded infra at a glance without checking SSH. Gated by:
+//     1. Connected wallet matches MAINTAINER_WALLET, or
+//     2. localStorage.cradleos_show_node_telemetry === "true"
+//
+// Polls `/sui-status` on the Cloudflare-fronted sui-proxy every 30s.
 
 interface PrivateNodeStatusValue {
   privateNode: { enabled: boolean; checkpoint: number | null; latencyMs: number | null; url?: string };
@@ -211,7 +221,26 @@ interface PrivateNodeStatusValue {
   ts: number;
 }
 
+// Hardcoded maintainer wallet (Raw's Stillness zkLogin address). Single
+// hardcoded address is fine for the inconspicuous-telemetry use case; if
+// we need multi-maintainer support later, lift to a Set.
+const MAINTAINER_WALLET = "0x33559741bbc3d4d0c2b8c06f9caf59ec1007e53aa9dc8500f7ed63aa0ad5ce4f";
+
+function isMaintainer(walletAddress: string | null | undefined): boolean {
+  if (walletAddress && walletAddress.toLowerCase() === MAINTAINER_WALLET.toLowerCase()) return true;
+  // Fallback: set localStorage.cradleos_show_node_telemetry = "true" on any
+  // device Raw uses to see the full badge without connecting first.
+  try {
+    if (typeof localStorage !== "undefined" &&
+        localStorage.getItem("cradleos_show_node_telemetry") === "true") return true;
+  } catch {
+    // localStorage unavailable (some sandboxed iframes) — silently fall through
+  }
+  return false;
+}
+
 function PrivateNodeStatus() {
+  const account = useCurrentAccount();
   const [status, setStatus] = useState<PrivateNodeStatusValue | null>(null);
   const [unreachable, setUnreachable] = useState(false);
 
@@ -236,32 +265,89 @@ function PrivateNodeStatus() {
     return () => { cancelled = true; clearInterval(id); };
   }, []);
 
-  if (unreachable) return null;
+  const maintainer = isMaintainer(account?.address);
+
+  // ── PUBLIC TIER ───────────────────────────────────────────────────────────
+  // Tiny inconspicuous dot, no label, no tooltip. Random visitors don't notice
+  // it; Raw recognizes the color instantly.
+  if (!maintainer) {
+    if (unreachable || !status || !status.privateNode.enabled) return null;
+    let publicColor: string;
+    if (status.caughtUp === true) publicColor = "#00ff96";
+    else if (status.syncing === true && status.gap !== null && status.gap < 1000) publicColor = "#ffcc00";
+    else publicColor = "#5599ff";
+    return (
+      <span
+        style={{
+          display: "inline-block", width: 4, height: 4, borderRadius: "50%",
+          background: publicColor,
+          opacity: 0.55,
+          verticalAlign: "middle",
+        }}
+      />
+    );
+  }
+
+  // ── MAINTAINER TIER ──────────────────────────────────────────────────────
+  // Full badge with hover tooltip showing checkpoint numbers, gap, latency.
+  // Renders even on failure states (unreachable / OFFLINE) so Raw can see at a
+  // glance when infra is degraded without checking SSH.
+  if (unreachable) {
+    return (
+      <span
+        title={"Sui status endpoint unreachable\n\n/sui-status returned an error or timed out.\nDGX1 sui-proxy may be down."}
+        style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
+      >
+        <span style={{ color: "rgba(180,160,140,0.45)" }}>PRIVATE NODE</span>
+        <span
+          style={{
+            display: "inline-block", width: 5, height: 5, borderRadius: "50%",
+            background: "#ff4040",
+            boxShadow: "0 0 4px #ff4040",
+            verticalAlign: "middle",
+          }}
+        />
+        <span style={{ color: "#ff4040" }}>STATUS UNREACHABLE</span>
+      </span>
+    );
+  }
   if (!status) return null;
-  if (!status.privateNode.enabled) return null;
 
   const gap = status.gap;
   const caughtUp = status.caughtUp === true;
   const syncing = status.syncing === true;
+  const enabled = status.privateNode.enabled;
 
-  const color = caughtUp ? "#00ff96"
-    : syncing && gap !== null && gap < 1000 ? "#ffcc00"
-    : "#5599ff";
-
-  const label = caughtUp ? "CAUGHT UP"
-    : syncing && gap !== null && gap < 1000 ? `syncing (${gap.toLocaleString()})`
-    : syncing && gap !== null ? `syncing (gap ${gap.toLocaleString()})`
-    : "syncing";
+  let color: string;
+  let label: string;
+  if (!enabled) {
+    color = "#ff4040";
+    label = "OFFLINE";
+  } else if (caughtUp) {
+    color = "#00ff96";
+    label = "CAUGHT UP";
+  } else if (syncing && gap !== null && gap < 1000) {
+    color = "#ffcc00";
+    label = `syncing (${gap.toLocaleString()})`;
+  } else if (syncing && gap !== null) {
+    color = "#5599ff";
+    label = `syncing (gap ${gap.toLocaleString()})`;
+  } else {
+    color = "#5599ff";
+    label = "syncing";
+  }
 
   const lat = status.privateNode.latencyMs;
   const tooltipLines = [
-    `Private node: ${caughtUp ? "caught up" : "syncing"}`,
+    `Private node: ${enabled ? (caughtUp ? "caught up" : "syncing") : "OFFLINE"}`,
     gap !== null ? `Gap behind public testnet: ${gap.toLocaleString()} checkpoints` : null,
     status.privateNode.checkpoint !== null ? `Local checkpoint: ${status.privateNode.checkpoint.toLocaleString()}` : null,
     status.publicNode.checkpoint !== null ? `Public checkpoint: ${status.publicNode.checkpoint.toLocaleString()}` : null,
     lat !== null ? `Probe latency: ${lat}ms` : null,
     "",
     "DGX2 fullnode operated by Reality Anchor (CradleOS)",
+    "",
+    "[maintainer-only badge]",
   ].filter(Boolean).join("\n");
 
   return (
