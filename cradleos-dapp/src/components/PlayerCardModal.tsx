@@ -335,9 +335,7 @@ export function PlayerCardModal({
     let cancelled = false;
     (async () => {
       const next = new Map(lazySysMap);
-      const WORLD_API = SERVER_ENV === "stillness"
-        ? "https://world-api-stillness.live.pub.evefrontier.com"
-        : "https://world-api-utopia.uat.pub.evefrontier.com";
+      const { WORLD_API } = await import("../constants");
       const idArr = [...ids];
       const slots = 3;
       let cursor = 0;
@@ -858,8 +856,7 @@ async function resolveWalletForCharacterItemId(
   // by importing from constants — but we'd cause a circular dep. Instead, use an
   // env-derived value: SERVER_ENV stillness vs utopia. The real WORLD_PKG is
   // set in constants. Import directly:
-  const { WORLD_PKG } = await import("../constants");
-  const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
+  const { WORLD_PKG, SUI_GRAPHQL } = await import("../constants");
 
   // Page through Character objects (capped) — small enough since we're only
   // looking for one. Most characters resolve in the first 1-2 pages because

@@ -46,8 +46,7 @@ const BOUNTY_TYPE_PER_STRUCTURE    = 3;
 /** EVE uses 9 decimals (same as SUI/MIST). */
 const EVE_DECIMALS = 9;
 
-const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
-const WORLD_PKG   = "0x28b497559d65ab320d9da4613bf2498d5946b2c0ae3597ccfda3072ce127448c";
+import { SUI_GRAPHQL, WORLD_PKG } from "../constants";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

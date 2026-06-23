@@ -1,9 +1,8 @@
 // graphql.ts — Shared GraphQL data layer for EVE Frontier on-chain data (Sui testnet)
 
-export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
-// WORLD_PKG is env-driven — always use the one from constants
-import { WORLD_PKG as _WORLD_PKG } from "./constants";
-export { WORLD_PKG } from "./constants";
+// Re-export from constants — central source of truth (routes through DGX1 caching proxy).
+import { SUI_GRAPHQL, WORLD_PKG as _WORLD_PKG } from "./constants";
+export { SUI_GRAPHQL, WORLD_PKG } from "./constants";
 const WORLD_PKG = _WORLD_PKG;
 
 // ---------------------------------------------------------------------------

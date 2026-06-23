@@ -306,13 +306,50 @@ export const SUI_TESTNET_RPC_FALLBACK = "https://fullnode.testnet.sui.io:443";
  * resilience.
  */
 export const SUI_TESTNET_RPC_DIRECT = "https://fullnode.testnet.sui.io:443";
-export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
+
+/**
+ * Sui GraphQL endpoint.
+ *
+ * Routed through our caching proxy on DGX1 (cradleos-agent-proxy at
+ * keeper.reapers.shop/graphql). Adds TTL caching + request coalescing for
+ * the new Track 6 char-helper migration paths that hit GraphQL on every
+ * wallet-connect (GET_WALLET_CHARACTERS, getObjectWithJson, etc.). The
+ * proxy auto-detects query shape and applies appropriate TTLs:
+ *   - character/PlayerProfile reads: 60s
+ *   - object/normalized-move reads: 5min
+ *   - default: 15s
+ *
+ * Fallback constant kept for direct probing during proxy outages.
+ */
+export const SUI_GRAPHQL = "https://keeper.reapers.shop/graphql";
+export const SUI_GRAPHQL_DIRECT = "https://graphql.testnet.sui.io/graphql";
 
 // Well-known tribes that don't have CradleOS vaults but still need policy coverage
 export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; label: string }> = [
   { tribeId: 1000167, coinSymbol: "—", label: "Default Spawn Tribe" },
 ];
+/**
+ * EVE Frontier World API (datahub) endpoint.
+ *
+ * Stillness traffic is routed through our caching proxy on DGX1
+ * (cradleos-agent-proxy at keeper.reapers.shop/world). Adds TTL caching
+ * for the heavy reads:
+ *   - /v2/types catalog: 1 hour TTL (~100KB+, changes only on patches)
+ *   - /v2/solarsystems: 1 hour TTL (static)
+ *   - /v2/tribes, /v2/characters: 60s TTL (slow churn)
+ *   - default: 30s TTL
+ *
+ * Utopia traffic still goes direct (low volume, hackathon-era only).
+ * The proxy DOES support Utopia via `?env=utopia` but path-concatenation
+ * patterns in components make the query-string approach error-prone, so
+ * we keep Utopia on the direct upstream until we move to a typed helper.
+ *
+ * Direct constants kept for fallback / direct probing.
+ */
 export const WORLD_API = SERVER_ENV === "stillness"
+  ? "https://keeper.reapers.shop/world"
+  : "https://world-api-utopia.uat.pub.evefrontier.com";
+export const WORLD_API_DIRECT = SERVER_ENV === "stillness"
   ? "https://world-api-stillness.live.pub.evefrontier.com"
   : "https://world-api-utopia.uat.pub.evefrontier.com";
 
