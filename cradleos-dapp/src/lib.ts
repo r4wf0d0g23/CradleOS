@@ -646,14 +646,16 @@ async function _findCharacterViaGraphQL(walletAddress: string): Promise<Characte
  * Resolve a wallet to ALL its live Character objects across both world packages.
  * Returns Characters sorted newest-first by Sui object version.
  *
- * Why this exists: Sanctuary's launcher (and historically the Utopia launcher
- * too) occasionally mints a second Character for the same wallet — same name,
- * same wallet address, distinct item_id. CCP doesn't expose a UI to deduplicate
- * these. If we only pick one we silently hide whichever Character owns
- * structures the player can't see.
+ * Why this exists: when a player destroys their original Character in-game
+ * and creates a new one, both Character objects can persist on-chain under
+ * the same wallet (the game burns the PlayerProfile's authorization but the
+ * Sui object lifecycle keeps the old Character around as orphaned state).
+ * Always treat the NEWEST Character as the live one — the older one represents
+ * a destroyed/abandoned identity. Per Raw 2026-06-25: "if there are multiple,
+ * it means they have destroyed their original character and made a new one."
  *
- * Used by fetchPlayerStructures to fan out OwnerCap scans across every
- * Character the wallet controls.
+ * Used by findLatestCharacterForWallet (single newest pick) and as a building
+ * block for diagnostic UI that wants to enumerate all of them.
  */
 export async function findAllCharactersForWallet(walletAddress: string): Promise<CharacterInfo[]> {
   const seen = new Map<string, CharacterInfo & { version: number }>();
@@ -711,7 +713,33 @@ export async function findAllCharactersForWallet(walletAddress: string): Promise
   return Array.from(seen.values()).sort((a, b) => b.version - a.version);
 }
 
+/**
+ * Resolve a wallet to its SINGLE LIVE Character — the newest one by Sui
+ * object version. Older Characters with matching wallets represent destroyed
+ * identities (player rerolled in-game) and must be ignored entirely.
+ *
+ * This is the canonical wallet→Character resolver for all production code paths
+ * (StructurePanel, InventoryPanel, GatePolicyPanel, etc). The legacy
+ * findCharacterForWallet wraps this for backwards-compat.
+ */
+export async function findLatestCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
+  const all = await findAllCharactersForWallet(walletAddress);
+  return all.length ? { characterId: all[0].characterId, tribeId: all[0].tribeId } : null;
+}
+
 export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
+  // 2026-06-25: always defer to findLatestCharacterForWallet so the destroyed-and-
+  // rerolled-character case picks the live identity, not whichever one dapp-kit
+  // GraphQL happens to return first (which was Char #1 — the destroyed one —
+  // for Raw's wallet at gates-open).
+  const latest = await findLatestCharacterForWallet(walletAddress);
+  if (latest) return latest;
+  // No characters — fall through to historical paths (handles edge cases like
+  // GraphQL-returns-empty-but-event-scan-finds-something).
+  return _findCharacterForWalletLegacy(walletAddress);
+}
+
+async function _findCharacterForWalletLegacy(walletAddress: string): Promise<CharacterInfo | null> {
   // PRIMARY: dapp-kit GraphQL (getWalletCharacters). Reads the live Character object so
   // tribe_id reflects current state, not creation-time snapshot. Tries both world package
   // versions to cover characters created before the v0.0.21 upgrade.
@@ -928,38 +956,37 @@ export async function fetchSolarSystem(systemId: number): Promise<{
 }
 
 export async function fetchPlayerStructures(walletAddress: string): Promise<LocationGroup[]> {
-  // 2026-06-25: fan out across ALL Characters owned by this wallet. Sanctuary
-  // launcher minted duplicate Characters for some players (Raw included — his
-  // wallet has Character #1 with zero structures and Character #2 with the
-  // actual NetworkNode). Picking just one Character silently hides structures
-  // controlled by the other one.
-  const allChars = await findAllCharactersForWallet(walletAddress);
-  if (!allChars.length) return [];
+  // 2026-06-25: always use the NEWEST Character. If a wallet has multiple
+  // Characters, the older ones represent destroyed identities (player rerolled
+  // in-game) and their owned structures are unreachable from the game client —
+  // surfacing them would mislead the player into thinking they could still
+  // interact with that infrastructure.
+  const charInfo = await findLatestCharacterForWallet(walletAddress);
+  const characterId = charInfo?.characterId ?? null;
+  if (!characterId) return [];
 
-  // Discover all OwnerCaps across every Character
+  // Discover all OwnerCaps
   const capEntries: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; label: string }> = [];
   // Query OwnerCaps for both world package versions — characters created before v0.0.21
   // have OwnerCaps typed against the v1 package (WORLD_PKG_UTOPIA_V1).
   const worldPkgsToCheck = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
   await Promise.all(
-    allChars.flatMap((char) =>
-      STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
-        worldPkgsToCheck.map(async (wpkg) => {
-          // Build the struct type using the current pkg prefix but override the world pkg
-          const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
-          const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
-          // No explicit limit — default 1000 with pagination handles characters
-          // with large structure counts. Bug 2026-05-07: hard-coded 50 here
-          // silently dropped Assemblies past index 50 (e.g. Jack Sparrow had 64).
-          const caps = await rpcGetOwnedObjects(char.characterId, ownerCapType);
-          for (const { objectId: capId, fields } of caps) {
-            const structureId = fields["authorized_object_id"] as string;
-            if (structureId && !capEntries.some(e => e.structureId === structureId)) {
-              capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
-            }
+    STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
+      worldPkgsToCheck.map(async (wpkg) => {
+        // Build the struct type using the current pkg prefix but override the world pkg
+        const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
+        const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
+        // No explicit limit — default 1000 with pagination handles characters
+        // with large structure counts. Bug 2026-05-07: hard-coded 50 here
+        // silently dropped Assemblies past index 50 (e.g. Jack Sparrow had 64).
+        const caps = await rpcGetOwnedObjects(characterId, ownerCapType);
+        for (const { objectId: capId, fields } of caps) {
+          const structureId = fields["authorized_object_id"] as string;
+          if (structureId && !capEntries.some(e => e.structureId === structureId)) {
+            capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
           }
-        })
-      )
+        }
+      })
     )
   );
   if (!capEntries.length) return [];
