@@ -1,0 +1,267 @@
+[
+  {
+    "path": "res:/staticdata/atoms.fsdbinary",
+    "old_hash": "0b40d538c6d57caccf515eac3cb01cc5",
+    "new_hash": "a4c04b0c42db22c7eb6beee9be53f7bf"
+  },
+  {
+    "path": "res:/staticdata/audiometadata.fsdbinary",
+    "old_hash": "a2e69d59a02fcad27fe950265fbedb9e",
+    "new_hash": "55ba966c4f45d84e1d8231cc39d7874d"
+  },
+  {
+    "path": "res:/staticdata/bracketicons.fsdbinary",
+    "old_hash": "26d0e1f6d0fc98814ec5c074da1e80b5",
+    "new_hash": "00e11b6c51f031e147807022ac4a5aa6"
+  },
+  {
+    "path": "res:/staticdata/bracketsbycategory.fsdbinary",
+    "old_hash": "b42428bfc4899196b5c3de7c5aaf7e6b",
+    "new_hash": "fd6395a6492ef976117edee847e5c881"
+  },
+  {
+    "path": "res:/staticdata/bracketsbygroup.fsdbinary",
+    "old_hash": "784f333c2ad927957605dfaed1234fd5",
+    "new_hash": "65019ceda24615a7b70ba46274c9e230"
+  },
+  {
+    "path": "res:/staticdata/bracketsbytype.fsdbinary",
+    "old_hash": "37c88cc9edb8e54e9b1240de2a810a6b",
+    "new_hash": "09974ea9783064acd44d490b67a23f02"
+  },
+  {
+    "path": "res:/staticdata/categories.fsdbinary",
+    "old_hash": "d86f7a88c5223031bfd6d0b0ccd70dd2",
+    "new_hash": "55a43a746ace8d937f8a08ce4a771711"
+  },
+  {
+    "path": "res:/staticdata/collisions.fsdbinary",
+    "old_hash": "86adf8c70f3ca8676ba97206010b78e1",
+    "new_hash": "587c40024427d2f9670cb24607392adb"
+  },
+  {
+    "path": "res:/staticdata/constellations.schema",
+    "old_hash": "37fa6237eb4958c84a2b2f1cca8c8ccd",
+    "new_hash": "84649555cdc070c4813145537e616b49"
+  },
+  {
+    "path": "res:/staticdata/constellations.static",
+    "old_hash": "6c1b56bfd29ec39a3df196a3acf01085",
+    "new_hash": "750de1af66eaac9bd0bd6ba122e348ef"
+  },
+  {
+    "path": "res:/staticdata/creation_hardpoint_types.fsdbinary",
+    "old_hash": "6911c936fb5fdc6f6f716d7ccbeebeff",
+    "new_hash": "accf001d55c738fd5936730db1aca7e9"
+  },
+  {
+    "path": "res:/staticdata/creation_modules.fsdbinary",
+    "old_hash": "81f1e36a8bf44eaebedb33c6a029d6f5",
+    "new_hash": "b2732075b03c5ed2b2ac2868ffa33784"
+  },
+  {
+    "path": "res:/staticdata/creation_parts.fsdbinary",
+    "old_hash": "6b72733faafcab36d52f62a0a518ee95",
+    "new_hash": "52017e58a2f52141724ff5cde9ad8e29"
+  },
+  {
+    "path": "res:/staticdata/creation_templates.fsdbinary",
+    "old_hash": "de316346555e845fda6bce8af79ba589",
+    "new_hash": "ec40bcc63faf78974db0518992973915"
+  },
+  {
+    "path": "res:/staticdata/dbuffcollections.static",
+    "old_hash": "ec0e91b7251c74b862817bee91aabc7c",
+    "new_hash": "edb9b1df22e3d77728268b16650aa91a"
+  },
+  {
+    "path": "res:/staticdata/dialogs.static",
+    "old_hash": "f02c08280d876271f89420505722e517",
+    "new_hash": "70aa181587b4a2a63c1fdc9c088a4393"
+  },
+  {
+    "path": "res:/staticdata/dogmaattributecategories.fsdbinary",
+    "old_hash": "54b5a4add65fdbad6fe5fd8ab4d7e139",
+    "new_hash": "df5c4f8251655738138b25fead645590"
+  },
+  {
+    "path": "res:/staticdata/dogmaattributes.fsdbinary",
+    "old_hash": "8122e7a2787523a4cf89dbcbd47c82cd",
+    "new_hash": "4e872258e911475bafea5ae0a331cccf"
+  },
+  {
+    "path": "res:/staticdata/dogmaeffects.fsdbinary",
+    "old_hash": "ed5d046ee0886eb134fed8e7f9eb73a0",
+    "new_hash": "f34e478c296ea5f03eb853dbdf745c36"
+  },
+  {
+    "path": "res:/staticdata/dogmaunits.fsdbinary",
+    "old_hash": "375f913ace7c9e7b6c73ce17b2ea044f",
+    "new_hash": "134c755f690adb2fa74ac543833ccb53"
+  },
+  {
+    "path": "res:/staticdata/dungeonassetmanipulations.fsdbinary",
+    "old_hash": "20106eb1d1fd2bf9e115f05a8d953bf5",
+    "new_hash": "482983572ba7bae6cde16562bab60798"
+  },
+  {
+    "path": "res:/staticdata/dungeons.fsdbinary",
+    "old_hash": "586d4bf267382c7dd22d0d3882321553",
+    "new_hash": "c0e434ab3e6d05b1a52c132e9b3dc6e9"
+  },
+  {
+    "path": "res:/staticdata/ecosystem.fsdbinary",
+    "old_hash": "f7c29d7540707f14112d3d43ca762522",
+    "new_hash": "7ca438dfa8ba4d6337d6f5bcfc3c71f0"
+  },
+  {
+    "path": "res:/staticdata/effects.fsdbinary",
+    "old_hash": "791d8f264a80fb4254bcd868eadf199b",
+    "new_hash": "48e1a07a49348a19f3976dd617c620cb"
+  },
+  {
+    "path": "res:/staticdata/factionsowningsolarsystems.static",
+    "old_hash": "0df5ed7d62773f9859e1ded4a9017b68",
+    "new_hash": "16ec2a8685413877669b4595c2fe4de8"
+  },
+  {
+    "path": "res:/staticdata/graphicids.fsdbinary",
+    "old_hash": "3742031f511a2b2d18325fa4dcf64f93",
+    "new_hash": "42ebb306f245f1ffa88e7b24f4d23e3e"
+  },
+  {
+    "path": "res:/staticdata/graphiclocations.fsdbinary",
+    "old_hash": "655652988808e087b7707a6eadfc9eba",
+    "new_hash": "32d1fb15c3cd4d7a634db2dd782748f6"
+  },
+  {
+    "path": "res:/staticdata/groupgraphics.fsdbinary",
+    "old_hash": "b27d814e683c4dda186064a879196aa3",
+    "new_hash": "e01c5f4099754504ca5342608c72c214"
+  },
+  {
+    "path": "res:/staticdata/groups.fsdbinary",
+    "old_hash": "a05c35a42a2bb9f8c5ce0716c2e4deae",
+    "new_hash": "f7ae142f03c1bd211532b2f5d51f4b2e"
+  },
+  {
+    "path": "res:/staticdata/iconids.fsdbinary",
+    "old_hash": "2e9473730e480261e7d3427c69f14803",
+    "new_hash": "1b7951b4ec7bde168d95e06eba7c9943"
+  },
+  {
+    "path": "res:/staticdata/industry_blueprints.fsdbinary",
+    "old_hash": "b0cfc5c2feb1c75832af6303fd7f3c34",
+    "new_hash": "379a9e6d751ce76a6d8e800032cf1881"
+  },
+  {
+    "path": "res:/staticdata/industry_facilities.fsdbinary",
+    "old_hash": "17fa94c353b790b5a46b089adabf19a2",
+    "new_hash": "bd5ff84be20f1ede93c9dd0a5aaae613"
+  },
+  {
+    "path": "res:/staticdata/jumps.static",
+    "old_hash": "71e2cb07cf3fb2e9d7946f66d4fe2908",
+    "new_hash": "2d682949c4d8e2914cfb222fdfaf495c"
+  },
+  {
+    "path": "res:/staticdata/landscape.fsdbinary",
+    "old_hash": "fda403af22edd31f1ad8496165b2c8cd",
+    "new_hash": "582ba73f6f0ae981c1894dfb28817e64"
+  },
+  {
+    "path": "res:/staticdata/locationcache.static",
+    "old_hash": "1bde72c76d5b05ee67a88a036a641155",
+    "new_hash": "40de80e17d56200738c122783749a468"
+  },
+  {
+    "path": "res:/staticdata/nodegraphs.fsdbinary",
+    "old_hash": "e65503cf054c488cbb2c491d34808daf",
+    "new_hash": "9a3613575f9db76392edec6be3b2cad6"
+  },
+  {
+    "path": "res:/staticdata/nodetypes.fsdbinary",
+    "old_hash": "8370217f00815274cfc78ff7d541fc01",
+    "new_hash": "7898cf48c4fe2dfc5dd86e3e37c3fb2e"
+  },
+  {
+    "path": "res:/staticdata/objectivechains.fsdbinary",
+    "old_hash": "535de4beaa51bff312d612f09c0fdd08",
+    "new_hash": "8b4951cefd9f26ec2219d047d65216a4"
+  },
+  {
+    "path": "res:/staticdata/objectivetasktypes.fsdbinary",
+    "old_hash": "dbe0322a01bf038ed850e9412cb12062",
+    "new_hash": "59f5db9160b6b0ae27349a552fcd56e0"
+  },
+  {
+    "path": "res:/staticdata/objectivetypes.fsdbinary",
+    "old_hash": "7d968289492d0d43d7ee0ed9623192b9",
+    "new_hash": "c81b775a763717ec36ddefe7eb728c26"
+  },
+  {
+    "path": "res:/staticdata/regions.schema",
+    "old_hash": "9ff4a7a7e48d4e0aed5a652fe6303971",
+    "new_hash": "f196b295b0dcfcb70e903f97f3c3218b"
+  },
+  {
+    "path": "res:/staticdata/regions.static",
+    "old_hash": "13eb5da4601e760dd429a1a9ed2b799e",
+    "new_hash": "d938f93af1b4c143440905b105cd765d"
+  },
+  {
+    "path": "res:/staticdata/skinlicenses.static",
+    "old_hash": "eac516ab29b9778103b40250726ff17d",
+    "new_hash": "d49691b0b7dcd55359b8bd0a319ed219"
+  },
+  {
+    "path": "res:/staticdata/skinmaterials.static",
+    "old_hash": "bae7d3fa223c5abdcb5393cff4fe3976",
+    "new_hash": "f7a8ea078b45b57e2d364507689a065a"
+  },
+  {
+    "path": "res:/staticdata/skins.static",
+    "old_hash": "c5be5fee254b9a16ea898f3d8dd65cf5",
+    "new_hash": "b6e0d06cbd0a10785f416ebd7280d28a"
+  },
+  {
+    "path": "res:/staticdata/solarsystemcontent.static",
+    "old_hash": "6192550ccd1762a95c8b8b8fe1050e85",
+    "new_hash": "4b6ccb8d81053220b01bc332b927e9c6"
+  },
+  {
+    "path": "res:/staticdata/spacecomponentsbytype.fsdbinary",
+    "old_hash": "7e83fc9fb65c9618f03ce20e2af55ecd",
+    "new_hash": "e1f6af722d20199ec94b934f2fe81626"
+  },
+  {
+    "path": "res:/staticdata/starmapcache.pickle",
+    "old_hash": "3670e0a71d700d017163826f4aefd1d7",
+    "new_hash": "6a007f74b617b510c68f1e444b896bdb"
+  },
+  {
+    "path": "res:/staticdata/systems.schema",
+    "old_hash": "11c2d6e405b276e87d206ff224869387",
+    "new_hash": "1fbf931945bc585fa6aec5147689e784"
+  },
+  {
+    "path": "res:/staticdata/systems.static",
+    "old_hash": "eaaf5da5479b0a5b60813e09a24dbdc7",
+    "new_hash": "cfbae026ecc73c50e8c96952984382c5"
+  },
+  {
+    "path": "res:/staticdata/typedogma.fsdbinary",
+    "old_hash": "845922a759f19bbc910fa0393c463fa1",
+    "new_hash": "0d14abbb0e047dd77e2bc9c3ce667507"
+  },
+  {
+    "path": "res:/staticdata/typelist.fsdbinary",
+    "old_hash": "b05543553823dc1d98663a199154dc37",
+    "new_hash": "971f98e91245c74fb09f68aa5a0b5b93"
+  },
+  {
+    "path": "res:/staticdata/types.fsdbinary",
+    "old_hash": "273fe313f5ff0268cee8f860aa5672f9",
+    "new_hash": "54d3b7b30be18346492cc37149be3ce4"
+  }
+]
