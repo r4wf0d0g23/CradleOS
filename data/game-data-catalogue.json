@@ -296,7 +296,7 @@
     {
       "typeID": 1015358,
       "label": "Refuge (description)",
-      "text": "The <b>Refuge</b> serves as your field base. It stores your ships, and within its range, you can manage your <b>Shell</b> [Alt + C] and <b>Ascend</b>. It also allows you to refit your ship using the <b>Fitting</b> menu [Alt + F].\r\n\r\nBuild it [B], and place it close to your other <b>Assemblies</b> for more efficient operations.\r\n\r\nRequired <a href=\"showinfo:77810\">Platinum-Palladium Matrix</a> is extracted from <a href=\"showinfo:91375\">Slag</a> typically found closer to the star.",
+      "text": null,
       "desc": null,
       "group": "Refuge"
     }
@@ -356,148 +356,143 @@
   ],
   "kitbash_strings": [
     {
+      "typeID": 1018570,
+      "text": "Kitbash Framework Antenna ",
+      "desc": null
+    },
+    {
+      "typeID": 1018571,
+      "text": "Kitbash Framework Antenna ",
+      "desc": null
+    },
+    {
+      "typeID": 1037952,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037953,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037954,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037955,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037956,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037957,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037958,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037959,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037960,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037961,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037962,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037963,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037964,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037965,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037966,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037967,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037968,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037969,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037970,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037971,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1038170,
+      "text": "KitBash Module Big 19v01",
+      "desc": null
+    },
+    {
+      "typeID": 1038171,
+      "text": "KitBash Module Big 19v02",
+      "desc": null
+    },
+    {
+      "typeID": 1038265,
+      "text": "KitBash Module Big 14v22",
+      "desc": null
+    },
+    {
+      "typeID": 1038269,
+      "text": "KitBash Module Big 12v02",
+      "desc": null
+    },
+    {
+      "typeID": 1038271,
+      "text": "KitBash Module Big 14v23",
+      "desc": null
+    },
+    {
       "typeID": 1039375,
       "text": "Kitbash",
-      "desc": null
-    },
-    {
-      "typeID": 1018590,
-      "text": "Kitbash Module Small",
-      "desc": null
-    },
-    {
-      "typeID": 1018591,
-      "text": "Kitbash Module Small",
-      "desc": null
-    },
-    {
-      "typeID": 1018592,
-      "text": "Kitbash Module Small",
-      "desc": null
-    },
-    {
-      "typeID": 1018593,
-      "text": "Kitbash Module Small",
-      "desc": null
-    },
-    {
-      "typeID": 1018594,
-      "text": "Kitbash Module Small",
-      "desc": null
-    },
-    {
-      "typeID": 1037990,
-      "text": "Kitbash Frame Lamp Post",
-      "desc": null
-    },
-    {
-      "typeID": 1037991,
-      "text": "Kitbash Frame Lamp Post",
-      "desc": null
-    },
-    {
-      "typeID": 1037992,
-      "text": "Kitbash Frame Panel",
-      "desc": null
-    },
-    {
-      "typeID": 1037993,
-      "text": "Kitbash Frame Rectangular Small",
-      "desc": null
-    },
-    {
-      "typeID": 1037994,
-      "text": "Kitbash Frame Rectangular Small",
-      "desc": null
-    },
-    {
-      "typeID": 1037995,
-      "text": "Kitbash Frame Rectangular Small",
-      "desc": null
-    },
-    {
-      "typeID": 1037996,
-      "text": "Kitbash Frame Rectangular Small",
-      "desc": null
-    },
-    {
-      "typeID": 1037997,
-      "text": "Kitbash Frame Rectangular Small",
-      "desc": null
-    },
-    {
-      "typeID": 1037998,
-      "text": "Kitbash Frame Set",
-      "desc": null
-    },
-    {
-      "typeID": 1037999,
-      "text": "Kitbash Frame Triangle",
-      "desc": null
-    },
-    {
-      "typeID": 1038596,
-      "text": "KitBash Module Big 12v04",
-      "desc": null
-    },
-    {
-      "typeID": 1038597,
-      "text": "KitBash Module Big 14v25",
-      "desc": null
-    },
-    {
-      "typeID": 1043191,
-      "text": "KitBash Debris Block 01v08",
-      "desc": null
-    },
-    {
-      "typeID": 1043192,
-      "text": "KitBash Debris Block 02v01",
-      "desc": null
-    },
-    {
-      "typeID": 1043193,
-      "text": "KitBash Debris Block 02v03",
-      "desc": null
-    },
-    {
-      "typeID": 1043194,
-      "text": "KitBash Debris Block 04v03",
-      "desc": null
-    },
-    {
-      "typeID": 1043195,
-      "text": "KitBash Module Medium 06v01",
-      "desc": null
-    },
-    {
-      "typeID": 1043196,
-      "text": "KitBash Module Medium 06v04",
-      "desc": null
-    },
-    {
-      "typeID": 1043197,
-      "text": "KitBash Module Medium 07v02",
-      "desc": null
-    },
-    {
-      "typeID": 1043198,
-      "text": "KitBash Module Medium 19v03",
-      "desc": null
-    },
-    {
-      "typeID": 1043199,
-      "text": "KitBash Module Medium 19v07",
-      "desc": null
-    },
-    {
-      "typeID": 1019530,
-      "text": "Kitbash Small Module",
-      "desc": null
-    },
-    {
-      "typeID": 1019531,
-      "text": "Kitbash Small Module",
       "desc": null
     },
     {
@@ -591,88 +586,93 @@
       "desc": null
     },
     {
-      "typeID": 1019505,
-      "text": "Kitbash Framework Antenna",
+      "typeID": 1019550,
+      "text": "Kitbash Small Module",
       "desc": null
     },
     {
-      "typeID": 1019506,
-      "text": "Kitbash Framework Antenna",
+      "typeID": 1018572,
+      "text": "Kitbash Framework Panel",
       "desc": null
     },
     {
-      "typeID": 1019507,
-      "text": "Kitbash Framework Antenna",
+      "typeID": 1018573,
+      "text": "Kitbash Framework Panel",
       "desc": null
     },
     {
-      "typeID": 1019508,
-      "text": "Kitbash Framework Antenna",
+      "typeID": 1018574,
+      "text": "Kitbash Framework Panel",
       "desc": null
     },
     {
-      "typeID": 1019509,
-      "text": "Kitbash Frame Corner",
+      "typeID": 1018575,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038000,
-      "text": "Kitbash Frame Triangle",
+      "typeID": 1018576,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038001,
-      "text": "Kitbash Frame Triangle",
+      "typeID": 1018577,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038002,
-      "text": "Kitbash Frame Triangle",
+      "typeID": 1018578,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038003,
-      "text": "Kitbash Frame Triangle",
+      "typeID": 1018579,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038004,
-      "text": "Kitbash Frame Triangle",
+      "typeID": 1018580,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038600,
-      "text": "KitBash Module Big 23v01",
+      "typeID": 1018581,
+      "text": "Kitbash Framework Set",
       "desc": null
     },
     {
-      "typeID": 1038601,
-      "text": "KitBash Module Big 14v08",
+      "typeID": 1018584,
+      "text": "Kitbash Framework Corner",
       "desc": null
     },
     {
-      "typeID": 1038606,
-      "text": "KitBash Module Big 07v01",
+      "typeID": 1018590,
+      "text": "Kitbash Module Small",
       "desc": null
     },
     {
-      "typeID": 1038608,
-      "text": "KitBash Module Big 12v07",
+      "typeID": 1018591,
+      "text": "Kitbash Module Small",
       "desc": null
     },
     {
-      "typeID": 1038901,
-      "text": "KitBash Monument 04v01",
+      "typeID": 1037972,
+      "text": "Kitbash Frame Antenna",
       "desc": null
     },
     {
-      "typeID": 1038902,
-      "text": "KitBash Module Big 04v02",
+      "typeID": 1037973,
+      "text": "Kitbash Frame Antenna",
       "desc": null
     },
     {
-      "typeID": 1038903,
-      "text": "KitBash Module Medium 11v05",
+      "typeID": 1037974,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037975,
+      "text": "Kitbash Frame Antenna",
       "desc": null
     }
   ]
