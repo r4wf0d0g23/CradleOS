@@ -1,0 +1,191 @@
+{
+  "1": {
+    "eventTypeName": "Activate Gate"
+  },
+  "2": {
+    "eventTypeName": "Spawn Guards"
+  },
+  "3": {
+    "eventTypeName": "Spawn Guard Object"
+  },
+  "4": {
+    "eventTypeName": "Ranged NPC Healing"
+  },
+  "5": {
+    "eventTypeName": "Ranged Player Damage (EM)"
+  },
+  "6": {
+    "eventTypeName": "Ranged Player Damage (Explosive)"
+  },
+  "7": {
+    "eventTypeName": "Ranged Player Damage (Kinetic)"
+  },
+  "8": {
+    "eventTypeName": "Ranged Player Damage (Thermal)"
+  },
+  "9": {
+    "eventTypeName": "Mission Completion"
+  },
+  "10": {
+    "eventTypeName": "Message"
+  },
+  "11": {
+    "eventTypeName": "Dungeon Completion"
+  },
+  "13": {
+    "eventTypeName": "Effect Beacon Activate"
+  },
+  "14": {
+    "eventTypeName": "Effect Beacon Deactivate"
+  },
+  "15": {
+    "eventTypeName": "Object Despawn"
+  },
+  "16": {
+    "eventTypeName": "Object Explode"
+  },
+  "18": {
+    "eventTypeName": "Entity Despawn"
+  },
+  "19": {
+    "eventTypeName": "Entity Explode"
+  },
+  "20": {
+    "eventTypeName": "FacWar Victory Points Granted"
+  },
+  "22": {
+    "eventTypeName": "Agent Talk To"
+  },
+  "23": {
+    "eventTypeName": "Agent Message"
+  },
+  "24": {
+    "eventTypeName": "Drop Loot"
+  },
+  "25": {
+    "eventTypeName": "Ranged Player Healing"
+  },
+  "26": {
+    "eventTypeName": "Ranged NPC Damage (EM)"
+  },
+  "27": {
+    "eventTypeName": "Ranged NPC Damage (Explosive)"
+  },
+  "28": {
+    "eventTypeName": "Ranged NPC Damage (Kinetic)"
+  },
+  "29": {
+    "eventTypeName": "Ranged NPC Damage (Thermal)"
+  },
+  "30": {
+    "eventTypeName": "Spawn Item In Cargo"
+  },
+  "31": {
+    "eventTypeName": "Mission Failure"
+  },
+  "32": {
+    "eventTypeName": "Counter Add"
+  },
+  "33": {
+    "eventTypeName": "Counter Subtract"
+  },
+  "34": {
+    "eventTypeName": "Counter Multiply"
+  },
+  "35": {
+    "eventTypeName": "Counter Divide"
+  },
+  "36": {
+    "eventTypeName": "Counter Set"
+  },
+  "37": {
+    "eventTypeName": "Grant Group Reward"
+  },
+  "38": {
+    "eventTypeName": "Grant Delayed Group Rewards"
+  },
+  "39": {
+    "eventTypeName": "AdjustSystemInfluence"
+  },
+  "40": {
+    "eventTypeName": "Warp Ship Away and despawn"
+  },
+  "41": {
+    "eventTypeName": "Warp ship away and come back"
+  },
+  "42": {
+    "eventTypeName": "Supress All Respawn"
+  },
+  "45": {
+    "eventTypeName": "Grant Group Reward (limited restrictions)"
+  },
+  "47": {
+    "eventTypeName": "Spawn Ship"
+  },
+  "49": {
+    "eventTypeName": "Timer Start"
+  },
+  "52": {
+    "eventTypeName": "Timer Cancel"
+  },
+  "54": {
+    "eventTypeName": "Start Tale"
+  },
+  "55": {
+    "eventTypeName": "Spawn Entity By Type ID"
+  },
+  "56": {
+    "eventTypeName": "Ranged Player Damage (Explosive) (POD included)"
+  },
+  "57": {
+    "eventTypeName": "Warp In Guards"
+  },
+  "58": {
+    "eventTypeName": "Spawn Guard Delay"
+  },
+  "59": {
+    "eventTypeName": "Empire Ore Removal"
+  },
+  "61": {
+    "eventTypeName": "Event Spawn Npcs Dynamically Using Blackboard"
+  },
+  "63": {
+    "eventTypeName": "Open Abyss Gate"
+  },
+  "65": {
+    "eventTypeName": "Remove Cargo From Ship"
+  },
+  "67": {
+    "eventTypeName": "Set Pose"
+  },
+  "2068": {
+    "eventTypeName": "Set Dungeon Blackboard Integer Value"
+  },
+  "2069": {
+    "eventTypeName": "Set Dungeon Blackboard String Value"
+  },
+  "2130": {
+    "eventTypeName": "Camera Interest"
+  },
+  "2132": {
+    "eventTypeName": "Apply Fitting"
+  },
+  "2133": {
+    "eventTypeName": "Play Music"
+  },
+  "2134": {
+    "eventTypeName": "Start Conversation"
+  },
+  "2135": {
+    "eventTypeName": "Deactivate Gate"
+  },
+  "2138": {
+    "eventTypeName": "Ignore Triggers"
+  },
+  "2143": {
+    "eventTypeName": "OpenVoidSpaceExit"
+  },
+  "2144": {
+    "eventTypeName": "Play Ambient Sound"
+  }
+}
