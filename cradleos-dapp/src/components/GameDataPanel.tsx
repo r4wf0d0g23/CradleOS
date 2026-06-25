@@ -18,6 +18,8 @@
  * panel render is cheap.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 const ACCENT = "#FF4700";
 const ACCENT_BLUE = "#64b4ff";
@@ -372,83 +374,305 @@ function EventTypesView() {
 
 // ── 3D viewport (placeholder for now) ─────────────────────────────────────
 
-function Viewport3D() {
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+// Hand-curated GLB stand-ins for each ship and structure class, shipped under
+// /public/models/ and rendered with the same point-cloud + edge-wireframe styling
+// as the Keeper viewport (see components/KeeperViewport.tsx). These are NOT
+// decoded from the live .cmf/.black client assets — when CCP starts shipping .cmf
+// and we wire up a real loader, we swap these for the extracted geometry.
+const MODEL_ROSTER: Array<{ file: string; label: string; group: string; accent: number }> = [
+  // Ships
+  { file: "lai.glb",      label: "Lai",         group: "Frigates",   accent: 0xff4700 },
+  { file: "haf.glb",      label: "Haf",         group: "Frigates",   accent: 0xff4700 },
+  { file: "carom.glb",    label: "Carom",       group: "Frigates",   accent: 0xff4700 },
+  { file: "reflex.glb",   label: "Reflex",      group: "Frigates",   accent: 0xff4700 },
+  { file: "stride.glb",   label: "Stride",      group: "Frigates",   accent: 0xff4700 },
+  { file: "lorha.glb",    label: "Lorha",       group: "Destroyers", accent: 0xff4700 },
+  { file: "tades.glb",    label: "Tades",       group: "Destroyers", accent: 0xff4700 },
+  { file: "maul.glb",     label: "Maul",        group: "Destroyers", accent: 0xff4700 },
+  { file: "wend.glb",     label: "Wend",        group: "Haulers",    accent: 0x64b4ff },
+  { file: "mcf.glb",      label: "MCF",         group: "Haulers",    accent: 0x64b4ff },
+  { file: "usv.glb",      label: "USV",         group: "Shuttles",   accent: 0x64b4ff },
+  { file: "chumaq.glb",   label: "Chumaq",      group: "Cruisers",   accent: 0xff4700 },
+  { file: "recurve.glb",  label: "Recurve",     group: "Cruisers",   accent: 0xff4700 },
+  { file: "reiver.glb",   label: "Reiver",      group: "Cruisers",   accent: 0xff4700 },
+  // Structures
+  { file: "gate.glb",      label: "Smart Gate",   group: "Structures", accent: 0xffc800 },
+  { file: "turret.glb",    label: "Smart Turret", group: "Structures", accent: 0xffc800 },
+  { file: "assembly.glb",  label: "Assembly",     group: "Structures", accent: 0xffc800 },
+  { file: "printer.glb",   label: "Printer",      group: "Structures", accent: 0xffc800 },
+  { file: "refinery.glb",  label: "Refinery",     group: "Structures", accent: 0xffc800 },
+  { file: "shipyard.glb",  label: "Shipyard",     group: "Structures", accent: 0xffc800 },
+  { file: "silo.glb",      label: "Silo",         group: "Structures", accent: 0xffc800 },
+  { file: "hangar.glb",    label: "Hangar",       group: "Structures", accent: 0xffc800 },
+  { file: "warehouse.glb", label: "Warehouse",    group: "Structures", accent: 0xffc800 },
+  { file: "tether.glb",    label: "Tether",       group: "Structures", accent: 0xffc800 },
+  { file: "wall.glb",      label: "Wall",         group: "Structures", accent: 0xffc800 },
+  // World props
+  { file: "asteroid.glb",  label: "Asteroid",     group: "World",      accent: 0x44ffaa },
+  { file: "asteroid2.glb", label: "Asteroid II",  group: "World",      accent: 0x44ffaa },
+];
 
-  // Draw a slowly-rotating wireframe placeholder so the panel feels live.
-  useEffect(() => {
-    const el = canvasRef.current;
-    if (!el) return;
-    let angle = 0;
-    let raf = 0;
-    const tick = () => {
-      angle = (angle + 0.4) % 360;
-      el.style.transform = `perspective(420px) rotateY(${angle}deg) rotateX(${Math.sin(angle * Math.PI / 180) * 12}deg)`;
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+function Viewport3D() {
+  const mountRef = useRef<HTMLDivElement | null>(null);
+  const [selected, setSelected] = useState<string>(MODEL_ROSTER[0].file);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
+
+  const groups = useMemo(() => {
+    const m = new Map<string, typeof MODEL_ROSTER>();
+    for (const r of MODEL_ROSTER) {
+      const arr = m.get(r.group) ?? [];
+      arr.push(r);
+      m.set(r.group, arr);
+    }
+    return Array.from(m.entries());
   }, []);
+
+  const current = useMemo(
+    () => MODEL_ROSTER.find(r => r.file === selected) ?? MODEL_ROSTER[0],
+    [selected],
+  );
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+
+    setLoadState("loading");
+    let cancelled = false;
+    let raf = 0;
+    const disposables: Array<THREE.BufferGeometry | THREE.Material | THREE.Texture> = [];
+
+    const w = mount.clientWidth || 800;
+    const h = 360;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(w, h);
+    renderer.setClearColor(0x000000, 0);
+    mount.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, w / h, 0.05, 100);
+    camera.position.set(0, 1.0, 4.2);
+    camera.lookAt(0, 0, 0);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.15));
+
+    // Grid floor in the model's accent colour
+    const grid = new THREE.GridHelper(8, 16, current.accent, current.accent);
+    const gridMat = grid.material as THREE.Material;
+    gridMat.transparent = true;
+    gridMat.opacity = 0.10;
+    grid.position.y = -1.1;
+    scene.add(grid);
+    disposables.push(gridMat);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const edgeMats: THREE.LineBasicMaterial[] = [];
+    const ptMats: THREE.PointsMaterial[] = [];
+
+    const loader = new GLTFLoader();
+    const base = import.meta.env.BASE_URL || "/";
+    loader.load(
+      `${base}models/${current.file}`,
+      (gltf) => {
+        if (cancelled) return;
+        const model = gltf.scene;
+        // Auto-fit to viewport
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const scale = 2.0 / maxDim;
+        model.scale.setScalar(scale);
+        const center = box.getCenter(new THREE.Vector3()).multiplyScalar(scale);
+        model.position.sub(center);
+
+        // Per-mesh: hide the original mesh, add a sparse point cloud + edge wires
+        model.traverse((child) => {
+          if (!(child instanceof THREE.Mesh)) return;
+          child.visible = false;
+          const pos = child.geometry.attributes.position;
+          if (!pos) return;
+
+          const step = Math.max(1, Math.floor(pos.count / 8000));
+          const pts: number[] = [];
+          for (let i = 0; i < pos.count; i += step) {
+            pts.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+          }
+          if (pts.length > 0) {
+            const pg = new THREE.BufferGeometry();
+            pg.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+            disposables.push(pg);
+            const pm = new THREE.PointsMaterial({
+              color: current.accent,
+              size: 0.022,
+              opacity: 0.45,
+              transparent: true,
+              sizeAttenuation: true,
+              blending: THREE.AdditiveBlending,
+              depthWrite: false,
+            });
+            disposables.push(pm);
+            ptMats.push(pm);
+            const points = new THREE.Points(pg, pm);
+            points.position.copy(child.position);
+            points.rotation.copy(child.rotation);
+            points.scale.copy(child.scale);
+            child.parent?.add(points);
+          }
+
+          const eg = new THREE.EdgesGeometry(child.geometry, 25);
+          disposables.push(eg);
+          const em = new THREE.LineBasicMaterial({
+            color: current.accent,
+            opacity: 0.22,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+          });
+          disposables.push(em);
+          edgeMats.push(em);
+          const edges = new THREE.LineSegments(eg, em);
+          edges.position.copy(child.position);
+          edges.rotation.copy(child.rotation);
+          edges.scale.copy(child.scale);
+          child.parent?.add(edges);
+        });
+
+        group.add(model);
+        setLoadState("ready");
+      },
+      undefined,
+      (err) => {
+        console.warn(`[GameDataPanel] Failed to load ${current.file}:`, err);
+        if (!cancelled) setLoadState("error");
+      },
+    );
+
+    let t = 0;
+    const animate = () => {
+      t += 0.005;
+      group.rotation.y += 0.004;
+      group.rotation.x = Math.sin(t * 0.5) * 0.08;
+      const edgePulse = 0.18 + Math.sin(t * 1.4) * 0.04;
+      for (const m of edgeMats) m.opacity = edgePulse;
+      const ptPulse = 0.40 + Math.sin(t * 1.4 + 0.5) * 0.08;
+      for (const m of ptMats) m.opacity = ptPulse;
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(animate);
+    };
+    animate();
+
+    const ro = new ResizeObserver(() => {
+      const nw = mount.clientWidth || w;
+      renderer.setSize(nw, h);
+      camera.aspect = nw / h;
+      camera.updateProjectionMatrix();
+    });
+    ro.observe(mount);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      for (const d of disposables) (d as { dispose?: () => void }).dispose?.();
+      renderer.dispose();
+      if (renderer.domElement.parentElement === mount) {
+        mount.removeChild(renderer.domElement);
+      }
+    };
+  }, [current.file, current.accent]);
+
+  const accentHex = `#${current.accent.toString(16).padStart(6, "0")}`;
 
   return (
     <div>
+      {/* Viewer */}
       <div style={{
         background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,71,0,0.18)",
+        border: `1px solid ${accentHex}33`,
         borderRadius: 2,
-        padding: 20,
-        marginBottom: 14,
-        minHeight: 280,
-        display: "grid", placeItems: "center",
-        position: "relative", overflow: "hidden",
+        padding: 12,
+        marginBottom: 12,
+        minHeight: 380,
+        position: "relative",
       }}>
-        {/* Wireframe placeholder shape */}
-        <div ref={canvasRef} style={{
-          width: 160, height: 160,
-          border: `1.5px solid ${ACCENT}`,
-          borderTopColor: ACCENT_BLUE,
-          borderRightColor: ACCENT_AMBER,
-          borderBottomColor: ACCENT_GREEN,
-          borderRadius: "50%",
-          boxShadow: `0 0 60px ${ACCENT}33, inset 0 0 30px ${ACCENT}22`,
-          transformStyle: "preserve-3d",
-          position: "relative",
-        }}>
+        <div ref={mountRef} style={{ width: "100%", height: 360, display: "grid", placeItems: "center" }} />
+        {loadState === "loading" && (
           <div style={{
-            position: "absolute", top: "50%", left: "50%",
-            transform: "translate(-50%,-50%) rotateX(90deg)",
-            width: 160, height: 160,
-            border: `1.5px solid ${ACCENT_BLUE}`,
-            borderRadius: "50%",
-          }} />
+            position: "absolute", top: 18, left: 18,
+            color: ACCENT_AMBER, fontSize: 11, fontFamily: "monospace",
+          }}>○ Loading {current.label}…</div>
+        )}
+        {loadState === "error" && (
           <div style={{
-            position: "absolute", top: "50%", left: "50%",
-            transform: "translate(-50%,-50%) rotateY(90deg)",
-            width: 160, height: 160,
-            border: `1.5px solid ${ACCENT_GREEN}`,
-            borderRadius: "50%",
-          }} />
-        </div>
+            position: "absolute", top: 18, left: 18,
+            color: "#ff5070", fontSize: 11, fontFamily: "monospace",
+          }}>⚠ Model file missing: /models/{current.file}</div>
+        )}
+        {loadState === "ready" && (
+          <div style={{
+            position: "absolute", top: 14, right: 18,
+            color: accentHex, fontSize: 10, fontFamily: "monospace",
+            letterSpacing: "0.12em", textTransform: "uppercase",
+          }}>◇ {current.label} · {current.group}</div>
+        )}
       </div>
+
+      {/* Picker, grouped by class */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 14 }}>
+        {groups.map(([groupName, entries]) => (
+          <div key={groupName} style={{ minWidth: 160 }}>
+            <div style={{
+              fontSize: 9, color: MUTED, fontFamily: "monospace",
+              letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 6,
+            }}>── {groupName} ──</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              {entries.map(r => {
+                const isActive = r.file === selected;
+                const entryAccent = `#${r.accent.toString(16).padStart(6, "0")}`;
+                return (
+                  <button
+                    key={r.file}
+                    type="button"
+                    onClick={() => setSelected(r.file)}
+                    style={{
+                      textAlign: "left",
+                      background: isActive ? `${entryAccent}1f` : "transparent",
+                      border: `1px solid ${isActive ? entryAccent : "rgba(255,255,255,0.06)"}`,
+                      color: isActive ? entryAccent : TEXT,
+                      padding: "4px 9px",
+                      fontSize: 11,
+                      fontFamily: "inherit",
+                      cursor: "pointer",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {isActive ? "◆" : "◇"} {r.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Caption */}
       <div style={{ fontSize: 11, color: TEXT, lineHeight: 1.6 }}>
-        <div style={{ color: ACCENT, fontWeight: 700, marginBottom: 6 }}>◇ 3D Mesh Viewport — roadmap</div>
+        <div style={{ color: ACCENT, fontWeight: 700, marginBottom: 6 }}>◇ 3D Model Browser</div>
         <p style={{ margin: "0 0 6px 0", color: "rgba(220,220,200,0.85)" }}>
-          The static client ships ships, structures, and turrets as <code style={{ color: ACCENT_AMBER }}>.cmf</code> meshes
-          (Carbon Mesh Format), decoded by the open-sourced{" "}
-          <a href="https://github.com/carbonengine/mesh" target="_blank" rel="noreferrer"
-             style={{ color: ACCENT_BLUE }}>carbonengine/mesh</a> C++ library.
-          A WASM build or a TypeScript port is required to render them in-browser; both are tractable
-          but not in scope for tonight's drop.
-        </p>
-        <p style={{ margin: "0 0 6px 0", color: MUTED }}>
-          Until that's wired up, this slot showcases that the data flow is in place — the same
-          extractor pipeline that produced the catalogue and strings indices is parked at
-          <code style={{ color: ACCENT_AMBER }}> frontier/datamine/sanctuary/extract_for_dapp.py</code>{" "}
-          and ready to emit mesh metadata as soon as the loader lands.
+          Hand-curated GLB stand-ins for each EVE Frontier ship and structure class, rendered with
+          the same point-cloud + edge-wireframe styling as the Keeper viewport. Click any entry to
+          load it.
         </p>
         <p style={{ margin: 0, color: MUTED, fontSize: 10 }}>
-          Next iteration: WASM <code>carbonengine/mesh</code> + three.js renderer, then progressively
-          load Refuge / Nursery / RAINMAKER / HARBINGER hulls into a model browser.
+          Future iteration: when CCP starts shipping <code style={{ color: ACCENT_AMBER }}>.cmf</code>{" "}
+          files in the client (currently the Sanctuary build ships{" "}
+          <code style={{ color: ACCENT_AMBER }}>.gr2</code> / <code style={{ color: ACCENT_AMBER }}>.black</code>{" "}
+          only), we'll wire up a real loader from{" "}
+          <a href="https://github.com/carbonengine/mesh" target="_blank" rel="noreferrer"
+             style={{ color: ACCENT_BLUE }}>carbonengine/mesh</a>{" "}
+          and stream the live extracted geometry instead.
         </p>
       </div>
     </div>
