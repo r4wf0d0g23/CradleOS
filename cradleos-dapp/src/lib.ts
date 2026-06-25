@@ -642,6 +642,75 @@ async function _findCharacterViaGraphQL(walletAddress: string): Promise<Characte
   return null;
 }
 
+/**
+ * Resolve a wallet to ALL its live Character objects across both world packages.
+ * Returns Characters sorted newest-first by Sui object version.
+ *
+ * Why this exists: Sanctuary's launcher (and historically the Utopia launcher
+ * too) occasionally mints a second Character for the same wallet — same name,
+ * same wallet address, distinct item_id. CCP doesn't expose a UI to deduplicate
+ * these. If we only pick one we silently hide whichever Character owns
+ * structures the player can't see.
+ *
+ * Used by fetchPlayerStructures to fan out OwnerCap scans across every
+ * Character the wallet controls.
+ */
+export async function findAllCharactersForWallet(walletAddress: string): Promise<CharacterInfo[]> {
+  const seen = new Map<string, CharacterInfo & { version: number }>();
+  for (const pkg of Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]))) {
+    // Paginated PlayerProfile scan (suix_getOwnedObjects caps at 50/page).
+    let cursor: string | null = null;
+    let pages = 0;
+    do {
+      const ppRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "suix_getOwnedObjects",
+          params: [
+            walletAddress,
+            { filter: { StructType: `${pkg}::character::PlayerProfile` }, options: { showContent: true } },
+            cursor, 50,
+          ],
+        }),
+      });
+      const ppJson = await ppRes.json() as {
+        result: {
+          data: Array<{ data: { objectId: string; content: { fields: { character_id: string } } } }>;
+          hasNextPage?: boolean;
+          nextCursor?: string | null;
+        }
+      };
+      const profiles = ppJson.result?.data ?? [];
+      await Promise.all(profiles.map(async (pp) => {
+        const charId = pp?.data?.content?.fields?.character_id;
+        if (!charId || seen.has(charId)) return;
+        const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1,
+            method: "sui_getObject",
+            params: [charId, { showContent: true, showOwner: true }],
+          }),
+        });
+        const json = await res.json() as {
+          result?: { data?: { version?: string; content?: { fields?: Record<string, unknown> } | null } | null }
+        };
+        const data = json.result?.data;
+        if (!data?.content?.fields) return; // deleted/missing
+        const tribeId = numish(data.content.fields["tribe_id"]) ?? 0;
+        const version = Number(data.version ?? 0);
+        seen.set(charId, { characterId: charId, tribeId, version });
+      }));
+      cursor = ppJson.result?.hasNextPage ? (ppJson.result.nextCursor ?? null) : null;
+      pages++;
+    } while (cursor && pages < 25);
+  }
+  return Array.from(seen.values()).sort((a, b) => b.version - a.version);
+}
+
 export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
   // PRIMARY: dapp-kit GraphQL (getWalletCharacters). Reads the live Character object so
   // tribe_id reflects current state, not creation-time snapshot. Tries both world package
@@ -859,32 +928,38 @@ export async function fetchSolarSystem(systemId: number): Promise<{
 }
 
 export async function fetchPlayerStructures(walletAddress: string): Promise<LocationGroup[]> {
-  const charInfo = await findCharacterForWallet(walletAddress);
-  const characterId = charInfo?.characterId ?? null;
-  if (!characterId) return [];
+  // 2026-06-25: fan out across ALL Characters owned by this wallet. Sanctuary
+  // launcher minted duplicate Characters for some players (Raw included — his
+  // wallet has Character #1 with zero structures and Character #2 with the
+  // actual NetworkNode). Picking just one Character silently hides structures
+  // controlled by the other one.
+  const allChars = await findAllCharactersForWallet(walletAddress);
+  if (!allChars.length) return [];
 
-  // Discover all OwnerCaps
+  // Discover all OwnerCaps across every Character
   const capEntries: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; label: string }> = [];
   // Query OwnerCaps for both world package versions — characters created before v0.0.21
   // have OwnerCaps typed against the v1 package (WORLD_PKG_UTOPIA_V1).
   const worldPkgsToCheck = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
   await Promise.all(
-    STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
-      worldPkgsToCheck.map(async (wpkg) => {
-        // Build the struct type using the current pkg prefix but override the world pkg
-        const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
-        const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
-        // No explicit limit — default 1000 with pagination handles characters
-        // with large structure counts. Bug 2026-05-07: hard-coded 50 here
-        // silently dropped Assemblies past index 50 (e.g. Jack Sparrow had 64).
-        const caps = await rpcGetOwnedObjects(characterId, ownerCapType);
-        for (const { objectId: capId, fields } of caps) {
-          const structureId = fields["authorized_object_id"] as string;
-          if (structureId && !capEntries.some(e => e.structureId === structureId)) {
-            capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
+    allChars.flatMap((char) =>
+      STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
+        worldPkgsToCheck.map(async (wpkg) => {
+          // Build the struct type using the current pkg prefix but override the world pkg
+          const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
+          const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
+          // No explicit limit — default 1000 with pagination handles characters
+          // with large structure counts. Bug 2026-05-07: hard-coded 50 here
+          // silently dropped Assemblies past index 50 (e.g. Jack Sparrow had 64).
+          const caps = await rpcGetOwnedObjects(char.characterId, ownerCapType);
+          for (const { objectId: capId, fields } of caps) {
+            const structureId = fields["authorized_object_id"] as string;
+            if (structureId && !capEntries.some(e => e.structureId === structureId)) {
+              capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
+            }
           }
-        }
-      })
+        })
+      )
     )
   );
   if (!capEntries.length) return [];
