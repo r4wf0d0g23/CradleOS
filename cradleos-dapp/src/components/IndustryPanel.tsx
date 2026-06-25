@@ -7,6 +7,15 @@ interface TypeInfo {
   name: string;
   category: string;
   group: string;
+  volume?: number;
+}
+
+interface IndustryMeta {
+  cycle?: string;
+  version?: string;
+  build?: string;
+  extracted_at?: string;
+  counts?: Record<string, number>;
 }
 
 interface BlueprintMaterial {
@@ -67,6 +76,8 @@ interface TimeSummary {
 const types = industryData.types as Record<string, TypeInfo>;
 const blueprints = industryData.blueprints as Record<string, Blueprint>;
 const recipes = (industryData as { recipes?: Recipe[] }).recipes ?? [];
+const industryMeta = (industryData as { meta?: IndustryMeta }).meta ?? {};
+const industryDelta = (industryData as { delta?: { added_blueprints?: number[]; changed_blueprints?: number[]; removed_blueprints?: number[] } }).delta ?? {};
 
 // Convert recipes into blueprint-like entries for unified supply chain resolution.
 // Recipe key format: "r_<index>" to avoid collisions with numeric blueprint keys.
@@ -828,6 +839,16 @@ export function IndustryPanel() {
         </div>
         <div style={{ fontSize: "10px", color: "rgba(180,160,140,0.4)", letterSpacing: "0.08em" }}>
           {Object.keys(blueprints).length} blueprints · {recipes.length} recipes · {producibleTypeIds.size} producible items
+          {industryMeta.build && (
+            <span style={{ marginLeft: "12px", color: "rgba(255,71,0,0.5)", fontSize: "9px" }}>
+              ▸ {industryMeta.cycle ?? ""} build {industryMeta.build}
+              {(industryDelta.added_blueprints?.length ?? 0) > 0 && (
+                <span style={{ marginLeft: "6px", color: "rgba(80,200,120,0.7)" }}>
+                  +{industryDelta.added_blueprints!.length} new
+                </span>
+              )}
+            </span>
+          )}
         </div>
       </div>
 
