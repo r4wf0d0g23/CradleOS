@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 
 // Hard target moments (UTC). Update these on the next cycle.
 const SHUTDOWN_MS  = Date.UTC(2026, 5, 25,  9, 0, 0); // Jun 25 09:00 UTC
-const GATES_OPEN_MS = Date.UTC(2026, 5, 25, 14, 0, 0); // Jun 25 14:00 UTC
+const GATES_OPEN_MS = Date.UTC(2026, 5, 25, 14, 30, 0); // Jun 25 14:30 UTC (FC pushed +30 min on wipe day)
 const POST_WIPE_DISPLAY_MS = 24 * 60 * 60 * 1000;       // keep "live" banner for 24h after gates open
 const DISMISS_KEY = "cradleos:wipe-countdown-dismissed:cycle6";
 
