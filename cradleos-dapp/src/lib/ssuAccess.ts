@@ -921,7 +921,50 @@ export async function discoverSharedSsus(
   }
 
   // De-dup vs caller's owned set BEFORE doing per-policy round trips.
-  const candidates = ssuIds.filter(id => !skipSsuIds.has(id));
+  const rawCandidates = ssuIds.filter(id => !skipSsuIds.has(id));
+
+  // Filter out SSUs typed against an orphaned world package. The CradleOS
+  // ssu_access policies table outlived the 2026-06-25 wipe so it still maps
+  // pre-wipe SSU ids — those Sui shared objects exist forever but the game
+  // client can't see them anymore, so surfacing them in the inventory panel
+  // is just user-confusing dead data. Batch-fetch types via sui_multiGetObjects
+  // (50 per call, the public RPC cap) and keep only SSUs typed against the
+  // active WORLD_PKG.
+  const candidates: string[] = [];
+  if (WORLD_PKG) {
+    const expectedTypePrefix = `${WORLD_PKG}::storage_unit::StorageUnit`;
+    const TYPE_BATCH = 50;
+    for (let i = 0; i < rawCandidates.length; i += TYPE_BATCH) {
+      const batch = rawCandidates.slice(i, i + TYPE_BATCH);
+      try {
+        const res = await fetchWithRetry(SUI_TESTNET_RPC, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "sui_multiGetObjects",
+            params: [batch, { showType: true }],
+          }),
+        });
+        const json = await res.json();
+        const data = (json?.result ?? []) as Array<{ data?: { objectId: string; type?: string } } | null>;
+        for (const entry of data) {
+          const ssuId = entry?.data?.objectId;
+          const type = entry?.data?.type;
+          if (!ssuId || !type) continue;
+          // type looks like `${WORLD_PKG}::storage_unit::StorageUnit`
+          if (type === expectedTypePrefix) candidates.push(ssuId);
+        }
+      } catch {
+        // On RPC failure, fall back to including the batch — better to show a
+        // few stale SSUs than to hide live ones.
+        candidates.push(...batch);
+      }
+    }
+  } else {
+    candidates.push(...rawCandidates);
+  }
 
   // Resolve policies in parallel. Bound concurrency so we don't hammer
   // public RPC endpoints — chunk size 8 is a safe middle ground.
