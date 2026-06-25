@@ -2,7 +2,7 @@
  * QueryPanel — Search characters and tribes by name.
  * Sources: Sui GraphQL (Character objects) + World API (tribes) + CoinLaunched events (CradleOS vaults)
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL, SERVER_ENV } from "../constants";
 import { numish, isTribeOnActiveServer } from "../lib";
@@ -37,11 +37,23 @@ type CradleOSVault = {
 
 // ── Fetchers ───────────────────────────────────────────────────────────────
 
-async function fetchCharactersByPkg(charType: string): Promise<CharacterResult[]> { // eslint-disable-line @typescript-eslint/no-unused-vars
+// Streaming paginated walk. Calls `onPage` after every page so the UI can
+// render incrementally, and respects `shouldStop` / AbortSignal so a search
+// can short-circuit once we have enough matches.
+async function fetchCharactersByPkg(
+  charType: string,
+  opts: {
+    onPage?: (acc: CharacterResult[], pageNum: number) => void;
+    shouldStop?: (acc: CharacterResult[]) => boolean;
+    signal?: AbortSignal;
+  } = {},
+): Promise<CharacterResult[]> {
   const results: CharacterResult[] = [];
   let cursor: string | null = null;
-  // Rolling paginated fetch — continues until hasNextPage is false (no hard cap)
+  let pageNum = 0;
   do {
+    if (opts.signal?.aborted) return results;
+    pageNum++;
     const query = `{
       objects(filter: { type: "${charType}" }
         first: 50
@@ -54,6 +66,7 @@ async function fetchCharactersByPkg(charType: string): Promise<CharacterResult[]
     const res = await fetch(SUI_GRAPHQL, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),
+      signal: opts.signal,
     });
     const json = await res.json() as {
       data?: { objects?: {
@@ -74,6 +87,8 @@ async function fetchCharactersByPkg(charType: string): Promise<CharacterResult[]
         itemId: String((j.key as Record<string, unknown>)?.item_id ?? ""),
       });
     }
+    opts.onPage?.(results, pageNum);
+    if (opts.shouldStop?.(results)) return results;
     const pageInfo = json.data?.objects?.pageInfo;
     cursor = pageInfo?.hasNextPage ? (pageInfo.endCursor ?? null) : null;
   } while (cursor);
@@ -106,20 +121,97 @@ function lsCacheSet<T>(name: string, data: T): void {
   }
 }
 
-async function fetchAllCharacters(): Promise<CharacterResult[]> {
-  const cached = lsCacheGet<CharacterResult[]>("characters");
-  if (cached && cached.length > 0) return cached;
+// Read whatever is cached locally without triggering a network walk.
+function loadCachedCharacters(): CharacterResult[] | null {
+  return lsCacheGet<CharacterResult[]>("characters");
+}
 
-  // Fetch from both world pkg versions — characters created before v0.0.21 are typed against v1
-  const [v2, v1] = await Promise.all([
-    fetchCharactersByPkg(`${WORLD_PKG}::character::Character`),
-    fetchCharactersByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`),
-  ]);
-  // Deduplicate by objectId
+// Indexer-backed search. Talks to the character-index service on DGX2 via
+// the public CradleOS proxy. Returns null on any failure so the caller can
+// fall back to the in-browser GraphQL walk.
+//
+// The indexer returns sub-50ms substring/prefix matches across all on-chain
+// Character objects for the current server, so this replaces an entire
+// 30–60s paginated walk for the common case.
+const CHARACTER_INDEX_URL = "https://keeper.reapers.shop/index";
+async function searchCharactersViaIndex(
+  q: string,
+  limit = 50,
+  signal?: AbortSignal,
+): Promise<CharacterResult[] | null> {
+  try {
+    const url = `${CHARACTER_INDEX_URL}/character-search?server=${encodeURIComponent(SERVER_ENV)}`
+      + `&q=${encodeURIComponent(q)}&limit=${limit}`;
+    const r = await fetch(url, { signal, headers: { Accept: "application/json" } });
+    if (!r.ok) return null;
+    const json = await r.json() as { matches?: Array<{
+      object_id: string; character_addr: string; name: string;
+      tribe_id: number; item_id: string;
+    }> };
+    return (json.matches ?? []).map(m => ({
+      objectId:         m.object_id,
+      characterAddress: m.character_addr,
+      name:             m.name,
+      description:      "",
+      tribeId:          m.tribe_id,
+      itemId:           m.item_id,
+    }));
+  } catch {
+    return null;
+  }
+}
+
+// Streaming walk across both world pkg versions. Each page in either stream
+// dedupes into a shared merged list and fires `onProgress`. `shouldStop`
+// short-circuits both streams once the UI has enough matches. The
+// localStorage cache is only updated on a full completed walk so partial
+// (search-terminated) walks don't poison the cache for the next visitor.
+async function fetchAllCharactersStreaming(opts: {
+  onProgress?: (merged: CharacterResult[], pagesDone: number) => void;
+  shouldStop?: (merged: CharacterResult[]) => boolean;
+  signal?: AbortSignal;
+} = {}): Promise<{ merged: CharacterResult[]; completed: boolean }> {
+  const merged: CharacterResult[] = [];
   const seen = new Set<string>();
-  const merged = [...v2, ...v1].filter(c => { if (seen.has(c.objectId)) return false; seen.add(c.objectId); return true; });
-  lsCacheSet("characters", merged);
-  return merged;
+  let pagesDone = 0;
+  let stopped = false;
+
+  // Per-stream local results are passed in via `acc`; we dedupe into the
+  // shared merged list so two parallel streams produce one consistent view.
+  const intake = (acc: CharacterResult[]) => {
+    for (const c of acc) {
+      if (seen.has(c.objectId)) continue;
+      seen.add(c.objectId);
+      merged.push(c);
+    }
+    pagesDone++;
+    opts.onProgress?.(merged, pagesDone);
+  };
+
+  const stopGate = () => {
+    if (stopped) return true;
+    if (opts.shouldStop?.(merged)) { stopped = true; return true; }
+    return false;
+  };
+
+  await Promise.all([
+    fetchCharactersByPkg(`${WORLD_PKG}::character::Character`, {
+      onPage: intake,
+      shouldStop: stopGate,
+      signal: opts.signal,
+    }),
+    fetchCharactersByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`, {
+      onPage: intake,
+      shouldStop: stopGate,
+      signal: opts.signal,
+    }),
+  ]);
+
+  const completed = !stopped && !opts.signal?.aborted;
+  if (completed) {
+    lsCacheSet("characters", merged);
+  }
+  return { merged, completed };
 }
 
 async function fetchAllTribes(): Promise<TribeResult[]> {
@@ -234,11 +326,18 @@ export function QueryPanel() {
   const [selectedTribe, setSelectedTribe] = useState<TribeResult | null>(null);
   const [openPlayer, setOpenPlayer] = useState<{ itemId: string; objectId: string; wallet: string } | null>(null);
 
-  const { data: characters, isLoading: charsLoading } = useQuery({
-    queryKey: ["allCharacters"],
-    queryFn: fetchAllCharacters,
-    staleTime: 15 * 60_000, // cache 15 min — full paginated fetch is expensive
-  });
+  // Character index. We do NOT auto-walk on mount — the walk is ~10k+ objects
+  // and takes 30–60s. Instead we seed from localStorage (instant on revisit)
+  // and kick off a streaming walk only when the user actually searches.
+  // The walk short-circuits for non-wildcard queries once ENOUGH_MATCHES are
+  // found so simple lookups return in seconds, not a full minute.
+  const ENOUGH_MATCHES = 50;
+  const [characters, setCharacters] = useState<CharacterResult[] | null>(() => loadCachedCharacters());
+  const [charsLoading, setCharsLoading] = useState(false);
+  const [charsPagesDone, setCharsPagesDone] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_charsCompleted, setCharsCompleted] = useState<boolean>(() => loadCachedCharacters() !== null);
+  const charsAbortRef = useRef<AbortController | null>(null);
 
   const { data: tribes, isLoading: tribesLoading } = useQuery({
     queryKey: ["allTribes"],
@@ -256,6 +355,69 @@ export function QueryPanel() {
 
   const isWildcard = q === "*";
   const showResults = isWildcard || q.length >= 2;
+
+  // Search strategy: hit the DGX2 indexer first (sub-50ms substring search
+  // across the full on-chain character set). On any failure, fall back to
+  // the in-browser streaming walk so the panel still works when the indexer
+  // is unreachable. The cache from a prior session is shown immediately as a
+  // placeholder while the indexer query is in flight, so the UI never blanks.
+  const [usedIndexer, setUsedIndexer] = useState<boolean>(false);
+  useEffect(() => {
+    if (mode !== "character") return;
+    if (!showResults) return;
+
+    const ac = new AbortController();
+    charsAbortRef.current?.abort();
+    charsAbortRef.current = ac;
+    setCharsLoading(true);
+    setCharsPagesDone(0);
+
+    (async () => {
+      // Indexer path — sub-50ms substring search on the full corpus.
+      const indexed = await searchCharactersViaIndex(q, 200, ac.signal);
+      if (ac.signal.aborted) return;
+      if (indexed !== null) {
+        setUsedIndexer(true);
+        setCharacters(indexed);
+        setCharsCompleted(true);
+        setCharsLoading(false);
+        return;
+      }
+
+      // Fallback path — streaming GraphQL walk in the browser.
+      setUsedIndexer(false);
+      const stopWhen = isWildcard
+        ? undefined
+        : (merged: CharacterResult[]) => {
+            const hits = merged.filter(c =>
+              c.name.toLowerCase().includes(q) ||
+              c.characterAddress.toLowerCase().includes(q) ||
+              c.objectId.toLowerCase().includes(q)
+            );
+            return hits.length >= ENOUGH_MATCHES;
+          };
+      try {
+        const { completed } = await fetchAllCharactersStreaming({
+          signal: ac.signal,
+          shouldStop: stopWhen,
+          onProgress: (merged, pagesDone) => {
+            if (ac.signal.aborted) return;
+            setCharacters([...merged]);
+            setCharsPagesDone(pagesDone);
+          },
+        });
+        if (ac.signal.aborted) return;
+        setCharsLoading(false);
+        if (completed) setCharsCompleted(true);
+      } catch {
+        if (ac.signal.aborted) return;
+        setCharsLoading(false);
+      }
+    })();
+
+    return () => { ac.abort(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showResults, isWildcard, q, mode]);
 
   const filteredChars = !showResults ? [] : isWildcard
     ? (characters ?? []).slice(0, 100)
@@ -313,21 +475,32 @@ export function QueryPanel() {
             borderRadius: 3, color: "#e0e0d0", fontSize: 12, padding: "6px 12px", outline: "none" }}
           autoFocus
         />
-        {isLoading && <span style={{ fontSize: 11, color: "#ffa032", alignSelf: "center" }}>● indexing…</span>}
+        {isLoading && (
+          <span style={{ fontSize: 11, color: "#ffa032", alignSelf: "center" }}>
+            ● searching… {!usedIndexer && characters ? `(walking on-chain: ${characters.length.toLocaleString()} chars, ${charsPagesDone} pages)` : ""}
+          </span>
+        )}
+        {!isLoading && usedIndexer && showResults && (
+          <span style={{ fontSize: 10, color: "rgba(100,200,255,0.6)", alignSelf: "center" }}>⚡ indexer</span>
+        )}
       </div>
 
       {/* Results list */}
       {showResults && !selectedChar && !selectedTribe && (
         <div>
           {mode === "character" && (
-            charsLoading
-              ? <div style={{ color: "#aaa", fontSize: 12 }}>Loading characters… {filteredChars.length > 0 ? `(${filteredChars.length} so far)` : ""}</div>
-              : filteredChars.length === 0
-              ? <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>
-                  No characters found for "{query}"
-                  {characters ? <span style={{ color: "rgba(175,175,155,0.4)" }}> — searched {characters.length} indexed characters</span> : " (index still loading)"}
-                </div>
-              : filteredChars.map(c => (
+            filteredChars.length === 0
+              ? charsLoading
+                ? <div style={{ color: "#aaa", fontSize: 12 }}>
+                    {usedIndexer
+                      ? "Searching…"
+                      : `Walking on-chain index… ${characters ? `${characters.length.toLocaleString()} characters scanned (${charsPagesDone} pages)` : ""}`}
+                  </div>
+                : <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>
+                    No characters found for "{query}"
+                  </div>
+              : <>
+                {filteredChars.map(c => (
                 <div key={c.objectId} onClick={() => setSelectedChar(c)} style={{ ...S.card, cursor: "pointer" }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,71,0,0.4)")}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,71,0,0.15)")}>
@@ -341,7 +514,13 @@ export function QueryPanel() {
                     {short(c.characterAddress, 14)} · item {c.itemId}
                   </div>
                 </div>
-              ))
+                ))}
+                {charsLoading && (
+                  <div style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", marginTop: 6, fontStyle: "italic" }}>
+                    … still scanning ({characters?.length.toLocaleString() ?? 0} chars, {charsPagesDone} pages) — results may grow.
+                  </div>
+                )}
+                </>
           )}
           {mode === "tribe" && (
             filteredTribes.length === 0
@@ -386,7 +565,9 @@ export function QueryPanel() {
 
       {!showResults && !selectedChar && !selectedTribe && (
         <div style={{ color: "rgba(175,175,155,0.4)", fontSize: 12, marginTop: 8 }}>
-          Type a name to search, or <strong style={{ color: "#FF4700" }}>*</strong> to list all. {characters ? `${characters.length} characters` : ""} {tribes ? `· ${tribes.length} tribes` : ""} indexed.
+          Type a name to search, or <strong style={{ color: "#FF4700" }}>*</strong> to list all.
+          {tribes ? ` ${tribes.length.toLocaleString()} tribes indexed.` : ""}
+          {" "}<span style={{ color: "rgba(100,200,255,0.5)" }}>⚡ server-side character search</span>
         </div>
       )}
 

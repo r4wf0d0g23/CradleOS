@@ -24,6 +24,10 @@
  *   4. Run full build to validate
  *
  * Last synced from wallet-core: 2026-06-22 (HEAD 1b4be23)
+ *
+ * 2026-06-25 wipe-day update: Stillness world republished (fresh v1) per
+ * world-contracts PR #189. New ids verified on-chain; wallet-core had not
+ * yet picked them up at time of patch (HEAD still on previous ids).
  */
 
 /** Tenant identifier — matches CCP's TenantId enum. */
@@ -90,9 +94,9 @@ export const TENANT_CONFIG: Record<TenantId, TenantConfig> = {
   },
   [TenantId.STILLNESS]: {
     packageId:
-      "0x28b497559d65ab320d9da4613bf2498d5946b2c0ae3597ccfda3072ce127448c",
+      "0x8b8a46ed766fa1358ce7c5c51f6a164b13d627a63e45343f69ed0ba0446c1aa1",
     evePackageId:
-      "0x2a66a89b5a735738ffa4423ac024d23571326163f324f9051557617319e59d60",
+      "0xac361aa5ceb726bd974f885c9dea9e55dc9bc98fa1f5731c5965a810707bf0b8",
     datahubHost: "world-api-stillness.live.pub.evefrontier.com",
   },
 };

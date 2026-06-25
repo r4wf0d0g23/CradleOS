@@ -1,0 +1,14 @@
+{
+  "cycle": "Sanctuary",
+  "version": "v2026.05",
+  "build": "3388875",
+  "extracted_at": "2026-06-25T04:00:33.363402Z",
+  "counts": {
+    "strings_total": 250155,
+    "strings_index": 216785,
+    "catalogue_rows": 113,
+    "deltas_added": 15,
+    "deltas_changed": 27,
+    "deltas_removed": 0
+  }
+}

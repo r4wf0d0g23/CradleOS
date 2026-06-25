@@ -50,6 +50,13 @@ export const WORLD_PKG_UTOPIA_V1 = TENANT_CONFIG[TenantId.UTOPIA].packageId;
 // updates are a single-file change.
 export const WORLD_PKG_STILLNESS = TENANT_CONFIG[TenantId.STILLNESS].packageId;
 export const WORLD_PKG = _serverEnv === "stillness" ? WORLD_PKG_STILLNESS : WORLD_PKG_UTOPIA;
+
+// Globally-shared ObjectRegistry — derived child-object root for in_game_id
+// resolution. One per world pkg; changes whenever world is republished.
+// 2026-06-25 wipe-day: Stillness republished, new registry below.
+export const OBJECT_REGISTRY_STILLNESS = "0xf6aed9361acc0d7021672b653ebe9dae45d88e11fecef01cc5434c8f60ae764f";
+export const OBJECT_REGISTRY_UTOPIA    = "0x454a9aa3d37e1d08d3c9181239c1b683781e4087fbbbd48c935d54b6736fd05c"; // pre-wipe Stillness id, also serves as Utopia placeholder — verify if used
+export const OBJECT_REGISTRY = _serverEnv === "stillness" ? OBJECT_REGISTRY_STILLNESS : OBJECT_REGISTRY_UTOPIA;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 // ── CradleOS package IDs ──────────────────────────────────────────────────────
@@ -58,7 +65,16 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //   published-at → moveCall targets (changes on each `sui client upgrade`)
 //
 // v2 deployed 2026-03-25 (Reapers_v2)
-export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3";
+// 2026-06-25 WIPE-DAY: chain-side wipe orphaned the prior CradleOS lineage.
+// All shared objects (TribeVault, Treasury, Registry, defense_policy state,
+// voting elections, ssu_access policies) created under the old packages are
+// unreachable from the new world. The fresh v1 publish below is the new
+// canonical "original" for all type/event queries going forward.
+// Pre-wipe lineage (now archived, returns zero hits forever):
+//   v1 original: 0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3
+//   v4 upgrade-origin (collateral_vault etc): 0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d
+//   last pre-wipe published-at (v14): 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93
+export const CRADLEOS_ORIGINAL = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
 // CRADLEOS_PKG v14 (2026-05-04 PM): closes the gate-access bug class.
 // Adds GateFriendlyCharacterKey + GateHostileCharacterKey + character-keyed
 // entry functions on TribeGatePolicy mirroring the v13 turret-friendly fix.
@@ -72,7 +88,14 @@ export const CRADLEOS_ORIGINAL = "0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786
 // v13 (2026-05-04 AM): turret friendly-fire fix, tx HaZwqgiu...
 // v12 (2026-04-27): shared_withdraw_to_owned, tx 6aaYV3Yha...
 // v11 (2026-04-26): recover_to_owned + recover_to_shared, tx 8aevQ9uu...
-export const CRADLEOS_PKG      = "0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93";
+// 2026-06-25 WIPE-DAY fresh publish on Stillness against new world
+// `0x8b8a46ed...`. Original-id == published-at (v1). All prior CradleOS state
+// (TribeVaults, defense_policy, ssu_access policies, voting elections) is
+// orphaned by the chain-side wipe and unreachable from the new world.
+// Tx digest: FT5Wy4ZxFLHgvNXKeK93bZmEpdW8WGHoyfP2kbadj69H
+// UpgradeCap: 0x82935954658845b86584b035143a5614530b6bb8d30ad2a3b53ec70c7e2b61be
+export const CRADLEOS_PKG      = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
+// Previous v14: 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93 (last pre-wipe)
 // Previous v13: 0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6
 // Previous v12: 0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f
 // Previous v9:  0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce
@@ -140,7 +163,9 @@ export const SSU_ACCESS_AVAILABLE: boolean = SSU_ACCESS_PKG !== "";
 // Modules added AFTER the original publish have a different original-id on Sui.
 // Sui indexes events/types by the package version where the module first appeared,
 // NOT the package's original-id. These modules were introduced in upgrade v2.
-export const CRADLEOS_UPGRADE_ORIGIN = "0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d";
+// 2026-06-25 wipe-day: collapsed back into single-pkg lineage. CRADLEOS_UPGRADE_ORIGIN
+// equals CRADLEOS_ORIGINAL post-wipe because the fresh publish carries every module.
+export const CRADLEOS_UPGRADE_ORIGIN = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
 // Affected modules: collateral_vault, keeper_shrine, trustless_bounty
 // Use CRADLEOS_UPGRADE_ORIGIN (not CRADLEOS_ORIGINAL) for event queries on these.
 
@@ -203,7 +228,8 @@ export const CRADLEOS_VOTING_AVAILABLE: boolean =
 // validate Hot Potato / AdminCap / Display patterns on real chain and capture
 // real-world feedback before the clean republish. Set false in the post-wipe
 // publish to drop the banner.
-export const CRADLEOS_VOTING_PREVIEW: boolean = true;
+// 2026-06-25 PM: wipe-day passed. Preview window closed.
+export const CRADLEOS_VOTING_PREVIEW: boolean = false;
 export const CRADLEOS_WIPE_DATE_ISO: string = "2026-06-25";
 
 /**
@@ -229,24 +255,31 @@ export function eventType(module: string, event: string): string {
 }
 
 // EVE Token coin types per server environment
-export const EVE_COIN_TYPE_STILLNESS = "0x2a66a89b5a735738ffa4423ac024d23571326163f324f9051557617319e59d60::EVE::EVE";
+// 2026-06-25 wipe-day: Stillness EVE coin package republished by CCP (PR #189).
+// New pkg: 0xac361aa5... (was 0x2a66a89b...)
+export const EVE_COIN_TYPE_STILLNESS = "0xac361aa5ceb726bd974f885c9dea9e55dc9bc98fa1f5731c5965a810707bf0b8::EVE::EVE";
 export const EVE_COIN_TYPE_UTOPIA = "0xf0446b93345c1118f21239d7ac58fb82d005219b2016e100f074e4d17162a465::EVE::EVE";
 export const EVE_COIN_TYPE = _serverEnv === "stillness" ? EVE_COIN_TYPE_STILLNESS : EVE_COIN_TYPE_UTOPIA;
 
 // Backward compat alias — deprecated, use EVE_COIN_TYPE
 export const CRDL_COIN_TYPE = EVE_COIN_TYPE;
 
-// Developer testnet objects — real users connect their own wallet
-export const RAW_CHARACTER_ID = "0x5ef314c39748d5027fe4aef711f92497a4ea9618886f107916f2df0f16034c1c";
-export const RAW_NETWORK_NODE_ID = "0xbce555aedb0c1322232c4243ce62cfc6210293cb69be6b4fe212ab9b4ba49fd7";
-export const RAW_NODE_OWNER_CAP = "0x1e69832d1977a6963ea93b4cf2feeb7e432cde4ae463ff2989f35de3c78765f2";
+// Developer testnet objects — real users connect their own wallet.
+// 2026-06-25 wipe-day: Raw's pre-wipe Character / NetworkNode / OwnerCap are
+// orphaned by the chain-side wipe. Empty for now; will be repopulated after
+// Raw creates a new Character on the republished Stillness world.
+export const RAW_CHARACTER_ID = "";
+export const RAW_NETWORK_NODE_ID = "";
+export const RAW_NODE_OWNER_CAP = "";
 // FuelConfig per server — used in network_node::offline tx
-export const FUEL_CONFIG_STILLNESS = "0x4fcf28a9be750d242bc5d2f324429e31176faecb5b84f0af7dff3a2a6e243550";
+// 2026-06-25 wipe-day: new FuelConfig on republished Stillness world
+export const FUEL_CONFIG_STILLNESS = "0x190645fbcf66b9322dbc8f3ee5f883e46e1e6ab562daa978ffd78cb88404f7cf";
 export const FUEL_CONFIG_UTOPIA    = "0x0f354c803af170ac0d1ac9068625c6321996b3013dc67bdaf14d06f93fa1671f";
 export const FUEL_CONFIG = _serverEnv === "stillness" ? FUEL_CONFIG_STILLNESS : FUEL_CONFIG_UTOPIA;
 // EnergyConfig for Stillness world package (0x28b497...)
-export const ENERGY_CONFIG_STILLNESS = "0xd77693d0df5656d68b1b833e2a23cc81eb3875d8d767e7bd249adde82bdbc952";
-export const ENERGY_CONFIG_STILLNESS_ISV = 791126223;
+// 2026-06-25 wipe-day: new EnergyConfig on republished Stillness world
+export const ENERGY_CONFIG_STILLNESS = "0x885d13b06bd9199d037aa358ba37e6692aca92d7bf6c1b5a5210da7d83501b09";
+export const ENERGY_CONFIG_STILLNESS_ISV = 868826232;
 // EnergyConfig for Utopia world package (0xd12a70c7...)
 export const ENERGY_CONFIG_UTOPIA = "0x9285364e8104c04380d9cc4a001bbdfc81a554aad441c2909c2d3bd52a0c9c62";
 export const ENERGY_CONFIG_UTOPIA_ISV = 791126162;

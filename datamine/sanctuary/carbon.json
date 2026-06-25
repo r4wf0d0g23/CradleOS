@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "libraries": {
+        "carbon_components": "github.com/ccpgames/carbon-port/v0.5.0-0-g9668c6f",
+        "carbon_audio": "github.com/ccpgames/carbon-audio/v5.3.5-51-g5c48754",
+        "carbon_controls": "github.com/ccpgames/carbon-controls/wip",
+        "carbon_d3dinfo": "github.com/ccpgames/carbon-d3dinfo/v2.0.1-0-gc85ed0e",
+        "carbon_destiny": "github.com/ccpgames/frontier-destiny/v2.2.2-0-gc333b9e",
+        "carbon_fsd": "github.com/ccpgames/carbon-fsd/v2.0.1-0-g5930ead",
+        "carbon_ime": "github.com/ccpgames/carbon-ime/v1.0.1-0-g049ed3c",
+        "carbon_imagetools": "github.com/ccpgames/carbon-imagetools/v2.0.1-0-g3116627",
+        "carbon_spacemouse": "github.com/ccpgames/carbon-spacemouse/v2.0.0-0-g16c0b55",
+        "carbon_trinity": "github.com/ccpgames/carbon-trinity/v3.8.0-0-gf2526490",
+        "carbon_trinityaudioapi": "github.com/ccpgames/carbon-trinityaudioapi/v1.0.5-0-g762af6f",
+        "carbon_videoplayer": "github.com/ccpgames/carbon-videoplayer/v2.0.0-0-gbdcca04",
+        "carbon_webbrowser": "github.com/ccpgames/carbon-webbrowser/v1.3.2-0-g05e56d5"
+    }
+}

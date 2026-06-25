@@ -1,0 +1,1106 @@
+[
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/corpsev1/synomobody_corpsev1_sk.gr2",
+    "hash": "9106f05081d3002eca3846f030f32a06"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/corpsev2/synomobody_corpsev2_sk.gr2",
+    "hash": "f5112c1f211d12604ff19c7955a776e6"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/corpsev3/synomobody_corpsev3_sk.gr2",
+    "hash": "d26564a0efebca24f34e18a027de2fd0"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/corpsev4/synomobody_corpsev4_sk.gr2",
+    "hash": "200fc02b2399ff849b1fbaa71f223ae1"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/corpsev5/synomobody_corpsev5_sk.gr2",
+    "hash": "3075c120e7795318dbae2b2533a2c585"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/synomobody_corpsev1.black",
+    "hash": "55821be494d4cfc271a338e4197d950d"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/synomobody_corpsev2.black",
+    "hash": "828c731f9f6f5c7a1f0825a465b0e1f8"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/synomobody_corpsev3.black",
+    "hash": "faf30e2e83415654ebd5738d19e85ac6"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/synomobody_corpsev4.black",
+    "hash": "be58875218dfab63cf9efa6d3d3ec8f8"
+  },
+  {
+    "path": "res:/characters/assets/bodyparts/synomobody/build/synomobody_corpsev5.black",
+    "hash": "22acfeeacc53fb8a62d617385558b96f"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/corpsev1/synomohead_corpsev1_sk.gr2",
+    "hash": "18f60a525bcd6627318e4635b03b2a70"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/corpsev2/synomohead_corpsev2_sk.gr2",
+    "hash": "f593afd55cd6cd08c80557ad8fe603b2"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/corpsev3/synomohead_corpsev3_sk.gr2",
+    "hash": "a0276e2c7994f09db0e0893193411391"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/corpsev4/synomohead_corpsev4_sk.gr2",
+    "hash": "a35c7a0a7cb399a35057dba713b447b7"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/corpsev5/synomohead_corpsev5_sk.gr2",
+    "hash": "01a340a90a509ae81ce2d4d193291cb2"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/synomohead_corpsev1.black",
+    "hash": "9584721c93b5d6797da3f2420e2c2dbb"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/synomohead_corpsev2.black",
+    "hash": "0851520ff634a9913c79f60135abfbb2"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/synomohead_corpsev3.black",
+    "hash": "719e73bf7bc4357413cccc71a8de02fb"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/synomohead_corpsev4.black",
+    "hash": "5b7e857eb714e94a7d5b6bc7f9e24c59"
+  },
+  {
+    "path": "res:/characters/assets/heads/synomohead/build/synomohead_corpsev5.black",
+    "hash": "ebbe2e65552cedd57867e5edb0ddf469"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv1.black",
+    "hash": "af42e12bf0b64d0259f235ee62da85a5"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv1.clone",
+    "hash": "393b78005ddf421b2193e2a7d11630e6"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv2.black",
+    "hash": "4d6bb927d5e4ad0d1e82af33b4a5dae1"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv2.clone",
+    "hash": "5457811661a1c286c5520d428e3c5904"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv3.black",
+    "hash": "06c3ace7430ac92b0141913c8dc558b2"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv3.clone",
+    "hash": "e6b00559aeb1bb5dc4fefdabcc54251b"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv4.black",
+    "hash": "4e32fd9026b77fbe1417b7ce0e8e8632"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv4.clone",
+    "hash": "95c0bd819a9634f0a3eea39d3d090253"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv5.black",
+    "hash": "06c0957a9bbaaf02498528c387c197cf"
+  },
+  {
+    "path": "res:/characters/clonelab/clones/corpse/build/corpse_brokenv5.clone",
+    "hash": "58c13c921cc47c43de664a6dfc51e778"
+  },
+  {
+    "path": "res:/dx9/audio_controllers/audio_deployable_shared_ctrl.black",
+    "hash": "2589d31e2717397057f6da55d8e408de"
+  },
+  {
+    "path": "res:/dx9/fx/overlays/basebuilding/basebuilding_overlay_error.black",
+    "hash": "a2544752c5acda73a575f54e3251a73a"
+  },
+  {
+    "path": "res:/dx9/fx/overlays/basebuilding/basebuilding_overlay_error_skinned.black",
+    "hash": "e1fcd8f3cd8cf98eeba8daaed1f10337"
+  },
+  {
+    "path": "res:/dx9/fx/overlays/basebuilding/basebuilding_overlay_ghost.black",
+    "hash": "e2581fcf6d235d5ba3e8e1c8efe871d0"
+  },
+  {
+    "path": "res:/dx9/fx/overlays/basebuilding/basebuilding_overlay_ghost_skinned.black",
+    "hash": "3bcc338aee5c31bd076bad9472ce7840"
+  },
+  {
+    "path": "res:/dx9/fx/overlays/basebuilding/basebuilding_overlay_spawn.black",
+    "hash": "786de04d043aef065ba31e2008f78bb0"
+  },
+  {
+    "path": "res:/dx9/fx/overlays/basebuilding/basebuilding_overlay_spawn_skinned.black",
+    "hash": "f67980bd1f56fa7eb97ec676efaa6c79"
+  },
+  {
+    "path": "res:/dx9/fx/scanning/cone_pulse.black",
+    "hash": "40a477db131ce0e6dfba7ce691d93996"
+  },
+  {
+    "path": "res:/dx9/fx/scanning/ctrl_volumescanner.black",
+    "hash": "043147df7a749ecd7e7b91c6d63dacb7"
+  },
+  {
+    "path": "res:/dx9/fx/scanning/scanner/volumescanner_01a.black",
+    "hash": "02f408bd4b9963b03a05bab65866a24b"
+  },
+  {
+    "path": "res:/dx9/fx/scanning/scanner/volumnscanner_cone_small.gr2",
+    "hash": "643c9e920cf1a321d488b295b1cdd1e1"
+  },
+  {
+    "path": "res:/dx9/fx/ui/grid/grid_plane.gr2",
+    "hash": "238fdf7d1f76dfc7812f22e5aea40135"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_04v02/kb_b_04v02_lowdetail.gr2",
+    "hash": "0c3f6309ac1501af529ab43afafdcd07"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_07v01/kb_b_07v01_lowdetail.gr2",
+    "hash": "7e2d5fda2d8609081acadc11c6f4aa5c"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_10v01/kb_b_10v01_lowdetail.gr2",
+    "hash": "3e4f20219da440937af9d1b98a950259"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_12v02/kb_b_12v02_lowdetail.gr2",
+    "hash": "3cb25c9d3b2a14c7f01119b1d5d41cd0"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_12v04/kb_b_12v04_lowdetail.gr2",
+    "hash": "a8efc34c6d65a747328ed0260305719e"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_12v07/kb_b_12v07_lowdetail.gr2",
+    "hash": "48f2889e15c70b20e7bd01a35a0b6c07"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_14v08/kb_b_14v08_lowdetail.gr2",
+    "hash": "9ab785db63c5e4786c4a6082d219ed0e"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_14v18/kb_b_14v18_lowdetail.gr2",
+    "hash": "d7fe58909dbbeca46feef539067e1077"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_14v22/kb_b_14v22_lowdetail.gr2",
+    "hash": "2a6c0dfda13665bb31b742d34c03a7e4"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_14v23/kb_b_14v23_lowdetail.gr2",
+    "hash": "fab39bf65ed656088ce24429a2ae4098"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_14v25/kb_b_14v25_lowdetail.gr2",
+    "hash": "72797c3e6ebdd0f6a758460633d29ba2"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_15v03/kb_b_15v03.gr2",
+    "hash": "3e8c6fbaf61c797f830214017541afe6"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_15v04/kb_b_15v04.gr2",
+    "hash": "6f7f95513a76af140e8e5a400ab6932f"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_19v01/kb_b_19v01_lowdetail.gr2",
+    "hash": "f470e22dde3eea87793a1e032ed10153"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_19v02/kb_b_19v02_lowdetail.gr2",
+    "hash": "99d595ab5805659fd429308cbc8156a5"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/big/kb_b_26v01/kb_b_26v01_lowdetail.gr2",
+    "hash": "f50a777ccfa022730a7883960324070b"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_07v02/kb_m_07v02_lowdetail.gr2",
+    "hash": "37dc6ceaa336a872b3fcd8cfb25843f7"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_07v04/kb_m_07v04_lowdetail.gr2",
+    "hash": "2dfeb45bc1550d642bd542df560d930b"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_15v01/kb_m_15v01_lowdetail.gr2",
+    "hash": "f72d003b7b84b4445f756a46a77f2577"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_15v02/kb_m_15v02_lowdetail.gr2",
+    "hash": "2b7ab77765418a1bf0dc051257526aeb"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_19v03/kb_m_19v03_lowdetail.gr2",
+    "hash": "8c391d2209c2a9be8239120fc257fd70"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_19v04/kb_m_19v04_lowdetail.gr2",
+    "hash": "062af5b5210eff55c2a03d18475da512"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_19v07/kb_m_19v07_lowdetail.gr2",
+    "hash": "9560cb7cab4ddbc2f8c7396b028df734"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_19v08/kb_m_19v08_lowdetail.gr2",
+    "hash": "e2ae39effc3d46ffc7ec4db65aa202ce"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/medium/kb_m_22v03/kb_m_22v03_lowdetail.gr2",
+    "hash": "af1d33f5741c89a0e11f6530e1836f00"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/small/kb_s_04v02/kb_s_04v02.gr2",
+    "hash": "5af45634fde7b3b75ac7f72dc0ef2080"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/small/kb_s_04v02/kb_s_04v02_lowdetail.gr2",
+    "hash": "43dd78474235a8e7e65a6c700fa76329"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/small/kb_s_05v04/kb_s_05v04.gr2",
+    "hash": "dfefbc7c156045881d0423c41dfca33f"
+  },
+  {
+    "path": "res:/dx9/model/celestial/kitbash/structures/small/kb_s_11v01/kb_s_11v01.gr2",
+    "hash": "db18fd9da9a4be972177ea9716cc2df0"
+  },
+  {
+    "path": "res:/dx9/model/deployables/base_core_01v01/dep_basecore_process_fx_child.black",
+    "hash": "4d6bf5e7caaadc0a07b0d7c034aa360a"
+  },
+  {
+    "path": "res:/dx9/model/deployables/beacon_01v01/dep_beacon_01v01.gr2",
+    "hash": "f6b642d1c7f457779d5aa979523d401d"
+  },
+  {
+    "path": "res:/dx9/model/deployables/beacon_01v01/dep_beacon_01v01_lowdetail.gr2",
+    "hash": "a6fde8180bd9972a618f5faa988b6394"
+  },
+  {
+    "path": "res:/dx9/model/deployables/crude_silo_s_01v01/dep_crude_silo_s_01v01_curvature.dds",
+    "hash": "1d3d2d0921e3b4b7a45b1dd7e390cef8"
+  },
+  {
+    "path": "res:/dx9/model/deployables/crude_silo_s_01v01/dep_crude_silo_s_01v01_dirt1.dds",
+    "hash": "92fcfbce490edaed633a28b633101b12"
+  },
+  {
+    "path": "res:/dx9/model/deployables/crude_silo_s_01v01/dep_crude_silo_s_01v01_dirt2.dds",
+    "hash": "bc46910b15657e4540f49fce0294d39d"
+  },
+  {
+    "path": "res:/dx9/model/deployables/crude_silo_s_01v01/dep_crude_silo_s_01v01_thick.dds",
+    "hash": "54c404eb00d83974f338f5490f948b41"
+  },
+  {
+    "path": "res:/dx9/model/deployables/generic/container/profession/cp1/cp1_t1_p3.dds",
+    "hash": "92f7f432938899479755b3fb589324de"
+  },
+  {
+    "path": "res:/dx9/model/deployables/generic/container/profession/cp1/cp1_t1_p3_lowdetail.dds",
+    "hash": "0af9f69948e0f8479935d6289eda3613"
+  },
+  {
+    "path": "res:/dx9/model/deployables/modules/dep_mod_container_01v01.gr2",
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  {
+    "path": "res:/dx9/model/deployables/modules/dep_mod_container_01v01_curvature.dds",
+    "hash": "a9b2424afb8aa5ef9b499785ba93e2dd"
+  },
+  {
+    "path": "res:/dx9/model/deployables/modules/dep_mod_container_01v01_dirt1.dds",
+    "hash": "4d6d4807c598d1e0c5878720d800d823"
+  },
+  {
+    "path": "res:/dx9/model/deployables/modules/dep_mod_container_01v01_dirt2.dds",
+    "hash": "2d7b465760f16e804c8e9cdd93861192"
+  },
+  {
+    "path": "res:/dx9/model/deployables/modules/dep_mod_container_01v01_lowdetail.gr2",
+    "hash": "7ac9a6448e1a9b5c97c8975111c54321"
+  },
+  {
+    "path": "res:/dx9/model/deployables/modules/dep_mod_container_01v01_thick.dds",
+    "hash": "21a8a4bb3f97d54b6cc7eccb292f343d"
+  },
+  {
+    "path": "res:/dx9/model/deployables/printer_s_01v01/dep_printer_s_01v01_curvature.dds",
+    "hash": "44c9d62d022f394746adf664c51f85f0"
+  },
+  {
+    "path": "res:/dx9/model/deployables/printer_s_01v01/dep_printer_s_01v01_dirt1.dds",
+    "hash": "df3cf6bbbb6c888d9f24e53d20f78951"
+  },
+  {
+    "path": "res:/dx9/model/deployables/printer_s_01v01/dep_printer_s_01v01_dirt2.dds",
+    "hash": "74478e625387d9fceb5cf978cc5ad7ab"
+  },
+  {
+    "path": "res:/dx9/model/deployables/printer_s_01v01/dep_printer_s_01v01_thick.dds",
+    "hash": "b0fcdfb0cf8e16969d8a1cf94954220a"
+  },
+  {
+    "path": "res:/dx9/model/deployables/printer_s_01v01/dep_printer_s_process_fx.black",
+    "hash": "ffd8b3a933bfefa4b30f4ebaddbfdaad"
+  },
+  {
+    "path": "res:/dx9/model/deployables/printer_s_01v01/dep_printer_s_process_fx_child.black",
+    "hash": "f50e898ab93dd4196d4b5b4b5052e301"
+  },
+  {
+    "path": "res:/dx9/model/deployables/refinery_s_01v01/dep_refinery_s_01v01_curvature.dds",
+    "hash": "bdc79a4d0e1528c20228dd9ecb94f92f"
+  },
+  {
+    "path": "res:/dx9/model/deployables/refinery_s_01v01/dep_refinery_s_01v01_dirt1.dds",
+    "hash": "513edbe9a510bd3a464e7d6cfe6587ce"
+  },
+  {
+    "path": "res:/dx9/model/deployables/refinery_s_01v01/dep_refinery_s_01v01_dirt2.dds",
+    "hash": "a6cefc091088365d387b42c581978e98"
+  },
+  {
+    "path": "res:/dx9/model/deployables/refinery_s_01v01/dep_refinery_s_01v01_thick.dds",
+    "hash": "f43b33025c5e36519f037c75d71a9b5d"
+  },
+  {
+    "path": "res:/dx9/model/deployables/refinery_s_01v01/dep_refinery_s_process_fx.black",
+    "hash": "7a430fbc5ac1a3cbe4ec375358bad57c"
+  },
+  {
+    "path": "res:/dx9/model/deployables/refinery_s_01v01/dep_refinery_s_process_fx_child.black",
+    "hash": "3a0f0c05d3efa3dc7ce9fd1adb88b0d7"
+  },
+  {
+    "path": "res:/dx9/model/deployables/shipyard_s_01v01/dep_shipyard_s_01v01_curvature.dds",
+    "hash": "c10e0ddf5e9def9bbdd0638602218bb8"
+  },
+  {
+    "path": "res:/dx9/model/deployables/shipyard_s_01v01/dep_shipyard_s_01v01_dirt1.dds",
+    "hash": "85cad0b6c057beb8aed42beefa471eec"
+  },
+  {
+    "path": "res:/dx9/model/deployables/shipyard_s_01v01/dep_shipyard_s_01v01_dirt2.dds",
+    "hash": "cd21cca6dac4ae4b948da9e7b19ad371"
+  },
+  {
+    "path": "res:/dx9/model/deployables/shipyard_s_01v01/dep_shipyard_s_01v01_thick.dds",
+    "hash": "f4f614b8dbed3e1f2a3f00549045399f"
+  },
+  {
+    "path": "res:/dx9/model/deployables/shipyard_s_01v01/dep_shipyard_s_process_fx_child.black",
+    "hash": "59509faea1f29f2f56c50254fd0f2604"
+  },
+  {
+    "path": "res:/dx9/model/deployables/smart_printer_s_01/dep_smart_printer_s_process_fx_child.black",
+    "hash": "806f692d6488a2a8f23242eb46ed78f1"
+  },
+  {
+    "path": "res:/dx9/model/deployables/tumble_s_01v01/dep_tumble_s_01v01.gr2",
+    "hash": "1e16d8b55f4c83c723d28aac767daa91"
+  },
+  {
+    "path": "res:/dx9/model/deployables/tumble_s_01v01/dep_tumble_s_01v01_lowdetail.gr2",
+    "hash": "71128004ab90542a330a77a74af0b5ba"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_m_01v01/dep_turret_m_01_curvature.dds",
+    "hash": "c6b3fa31c76e28745643eb82e7ceb217"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_m_01v01/dep_turret_m_01_dirt1.dds",
+    "hash": "e7bf90cebfaae1a001c8d3df06c73925"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_m_01v01/dep_turret_m_01_dirt2.dds",
+    "hash": "e1c800b4f0af94fdd46db0571e18a42a"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_m_01v01/dep_turret_m_01_thick.dds",
+    "hash": "c1dedc38da826bf74a900c6142f98560"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_s_01v01/dep_turret_s_01_curvature.dds",
+    "hash": "6e264f22097f92ddc561066316e30ad5"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_s_01v01/dep_turret_s_01_dirt1.dds",
+    "hash": "c305befddf89eb521729e9dae0344cfd"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_s_01v01/dep_turret_s_01_dirt2.dds",
+    "hash": "2621f8f13d9f12d0c4762bfd081d3d07"
+  },
+  {
+    "path": "res:/dx9/model/deployables/turret_s_01v01/dep_turret_s_01_thick.dds",
+    "hash": "a98d58e550e0f980c76b2e72972e2db4"
+  },
+  {
+    "path": "res:/dx9/model/deployables/warehouse_s_01v01/dep_warehouse_s_01v01_curvature.dds",
+    "hash": "10018bca12e48ad041b5b95579c35eed"
+  },
+  {
+    "path": "res:/dx9/model/deployables/warehouse_s_01v01/dep_warehouse_s_01v01_dirt1.dds",
+    "hash": "3661e30c6e8997ab1a9c9155706bb5fc"
+  },
+  {
+    "path": "res:/dx9/model/deployables/warehouse_s_01v01/dep_warehouse_s_01v01_dirt2.dds",
+    "hash": "5205983cc56958f6d69ae5402c7c3c02"
+  },
+  {
+    "path": "res:/dx9/model/deployables/warehouse_s_01v01/dep_warehouse_s_01v01_thick.dds",
+    "hash": "99c3e742362c05286e8416a3535f5c44"
+  },
+  {
+    "path": "res:/dx9/model/shared/cube-verticaluv.gr2",
+    "hash": "35ed412ac42e81790b103b7d494b0d3f"
+  },
+  {
+    "path": "res:/dx9/model/shared/dep_base_core_01v01_circles_mesh.gr2",
+    "hash": "6c878ae7ccbb0a5afbf58715751414bc"
+  },
+  {
+    "path": "res:/dx9/model/shared/dep_base_core_01v01_circles_mesh_lowdetail.gr2",
+    "hash": "39139efe7435ac0b3bd96dfc8bf86f67"
+  },
+  {
+    "path": "res:/dx9/model/shared/details/dirtdetailnoise.dds",
+    "hash": "539d50c7f2f2fa8815922d5cd75d098f"
+  },
+  {
+    "path": "res:/dx9/model/shared/details/dirtdetailnoise_lowdetail.dds",
+    "hash": "868a4015d8db76e915f772a5489701a3"
+  },
+  {
+    "path": "res:/dx9/model/shared/minmatar/textures/detail/minmatar_sail_pattern_t1.dds",
+    "hash": "49f833b4a9f9a745c984ee27500a88bd"
+  },
+  {
+    "path": "res:/dx9/model/shared/minmatar/textures/detail/minmatar_sail_pattern_t1_lowdetail.dds",
+    "hash": "84116338a0379e484787cf3785f287eb"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_bcr_haul_01a_mat.dds",
+    "hash": "c1599d59bf6a07def76a22310a7f1723"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_a.dds",
+    "hash": "79c8641b78f7491486e03c28300b97e5"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_a_lowdetail.dds",
+    "hash": "c63bf2768a6ee950cba81d4c776d381f"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_m.dds",
+    "hash": "01fe86ce63ada28c2c9fedd6daeda117"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_n.dds",
+    "hash": "43e781a9e1f8d1d58c01a75746a8f02e"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_n_lowdetail.dds",
+    "hash": "b2be9e972498dde18700daa6d9d34f87"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_r.dds",
+    "hash": "ee285c66fb8d2adebe387841f4202ebb"
+  },
+  {
+    "path": "res:/dx9/model/ship/traditionalist/battlecruiser/trad_bcr_haul_01/trad_mods_01_r_lowdetail.dds",
+    "hash": "c7254907a11a36bea61fcd32eecc342d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_04.black",
+    "hash": "13ecaf539d3bb86cdacf1be0aa587fe5"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_05.black",
+    "hash": "7bd37dd4ec2218270616bee29ffcf49c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_06.black",
+    "hash": "986211da208a66639782f10715f49656"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_07.black",
+    "hash": "ecd7af6783a6c527f4f5b9fe0280a893"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_08.black",
+    "hash": "6aa04c831cfb21e65e4b93fbca8da505"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_09.black",
+    "hash": "60f32b768876303cf5d78e43a29288aa"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_10.black",
+    "hash": "a5d61053adeecae217a2f47aa08e9282"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_11.black",
+    "hash": "4470bb1dd4794025be543a6e2de41dcc"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_12.black",
+    "hash": "63071cddf48ea3605485abeeca0df465"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_13.black",
+    "hash": "98e22fe87a742761320353c2c747244e"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_14.black",
+    "hash": "b81404c155fccd553c7f23f68b5b03a7"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_15.black",
+    "hash": "8a2b094807b7de3ac595b6c8ef89db7c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_17.black",
+    "hash": "386b563a85cc3bc9cce7cce18cbf41db"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_18.black",
+    "hash": "0ac29a2ec2ddb88d39d384459fbba402"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_19.black",
+    "hash": "82904e3c952d708c142fccb058b7c435"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/deployable_generic_20.black",
+    "hash": "b6b27eb03f5f43087264b2e8d30ebc73"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/trad_ship_trader.black",
+    "hash": "2eee642f3f9a781b68adb23204e615ff"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/unreal_ship_01.black",
+    "hash": "188a10f4dedd00ae3eaf60019f94faac"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/dep_beacon_01v01.black",
+    "hash": "006341593c112837e5f19ba93381e780"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/dep_mod_container_01v01.black",
+    "hash": "36f17e1a4d7b8f4cd4c4f0ca33df4e27"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/dep_mod_container_01v01_ext.black",
+    "hash": "6013df8f8db868086bc7edb9978572c1"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/dep_tumble_s_01v01.black",
+    "hash": "7fa3f8d66ffa2a909a1f9581f4cc743d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/ff_trench.black",
+    "hash": "9f28186c72dd3582c444adcb0b38d914"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/kb_b_15v03.black",
+    "hash": "20554fdfb02d733e86863233030d5ba0"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/kb_b_15v03_ext.black",
+    "hash": "dd80d7edc69f48fdd2be7224f384ab07"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/kb_b_15v04.black",
+    "hash": "79e54992f0ee063d8692bce7aba13740"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/kb_b_15v04_ext.black",
+    "hash": "569225dee5dc7681fbab5e14d65817c9"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_beacon_01v01/33304_128.png",
+    "hash": "8363e29aa87c738a3a8cf0a850cc86c7"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_beacon_01v01/33304_128_no_background.png",
+    "hash": "a0d86ac86e3d4e6c7cbce517e85cd9cf"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_beacon_01v01/33304_512.jpg",
+    "hash": "103b5c7ccc5e7708d90d01828cb6d3b1"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_beacon_01v01/33304_512_no_background.jpg",
+    "hash": "a79a0761b69078b1995003bcec4c754f"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_beacon_01v01/33304_64.png",
+    "hash": "f4d6c343be30dd0ea29a5b489a8bc40e"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_beacon_01v01/33304_64_no_background.png",
+    "hash": "46aac5fb2cb4d9c01ea04b3092c2bd6c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_nursery_m_01v03/33043_128.png",
+    "hash": "71109d25af7423e8678bb08b5f179ad6"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_nursery_m_01v03/33043_512.jpg",
+    "hash": "ea9bf3bec91ba6aa7e463f4419e42308"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_nursery_m_01v03/33043_64.png",
+    "hash": "4f0aa9edaa6918f157b4d4aab2be011d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_nursery_m_01v03/dep_nursery_m_01v03_isis.png",
+    "hash": "7bca501f15e01e2e5c2c615a05bb8597"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_turret_s_01v01/28243_128.png",
+    "hash": "88c51368d6b3fb8eeb5c52c9d25e4db6"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_turret_s_01v01/28243_128_no_background.png",
+    "hash": "7df54977bf524c783f29897933198646"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_turret_s_01v01/28243_512.jpg",
+    "hash": "c87c74df453cde2225c2499cfa35b57f"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_turret_s_01v01/28243_512_no_background.jpg",
+    "hash": "2a848137acab547fed9f52253ecd250d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_turret_s_01v01/28243_64.png",
+    "hash": "e4f2ff4f75407e6c376c3f7991efadf9"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/dep_turret_s_01v01/28243_64_no_background.png",
+    "hash": "73fe2317dcf17d9c4a88dd6ce31f3806"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/kb_m_02v05/28080_128.png",
+    "hash": "9ec3d78dd1142f4d39b8697acca0b27c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/kb_m_02v05/28080_128_no_background.png",
+    "hash": "ae19b9b5140339f5283a3cea48ca53e7"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/kb_m_02v05/28080_512.jpg",
+    "hash": "98e17386e634bf510456f41ed25dfc98"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/kb_m_02v05/28080_512_no_background.jpg",
+    "hash": "c99814a4f60ed5260dc70732ccf298d8"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/kb_m_02v05/28080_64.png",
+    "hash": "e3a3c775a686603fa50e852af5b639df"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/kb_m_02v05/28080_64_no_background.png",
+    "hash": "de1be3a3cd8055aa27d8b99a391ece15"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_01_npc/33057_128.png",
+    "hash": "631ca64a6371823019328fb574bd1214"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_01_npc/33057_128_no_background.png",
+    "hash": "7bf94655d2250980992fdabc29de3b14"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_01_npc/33057_512.jpg",
+    "hash": "51cfe7bbbfe99da8c941c39ae17beb30"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_01_npc/33057_512_no_background.jpg",
+    "hash": "8a1bdff3732fd88bac2beb621f50435a"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_01_npc/33057_64.png",
+    "hash": "0ab150e79a4ca8a3991b709886312b6e"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_01_npc/33057_64_no_background.png",
+    "hash": "71c22c39e994d90a04f8d12295664fee"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33089_128.png",
+    "hash": "5bdf480aa8fbd5553815965c082b482f"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33089_128_no_background.png",
+    "hash": "fe817170d9bdb0888473e8491654a0da"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33089_512.jpg",
+    "hash": "b6eaf72f4d68ebd036f80ec006a60eeb"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33089_512_no_background.jpg",
+    "hash": "4031246fff1da459540c973c9a2b03cb"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33089_64.png",
+    "hash": "b40b87b10d95da665a0b4b26e18e2c6c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33089_64_no_background.png",
+    "hash": "c8e63af67db07c0a1921635bc19f7a59"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33096_128.png",
+    "hash": "5bdf480aa8fbd5553815965c082b482f"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33096_128_no_background.png",
+    "hash": "fe817170d9bdb0888473e8491654a0da"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33096_512.jpg",
+    "hash": "b6eaf72f4d68ebd036f80ec006a60eeb"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33096_512_no_background.jpg",
+    "hash": "4031246fff1da459540c973c9a2b03cb"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33096_64.png",
+    "hash": "b40b87b10d95da665a0b4b26e18e2c6c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_02_npc/33096_64_no_background.png",
+    "hash": "c8e63af67db07c0a1921635bc19f7a59"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_mine_01_npc/33073_128.png",
+    "hash": "eb237fb0ffa5fd32dfa3d7fc09eec9da"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_mine_01_npc/33073_128_no_background.png",
+    "hash": "6176fffc69c7100abe8768f7496a458f"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_mine_01_npc/33073_512.jpg",
+    "hash": "55cd9d089acac5b65e78afb103c58001"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_mine_01_npc/33073_512_no_background.jpg",
+    "hash": "fbd56aad29683a76ff94ee743b700805"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_mine_01_npc/33073_64.png",
+    "hash": "36a7e56c4730476e30e8016d1353cac5"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_corv_mine_01_npc/33073_64_no_background.png",
+    "hash": "0c522d0281f2a336b21d74be1d190a30"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_01_npc/33092_128.png",
+    "hash": "719a96fc6d0c0ba24249eb9f3cf72aea"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_01_npc/33092_128_no_background.png",
+    "hash": "3f75613738dc882e898d20234dc60791"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_01_npc/33092_512.jpg",
+    "hash": "84345f23ed7ccea39e16b800d3ceb53c"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_01_npc/33092_512_no_background.jpg",
+    "hash": "6b92cf261ea7218f171414cefec3921b"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_01_npc/33092_64.png",
+    "hash": "8941aae680b244e73d48eb50a016b75e"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_01_npc/33092_64_no_background.png",
+    "hash": "f077106c88a30800ff6e93efa546cb69"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_03_npc/33090_128.png",
+    "hash": "d03b571d2a3f68e49d57530885b49f5e"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_03_npc/33090_128_no_background.png",
+    "hash": "5d59885f44daaecdee3835b540aa5603"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_03_npc/33090_512.jpg",
+    "hash": "9cf90b23052b1a3dd8a6b34802ba84fe"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_03_npc/33090_512_no_background.jpg",
+    "hash": "22c01d4c11bed9ba9622d97bfd9cbf5d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_03_npc/33090_64.png",
+    "hash": "cfa070326506244177f0aa87d759856d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_03_npc/33090_64_no_background.png",
+    "hash": "c7027326c4820dbeb4cda8d069768d4a"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_mine_01_npc/33095_128.png",
+    "hash": "04be574053d278fe51b0eb6048d2af82"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_mine_01_npc/33095_128_no_background.png",
+    "hash": "b34c15202efd4c6f01cfb428b25e8889"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_mine_01_npc/33095_512.jpg",
+    "hash": "3f60d77d9d4f38266590ecf7163f7346"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_mine_01_npc/33095_512_no_background.jpg",
+    "hash": "38d38d1ece66626e76be8ba44e2ae6d3"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_mine_01_npc/33095_64.png",
+    "hash": "586545bff184eb67e19adfe8bf393c5d"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/icons/trad_frig_mine_01_npc/33095_64_no_background.png",
+    "hash": "a6a6753f10c88cf5f200cddc68e48cc6"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/layouts/strl_ff_trench_layout_01.black",
+    "hash": "fa748e6625c67670b30fc782a4bbbfe1"
+  },
+  {
+    "path": "res:/dx9/model/ui/linecontaineroverlay.black",
+    "hash": "e17fbbc47dd2666d57fabf498402c447"
+  },
+  {
+    "path": "res:/dx9/texture/decal/logistic_unit_n.dds",
+    "hash": "c1124051b5b5c998fcdb1f721e662ddf"
+  },
+  {
+    "path": "res:/dx9/texture/decal/logistic_unit_t.dds",
+    "hash": "8b24343a26b5ebc02ee94eb079a25e2c"
+  },
+  {
+    "path": "res:/dx9/texture/fx/caustics/caustic_13.dds",
+    "hash": "bd3014a8ace95af19b3cdd4fb2111ef2"
+  },
+  {
+    "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_concrete_damaged_02_n.dds",
+    "hash": "71dee20b359246f528b34d4f1a24b036"
+  },
+  {
+    "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_concrete_damaged_02_n_lowdetail.dds",
+    "hash": "59a87da64c96deced0b8145ee3e78f73"
+  },
+  {
+    "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_concrete_damaged_02_o.dds",
+    "hash": "076504e37f1ad52c44cd53bfada2f100"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_a.dds",
+    "hash": "1d5baa6ddb4b3a5415cd465ec527c73a"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_a_lowdetail.dds",
+    "hash": "b020f17ec79f0e9d2cc94d07bdabcad0"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_m.dds",
+    "hash": "41bd6a2b010757d328d42ab988385abb"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_mat.dds",
+    "hash": "0e4b190aa709a626ec9ac1bf94cc5e2c"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_n.dds",
+    "hash": "d528e0745ab18764bab5c2ce8b0f01ca"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_n_lowdetail.dds",
+    "hash": "1066923f3caf62a1ad8ee8a7334a893f"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_r.dds",
+    "hash": "2d257e719cac3383308e6e50b0ea5b21"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_r_lowdetail.dds",
+    "hash": "9234e9187e8a3a6be668971cd7919e32"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_04_p3.dds",
+    "hash": "51a8dff6076d4f32bf6ba8c5aed579dc"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_04_p3_lowdetail.dds",
+    "hash": "4c028dd3a5169f10cff1544588af3827"
+  },
+  {
+    "path": "res:/fisfx/_helper_/curves/colorcurve_orbitalzonetemperature.black",
+    "hash": "2354ad0de27aabc4f8d30588244ddc1e"
+  },
+  {
+    "path": "res:/model/ui/hitsphere.black",
+    "hash": "1fceb0975fdef3a5a2e8e6036c12e52b"
+  },
+  {
+    "path": "res:/staticdata/constellations.fsdbinary",
+    "hash": "7f9e79b3cb6ef2a7cf562d1651081afb"
+  },
+  {
+    "path": "res:/staticdata/creation_hardpoint_types.fsdbinary",
+    "hash": "6911c936fb5fdc6f6f716d7ccbeebeff"
+  },
+  {
+    "path": "res:/staticdata/creation_modules.fsdbinary",
+    "hash": "81f1e36a8bf44eaebedb33c6a029d6f5"
+  },
+  {
+    "path": "res:/staticdata/creation_parts.fsdbinary",
+    "hash": "6b72733faafcab36d52f62a0a518ee95"
+  },
+  {
+    "path": "res:/staticdata/creation_templates.fsdbinary",
+    "hash": "de316346555e845fda6bce8af79ba589"
+  },
+  {
+    "path": "res:/staticdata/ecosystem.fsdbinary",
+    "hash": "f7c29d7540707f14112d3d43ca762522"
+  },
+  {
+    "path": "res:/staticdata/landscape.fsdbinary",
+    "hash": "fda403af22edd31f1ad8496165b2c8cd"
+  },
+  {
+    "path": "res:/staticdata/moons.fsdbinary",
+    "hash": "f03339dad805685753e89612de2ef254"
+  },
+  {
+    "path": "res:/staticdata/npcstations.fsdbinary",
+    "hash": "7a953ab9f905a151a3b188c453999e44"
+  },
+  {
+    "path": "res:/staticdata/planets.fsdbinary",
+    "hash": "78cb3af3ca1bbbf1b5936902a960543e"
+  },
+  {
+    "path": "res:/staticdata/regions.fsdbinary",
+    "hash": "836a7b6242f0aa322f12804d9d4b16b4"
+  },
+  {
+    "path": "res:/staticdata/solarsystems.fsdbinary",
+    "hash": "d2d35f80eb94ad334443db8e2afc48e9"
+  },
+  {
+    "path": "res:/staticdata/stargates.fsdbinary",
+    "hash": "52591718d72f671a411eacd05b084397"
+  },
+  {
+    "path": "res:/staticdata/systemstate.fsdbinary",
+    "hash": "ec715c7a10794c7fd913c9e92f079382"
+  },
+  {
+    "path": "res:/staticdata/universe_distances.fsdbinary",
+    "hash": "dbb91876507589850fe608b174acec55"
+  },
+  {
+    "path": "res:/stuff/resdx9.txt",
+    "hash": "4fbea9c2273d154c3b739f831a53eb18"
+  },
+  {
+    "path": "res:/texture/fx/caustics/aurora_01b_bw.dds",
+    "hash": "5073e3a59be8f7e2ccbe61ed5cd99e52"
+  },
+  {
+    "path": "res:/texture/fx/caustics/caustic_01b3.dds",
+    "hash": "588beceb9b08ec0b75a78955fd6b084f"
+  },
+  {
+    "path": "res:/texture/fx/caustics/caustic_42a.dds",
+    "hash": "09d4deda8e0746387f18ad6a44014836"
+  },
+  {
+    "path": "res:/texture/fx/gradients/aurora_02c.dds",
+    "hash": "a96323f1057be7a0a751aa0101d4ea8e"
+  },
+  {
+    "path": "res:/texture/fx/gradients/cynoconegradient_01a.dds",
+    "hash": "3a034fd98e24743b1af77c4db7d62ca4"
+  },
+  {
+    "path": "res:/texture/fx/gradients/linear_01_b_inverse_b.dds",
+    "hash": "6ff1888b018f1b460d2c5fa1e9eb34af"
+  },
+  {
+    "path": "res:/texture/fx/gradients/offcenter_01a.dds",
+    "hash": "4ceab71720c2c40b5f35eac73956fac6"
+  },
+  {
+    "path": "res:/texture/fx/gradients/offcenter_02a.dds",
+    "hash": "f7deb28076b9404f0e0f8c1c309cfc6d"
+  },
+  {
+    "path": "res:/ui/texture/classes/character/arrow_down.png",
+    "hash": "55f01ff2c01ba329bdf8d7b8b25d5766"
+  },
+  {
+    "path": "res:/ui/texture/classes/character/caret_down.png",
+    "hash": "c50074807318b7f2fabe845ba93cd941"
+  },
+  {
+    "path": "res:/ui/texture/classes/character/dotted_line_box.png",
+    "hash": "49a4aac1b260c9eeae18f425ae6e2d04"
+  },
+  {
+    "path": "res:/ui/texture/classes/character/nest_background.png",
+    "hash": "7bfef6947d19c3cb4adbb8b2ee1005d7"
+  },
+  {
+    "path": "res:/ui/texture/classes/character/plus.png",
+    "hash": "adfef9b58ea87f32801df3e712c7c616"
+  },
+  {
+    "path": "res:/ui/texture/classes/frontier/buildmode/building/93141_128.png",
+    "hash": "4dde509f3600e1bc8ae26374f78faad9"
+  },
+  {
+    "path": "res:/ui/texture/classes/frontier/demotool/eve_frontier_splash.png",
+    "hash": "9a21a9fbadb217c633a53a85fab85643"
+  },
+  {
+    "path": "res:/ui/texture/classes/frontier/hud/reticle_center.png",
+    "hash": "4076ded2ad20ecd1c7dcba5342c105a5"
+  }
+]

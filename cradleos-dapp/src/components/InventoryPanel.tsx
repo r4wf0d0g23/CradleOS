@@ -198,6 +198,45 @@ async function fetchWithRetry(url: string, init: RequestInit, retries = 2, backo
   throw lastErr;
 }
 
+/**
+ * Wait until a freshly-submitted transaction is visible on the read endpoint.
+ *
+ * `signAndExecuteTransaction` returns once the transaction has been broadcast,
+ * but the JSON-RPC fullnode we read from may not yet reflect the new state
+ * (effects haven't propagated to the read replica). Without waiting, a refresh
+ * fired right after submission races and returns stale data — the user sees
+ * the UI report success but every row stays in the previous partition.
+ *
+ * This polls `sui_getTransactionBlock` until the digest resolves with effects,
+ * which is the moment the post-tx state is safe to re-fetch. Returns the
+ * effects status on success, or `null` on timeout (caller falls back to a
+ * best-effort refresh anyway).
+ */
+async function waitForTxFinality(digest: string, timeoutMs = 20_000, pollMs = 600): Promise<"success" | "failure" | null> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const r = await fetch(SUI_TESTNET_RPC, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "sui_getTransactionBlock",
+          params: [digest, { showEffects: true }],
+        }),
+      });
+      const j = await r.json() as {
+        result?: { effects?: { status?: { status?: "success" | "failure" } } };
+        error?: { message?: string };
+      };
+      const status = j.result?.effects?.status?.status;
+      if (status === "success" || status === "failure") return status;
+    } catch { /* transient — keep polling */ }
+    await new Promise(r => setTimeout(r, pollMs));
+  }
+  return null;
+}
+
 type SSUInventoryResult = {
   items: InventoryItem[];
   maxCapacity: number;
@@ -774,7 +813,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       }
 
       const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
       const itemName = resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
       // After v12, both branches land the item in an SSU partition visible
       // to the in-game client — owner branch routes to owner_main, non-owner
@@ -790,10 +829,13 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         next.delete(qtyKey);
         return next;
       });
-      // Defer refresh ~1.5s: RPC indexer needs time to reflect the new
-      // partition state after the tx commits. Refreshing immediately races
-      // and returns stale data.
-      setTimeout(() => onRefresh(ssu.objectId), 1500);
+      // Wait for the read endpoint to see the tx before refreshing so the
+      // row state reflects the new partition. +4s safety refresh covers
+      // any downstream proxy lag.
+      const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
     } finally {
@@ -893,7 +935,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       });
 
       const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
       const itemName = resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
       setTxStatus(`Moved ${qty}× ${itemName} from owner partition to shared`);
       setWithdrawQty(prev => {
@@ -901,7 +943,10 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         next.delete(qtyKey);
         return next;
       });
-      setTimeout(() => onRefresh(ssu.objectId), 1500);
+      const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
     } finally {
@@ -985,11 +1030,23 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
       });
 
       const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      setTxStatus(
+        `Moved ${totalMoved.toLocaleString()} item(s) across ${ownerRows.length} stack(s) → shared partition. Confirming on-chain…`
+      );
+      // Wait for the tx to be observable at the read endpoint before refreshing.
+      // For a 36-stack PTB the read replica can take several seconds to catch
+      // up; the old 1500ms blind timeout was racing and leaving the UI showing
+      // pre-tx state. Belt-and-braces: explicit wait + one follow-up refresh
+      // at +4s in case a downstream cache (cradleos-agent /sui proxy) lags
+      // the read endpoint by another tick.
+      const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
       setTxStatus(
         `Moved ${totalMoved.toLocaleString()} item(s) across ${ownerRows.length} stack(s) → shared partition`
       );
-      setTimeout(() => onRefresh(ssu.objectId), 1500);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
     } finally {
@@ -1034,6 +1091,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
     setTxError(null);
     try {
       const tx = new Transaction();
+      let digest: string | undefined;
 
       if (ownerCapId) {
         // OWNER branch: borrow OwnerCap once, withdraw each shared stack,
@@ -1080,9 +1138,10 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         });
 
         const signer = new CurrentAccountSigner(dAppKit);
-        await signer.signAndExecuteTransaction({ transaction: tx });
+        const result = await signer.signAndExecuteTransaction({ transaction: tx });
+        digest = (result as Record<string, unknown>)["digest"] as string | undefined;
         setTxStatus(
-          `Withdrew ${totalMoved.toLocaleString()} item(s) across ${sharedRows.length} stack(s) → owner partition`
+          `Withdrew ${totalMoved.toLocaleString()} item(s) across ${sharedRows.length} stack(s) → owner partition. Confirming on-chain…`
         );
       } else {
         // TRIBEMATE / allowlisted / public-mode branch: shared_withdraw_to_owned
@@ -1101,12 +1160,22 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         }
 
         const signer = new CurrentAccountSigner(dAppKit);
-        await signer.signAndExecuteTransaction({ transaction: tx });
+        const result = await signer.signAndExecuteTransaction({ transaction: tx });
+        digest = (result as Record<string, unknown>)["digest"] as string | undefined;
         setTxStatus(
-          `Withdrew ${totalMoved.toLocaleString()} item(s) across ${sharedRows.length} stack(s) → your partition`
+          `Withdrew ${totalMoved.toLocaleString()} item(s) across ${sharedRows.length} stack(s) → your partition. Confirming on-chain…`
         );
       }
-      setTimeout(() => onRefresh(ssu.objectId), 1500);
+      // Wait for the read endpoint to see the tx before refreshing; +4s
+      // safety net catches any downstream proxy lag. Same pattern as the
+      // owner→shared batch above.
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
+      // Drop the " Confirming on-chain…" suffix once finality is observed.
+      // We don't bother with functional updates because both branches set
+      // txStatus to the same shape immediately before this point.
+      setTxStatus(s => s ? s.replace(/\.? Confirming on-chain…$/, "") : s);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
     } finally {
@@ -1150,7 +1219,7 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         charOwnerCapId,
       );
       const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
       const itemName = resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
       setTxStatus(`Promoted ${qty}× ${itemName} from locked partition → shared pool`);
       setWithdrawQty(prev => {
@@ -1158,7 +1227,10 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
         next.delete(qtyKey);
         return next;
       });
-      setTimeout(() => onRefresh(ssu.objectId), 1500);
+      const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
     } finally {
@@ -1232,10 +1304,13 @@ async function _handleWithdraw(item: InventoryItem) {
       tx.transferObjects([withdrawn], tx.pure.address(walletAddress));
 
       const signer = new CurrentAccountSigner(dAppKit);
-      await signer.signAndExecuteTransaction({ transaction: tx });
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
       const itemName = resolvedNames.get(item.typeId) ?? `type_id ${item.typeId}`;
       setTxStatus(`Withdrew ${item.quantity}x ${itemName} to wallet`);
-      setTimeout(() => onRefresh(ssu.objectId), 1500);
+      const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
     } catch (err: any) {
       setTxError(err?.message ?? String(err));
     }

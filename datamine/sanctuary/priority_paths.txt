@@ -1,0 +1,52 @@
+# Sanctuary priority datamine targets
+# Generated 2026-06-24 from diff vs Cycle 5 Stillness resfileindex.txt
+
+# === NEW staticdata files in Sanctuary (15) ===
+res:/staticdata/constellations.fsdbinary
+res:/staticdata/creation_hardpoint_types.fsdbinary
+res:/staticdata/creation_modules.fsdbinary
+res:/staticdata/creation_parts.fsdbinary
+res:/staticdata/creation_templates.fsdbinary
+res:/staticdata/ecosystem.fsdbinary
+res:/staticdata/landscape.fsdbinary
+res:/staticdata/moons.fsdbinary
+res:/staticdata/npcstations.fsdbinary
+res:/staticdata/planets.fsdbinary
+res:/staticdata/regions.fsdbinary
+res:/staticdata/solarsystems.fsdbinary
+res:/staticdata/stargates.fsdbinary
+res:/staticdata/systemstate.fsdbinary
+res:/staticdata/universe_distances.fsdbinary
+
+# === CHANGED high-value staticdata (priority subset) ===
+res:/staticdata/industry_blueprints.fsdbinary
+res:/staticdata/industry_facilities.fsdbinary
+res:/staticdata/types.fsdbinary
+res:/staticdata/typedogma.fsdbinary
+res:/staticdata/typelist.fsdbinary
+res:/staticdata/dogmaattributes.fsdbinary
+res:/staticdata/groups.fsdbinary
+res:/staticdata/categories.fsdbinary
+res:/staticdata/jumps.static
+res:/staticdata/dialogs.static
+res:/staticdata/spacecomponentsbytype.fsdbinary
+res:/staticdata/skins.static
+res:/staticdata/skinmaterials.static
+res:/staticdata/skinlicenses.static
+res:/staticdata/audiometadata.fsdbinary
+res:/staticdata/bracketicons.fsdbinary
+res:/staticdata/bracketsbygroup.fsdbinary
+res:/staticdata/collisions.fsdbinary
+res:/staticdata/dbuffcollections.static
+res:/staticdata/dungeons.fsdbinary
+res:/staticdata/dungeonassetmanipulations.fsdbinary
+res:/staticdata/graphicids.fsdbinary
+res:/staticdata/nodegraphs.fsdbinary
+res:/staticdata/objectivechains.fsdbinary
+res:/staticdata/objectivetasktypes.fsdbinary
+res:/staticdata/objectivetypes.fsdbinary
+res:/staticdata/starmapcache.pickle
+
+# === Localization (en-us + main, the two we need) ===
+res:/localizationfsd/localization_fsd_en-us.pickle
+res:/localizationfsd/localization_fsd_main.pickle

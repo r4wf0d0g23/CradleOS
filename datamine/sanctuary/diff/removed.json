@@ -1,0 +1,242 @@
+[
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig.black",
+    "hash": "0f9b71b480d33f626aadc38e502d503f"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_body_d.dds",
+    "hash": "a8377da88108ba377a43ef563d1951dc"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_body_m.dds",
+    "hash": "e1ea9988000bbd88d4f59cb6d32c01ae"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_body_n.dds",
+    "hash": "2786c0b54e04051fb52c107aadfffbab"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_body_r.dds",
+    "hash": "414dcbcd988074e16081b14adbe9c232"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_head_d.dds",
+    "hash": "6808f85ea3ab731678b170c6ae821f8d"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_head_m.dds",
+    "hash": "e1ea9988000bbd88d4f59cb6d32c01ae"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_head_n.dds",
+    "hash": "3b7273ae84c30fa3dd2a723d2b296f11"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_head_r.dds",
+    "hash": "4954981b4d9744e50c642c3027490fbd"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_metadata.yaml",
+    "hash": "5fd108e1cbb06f065b590334f0c61a07"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/ancientomo/build/ancientomo_orig_sk.gr2",
+    "hash": "32a46a0af1638f3eb4f634a02af83100"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/brokenv1/corpse_brokenv1_sk.gr2",
+    "hash": "323b816a2fe00c597513f91e2c94ec1f"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/brokenv2/corpse_brokenv2_sk.gr2",
+    "hash": "419826260bbf7c18feea4230433c4a42"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/brokenv3/corpse_brokenv3_sk.gr2",
+    "hash": "a525e2a36f9da7d802f360694e77be3f"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/brokenv4/corpse_brokenv4_sk.gr2",
+    "hash": "38faf1275179bd2ebd2421fe34bf2f6d"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/brokenv5/corpse_brokenv5_sk.gr2",
+    "hash": "3675d065f88dbd6de072c1ddf33721e0"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_brokenv1.black",
+    "hash": "e95e273c4c9b33b1652b00b13b319c50"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_brokenv2.black",
+    "hash": "ea58254a90c49616e35feb61348e6b77"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_brokenv3.black",
+    "hash": "6ad86d6280260c9dbd93ebf6b119b7ac"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_brokenv4.black",
+    "hash": "cfeff3b7bf2e7901676874688482d41c"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_brokenv5.black",
+    "hash": "ac27537e8054283e826d3d79b7504f0d"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_body_d.dds",
+    "hash": "1ddeb8d6e466dde24111e63d39aeaead"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_body_m.dds",
+    "hash": "1bb123a5d84f4c0f807475d110f1f3b7"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_body_n.dds",
+    "hash": "ac6100a59315468a18db34ae763cce92"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_body_r.dds",
+    "hash": "f94d9ce8ef9dd4466282782ab9c49194"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_head_d.dds",
+    "hash": "baf0b57825d3d7a8711c416c9dc35173"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_head_m.dds",
+    "hash": "4cf19f4cc15c5bf2ba552c8d675f9155"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_head_n.dds",
+    "hash": "008e9a9e4d5d37c0fa20e04661088c3f"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_head_r.dds",
+    "hash": "0b0c67187c9e0827dcbb0ef19e50d0f9"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/corpse/build/corpse_orig_metadata.yaml",
+    "hash": "2df28f6024819483e5f7bbc210433cd6"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_body_d.dds",
+    "hash": "45e2101ebcf8c49f3eb9bce7764f8b0b"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_body_m.dds",
+    "hash": "18d1e971fd3534f93a2385954130d0fe"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_body_n.dds",
+    "hash": "211ccf2866c49158b3f5e1e778ca2518"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_body_r.dds",
+    "hash": "ef960df1b60fd70aa29ab7551627e495"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_head_d.dds",
+    "hash": "a9a6e211fed124241799adcfa66d3a09"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_head_m.dds",
+    "hash": "5a099b1830cc1680133de604436b8392"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_head_n.dds",
+    "hash": "daef11ad418008d151eb382524bd0797"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/dirty/omo_dirty_head_r.dds",
+    "hash": "0118f3f34f6b76e7b228caef37e3ad30"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig.black",
+    "hash": "c3281cd6dfc8d6b0cf684924940f4ec8"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_anim.gr2",
+    "hash": "b76c83d06a5decfea85c70d153b9abf7"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_body_d.dds",
+    "hash": "7fd42d395731121a8aea9e46442c2e64"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_body_m.dds",
+    "hash": "e5a48f19bc1d6edad99b21673b6f3ae4"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_body_n.dds",
+    "hash": "f3565bc682c64d3675683ee2577c5bb1"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_body_r.dds",
+    "hash": "5a4184deda07de686cab2b3af1e81642"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_body_z.dds",
+    "hash": "2bd5920142f568ae8e05aff81a3f2de9"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_head_d.dds",
+    "hash": "529a02b7a2d89c0f0ecb8bae500f92c1"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_head_m.dds",
+    "hash": "aafa33e3b0265cec255a56c88a1bbc5d"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_head_n.dds",
+    "hash": "55f76f4cbace85c7eb6bec14a0b78567"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_head_r.dds",
+    "hash": "3cf58493ec093c7d91d3f826a33e684e"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_head_z.dds",
+    "hash": "524effe290f34f5a7f03b877c913cbf0"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_metadata.yaml",
+    "hash": "6cca726271cb49765da776957d76c6f6"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/omo_orig_sk.gr2",
+    "hash": "0727c2f166e06c6d2d73cfb71cc88c13"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_body_d.dds",
+    "hash": "84552e21276c12315104f0e96bf91eea"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_body_m.dds",
+    "hash": "57f6576814e96bd5355bb5899b079d8d"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_body_n.dds",
+    "hash": "5f3295de0a85a7d66926190f5b415e4e"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_body_r.dds",
+    "hash": "a8c311ffce61bdd8ea2b0e4116b5a839"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_head_d.dds",
+    "hash": "4167f7d429cfb19b594eb7e1778ac6b7"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_head_m.dds",
+    "hash": "992bb8c025ab488793146d2b952a7c9f"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_head_n.dds",
+    "hash": "95a3b458553e962d4bd54939d1af2050"
+  },
+  {
+    "path": "res:/characters/pipeline/rigs/omo/build/seers/omo_seers_head_r.dds",
+    "hash": "4abc06e3b3209a1ab61353f949eef7d1"
+  }
+]

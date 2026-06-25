@@ -7,9 +7,12 @@ import { resolveSolarSystemsBatch } from "../lib/solarSystems";
 import { KillCardModal, type KillRecord } from "./KillCardModal";
 import { PlayerCardModal } from "./PlayerCardModal";
 
-import { SUI_GRAPHQL, SUI_TESTNET_RPC_DIRECT as SUI_RPC } from "../constants";
-const WORLD_PKG = "0x28b497559d65ab320d9da4613bf2498d5946b2c0ae3597ccfda3072ce127448c";
-const OBJECT_REGISTRY = "0x454a9aa3d37e1d08d3c9181239c1b683781e4087fbbbd48c935d54b6736fd05c";
+import {
+  SUI_GRAPHQL,
+  SUI_TESTNET_RPC_DIRECT as SUI_RPC,
+  WORLD_PKG_STILLNESS as WORLD_PKG,
+  OBJECT_REGISTRY_STILLNESS as OBJECT_REGISTRY,
+} from "../constants";
 
 // ── Targeted character resolution via address derivation ──────────────────────
 // Instead of fetching all 3000+ characters, derive Sui addresses from item_ids

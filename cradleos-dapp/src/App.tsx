@@ -5,6 +5,8 @@ import { useCurrentAccount, useWallets, useDAppKit } from "@mysten/dapp-kit-reac
 import { VerifiedAccountProvider, useVerifiedAccountContext } from "./contexts/VerifiedAccountContext";
 import { DevModeProvider, DevRoleToggle } from "./contexts/DevModeContext";
 import { ServerMismatchBanner } from "./components/ServerMismatchBanner";
+import { WipeCountdownBanner } from "./components/WipeCountdownBanner";
+import { GameDataPanel } from "./components/GameDataPanel";
 import MAUFooterPill from "./components/MAUFooterPill";
 import { StructurePanel } from "./components/StructurePanel";
 import { TribeVaultPanel } from "./components/TribeVaultPanel";
@@ -369,7 +371,7 @@ function PrivateNodeStatus() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -782,6 +784,16 @@ function AppInner() {
         "Sponsored gas is default — voters pay zero when creators sponsor (Enoki relayer)",
       ],
     },
+    gamedata: {
+      title: "Game Data — viewport of extracted Sanctuary client static data",
+      steps: [
+        "Catalogue: curated typeID groups (structures, turrets, shells, refuge, ecosystem dungeons) read straight from the Sanctuary build",
+        "Strings: searchable index of ~217k human-readable game strings (typeID + display name)",
+        "Cycle Deltas: every new and rotated staticdata file vs Cycle 5 / Stillness 0.5.1",
+        "Event Types: canonical event-type table the on-chain world emits",
+        "3D Preview: roadmap slot — carbonengine/mesh WASM port plus three.js will land ship/structure hulls here",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -796,7 +808,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy",
+      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata",
       voting: "voting",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
@@ -920,13 +932,16 @@ function AppInner() {
               // announcements, recruiting, hierarchy, assets, wiki, fitting,
               // map, efmap, keeper, cipher, flappy. Re-enable by adding back to
               // ORDER (and KIOSK_PUBLIC if it should work without a wallet).
+              // "defense" temporarily removed 2026-06-24 — see comment on
+              // the main tab strip above. Re-add when turrets return.
+              // "gamedata" added 2026-06-24 (public tab, Sanctuary viewport).
               const ORDER: Tab[] = [
-                "dashboard", "inventory", "tribe", "defense",
+                "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
-                "query", "industry", "dapps",
+                "query", "industry", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "dapps", "query", "intel", "industry",
+                "dapps", "query", "intel", "industry", "gamedata",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -954,6 +969,7 @@ function AppInner() {
                 : tab === "dapps"      ? "DAPPS"
                 : tab === "query"      ? "QUERY"
                 : tab === "industry"   ? "IND"
+                : tab === "gamedata"   ? "GAMEDATA"
                 : tab === "cipher"     ? "CIPHER"
                 : tab === "voting"     ? "VOTE"
                 : tab.toUpperCase();
@@ -1165,6 +1181,10 @@ function AppInner() {
         </div>
       </header>}
 
+      {/* Cycle 6 / Sanctuary wipe countdown — visible above all tabs, including
+          before wallet connect. Auto-hides 24h after gates open. */}
+      {!kioskMode && <WipeCountdownBanner />}
+
       {/* Collapsible context brief */}
       {!kioskMode && <div style={{
         marginBottom: "12px",
@@ -1226,9 +1246,14 @@ function AppInner() {
             render below if active tab is set programmatically; only the
             nav buttons are removed. Re-enable by adding tab id back to
             this list (and PUBLIC_TABS if public-without-wallet). */}
-        {(["dashboard", "inventory", "tribe", "defense", "gates", "intel", "calendar", "voting", "query", "industry", "dapps"] as Tab[]).filter(tab => {
+        {/* "defense" temporarily removed 2026-06-24 — next wipe ships without
+            turrets, so the TurretPolicyPanel has nothing to act on. Re-add
+            (here AND in the kiosk ORDER below) once Fenris restores turrets.
+            "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
+            static data; public, no wallet required. */}
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry"]);
+          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry", "gamedata"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1285,6 +1310,7 @@ function AppInner() {
                   : tab === "dapps"      ? "DApps"
                   : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
+                  : tab === "gamedata"  ? "Game Data"
                   : tab === "cipher"    ? "⊕ Cipher"
                   : tab === "voting"    ? "Vote"
                   : tab === "flappy"    ? "🚀"
@@ -1310,6 +1336,7 @@ function AppInner() {
                   : tab === "efmap"         ? "⬡ EF-Map"
                   : tab === "dapps"         ? "⧫ Community DApps"
                   : tab === "keeper"        ? "◆ Keeper"
+                  : tab === "gamedata"      ? "◇ Game Data"
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
@@ -1372,6 +1399,7 @@ function AppInner() {
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
+          {activeTab === "gamedata"      && <div style={{ background: "transparent" }} className="content-panel"><GameDataPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
