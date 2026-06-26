@@ -2588,7 +2588,11 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
 // CHARACTER REGISTRY — proof-based tribe vault ownership (v6)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const CHARACTER_REGISTRY_ID = "0x2e988f290955c6bf8ccf00ed3b847494016eb907c36d81d3774fcc8cead82ef5";
+// 2026-06-25 wipe-day: pre-wipe CharacterRegistry (typed under orphaned pkg
+// 0x7541ac23...) replaced with a fresh registry created via PTB tx
+// CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi alongside BountyBoard,
+// TrustlessBountyBoard, and KeeperShrine.
+export const CHARACTER_REGISTRY_ID = "0x36338164833e15ddf354d1b6f4d05fb57efb64020ce960107b46fc07d58f4813";
 
 export type TribeClaim = {
   claimer: string;

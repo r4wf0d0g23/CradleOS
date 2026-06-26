@@ -55,7 +55,12 @@ export const WORLD_PKG = _serverEnv === "stillness" ? WORLD_PKG_STILLNESS : WORL
 // resolution. One per world pkg; changes whenever world is republished.
 // 2026-06-25 wipe-day: Stillness republished, new registry below.
 export const OBJECT_REGISTRY_STILLNESS = "0xf6aed9361acc0d7021672b653ebe9dae45d88e11fecef01cc5434c8f60ae764f";
-export const OBJECT_REGISTRY_UTOPIA    = "0x454a9aa3d37e1d08d3c9181239c1b683781e4087fbbbd48c935d54b6736fd05c"; // pre-wipe Stillness id, also serves as Utopia placeholder — verify if used
+// 2026-06-25 audit: Utopia ObjectRegistry id is not currently known on-chain.
+// Previous value (0x454a9aa3...) was the PRE-WIPE Stillness registry being
+// borrowed as a placeholder — wrong on both counts. The only consumer is
+// IntelDashboardPanel, which is Stillness-only in practice. Zero it out so a
+// stray Utopia code path can't silently derive against the wrong registry.
+export const OBJECT_REGISTRY_UTOPIA    = "0x0000000000000000000000000000000000000000000000000000000000000000";
 export const OBJECT_REGISTRY = _serverEnv === "stillness" ? OBJECT_REGISTRY_STILLNESS : OBJECT_REGISTRY_UTOPIA;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -198,12 +203,12 @@ export const CRADLEOS_UPGRADE_ORIGIN = "0xd4f46821b371c776887922a5ac8e2e405b86b3
 //
 // When a future upgrade introduces a new event struct, append the new
 // package id here. fetchEventAcrossPackages in lib.ts uses this list.
+// 2026-06-25 wipe-day: post-wipe single-pkg lineage. The fresh v1 publish
+// carries every module, so there are no historical event pkgs to also query.
+// All prior CradleOS lineage pkgs are orphaned and return zero hits forever.
+// Append new pkgs here when future upgrades introduce new event structs.
 export const CRADLEOS_EVENT_PKGS: readonly string[] = [
-  CRADLEOS_PKG,             // v14 — GateFriendlyCharacterSet, GateHostileCharacterSet, GatePermitIssued
-  "0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6", // v13 — FriendlyCharacterSet, PlayerRelationRemoved
-  CRADLEOS_UPGRADE_ORIGIN,  // v4 — collateral_vault et al
-  "0x38115c0620f5f885529e932c1369cbe10305c9f2de504a6f203ce831941439c4", // v5 — defense_policy::HostileCharacterSet
-  CRADLEOS_ORIGINAL,        // v1 — all original-era structs
+  CRADLEOS_PKG, // fresh v1, post-wipe
 ];
 
 // Backward-compat aliases — all point to published-at for moveCall targets
@@ -411,10 +416,18 @@ export const TRIBE_VAULT_TYPE = `${CRADLEOS_ORIGINAL}::tribe_vault::TribeVault`;
 export const TRIBE_DEX_TYPE   = `${CRADLEOS_ORIGINAL}::tribe_dex::TribeDex`;
 
 // Shared objects that must be re-created by founders on the new chain
-export const BOUNTY_BOARD = "0x965709ce9d087d8f90edac6e19d8d42908098ec253e83f20a650884cd4814d90";
+// 2026-06-25 wipe-day: pre-wipe BountyBoard (typed under orphaned pkg
+// 0x7541ac23...) replaced with a fresh board created via PTB tx
+// CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi.
+export const BOUNTY_BOARD = "0xdd3c2af5485f5f4e8d13b00ae3ad8407e9ca127207a2138269d0039de2b3c388";
 // Trustless bounty board — set after deploying trustless_bounty module
-export const TRUSTLESS_BOUNTY_BOARD = "0xc6b60757b79e474745b5d0e9b1d2aa82b0ee6aca9efb92917b7f2a3c665c7498";
-export const KEEPER_SHRINE = "0x1bc082778513e51d2dfe691f8084822ac3b5db4014c0135a61c4ff135b5b671a";
+// 2026-06-25 wipe-day: pre-wipe TrustlessBountyBoard (typed under orphaned
+// pkg 0xa676b736...) replaced with a fresh board from same PTB.
+export const TRUSTLESS_BOUNTY_BOARD = "0x1969d8e82db7c26c362d6bf1b5e39fec22fa4872e494e95225d102f1975adfa4";
+// 2026-06-25 wipe-day: pre-wipe KeeperShrine<EVE> (typed under orphaned
+// pkg 0x2e51c867... and pre-wipe EVE coin 0x2a66a89b...) replaced with a
+// fresh KeeperShrine<EVE> typed correctly against new pkg + new EVE coin.
+export const KEEPER_SHRINE = "0x65daea1b74ea88e7f21d26f71735d2fdddc8c40756bd975a92684eb763c39f9d";
 // Wiki board not yet created on-chain — LoreWikiPanel shows placeholder when empty
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";
