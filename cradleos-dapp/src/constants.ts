@@ -131,11 +131,20 @@ export const CRADLEOS_PKG      = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066
 // v4 (2026-04-27 promote_ephemeral_to_shared): adds promote_ephemeral_to_shared which lets
 // a non-owner character move items from their per-character partition to the shared open pool.
 // Uses withdraw_by_owner<Character> with the character's own OwnerCap. Tx digest: 3SpS84N3i57jiPwx19JsdbUEfKYUWgP3XsxGfAWucc5t
-export const SSU_ACCESS_PKG_STILLNESS    = "0x6ea83a3e990892331b799f8ff516835bc8362793c635403db19a87ca9b81aeb8";
+// 2026-06-25 wipe-day: republished against new Stillness world (fresh v1).
+// Tx digest: Gj8pXc84s4k9smw7hZFBvRrYw24ZJPMA9NJbUZFxYPkh
+// UpgradeCap: 0x21d0cfbbf509ccfd3f86d3fa9fcb2344d2b34ba3b2a7fb5f81548d3f45a691b4
+// Pre-wipe pkg (now orphaned): 0x6ea83a3e990892331b799f8ff516835bc8362793c635403db19a87ca9b81aeb8
+export const SSU_ACCESS_PKG_STILLNESS    = "0x61f4dab56be12cfa74c268d900cfc7490a50c5969810433476b78d495e572232";
 // Original-id (publish v1) — use for event queries and shared-object type tags.
-export const SSU_ACCESS_ORIGINAL_STILLNESS = "0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e";
+// Fresh v1 publish post-wipe — ORIGINAL == PKG. Pre-wipe original (orphaned):
+// 0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e
+export const SSU_ACCESS_ORIGINAL_STILLNESS = "0x61f4dab56be12cfa74c268d900cfc7490a50c5969810433476b78d495e572232";
 // Registry — shared object id is unchanged across upgrades.
-export const SSU_POLICY_REGISTRY_STILLNESS = "0x59bbda885ae86d8c10033959d64c1375ff83b2a1a77966e7721da5c6005f402e";
+// 2026-06-25 wipe-day: new policy registry on the republished extension. The
+// pre-wipe registry (0x59bbda88...) still exists but maps pre-wipe SSU ids and
+// is unreachable via the new pkg — leave it orphaned.
+export const SSU_POLICY_REGISTRY_STILLNESS = "0x6fff6e36947a9cad9c8fb09578494f0c50a33440b708142af0b33ba4d56c1daa";
 //
 // Archived ssu_access packages (do NOT use):
 //   v1   (2026-04-26 single-tribe):    pkg=0x7d85b7c5524ffa0b0b029bdf77bb4f68d263f1b995f772272b04697520304a33
