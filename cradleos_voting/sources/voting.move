@@ -20,8 +20,29 @@ module cradleos_voting::voting {
     // ── One-Time Witness for Publisher / Display registration ─────────────────
     public struct VOTING has drop {}
 
+    // ── Scheduling sub-struct (added 2026-06-26) ──────────────────────────────
+    // Packs the four scheduling timestamps into one field on Election so the
+    // outer struct stays at or below Sui's 32-fields-per-struct verifier limit.
+    // Election previously had 35 fields and was rejected by the Sui validator
+    // with VMVerificationOrDeserializationError at publish time. See accessor
+    // wrappers (`scheduled_open_ms`, `scheduled_close_ms`, `reveal_deadline_ms`,
+    // `dispute_window_ms`) below for the unchanged public surface.
+    public struct ElectionSchedule has store, copy, drop {
+        opens_ms: u64,
+        closes_ms: u64,
+        reveal_deadline_ms: u64,
+        dispute_window_ms: u64,
+    }
+
     // ── Method kind constants (kinds 0–63 = built-in) ────────────────────────
-    public struct MethodKindMarker has drop {}  // suppress unused-use lints in pure consumers
+    // NOTE (2026-06-26): Previously a `public struct MethodKindMarker has drop {}` lived
+    // here with a misleading comment about "suppressing unused-use lints in pure consumers."
+    // It was dead code (zero references in the entire package) AND a second zero-sized
+    // `has drop` struct in a module that already declares the `VOTING` OTW on line 22.
+    // Sui's bytecode verifier rejects modules with multiple OTW-shaped structs at publish
+    // time (`VMVerificationOrDeserializationError`) even though `sui move build` passes
+    // cleanly. This blocked the entire cradleos_voting Stillness publish on wipe-day
+    // (2026-06-25). Confirmed by Opus review and removed 2026-06-26.
     const METHOD_SINGLE_CHOICE: u8 = 0;
     const METHOD_APPROVAL:      u8 = 1;
     const METHOD_RANKED_CHOICE: u8 = 2;     // subtype encoded in method_params[0]
@@ -114,10 +135,11 @@ module cradleos_voting::voting {
         // Lifecycle
         state: u8,
         created_ms: u64,
-        scheduled_open_ms: u64,
-        scheduled_close_ms: u64,
-        reveal_deadline_ms: u64,
-        dispute_window_ms: u64,
+        // Scheduling timestamps packed into a sub-struct so Election stays at
+        // ≤32 fields total (Sui verifier limit). Accessors below preserve the
+        // original public surface so tally.move and method modules read
+        // `voting::scheduled_open_ms(election)` etc. unchanged.
+        schedule: ElectionSchedule,
         finalized_ms: u64,
 
         // Method config
@@ -411,10 +433,12 @@ module cradleos_voting::voting {
             metadata_uri: string::utf8(metadata_uri),
             state: STATE_DRAFT,
             created_ms: now_ms,
-            scheduled_open_ms: 0,
-            scheduled_close_ms: 0,
-            reveal_deadline_ms: 0,
-            dispute_window_ms: 0,
+            schedule: ElectionSchedule {
+                opens_ms: 0,
+                closes_ms: 0,
+                reveal_deadline_ms: 0,
+                dispute_window_ms: 0,
+            },
             finalized_ms: 0,
             method_kind,
             method_params,
@@ -511,10 +535,10 @@ module cradleos_voting::voting {
         if (election.privacy_kind == PRIVACY_COMMIT_REVEAL) {
             assert!(reveal_deadline_ms > close_ms, E_BAD_SCHEDULE);
         };
-        election.scheduled_open_ms = open_ms;
-        election.scheduled_close_ms = close_ms;
-        election.reveal_deadline_ms = reveal_deadline_ms;
-        election.dispute_window_ms = dispute_window_ms;
+        election.schedule.opens_ms = open_ms;
+        election.schedule.closes_ms = close_ms;
+        election.schedule.reveal_deadline_ms = reveal_deadline_ms;
+        election.schedule.dispute_window_ms = dispute_window_ms;
         election.eligibility_snapshot_ms = open_ms;
     }
 
@@ -563,7 +587,7 @@ module cradleos_voting::voting {
     ) {
         assert!(ctx.sender() == election.creator, E_NOT_CREATOR);
         assert!(election.state == STATE_DRAFT, E_WRONG_STATE);
-        assert!(election.scheduled_open_ms > 0, E_BAD_SCHEDULE);
+        assert!(election.schedule.opens_ms > 0, E_BAD_SCHEDULE);
         assert!(vector::length(&election.options) >= 1, E_BAD_SCHEDULE);
 
         change_state(election, STATE_SCHEDULED, clock::timestamp_ms(clock));
@@ -571,9 +595,9 @@ module cradleos_voting::voting {
         event::emit(ElectionPublished {
             election_id: object::uid_to_inner(&election.id),
             options_count: (vector::length(&election.options) as u32),
-            scheduled_open_ms: election.scheduled_open_ms,
-            scheduled_close_ms: election.scheduled_close_ms,
-            reveal_deadline_ms: election.reveal_deadline_ms,
+            scheduled_open_ms: election.schedule.opens_ms,
+            scheduled_close_ms: election.schedule.closes_ms,
+            reveal_deadline_ms: election.schedule.reveal_deadline_ms,
         });
     }
 
@@ -599,7 +623,7 @@ module cradleos_voting::voting {
     ) {
         assert!(election.state == STATE_SCHEDULED, E_WRONG_STATE);
         let now_ms = clock::timestamp_ms(clock);
-        assert!(now_ms >= election.scheduled_open_ms, E_BAD_SCHEDULE);
+        assert!(now_ms >= election.schedule.opens_ms, E_BAD_SCHEDULE);
         change_state(election, STATE_OPEN, now_ms);
     }
 
@@ -611,7 +635,7 @@ module cradleos_voting::voting {
         assert!(election.state == STATE_OPEN, E_WRONG_STATE);
         assert!(election.privacy_kind == PRIVACY_COMMIT_REVEAL, E_NOT_COMMIT_REVEAL);
         let now_ms = clock::timestamp_ms(clock);
-        assert!(now_ms >= election.scheduled_close_ms, E_BAD_SCHEDULE);
+        assert!(now_ms >= election.schedule.closes_ms, E_BAD_SCHEDULE);
         change_state(election, STATE_REVEAL, now_ms);
     }
 
@@ -623,10 +647,10 @@ module cradleos_voting::voting {
         let now_ms = clock::timestamp_ms(clock);
         if (election.privacy_kind == PRIVACY_COMMIT_REVEAL) {
             assert!(election.state == STATE_REVEAL, E_WRONG_STATE);
-            assert!(now_ms >= election.reveal_deadline_ms, E_BAD_SCHEDULE);
+            assert!(now_ms >= election.schedule.reveal_deadline_ms, E_BAD_SCHEDULE);
         } else {
             assert!(election.state == STATE_OPEN, E_WRONG_STATE);
-            assert!(now_ms >= election.scheduled_close_ms, E_BAD_SCHEDULE);
+            assert!(now_ms >= election.schedule.closes_ms, E_BAD_SCHEDULE);
         };
         change_state(election, STATE_CLOSED, now_ms);
     }
@@ -808,8 +832,8 @@ module cradleos_voting::voting {
         assert!(!ballot.revealed, E_ALREADY_VOTED);
 
         let now_ms = clock::timestamp_ms(clock);
-        assert!(now_ms >= election.scheduled_close_ms, E_REVEAL_TOO_EARLY);
-        assert!(now_ms <= election.reveal_deadline_ms, E_REVEAL_TOO_LATE);
+        assert!(now_ms >= election.schedule.closes_ms, E_REVEAL_TOO_EARLY);
+        assert!(now_ms <= election.schedule.reveal_deadline_ms, E_REVEAL_TOO_LATE);
 
         // Verify commitment: H(salt || encoded_vote) == ballot.commitment
         let mut buf = vector[];
@@ -1042,10 +1066,10 @@ module cradleos_voting::voting {
     public fun total_weight_cast(e: &Election): u64   { e.total_weight_cast }
     public fun options(e: &Election): &vector<Option_> { &e.options }
     public fun option_id(o: &Option_): u32            { o.id }
-    public fun scheduled_open_ms(e: &Election): u64   { e.scheduled_open_ms }
-    public fun scheduled_close_ms(e: &Election): u64  { e.scheduled_close_ms }
-    public fun reveal_deadline_ms(e: &Election): u64  { e.reveal_deadline_ms }
-    public fun dispute_window_ms(e: &Election): u64   { e.dispute_window_ms }
+    public fun scheduled_open_ms(e: &Election): u64   { e.schedule.opens_ms }
+    public fun scheduled_close_ms(e: &Election): u64  { e.schedule.closes_ms }
+    public fun reveal_deadline_ms(e: &Election): u64  { e.schedule.reveal_deadline_ms }
+    public fun dispute_window_ms(e: &Election): u64   { e.schedule.dispute_window_ms }
     public fun eligibility_snapshot_ms(e: &Election): u64 { e.eligibility_snapshot_ms }
     public fun creator_character_id(e: &Election): u32 { e.creator_character_id }
     public fun has_vote(e: &Election, character_id: u32): bool {

@@ -218,16 +218,22 @@ export const GATE_POLICY_PKG      = CRADLEOS_PKG;
 export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
 
 // ── CradleOS Voting ──────────────────────────────────────────────────────────
-// Separate sibling package. NOT YET PUBLISHED — set the published-at id and the
-// shared ExtensionRegistry id here after `sui client publish` lands. Until both
-// are populated, the dApp VotingPanel renders a "package not yet published"
-// banner and disables tx-sending actions. Read-only browsing of any past elections
-// would fail too (no events to query), so all panel surfaces gate on
-// CRADLEOS_VOTING_AVAILABLE.
+// Separate sibling package. Published 2026-06-26 post-wipe on Stillness v1.
+//   Pkg:           0x7756113607b23efc989f0ce9976c1b93dae87f8824e1c0ba4988273565565a7a
+//   UpgradeCap:    0x2e279a2cfb1ce40e3a67bb43f486b7285d63cc553bfcce435142b1dea38436aa
+//   AdminCap:      0xef1828b1055b5240d82fa4e2acec03a74ddd64a860b66fc295f61781c75b8071
+//   Publish tx:    7aMUdvJWyG4Rr5w2423n5CSTbiVLBBd9GTzY4tUTTLLK
+//   Registry tx:   79RqEp2zfLaNNYdqoWGrXGQvVKLnUWMmxU1arTSnpqnz
+// Two blockers cleared today: (1) removed a stray `MethodKindMarker` OTW twin
+// in voting.move (Sui caps zero-sized has-drop structs to one per module —
+// OTW uniqueness), (2) refactored `Election` from 35 fields to exactly 32 by
+// packing the 4 scheduling timestamps into an `ElectionSchedule` sub-struct
+// (Sui validator caps structs at 32 fields). Both rejected at publish time
+// with VMVerificationOrDeserializationError; neither caught by `sui move build`.
 export const CRADLEOS_VOTING_PKG: string =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
+  "0x7756113607b23efc989f0ce9976c1b93dae87f8824e1c0ba4988273565565a7a";
 export const CRADLEOS_VOTING_REGISTRY: string =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
+  "0x85c113874576b407fcebf077de1d2f9993b6edfce4e71fcc382785abd72df183";
 // Append every upgrade-publish for fetchVotingEventAcrossPackages.
 export const CRADLEOS_VOTING_EVENT_PKGS: readonly string[] = [
   CRADLEOS_VOTING_PKG,
