@@ -22,12 +22,13 @@
  *
  * ⚠️ Post-Sanctuary (build 3409470+) the world-api `name` field returns
  * numeric placeholder strings (e.g. "30089267") instead of the human-readable
- * in-game names (e.g. "A 2560", "AF2-FF9"). After running this script,
- * follow up with `scripts/overlay-solarsystem-names.py` to overlay the
- * localization-pickle names on top of the geometry payload. The overlay
- * reads `frontier/datamine/sanctuary-<build>/raw/localization_fsd_en-us.pickle`
- * and patches the `name` field of every system whose offset typeID
- * (825732 + (sys_id - 30000001)) exists in the pickle.
+ * in-game names (e.g. "A4T-SL7"). The in-game client reads the canonical
+ * name directly from the bundled `systems.static` data file's per-system
+ * `name: string` field.
+ *
+ * After running this script, follow up with
+ * `scripts/overlay-solarsystem-names.py` to overlay the canonical names
+ * from `systems.static` on top of this geometry payload.
  */
 import { writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
