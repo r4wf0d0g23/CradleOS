@@ -19,6 +19,15 @@
  * initial dApp boot. Same pattern as `public/data/planet-index.json`.
  *
  * Run: node scripts/refresh-solar-systems.mjs
+ *
+ * ⚠️ Post-Sanctuary (build 3409470+) the world-api `name` field returns
+ * numeric placeholder strings (e.g. "30089267") instead of the human-readable
+ * in-game names (e.g. "A 2560", "AF2-FF9"). After running this script,
+ * follow up with `scripts/overlay-solarsystem-names.py` to overlay the
+ * localization-pickle names on top of the geometry payload. The overlay
+ * reads `frontier/datamine/sanctuary-<build>/raw/localization_fsd_en-us.pickle`
+ * and patches the `name` field of every system whose offset typeID
+ * (825732 + (sys_id - 30000001)) exists in the pickle.
  */
 import { writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
