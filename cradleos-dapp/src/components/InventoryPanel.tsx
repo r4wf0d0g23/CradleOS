@@ -29,6 +29,7 @@ import {
   discoverSharedSsus,
   type LoadedPolicy,
   buildPromoteToSharedTx,
+  buildPromoteAllToSharedTx,
   fetchCharacterOwnerCapId,
 } from "../lib/ssuAccess";
 import { blake2b } from "@noble/hashes/blake2.js";
@@ -584,6 +585,8 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
   // True while a batch "Move All to Shared" tx is in flight.
   const [batchMovingAll, setBatchMovingAll] = useState(false);
   const [batchWithdrawingAll, setBatchWithdrawingAll] = useState(false);
+  // True while a batch "Promote All Lockbox → Shared" tx is in flight.
+  const [batchPromotingAll, setBatchPromotingAll] = useState(false);
 
   // Resolve the user's *current* tribe_id from chain (Character object).
   // Used to pre-populate ssu_access tribe-policy editors and badge own tribe.
@@ -1238,6 +1241,41 @@ function SSUCard({ inv, characterId, ownerCaps, dAppKit, walletAddress, onRefres
     }
   }
 
+  // Batched version of handlePromoteToShared. Borrows OwnerCap<Character> once,
+  // runs N promote_ephemeral_to_shared calls inside the borrow window, returns
+  // the cap once. One signature for the whole lockbox → shared move.
+  async function handlePromoteAllToShared() {
+    if (!characterId || !policy?.policyId || !charOwnerCapId) return;
+    const ownItems = nonZero.filter(i => isOwnLockbox(i));
+    if (ownItems.length === 0) {
+      setTxError("No items in your lockbox to promote.");
+      return;
+    }
+    setBatchPromotingAll(true);
+    setTxStatus(null);
+    setTxError(null);
+    try {
+      const tx = buildPromoteAllToSharedTx(
+        ssu.objectId,
+        characterId,
+        policy.policyId,
+        ownItems.map(i => ({ typeId: i.typeId, quantity: i.quantity })),
+        charOwnerCapId,
+      );
+      const signer = new CurrentAccountSigner(dAppKit);
+      const result = await signer.signAndExecuteTransaction({ transaction: tx });
+      setTxStatus(`Promoted ${ownItems.length} stack${ownItems.length === 1 ? "" : "s"} from your lockbox → shared pool`);
+      const digest = (result as Record<string, unknown>)["digest"] as string | undefined;
+      if (digest) await waitForTxFinality(digest);
+      onRefresh(ssu.objectId);
+      setTimeout(() => onRefresh(ssu.objectId), 4000);
+    } catch (err: any) {
+      setTxError(err?.message ?? String(err));
+    } finally {
+      setBatchPromotingAll(false);
+    }
+  }
+
   const nonZero = items.filter(i => i.quantity > 0);
   const totalVol = nonZero.reduce((acc, i) => acc + i.volume * i.quantity, 0);
   const usedCap = inv.usedCapacity > 0 ? inv.usedCapacity : totalVol;
@@ -1487,7 +1525,7 @@ async function _handleWithdraw(item: InventoryItem) {
           items.some(i => i.partition === "open" && i.quantity > 0) && (
           <button
             onClick={(e) => { e.stopPropagation(); handleWithdrawAllShared(); }}
-            disabled={batchWithdrawingAll || batchMovingAll || withdrawingTypeId !== null}
+            disabled={batchWithdrawingAll || batchMovingAll || batchPromotingAll || withdrawingTypeId !== null}
             title={ownerCapId
               ? `Withdraw ALL shared-partition stacks → owner-private partition in a single signature. Items stay on this SSU, in-game-client visible.`
               : `Withdraw ALL shared-partition stacks → your per-character partition on this SSU in a single signature. In-game-client visible under your character.`
@@ -1501,13 +1539,39 @@ async function _handleWithdraw(item: InventoryItem) {
               border: "1px solid rgba(120,200,255,0.5)",
               color: batchWithdrawingAll ? "rgba(120,200,255,0.4)" : "#78c8ff",
               padding: "2px 6px",
-              cursor: (batchWithdrawingAll || batchMovingAll || withdrawingTypeId !== null) ? "wait" : "pointer",
+              cursor: (batchWithdrawingAll || batchMovingAll || batchPromotingAll || withdrawingTypeId !== null) ? "wait" : "pointer",
               whiteSpace: "nowrap",
             }}
           >
             {batchWithdrawingAll
               ? "… batch"
               : ownerCapId ? "↩ ALL→OWNED" : "↩ WITHDRAW ALL"}
+          </button>
+        )}
+        {/* Batch "Deposit All Lockbox" button. Renders when:
+            (a) caller has a usable charOwnerCapId + policy + characterId,
+            (b) at least one row in the caller's own lockbox has nonzero qty.
+            Promotes every own-lockbox stack into the shared open pool in a
+            single PTB / single signature. Mirrors WITHDRAW ALL. */}
+        {canPromoteToShared && nonZero.some(isOwnLockbox) && (
+          <button
+            onClick={(e) => { e.stopPropagation(); handlePromoteAllToShared(); }}
+            disabled={batchPromotingAll || batchMovingAll || batchWithdrawingAll || withdrawingTypeId !== null}
+            title={`Deposit ALL of your lockbox stacks → shared open pool in a single signature. Other members with shared access (${policy ? modeLabel(policy.mode) : "shared"}) can then withdraw.`}
+            style={{
+              marginLeft: 8,
+              fontSize: 9,
+              fontFamily: "monospace",
+              letterSpacing: "0.08em",
+              background: "transparent",
+              border: "1px solid rgba(255,200,80,0.5)",
+              color: batchPromotingAll ? "rgba(255,200,80,0.4)" : "#ffc850",
+              padding: "2px 6px",
+              cursor: (batchPromotingAll || batchMovingAll || batchWithdrawingAll || withdrawingTypeId !== null) ? "wait" : "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {batchPromotingAll ? "… batch" : "↓ DEPOSIT ALL"}
           </button>
         )}
         {/* Manual refresh button. Always rendered to give a guaranteed

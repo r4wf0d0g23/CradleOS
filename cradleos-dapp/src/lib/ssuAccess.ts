@@ -1115,3 +1115,73 @@ export function buildPromoteToSharedTx(
 
   return tx;
 }
+
+/**
+ * Batch variant of `buildPromoteToSharedTx`: promote N items from the caller's
+ * per-character (ephemeral / [locked]) partition into the SSU's shared open
+ * inventory — all in a single PTB, one signature.
+ *
+ * Borrow OwnerCap<Character> once, chain N promote_ephemeral_to_shared calls
+ * against it, return the cap once. Mirrors the WITHDRAW ALL flow's batching.
+ *
+ * Sui PTBs execute commands sequentially within one tx, so the same charCap
+ * (borrowed by &mut from the Character) can be reused as a &ref argument by
+ * every promote call before being returned. This is the same pattern the
+ * StructurePanel batch online/offline builders use for OwnerCap<Structure>.
+ */
+export function buildPromoteAllToSharedTx(
+  ssuObjectId: string,
+  characterId: string,
+  policyId: string,
+  items: Array<{ typeId: number | bigint; quantity: number }>,
+  charOwnerCapId: string,
+): Transaction {
+  if (!SSU_ACCESS_AVAILABLE) {
+    throw new Error("ssu_access feature not available on this server.");
+  }
+  if (items.length === 0) {
+    throw new Error("buildPromoteAllToSharedTx: no items to promote.");
+  }
+
+  const tx = new Transaction();
+
+  // 1. Borrow OwnerCap<Character> once.
+  const [charCap, charCapReceipt] = tx.moveCall({
+    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    typeArguments: [`${WORLD_PKG}::character::Character`],
+    arguments: [
+      tx.object(characterId),
+      tx.object(charOwnerCapId),
+    ],
+  });
+
+  // 2. One promote_ephemeral_to_shared call per item. charCap is passed by &ref
+  //    so it stays valid across the loop.
+  for (const item of items) {
+    tx.moveCall({
+      target: `${SSU_ACCESS_PKG}::ssu_access::promote_ephemeral_to_shared`,
+      arguments: [
+        tx.object(ssuObjectId),
+        tx.object(policyId),
+        tx.object(characterId),
+        charCap,
+        tx.pure.u64(BigInt(item.typeId)),
+        tx.pure.u32(item.quantity),
+        tx.object("0x6"),
+      ],
+    });
+  }
+
+  // 3. Return the cap once (consumes charCap by value + receipt).
+  tx.moveCall({
+    target: `${WORLD_PKG}::character::return_owner_cap`,
+    typeArguments: [`${WORLD_PKG}::character::Character`],
+    arguments: [
+      tx.object(characterId),
+      charCap,
+      charCapReceipt,
+    ],
+  });
+
+  return tx;
+}
