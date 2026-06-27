@@ -444,8 +444,22 @@ export function QueryPanel() {
   const isLoading = charsLoading || tribesLoading;
 
   return (
-    <div style={{ padding: 20, maxWidth: 860, margin: "0 auto" }}>
-      <div style={{ color: "#FF4700", fontWeight: 700, fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+    // EVE Vault embedded webview has a fixed viewport with no document-level
+    // scroll. Panels must manage their own internal scrolling. Pattern mirrors
+    // LoreWikiPanel: flex column root with calc(100vh - chrome) height, fixed
+    // header + toggle, scrollable results region with overflowY auto + minHeight 0
+    // so flex children actually shrink instead of growing the page.
+    // (Fix shipped 2026-06-27 after Raw caught the Chain Query clipping in-game.)
+    <div style={{
+      padding: 20,
+      maxWidth: 860,
+      margin: "0 auto",
+      height: "calc(100vh - 200px)",
+      minHeight: 400,
+      display: "flex",
+      flexDirection: "column",
+    }}>
+      <div style={{ color: "#FF4700", fontWeight: 700, fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         Chain Query
         <span style={{ fontSize: 10, fontWeight: 400, color: "rgba(180,180,160,0.5)", background: "rgba(255,71,0,0.08)", border: "1px solid rgba(255,71,0,0.2)", borderRadius: 3, padding: "1px 8px", letterSpacing: 1 }}>
           {SERVER_LABEL}
@@ -453,7 +467,7 @@ export function QueryPanel() {
       </div>
 
       {/* Mode toggle + search */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", flexShrink: 0 }}>
         {(["character", "tribe"] as const).map(m => (
           <button key={m} onClick={() => { setMode(m); setQuery(""); setSelectedChar(null); setSelectedTribe(null); }}
             style={{ padding: "5px 16px", borderRadius: 3, fontSize: 12, fontWeight: 600, cursor: "pointer",
@@ -485,6 +499,12 @@ export function QueryPanel() {
         )}
       </div>
 
+      {/* Body — single scrollable region containing whichever sub-view is
+          active (results list / char detail / tribe detail / empty state).
+          `flex: 1 + minHeight: 0` lets the flex child shrink so `overflowY: auto`
+          actually engages instead of growing the page.  paddingRight gives
+          the scroll thumb breathing room inside the EVE Vault webview. */}
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", paddingRight: 4 }}>
       {/* Results list */}
       {showResults && !selectedChar && !selectedTribe && (
         <div>
@@ -570,6 +590,7 @@ export function QueryPanel() {
           {" "}<span style={{ color: "rgba(100,200,255,0.5)" }}>⚡ server-side character search</span>
         </div>
       )}
+      </div>{/* end scrollable body */}
 
       {/* Player card modal (opened from character detail "Open player card" button) */}
       {openPlayer && (() => {
