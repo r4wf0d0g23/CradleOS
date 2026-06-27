@@ -4101,8 +4101,37 @@ export type CharacterMember = {
   tribeId: number;
 };
 
-/** Query all Character objects for a tribe using Sui GraphQL — paginated. */
+/** Query all Character objects for a tribe.
+ *
+ *  PRIMARY: character-index /characters-by-tribe (sub-50ms, indexed by
+ *  (server, tribe_id)). Returns full tribe roster in one round trip.
+ *  FALLBACK: paginated GraphQL walk for index outages.
+ *
+ *  Migrated 2026-06-26 from a multi-page Sui GraphQL walk. */
 export async function fetchTribeMembersByTribeId(tribeId: number): Promise<CharacterMember[]> {
+  // PRIMARY: character-index endpoint
+  try {
+    const r = await fetch(
+      `https://keeper.reapers.shop/index/characters-by-tribe?server=${SERVER_ENV}&tribe_id=${tribeId}&limit=5000`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (r.ok) {
+      const j = (await r.json()) as {
+        rows?: Array<{ object_id: string; character_addr: string }>;
+      };
+      if (j.rows) {
+        return j.rows.map((row) => ({
+          characterId:      row.object_id,
+          characterAddress: row.character_addr,
+          tribeId,
+        }));
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+
+  // FALLBACK: paginated GraphQL walk
   const results: CharacterMember[] = [];
   let cursor: string | null = null;
   // Paginate through ALL characters and filter by tribe_id

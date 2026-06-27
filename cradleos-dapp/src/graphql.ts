@@ -412,10 +412,51 @@ export async function fetchTribeMembers(
 // Used to enrich member roster with in-game names.
 // ---------------------------------------------------------------------------
 
+// character-index public endpoint shared with other resolvers in this module.
+const CHARACTER_INDEX_URL = "https://keeper.reapers.shop/index";
+
 export async function fetchCharactersByTribeId(
   tribeId: number,
   maxScan = 500,
 ): Promise<EFCharacter[]> {
+  // PRIMARY: character-index /characters-by-tribe (sub-50ms, indexed by
+  // (server, tribe_id)). Returns full tribe roster in one round trip.
+  // Migrated 2026-06-26 from a 500-object paginated GraphQL walk.
+  try {
+    const { SERVER_ENV } = await import("./constants");
+    const r = await fetch(
+      `${CHARACTER_INDEX_URL}/characters-by-tribe?server=${SERVER_ENV}&tribe_id=${tribeId}&limit=${maxScan}`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (r.ok) {
+      const j = (await r.json()) as {
+        rows?: Array<{
+          object_id: string;
+          character_addr: string;
+          name: string;
+          tribe_id: number;
+          item_id: string;
+        }>;
+      };
+      if (j.rows && j.rows.length > 0) {
+        return j.rows.map((row) => ({
+          objectId:      row.object_id,
+          charId:        row.item_id,
+          name:          row.name,
+          tribeId:       row.tribe_id,
+          walletAddress: row.character_addr, // misnomer; this is character_addr
+        }));
+      }
+      // Index returned empty for this tribe — could be legitimately empty
+      // OR a brand-new tribe the index hasn't polled yet. Fall through to
+      // GraphQL only on the latter case (cheap to be paranoid here since
+      // most tribes won't be brand-new).
+    }
+  } catch {
+    /* fall through to legacy walk */
+  }
+
+  // FALLBACK: paginated GraphQL walk. Bounded by maxScan; same as pre-migration.
   const result: EFCharacter[] = [];
   let cursor: string | undefined;
   let scanned = 0;
@@ -493,38 +534,74 @@ export async function resolveCharacterNamesForSet(
   const result = new Map<string, string>();
   if (!walletAddresses.length) return result;
 
-  // Scan characters, match by character_address field
-  // (Sui doesn't support field-value filters, so we scan with early-exit once all found)
-  const needed = new Set(walletAddresses.map(a => a.toLowerCase()));
-  let cursor: string | undefined;
-  let scanned = 0;
-
+  // PRIMARY: character-index /character-bulk-by-character-addrs (one round
+  // trip, sub-50ms). Returns the newest Character per character_addr so
+  // destroyed identities never bleed through.
+  // Migrated 2026-06-26 from a 600-object paginated GraphQL walk.
   try {
-    while (needed.size > result.size && scanned < 600) {
-      const afterClause = cursor ? `, after: "${cursor}"` : "";
-      const data = await gql(`{
-        objects(filter: { type: "${WORLD_PKG}::character::Character" }, first: 50${afterClause}) {
-          pageInfo { hasNextPage endCursor }
-          nodes {
-            address
-            asMoveObject { contents { json } }
+    const { SERVER_ENV } = await import("./constants");
+    const r = await fetch(
+      `${CHARACTER_INDEX_URL}/character-bulk-by-character-addrs`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          server: SERVER_ENV,
+          character_addrs: walletAddresses,
+        }),
+      },
+    );
+    if (r.ok) {
+      const j = (await r.json()) as {
+        characters?: { [addr: string]: { name: string; item_id: string } };
+      };
+      const chars = j.characters ?? {};
+      for (const [addr, info] of Object.entries(chars)) {
+        result.set(
+          addr.toLowerCase(),
+          info.name || `Rider ${(info.item_id || "").slice(-4)}`,
+        );
+      }
+    }
+  } catch {
+    /* fall through to legacy walk for misses */
+  }
+
+  // FALLBACK: paginated GraphQL walk for whatever the index didn't return.
+  // Only re-scans the still-missing addresses.
+  const stillMissing = walletAddresses.filter((a) => !result.has(a.toLowerCase()));
+  if (stillMissing.length > 0) {
+    const needed = new Set(stillMissing.map((a) => a.toLowerCase()));
+    let cursor: string | undefined;
+    let scanned = 0;
+
+    try {
+      while (needed.size > result.size - (walletAddresses.length - stillMissing.length) && scanned < 600) {
+        const afterClause = cursor ? `, after: "${cursor}"` : "";
+        const data = await gql(`{
+          objects(filter: { type: "${WORLD_PKG}::character::Character" }, first: 50${afterClause}) {
+            pageInfo { hasNextPage endCursor }
+            nodes {
+              address
+              asMoveObject { contents { json } }
+            }
+          }
+        }`);
+        const nodes = data?.objects?.nodes ?? [];
+        for (const node of nodes) {
+          const c = parseNodeAsCharacter(node);
+          if (c && needed.has(c.walletAddress.toLowerCase())) {
+            result.set(c.walletAddress.toLowerCase(), c.name || `Rider ${c.charId.slice(-4)}`);
           }
         }
-      }`);
-      const nodes = data?.objects?.nodes ?? [];
-      for (const node of nodes) {
-        const c = parseNodeAsCharacter(node);
-        if (c && needed.has(c.walletAddress.toLowerCase())) {
-          result.set(c.walletAddress.toLowerCase(), c.name || `Rider ${c.charId.slice(-4)}`);
-        }
+        scanned += nodes.length;
+        if (!data?.objects?.pageInfo?.hasNextPage || !data?.objects?.pageInfo?.endCursor) break;
+        cursor = data.objects.pageInfo.endCursor;
       }
-      scanned += nodes.length;
-      if (!data?.objects?.pageInfo?.hasNextPage || !data?.objects?.pageInfo?.endCursor) break;
-      cursor = data.objects.pageInfo.endCursor;
-    }
-  } catch { /* return whatever we found */ }
+    } catch { /* return whatever we found */ }
+  }
 
-  // Fill in unknowns
+  // Fill in unknowns with abbreviated addresses
   for (const addr of walletAddresses) {
     if (!result.has(addr.toLowerCase())) {
       result.set(addr.toLowerCase(), `${addr.slice(0, 6)}…${addr.slice(-4)}`);
