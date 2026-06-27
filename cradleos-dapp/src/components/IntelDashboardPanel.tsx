@@ -30,6 +30,54 @@ function deriveCharacterAddress(itemId: string, tenant: string): string {
 // no tribe affiliation; the caller should treat 0 / undefined as "no tribe."
 export type CharResolution = { name: string; tribeId?: number };
 
+// Bulk resolve character item_ids → {name, tribeId} via the CradleOS character-index
+// service (keeper.reapers.shop/index, sub-50ms on warm cache). Characters never
+// change name on chain, so once the index has seen them they stay resolved
+// forever — perfect for kill-feed name lookup. Returns an empty map on any
+// failure (network, CORS, 5xx) so callers can transparently fall through to
+// the legacy GraphQL fanout.
+//
+// Chunks at 500 item_ids per POST (server-side cap). For typical 7-day windows
+// we see ~50–300 unique chars — one round trip, no fanout.
+const CHARACTER_INDEX_URL = "https://keeper.reapers.shop/index";
+async function resolveCharactersViaIndex(
+  itemIds: string[],
+  server: string,
+): Promise<Map<string, CharResolution>> {
+  const out = new Map<string, CharResolution>();
+  if (!itemIds.length) return out;
+  const unique = [...new Set(itemIds.filter(Boolean))];
+  const CHUNK = 500;
+  for (let i = 0; i < unique.length; i += CHUNK) {
+    const batch = unique.slice(i, i + CHUNK);
+    try {
+      const r = await fetch(`${CHARACTER_INDEX_URL}/character-bulk-by-item-ids`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ server, item_ids: batch }),
+      });
+      if (!r.ok) {
+        console.warn(`[IntelDashboard] character-index returned ${r.status}; falling through`);
+        continue;
+      }
+      const json = await r.json() as {
+        characters?: { [itemId: string]: { name: string; tribe_id: number } };
+      };
+      const chars = json.characters ?? {};
+      for (const [itemId, info] of Object.entries(chars)) {
+        out.set(itemId, {
+          name: info.name,
+          tribeId: info.tribe_id && info.tribe_id > 0 ? info.tribe_id : undefined,
+        });
+      }
+    } catch (e) {
+      console.warn("[IntelDashboard] character-index fetch failed; falling through:", e);
+      // Continue to next chunk; caller will fall back via resolveCharactersByItemIds.
+    }
+  }
+  return out;
+}
+
 async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): Promise<Map<string, CharResolution>> {
   // Try both tenants if not specified — covers cross-env edge cases
   const tenantToUse = tenant ?? SERVER_ENV;
@@ -1630,8 +1678,23 @@ export function IntelDashboardPanel() {
       if (!detectedTenant && kill.killer_id?.tenant) detectedTenant = kill.killer_id.tenant;
     }
 
-    let resolvedMap = await resolveCharactersByItemIds([...allCharIds], detectedTenant);
+    // Phase 2a: try the CradleOS character-index service first (one round trip
+    // for the whole batch, sub-50ms warm). It already saw every Character
+    // creation event on this world via background polling, so a 7d kill window
+    // resolves immediately. Anything still missing afterwards falls through
+    // to the slower GraphQL derived-address path below.
+    let resolvedMap = await resolveCharactersViaIndex([...allCharIds], detectedTenant ?? SERVER_ENV);
     if (killsLoadSeq.current !== mySeq) return;
+
+    // Phase 2b: GraphQL derived-address fallback for whatever the index
+    // didn't find (brand-new chars that haven't been polled yet, or index
+    // service downtime). Only re-resolves the missing IDs, never the full set.
+    const stillMissing = [...allCharIds].filter(id => !resolvedMap.has(id));
+    if (stillMissing.length > 0) {
+      const fallbackBatch = await resolveCharactersByItemIds(stillMissing, detectedTenant);
+      if (killsLoadSeq.current !== mySeq) return;
+      for (const [id, info] of fallbackBatch.entries()) resolvedMap.set(id, info);
+    }
 
     // Fallback only if targeted resolution returned literally nothing.
     if (resolvedMap.size === 0 && allCharIds.size > 0) {
@@ -1655,12 +1718,32 @@ export function IntelDashboardPanel() {
     // Build the legacy char-objects array for charMap useMemo compatibility
     // (charMap is item_id → name). Also surface tribe membership in a parallel
     // map for tribe enrichment / filtering.
-    const charObjects = [...resolvedMap.entries()].map(([itemId, info]) => ({
+    //
+    // CRITICAL: MERGE into existing characters instead of replacing. Character
+    // names never change on chain (a destroyed Character's identity is
+    // permanently retired — never reused). Once we've resolved a name,
+    // discarding it on the next window flip is pure regression. Merge-by-item_id
+    // preserves every name we've ever seen for this session, even when the
+    // current window's resolver batch partially fails or the user toggles
+    // 24H→24H rapidly. Fixes the "names unresolved to char#... after
+    // selecting 7d" bug surfaced 2026-06-26 by Raw.
+    const newCharObjects = [...resolvedMap.entries()].map(([itemId, info]) => ({
       key: { item_id: itemId },
       metadata: { name: info.name },
       tribe_id: info.tribeId ?? 0,
     }));
-    setCharacters(charObjects);
+    setCharacters((prev) => {
+      const byId = new Map<string, any>();
+      for (const c of prev) {
+        const id = c.key?.item_id;
+        if (id) byId.set(id, c);
+      }
+      for (const c of newCharObjects) {
+        const id = c.key?.item_id;
+        if (id) byId.set(id, c); // new resolution wins, e.g. fresh tribe_id
+      }
+      return [...byId.values()];
+    });
     setCharsLoading(false);
 
     // Phase 3a: resolve solar system names from World API
