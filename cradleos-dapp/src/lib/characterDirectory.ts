@@ -109,11 +109,80 @@ async function fetchByPkg(charType: string): Promise<CharacterDirectoryEntry[]> 
   return out;
 }
 
-/** Fetch every Character object on chain (paginated, deduped, cached). */
+// CradleOS character-index public endpoint (DGX2 → keeper.reapers.shop ingress).
+// `/character-list` paginates the full corpus via opaque base64 cursor.
+const CHARACTER_INDEX_URL = "https://keeper.reapers.shop/index";
+
+/** Fetch every Character via the character-index `/character-list` endpoint.
+ *  Paginates with the index's base64 cursor; safe to abort mid-walk. Returns
+ *  an empty array on any failure so callers can fall through to the legacy
+ *  GraphQL walk. */
+async function fetchAllCharactersViaIndex(): Promise<CharacterDirectoryEntry[]> {
+  const PAGE = 500;
+  const HARD_CAP = 50_000; // sanity — cuts runaway loops if the index ever lies
+  const out: CharacterDirectoryEntry[] = [];
+  let cursor: string | null = null;
+  try {
+    for (let pages = 0; pages < 200 && out.length < HARD_CAP; pages++) {
+      const url =
+        `${CHARACTER_INDEX_URL}/character-list?server=${SERVER_ENV}&limit=${PAGE}` +
+        (cursor ? `&cursor=${encodeURIComponent(cursor)}` : "");
+      const r = await fetch(url, { headers: { Accept: "application/json" } });
+      if (!r.ok) return [];
+      const j = (await r.json()) as {
+        rows?: Array<{
+          object_id: string;
+          character_addr: string;
+          name: string;
+          tribe_id: number;
+          item_id: string;
+        }>;
+        nextCursor?: string | null;
+        hasMore?: boolean;
+      };
+      const rows = j.rows ?? [];
+      for (const row of rows) {
+        out.push({
+          objectId: row.object_id,
+          characterId: Number(row.item_id) || 0,
+          name: row.name,
+          description: "",
+          tribeId: row.tribe_id ?? 0,
+          characterAddress: row.character_addr,
+        });
+      }
+      if (!j.hasMore || !j.nextCursor) break;
+      cursor = j.nextCursor;
+    }
+  } catch {
+    return [];
+  }
+  return out;
+}
+
+/** Fetch every Character object on chain (paginated, deduped, cached).
+ *
+ *  PRIMARY: character-index `/character-list` paginated dump (sub-second for
+ *  the full Stillness corpus, served from indexed SQLite).
+ *  FALLBACK: legacy 5–15s GraphQL walk for index outages or brand-new chars
+ *  that haven't been polled yet.
+ *
+ *  Migrated 2026-06-26 — prior cold load was 5–15s of GraphQL walking on first
+ *  page-open of GatePolicy, TurretPolicy, or any CharacterAutocomplete user.
+ *  See memory/character-resolution-audit-2026-06-26.md § Patch 2. */
 export async function fetchAllCharacters(): Promise<CharacterDirectoryEntry[]> {
   const cached = lsCacheGet();
   if (cached && cached.length > 0) return cached;
 
+  // PRIMARY: character-index. Single source, paginated, already deduped
+  // server-side (PRIMARY KEY is (server, object_id)).
+  const indexed = await fetchAllCharactersViaIndex();
+  if (indexed.length > 0) {
+    lsCacheSet(indexed);
+    return indexed;
+  }
+
+  // FALLBACK: legacy GraphQL walk across both world pkg lineages.
   // Two world package lineages cohabit on Stillness — pre-v0.0.21 characters are
   // typed against the v1 origin and post-v0.0.21 characters against the v2 origin.
   // Fetch both, merge by objectId.

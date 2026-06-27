@@ -1696,24 +1696,15 @@ export function IntelDashboardPanel() {
       for (const [id, info] of fallbackBatch.entries()) resolvedMap.set(id, info);
     }
 
-    // Fallback only if targeted resolution returned literally nothing.
-    if (resolvedMap.size === 0 && allCharIds.size > 0) {
-      const allChars = await fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000);
-      if (killsLoadSeq.current !== mySeq) return;
-      const fallbackMap = new Map<string, CharResolution>();
-      for (const c of allChars) {
-        const id = c.key?.item_id;
-        const name = c.metadata?.name?.trim();
-        const tribeIdRaw = c.tribe_id;
-        const tribeId = typeof tribeIdRaw === "number"
-          ? tribeIdRaw
-          : (tribeIdRaw ? Number(tribeIdRaw) : undefined);
-        if (id && name) {
-          fallbackMap.set(id, { name, tribeId: (tribeId && tribeId > 0) ? tribeId : undefined });
-        }
-      }
-      resolvedMap = fallbackMap;
-    }
+    // Phase 2c: NO 5000-object full-corpus fallback. Removed 2026-06-26.
+    // Pre-fix this loader would `fetchAllObjects(WORLD_PKG + "::character::Character", 50, 5000)`
+    // whenever Phase 2a + 2b returned an empty map — a 30+ second blocking GraphQL
+    // walk that fired on every transient index hiccup. Strictly worse UX than
+    // letting unresolved ids render as `char#<itemId>` for 60s until the next
+    // index poll catches up. If observability ever shows persistent misses
+    // here, the right fix is server-side: opportunistic on-chain backfill
+    // inside `character-bulk-by-item-ids` for non-empty `missing: []`. See
+    // memory/character-resolution-audit-2026-06-26.md § server-side asks #5.
 
     // Build the legacy char-objects array for charMap useMemo compatibility
     // (charMap is item_id → name). Also surface tribe membership in a parallel

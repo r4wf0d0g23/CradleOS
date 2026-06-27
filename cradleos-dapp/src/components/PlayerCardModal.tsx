@@ -837,15 +837,42 @@ function PlayerLink({
 const _playerLookupCache = new Map<string, { objectId: string; wallet: string }>();
 
 /** Resolve a character's Sui object id and wallet (character_address) by item_id.
- *  Uses the GraphQL objects() filter — same path used for kill-feed character
- *  resolution. Cached for the process lifetime since identities don't move. */
+ *  PRIMARY path: character-index bulk endpoint (sub-50ms warm, one round trip).
+ *  FALLBACK path: legacy paginated GraphQL walk preserved for index outages or
+ *  brand-new characters the index hasn't polled yet.
+ *
+ *  Migrated 2026-06-26 from a 5000-Character GraphQL walk that fired on every
+ *  player-card open. The index endpoint already returns object_id and
+ *  character_addr (== the synthesized `wallet` value) directly. */
 async function resolveWalletForCharacterItemId(
   itemId: string,
 ): Promise<{ objectId: string; wallet: string } | null> {
-  // We don't have the package id imported here. Read it from the DOM build constant
-  // by importing from constants — but we'd cause a circular dep. Instead, use an
-  // env-derived value: SERVER_ENV stillness vs utopia. The real WORLD_PKG is
-  // set in constants. Import directly:
+  // PRIMARY: character-index bulk endpoint. Returns object_id + character_addr
+  // in one round trip; covers everything the index has seen via background
+  // polling on the world's CharacterCreatedEvent stream.
+  try {
+    const { SERVER_ENV } = await import("../constants");
+    const r = await fetch(
+      "https://keeper.reapers.shop/index/character-bulk-by-item-ids",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ server: SERVER_ENV, item_ids: [itemId] }),
+      },
+    );
+    if (r.ok) {
+      const j = (await r.json()) as {
+        characters?: { [k: string]: { object_id: string; character_addr: string } };
+      };
+      const c = j.characters?.[itemId];
+      if (c) return { objectId: c.object_id, wallet: c.character_addr };
+    }
+  } catch {
+    /* fall through */
+  }
+
+  // FALLBACK: legacy paginated GraphQL walk. Only hit when the index is down
+  // OR the character is so new it hasn't been polled yet (60s window).
   const { WORLD_PKG, SUI_GRAPHQL } = await import("../constants");
 
   // Page through Character objects (capped) — small enough since we're only
