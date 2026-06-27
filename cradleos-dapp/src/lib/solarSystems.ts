@@ -34,7 +34,23 @@ export interface SolarSystemRecord {
 type WorldKey = "stillness" | "utopia";
 
 const CACHE_KEY_PREFIX = "cradleos:solarsystem-catalog:";
-const STORAGE_VERSION = "v1";
+// Bump STORAGE_VERSION whenever the canonical name source changes so existing
+// sessionStorage caches get invalidated automatically.
+//   v1 — initial release (world-api names, mostly numeric placeholders)
+//   v2 — added systems.static overlay (Sanctuary build 3409470, 2026-06-25)
+//        => names like 'O3S-11J' / 'I8V-PCH'. THIS IS CORRECT.
+//
+// Critically: when v1 caches existed in user browsers across the v1→v2 switch
+// (2026-06-25 wipe day), the loader silently kept serving the old v1 names from
+// sessionStorage because the key only had `v1` in it. Same physical key, same
+// data shape, completely wrong contents — the SECURITY tab and kill cards then
+// rendered numeric/garbage names indefinitely until the tab was closed. Raw
+// caught this 2026-06-26 evening.
+//
+// Standing rule going forward: any change to the catalog source / overlay path
+// MUST bump STORAGE_VERSION in the same commit so client caches invalidate the
+// instant a user reloads the new bundle.
+const STORAGE_VERSION = "v2";
 
 let _cache: Map<number, SolarSystemRecord> | null = null;
 let _loadingPromise: Promise<Map<number, SolarSystemRecord>> | null = null;
