@@ -935,13 +935,21 @@ function AppInner() {
               // "defense" temporarily removed 2026-06-24 — see comment on
               // the main tab strip above. Re-add when turrets return.
               // "gamedata" added 2026-06-24 (public tab, Sanctuary viewport).
+              // 'industry' tab hidden 2026-06-27: extracted recipe/blueprint catalog
+              // only covers ~57% of referenced type ids (43% render as 'Unknown'),
+              // and the genBlueprints FSD blob hasn't been decoded into the simple
+              // recipe form the panel expects — so the Supply Chain Calculator
+              // produces misleading trees for most products. Will resurface once
+              // the Sanctuary genBlueprints decode is finished and industry.json
+              // is regenerated with full type-name coverage. Panel + data file
+              // intentionally kept on disk for fast revival.
               const ORDER: Tab[] = [
                 "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
-                "query", "industry", "gamedata", "dapps",
+                "query", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "dapps", "query", "intel", "industry", "gamedata",
+                "dapps", "query", "intel", "gamedata",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -1251,9 +1259,10 @@ function AppInner() {
             (here AND in the kiosk ORDER below) once Fenris restores turrets.
             "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
             static data; public, no wallet required. */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry", "gamedata"]);
+          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
