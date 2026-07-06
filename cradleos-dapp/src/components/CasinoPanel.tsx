@@ -61,7 +61,7 @@ function CardView({ index, hidden, dealDelay = 0 }: { index?: number; hidden?: b
 
   if (hidden || index === undefined) {
     return (
-      <div style={cardShell(false)}>
+      <div style={{ ...cardShell(false), transform: shown ? "rotateY(0deg) translateY(0px)" : "rotateY(90deg) translateY(-14px)", transition: "transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.15)" }}>
         <img src={CARD_BACK} alt="" style={{ width: "68%", height: "68%", objectFit: "contain", opacity: 0.55, filter: "drop-shadow(0 0 4px rgba(255,71,0,0.5))" }} />
       </div>
     );
@@ -70,7 +70,7 @@ function CardView({ index, hidden, dealDelay = 0 }: { index?: number; hidden?: b
   const suit = SUIT_THEME[card.suit];
   const face = isFace(card.rank);
   return (
-    <div style={{ ...cardShell(true), transform: shown ? "rotateY(0deg)" : "rotateY(90deg)", transition: "transform 0.28s ease" }}>
+    <div style={{ ...cardShell(true), transform: shown ? "rotateY(0deg) translateY(0px) scale(1)" : "rotateY(90deg) translateY(-14px) scale(0.92)", transition: "transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.15)" }}>
       {/* corner rank + suit */}
       <div style={{ position: "absolute", top: 4, left: 5, color: suit.color, fontSize: 14, fontWeight: 900, lineHeight: 1, textAlign: "center" }}>
         {RANK_LABEL[card.rank]}
@@ -103,12 +103,12 @@ function HandRow({ label, cards, total, hideHole }: { label: string; cards: numb
   const shownTotal = hideHole && cards.length >= 1 ? handTotal([cards[0]]) : total;
   return (
     <div style={{ marginBottom: 12 }}>
-      <div style={{ color: "#999", fontSize: 11, letterSpacing: "0.08em", marginBottom: 6 }}>
+      <div style={{ color: "#999", fontSize: 11, letterSpacing: "0.08em", marginBottom: 6, textAlign: "center" }}>
         {label}{cards.length > 0 && <span style={{ color: GOLD, marginLeft: 8 }}>{hideHole ? `${shownTotal} +?` : shownTotal}</span>}
       </div>
-      <div style={{ display: "flex", gap: 8, minHeight: 88 }}>
+      <div style={{ display: "flex", gap: 8, minHeight: 88, justifyContent: "center", flexWrap: "wrap" }}>
         {cards.length === 0 && <div style={{ color: "#555", fontSize: 12, alignSelf: "center" }}>—</div>}
-        {cards.map((idx, i) => <CardView key={`${idx}-${i}`} index={idx} hidden={hideHole && i === 1} />)}
+        {cards.map((idx, i) => <CardView key={`${idx}-${i}`} index={idx} hidden={hideHole && i === 1} dealDelay={60 + i * 150} />)}
       </div>
     </div>
   );
