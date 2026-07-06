@@ -39,6 +39,7 @@ import KeeperOrb from "./components/KeeperOrb";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
 import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
+import { CasinoPanel } from "./components/CasinoPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
 
@@ -371,7 +372,7 @@ function PrivateNodeStatus() {
   );
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -794,6 +795,16 @@ function AppInner() {
         "3D Preview: roadmap slot — carbonengine/mesh WASM port plus three.js will land ship/structure hulls here",
       ],
     },
+    casino: {
+      title: "Cradle Casino — provably-fair Blackjack, settled in $EVE on-chain",
+      steps: [
+        "Every hand is one atomic transaction using Sui's on-chain randomness (0x8)",
+        "Set your bet in $EVE and your stand-on threshold; the house edge for each threshold is MEASURED, not invented",
+        "Shuffle, deal, and settlement all resolve together — no re-rolling a loss, no house cheating",
+        "Blackjack pays 3:2; wins pay even money; ties push",
+        "The provably-fair feed shows every recent hand — verifiable on-chain",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -808,7 +819,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata",
+      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
       voting: "voting",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
@@ -944,6 +955,7 @@ function AppInner() {
               // is regenerated with full type-name coverage. Panel + data file
               // intentionally kept on disk for fast revival.
               const ORDER: Tab[] = [
+                "casino",
                 "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
                 "query", "gamedata", "dapps",
@@ -980,6 +992,7 @@ function AppInner() {
                 : tab === "gamedata"   ? "GAMEDATA"
                 : tab === "cipher"     ? "CIPHER"
                 : tab === "voting"     ? "VOTE"
+                : tab === "casino"     ? "CASINO"
                 : tab.toUpperCase();
               return (
                 <button
@@ -1260,7 +1273,7 @@ function AppInner() {
             "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
             static data; public, no wallet required. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
           const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata"]);
           return account || PUBLIC_TABS.has(tab);
@@ -1322,6 +1335,7 @@ function AppInner() {
                   : tab === "gamedata"  ? "Game Data"
                   : tab === "cipher"    ? "⊕ Cipher"
                   : tab === "voting"    ? "Vote"
+                  : tab === "casino"    ? "◆ BJ"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
@@ -1350,6 +1364,7 @@ function AppInner() {
                   : tab === "industry"      ? "⚙ Industry"
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
                   : tab === "voting"        ? "◣ Elections"
+                  : tab === "casino"        ? "◆ Casino"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
@@ -1411,6 +1426,7 @@ function AppInner() {
           {activeTab === "gamedata"      && <div style={{ background: "transparent" }} className="content-panel"><GameDataPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
+          {activeTab === "casino"        && <div style={{ background: "transparent" }} className="content-panel"><CasinoPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}

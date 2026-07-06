@@ -307,6 +307,30 @@ export const ENERGY_CONFIG_UTOPIA_ISV = 791126162;
 export const ENERGY_CONFIG = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS : ENERGY_CONFIG_UTOPIA;
 export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS_ISV : ENERGY_CONFIG_UTOPIA_ISV;
 export const CLOCK = "0x6";
+// Sui system Random object (on-chain randomness beacon) — reserved address.
+export const RANDOM_OBJECT = "0x8";
+
+// ── CradleOS Casino ───────────────────────────────────────────────────────────
+// Standalone Move package (modules: house, blackjack). Wired directly to $EVE.
+// Published 2026-07-05 on Stillness. Single-pkg lineage (original == published-at).
+//   tx: (publish) — pkg below; UpgradeCap 0x372bbe54784c4e59ddba7a111977163decfdec8aa56632d849c8cf1570975736
+// House edge is MEASURED (scripts/edge_sim.py), not invented: ~4.9% at best play
+// (stand_on=15), rising with looser thresholds. Profitable at every threshold.
+// v2 (2026-07-05 PM): fresh publish adding blackjack_live (commit-reveal
+// interactive hit/stand/double). Modules: house, blackjack, blackjack_live.
+// UpgradeCap 0x76124b462d729eedd46e7dda64df819837d850651595cc8c2865dbe541c5ed29
+// Prior v1 pkg (orphaned, House drained back to cradle wallet):
+//   0x02ce3fd64b4e19fc608d48efca66d37708bc356cca0d9dc3d35221d3f7a7afbb
+export const CASINO_PKG_STILLNESS = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164";
+export const CASINO_PKG = _serverEnv === "stillness" ? CASINO_PKG_STILLNESS : "";
+// House shared object + admin cap (on v2 package).
+// Seeded 2026-07-05 from the cradle wallet (0xc80fe7d6...) with 90,000 $EVE.
+// max_bet 500 EVE, min_bet 1 EVE. Admin cap held by the cradle wallet
+// (server-controlled) for operator top-up / risk-param / pause:
+//   HouseAdminCap = 0x476c10fc52b73f52322957368780d370c8705c2ccc1876b0cbfcf13e2cec7391
+export const CASINO_HOUSE_STILLNESS = "0xeec606d9b3dfd5063c26a1b23b9ad0ed112f7de81dce64862a0d78edbb9b2c96";
+export const CASINO_HOUSE = _serverEnv === "stillness" ? CASINO_HOUSE_STILLNESS : "";
+export const CASINO_AVAILABLE = CASINO_PKG !== "";
 
 /**
  * Sui testnet RPC endpoint.
