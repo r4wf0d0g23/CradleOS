@@ -128,6 +128,13 @@ const SERVICES: ServiceDef[] = [
     icon: "?",
   },
   {
+    id: "casino",
+    label: "Casino",
+    description: "Cradle Casino — provably-fair blackjack, split pairs, dice, roulette, slots and more. Settled in $EVE.",
+    url: `${BASE}/#/casino`,
+    icon: "◈",
+  },
+  {
     id: "dapps",
     label: "Community dApps",
     description: "Directory of community-built EVE Frontier dApps and tools.",
