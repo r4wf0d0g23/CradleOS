@@ -38,9 +38,9 @@ module cradleos_casino::coinflip {
         assert!(choice <= 1, EBadParams);
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager);
-        // 1%-bankroll exposure rule: max possible payout must fit the budget.
+        // 3%-bankroll exposure rule: max possible payout must fit the budget.
         let max_payout = (((amount as u128) * (WIN_BPS as u128) / 10000) as u64);
-        assert!(max_payout <= house::bank_balance(house) / 100, EMaxExposure);
+        assert!(max_payout <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

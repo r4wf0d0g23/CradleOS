@@ -321,14 +321,17 @@ export const RANDOM_OBJECT = "0x8";
 // UpgradeCap 0x76124b462d729eedd46e7dda64df819837d850651595cc8c2865dbe541c5ed29
 // Prior v1 pkg (orphaned, House drained back to cradle wallet):
 //   0x02ce3fd64b4e19fc608d48efca66d37708bc356cca0d9dc3d35221d3f7a7afbb
-// v3 upgrade (instant games) — published-at: moveCall targets + v3 event types
-// (FlipResult/DiceRolled/RouletteSpun/SlotsSpun/WheelSpun tag under THIS id).
-export const CASINO_PKG_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
+// v4 upgrade (3% exposure) — published-at: moveCall targets.
+export const CASINO_PKG_STILLNESS = "0xd54a21b9cc10d28595d5aba3cbe00810ff49bebf12e83ef786ecb0fc70e00f54";
+// v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
+// SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
+export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
 // v2 pkg id: HandSplit/SplitSettled event types (introduced in v2) tag here.
 export const CASINO_V2_STILLNESS = "0x8c342cdca493fdcd374419bc452095ec08c9a9c723dddeaa30af416d6c6c7c8a";
 // original-id: v1 event/type queries (HandDealt/HandSettled/HandPlayed, Hand<T>).
 export const CASINO_ORIGINAL_STILLNESS = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164";
 export const CASINO_PKG = _serverEnv === "stillness" ? CASINO_PKG_STILLNESS : "";
+export const CASINO_V3 = _serverEnv === "stillness" ? CASINO_V3_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

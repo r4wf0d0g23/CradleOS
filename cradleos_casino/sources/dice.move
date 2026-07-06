@@ -51,7 +51,7 @@ module cradleos_casino::dice {
         assert!(chance >= 2 && chance <= 96, EBadParams);
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager);
-        assert!(max_payout(amount, target, over) <= house::bank_balance(house) / 100, EMaxExposure);
+        assert!(max_payout(amount, target, over) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

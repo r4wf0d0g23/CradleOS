@@ -12,6 +12,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_V3,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -170,9 +171,11 @@ export interface InstantFeedRow extends InstantResult { player: string; ts: numb
 export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRow[]> {
   if (!CASINO_PKG) return [];
   const keys = Object.keys(GAMES) as InstantGameKey[];
+  // Event types tag under the package version that INTRODUCED them (v3),
+  // regardless of later upgrades — moveCalls use CASINO_PKG, queries use V3.
   const results = await Promise.all(keys.map((k) =>
     rpc("suix_queryEvents", [
-      { MoveEventType: `${CASINO_PKG}::${GAMES[k].module}::${GAMES[k].event}` },
+      { MoveEventType: `${CASINO_V3}::${GAMES[k].module}::${GAMES[k].event}` },
       null, limit, true,
     ]).then((r) => ({ k, data: r.data ?? [] })).catch(() => ({ k, data: [] }))
   ));

@@ -89,7 +89,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
       if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
-        setErr(`Bet too large for this payout: a max win must stay under 1% of the house bank (≈${fmtEve(bank / 100)} EVE). Lower the bet or pick shorter odds.`);
+        setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
       }
@@ -101,15 +101,17 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const diceMult = diceChance >= 2 && diceChance <= 96 ? (98 / diceChance) : 0;
   const rDef = ROULETTE_KINDS[rKind];
 
-  // ── On-chain exposure rule mirror: max payout ≤ 1% of house bank. ──
+  // ── On-chain exposure rule mirror: max payout ≤ 3% of house bank. ──
   // Pre-check here so players never sign a tx that will abort with EMaxExposure.
+  const EXPOSURE_PCT = 0.03;
   const grossMult =
     game === "coinflip" ? 1.96
     : game === "dice" ? (diceMult || 49)
     : game === "roulette" ? (rKind === 0 ? 36 : rKind >= 4 ? 3 : 2)
     : game === "slots" ? 60
     : 10; // wheel
-  const maxBetForExposure = bank > 0 ? (bank / 100) / grossMult : Infinity;
+  const exposureBudget = bank * EXPOSURE_PCT;
+  const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
   const betNum = Number(betEve) || 0;
   const overExposure = bank > 0 && betNum > maxBetForExposure;
 
@@ -194,13 +196,18 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
             {busy ? "SIGNING…" : game === "slots" || game === "wheel" ? "✦ SPIN" : "✦ PLAY"}
           </button>
           {overExposure && (
-            <div style={{ color: GOLD, fontSize: 12, marginTop: 8 }}>
-              ⚠ Max bet for this wager is {fmtEve(Math.floor(maxBetForExposure))} EVE — a potential {grossMult}x win must stay under 1% of the house bank ({fmtEve(bank / 100)} EVE). Lower the bet or pick shorter odds.
+            <div style={{ color: GOLD, fontSize: 12, marginTop: 8, lineHeight: 1.6, background: "#1a1408", border: `1px solid ${GOLD}44`, padding: "10px 12px" }}>
+              <div style={{ fontWeight: 800, letterSpacing: "0.06em" }}>⚠ BET TOO LARGE FOR THIS GAME'S TOP PAYOUT</div>
+              <div style={{ marginTop: 4, color: "#c9b478" }}>
+                Your {fmtEve(betNum)} EVE bet could win up to <b>{fmtEve(betNum * grossMult)} EVE</b> ({grossMult}x).
+                The house risks at most <b>{fmtEve(exposureBudget)} EVE</b> per play — 3% of its {fmtEve(bank)} EVE bank — so it can always pay every winner.
+              </div>
+              <div style={{ marginTop: 4 }}>▸ Max bet here right now: <b>{fmtEve(Math.floor(maxBetForExposure))} EVE</b> — or switch to shorter odds. This limit rises as the bank grows.</div>
             </div>
           )}
           {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
           <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
-            single-tx settle · randomness from Sui beacon (0x8) · max win per bet: 1% of house bank · full outcome in the result event
+            single-tx settle · randomness from Sui beacon (0x8) · max win per bet: 3% of house bank · full outcome in the result event
           </div>
         </div>
       </div>

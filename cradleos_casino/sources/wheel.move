@@ -48,7 +48,7 @@ module cradleos_casino::wheel {
     ) {
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) / 100, EMaxExposure);
+        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
