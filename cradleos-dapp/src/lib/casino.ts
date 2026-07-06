@@ -122,14 +122,20 @@ async function rpcDirect(method: string, params: unknown[]): Promise<any> {
   return j.result;
 }
 
-/** All EVE coin object ids owned by `owner`, with total balance (raw). */
+/** All EVE coin object ids owned by `owner`, with total balance (raw).
+ *
+ *  DIRECT fullnode read (not the caching proxy): these ids feed straight into
+ *  tx building, and consecutive plays consume/merge coin objects. A cached
+ *  list from the proxy (5s TTL) can hand back a spent coin id → the wallet
+ *  builds a tx on a dead object → "Object ... not found". Observed live on
+ *  back-to-back slots spins, 2026-07-06. */
 export async function fetchEveCoins(owner: string): Promise<{ ids: string[]; totalRaw: bigint }> {
   const ids: string[] = [];
   let totalRaw = 0n;
   let cursor: string | null = null;
   // paginate — suix_getCoins caps at 50 (see MEMORY.md pagination rule)
   for (let guard = 0; guard < 25; guard++) {
-    const result = await rpc("suix_getCoins", [owner, EVE_COIN_TYPE, cursor, 50]);
+    const result = await rpcDirect("suix_getCoins", [owner, EVE_COIN_TYPE, cursor, 50]);
     for (const c of result.data ?? []) {
       ids.push(c.coinObjectId);
       totalRaw += BigInt(c.balance);

@@ -82,16 +82,27 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
     setBusy(true); setErr(null); setResult(null); setPending(null);
     try {
-      const { ids } = await fetchEveCoins(addr);
-      if (!ids.length) throw new Error("No $EVE in wallet.");
       const raw = BigInt(Math.floor(wager * 1e9));
-      let tx;
-      if (game === "coinflip") tx = buildCoinflipTx(ids, raw, choice);
-      else if (game === "dice") tx = buildDiceTx(ids, raw, diceTarget, diceOver);
-      else if (game === "roulette") tx = buildRouletteTx(ids, raw, rKind, rTarget);
-      else if (game === "slots") tx = buildSlotsTx(ids, raw);
-      else tx = buildWheelTx(ids, raw);
-      const res: any = await signer().signAndExecuteTransaction({ transaction: tx });
+      const buildTx = async () => {
+        const { ids } = await fetchEveCoins(addr);
+        if (!ids.length) throw new Error("No $EVE in wallet.");
+        if (game === "coinflip") return buildCoinflipTx(ids, raw, choice);
+        if (game === "dice") return buildDiceTx(ids, raw, diceTarget, diceOver);
+        if (game === "roulette") return buildRouletteTx(ids, raw, rKind, rTarget);
+        if (game === "slots") return buildSlotsTx(ids, raw);
+        return buildWheelTx(ids, raw);
+      };
+      let res: any;
+      try {
+        res = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
+      } catch (e: any) {
+        // Coin objects mutate on every play; if the node handed us a just-spent
+        // coin id (read lag), wait a beat, refetch fresh coins, retry ONCE.
+        if (/not found|notexists|deleted|invalid.*object/i.test(String(e?.message ?? e))) {
+          await new Promise((r) => setTimeout(r, 1500));
+          res = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
+        } else { throw e; }
+      }
       const digest = txDigestOf(res);
       if (!digest) throw new Error("No tx digest returned.");
       const r = await resolveInstantByDigest(game, digest);
