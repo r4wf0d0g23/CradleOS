@@ -9,7 +9,8 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
-import { fetchEveCoins } from "../lib/casino";
+import { fetchEveCoins, fetchHouseState } from "../lib/casino";
+import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
   resolveInstantByDigest, fetchRecentInstantPlays, rouletteColor,
@@ -59,7 +60,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
   const feedQ = useQuery({ queryKey: ["casinoInstantFeed"], queryFn: () => fetchRecentInstantPlays(20), refetchInterval: 15000 });
   const balQ = useQuery({ queryKey: ["casinoEve", addr], queryFn: () => fetchEveCoins(addr), enabled: !!addr, refetchInterval: 20000 });
+  const houseQ = useQuery({ queryKey: ["casinoHouseLive"], queryFn: () => fetchHouseState(CASINO_HOUSE), refetchInterval: 15000 });
   const myEve = balQ.data ? Number(balQ.data.totalRaw) / 1e9 : 0;
+  const bank = houseQ.data?.bankBalance ?? 0;
 
   const play = useCallback(async () => {
     if (!addr) { setErr("Connect a wallet."); return; }
@@ -83,13 +86,32 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       if (!r) throw new Error("Could not read result — check the feed.");
       setResult(r);
       feedQ.refetch(); balQ.refetch();
-    } catch (e) { setErr(translateTxError(e)); }
+    } catch (e: any) {
+      const msg = String(e?.message ?? e ?? "");
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+        setErr(`Bet too large for this payout: a max win must stay under 1% of the house bank (≈${fmtEve(bank / 100)} EVE). Lower the bet or pick shorter odds.`);
+      } else {
+        setErr(translateTxError(e));
+      }
+    }
     finally { setBusy(false); }
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget, dAppKit]);
 
   const diceChance = diceOver ? 100 - diceTarget : diceTarget - 1;
   const diceMult = diceChance >= 2 && diceChance <= 96 ? (98 / diceChance) : 0;
   const rDef = ROULETTE_KINDS[rKind];
+
+  // ── On-chain exposure rule mirror: max payout ≤ 1% of house bank. ──
+  // Pre-check here so players never sign a tx that will abort with EMaxExposure.
+  const grossMult =
+    game === "coinflip" ? 1.96
+    : game === "dice" ? (diceMult || 49)
+    : game === "roulette" ? (rKind === 0 ? 36 : rKind >= 4 ? 3 : 2)
+    : game === "slots" ? 60
+    : 10; // wheel
+  const maxBetForExposure = bank > 0 ? (bank / 100) / grossMult : Infinity;
+  const betNum = Number(betEve) || 0;
+  const overExposure = bank > 0 && betNum > maxBetForExposure;
 
   return (
     <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -168,12 +190,17 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             </label>
           </div>
-          <button disabled={busy || !addr} onClick={play} style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr ? 0.5 : 1 }}>
+          <button disabled={busy || !addr || overExposure} onClick={play} style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}>
             {busy ? "SIGNING…" : game === "slots" || game === "wheel" ? "✦ SPIN" : "✦ PLAY"}
           </button>
+          {overExposure && (
+            <div style={{ color: GOLD, fontSize: 12, marginTop: 8 }}>
+              ⚠ Max bet for this wager is {fmtEve(Math.floor(maxBetForExposure))} EVE — a potential {grossMult}x win must stay under 1% of the house bank ({fmtEve(bank / 100)} EVE). Lower the bet or pick shorter odds.
+            </div>
+          )}
           {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
           <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
-            single-tx settle · randomness from Sui beacon (0x8) · full outcome in the result event
+            single-tx settle · randomness from Sui beacon (0x8) · max win per bet: 1% of house bank · full outcome in the result event
           </div>
         </div>
       </div>
