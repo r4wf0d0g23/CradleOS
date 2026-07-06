@@ -9,7 +9,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
-import { fetchEveCoins, fetchHouseState } from "../lib/casino";
+import { fetchEveCoins, fetchHouseState, withGas } from "../lib/casino";
 import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
@@ -86,19 +86,23 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       const buildTx = async () => {
         const { ids } = await fetchEveCoins(addr);
         if (!ids.length) throw new Error("No $EVE in wallet.");
-        if (game === "coinflip") return buildCoinflipTx(ids, raw, choice);
-        if (game === "dice") return buildDiceTx(ids, raw, diceTarget, diceOver);
-        if (game === "roulette") return buildRouletteTx(ids, raw, rKind, rTarget);
-        if (game === "slots") return buildSlotsTx(ids, raw);
-        return buildWheelTx(ids, raw);
+        const t =
+          game === "coinflip" ? buildCoinflipTx(ids, raw, choice) :
+          game === "dice" ? buildDiceTx(ids, raw, diceTarget, diceOver) :
+          game === "roulette" ? buildRouletteTx(ids, raw, rKind, rTarget) :
+          game === "slots" ? buildSlotsTx(ids, raw) :
+          buildWheelTx(ids, raw);
+        // Explicit gas (fresh refs + fixed budget) — see withGas in casino.ts;
+        // fixes wallet-side "InsufficientGas" on back-to-back plays.
+        return withGas(t, addr);
       };
       let res: any;
       try {
         res = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
       } catch (e: any) {
         // Coin objects mutate on every play; if the node handed us a just-spent
-        // coin id (read lag), wait a beat, refetch fresh coins, retry ONCE.
-        if (/not found|notexists|deleted|invalid.*object/i.test(String(e?.message ?? e))) {
+        // coin/gas ref (read lag), wait a beat, refetch fresh state, retry ONCE.
+        if (/not found|notexists|deleted|invalid.*object|not available for consumption|InsufficientGas|GasBalanceTooLow/i.test(String(e?.message ?? e))) {
           await new Promise((r) => setTimeout(r, 1500));
           res = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
         } else { throw e; }

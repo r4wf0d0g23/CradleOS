@@ -20,7 +20,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { CASINO_AVAILABLE } from "../constants";
 import {
-  fetchEveCoins, fetchHouseState,
+  fetchEveCoins, fetchHouseState, withGas,
   buildDealTx, buildHitTx, buildStandTx, buildDoubleTx,
   buildSplitTx, buildSplitHitTx, buildSplitStandTx,
   fetchLiveHand, resolveDealByDigest, resolveSettleByDigest, fetchRecentLiveHands,
@@ -156,11 +156,23 @@ export function CasinoPanel() {
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
     setBusy(true); setErr(null); setSettlement(null); setHand(null); setPhase("dealing");
     try {
-      const { ids } = await fetchEveCoins(addr);
-      if (!ids.length) throw new Error("No $EVE in wallet.");
-      const tx = buildDealTx(ids, BigInt(Math.floor(wager * 1e9)));
+      const buildTx = async () => {
+        const { ids } = await fetchEveCoins(addr);
+        if (!ids.length) throw new Error("No $EVE in wallet.");
+        return withGas(buildDealTx(ids, BigInt(Math.floor(wager * 1e9))), addr);
+      };
       dealSfx.current?.play().catch(() => {});
-      const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
+      let result: any;
+      try {
+        result = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
+      } catch (e: any) {
+        // Coin/gas objects mutate every hand; on a stale-ref class error wait a
+        // beat, rebuild with fresh refs, retry ONCE (same pattern as instant games).
+        if (/not found|notexists|deleted|invalid.*object|not available for consumption|InsufficientGas|GasBalanceTooLow/i.test(String(e?.message ?? e))) {
+          await new Promise((r) => setTimeout(r, 1500));
+          result = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
+        } else { throw e; }
+      }
       const digest = txDigestOf(result);
       if (!digest) throw new Error("No tx digest returned.");
       // AUTHORITATIVE: resolve THIS tx by its digest (not "latest event").
@@ -189,6 +201,7 @@ export function CasinoPanel() {
         const { ids } = await fetchEveCoins(addr);
         tx = buildDoubleTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9)));
       }
+      tx = await withGas(tx, addr);
       const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(result);
 
@@ -269,7 +282,7 @@ export function CasinoPanel() {
     try {
       const { ids } = await fetchEveCoins(addr);
       if (!ids.length) throw new Error("No $EVE for the split stake.");
-      const tx = buildSplitTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9)));
+      const tx = await withGas(buildSplitTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9))), addr);
       const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(result);
       setPhase("resolving");
@@ -298,7 +311,7 @@ export function CasinoPanel() {
     if (!splitHand) return;
     setBusy(true); setErr(null);
     try {
-      const tx = kind === "hit" ? buildSplitHitTx(splitHand.splitId) : buildSplitStandTx(splitHand.splitId);
+      const tx = await withGas(kind === "hit" ? buildSplitHitTx(splitHand.splitId) : buildSplitStandTx(splitHand.splitId), addr);
       const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(result);
       const prevActive = splitHand.active;

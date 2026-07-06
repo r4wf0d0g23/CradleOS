@@ -146,6 +146,45 @@ export async function fetchEveCoins(owner: string): Promise<{ ids: string[]; tot
   return { ids, totalRaw };
 }
 
+/**
+ * Explicit gas wiring — bypasses EVE Vault's wallet-side gas selection.
+ *
+ * Root cause of the recurring "InsufficientGas" on the SECOND+ deal
+ * (observed 2026-07-06): every casino tx mutates the player's SUI gas coin.
+ * When the next deal is built seconds later, the wallet's own gas resolution
+ * (dry-run estimation with budget=null) works from stale coin state on its
+ * fullnode and reports InsufficientGas even though the wallet holds plenty
+ * of SUI. Deal #1 after a fresh page load always works because nothing has
+ * mutated the gas coin yet.
+ *
+ * Fix: the dApp sets gas payment (fresh refs from the DIRECT fullnode — the
+ * same node that just served our settle-by-digest read, so it has already
+ * indexed the previous tx) and a fixed budget. With payment+budget present
+ * the wallet skips gas selection AND the dry-run estimation entirely.
+ */
+const GAS_BUDGET_MIST = 50_000_000n; // 0.05 SUI — generous for any casino tx
+export async function withGas<T extends Transaction>(tx: T, owner: string): Promise<T> {
+  const coins: { objectId: string; version: string; digest: string; balance: bigint }[] = [];
+  let cursor: string | null = null;
+  for (let guard = 0; guard < 10; guard++) {
+    const r = await rpcDirect("suix_getCoins", [owner, "0x2::sui::SUI", cursor, 50]);
+    for (const c of r.data ?? []) {
+      coins.push({ objectId: c.coinObjectId, version: c.version, digest: c.digest, balance: BigInt(c.balance) });
+    }
+    if (!r.hasNextPage) break;
+    cursor = r.nextCursor;
+  }
+  if (!coins.length) throw new Error("No SUI in wallet for gas — top up via the testnet faucet.");
+  // Largest coins first; pass up to 16 as payment (gas smashing merges them,
+  // which also consolidates faucet dust as a side benefit).
+  coins.sort((a, b) => (b.balance > a.balance ? 1 : b.balance < a.balance ? -1 : 0));
+  const picked = coins.slice(0, 16);
+  const total = picked.reduce((s, c) => s + c.balance, 0n);
+  tx.setGasPayment(picked.map(({ objectId, version, digest }) => ({ objectId, version, digest })));
+  tx.setGasBudget(total < GAS_BUDGET_MIST ? total : GAS_BUDGET_MIST);
+  return tx;
+}
+
 /** Read live House shared-object state. */
 export async function fetchHouseState(houseId: string): Promise<HouseState | null> {
   if (!houseId) return null;
