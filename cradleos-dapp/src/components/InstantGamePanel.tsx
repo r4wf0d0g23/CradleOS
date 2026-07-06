@@ -3,7 +3,7 @@
  * coinflip, dice, roulette, slots, wheel. One bet → one signature → result.
  * Result resolved by the play tx's own digest (standing rule).
  */
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -14,9 +14,10 @@ import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
   resolveInstantByDigest, fetchRecentInstantPlays, rouletteColor,
-  ROULETTE_KINDS, SLOT_SYMBOLS,
+  ROULETTE_KINDS,
   type InstantGameKey, type InstantResult,
 } from "../lib/casinoGames";
+import { CoinFlipStage, DiceRollStage, RouletteStage, SlotsStage, WheelStage, ResultFlash } from "./CasinoAnimations";
 
 const ACCENT = "#FF4700";
 const GOLD = "#E8B84B";
@@ -50,7 +51,18 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [betEve, setBetEve] = useState("10");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [result, setResult] = useState<InstantResult | null>(null);
+  const [pending, setPending] = useState<InstantResult | null>(null); // settled on-chain, animating
+  const [result, setResult] = useState<InstantResult | null>(null);   // revealed
+  const winSfx = useRef<HTMLAudioElement | null>(null);
+  const lossSfx = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    winSfx.current = new Audio("sounds/power-on.mp3"); if (winSfx.current) winSfx.current.volume = 0.4;
+    lossSfx.current = new Audio("sounds/power-off.mp3"); if (lossSfx.current) lossSfx.current.volume = 0.3;
+  }, []);
+  const reveal = useCallback((r: InstantResult) => {
+    setResult(r);
+    (r.payout > 0 ? winSfx : lossSfx).current?.play().catch(() => {});
+  }, []);
   // game params
   const [choice, setChoice] = useState<0 | 1>(0);
   const [diceTarget, setDiceTarget] = useState(50);
@@ -68,7 +80,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     if (!addr) { setErr("Connect a wallet."); return; }
     const wager = Number(betEve);
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
-    setBusy(true); setErr(null); setResult(null);
+    setBusy(true); setErr(null); setResult(null); setPending(null);
     try {
       const { ids } = await fetchEveCoins(addr);
       if (!ids.length) throw new Error("No $EVE in wallet.");
@@ -84,7 +96,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       if (!digest) throw new Error("No tx digest returned.");
       const r = await resolveInstantByDigest(game, digest);
       if (!r) throw new Error("Could not read result — check the feed.");
-      setResult(r);
+      setPending(r); // stage animates to this outcome, then reveals
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
@@ -122,22 +134,31 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>{GAME_TITLE[game]}</div>
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 4 }}>{GAME_BLURB[game]}</div>
 
-          {result ? (
-            <div style={{ textAlign: "center", padding: "18px 0 6px" }}>
-              {game === "slots" && (
-                <div style={{ fontSize: 40, letterSpacing: "0.3em", color: GOLD, marginBottom: 6 }}>
-                  {SLOT_SYMBOLS[Number(result.fields.s1)]}{SLOT_SYMBOLS[Number(result.fields.s2)]}{SLOT_SYMBOLS[Number(result.fields.s3)]}
-                </div>
-              )}
-              <div style={{ color: "#ccc", fontSize: 14 }}>{result.detail}</div>
-              <div style={{ color: result.payout > 0 ? GREEN : ACCENT, fontSize: 26, fontWeight: 900, marginTop: 6 }}>
-                {result.payout > 0 ? `WIN +${fmtEve(result.payout - result.wager)} EVE` : `LOSS −${fmtEve(result.wager)} EVE`}
-              </div>
-              {result.payout > 0 && <div style={{ color: "#888", fontSize: 11 }}>gross payout {fmtEve(result.payout)} EVE</div>}
-            </div>
-          ) : (
-            <div style={{ color: "#556", fontSize: 12, textAlign: "center", padding: "26px 0" }}>{busy ? "◇ rolling on-chain…" : "place a bet"}</div>
-          )}
+          <div style={{ position: "relative" }}>
+            {pending ? (
+              <>
+                {game === "coinflip" && <CoinFlipStage key={pending.txDigest} result={Number(pending.fields.result)} onDone={() => reveal(pending)} />}
+                {game === "dice" && <DiceRollStage key={pending.txDigest} roll={Number(pending.fields.roll)} target={Number(pending.fields.target)} over={Boolean(pending.fields.over)} onDone={() => reveal(pending)} />}
+                {game === "roulette" && <RouletteStage key={pending.txDigest} spin={Number(pending.fields.spin)} onDone={() => reveal(pending)} />}
+                {game === "slots" && <SlotsStage key={pending.txDigest} s1={Number(pending.fields.s1)} s2={Number(pending.fields.s2)} s3={Number(pending.fields.s3)} onDone={() => reveal(pending)} />}
+                {game === "wheel" && <WheelStage key={pending.txDigest} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
+                {result && <ResultFlash key={`flash-${result.txDigest}`} win={result.payout > 0} />}
+                {result ? (
+                  <div style={{ textAlign: "center", padding: "4px 0 6px" }}>
+                    <div style={{ color: "#ccc", fontSize: 13 }}>{result.detail}</div>
+                    <div style={{ color: result.payout > 0 ? GREEN : ACCENT, fontSize: 26, fontWeight: 900, marginTop: 4 }}>
+                      {result.payout > 0 ? `WIN +${fmtEve(result.payout - result.wager)} EVE` : `LOSS −${fmtEve(result.wager)} EVE`}
+                    </div>
+                    {result.payout > 0 && <div style={{ color: "#888", fontSize: 11 }}>gross payout {fmtEve(result.payout)} EVE</div>}
+                  </div>
+                ) : (
+                  <div style={{ color: GOLD, fontSize: 11, textAlign: "center", letterSpacing: "0.15em", paddingBottom: 6 }}>◇ · · ·</div>
+                )}
+              </>
+            ) : (
+              <div style={{ color: "#556", fontSize: 12, textAlign: "center", padding: "26px 0" }}>{busy ? "◇ rolling on-chain…" : "place a bet"}</div>
+            )}
+          </div>
         </div>
 
         {/* Controls */}
@@ -192,7 +213,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             </label>
           </div>
-          <button disabled={busy || !addr || overExposure} onClick={play} style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}>
+          <button disabled={busy || !addr || overExposure || (!!pending && !result)} onClick={play} style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}>
             {busy ? "SIGNING…" : game === "slots" || game === "wheel" ? "✦ SPIN" : "✦ PLAY"}
           </button>
           {overExposure && (
