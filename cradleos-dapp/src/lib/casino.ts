@@ -6,6 +6,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_ORIGINAL,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -160,7 +161,7 @@ export async function fetchHouseState(houseId: string): Promise<HouseState | nul
 export async function fetchRecentHands(houseId: string, limit = 30): Promise<HandRecord[]> {
   if (!CASINO_PKG) return [];
   const result = await rpc("suix_queryEvents", [
-    { MoveEventType: `${CASINO_PKG}::blackjack::HandPlayed` },
+    { MoveEventType: `${CASINO_ORIGINAL}::blackjack::HandPlayed` },
     null, limit, true, // descending = newest first
   ]);
   const out: HandRecord[] = [];
@@ -288,6 +289,34 @@ export interface LiveSettlement {
   txDigest: string;
 }
 
+export interface LiveSplitHand {
+  splitId: string;
+  player: string;
+  wager: number;         // per-hand wager, EVE (total escrow = 2x)
+  handA: number[];
+  handB: number[];
+  dealerUpcard: number;
+  active: 0 | 1;         // which hand is being played
+  totalA: number;
+  totalB: number;
+}
+
+export interface SplitSettlement {
+  splitId: string;
+  wager: number;         // total staked (2 × per-hand), EVE
+  deck: number[];
+  handA: number[];
+  handB: number[];
+  dealerCards: number[];
+  totalA: number;
+  totalB: number;
+  dealerTotal: number;
+  outcomeA: number;
+  outcomeB: number;
+  payout: number;        // combined, EVE
+  txDigest: string;
+}
+
 /** Best blackjack total for a set of card indices (client mirror of Move logic). */
 export function handTotal(cards: number[]): number {
   let total = 0, aces = 0;
@@ -345,6 +374,40 @@ export function buildDoubleTx(handId: string, eveCoinIds: string[], wagerRaw: bi
     target: `${CASINO_PKG}::blackjack_live::double`,
     typeArguments: [EVE_COIN_TYPE],
     arguments: [tx.object(CASINO_HOUSE), tx.object(handId), extra],
+  });
+  return tx;
+}
+
+/** Split a same-rank pair: post an equal extra stake, play two hands. */
+export function buildSplitTx(handId: string, eveCoinIds: string[], wagerRaw: bigint): Transaction {
+  const tx = new Transaction();
+  const primary = tx.object(eveCoinIds[0]);
+  if (eveCoinIds.length > 1) tx.mergeCoins(primary, eveCoinIds.slice(1).map((id) => tx.object(id)));
+  const [extra] = tx.splitCoins(primary, [tx.pure.u64(wagerRaw)]);
+  tx.moveCall({
+    target: `${CASINO_PKG}::blackjack_live::split`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(handId), extra],
+  });
+  return tx;
+}
+
+export function buildSplitHitTx(splitId: string): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CASINO_PKG}::blackjack_live::split_hit`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(splitId)],
+  });
+  return tx;
+}
+
+export function buildSplitStandTx(splitId: string): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CASINO_PKG}::blackjack_live::split_stand`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(splitId)],
   });
   return tx;
 }
@@ -475,11 +538,104 @@ export async function fetchLiveHand(handId: string): Promise<LiveHand | null> {
   };
 }
 
+/** Read a live SplitHand object (null = settled/consumed). Direct fullnode. */
+export async function fetchLiveSplitHand(splitId: string): Promise<LiveSplitHand | null> {
+  const res = await rpcDirect("sui_getObject", [splitId, { showContent: true }]);
+  const f = res?.data?.content?.fields;
+  if (!f) return null;
+  const a = (f.hand_a ?? []).map((x: any) => Number(x));
+  const b = (f.hand_b ?? []).map((x: any) => Number(x));
+  return {
+    splitId,
+    player: f.player,
+    wager: Number(f.base_wager ?? 0) / 1e9,
+    handA: a,
+    handB: b,
+    dealerUpcard: Number((f.dealer_cards ?? [])[0] ?? 0),
+    active: Number(f.active ?? 0) === 1 ? 1 : 0,
+    totalA: handTotal(a),
+    totalB: handTotal(b),
+  };
+}
+
+function parseSplitSettled(pj: any, digest: string): SplitSettlement {
+  return {
+    splitId: pj.split_id ?? "",
+    wager: Number(pj.wager ?? 0) / 1e9,
+    deck: (pj.deck ?? []).map((x: any) => Number(x)),
+    handA: (pj.hand_a ?? []).map((x: any) => Number(x)),
+    handB: (pj.hand_b ?? []).map((x: any) => Number(x)),
+    dealerCards: (pj.dealer_cards ?? []).map((x: any) => Number(x)),
+    totalA: Number(pj.total_a ?? 0),
+    totalB: Number(pj.total_b ?? 0),
+    dealerTotal: Number(pj.dealer_total ?? 0),
+    outcomeA: Number(pj.outcome_a ?? 0),
+    outcomeB: Number(pj.outcome_b ?? 0),
+    payout: Number(pj.payout ?? 0) / 1e9,
+    txDigest: digest,
+  };
+}
+
+/**
+ * Resolve a split tx by ITS OWN digest (standing rule: never "latest event").
+ * Returns a live SplitHand id, or the settlement when it auto-resolved
+ * (split aces / both hands landing on 21).
+ */
+export async function resolveSplitByDigest(digest: string): Promise<
+  { kind: "live"; splitId: string } | { kind: "settled"; settlement: SplitSettlement } | null
+> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    try {
+      const res = await rpc("sui_getTransactionBlock", [
+        digest,
+        { showEffects: true, showEvents: true, showObjectChanges: true },
+      ]);
+      const events = res?.events ?? [];
+      for (const e of events) {
+        if (typeof e.type === "string" && e.type.endsWith("::blackjack_live::SplitSettled")) {
+          return { kind: "settled", settlement: parseSplitSettled(e.parsedJson ?? {}, digest) };
+        }
+      }
+      for (const e of events) {
+        if (typeof e.type === "string" && e.type.endsWith("::blackjack_live::HandSplit")) {
+          const pj = e.parsedJson ?? {};
+          if (pj.split_id) return { kind: "live", splitId: String(pj.split_id) };
+        }
+      }
+      const changes = res?.objectChanges ?? [];
+      for (const ch of changes) {
+        if (ch.type === "created" && typeof ch.objectType === "string" && ch.objectType.includes("::blackjack_live::SplitHand<")) {
+          return { kind: "live", splitId: ch.objectId };
+        }
+      }
+    } catch { /* fullnode lag — retry */ }
+    await new Promise((r) => setTimeout(r, 700));
+  }
+  return null;
+}
+
+/** Resolve a settling split action (hit-bust/stand on hand B) by tx digest. */
+export async function resolveSplitSettleByDigest(digest: string): Promise<SplitSettlement | null> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    try {
+      const res = await rpc("sui_getTransactionBlock", [digest, { showEvents: true }]);
+      const events = res?.events ?? [];
+      for (const e of events) {
+        if (typeof e.type === "string" && e.type.endsWith("::blackjack_live::SplitSettled")) {
+          return parseSplitSettled(e.parsedJson ?? {}, digest);
+        }
+      }
+    } catch { /* retry */ }
+    await new Promise((r) => setTimeout(r, 700));
+  }
+  return null;
+}
+
 /** Find the settlement for a given hand id (poll after a settling action). */
 export async function fetchSettlement(handId: string): Promise<LiveSettlement | null> {
   if (!CASINO_PKG) return null;
   const result = await rpc("suix_queryEvents", [
-    { MoveEventType: `${CASINO_PKG}::blackjack_live::HandSettled` },
+    { MoveEventType: `${CASINO_ORIGINAL}::blackjack_live::HandSettled` },
     null, 30, true,
   ]);
   for (const e of result.data ?? []) {
@@ -502,14 +658,49 @@ export async function fetchSettlement(handId: string): Promise<LiveSettlement | 
   return null;
 }
 
-/** Recent live-blackjack settlements for the feed, newest first. */
+/** Recent live-blackjack settlements for the feed, newest first.
+ *  Merges classic HandSettled (v1 types → CASINO_ORIGINAL) with split
+ *  settlements (v2 types → CASINO_PKG), one feed row per split hand. */
 export async function fetchRecentLiveHands(limit = 25): Promise<LiveSettlement[]> {
   if (!CASINO_PKG) return [];
-  const result = await rpc("suix_queryEvents", [
-    { MoveEventType: `${CASINO_PKG}::blackjack_live::HandSettled` },
-    null, limit, true,
+  const [classic, splits] = await Promise.all([
+    rpc("suix_queryEvents", [
+      { MoveEventType: `${CASINO_ORIGINAL}::blackjack_live::HandSettled` },
+      null, limit, true,
+    ]).catch(() => ({ data: [] })),
+    rpc("suix_queryEvents", [
+      { MoveEventType: `${CASINO_PKG}::blackjack_live::SplitSettled` },
+      null, limit, true,
+    ]).catch(() => ({ data: [] })),
   ]);
-  return (result.data ?? []).map((e: any) => {
+  const splitRows: (LiveSettlement & { player: string; split?: boolean })[] = [];
+  for (const e of splits.data ?? []) {
+    const pj = e.parsedJson ?? {};
+    const s = parseSplitSettled(pj, e.id?.txDigest ?? "");
+    const per = s.wager / 2;
+    const tsSplit = Number(e.timestampMs ?? 0);
+    // Per-hand payout reconstruction: win 2x, push 1x, loss 0.
+    const payFor = (o: number) => (o === 2 ? per * 2 : o === 1 ? per : 0);
+    const mk = (cards: number[], total: number, outcome: number) => ({
+      handId: s.splitId,
+      wager: per,
+      deck: [],
+      playerCards: cards,
+      dealerCards: s.dealerCards,
+      playerTotal: total,
+      dealerTotal: s.dealerTotal,
+      doubled: false,
+      outcome,
+      payout: payFor(outcome),
+      txDigest: s.txDigest,
+      player: pj.player ?? "",
+      split: true,
+      _ts: tsSplit,
+    });
+    splitRows.push(mk(s.handA, s.totalA, s.outcomeA) as any);
+    splitRows.push(mk(s.handB, s.totalB, s.outcomeB) as any);
+  }
+  const classicRows = (classic.data ?? []).map((e: any) => {
     const pj = e.parsedJson ?? {};
     return {
       handId: pj.hand_id ?? "",
@@ -524,6 +715,12 @@ export async function fetchRecentLiveHands(limit = 25): Promise<LiveSettlement[]
       payout: Number(pj.payout ?? 0) / 1e9,
       txDigest: e.id?.txDigest ?? "",
       player: pj.player ?? "",
+      _ts: Number(e.timestampMs ?? 0),
     } as LiveSettlement & { player: string };
   });
+  // Merge newest-first by event timestamp, cap at `limit` rows.
+  const all = [...classicRows, ...splitRows].sort(
+    (a: any, b: any) => (b._ts ?? 0) - (a._ts ?? 0),
+  );
+  return all.slice(0, limit);
 }

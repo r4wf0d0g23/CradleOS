@@ -22,10 +22,12 @@ import { CASINO_AVAILABLE } from "../constants";
 import {
   fetchEveCoins, fetchHouseState,
   buildDealTx, buildHitTx, buildStandTx, buildDoubleTx,
+  buildSplitTx, buildSplitHitTx, buildSplitStandTx,
   fetchLiveHand, resolveDealByDigest, resolveSettleByDigest, fetchRecentLiveHands,
+  fetchLiveSplitHand, resolveSplitByDigest, resolveSplitSettleByDigest,
   decodeCard, outcomeLabel, handTotal,
   OUT_WIN, OUT_BLACKJACK, OUT_PUSH,
-  type LiveHand, type LiveSettlement,
+  type LiveHand, type LiveSettlement, type LiveSplitHand, type SplitSettlement,
 } from "../lib/casino";
 import { SUIT_THEME, RANK_LABEL, RANK_SHIP, CARD_BACK, isFace } from "../lib/casinoTheme";
 
@@ -121,6 +123,8 @@ export function CasinoPanel() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [hand, setHand] = useState<LiveHand | null>(null);
   const [settlement, setSettlement] = useState<LiveSettlement | null>(null);
+  const [splitHand, setSplitHand] = useState<LiveSplitHand | null>(null);
+  const [splitSettlement, setSplitSettlement] = useState<SplitSettlement | null>(null);
   const [busy, setBusy] = useState(false);
   const [drawing, setDrawing] = useState(false); // polling for the freshly-drawn card
   const [err, setErr] = useState<string | null>(null);
@@ -249,14 +253,99 @@ export function CasinoPanel() {
     const won = s.outcome === OUT_WIN || s.outcome === OUT_BLACKJACK;
     if (!won && s.outcome !== OUT_PUSH) bustSfx.current?.play().catch(() => {});
   };
-  const newHand = () => { setSettlement(null); setHand(null); setPhase("idle"); };
+  const finishSplitSettle = (s: SplitSettlement) => {
+    setSplitSettlement(s); setSplitHand(null); setHand(null); setPhase("settled");
+    if (s.payout === 0) bustSfx.current?.play().catch(() => {});
+  };
+  const newHand = () => { setSettlement(null); setHand(null); setSplitHand(null); setSplitSettlement(null); setPhase("idle"); };
+
+  // ── Split a same-rank pair ──
+  const actSplit = useCallback(async () => {
+    if (!hand) return;
+    setBusy(true); setErr(null);
+    try {
+      const { ids } = await fetchEveCoins(addr);
+      if (!ids.length) throw new Error("No $EVE for the split stake.");
+      const tx = buildSplitTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9)));
+      const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
+      const digest = txDigestOf(result);
+      setPhase("resolving");
+      const resolved = digest ? await resolveSplitByDigest(digest) : null;
+      if (!resolved) {
+        setErr("Could not read split result — check the feed."); setHand(null); setPhase("idle");
+      } else if (resolved.kind === "live") {
+        const sh = await fetchLiveSplitHand(resolved.splitId);
+        if (sh) { setHand(null); setSplitHand(sh); setPhase("player"); }
+        else {
+          // Consumed between reads (auto-settled) — resolve by this same digest.
+          const s = digest ? await resolveSplitSettleByDigest(digest) : null;
+          if (s) finishSplitSettle(s);
+          else { setErr("Split hand vanished — refresh."); setHand(null); setPhase("idle"); }
+        }
+      } else {
+        finishSplitSettle(resolved.settlement); // split aces auto-settle
+      }
+      refreshAll();
+    } catch (e) { setErr(translateTxError(e)); setPhase("player"); }
+    finally { setBusy(false); }
+  }, [hand, addr, dAppKit]);
+
+  // ── Hit/stand on the active split hand (poll-until-changed, direct fullnode) ──
+  const actSplitMove = useCallback(async (kind: "hit" | "stand") => {
+    if (!splitHand) return;
+    setBusy(true); setErr(null);
+    try {
+      const tx = kind === "hit" ? buildSplitHitTx(splitHand.splitId) : buildSplitStandTx(splitHand.splitId);
+      const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
+      const digest = txDigestOf(result);
+      const prevActive = splitHand.active;
+      const prevLen = prevActive === 0 ? splitHand.handA.length : splitHand.handB.length;
+      if (kind === "hit") setDrawing(true);
+      try {
+        const DEADLINE = Date.now() + 10_000;
+        for (let i = 0; i < 20 && Date.now() < DEADLINE; i++) {
+          await new Promise((r) => setTimeout(r, 500));
+          let still: LiveSplitHand | null = null;
+          try { still = await fetchLiveSplitHand(splitHand.splitId); } catch { /* RPC blip — retry */ }
+          if (still) {
+            const nowLen = prevActive === 0 ? still.handA.length : still.handB.length;
+            if (still.active !== prevActive || (kind === "hit" && nowLen > prevLen)) {
+              setSplitHand(still); refreshAll(); return;
+            }
+            // unchanged = read lag → keep polling
+          } else {
+            // Object consumed → the whole split settled in this action.
+            setPhase("resolving");
+            const s = digest ? await resolveSplitSettleByDigest(digest) : null;
+            if (s) { finishSplitSettle(s); refreshAll(); return; }
+            break;
+          }
+        }
+        const s = digest ? await resolveSplitSettleByDigest(digest) : null;
+        if (s) { finishSplitSettle(s); refreshAll(); return; }
+        const last = await fetchLiveSplitHand(splitHand.splitId).catch(() => null);
+        if (last) { setSplitHand(last); refreshAll(); return; }
+        setErr("Result is taking a moment — the tx landed; refreshing…");
+        refreshAll();
+      } finally { setDrawing(false); }
+    } catch (e) { setErr(translateTxError(e)); }
+    finally { setBusy(false); }
+  }, [splitHand, addr, dAppKit]);
 
   if (!CASINO_AVAILABLE) return <div style={{ color: "#888", padding: 24 }}>Casino is only available on Stillness.</div>;
 
   const canDouble = hand && hand.playerCards.length === 2;
+  const canSplit = !!hand && hand.playerCards.length === 2
+    && hand.playerCards[0] % 13 === hand.playerCards[1] % 13
+    && myEve >= hand.wager;
   const playerCards = settlement?.playerCards ?? hand?.playerCards ?? [];
   const dealerCards = settlement?.dealerCards ?? (hand ? [hand.dealerUpcard] : []);
   const hideHole = phase === "player" || phase === "dealing";
+  const inSplit = !!splitHand || !!splitSettlement;
+  const splitA = splitSettlement?.handA ?? splitHand?.handA ?? [];
+  const splitB = splitSettlement?.handB ?? splitHand?.handB ?? [];
+  const splitDealer = splitSettlement?.dealerCards ?? (splitHand ? [splitHand.dealerUpcard] : []);
+  const activeLabel = splitHand?.active === 1 ? "B" : "A";
 
   return (
     <div style={{ maxWidth: 1080, margin: "0 auto" }}>
@@ -279,22 +368,48 @@ export function CasinoPanel() {
         {/* Table */}
         <div style={{ flex: "1 1 440px", minWidth: 340 }}>
           <div style={{ background: `radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)`, border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
-            <HandRow label="DEALER" cards={dealerCards} total={settlement?.dealerTotal ?? 0} hideHole={hideHole} />
-            <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
-            <HandRow label="YOU" cards={playerCards} total={settlement?.playerTotal ?? hand?.playerTotal ?? 0} />
+            {inSplit ? (
+              <>
+                <HandRow label="DEALER" cards={splitDealer} total={splitSettlement?.dealerTotal ?? 0} hideHole={!!splitHand} />
+                <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
+                <HandRow
+                  label={splitHand && splitHand.active === 0 ? "HAND A ▸ PLAYING" : "HAND A"}
+                  cards={splitA}
+                  total={splitSettlement?.totalA ?? splitHand?.totalA ?? 0}
+                />
+                <HandRow
+                  label={splitHand && splitHand.active === 1 ? "HAND B ▸ PLAYING" : "HAND B"}
+                  cards={splitB}
+                  total={splitSettlement?.totalB ?? splitHand?.totalB ?? 0}
+                />
+              </>
+            ) : (
+              <>
+                <HandRow label="DEALER" cards={dealerCards} total={settlement?.dealerTotal ?? 0} hideHole={hideHole} />
+                <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
+                <HandRow label="YOU" cards={playerCards} total={settlement?.playerTotal ?? hand?.playerTotal ?? 0} />
+              </>
+            )}
 
             {phase === "dealing" && <Center text="◇ shuffling on-chain…" color={GOLD} />}
             {phase === "resolving" && <Center text="◇ dealer playing…" color={GOLD} />}
             {phase === "settled" && settlement && <OutcomeBadge s={settlement} />}
+            {phase === "settled" && splitSettlement && <SplitOutcomeBadge s={splitSettlement} />}
           </div>
 
           {/* Controls */}
           <div style={{ marginTop: 16, background: "#111", border: `1px solid ${ACCENT}22`, padding: 18 }}>
-            {phase === "player" ? (
+            {phase === "player" && splitHand ? (
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button disabled={busy} onClick={() => actSplitMove("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : `◆ HIT ${activeLabel}`}</button>
+                <button disabled={busy} onClick={() => actSplitMove("stand")} style={actionBtn("#666")}>■ STAND {activeLabel}</button>
+              </div>
+            ) : phase === "player" ? (
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <button disabled={busy} onClick={() => act("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : "◆ HIT"}</button>
                 <button disabled={busy} onClick={() => act("stand")} style={actionBtn("#666")}>■ STAND</button>
                 <button disabled={busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
+                {canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
               </div>
             ) : phase === "settled" ? (
               <button onClick={newHand} style={dealBtn}>◈ NEW HAND</button>
@@ -318,7 +433,7 @@ export function CasinoPanel() {
             {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
             {house && phase !== "player" && (
               <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
-                min {fmtEve(house.minBet)} · max {fmtEve(house.maxBet)} EVE · blackjack pays 3:2 · dealer stands on 17
+                min {fmtEve(house.minBet)} · max {fmtEve(house.maxBet)} EVE · blackjack pays 3:2 · dealer stands on 17 · split same-rank pairs (aces: one card each)
               </div>
             )}
           </div>
@@ -351,6 +466,18 @@ function Stat({ label, value, color }: { label: string; value: string; color?: s
 }
 function Center({ text, color }: { text: string; color: string }) {
   return <div style={{ color, fontSize: 13, textAlign: "center", padding: 10 }}>{text}</div>;
+}
+function SplitOutcomeBadge({ s }: { s: SplitSettlement }) {
+  const net = s.payout - s.wager;
+  const col = net > 0 ? GREEN : net === 0 ? "#9a9a8a" : ACCENT;
+  return (
+    <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
+      <div style={{ color: col, fontSize: 20, fontWeight: 900, letterSpacing: "0.08em" }}>
+        A: {outcomeLabel(s.outcomeA)} · B: {outcomeLabel(s.outcomeB)}
+      </div>
+      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{net > 0 ? `+${fmtEve(net)}` : net < 0 ? fmtEve(net) : "±0"} EVE</div>
+    </div>
+  );
 }
 function OutcomeBadge({ s }: { s: LiveSettlement }) {
   const win = s.outcome === OUT_WIN || s.outcome === OUT_BLACKJACK;
