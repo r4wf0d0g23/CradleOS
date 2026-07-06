@@ -6,6 +6,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_V2,
   CASINO_ORIGINAL,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
@@ -669,7 +670,8 @@ export async function fetchRecentLiveHands(limit = 25): Promise<LiveSettlement[]
       null, limit, true,
     ]).catch(() => ({ data: [] })),
     rpc("suix_queryEvents", [
-      { MoveEventType: `${CASINO_PKG}::blackjack_live::SplitSettled` },
+      // SplitSettled was introduced in v2 — its event type tags under the v2 pkg id.
+      { MoveEventType: `${CASINO_V2}::blackjack_live::SplitSettled` },
       null, limit, true,
     ]).catch(() => ({ data: [] })),
   ]);

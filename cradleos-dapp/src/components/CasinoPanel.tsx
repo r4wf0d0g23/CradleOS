@@ -30,6 +30,8 @@ import {
   type LiveHand, type LiveSettlement, type LiveSplitHand, type SplitSettlement,
 } from "../lib/casino";
 import { SUIT_THEME, RANK_LABEL, RANK_SHIP, CARD_BACK, isFace } from "../lib/casinoTheme";
+import { InstantGamePanel } from "./InstantGamePanel";
+import type { InstantGameKey } from "../lib/casinoGames";
 
 const ACCENT = "#FF4700";
 const GOLD = "#E8B84B";
@@ -119,6 +121,7 @@ export function CasinoPanel() {
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
 
+  const [game, setGame] = useState<"blackjack" | InstantGameKey>("blackjack");
   const [betEve, setBetEve] = useState("10");
   const [phase, setPhase] = useState<Phase>("idle");
   const [hand, setHand] = useState<LiveHand | null>(null);
@@ -364,6 +367,29 @@ export function CasinoPanel() {
         </div>
       </div>
 
+      {/* Game selector */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+        {([
+          ["blackjack", "✦ BLACKJACK"],
+          ["coinflip", "◉ COINFLIP"],
+          ["dice", "⚄ DICE"],
+          ["roulette", "◎ ROULETTE"],
+          ["slots", "▦ SLOTS"],
+          ["wheel", "✦ WHEEL"],
+        ] as const).map(([k, label]) => (
+          <button key={k} onClick={() => setGame(k)} style={{
+            background: game === k ? "#241009" : "#141414",
+            border: `1px solid ${game === k ? ACCENT : "#2a2a2a"}`,
+            color: game === k ? ACCENT : "#888",
+            fontSize: 12, fontWeight: 800, letterSpacing: "0.08em",
+            padding: "10px 16px", cursor: "pointer",
+          }}>{label}</button>
+        ))}
+      </div>
+
+      {game !== "blackjack" ? (
+        <InstantGamePanel game={game} />
+      ) : (
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {/* Table */}
         <div style={{ flex: "1 1 440px", minWidth: 340 }}>
@@ -451,6 +477,7 @@ export function CasinoPanel() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
