@@ -32,6 +32,7 @@ import {
   buildSetGateFriendlyCharacterTx, buildSetGateHostileCharacterTx,
   fetchGateFriendlyCharacters, fetchGateHostileCharacters,
   buildAuthorizeGateExtensionTx, buildRequestGatePermitTx,
+  buildSetPermitTtlTx, fetchGatePermitTtl, DEFAULT_PERMIT_TTL_MS,
   fetchGateExtensionStatus, fetchOwnedGates,
   fetchCradleOSAuthorizedGates, fetchAllGatePolicies, previewIsAllowed,
   type GateFriendlyCharacter, type GateHostileCharacter,
@@ -731,6 +732,81 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
 
 // ── Policy card (founder controls) ───────────────────────────────────────────
 
+// ── Permit lifetime section (v2: gate_policy::set_permit_ttl) ────────────────
+
+/** Preset lifetimes offered to gate owners. Selecting the 24h preset clears the
+ * override on-chain (ttl_ms = 0 ⇒ revert to contract default). */
+const PERMIT_TTL_PRESETS: Array<{ label: string; ms: number }> = [
+  { label: "1 h",  ms: 3_600_000 },
+  { label: "6 h",  ms: 21_600_000 },
+  { label: "12 h", ms: 43_200_000 },
+  { label: "24 h", ms: 86_400_000 },
+  { label: "3 d",  ms: 259_200_000 },
+  { label: "7 d",  ms: 604_800_000 },
+];
+
+function formatTtl(ms: number): string {
+  const preset = PERMIT_TTL_PRESETS.find(p => p.ms === ms);
+  if (preset) return preset.label;
+  if (ms % 86_400_000 === 0) return `${ms / 86_400_000} d`;
+  if (ms % 3_600_000 === 0) return `${ms / 3_600_000} h`;
+  if (ms % 60_000 === 0) return `${ms / 60_000} min`;
+  return `${ms} ms`;
+}
+
+function PermitTtlSection({ policyId, vaultId, isFounder, busy, exec }: {
+  policyId: string;
+  vaultId: string;
+  isFounder: boolean;
+  busy: boolean;
+  exec: (tx: ReturnType<typeof buildSetPermitTtlTx>) => Promise<void>;
+}) {
+  const { data: ttl } = useQuery<number>({
+    queryKey: ["gatePermitTtl", policyId],
+    queryFn: () => fetchGatePermitTtl(policyId),
+    staleTime: 30_000,
+  });
+  const effective = ttl ?? DEFAULT_PERMIT_TTL_MS;
+
+  return (
+    <div style={{ marginBottom: 16, borderTop: "1px solid rgba(255,71,0,0.1)", paddingTop: 14 }}>
+      <div style={{ fontSize: 11, color: "rgba(180,180,160,0.6)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>
+        Permit Lifetime
+      </div>
+      <div style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", marginBottom: 8, lineHeight: 1.5 }}>
+        How long an issued JumpPermit stays valid. Current:{" "}
+        <span style={{ color: "#FF9E64", fontWeight: 700 }}>{formatTtl(effective)}</span>
+        {effective === DEFAULT_PERMIT_TTL_MS ? " (default)" : ""}
+      </div>
+      {isFounder ? (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {PERMIT_TTL_PRESETS.map(p => {
+            const active = effective === p.ms;
+            return (
+              <button
+                key={p.ms}
+                onClick={() => exec(buildSetPermitTtlTx(policyId, vaultId, p.ms === DEFAULT_PERMIT_TTL_MS ? 0 : p.ms))}
+                disabled={busy || active}
+                style={{
+                  padding: "5px 12px", borderRadius: 3, fontSize: 11, fontWeight: 600,
+                  cursor: active ? "default" : "pointer",
+                  background: active ? "rgba(255,158,100,0.18)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${active ? "#FF9E64" : "rgba(255,255,255,0.1)"}`,
+                  color: active ? "#FF9E64" : "#666",
+                }}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div style={{ fontSize: 10, color: "rgba(175,175,155,0.4)" }}>Only the tribe founder/admins can change this.</div>
+      )}
+    </div>
+  );
+}
+
 function PolicyCard({ vault, policy, isFounder, allTribes }: {
   vault: TribeVaultState;
   policy: GatePolicyState | null;
@@ -750,6 +826,7 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       queryClient.invalidateQueries({ queryKey: ["gatePolicy"] });
+      queryClient.invalidateQueries({ queryKey: ["gatePermitTtl"] });
     } catch (e: unknown) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
   }
@@ -807,6 +884,9 @@ function PolicyCard({ vault, policy, isFounder, allTribes }: {
               ))}
             </div>
           </div>
+
+          {/* Permit lifetime (v2): how long issued JumpPermits stay valid */}
+          <PermitTtlSection policyId={policy.objectId} vaultId={vault.objectId} isFounder={isFounder} busy={busy} exec={exec} />
 
           {/* Tribe overrides */}
           {isFounder && (
@@ -1072,7 +1152,8 @@ function TransitCard({ pilotTribeId }: { pilotTribeId: number }) {
         without a valid permit your in-game jump command will be rejected by the gate.
       </div>
       <div style={{ ...cardSub, color: "rgba(255,200,0,0.8)", marginBottom: 14 }}>
-        ⓘ A permit is good for one round-trip (source ↔ destination) and expires after 24 hours.
+        ⓘ A permit is good for one round-trip (source ↔ destination). Its lifetime is set by the
+        gate policy's owner (24h default) — shown per policy in the Gate Access Policy card.
         If you don't transit in that window, just request a fresh one — there's no cost beyond gas.
       </div>
 

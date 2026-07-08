@@ -99,7 +99,11 @@ export const CRADLEOS_ORIGINAL = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066
 // orphaned by the chain-side wipe and unreachable from the new world.
 // Tx digest: FT5Wy4ZxFLHgvNXKeK93bZmEpdW8WGHoyfP2kbadj69H
 // UpgradeCap: 0x82935954658845b86584b035143a5614530b6bb8d30ad2a3b53ec70c7e2b61be
-export const CRADLEOS_PKG      = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
+// v2 (2026-07-08): configurable JumpPermit lifetime — gate_policy::set_permit_ttl
+// + permit_ttl_ms + PermitTtlKey DF + GatePermitTtlSet event.
+// Tx digest: 648Vzom7hjsGSYunE3D5i9AGDPAH32BLGGZaGVELLuSV
+export const CRADLEOS_PKG      = "0xd98eea77615be152f02d70f50140734d7cdf18f2bfb8c02abbbb1421023841ed";
+// Previous v1 (wipe-day fresh publish) = CRADLEOS_ORIGINAL below.
 // Previous v14: 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93 (last pre-wipe)
 // Previous v13: 0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6
 // Previous v12: 0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f
@@ -208,7 +212,8 @@ export const CRADLEOS_UPGRADE_ORIGIN = "0xd4f46821b371c776887922a5ac8e2e405b86b3
 // All prior CradleOS lineage pkgs are orphaned and return zero hits forever.
 // Append new pkgs here when future upgrades introduce new event structs.
 export const CRADLEOS_EVENT_PKGS: readonly string[] = [
-  CRADLEOS_PKG, // fresh v1, post-wipe
+  CRADLEOS_ORIGINAL, // fresh v1, post-wipe — defines all v1 event structs
+  CRADLEOS_PKG,      // v2 2026-07-08 — defines GatePermitTtlSet
 ];
 
 // Backward-compat aliases — all point to published-at for moveCall targets

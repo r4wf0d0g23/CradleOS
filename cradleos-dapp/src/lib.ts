@@ -2108,7 +2108,7 @@ export function buildAuthorizeExtensionTx(
   // authorize_extension<Auth: drop>(turret: &mut Turret, owner_cap: &OwnerCap<Turret>)
   tx.moveCall({
     target: `${WORLD_PKG}::turret::authorize_extension`,
-    typeArguments: [`${CRADLEOS_PKG}::turret_ext::TurretAuth`],
+    typeArguments: [`${CRADLEOS_ORIGINAL}::turret_ext::TurretAuth`],
     arguments: [
       tx.object(turretId),
       borrowedCap,
@@ -3597,10 +3597,11 @@ export function buildAuthorizeGateExtensionTx(
     arguments: [tx.object(characterId), tx.object(ownerCapId)],
   });
 
-  // CradleOSAuth witness comes from gate_control module
+  // CradleOSAuth witness comes from gate_control module. NOTE: type tags must
+  // reference the struct's DEFINING package (v1 original), not published-at.
   tx.moveCall({
     target: `${WORLD_PKG}::gate::authorize_extension`,
-    typeArguments: [`${CRADLEOS_PKG}::gate_control::CradleOSAuth`],
+    typeArguments: [`${CRADLEOS_ORIGINAL}::gate_control::CradleOSAuth`],
     arguments: [tx.object(gateId), borrowedCap],
   });
 
@@ -3619,9 +3620,10 @@ export function buildAuthorizeGateExtensionTx(
  * If denied the tx aborts with E_ACCESS_DENIED (10) and the pilot sees an
  * "access denied" wallet error.
  *
- * The permit is short-lived (24h hardcoded in the contract) but the dApp
- * surfaces this as access-state, not time. If a permit expires before the
- * pilot uses it, they re-request — the access state on chain is what matters.
+ * The permit lifetime defaults to 24h but can be configured per-policy by
+ * the gate-policy admins via `set_permit_ttl` (see buildSetPermitTtlTx /
+ * fetchGatePermitTtl). If a permit expires before the pilot uses it, they
+ * re-request — the access state on chain is what matters.
  */
 export function buildRequestGatePermitTx(
   policyId: string,
@@ -3641,6 +3643,85 @@ export function buildRequestGatePermitTx(
     ],
   });
   return tx;
+}
+
+/**
+ * Admin: set the JumpPermit lifetime for a tribe gate policy, in milliseconds.
+ * `ttlMs = 0` clears the override and reverts to the 24h contract default.
+ * Contract bounds: 5 minutes .. 30 days (E_INVALID_TTL = 4 otherwise).
+ * Caller must be the vault founder/admin (same auth as set_access_level).
+ */
+export function buildSetPermitTtlTx(
+  policyId: string,
+  vaultId: string,
+  ttlMs: number,
+): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${GATE_POLICY_PKG}::gate_policy::set_permit_ttl`,
+    arguments: [
+      tx.object(policyId),
+      tx.object(vaultId),
+      tx.pure.u64(ttlMs),
+    ],
+  });
+  return tx;
+}
+
+/** Contract default permit lifetime (24h), mirrored from gate_policy.move. */
+export const DEFAULT_PERMIT_TTL_MS = 86_400_000;
+
+/**
+ * Read the effective JumpPermit lifetime (ms) for a gate policy.
+ * The override lives in a `PermitTtlKey` dynamic field on the policy object
+ * (absent ⇒ 24h default). Walks the policy's dynamic fields with pagination
+ * (standing rule: suix_* pagination is mandatory) looking for the key type.
+ */
+export async function fetchGatePermitTtl(policyId: string): Promise<number> {
+  try {
+    let cursor: string | null = null;
+    let pages = 0;
+    while (pages < 25) {
+      pages++;
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "suix_getDynamicFields",
+          params: [policyId, cursor, 50],
+        }),
+      });
+      const j = await res.json() as {
+        result?: {
+          data?: Array<{ objectId: string; name?: { type?: string } }>;
+          nextCursor?: string | null;
+          hasNextPage?: boolean;
+        };
+      };
+      const rows = j.result?.data ?? [];
+      const hit = rows.find(r => (r.name?.type ?? "").endsWith("::gate_policy::PermitTtlKey"));
+      if (hit) {
+        const objRes = await fetch(SUI_TESTNET_RPC, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1,
+            method: "sui_getObject",
+            params: [hit.objectId, { showContent: true }],
+          }),
+        });
+        const oj = await objRes.json() as {
+          result?: { data?: { content?: { fields?: { value?: string } } } };
+        };
+        const v = oj.result?.data?.content?.fields?.value;
+        const n = v != null ? Number(v) : NaN;
+        if (Number.isFinite(n) && n > 0) return n;
+        return DEFAULT_PERMIT_TTL_MS;
+      }
+      if (!j.result?.hasNextPage || !j.result?.nextCursor) break;
+      cursor = j.result.nextCursor;
+    }
+  } catch { /* fall through to default */ }
+  return DEFAULT_PERMIT_TTL_MS;
 }
 
 /**

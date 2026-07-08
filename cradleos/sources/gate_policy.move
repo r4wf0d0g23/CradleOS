@@ -34,6 +34,7 @@ module cradleos::gate_policy {
     const E_NOT_AUTHORIZED: u64 = 1;
     const E_INVALID_LEVEL:  u64 = 2;
     const E_WRONG_VAULT:    u64 = 3;
+    const E_INVALID_TTL:    u64 = 4;
 
     // ── Structs ───────────────────────────────────────────────────────────────
 
@@ -64,6 +65,11 @@ module cradleos::gate_policy {
 
     /// Per-player override on the gate policy.
     public struct PlayerGateKey has copy, drop, store { player: address }
+
+    /// Dynamic-field key for the policy's configurable permit lifetime (ms).
+    /// Stored as a DF because TribeGatePolicy is an existing public struct —
+    /// Sui upgrades cannot add fields to it. Absent ⇒ DEFAULT_PERMIT_VALIDITY_MS.
+    public struct PermitTtlKey has copy, drop, store {}
 
     // ── Events ────────────────────────────────────────────────────────────────
 
@@ -579,8 +585,72 @@ module cradleos::gate_policy {
     // via `cradleos::gate_control::authorize_on_gate` for this to succeed;
     // otherwise `world::gate::issue_jump_permit` aborts EExtensionNotAuthorized.
 
-    /// 24 hours in milliseconds. Enough headroom for a player session.
+    /// Default permit lifetime: 24 hours in milliseconds. Gate-policy admins
+    /// can override per-policy via `set_permit_ttl` (stored as a dynamic field).
     const PERMIT_VALIDITY_MS: u64 = 86_400_000;
+    /// Bounds for the configurable permit lifetime.
+    const MIN_PERMIT_TTL_MS: u64 = 300_000;        // 5 minutes
+    const MAX_PERMIT_TTL_MS: u64 = 2_592_000_000;  // 30 days
+
+    /// Effective permit lifetime for a policy: the admin-configured override
+    /// if present, otherwise the 24h default.
+    public fun permit_ttl_ms(policy: &TribeGatePolicy): u64 {
+        let key = PermitTtlKey {};
+        if (df::exists_(&policy.id, key)) {
+            *df::borrow<PermitTtlKey, u64>(&policy.id, key)
+        } else {
+            PERMIT_VALIDITY_MS
+        }
+    }
+
+    /// Emitted when an admin sets or clears the permit lifetime override.
+    /// ttl_ms is the new EFFECTIVE lifetime (default when cleared).
+    public struct GatePermitTtlSet has copy, drop {
+        policy_id: ID,
+        vault_id: ID,
+        ttl_ms: u64,
+        is_override: bool,
+        set_by: address,
+        version: u64,
+    }
+
+    /// Founder/admin: set how long issued JumpPermits remain valid, in ms.
+    /// `ttl_ms = 0` clears the override and reverts to the 24h default.
+    /// Otherwise must be within [5 minutes, 30 days].
+    public entry fun set_permit_ttl(
+        policy: &mut TribeGatePolicy,
+        vault: &TribeVault,
+        ttl_ms: u64,
+        ctx: &mut TxContext,
+    ) {
+        let caller = tx_context::sender(ctx);
+        assert!(is_authorized(vault, caller), E_NOT_AUTHORIZED);
+        assert!(object::id(vault) == policy.vault_id, E_WRONG_VAULT);
+
+        let key = PermitTtlKey {};
+        if (ttl_ms == 0) {
+            if (df::exists_(&policy.id, key)) {
+                df::remove<PermitTtlKey, u64>(&mut policy.id, key);
+            };
+        } else {
+            assert!(ttl_ms >= MIN_PERMIT_TTL_MS && ttl_ms <= MAX_PERMIT_TTL_MS, E_INVALID_TTL);
+            if (df::exists_(&policy.id, key)) {
+                *df::borrow_mut<PermitTtlKey, u64>(&mut policy.id, key) = ttl_ms;
+            } else {
+                df::add(&mut policy.id, key, ttl_ms);
+            };
+        };
+        policy.version = policy.version + 1;
+
+        event::emit(GatePermitTtlSet {
+            policy_id: object::uid_to_inner(&policy.id),
+            vault_id: policy.vault_id,
+            ttl_ms: permit_ttl_ms(policy),
+            is_override: ttl_ms != 0,
+            set_by: caller,
+            version: policy.version,
+        });
+    }
 
     public entry fun request_jump_permit_entry(
         policy: &TribeGatePolicy,
@@ -602,7 +672,7 @@ module cradleos::gate_policy {
 
         assert!(is_allowed(policy, char_id_u32, tribe), E_ACCESS_DENIED);
 
-        let expires_at = timestamp_ms(clock) + PERMIT_VALIDITY_MS;
+        let expires_at = timestamp_ms(clock) + permit_ttl_ms(policy);
         gate::issue_jump_permit<cradleos::gate_control::CradleOSAuth>(
             source_gate,
             destination_gate,

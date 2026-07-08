@@ -1,7 +1,7 @@
 [package]
 name = "cradleos"
 edition = "2024"
-published-at = "0xe468d971c0705da10c8a8a7849c36adc4e64e6de2592326b50d1888a298312e1"
+published-at = "0xd98eea77615be152f02d70f50140734d7cdf18f2bfb8c02abbbb1421023841ed"
 
 [dependencies]
 world = { local = "../world-contracts/contracts/world" }

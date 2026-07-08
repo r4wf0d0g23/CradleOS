@@ -1752,7 +1752,7 @@ function MemberDelegationSection({
         // Authorize extension
         tx.moveCall({
           target: `${WORLD_PKG}::turret::authorize_extension`,
-          typeArguments: [`${CRADLEOS_PKG}::turret_ext::TurretAuth`],
+          typeArguments: [`${CRADLEOS_ORIGINAL}::turret_ext::TurretAuth`],
           arguments: [tx.object(s.objectId), borrowedCap],
         });
         // Return OwnerCap
