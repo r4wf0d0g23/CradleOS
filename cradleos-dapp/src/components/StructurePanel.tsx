@@ -863,7 +863,7 @@ export function StructurePanel({ onTxSuccess }: Props) {
       // Extract character ID from the first structure's ownerCap chain (via lib internals),
       // but since fetchPlayerStructures resolves it internally, query CharacterCreatedEvent here too.
       // Resolve character ID via owned PlayerProfile object (exact, no pagination issues)
-      const profileRes = await fetch("https://fullnode.testnet.sui.io:443", {
+      const profileRes = await fetch(SUI_TESTNET_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

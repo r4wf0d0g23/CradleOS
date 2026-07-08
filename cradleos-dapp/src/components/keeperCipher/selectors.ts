@@ -9,9 +9,9 @@
  */
 
 import { rpcFetchWithRetry } from "../../lib";
-import { WORLD_PKG } from "../../constants";
+import { SUI_TESTNET_RPC, WORLD_PKG } from "../../constants";
 
-const SUI_RPC = "https://fullnode.testnet.sui.io:443";
+const SUI_RPC = SUI_TESTNET_RPC;
 
 export interface KillEventLite {
   killer_id?: string;

@@ -27,7 +27,7 @@ import {
   CHARACTER_REGISTRY_ID, rpcGetObject, discoverVaultIdForTribe,
   type TribeClaim,
 } from "../lib";
-import { CRADLEOS_PKG } from "../constants";
+import { CRADLEOS_PKG, SUI_TESTNET_RPC } from "../constants";
 import { Transaction } from "@mysten/sui/transactions";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -166,7 +166,7 @@ export function RegistryPanel() {
       let newVaultId: string | null = null;
       if (vaultDigest) {
         try {
-          const res = await fetch("https://fullnode.testnet.sui.io:443", {
+          const res = await fetch(SUI_TESTNET_RPC, {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getTransactionBlock", params: [vaultDigest, { showEffects: true }] }),
           });

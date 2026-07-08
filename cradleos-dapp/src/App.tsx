@@ -40,7 +40,7 @@ import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
 import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
 import { CasinoPanel } from "./components/CasinoPanel";
-import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
+import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
 
 // ── Server status dots ────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ function ChainHealth() {
 
   useEffect(() => {
     let cancelled = false;
-    const RPC = "https://fullnode.testnet.sui.io:443";
+    const RPC = SUI_TESTNET_RPC;
     const post = async (method: string, params: unknown[] = []) => {
       const r = await fetch(RPC, {
         method: "POST",

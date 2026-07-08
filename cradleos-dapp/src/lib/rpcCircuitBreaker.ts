@@ -40,7 +40,9 @@
  */
 
 const PROXY_URL = "https://keeper.reapers.shop/sui";
-const FALLBACK_URL = "https://fullnode.testnet.sui.io:443";
+// 2026-07-08: fullnode.testnet.sui.io 404s on everything; BlockVision public
+// endpoint verified live with CORS *.
+const FALLBACK_URL = "https://sui-testnet-endpoint.blockvision.org";
 
 const FAIL_THRESHOLD = 3;
 const COOLDOWN_MS = 45_000;

@@ -27,6 +27,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchCharacterTribeId, findCharacterForWallet } from "../lib";
+import { SUI_TESTNET_RPC } from "../constants";
 import {
   ELIGIBILITY_OPTIONS,
   WEIGHT_OPTIONS,
@@ -994,7 +995,7 @@ function UseMyTribeButton({ onApply }: { onApply: (tribeId: number) => void }) {
 // Mirrors the helper used in TribeVaultPanel; pulls the new Election id.
 async function fetchCreatedSharedFromDigest(digest: string, typeContains: string): Promise<string | null> {
   try {
-    const res = await fetch("https://fullnode.testnet.sui.io:443", {
+    const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

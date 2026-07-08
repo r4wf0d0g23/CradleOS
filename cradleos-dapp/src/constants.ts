@@ -362,7 +362,12 @@ export const CASINO_AVAILABLE = CASINO_PKG !== "";
  * separate piece of work.
  */
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
-export const SUI_TESTNET_RPC_FALLBACK = "https://fullnode.testnet.sui.io:443";
+// 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body) on
+// all requests — every direct/fallback read against it failed with
+// "Unexpected end of JSON input" and cascaded into "Character Not Found" /
+// "No tribe vault found" for live users. Fallback + direct now point at
+// BlockVision's public testnet endpoint (CORS: *, verified 2026-07-08).
+export const SUI_TESTNET_RPC_FALLBACK = "https://sui-testnet-endpoint.blockvision.org";
 
 /**
  * DIRECT public-fullnode endpoint for CRITICAL-PATH reads only.
@@ -393,7 +398,7 @@ export const SUI_TESTNET_RPC_FALLBACK = "https://fullnode.testnet.sui.io:443";
  * pays slightly higher RPC latency on these calls in exchange for storm
  * resilience.
  */
-export const SUI_TESTNET_RPC_DIRECT = "https://fullnode.testnet.sui.io:443";
+export const SUI_TESTNET_RPC_DIRECT = "https://sui-testnet-endpoint.blockvision.org";
 
 /**
  * Sui GraphQL endpoint.

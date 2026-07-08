@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { SERVER_ENV } from "../constants";
+import { SERVER_ENV, SUI_TESTNET_RPC } from "../constants";
 
 // ── Suiscan URL helper ────────────────────────────────────────────────────────
 const SUISCAN_BASE = "https://suiscan.xyz/testnet";
@@ -253,7 +253,7 @@ export function KillCardModal({ kill, charMap, sysMap, charTribeMap, tribeInfoMa
     if (txDigest) return;
     if (!kill.objectId || kill.objectId.startsWith("evt:")) return; // synthetic id, can't fetch
     let cancelled = false;
-    fetch("https://fullnode.testnet.sui.io:443", {
+    fetch(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { SERVER_ENV, WORLD_PKG } from "../constants";
+import { SERVER_ENV, SUI_TESTNET_RPC, WORLD_PKG } from "../constants";
 import { fetchPlayerStructures, rpcFetchWithRetry, type LocationGroup } from "../lib";
 import { type KillRecord } from "./KillCardModal";
 
@@ -16,7 +16,7 @@ async function fetchPlayerKills(
 ): Promise<KillRecord[]> {
   const eventType = `${WORLD_PKG}::killmail::KillmailCreatedEvent`;
   const stopAt = Math.floor(Date.now() / 1000) - windowSeconds;
-  const SUI_RPC = "https://fullnode.testnet.sui.io:443";
+  const SUI_RPC = SUI_TESTNET_RPC;
   const out: KillRecord[] = [];
   let cursor: any = null;
 
