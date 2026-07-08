@@ -102,7 +102,17 @@ export const CRADLEOS_ORIGINAL = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066
 // v2 (2026-07-08): configurable JumpPermit lifetime — gate_policy::set_permit_ttl
 // + permit_ttl_ms + PermitTtlKey DF + GatePermitTtlSet event.
 // Tx digest: 648Vzom7hjsGSYunE3D5i9AGDPAH32BLGGZaGVELLuSV
-export const CRADLEOS_PKG      = "0xd98eea77615be152f02d70f50140734d7cdf18f2bfb8c02abbbb1421023841ed";
+// v3 (2026-07-08): SECURITY — gate↔policy binding. bind_gate/unbind_gate with
+// OwnerCap proof + GateBindingKey DF; request_jump_permit_entry now fail-closed
+// requires the source gate to be bound to the policy passed. Without this, any
+// tribe's OPEN policy could mint permits for any enforced gate.
+// Tx digest: 7skiif5oYopW8ruUkk2qTFHfLvVzqGQjXvveoiKSji5x
+export const CRADLEOS_PKG      = "0xaf2b9fca870b3e14f64f4f5935b972a39ccbc405b9d2339ccbb8ff0953fc0995";
+// Defining packages for structs introduced in specific upgrades — DF name
+// types and event struct types are typed under the package that FIRST defined
+// them, regardless of the current published-at:
+export const CRADLEOS_V2_PKG = "0xd98eea77615be152f02d70f50140734d7cdf18f2bfb8c02abbbb1421023841ed"; // PermitTtlKey, GatePermitTtlSet
+export const CRADLEOS_V3_PKG = "0xaf2b9fca870b3e14f64f4f5935b972a39ccbc405b9d2339ccbb8ff0953fc0995"; // GateBindingKey, GateBound, GateUnbound
 // Previous v1 (wipe-day fresh publish) = CRADLEOS_ORIGINAL below.
 // Previous v14: 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93 (last pre-wipe)
 // Previous v13: 0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6
@@ -213,7 +223,8 @@ export const CRADLEOS_UPGRADE_ORIGIN = "0xd4f46821b371c776887922a5ac8e2e405b86b3
 // Append new pkgs here when future upgrades introduce new event structs.
 export const CRADLEOS_EVENT_PKGS: readonly string[] = [
   CRADLEOS_ORIGINAL, // fresh v1, post-wipe — defines all v1 event structs
-  CRADLEOS_PKG,      // v2 2026-07-08 — defines GatePermitTtlSet
+  CRADLEOS_V2_PKG,   // v2 2026-07-08 — defines GatePermitTtlSet
+  CRADLEOS_V3_PKG,   // v3 2026-07-08 — defines GateBound/GateUnbound
 ];
 
 // Backward-compat aliases — all point to published-at for moveCall targets

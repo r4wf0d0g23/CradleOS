@@ -10,6 +10,7 @@ import { SUI_GRAPHQL } from "./graphql";
 import {
   CLOCK,
   CRADLEOS_PKG,
+  CRADLEOS_V3_PKG,
   CRADLEOS_ORIGINAL,
   CRADLEOS_UPGRADE_ORIGIN,
   CRADLEOS_EVENT_PKGS,
@@ -3604,6 +3605,7 @@ export function buildAuthorizeGateExtensionTx(
   gateId: string,
   ownerCapId: string,
   characterId: string,
+  policyId?: string,
 ): Transaction {
   const tx = new Transaction();
 
@@ -3622,6 +3624,16 @@ export function buildAuthorizeGateExtensionTx(
     arguments: [tx.object(gateId), borrowedCap],
   });
 
+  // v3: bind the gate to its governing policy in the same PTB, so newly
+  // enforced gates are immediately transit-capable. Enforced-but-unbound
+  // gates cannot mint permits (fail-closed security fix).
+  if (policyId) {
+    tx.moveCall({
+      target: `${GATE_POLICY_PKG}::gate_policy::bind_gate`,
+      arguments: [tx.object(policyId), tx.object(gateId), borrowedCap],
+    });
+  }
+
   tx.moveCall({
     target: `${WORLD_PKG}::character::return_owner_cap`,
     typeArguments: [gateType],
@@ -3629,6 +3641,67 @@ export function buildAuthorizeGateExtensionTx(
   });
 
   return tx;
+}
+
+/**
+ * v3: gate owner binds (or unbinds) an already-authorized gate to a policy.
+ * Uses the standard Character borrow_owner_cap / return_owner_cap pattern as
+ * ownership proof. After the v3 security upgrade, permits can only be minted
+ * against the policy the gate's owner bound — enforced gates with no binding
+ * cannot mint permits at all.
+ */
+export function buildBindGateTx(
+  policyId: string,
+  gateId: string,
+  ownerCapId: string,
+  characterId: string,
+  unbind = false,
+): Transaction {
+  const tx = new Transaction();
+  const gateType = `${WORLD_PKG}::gate::Gate`;
+  const [borrowedCap, receipt] = tx.moveCall({
+    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    typeArguments: [gateType],
+    arguments: [tx.object(characterId), tx.object(ownerCapId)],
+  });
+  tx.moveCall({
+    target: `${GATE_POLICY_PKG}::gate_policy::${unbind ? "unbind_gate" : "bind_gate"}`,
+    arguments: [tx.object(policyId), tx.object(gateId), borrowedCap],
+  });
+  tx.moveCall({
+    target: `${WORLD_PKG}::character::return_owner_cap`,
+    typeArguments: [gateType],
+    arguments: [tx.object(characterId), borrowedCap, receipt],
+  });
+  return tx;
+}
+
+/**
+ * v3: which of `policyIds` (if any) is bound to `gateId`?
+ * Checks the GateBindingKey dynamic field on each candidate policy.
+ * Returns the first bound policyId, or null when the gate is unbound.
+ * DF name type uses the v3 defining package for GateBindingKey.
+ */
+export async function fetchBoundPolicyForGate(
+  gateId: string,
+  policyIds: string[],
+): Promise<string | null> {
+  const keyType = `${CRADLEOS_V3_PKG}::gate_policy::GateBindingKey`;
+  const results = await Promise.all(policyIds.map(async (pid) => {
+    try {
+      const res = await fetch(SUI_TESTNET_RPC, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1,
+          method: "suix_getDynamicFieldObject",
+          params: [pid, { type: keyType, value: { gate_id: gateId } }],
+        }),
+      });
+      const j = await res.json() as { result?: { data?: { objectId?: string } | null } };
+      return j.result?.data?.objectId ? pid : null;
+    } catch { return null; }
+  }));
+  return results.find((r): r is string => r !== null) ?? null;
 }
 
 /**

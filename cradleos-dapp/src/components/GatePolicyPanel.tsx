@@ -32,6 +32,7 @@ import {
   buildSetGateFriendlyCharacterTx, buildSetGateHostileCharacterTx,
   fetchGateFriendlyCharacters, fetchGateHostileCharacters,
   buildAuthorizeGateExtensionTx, buildRequestGatePermitTx,
+  buildBindGateTx, fetchBoundPolicyForGate,
   buildSetPermitTtlTx, fetchGatePermitTtl, DEFAULT_PERMIT_TTL_MS,
   fetchGateExtensionStatus, fetchOwnedGates,
   fetchCradleOSAuthorizedGates, fetchAllGatePolicies, previewIsAllowed,
@@ -639,6 +640,24 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
     staleTime: 5_000,
   });
 
+  // v3: per-gate binding status against this tribe's policy. Enforced gates
+  // with no binding cannot mint permits (fail-closed security fix).
+  const { data: bindingStatuses } = useQuery({
+    queryKey: ["gateBindings", gateIds, tribePolicyId],
+    queryFn: async () => {
+      const list = gates ?? [];
+      const rows = await Promise.all(list.map(async g => ({
+        gateId: g.objectId,
+        bound: tribePolicyId
+          ? (await fetchBoundPolicyForGate(g.objectId, [tribePolicyId])) !== null
+          : false,
+      })));
+      return new Map(rows.map(r => [r.gateId, r.bound]));
+    },
+    enabled: (gates ?? []).length > 0 && !!tribePolicyId,
+    staleTime: 10_000,
+  });
+
   if (!account) return null;
   if ((gates ?? []).length === 0) {
     return (
@@ -653,6 +672,23 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
     );
   }
 
+  const handleBind = async (gateId: string, ownerCapId: string) => {
+    if (!characterObjectId || !tribePolicyId) {
+      setErr(prev => ({ ...prev, [gateId]: "Character or policy not found — reload the dApp." }));
+      return;
+    }
+    setBusy(gateId); setErr(prev => ({ ...prev, [gateId]: "" }));
+    try {
+      const tx = buildBindGateTx(tribePolicyId, gateId, ownerCapId, characterObjectId);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      queryClient.invalidateQueries({ queryKey: ["gateBindings"] });
+      queryClient.invalidateQueries({ queryKey: ["gateBoundPolicy"] });
+    } catch (e) {
+      setErr(prev => ({ ...prev, [gateId]: translateTxError(e) }));
+    } finally { setBusy(null); }
+  };
+
   const handleAuthorize = async (gateId: string, ownerCapId: string) => {
     if (!characterObjectId) {
       setErr(prev => ({ ...prev, [gateId]: "Character not found — reload the dApp." }));
@@ -660,7 +696,8 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
     }
     setBusy(gateId); setErr(prev => ({ ...prev, [gateId]: "" }));
     try {
-      const tx = buildAuthorizeGateExtensionTx(gateId, ownerCapId, characterObjectId);
+      // v3: authorize + bind to the tribe policy in one PTB when available.
+      const tx = buildAuthorizeGateExtensionTx(gateId, ownerCapId, characterObjectId, tribePolicyId ?? undefined);
       const signer = new CurrentAccountSigner(dAppKit);
       await signer.signAndExecuteTransaction({ transaction: tx });
       // Optimistic flip on extensionStatuses cache.
@@ -674,8 +711,9 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
       );
       staggeredRefetch({
         queryClient,
-        queryKeys: [["gateExtensionStatuses", gateIds]],
+        queryKeys: [["gateExtensionStatuses", gateIds], ["gateBindings", gateIds, tribePolicyId]],
       });
+      queryClient.invalidateQueries({ queryKey: ["gateBoundPolicy"] });
     } catch (e) {
       setErr(prev => ({ ...prev, [gateId]: translateTxError(e) }));
     } finally { setBusy(null); }
@@ -712,6 +750,28 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
                 color: isAuthorized ? "#00c864" : isUnknown ? "rgba(175,175,155,0.5)" : "#ffcc00" }}>
                 {isAuthorized ? "✓ ENFORCED" : isUnknown ? "…" : "⚠ OPEN"}
               </span>
+              {isAuthorized && bindingStatuses?.get(g.objectId) === true && (
+                <span style={{ padding: "2px 8px", fontSize: 10, fontWeight: 600, borderRadius: 2,
+                  background: "rgba(0,200,100,0.15)", border: "1px solid rgba(0,200,100,0.4)", color: "#00c864" }}>
+                  ✓ BOUND
+                </span>
+              )}
+              {isAuthorized && bindingStatuses?.get(g.objectId) === false && (
+                <>
+                  <span style={{ padding: "2px 8px", fontSize: 10, fontWeight: 600, borderRadius: 2,
+                    background: "rgba(255,68,68,0.15)", border: "1px solid rgba(255,68,68,0.4)", color: "#ff4444" }}>
+                    ⚠ NOT BOUND
+                  </span>
+                  <button
+                    onClick={() => handleBind(g.objectId, g.ownerCapId)}
+                    disabled={myBusy || !tribePolicyId}
+                    style={{ background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.4)", color: "#ff6464",
+                      borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: "pointer", fontWeight: 600 }}
+                  >
+                    {myBusy ? "Binding…" : "Bind Policy"}
+                  </button>
+                </>
+              )}
               {!isAuthorized && (
                 <button
                   onClick={() => handleAuthorize(g.objectId, g.ownerCapId)}
@@ -1152,10 +1212,19 @@ function TransitCard({ pilotTribeId }: { pilotTribeId: number }) {
         access policy before issuing. <strong>You must request a permit BEFORE jumping in-game</strong>;
         without a valid permit your in-game jump command will be rejected by the gate.
       </div>
-      <div style={{ ...cardSub, color: "rgba(255,200,0,0.8)", marginBottom: 14 }}>
+      <div style={{ ...cardSub, color: "rgba(255,200,0,0.8)", marginBottom: 8 }}>
         ⓘ A permit is good for one round-trip (source ↔ destination). Its lifetime is set by the
         gate policy's owner (24h default) — shown per policy in the Gate Access Policy card.
         If you don't transit in that window, just request a fresh one — there's no cost beyond gas.
+      </div>
+      <div style={{ background: "rgba(255,71,0,0.08)", border: "1px solid rgba(255,71,0,0.35)", borderRadius: 2, padding: "8px 10px", marginBottom: 14, fontSize: 11, lineHeight: 1.5 }}>
+        <span style={{ color: "#FF4700", fontWeight: 700 }}>⚠ SECURITY UPGRADE (v3, 2026-07-08):</span>{" "}
+        <span style={{ color: "rgba(230,220,200,0.9)" }}>
+          Jump permits are now only issued against the policy the gate's owner explicitly bound to that gate.
+          <strong> Gate owners:</strong> your enforced gates will NOT issue permits until you press{" "}
+          <strong>Bind Policy</strong> in “Your Gates” below (one transaction, one time per gate).
+          Newly authorized gates are bound automatically.
+        </span>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1202,6 +1271,18 @@ function TransitRow({
   ok: string | undefined;
   usePreview: (gateId: string, policyId: string | null) => { data: { allowed: boolean; error: string | null } | null | undefined; isLoading: boolean };
 }) {
+  // v3: resolve THE policy the gate's owner bound — the only one that can
+  // mint permits for this gate. Replaces the old free-choice dropdown (which
+  // was both a webview-broken native <select> and a security smell: it let
+  // pilots pick arbitrary tribes' policies).
+  const policyIdsKey = policies.map(p => p.policyId).join(",");
+  const { data: boundPolicyId, isLoading: bindingLoading } = useQuery<string | null>({
+    queryKey: ["gateBoundPolicy", gate.objectId, policyIdsKey],
+    queryFn: () => fetchBoundPolicyForGate(gate.objectId, policies.map(p => p.policyId)),
+    enabled: policies.length > 0,
+    staleTime: 30_000,
+  });
+
   const preview = usePreview(gate.objectId, policyId || null);
   const allowedBadge = !policyId
     ? null
@@ -1213,15 +1294,16 @@ function TransitRow({
           ? <span style={badgeStyle("#ff4444", "rgba(255,68,68,0.15)")}>✗ DENIED</span>
           : <span style={badgeStyle("rgba(175,175,155,0.5)", "rgba(175,175,155,0.1)")}>?</span>;
 
-  // Auto-prefer the policy whose tribe matches the pilot's own tribe (best heuristic).
+  // v3: the bound policy is authoritative — auto-select it, no user choice.
   useEffect(() => {
-    if (policyId) return;
-    const pilotTribePolicy = policies.find(p => p.tribeId === pilotTribeId);
-    if (pilotTribePolicy) setPolicyId(pilotTribePolicy.policyId);
-    else if (policies.length > 0) setPolicyId(policies[0].policyId);
+    if (boundPolicyId && policyId !== boundPolicyId) setPolicyId(boundPolicyId);
+    if (!boundPolicyId && policyId) setPolicyId("");
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [policies.length, gate.objectId]);
+  }, [boundPolicyId, gate.objectId]);
   void charInfo;
+  void pilotTribeId;
+
+  const boundPolicy = policies.find(p => p.policyId === boundPolicyId) ?? null;
 
   // Human-readable origin and destination owner names. Falls back to a hex
   // short id when the cap chain doesn't resolve to a Character (e.g. legacy
@@ -1252,22 +1334,18 @@ function TransitRow({
 
       <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 6 }}>
         <span style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", letterSpacing: 0.5, textTransform: "uppercase" }}>Policy</span>
-        <select
-          value={policyId}
-          onChange={e => setPolicyId(e.target.value)}
-          disabled={busy}
-          style={{
-            flex: 1, fontSize: 11, padding: "3px 6px", background: "rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.1)", color: "#aaa", borderRadius: 2, fontFamily: "monospace",
-          }}
-        >
-          <option value="">— Select gate policy —</option>
-          {policies.map(p => (
-            <option key={p.policyId} value={p.policyId}>
-              Tribe {p.tribeId} · policy #{p.policyId.slice(-6)}
-            </option>
-          ))}
-        </select>
+        {bindingLoading ? (
+          <span style={{ fontSize: 11, color: "rgba(175,175,155,0.5)", fontFamily: "monospace" }}>Resolving bound policy…</span>
+        ) : boundPolicy ? (
+          <span style={{ fontSize: 11, color: "#aaa", fontFamily: "monospace" }}>
+            Tribe {boundPolicy.tribeId} · policy #{boundPolicy.policyId.slice(-6)}
+            <span style={{ color: "#00c864", marginLeft: 6, fontSize: 10 }}>✓ bound by gate owner</span>
+          </span>
+        ) : (
+          <span style={{ fontSize: 11, color: "#ffcc00" }}>
+            ⚠ Gate owner has not bound a policy — transit unavailable until they do.
+          </span>
+        )}
       </div>
 
       <button

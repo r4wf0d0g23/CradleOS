@@ -35,6 +35,12 @@ module cradleos::gate_policy {
     const E_INVALID_LEVEL:  u64 = 2;
     const E_WRONG_VAULT:    u64 = 3;
     const E_INVALID_TTL:    u64 = 4;
+    /// The source gate is not bound to the policy passed to the permit call.
+    /// v3 security fix: without binding, ANY tribe's policy (e.g. one created
+    /// with ACCESS_OPEN) could mint permits for ANY enforced gate.
+    const E_GATE_NOT_BOUND: u64 = 5;
+    /// The OwnerCap presented does not authorize the gate being (un)bound.
+    const E_CAP_MISMATCH:   u64 = 6;
 
     // ── Structs ───────────────────────────────────────────────────────────────
 
@@ -70,6 +76,11 @@ module cradleos::gate_policy {
     /// Stored as a DF because TribeGatePolicy is an existing public struct —
     /// Sui upgrades cannot add fields to it. Absent ⇒ DEFAULT_PERMIT_VALIDITY_MS.
     public struct PermitTtlKey has copy, drop, store {}
+
+    /// v3: Dynamic-field key marking that a specific gate is governed by this
+    /// policy. Written only by a holder of the gate's OwnerCap (ownership
+    /// proof), consulted by `request_jump_permit_entry` (fail-closed).
+    public struct GateBindingKey has copy, drop, store { gate_id: ID }
 
     // ── Events ────────────────────────────────────────────────────────────────
 
@@ -358,6 +369,21 @@ module cradleos::gate_policy {
         character_id: u32,
         hostile: bool,
         set_by: address,
+    }
+
+    /// v3: emitted when a gate owner binds/unbinds their gate to a policy.
+    public struct GateBound has copy, drop {
+        policy_id: ID,
+        gate_id: ID,
+        bound_by: address,
+        version: u64,
+    }
+
+    public struct GateUnbound has copy, drop {
+        policy_id: ID,
+        gate_id: ID,
+        unbound_by: address,
+        version: u64,
     }
 
     /// Emitted whenever a CradleOS-policy permit is issued through this module.
@@ -652,6 +678,61 @@ module cradleos::gate_policy {
         });
     }
 
+    /// v3: is `gate_id` bound to this policy? Public so UIs / other modules
+    /// can pre-check transit availability.
+    public fun is_gate_bound(policy: &TribeGatePolicy, gate_id: ID): bool {
+        df::exists_(&policy.id, GateBindingKey { gate_id })
+    }
+
+    /// v3: gate owner binds their gate to this policy. Requires the gate's
+    /// OwnerCap as proof of ownership (obtained in-PTB via the standard
+    /// Character borrow_owner_cap / return_owner_cap pattern). After binding,
+    /// `request_jump_permit_entry` will only mint permits for this gate when
+    /// called with THIS policy. Idempotent.
+    public entry fun bind_gate(
+        policy: &mut TribeGatePolicy,
+        gate: &Gate,
+        cap: &world::access::OwnerCap<Gate>,
+        ctx: &TxContext,
+    ) {
+        let gate_id = object::id(gate);
+        assert!(world::access::is_authorized(cap, gate_id), E_CAP_MISMATCH);
+        let key = GateBindingKey { gate_id };
+        if (!df::exists_(&policy.id, key)) {
+            df::add(&mut policy.id, key, true);
+        };
+        policy.version = policy.version + 1;
+        event::emit(GateBound {
+            policy_id: object::uid_to_inner(&policy.id),
+            gate_id,
+            bound_by: tx_context::sender(ctx),
+            version: policy.version,
+        });
+    }
+
+    /// v3: gate owner unbinds their gate (e.g. moving it under a different
+    /// policy). Same OwnerCap proof as bind_gate.
+    public entry fun unbind_gate(
+        policy: &mut TribeGatePolicy,
+        gate: &Gate,
+        cap: &world::access::OwnerCap<Gate>,
+        ctx: &TxContext,
+    ) {
+        let gate_id = object::id(gate);
+        assert!(world::access::is_authorized(cap, gate_id), E_CAP_MISMATCH);
+        let key = GateBindingKey { gate_id };
+        if (df::exists_(&policy.id, key)) {
+            df::remove<GateBindingKey, bool>(&mut policy.id, key);
+        };
+        policy.version = policy.version + 1;
+        event::emit(GateUnbound {
+            policy_id: object::uid_to_inner(&policy.id),
+            gate_id,
+            unbound_by: tx_context::sender(ctx),
+            version: policy.version,
+        });
+    }
+
     public entry fun request_jump_permit_entry(
         policy: &TribeGatePolicy,
         source_gate: &Gate,
@@ -663,6 +744,13 @@ module cradleos::gate_policy {
         use world::character;
         use world::in_game_id;
         use sui::clock::timestamp_ms;
+
+        // v3 SECURITY: the policy must be the one the gate's owner bound to
+        // this gate. Without this, any tribe's policy (e.g. self-created with
+        // ACCESS_OPEN) could mint permits for any enforced gate. Fail-closed:
+        // an enforced gate with no binding cannot mint permits at all until
+        // its owner runs bind_gate.
+        assert!(is_gate_bound(policy, object::id(source_gate)), E_GATE_NOT_BOUND);
 
         // Character.key is a TenantItemId; item_id is the u64 in-game id.
         // TargetCandidate.character_id is the u32 downcast in turret-targeting;
