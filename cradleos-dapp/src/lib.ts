@@ -133,6 +133,9 @@ async function rpcGetOwnedObjects(owner: string, typeFilter: string, maxTotal = 
     };
     const page_data = json.result?.data ?? [];
     for (const item of page_data) {
+      // Entries can carry `error` instead of `data` (display/dereference
+      // failures on individual objects) — skip rather than throw.
+      if (!item?.data?.objectId) continue;
       out.push({
         objectId: item.data.objectId,
         fields: item.data.content?.fields ?? {},
@@ -321,8 +324,10 @@ export async function buildBringOfflineTransaction(): Promise<Transaction> {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [id, { showType: true }] }),
       });
-      const json = await res.json() as { result: { data: { type: string } } };
-      return { id, type: json.result.data.type };
+      const json = await res.json() as { result?: { data?: { type?: string } } };
+      const t = json.result?.data?.type;
+      if (!t) throw new Error(`Could not resolve type of connected assembly ${id.slice(0, 10)}… (RPC error)`);
+      return { id, type: t };
     })
   );
 
@@ -661,7 +666,8 @@ async function _findCharacterViaGraphQL(walletAddress: string): Promise<Characte
  */
 export async function findAllCharactersForWallet(walletAddress: string): Promise<CharacterInfo[]> {
   const seen = new Map<string, CharacterInfo & { version: number }>();
-  for (const pkg of Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]))) {
+  // 2026-07-08: Utopia/old-lineage leg disabled per Raw (orphaned post-wipe).
+  for (const pkg of [WORLD_PKG]) {
     // Paginated PlayerProfile scan (suix_getOwnedObjects caps at 50/page).
     let cursor: string | null = null;
     let pages = 0;
@@ -834,19 +840,22 @@ async function buildLocationEventMap(): Promise<Map<string, number>> {
       }),
     });
     const json = await res.json() as {
-      result: {
-        data: Array<{ parsedJson: { assembly_id: string; solarsystem: string | number } }>;
-        hasNextPage: boolean;
-        nextCursor: string | null;
+      result?: {
+        data?: Array<{ parsedJson: { assembly_id: string; solarsystem: string | number } }>;
+        hasNextPage?: boolean;
+        nextCursor?: string | null;
       };
     };
+    // Guard: RPC error envelopes have no `result` — return the partial map
+    // instead of throwing (2026-07-08: "reading 'data'" crash class).
+    if (!json.result?.data) break;
     for (const e of json.result.data) {
       const sysId = Number(e.parsedJson.solarsystem);
       if (e.parsedJson.assembly_id && sysId && !isNaN(sysId)) {
         map.set(e.parsedJson.assembly_id, sysId);
       }
     }
-    cursor = json.result.hasNextPage ? json.result.nextCursor : null;
+    cursor = json.result.hasNextPage ? (json.result.nextCursor ?? null) : null;
   } while (cursor);
   return map;
 }
@@ -969,9 +978,9 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
 
   // Discover all OwnerCaps
   const capEntries: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; label: string }> = [];
-  // Query OwnerCaps for both world package versions — characters created before v0.0.21
-  // have OwnerCaps typed against the v1 package (WORLD_PKG_UTOPIA_V1).
-  const worldPkgsToCheck = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
+  // 2026-07-08: Utopia/old-lineage leg disabled per Raw — orphaned post-wipe.
+  // Restore [WORLD_PKG, WORLD_PKG_UTOPIA_V1] if Utopia ever returns.
+  const worldPkgsToCheck = [WORLD_PKG];
   await Promise.all(
     STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
       worldPkgsToCheck.map(async (wpkg) => {
@@ -1188,8 +1197,10 @@ export async function buildBatchOfflineTransaction(
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [id, { showType: true }] }),
           });
-          const j = await res.json() as { result: { data: { type: string } } };
-          return { id, type: j.result.data.type };
+          const j = await res.json() as { result?: { data?: { type?: string } } };
+          const t = j.result?.data?.type;
+          if (!t) throw new Error(`Could not resolve type of connected assembly ${id.slice(0, 10)}… (RPC error)`);
+          return { id, type: t };
         })
       );
       let hotPotato = tx.moveCall({
@@ -1293,8 +1304,10 @@ export async function buildBatchSequencedTransaction(
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [id, { showType: true }] }),
           });
-          const j = await res.json() as { result: { data: { type: string } } };
-          return { id, type: j.result.data.type };
+          const j = await res.json() as { result?: { data?: { type?: string } } };
+          const t = j.result?.data?.type;
+          if (!t) throw new Error(`Could not resolve type of connected assembly ${id.slice(0, 10)}… (RPC error)`);
+          return { id, type: t };
         })
       );
       let hotPotato = tx.moveCall({
@@ -1575,8 +1588,10 @@ export async function buildStructureOfflineTransaction(
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sui_getObject", params: [id, { showType: true }] }),
         });
-        const j = await res.json() as { result: { data: { type: string } } };
-        return { id, type: j.result.data.type };
+        const j = await res.json() as { result?: { data?: { type?: string } } };
+        const t = j.result?.data?.type;
+        if (!t) throw new Error(`Could not resolve type of connected assembly ${id.slice(0, 10)}… (RPC error)`);
+        return { id, type: t };
       })
     );
 
