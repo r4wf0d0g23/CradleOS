@@ -403,7 +403,13 @@ export const SUI_TESTNET_RPC_FALLBACK = "https://sui-testnet-endpoint.blockvisio
  * pays slightly higher RPC latency on these calls in exchange for storm
  * resilience.
  */
-export const SUI_TESTNET_RPC_DIRECT = "https://sui-testnet-endpoint.blockvision.org";
+// 2026-07-08 (later): BlockVision free-tier 429s browser traffic aggressively —
+// worse than the old public fullnode ever was. The "bypass DGX" rationale for
+// this lane died with fullnode.testnet.sui.io: there is no longer a generous
+// public JSON-RPC endpoint to bypass TO. Route the critical-path reads through
+// the proxy as well — they gain caching/coalescing/upstream-rotation, and the
+// circuit breaker still gives them the BlockVision fallback if DGX1 is down.
+export const SUI_TESTNET_RPC_DIRECT = "https://keeper.reapers.shop/sui";
 
 /**
  * Sui GraphQL endpoint.
