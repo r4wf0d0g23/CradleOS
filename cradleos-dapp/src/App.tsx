@@ -1150,17 +1150,16 @@ function AppInner() {
               }}
             >↻</button>
           </div>
+          {/* 2026-07-07 banner simplification: feature list now mirrors the
+              live tab set only (panel slimming 2026-06-08 + defense removal
+              2026-06-24 + industry hide 2026-06-27). Dropped: Defense,
+              Bounties, Cargo, Succession, Recruiting, Wiki, Ship Fitting,
+              Starmap. Restore lines here when those panels return. */}
           <p style={{
             fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase",
-            color: "rgba(175,175,155,0.65)", fontFamily: "inherit", margin: "0 0 4px", fontWeight: 400,
+            color: "rgba(175,175,155,0.65)", fontFamily: "inherit", margin: "0 0 10px", fontWeight: 400,
           }}>
-            Tribe Economy &nbsp;·&nbsp; Defense &nbsp;·&nbsp; Intel &nbsp;·&nbsp; Bounties &nbsp;·&nbsp; Cargo
-          </p>
-          <p style={{
-            fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase",
-            color: "rgba(175,175,155,0.45)", fontFamily: "inherit", margin: "0 0 10px", fontWeight: 400,
-          }}>
-            Gates &nbsp;·&nbsp; Succession &nbsp;·&nbsp; Recruiting &nbsp;·&nbsp; Wiki &nbsp;·&nbsp; Ship Fitting &nbsp;·&nbsp; Starmap
+            Tribe Economy &nbsp;·&nbsp; Gates &nbsp;·&nbsp; Intel &nbsp;·&nbsp; Inventory &nbsp;·&nbsp; Voting &nbsp;·&nbsp; Calendar &nbsp;·&nbsp; Casino
           </p>
           {/* EVE FRONTIER wordmark — official launcher asset */}
           <img src="ef-wordmark.svg" alt="EVE FRONTIER"
