@@ -615,7 +615,9 @@ async function findPlayerProfileForPkg(walletAddress: string, pkg: string): Prom
  *  Returns null on network error, empty result, or deleted Character (extract path is null).
  *  Callers fall back to the RPC-based findPlayerProfileForPkg + event-scan path. */
 async function _findCharacterViaGraphQL(walletAddress: string): Promise<CharacterInfo | null> {
-  for (const pkg of [WORLD_PKG, WORLD_PKG_UTOPIA_V1]) {
+  // 2026-07-08: WORLD_PKG_UTOPIA_V1 leg disabled per Raw — orphaned lineage
+  // post-wipe, the extra GraphQL round-trip never returns rows.
+  for (const pkg of [WORLD_PKG]) {
     try {
       const result = await executeGraphQLQuery<GetWalletCharactersResponse>(
         GET_WALLET_CHARACTERS,

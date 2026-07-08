@@ -21,7 +21,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   SUI_GRAPHQL,
   WORLD_PKG,
-  WORLD_PKG_UTOPIA_V1,
   SERVER_ENV,
 } from "../constants";
 import { numish } from "../lib";
@@ -186,9 +185,13 @@ export async function fetchAllCharacters(): Promise<CharacterDirectoryEntry[]> {
   // Two world package lineages cohabit on Stillness — pre-v0.0.21 characters are
   // typed against the v1 origin and post-v0.0.21 characters against the v2 origin.
   // Fetch both, merge by objectId.
+  // 2026-07-08: Utopia/old-lineage leg disabled per Raw. Post-wipe the
+  // WORLD_PKG_UTOPIA_V1 lineage is orphaned (zero rows). Re-enable by
+  // restoring the second fetchByPkg leg if Utopia ever comes back.
   const [v2, v1] = await Promise.all([
     fetchByPkg(`${WORLD_PKG}::character::Character`),
-    fetchByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`),
+    Promise.resolve([] as Awaited<ReturnType<typeof fetchByPkg>>),
+    // fetchByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`),
   ]);
   const seen = new Set<string>();
   const merged = [...v2, ...v1].filter(c => {

@@ -46,7 +46,10 @@ import { isMuted, toggleMuted } from "./lib/sound";
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
   { label: "STILLNESS", url: "https://world-api-stillness.live.pub.evefrontier.com/v2/tribes?limit=1" },
-  { label: "UTOPIA",    url: "https://world-api-utopia.uat.pub.evefrontier.com/v2/tribes?limit=1"    },
+  // 2026-07-08: Utopia disabled per Raw — not in use for the foreseeable future.
+  // Its UAT world-api DNS is also dead (ERR_NAME_NOT_RESOLVED), so the ping only
+  // produced console noise. Re-add when Utopia returns:
+  // { label: "UTOPIA",    url: "https://world-api-utopia.uat.pub.evefrontier.com/v2/tribes?limit=1"    },
 ];
 type ServerStatus = "checking" | "online" | "offline";
 

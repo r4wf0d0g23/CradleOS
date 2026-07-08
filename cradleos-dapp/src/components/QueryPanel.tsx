@@ -4,7 +4,7 @@
  */
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, WORLD_PKG_UTOPIA_V1, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL, SERVER_ENV } from "../constants";
+import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL, SERVER_ENV } from "../constants";
 import { numish, isTribeOnActiveServer } from "../lib";
 import { PlayerCardModal } from "./PlayerCardModal";
 
@@ -200,11 +200,13 @@ async function fetchAllCharactersStreaming(opts: {
       shouldStop: stopGate,
       signal: opts.signal,
     }),
-    fetchCharactersByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`, {
-      onPage: intake,
-      shouldStop: stopGate,
-      signal: opts.signal,
-    }),
+    // 2026-07-08: Utopia/old-lineage leg disabled per Raw. Post-wipe the
+    // WORLD_PKG_UTOPIA_V1 lineage is orphaned on Stillness (zero rows forever).
+    // fetchCharactersByPkg(`${WORLD_PKG_UTOPIA_V1}::character::Character`, {
+    //   onPage: intake,
+    //   shouldStop: stopGate,
+    //   signal: opts.signal,
+    // }),
   ]);
 
   const completed = !stopped && !opts.signal?.aborted;

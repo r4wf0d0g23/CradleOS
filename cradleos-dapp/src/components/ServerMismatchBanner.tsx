@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import {
   SERVER_ENV, SERVER_LABEL,
-  WORLD_PKG_UTOPIA, WORLD_PKG_UTOPIA_V1, WORLD_PKG_STILLNESS,
+  // WORLD_PKG_UTOPIA re-add when Utopia probing is restored (2026-07-08)
+  WORLD_PKG_UTOPIA_V1, WORLD_PKG_STILLNESS,
   SUI_TESTNET_RPC,
   switchServerAndReload,
 } from "../constants";
@@ -81,9 +82,12 @@ async function checkCharacterServer(walletAddress: string): Promise<MismatchStat
     const thisPackages  = SERVER_ENV === "utopia"
       ? [WORLD_PKG, WORLD_PKG_UTOPIA_V1]
       : [WORLD_PKG];
+    // 2026-07-08: Utopia probing disabled per Raw — on Stillness builds we no
+    // longer query the Utopia lineages (dead RPC weight; Utopia is out of use).
+    // Restore [WORLD_PKG_UTOPIA, WORLD_PKG_UTOPIA_V1] if Utopia returns.
     const otherPackages = SERVER_ENV === "utopia"
       ? [WORLD_PKG_STILLNESS]
-      : [WORLD_PKG_UTOPIA, WORLD_PKG_UTOPIA_V1];
+      : [];
 
     for (const pkg of thisPackages) {
       if (await hasPlayerProfile(walletAddress, pkg)) return "ok";

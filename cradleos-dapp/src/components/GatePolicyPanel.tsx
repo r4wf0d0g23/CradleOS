@@ -40,7 +40,7 @@ import {
   type TribeVaultState, type GatePolicyState, type GateDelegationObj, type RegisteredTribe,
   type PlayerStructure,
 } from "../lib";
-import { CLOCK } from "../constants";
+import { CLOCK, SERVER_ENV } from "../constants";
 import { translateTxError } from "../lib/txError";
 import { CharacterAutocomplete } from "./CharacterAutocomplete";
 import { useCharacterDirectory, findCharacterById } from "../lib/characterDirectory";
@@ -114,7 +114,8 @@ export function GatePolicyPanel() {
 
       // Fallback: EVE Vault hook handles everything
       // Note: requires wallet to be fully connected (not just installed) on this page
-      const result = await sendSponsoredTx({ txAction: action, assembly: makeAssembly(), tenant: "utopia" });
+      // 2026-07-08: tenant was hardcoded "utopia" — wrong on Stillness builds.
+      const result = await sendSponsoredTx({ txAction: action, assembly: makeAssembly(), tenant: SERVER_ENV });
       onSuccess(result.digest);
     } catch (e) {
       onError(e);
