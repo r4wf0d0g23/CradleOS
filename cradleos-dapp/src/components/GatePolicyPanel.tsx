@@ -602,6 +602,30 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<Record<string, string>>({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  // E: manual refresh for the Gates tab. RPC turbulence can leave gate
+  // discovery / extension / binding status stale (the root of the "No policy
+  // deployed" / "not bound" false-negatives that caused duplicate creates).
+  // Force a full refetch of every gate-related query on demand.
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setErr({});
+    try {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["ownedGates"] }),
+        queryClient.invalidateQueries({ queryKey: ["gateExtensionStatuses"] }),
+        queryClient.invalidateQueries({ queryKey: ["gateBindings"] }),
+        queryClient.invalidateQueries({ queryKey: ["gateBoundPolicy"] }),
+        queryClient.invalidateQueries({ queryKey: ["characterInfo"] }),
+        queryClient.invalidateQueries({ queryKey: ["gatePolicy"] }),
+        queryClient.invalidateQueries({ queryKey: ["gatePermitTtl"] }),
+      ]);
+      await queryClient.refetchQueries({ queryKey: ["ownedGates"], type: "active" });
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // The character object id is needed for the borrow_owner_cap PTB. It's
   // returned by findCharacterForWallet (the same source fetchPlayerStructures
@@ -662,8 +686,23 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
   if ((gates ?? []).length === 0) {
     return (
       <div style={{ background: "rgba(100,180,255,0.04)", border: "1px solid rgba(100,180,255,0.18)", borderRadius: 0, padding: 14, marginTop: 14 }}>
-        <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
-          Your Gates
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+          <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: 13 }}>
+            Your Gates
+          </div>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            title="Re-check gate discovery, authorization and binding status"
+            style={{
+              padding: "3px 10px", borderRadius: 3, fontSize: 10, fontWeight: 600,
+              cursor: refreshing ? "default" : "pointer",
+              background: "rgba(100,180,255,0.08)", border: "1px solid rgba(100,180,255,0.35)",
+              color: refreshing ? "rgba(100,180,255,0.5)" : "#64b4ff",
+            }}
+          >
+            {refreshing ? "Refreshing…" : "↻ Refresh"}
+          </button>
         </div>
         <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>
           You don't own any Smart Gates yet. Authorize CradleOS on a gate to enforce this policy.
@@ -721,8 +760,23 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
 
   return (
     <div style={{ background: "rgba(100,180,255,0.04)", border: "1px solid rgba(100,180,255,0.18)", borderRadius: 0, padding: 14, marginTop: 14 }}>
-      <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
-        Your Gates — CradleOS Enforcement
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+        <div style={{ color: "#64b4ff", fontWeight: 600, fontSize: 13 }}>
+          Your Gates — CradleOS Enforcement
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          title="Re-check gate discovery, authorization and binding status"
+          style={{
+            padding: "3px 10px", borderRadius: 3, fontSize: 10, fontWeight: 600,
+            cursor: refreshing ? "default" : "pointer",
+            background: "rgba(100,180,255,0.08)", border: "1px solid rgba(100,180,255,0.35)",
+            color: refreshing ? "rgba(100,180,255,0.5)" : "#64b4ff",
+          }}
+        >
+          {refreshing ? "Refreshing…" : "↻ Refresh"}
+        </button>
       </div>
       <div style={{ color: "rgba(175,175,155,0.65)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
         Click <strong>Authorize</strong> on any gate to enforce {tribePolicyId ? "this tribe's" : "a CradleOS"} policy on transits through it. Once authorized, default jumps are blocked and pilots must request transit through CradleOS (which checks the Friendly/Hostile/Tribe rules above before issuing a permit).
@@ -756,20 +810,41 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
                   ✓ BOUND
                 </span>
               )}
-              {isAuthorized && bindingStatuses?.get(g.objectId) === false && (
+              {/* NOT-BOUND, or binding status still unknown (policy pending / RPC
+                  turbulence). Previously this whole block only rendered when
+                  bindingStatuses resolved to exactly `false` AND tribePolicyId
+                  was non-null — so if the tribe policy failed to load, an
+                  already-enforced (pre-v3) gate showed NO badge and NO Bind
+                  button, stranding owners with no way to re-bind. Now we always
+                  surface a Bind affordance for authorized-but-not-bound gates,
+                  and fall back to a Refresh hint when the policy id is missing. */}
+              {isAuthorized && bindingStatuses?.get(g.objectId) !== true && (
                 <>
                   <span style={{ padding: "2px 8px", fontSize: 10, fontWeight: 600, borderRadius: 2,
                     background: "rgba(255,68,68,0.15)", border: "1px solid rgba(255,68,68,0.4)", color: "#ff4444" }}>
-                    ⚠ NOT BOUND
+                    {bindingStatuses?.get(g.objectId) === false ? "⚠ NOT BOUND" : "⚠ BINDING?"}
                   </span>
-                  <button
-                    onClick={() => handleBind(g.objectId, g.ownerCapId)}
-                    disabled={myBusy || !tribePolicyId}
-                    style={{ background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.4)", color: "#ff6464",
-                      borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: "pointer", fontWeight: 600 }}
-                  >
-                    {myBusy ? "Binding…" : "Bind Policy"}
-                  </button>
+                  {tribePolicyId ? (
+                    <button
+                      onClick={() => handleBind(g.objectId, g.ownerCapId)}
+                      disabled={myBusy}
+                      title="Bind this gate to your tribe's gate policy (required before pilots can request permits, v3 security)"
+                      style={{ background: "rgba(255,68,68,0.12)", border: "1px solid rgba(255,68,68,0.4)", color: "#ff6464",
+                        borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: myBusy ? "default" : "pointer", fontWeight: 600 }}
+                    >
+                      {myBusy ? "Binding…" : "Bind Policy"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleRefresh}
+                      disabled={refreshing}
+                      title="Your tribe's gate policy hasn't loaded yet — refresh, then the Bind Policy button will appear"
+                      style={{ background: "rgba(100,180,255,0.1)", border: "1px solid rgba(100,180,255,0.4)", color: "#64b4ff",
+                        borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: refreshing ? "default" : "pointer", fontWeight: 600 }}
+                    >
+                      {refreshing ? "Loading…" : "Load policy to bind"}
+                    </button>
+                  )}
                 </>
               )}
               {!isAuthorized && (
@@ -796,15 +871,37 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
 // ── Permit lifetime section (v2: gate_policy::set_permit_ttl) ────────────────
 
 /** Preset lifetimes offered to gate owners. Selecting the 24h preset clears the
- * override on-chain (ttl_ms = 0 ⇒ revert to contract default). */
+ * override on-chain (ttl_ms = 0 ⇒ revert to contract default).
+ *
+ * MODEL NOTE — "per-jump" vs "bus pass":
+ * The underlying world::gate::JumpPermit is single-use and route-locked — the
+ * game deletes it on every crossing (validate_jump_permit). We cannot make one
+ * on-chain permit last multiple jumps; that TODO lives in Fenris's world
+ * contract. What we CAN do is control ACCESS STATE + permit LIFETIME:
+ *   • Per-Jump  (short TTL): a minted permit is only fresh briefly; the pilot
+ *     re-authorizes each crossing. Tightest control.
+ *   • Bus Pass  (long TTL): a minted permit stays valid for the whole window,
+ *     and while the policy keeps the pilot ALLOWED they can re-mint on demand
+ *     (gas only) every jump. Functionally "transit freely for N days."
+ * Both are the same on-chain lever (permit_ttl_ms) framed for the two intents. */
 const PERMIT_TTL_PRESETS: Array<{ label: string; ms: number }> = [
-  { label: "1 h",  ms: 3_600_000 },
-  { label: "6 h",  ms: 21_600_000 },
-  { label: "12 h", ms: 43_200_000 },
-  { label: "24 h", ms: 86_400_000 },
-  { label: "3 d",  ms: 259_200_000 },
-  { label: "7 d",  ms: 604_800_000 },
+  { label: "5 min", ms: 300_000 },     // per-jump: minimum contract TTL
+  { label: "1 h",   ms: 3_600_000 },
+  { label: "6 h",   ms: 21_600_000 },
+  { label: "12 h",  ms: 43_200_000 },
+  { label: "24 h",  ms: 86_400_000 },
+  { label: "3 d",   ms: 259_200_000 },
+  { label: "7 d",   ms: 604_800_000 },
+  { label: "14 d",  ms: 1_209_600_000 },
+  { label: "30 d",  ms: 2_592_000_000 }, // bus pass: maximum contract TTL
 ];
+
+/** Rough per-preset intent label so the UI can hint bus-pass vs per-jump. */
+function ttlIntent(ms: number): "per-jump" | "short" | "bus-pass" {
+  if (ms <= 3_600_000) return "per-jump";     // ≤1h → re-auth each crossing
+  if (ms >= 604_800_000) return "bus-pass";   // ≥7d → long-lived pass
+  return "short";
+}
 
 function formatTtl(ms: number): string {
   const preset = PERMIT_TTL_PRESETS.find(p => p.ms === ms);
@@ -828,6 +925,7 @@ function PermitTtlSection({ policyId, vaultId, isFounder, busy, exec }: {
     staleTime: 30_000,
   });
   const effective = ttl ?? DEFAULT_PERMIT_TTL_MS;
+  const currentIntent = ttlIntent(effective);
 
   return (
     <div style={{ marginBottom: 16, borderTop: "1px solid rgba(255,71,0,0.1)", paddingTop: 14 }}>
@@ -838,22 +936,33 @@ function PermitTtlSection({ policyId, vaultId, isFounder, busy, exec }: {
         How long an issued JumpPermit stays valid. Current:{" "}
         <span style={{ color: "#FF9E64", fontWeight: 700 }}>{formatTtl(effective)}</span>
         {effective === DEFAULT_PERMIT_TTL_MS ? " (default)" : ""}
+        {" — "}
+        <span style={{ color: currentIntent === "bus-pass" ? "#7CE38B" : currentIntent === "per-jump" ? "#FF9E64" : "rgba(175,175,155,0.7)" }}>
+          {currentIntent === "bus-pass" ? "Bus Pass mode" : currentIntent === "per-jump" ? "Per-Jump mode" : "Short-window mode"}
+        </span>
+      </div>
+      <div style={{ fontSize: 10, color: "rgba(175,175,155,0.4)", marginBottom: 10, lineHeight: 1.55 }}>
+        <strong style={{ color: "#FF9E64" }}>Per-Jump</strong> (≤1&nbsp;h): pilots re-authorize each crossing — tightest control.{" "}
+        <strong style={{ color: "#7CE38B" }}>Bus Pass</strong> (≥7&nbsp;d): a minted permit stays valid for the whole window; while the policy keeps a pilot allowed they transit freely (gas only) every jump.
       </div>
       {isFounder ? (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {PERMIT_TTL_PRESETS.map(p => {
             const active = effective === p.ms;
+            const intent = ttlIntent(p.ms);
+            const accent = intent === "bus-pass" ? "#7CE38B" : intent === "per-jump" ? "#FF9E64" : "rgba(255,255,255,0.1)";
             return (
               <button
                 key={p.ms}
+                title={intent === "bus-pass" ? "Bus Pass — long-lived pass" : intent === "per-jump" ? "Per-Jump — re-authorize each crossing" : "Short window"}
                 onClick={() => exec(buildSetPermitTtlTx(policyId, vaultId, p.ms === DEFAULT_PERMIT_TTL_MS ? 0 : p.ms))}
                 disabled={busy || active}
                 style={{
                   padding: "5px 12px", borderRadius: 3, fontSize: 11, fontWeight: 600,
                   cursor: active ? "default" : "pointer",
                   background: active ? "rgba(255,158,100,0.18)" : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${active ? "#FF9E64" : "rgba(255,255,255,0.1)"}`,
-                  color: active ? "#FF9E64" : "#666",
+                  border: `1px solid ${active ? "#FF9E64" : accent}`,
+                  color: active ? "#FF9E64" : (intent === "bus-pass" ? "#7CE38B" : "#888"),
                 }}
               >
                 {p.label}
@@ -1213,9 +1322,11 @@ function TransitCard({ pilotTribeId }: { pilotTribeId: number }) {
         without a valid permit your in-game jump command will be rejected by the gate.
       </div>
       <div style={{ ...cardSub, color: "rgba(255,200,0,0.8)", marginBottom: 8 }}>
-        ⓘ A permit is good for one round-trip (source ↔ destination). Its lifetime is set by the
-        gate policy's owner (24h default) — shown per policy in the Gate Access Policy card.
-        If you don't transit in that window, just request a fresh one — there's no cost beyond gas.
+        ⓘ Each minted permit covers one crossing of a (source ↔ destination) pair — the game
+        consumes it on use. Its lifetime is set by the gate policy's owner (24h default) and shown
+        per policy in the Gate Access Policy card. As long as the policy keeps you allowed you can
+        re-mint on demand every jump — no cost beyond gas. A long lifetime (≥7d) is a “bus pass”:
+        transit freely for the whole window; a short one (≤1h) means re-authorize each crossing.
       </div>
       <div style={{ background: "rgba(255,71,0,0.08)", border: "1px solid rgba(255,71,0,0.35)", borderRadius: 2, padding: "8px 10px", marginBottom: 14, fontSize: 11, lineHeight: 1.5 }}>
         <span style={{ color: "#FF4700", fontWeight: 700 }}>⚠ SECURITY UPGRADE (v3, 2026-07-08):</span>{" "}
