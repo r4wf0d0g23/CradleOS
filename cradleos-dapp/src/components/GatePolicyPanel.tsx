@@ -32,6 +32,7 @@ import {
   buildSetGateFriendlyCharacterTx, buildSetGateHostileCharacterTx,
   fetchGateFriendlyCharacters, fetchGateHostileCharacters,
   buildAuthorizeGateExtensionTx, buildRequestGatePermitTx,
+  buildRevokeGateExtensionTx,
   buildBindGateTx, fetchBoundPolicyForGate,
   buildSetPermitTtlTx, fetchGatePermitTtl, DEFAULT_PERMIT_TTL_MS,
   fetchGateExtensionStatus, fetchOwnedGates,
@@ -193,7 +194,7 @@ export function GatePolicyPanel() {
 
       {/* Policy type tabs — mirrors TurretPolicyPanel UX so users find personal gate policy here too */}
       <div style={{ display: "flex", borderBottom: "2px solid rgba(0,200,255,0.15)" }}>
-        {([["tribe", "⛩ TRIBE POLICY"], ["personal", "👤 PERSONAL POLICY"]] as const).map(([tab, label]) => (
+        {([["tribe", "◈ TRIBE POLICY"], ["personal", "◇ PERSONAL POLICY"]] as const).map(([tab, label]) => (
           <button key={tab} onClick={() => setPolicyTab(tab)} style={{
             fontFamily: "inherit", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
             padding: "6px 16px", border: "none", cursor: "pointer",
@@ -603,6 +604,10 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<Record<string, string>>({});
   const [refreshing, setRefreshing] = useState(false);
+  // Two-step confirm for the destructive Remove-CradleOS action. Webview-safe:
+  // no window.confirm (no-ops in EVE Vault embedded Chrome). First click arms,
+  // second click within the window executes. gateId of the armed row, or null.
+  const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
 
   // E: manual refresh for the Gates tab. RPC turbulence can leave gate
   // discovery / extension / binding status stale (the root of the "No policy
@@ -758,6 +763,40 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
     } finally { setBusy(null); }
   };
 
+  // Strip CradleOS off a gate entirely (revoke_extension_authorization). After
+  // this the gate reverts to default in-game jump — anyone can transit, no
+  // permit, no rebuild. Unbinds from the tribe policy first (when known) to
+  // keep policy state tidy.
+  const handleRemove = async (gateId: string, ownerCapId: string) => {
+    if (!characterObjectId) {
+      setErr(prev => ({ ...prev, [gateId]: "Character not found — reload the dApp." }));
+      return;
+    }
+    setConfirmRemove(null);
+    setBusy(gateId); setErr(prev => ({ ...prev, [gateId]: "" }));
+    try {
+      const tx = buildRevokeGateExtensionTx(gateId, ownerCapId, characterObjectId, tribePolicyId ?? undefined);
+      const signer = new CurrentAccountSigner(dAppKit);
+      await signer.signAndExecuteTransaction({ transaction: tx });
+      // Optimistic flip: gate is no longer enforced.
+      queryClient.setQueryData<Map<string, { authorized: boolean; extensionType: string | null } | null>>(
+        ["gateExtensionStatuses", gateIds],
+        prev => {
+          const next = new Map(prev ?? []);
+          next.set(gateId, { authorized: false, extensionType: null });
+          return next;
+        },
+      );
+      staggeredRefetch({
+        queryClient,
+        queryKeys: [["gateExtensionStatuses", gateIds], ["gateBindings", gateIds, tribePolicyId]],
+      });
+      queryClient.invalidateQueries({ queryKey: ["gateBoundPolicy"] });
+    } catch (e) {
+      setErr(prev => ({ ...prev, [gateId]: translateTxError(e) }));
+    } finally { setBusy(null); }
+  };
+
   return (
     <div style={{ background: "rgba(100,180,255,0.04)", border: "1px solid rgba(100,180,255,0.18)", borderRadius: 0, padding: 14, marginTop: 14 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
@@ -779,7 +818,7 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
         </button>
       </div>
       <div style={{ color: "rgba(175,175,155,0.65)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
-        Click <strong>Authorize</strong> on any gate to enforce {tribePolicyId ? "this tribe's" : "a CradleOS"} policy on transits through it. Once authorized, default jumps are blocked and pilots must request transit through CradleOS (which checks the Friendly/Hostile/Tribe rules above before issuing a permit).
+        Click <strong>Authorize</strong> on any gate to enforce {tribePolicyId ? "this tribe's" : "a CradleOS"} policy on transits through it. Once authorized, default jumps are blocked and pilots must request transit through CradleOS (which checks the Friendly/Hostile/Tribe rules above before issuing a permit). To back out, <strong>Remove CradleOS</strong> restores default in-game jump for everyone — no rebuild required.
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -846,6 +885,44 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
                     </button>
                   )}
                 </>
+              )}
+              {/* Remove CradleOS entirely (un-enforce). Reverts the gate to
+                  default in-game jump — anyone can transit, no permit, no
+                  rebuild. Two-step webview-safe confirm (no window.confirm). */}
+              {isAuthorized && (
+                confirmRemove === g.objectId ? (
+                  <>
+                    <button
+                      onClick={() => handleRemove(g.objectId, g.ownerCapId)}
+                      disabled={myBusy}
+                      title="Confirm: strip CradleOS off this gate. Default in-game jump is restored for everyone."
+                      style={{ background: "rgba(255,68,68,0.2)", border: "1px solid rgba(255,68,68,0.6)", color: "#ff7a7a",
+                        borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: myBusy ? "default" : "pointer", fontWeight: 700 }}
+                    >
+                      {myBusy ? "Removing…" : "Confirm Remove"}
+                    </button>
+                    {!myBusy && (
+                      <button
+                        onClick={() => setConfirmRemove(null)}
+                        title="Cancel"
+                        style={{ background: "transparent", border: "1px solid rgba(175,175,155,0.35)", color: "rgba(175,175,155,0.7)",
+                          borderRadius: 2, fontSize: 10, padding: "3px 8px", cursor: "pointer", fontWeight: 600 }}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    onClick={() => { setConfirmRemove(g.objectId); setErr(prev => ({ ...prev, [g.objectId]: "" })); }}
+                    disabled={myBusy}
+                    title="Strip CradleOS off this gate without rebuilding it. Restores default in-game jump for everyone."
+                    style={{ background: "transparent", border: "1px solid rgba(255,68,68,0.3)", color: "rgba(255,120,120,0.75)",
+                      borderRadius: 2, fontSize: 10, padding: "3px 10px", cursor: myBusy ? "default" : "pointer", fontWeight: 600 }}
+                  >
+                    Remove CradleOS
+                  </button>
+                )
               )}
               {!isAuthorized && (
                 <button
@@ -1313,7 +1390,7 @@ function TransitCard({ pilotTribeId }: { pilotTribeId: number }) {
   return (
     <div style={cardWrap}>
       <div style={cardHeader}>
-        🚪 Gate Transit (CradleOS-enforced gates)
+        ⛨ Gate Transit (CradleOS-enforced gates)
       </div>
       <div style={{ ...cardSub, marginBottom: 8 }}>
         These gates require a CradleOS-issued <strong>JumpPermit</strong> before you can transit.

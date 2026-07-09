@@ -3434,16 +3434,25 @@ export type GateDelegationObj = {
   tribeId: number;
 };
 
-/** Fetch TribeGatePolicy for a vault (from GatePolicyCreated events). */
+/**
+ * Fetch TribeGatePolicy for a vault (from GatePolicyCreated events).
+ *
+ * 2026-07-09 fix: previously queried GatePolicyCreated under CRADLEOS_ORIGINAL
+ * ONLY, first 50 events, ascending (oldest-first). Two failure modes surfaced:
+ *   (1) Wrong-package miss — policies created under a later CradleOS package
+ *       version were invisible (same class as the 2026-05-04 Friendly-Character
+ *       bug). Owners who had already initialized a policy still saw the
+ *       "Initialize Gate Policy" button because this detector returned null.
+ *   (2) 50-cap + ascending truncation — once >50 policies exist on the server,
+ *       newer vaults (or any past index 50) were silently dropped (the standing
+ *       suix_* pagination rule, 2026-05-07).
+ * Now routes through fetchEventAcrossPackages (all pkgs, 500, newest-first),
+ * matching fetchAllGatePolicies which already did this correctly.
+ */
 export async function fetchGatePolicy(vaultId: string): Promise<GatePolicyState | null> {
   try {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-        params: [{ MoveEventType: `${CRADLEOS_ORIGINAL}::gate_policy::GatePolicyCreated` }, null, 50, false] }),
-    });
-    const json = await res.json() as { result?: { data?: Array<{ parsedJson?: Record<string, unknown> }> } };
-    const match = (json.result?.data ?? []).find(e => String(e.parsedJson?.vault_id) === vaultId);
+    const events = await fetchEventAcrossPackages("gate_policy", "GatePolicyCreated", 500);
+    const match = events.find(e => String(e.parsedJson?.vault_id) === vaultId);
     if (!match) return null;
     const policyId = String(match.parsedJson?.policy_id ?? "");
 
@@ -3633,6 +3642,61 @@ export function buildAuthorizeGateExtensionTx(
       arguments: [tx.object(policyId), tx.object(gateId), borrowedCap],
     });
   }
+
+  tx.moveCall({
+    target: `${WORLD_PKG}::character::return_owner_cap`,
+    typeArguments: [gateType],
+    arguments: [tx.object(characterId), borrowedCap, receipt],
+  });
+
+  return tx;
+}
+
+/**
+ * Build a single PTB that strips CradleOS off a gate WITHOUT rebuilding it:
+ *  1. Borrows the OwnerCap from the gate's owning Character
+ *  2. (optional) Unbinds the gate from its policy first — bind_gate DFs are
+ *     harmless once the extension is gone, but unbinding keeps policy state
+ *     tidy and avoids a stale GateBindingKey lingering on the policy object.
+ *  3. Calls world::gate::revoke_extension_authorization (the exact mirror of
+ *     authorize_extension — takes &mut Gate + &OwnerCap, no type args)
+ *  4. Returns the OwnerCap to the Character
+ *
+ * After this tx confirms, the gate reverts to default world::gate::jump —
+ * anyone may transit again, no permit required, no unanchor/rebuild.
+ *
+ * NOTE: aborts on-chain in the (very rare) case the gate owner previously
+ * froze the extension config via world::gate::freeze_extension_config
+ * (irreversible). CradleOS never exposes that call, so this only matters for
+ * gates frozen outside our dApp; the abort is surfaced via translateTxError.
+ */
+export function buildRevokeGateExtensionTx(
+  gateId: string,
+  ownerCapId: string,
+  characterId: string,
+  policyId?: string,
+): Transaction {
+  const tx = new Transaction();
+  const gateType = `${WORLD_PKG}::gate::Gate`;
+  const [borrowedCap, receipt] = tx.moveCall({
+    target: `${WORLD_PKG}::character::borrow_owner_cap`,
+    typeArguments: [gateType],
+    arguments: [tx.object(characterId), tx.object(ownerCapId)],
+  });
+
+  // Tidy: drop the policy binding before revoking. Same borrowed cap serves
+  // both calls in one PTB (shared-object reuse pattern).
+  if (policyId) {
+    tx.moveCall({
+      target: `${GATE_POLICY_PKG}::gate_policy::unbind_gate`,
+      arguments: [tx.object(policyId), tx.object(gateId), borrowedCap],
+    });
+  }
+
+  tx.moveCall({
+    target: `${WORLD_PKG}::gate::revoke_extension_authorization`,
+    arguments: [tx.object(gateId), borrowedCap],
+  });
 
   tx.moveCall({
     target: `${WORLD_PKG}::character::return_owner_cap`,
