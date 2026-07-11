@@ -706,6 +706,11 @@ function VarianceBadge({ v }: { v: Variance }) {
 
 function GameCard({ entry, onClick }: { entry: GameEntry; onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
+  // Asset Studio card art (public/casino/cards/<key>.webp). If the image is
+  // missing or the webview can't load it, fall back to the glyph silently
+  // (KeeperPanel RAG-image pattern — capability degrades, never breaks).
+  const [artFailed, setArtFailed] = useState(false);
+  const artSrc = `${import.meta.env.BASE_URL}casino/cards/${entry.key}.webp`;
   return (
     <div
       onClick={onClick}
@@ -714,36 +719,59 @@ function GameCard({ entry, onClick }: { entry: GameEntry; onClick: () => void })
       style={{
         background: hovered ? "#1a0f08" : "#111",
         border: `1px solid ${hovered ? ACCENT + "77" : "#242424"}`,
-        padding: "18px 14px 14px",
+        padding: 0,
         cursor: "pointer",
         transition: "background 0.12s, border-color 0.12s",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "stretch",
         gap: 0,
+        overflow: "hidden",
       }}
     >
-      <div style={{
-        fontSize: 30, lineHeight: 1,
-        color: hovered ? ACCENT : "#cc3a00",
-        marginBottom: 8,
-        transition: "color 0.12s",
-      }}>
-        {entry.glyph}
-      </div>
-      <div style={{
-        color: "#ddd", fontSize: 12, fontWeight: 800,
-        letterSpacing: "0.06em", textAlign: "center",
-        marginBottom: 4,
-      }}>
-        {entry.name}
-      </div>
-      <VarianceBadge v={entry.variance} />
-      <div style={{
-        color: "#777", fontSize: 10, lineHeight: 1.45,
-        marginTop: 8, textAlign: "center",
-      }}>
-        {entry.hook}
+      {/* Card art — 4:3 banner; glyph fallback when art unavailable */}
+      {!artFailed ? (
+        <div style={{ position: "relative", width: "100%", aspectRatio: "4 / 3", background: "#0a0a12", overflow: "hidden" }}>
+          <img
+            src={artSrc}
+            alt=""
+            loading="lazy"
+            onError={() => setArtFailed(true)}
+            style={{
+              width: "100%", height: "100%", objectFit: "cover", display: "block",
+              filter: hovered ? "brightness(1.12)" : "brightness(0.94)",
+              transform: hovered ? "scale(1.04)" : "scale(1)",
+              transition: "filter 0.15s, transform 0.25s ease",
+            }}
+          />
+          {/* bottom fade so the name row sits cleanly under the art */}
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 28, background: "linear-gradient(180deg, transparent, #111)" }} />
+          <div style={{ position: "absolute", top: 6, left: 8, fontSize: 13, color: hovered ? ACCENT : "#cc3a00", textShadow: "0 0 6px #000", transition: "color 0.12s" }}>{entry.glyph}</div>
+        </div>
+      ) : (
+        <div style={{
+          width: "100%", aspectRatio: "4 / 3", display: "flex", alignItems: "center", justifyContent: "center",
+          background: "radial-gradient(circle at 50% 40%, #1a0f08, #0a0a12)",
+          fontSize: 44, lineHeight: 1, color: hovered ? ACCENT : "#cc3a00", transition: "color 0.12s",
+        }}>
+          {entry.glyph}
+        </div>
+      )}
+      <div style={{ padding: "10px 12px 14px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{
+          color: "#ddd", fontSize: 12, fontWeight: 800,
+          letterSpacing: "0.06em", textAlign: "center",
+          marginBottom: 4,
+        }}>
+          {entry.name}
+        </div>
+        <VarianceBadge v={entry.variance} />
+        <div style={{
+          color: "#777", fontSize: 10, lineHeight: 1.45,
+          marginTop: 8, textAlign: "center",
+        }}>
+          {entry.hook}
+        </div>
       </div>
     </div>
   );
