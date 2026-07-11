@@ -13,7 +13,7 @@ import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casi
 import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
-  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildKenoTx, buildSicBoTx,
+  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
@@ -98,6 +98,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [limboBps, setLimboBps] = useState(20000); // 2x default
   // Live two-step hi-lo: set after `start` deals the base card; cleared at settle.
   const [hiloLive, setHiloLive] = useState<HiLoLiveGame | null>(null);
+  const [plinkoMode, setPlinkoMode] = useState(-1); // -1 CLASSIC · 0 LOW · 1 MED · 2 HIGH
   const [kenoPicks, setKenoPicks] = useState<Set<number>>(new Set());
   const [sicboKind, setSicboKind] = useState(0);
   const [sicboTarget, setSicboTarget] = useState(1);
@@ -150,7 +151,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "slots"           ? buildSlotsTx(ids, raw) :
           game === "limbo"           ? buildLimboTx(ids, raw, BigInt(limboBps)) :
           game === "hilo"            ? buildHiLoStartTx(ids, raw) :
-          game === "plinko"          ? buildPlinkoTx(ids, raw) :
+          game === "plinko"          ? (plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
           game === "keno"            ? buildKenoTx(ids, raw, picksArr) :
           game === "sicbo"           ? buildSicBoTx(ids, raw, sicboKind, sicboTarget) :
           game === "crash"           ? buildCrashTx(ids, raw, BigInt(crashBps)) :
@@ -196,7 +197,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       }
     } finally { setBusy(false); }
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
-      limboBps, kenoPicks, sicboKind, sicboTarget,
+      limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind, dAppKit]);
 
   // Settle a live hi-lo hand: player has seen the base, calls a direction.
@@ -237,7 +238,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "wheel"   ? 10
     : game === "limbo"   ? Math.max(1.01, limboMult)
     : game === "hilo"    ? 13
-    : game === "plinko"  ? 130
+    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130)
     : game === "keno"    ? (KENO_MAX_MULT[kenoPicks.size] ?? 970)
     : game === "sicbo"   ? (sicboKind === 3 ? 180 : sicboKind === 4 ? 30 : sicboKind === 2 ? 4 : 2)
     : game === "crash"   ? Math.max(1.01, crashMult)
@@ -278,7 +279,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "baccarat"         && <BaccaratStage   key={pending.txDigest} playerCards={Array.isArray(pending.fields.player_cards) ? (pending.fields.player_cards as number[]) : []} bankerCards={Array.isArray(pending.fields.banker_cards) ? (pending.fields.banker_cards as number[]) : []} playerScore={Number(pending.fields.player_score)} bankerScore={Number(pending.fields.banker_score)} result={Number(pending.fields.result)} onDone={() => reveal(pending)} />}
                 {game === "three_card_poker" && <ThreeCardStage  key={pending.txDigest} playerCards={Array.isArray(pending.fields.player_cards) ? (pending.fields.player_cards as number[]) : []} dealerCards={Array.isArray(pending.fields.dealer_cards) ? (pending.fields.dealer_cards as number[]) : []} result={Number(pending.fields.result)} dealerQualified={Boolean(pending.fields.dealer_qualified)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
-                {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} onDone={() => reveal(pending)} />}
+                {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}
                 {game === "sicbo"            && <SicBoStage      key={pending.txDigest} d1={Number(pending.fields.d1)} d2={Number(pending.fields.d2)} d3={Number(pending.fields.d3)} kind={Number(pending.fields.kind ?? 0)} target={Number(pending.fields.target ?? 0)} onDone={() => reveal(pending)} />}
 
@@ -619,6 +620,26 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             );
           })()}
+
+          {/* Plinko — risk mode selector */}
+          {game === "plinko" && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>RISK MODE</div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {PLINKO_MODES.map((m) => (
+                  <button key={m.mode} onClick={() => setPlinkoMode(m.mode)} style={pick(plinkoMode === m.mode)}>
+                    {m.label} <span style={{ color: "#777" }}>{m.maxMult}x</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ color: "#666", fontSize: 10, marginTop: 6 }}>
+                {plinkoMode === 0 ? "Grinder table — every bucket pays at least 0.85x, edges pay 5x."
+                  : plinkoMode === 1 ? "Center pays nothing — edges hit 100x."
+                  : plinkoMode === 2 ? "Boom or bust — center zone pays 0, edge jackpot 500x."
+                  : "The original board — 130x edge jackpots, 0.49x center."}
+              </div>
+            </div>
+          )}
 
           {/* Keno */}
           {game === "keno" && (

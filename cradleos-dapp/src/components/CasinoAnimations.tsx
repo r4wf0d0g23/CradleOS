@@ -961,7 +961,8 @@ const PLINKO_BUCKETS = 13;
 // Bucket multiplier display values (approximate — match contract odds)
 const PLINKO_BUCKET_MULTS = [130, 27, 8, 4, 2, 1, 0.3, 1, 2, 4, 8, 27, 130];
 
-export function PlinkoStage({ path, bucket, onDone }: { path: number; bucket: number; onDone: () => void }) {
+export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; bucket: number; mults?: number[]; onDone: () => void }) {
+  const bucketMults = mults ?? PLINKO_BUCKET_MULTS;
   useCasinoKeyframes();
 
   // Track ball position: [row, col] starting at center top
@@ -1006,7 +1007,7 @@ export function PlinkoStage({ path, bucket, onDone }: { path: number; bucket: nu
   const ballX = ballCol * cellW;
   const ballY = ballRow === -1 ? -rowH : (ballRow + 0.5) * rowH;
 
-  const bucketMult = PLINKO_BUCKET_MULTS[bucket] ?? 0;
+  const bucketMult = bucketMults[bucket] ?? 0;
   const bucketColor = bucketMult >= 8 ? GOLD : bucketMult >= 2 ? GREEN : "#888";
 
   return (
@@ -1054,7 +1055,7 @@ export function PlinkoStage({ path, bucket, onDone }: { path: number; bucket: nu
         }}>
           {Array.from({ length: PLINKO_BUCKETS }, (_, b) => {
             const isLanded = landed && b === bucket;
-            const mult = PLINKO_BUCKET_MULTS[b] ?? 0;
+            const mult = bucketMults[b] ?? 0;
             const col = mult >= 8 ? GOLD : mult >= 2 ? GREEN : "#555";
             return (
               <div key={b} style={{
@@ -1067,7 +1068,7 @@ export function PlinkoStage({ path, bucket, onDone }: { path: number; bucket: nu
                 transition: "background 0.2s",
                 fontSize: 7, color: col, fontWeight: 800,
               }}>
-                {mult >= 1 ? `${mult}x` : `.3x`}
+                {mult >= 1 ? `${mult}x` : mult > 0 ? `${mult.toFixed(2).replace(/^0/, "").replace(/0+$/, "")}x` : "0"}
               </div>
             );
           })}

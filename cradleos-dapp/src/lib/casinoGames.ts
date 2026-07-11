@@ -17,6 +17,7 @@ import {
   CASINO_V5,
   CASINO_V7,
   CASINO_V8,
+  CASINO_V10,
   CASINO_ORIGINAL,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
@@ -52,8 +53,18 @@ async function rpc(method: string, params: unknown[]): Promise<any> {
 interface GameDef {
   module: string;
   event: string;   // event struct name
+  altEvents?: string[]; // additional event structs that settle this game (e.g. mode variants)
   describe: (f: Record<string, any>) => string;
 }
+
+/** Plinko risk modes (v10). mode -1 = classic 130x table via legacy `play`. */
+export const PLINKO_MODES = [
+  { mode: -1, label: "CLASSIC", maxMult: 130, mults: [130, 6, 3, 1.6, 1.2, 0.5, 0.4851, 0.5, 1.2, 1.6, 3, 6, 130] },
+  { mode: 0,  label: "LOW",     maxMult: 5,   mults: [5, 2, 1.5, 1.2, 1, 0.85, 0.9, 0.85, 1, 1.2, 1.5, 2, 5] },
+  { mode: 1,  label: "MED",     maxMult: 100, mults: [100, 10, 3, 1.5, 1.1, 0.85, 0, 0.85, 1.1, 1.5, 3, 10, 100] },
+  { mode: 2,  label: "HIGH",    maxMult: 500, mults: [500, 50, 5, 1, 0.5, 0.1, 0, 0.1, 0.5, 1, 5, 50, 500] },
+] as const;
+const PLINKO_MODE_LABEL = ["LOW", "MED", "HIGH"];
 
 export const ROULETTE_KINDS = [
   { kind: 0, label: "STRAIGHT", targets: 37, pays: "36x" },
@@ -129,8 +140,8 @@ const GAMES: Record<InstantGameKey, GameDef> = {
     describe: (f) => `base ${HILO_RANKS[Number(f.base)] ?? "?"} → drew ${HILO_RANKS[Number(f.drawn)] ?? "?"}${f.push ? " (PUSH)" : ""}`,
   },
   plinko: {
-    module: "plinko", event: "PlinkoDropped",
-    describe: (f) => `bucket ${f.bucket} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
+    module: "plinko", event: "PlinkoDropped", altEvents: ["PlinkoModeDropped"],
+    describe: (f) => `${f.mode !== undefined ? `${PLINKO_MODE_LABEL[Number(f.mode)] ?? "?"} · ` : ""}bucket ${f.bucket} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
   },
   keno: {
     module: "keno", event: "KenoDrawn",
@@ -357,6 +368,16 @@ export function buildPlinkoTx(coins: string[], wagerRaw: bigint): Transaction {
   return tx;
 }
 
+/** Plinko risk-mode play (v10): mode 0=LOW 1=MED 2=HIGH. */
+export function buildPlinkoModeTx(coins: string[], wagerRaw: bigint, mode: number): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::plinko::play_mode`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(mode)],
+  });
+  return tx;
+}
+
 export function buildKenoTx(coins: string[], wagerRaw: bigint, picks: number[]): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
@@ -437,8 +458,9 @@ export async function resolveInstantByDigest(game: InstantGameKey, digest: strin
   for (let attempt = 0; attempt < 6; attempt++) {
     try {
       const res = await rpc("sui_getTransactionBlock", [digest, { showEvents: true }]);
+      const eventNames = [def.event, ...(def.altEvents ?? [])];
       for (const e of res?.events ?? []) {
-        if (typeof e.type === "string" && e.type.endsWith(`::${def.module}::${def.event}`)) {
+        if (typeof e.type === "string" && eventNames.some((ev) => e.type.endsWith(`::${def.module}::${ev}`))) {
           const f = e.parsedJson ?? {};
           return {
             game,
@@ -500,6 +522,10 @@ const STATEFUL_FEED: { label: string; pkg: string; module: string; event: string
   {
     label: "video poker", pkg: CASINO_V7, module: "video_poker", event: "VideoPokerSettled",
     describe: (f) => POKER_HAND_RANKS[Number(f.hand_rank ?? 0)]?.label?.toLowerCase() ?? "—",
+  },
+  {
+    label: "plinko", pkg: CASINO_V10, module: "plinko", event: "PlinkoModeDropped",
+    describe: (f) => `${PLINKO_MODE_LABEL[Number(f.mode ?? 0)] ?? "?"} · bucket ${f.bucket} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
   },
 ];
 

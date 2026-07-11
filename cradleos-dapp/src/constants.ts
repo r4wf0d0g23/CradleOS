@@ -337,12 +337,14 @@ export const RANDOM_OBJECT = "0x8";
 // UpgradeCap 0x76124b462d729eedd46e7dda64df819837d850651595cc8c2865dbe541c5ed29
 // Prior v1 pkg (orphaned, House drained back to cradle wallet):
 //   0x02ce3fd64b4e19fc608d48efca66d37708bc356cca0d9dc3d35221d3f7a7afbb
-// v8 upgrade (live two-step Hi-Lo: hilo::start/settle + HiLoGame/HiLoStarted)
-// — published-at: moveCall targets. Upgrade tx 4zE29FTkKv9HB6iU4sw4U47qSdRqFV4LbaPzHNf3ioQE (2026-07-11).
+// v11 upgrade (duplicate of v10 — double-publish, see CASINO_V10 note) — published-at:
+// moveCall targets. Tx C82ntkRRz7JezdGo6knqZvqcaugbJHsSDY1uGNkMpYmR (2026-07-11).
+// v10 tx 7xoUYUQ7SAUvBXfERg5Ut3QPiMfXSDAzhSjnxwW6oVQS (plinko risk modes).
+// v9 tx 4zE29FTkKv9HB6iU4sw4U47qSdRqFV4LbaPzHNf3ioQE (live two-step Hi-Lo).
 // v7 tx BW4utkwZQoz82wgFXRkAPDmnrgFwoKN9frPD4aEnRT4h (crash/diamonds/double_dice/war/baccarat/dragon_tower/video_poker/three_card_poker).
 // v6 tx 5m1rmB7EShihUmqJUdRWEnxn5goqi4jpw5vczEqjT64D (mines exposure fix).
 // v5 tx 8gxuNFsfvHByuMM9961K4jwitFTAaAJQR87dC5Hypsyi (limbo/hilo/plinko/keno/sicbo/mines added).
-export const CASINO_PKG_STILLNESS = "0x005222bea5f40139a0dad2fc4bc67fe0292a7cd82e232ff00c6a6d3e1a7132c5";
+export const CASINO_PKG_STILLNESS = "0xfbca70d4fc7856028bbdbb5f62b7968f9165d096676280f6152ca001d284b056";
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -366,10 +368,17 @@ export const CASINO_V5 = _serverEnv === "stillness" ? CASINO_V5_STILLNESS : "";
 // was mislabeled "v7" — types queried under it return ZERO rows (live-verified).
 export const CASINO_V7_STILLNESS = "0x82f80f21672cabe13076d1ea8e6ef0ce2a707d4b184146a4a7e5bd67527e5996";
 export const CASINO_V7 = _serverEnv === "stillness" ? CASINO_V7_STILLNESS : "";
-// v8 introduced: hilo::HiLoGame<T> object + HiLoStarted event (live two-step hi-lo).
-// HiLoDrawn stays tagged under V5 (introduced there — feed queries unchanged).
+// Lineage v9 introduced: hilo::HiLoGame<T> object + HiLoStarted event (live two-step
+// hi-lo). HiLoDrawn stays tagged under V5. (Constant named V8 before the lineage
+// numbering was reconciled — keep the name, the id is what matters.)
 export const CASINO_V8_STILLNESS = "0x005222bea5f40139a0dad2fc4bc67fe0292a7cd82e232ff00c6a6d3e1a7132c5";
 export const CASINO_V8 = _serverEnv === "stillness" ? CASINO_V8_STILLNESS : "";
+// Lineage v10 introduced: plinko::PlinkoModeDropped (risk modes). ⚠ v10 was
+// accidentally published twice (a piped upgrade whose output parse failed had
+// actually succeeded); v11 = 0xfbca70d4… is byte-identical. Event types tag
+// under v10 = 0x35f5a8e2… (first introduction) — verified live via smoke event.
+export const CASINO_V10_STILLNESS = "0x35f5a8e20f4e9413ebf392e5c4380c2393bed221f8579d2d1f440579d372816d";
+export const CASINO_V10 = _serverEnv === "stillness" ? CASINO_V10_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).
