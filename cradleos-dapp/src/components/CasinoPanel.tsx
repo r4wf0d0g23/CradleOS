@@ -15,7 +15,8 @@
  * Nav (Phase 1): lobby grid + search + category rail + router swap.
  * casinoView drives "lobby" vs "game" mode; game panels are lazy-mounted.
  */
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
+const Casino3D = React.lazy(() => import("./casino3d/Casino3D"));
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -137,7 +138,7 @@ export function CasinoPanel() {
   const addr = account?.address ?? "";
 
   // ── Router state (Phase 1 nav) ────────────────────────────────────────────
-  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game"; gameKey: string }>({
+  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game" | "floor3d"; gameKey: string }>({
     mode: "lobby",
     gameKey: "blackjack",
   });
@@ -453,6 +454,26 @@ export function CasinoPanel() {
             ))}
           </div>
 
+          {/* 3D Floor entry */}
+          <div style={{ marginBottom: 16 }}>
+            <button
+              onClick={() => setCasinoView((prev) => ({ mode: "floor3d", gameKey: prev.gameKey }))}
+              style={{
+                background: "#0a0a12",
+                border: `1px solid #FF470088`,
+                color: "#FF4700",
+                fontSize: 12,
+                fontWeight: 800,
+                letterSpacing: "0.08em",
+                padding: "10px 20px",
+                cursor: "pointer",
+                width: "100%",
+              }}
+            >
+              {"◈ 3D FLOOR (BETA)"}
+            </button>
+          </div>
+
           {/* Game grid */}
           {filteredGames.length === 0 ? (
             <div style={{ color: "#555", padding: "40px 0", textAlign: "center", fontSize: 13 }}>
@@ -469,6 +490,18 @@ export function CasinoPanel() {
               ))}
             </div>
           )}
+        </div>
+
+      ) : casinoView.mode === "floor3d" ? (
+
+        /* ── 3D FLOOR VIEW ── */
+        <div style={{ position: "relative", width: "100%", height: "70vh", minHeight: 480 }}>
+          <Suspense fallback={<div style={{ color: "#888", padding: 40, fontFamily: "monospace" }}>LOADING 3D FLOOR...</div>}>
+            <Casino3D
+              onExit={backToLobby}
+              onOpenGame={(k: string) => setCasinoView({ mode: "game", gameKey: k })}
+            />
+          </Suspense>
         </div>
 
       ) : (
