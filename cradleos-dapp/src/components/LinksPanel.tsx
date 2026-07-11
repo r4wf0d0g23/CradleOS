@@ -130,7 +130,7 @@ const SERVICES: ServiceDef[] = [
   {
     id: "casino",
     label: "Casino",
-    description: "Cradle Casino — provably-fair blackjack, split pairs, dice, roulette, slots and more. Settled in $EVE.",
+    description: "Cradle Casino — a full floor of provably-fair on-chain games: blackjack, mines, plinko, crash, dragon tower and more. Settled in $EVE.",
     url: `${BASE}/#/casino`,
     icon: "◈",
   },

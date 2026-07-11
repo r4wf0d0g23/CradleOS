@@ -409,7 +409,7 @@ export function CasinoPanel() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ color: ACCENT, fontSize: 22, fontWeight: 800, letterSpacing: "0.12em" }}>◈ CRADLE CASINO</div>
-            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>INTERACTIVE BLACKJACK · PROVABLY FAIR · SETTLED IN $EVE</div>
+            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>{CASINO_CATALOG.length} PROVABLY-FAIR GAMES · ON-CHAIN · SETTLED IN $EVE</div>
           </div>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             <Stat label="HOUSE BANK" value={house ? `${fmtEve(house.bankBalance)} EVE` : "—"} />
