@@ -361,7 +361,10 @@ export const CASINO_V5 = _serverEnv === "stillness" ? CASINO_V5_STILLNESS : "";
 // DoubleDiceRolled, WarPlayed, BaccaratPlayed, TowerStarted/RowClimbed/TowerSettled,
 // VideoPokerDealt/Settled, ThreeCardPlayed — tag under the v7 id forever.
 // TowerGame + VideoPokerHand object structs also introduced in v7.
-export const CASINO_V7_STILLNESS = "0xb66cb00e7b64d0ccf5544691cd3093f22e03c0eb22c90e85cabef5457bcde894";
+// ⚠ CORRECTED 2026-07-11: the introducing package is 0x82f80f21… (lineage v7).
+// 0xb66cb00e… was a same-day FOLLOW-UP upgrade (lineage v8, no new types) that
+// was mislabeled "v7" — types queried under it return ZERO rows (live-verified).
+export const CASINO_V7_STILLNESS = "0x82f80f21672cabe13076d1ea8e6ef0ce2a707d4b184146a4a7e5bd67527e5996";
 export const CASINO_V7 = _serverEnv === "stillness" ? CASINO_V7_STILLNESS : "";
 // v8 introduced: hilo::HiLoGame<T> object + HiLoStarted event (live two-step hi-lo).
 // HiLoDrawn stays tagged under V5 (introduced there — feed queries unchanged).

@@ -12,15 +12,18 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_V2,
   CASINO_V3,
   CASINO_V5,
   CASINO_V7,
   CASINO_V8,
+  CASINO_ORIGINAL,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
   SUI_TESTNET_RPC,
 } from "../constants";
+import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
 export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker";
 
@@ -452,7 +455,9 @@ export async function resolveInstantByDigest(game: InstantGameKey, digest: strin
 }
 
 // ── Feed: recent plays across all instant games ──────────────────────────────
-export interface InstantFeedRow extends InstantResult { player: string; ts: number; }
+// Feed rows cover BOTH instant games and stateful settles — `game` is a free
+// label (instant keys plus "mines", "blackjack", "tower", "video poker").
+export interface InstantFeedRow extends Omit<InstantResult, "game"> { game: string; player: string; ts: number; }
 
 // Event pkg routing: events tag under the package version where the module was FIRST introduced.
 // v1–v4 instant games (coinflip/dice/roulette/slots/wheel) tag under CASINO_V3.
@@ -465,18 +470,56 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   baccarat: CASINO_V7, three_card_poker: CASINO_V7,
 };
 
+// Stateful games' settle events — merged into the all-games feed. Each event
+// carries wager/payout/player like the instant events; pkg = version that
+// INTRODUCED the event type (never CASINO_PKG).
+const BJ_OUTCOME = (o: number) => (o === 3 ? "BLACKJACK" : o === 2 ? "win" : o === 1 ? "push" : "loss");
+const STATEFUL_FEED: { label: string; pkg: string; module: string; event: string; describe: (f: any) => string }[] = [
+  {
+    label: "mines", pkg: CASINO_V5, module: "mines", event: "MinesSettled",
+    describe: (f) => f.busted
+      ? `hit a mine after ${Number(f.safe_revealed ?? 0)} safe`
+      : `cashed out ${Number(f.safe_revealed ?? 0)} tiles @ ${(Number(f.multiplier_bps ?? 0) / 10000).toFixed(2)}x`,
+  },
+  {
+    label: "blackjack", pkg: CASINO_ORIGINAL, module: "blackjack_live", event: "HandSettled",
+    describe: (f) => `${Number(f.player_total ?? 0)} vs ${Number(f.dealer_total ?? 0)}${f.doubled ? " (doubled)" : ""} — ${BJ_OUTCOME(Number(f.outcome ?? 0))}`,
+  },
+  {
+    label: "blackjack", pkg: CASINO_V2, module: "blackjack_live", event: "SplitSettled",
+    describe: (f) => `split ${Number(f.total_a ?? 0)}/${Number(f.total_b ?? 0)} vs ${Number(f.dealer_total ?? 0)}`,
+  },
+  {
+    label: "tower", pkg: CASINO_V7, module: "dragon_tower", event: "TowerSettled",
+    describe: (f) => f.busted
+      ? `dragon at row ${Number(f.rows_climbed ?? 0) + 1}`
+      : `climbed ${Number(f.rows_climbed ?? 0)} rows @ ${(Number(f.multiplier_bps ?? 0) / 10000).toFixed(2)}x`,
+  },
+  {
+    label: "video poker", pkg: CASINO_V7, module: "video_poker", event: "VideoPokerSettled",
+    describe: (f) => POKER_HAND_RANKS[Number(f.hand_rank ?? 0)]?.label?.toLowerCase() ?? "—",
+  },
+];
+
 export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRow[]> {
   if (!CASINO_PKG) return [];
   // Skip games whose event package isn't populated yet (CASINO_V5 = "" before v5 publish).
   const keys = (Object.keys(GAMES) as InstantGameKey[]).filter((k) => EVENT_PKG[k]);
-  const results = await Promise.all(keys.map((k) =>
+  const instantQ = keys.map((k) =>
     rpc("suix_queryEvents", [
       { MoveEventType: `${EVENT_PKG[k]}::${GAMES[k].module}::${GAMES[k].event}` },
       null, limit, true,
     ]).then((r) => ({ k, data: r.data ?? [] })).catch(() => ({ k, data: [] }))
-  ));
+  );
+  const statefulQ = STATEFUL_FEED.filter((d) => d.pkg).map((d) =>
+    rpc("suix_queryEvents", [
+      { MoveEventType: `${d.pkg}::${d.module}::${d.event}` },
+      null, limit, true,
+    ]).then((r) => ({ d, data: r.data ?? [] })).catch(() => ({ d, data: [] }))
+  );
+  const [instantRes, statefulRes] = await Promise.all([Promise.all(instantQ), Promise.all(statefulQ)]);
   const rows: InstantFeedRow[] = [];
-  for (const { k, data } of results) {
+  for (const { k, data } of instantRes) {
     for (const e of data) {
       const f = e.parsedJson ?? {};
       rows.push({
@@ -484,6 +527,21 @@ export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRo
         wager: Number(f.wager ?? 0) / 1e9,
         payout: Number(f.payout ?? 0) / 1e9,
         detail: GAMES[k].describe(f),
+        fields: f,
+        txDigest: e.id?.txDigest ?? "",
+        player: f.player ?? "",
+        ts: Number(e.timestampMs ?? 0),
+      });
+    }
+  }
+  for (const { d, data } of statefulRes) {
+    for (const e of data) {
+      const f = e.parsedJson ?? {};
+      rows.push({
+        game: d.label,
+        wager: Number(f.wager ?? 0) / 1e9,
+        payout: Number(f.payout ?? 0) / 1e9,
+        detail: d.describe(f),
         fields: f,
         txDigest: e.id?.txDigest ?? "",
         player: f.player ?? "",
