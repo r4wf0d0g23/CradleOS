@@ -204,7 +204,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     if (!addr || !hiloLive) { return; }
     setBusy(true); setErr(null); setResult(null); setPending(null);
     try {
-      const tx = await withGas(buildHiLoSettleTx(hiloLive.gameId, higher), addr);
+      const tx = await withGas(await buildHiLoSettleTx(hiloLive.gameId, higher), addr);
       const res = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(res);
       if (!digest) throw new Error("No tx digest returned.");

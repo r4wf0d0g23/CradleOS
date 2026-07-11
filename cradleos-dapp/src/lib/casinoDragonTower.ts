@@ -21,7 +21,7 @@ import {
   RANDOM_OBJECT,
   SUI_TESTNET_RPC,
 } from "../constants";
-import { withGas, fetchEveCoins } from "./casino";
+import { withGas, fetchEveCoins, fetchOwnedRefDirect } from "./casino";
 
 export { withGas, fetchEveCoins };
 
@@ -112,22 +112,24 @@ export function buildTowerStartTx(coins: string[], wagerRaw: bigint, difficulty:
   return tx;
 }
 
-export function buildTowerPickTx(gameId: string, cell: number): Transaction {
+export async function buildTowerPickTx(gameId: string, cell: number): Promise<Transaction> {
+  const ref = await fetchOwnedRefDirect(gameId); // fresh ref — object mutates every pick
   const tx = new Transaction();
   tx.moveCall({
     target: `${CASINO_PKG}::dragon_tower::pick`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(gameId), tx.pure.u8(cell)],
+    arguments: [tx.object(CASINO_HOUSE), tx.objectRef(ref), tx.pure.u8(cell)],
   });
   return tx;
 }
 
-export function buildTowerCashoutTx(gameId: string): Transaction {
+export async function buildTowerCashoutTx(gameId: string): Promise<Transaction> {
+  const ref = await fetchOwnedRefDirect(gameId);
   const tx = new Transaction();
   tx.moveCall({
     target: `${CASINO_PKG}::dragon_tower::cashout`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(gameId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.objectRef(ref)],
   });
   return tx;
 }

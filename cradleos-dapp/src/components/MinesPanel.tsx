@@ -230,14 +230,14 @@ export function MinesPanel() {
     if (!gameId || busy || phase !== "playing") return;
     setBusy(true); setErr(null); setPendingTile(tile);
     try {
-      const tx = await withGas(buildMinesRevealTx(gameId, tile), addr);
+      const tx = await withGas(await buildMinesRevealTx(gameId, tile), addr);
       let res: any;
       try {
         res = await signer().signAndExecuteTransaction({ transaction: tx });
       } catch (e: any) {
         if (/not found|notexists|deleted|invalid.*object|InsufficientGas|GasBalanceTooLow/i.test(String(e?.message ?? e))) {
           await new Promise((r) => setTimeout(r, 1500));
-          const tx2 = await withGas(buildMinesRevealTx(gameId, tile), addr);
+          const tx2 = await withGas(await buildMinesRevealTx(gameId, tile), addr);
           res = await signer().signAndExecuteTransaction({ transaction: tx2 });
         } else { throw e; }
       }
@@ -275,7 +275,7 @@ export function MinesPanel() {
     if (!gameId || busy || phase !== "playing") return;
     setBusy(true); setErr(null); setPhase("settling");
     try {
-      const tx = await withGas(buildMinesCashoutTx(gameId), addr);
+      const tx = await withGas(await buildMinesCashoutTx(gameId), addr);
       const res: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(res);
       if (!digest) throw new Error("No tx digest returned.");

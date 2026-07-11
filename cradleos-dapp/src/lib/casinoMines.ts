@@ -19,7 +19,7 @@ import {
   RANDOM_OBJECT,
   SUI_TESTNET_RPC,
 } from "../constants";
-import { withGas, fetchEveCoins } from "./casino";
+import { withGas, fetchEveCoins, fetchOwnedRefDirect } from "./casino";
 
 // Re-export for consumers that want to avoid importing from two places.
 export { withGas, fetchEveCoins };
@@ -96,12 +96,13 @@ export function buildMinesStartTx(coins: string[], wagerRaw: bigint, mines: numb
  * and re-transferred (safe) or settled (bust) by the Move tx.
  * Caller must wrap with withGas() and sign.
  */
-export function buildMinesRevealTx(gameId: string, tile: number): Transaction {
+export async function buildMinesRevealTx(gameId: string, tile: number): Promise<Transaction> {
+  const ref = await fetchOwnedRefDirect(gameId); // fresh ref — object mutates every reveal
   const tx = new Transaction();
   tx.moveCall({
     target: `${CASINO_PKG}::mines::reveal`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(gameId), tx.pure.u8(tile)],
+    arguments: [tx.object(CASINO_HOUSE), tx.objectRef(ref), tx.pure.u8(tile)],
   });
   return tx;
 }
@@ -111,12 +112,13 @@ export function buildMinesRevealTx(gameId: string, tile: number): Transaction {
  * The MinesGame object is consumed; payout is sent to the player.
  * Caller must wrap with withGas() and sign.
  */
-export function buildMinesCashoutTx(gameId: string): Transaction {
+export async function buildMinesCashoutTx(gameId: string): Promise<Transaction> {
+  const ref = await fetchOwnedRefDirect(gameId);
   const tx = new Transaction();
   tx.moveCall({
     target: `${CASINO_PKG}::mines::cashout`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(gameId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.objectRef(ref)],
   });
   return tx;
 }

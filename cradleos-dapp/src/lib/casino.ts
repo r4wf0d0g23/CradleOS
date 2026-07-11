@@ -204,6 +204,20 @@ export async function fetchHouseState(houseId: string): Promise<HouseState | nul
 }
 
 /**
+ * Fresh owned-object ref straight from the fullnode (bypasses the caching
+ * proxy). Use when building txs on owned game objects that mutate between
+ * player actions (TowerGame, MinesGame, HiLoGame, VideoPokerHand) — a
+ * proxy-cached version produces "provided version doesn't match" equivocation
+ * errors on the second action.
+ */
+export async function fetchOwnedRefDirect(objectId: string): Promise<{ objectId: string; version: string; digest: string }> {
+  const res = await rpcDirect("sui_getObject", [objectId, {}]);
+  const d = res?.data;
+  if (!d?.objectId) throw new Error("Game object not found on the fullnode — try again in a moment.");
+  return { objectId: d.objectId, version: d.version, digest: d.digest };
+}
+
+/**
  * Dynamic bet preset chips — derived from the effective per-game cap:
  *   min( house exposure budget / max gross multiplier, house max_bet, wallet balance )
  * rounded DOWN (whole EVE when the cap is ≥20, else 0.1 steps). Returns an

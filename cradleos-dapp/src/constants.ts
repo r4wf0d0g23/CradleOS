@@ -442,7 +442,12 @@ export const SUI_TESTNET_RPC_FALLBACK = "https://sui-testnet-endpoint.blockvisio
 // public JSON-RPC endpoint to bypass TO. Route the critical-path reads through
 // the proxy as well — they gain caching/coalescing/upstream-rotation, and the
 // circuit breaker still gives them the BlockVision fallback if DGX1 is down.
-export const SUI_TESTNET_RPC_DIRECT = "https://keeper.reapers.shop/sui";
+// `?nocache=1` = proxy cache bypass (added 2026-07-11): every read through this
+// URL hits the upstream fullnode fresh. Required for owned-object refs that
+// mutate between player actions (TowerGame/MinesGame/HiLoGame/VideoPokerHand,
+// blackjack Hand reads, wager-coin refs) — the proxy's 30s sui_getObject cache
+// was serving stale versions, causing "provided version doesn't match" aborts.
+export const SUI_TESTNET_RPC_DIRECT = "https://keeper.reapers.shop/sui?nocache=1";
 
 /**
  * Sui GraphQL endpoint.

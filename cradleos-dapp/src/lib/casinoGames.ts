@@ -290,11 +290,13 @@ export function buildHiLoStartTx(coins: string[], wagerRaw: bigint): Transaction
   return tx;
 }
 
-export function buildHiLoSettleTx(gameId: string, higher: boolean): Transaction {
+export async function buildHiLoSettleTx(gameId: string, higher: boolean): Promise<Transaction> {
+  const { fetchOwnedRefDirect } = await import("./casino");
+  const ref = await fetchOwnedRefDirect(gameId); // fresh ref — proxy-cached versions equivocate
   const tx = new Transaction();
   tx.moveCall({
     target: `${CASINO_PKG}::hilo::settle`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(gameId), tx.pure.bool(higher)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.objectRef(ref), tx.pure.bool(higher)],
   });
   return tx;
 }

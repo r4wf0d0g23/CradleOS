@@ -190,14 +190,14 @@ export function DragonTowerPanel() {
     if (!gameId || busy || phase !== "playing") return;
     setBusy(true); setErr(null); setPendingCell(cell);
     try {
-      const tx = await withGas(buildTowerPickTx(gameId, cell), addr);
+      const tx = await withGas(await buildTowerPickTx(gameId, cell), addr);
       let res: any;
       try {
         res = await signer().signAndExecuteTransaction({ transaction: tx });
       } catch (e: any) {
-        if (/not found|notexists|deleted|invalid.*object|InsufficientGas|GasBalanceTooLow/i.test(String(e?.message ?? e))) {
+        if (/not found|notexists|deleted|invalid.*object|version.*match|not available for consumption|InsufficientGas|GasBalanceTooLow/i.test(String(e?.message ?? e))) {
           await new Promise((r) => setTimeout(r, 1500));
-          const tx2 = await withGas(buildTowerPickTx(gameId, cell), addr);
+          const tx2 = await withGas(await buildTowerPickTx(gameId, cell), addr);
           res = await signer().signAndExecuteTransaction({ transaction: tx2 });
         } else { throw e; }
       }
@@ -238,7 +238,7 @@ export function DragonTowerPanel() {
     if (!gameId || busy || phase !== "playing") return;
     setBusy(true); setErr(null); setPhase("settling");
     try {
-      const tx = await withGas(buildTowerCashoutTx(gameId), addr);
+      const tx = await withGas(await buildTowerCashoutTx(gameId), addr);
       const res: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(res);
       if (!digest) throw new Error("No tx digest returned.");

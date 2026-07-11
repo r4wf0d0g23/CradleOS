@@ -21,7 +21,7 @@ import {
   SUI_TESTNET_RPC,
   SUI_TESTNET_RPC_DIRECT,
 } from "../constants";
-import { withGas, fetchEveCoins } from "./casino";
+import { withGas, fetchEveCoins, fetchOwnedRefDirect } from "./casino";
 
 export { withGas, fetchEveCoins };
 
@@ -124,12 +124,13 @@ export function buildVideoPokerDealTx(coins: string[], wagerRaw: bigint): Transa
   return tx;
 }
 
-export function buildVideoPokerDrawTx(handId: string, holdMask: number): Transaction {
+export async function buildVideoPokerDrawTx(handId: string, holdMask: number): Promise<Transaction> {
+  const ref = await fetchOwnedRefDirect(handId); // fresh ref — proxy-cached versions equivocate
   const tx = new Transaction();
   tx.moveCall({
     target: `${CASINO_PKG}::video_poker::draw`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(handId), tx.pure.u8(holdMask)],
+    arguments: [tx.object(CASINO_HOUSE), tx.objectRef(ref), tx.pure.u8(holdMask)],
   });
   return tx;
 }
