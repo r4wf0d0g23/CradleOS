@@ -21,7 +21,8 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
-import { fetchEveCoins, withGas } from "../lib/casino";
+import { fetchEveCoins, fetchHouseState, withGas } from "../lib/casino";
+import { CASINO_HOUSE } from "../constants";
 import {
   buildMinesStartTx, buildMinesRevealTx, buildMinesCashoutTx,
   fetchActiveMinesGame, resolveMinesStartByDigest,
@@ -107,6 +108,22 @@ export function MinesPanel() {
   });
   const myEve = balQ.data ? Number(balQ.data.totalRaw) / 1e9 : 0;
 
+  const houseQ = useQuery({
+    queryKey: ["casinoHouseLive"],
+    queryFn: () => fetchHouseState(CASINO_HOUSE),
+    refetchInterval: 15000,
+  });
+  const bank = houseQ.data?.bankBalance ?? 0;
+
+  // ── Exposure guard mirror (house contract: full-clear payout ≤ 3% of bank;
+  //    clear-all multiplier capped at 1000x — mines::start aborts code 6 past it) ──
+  const clearAllBps = Math.min(computeMinesMultiplierBps(mineCount, 25 - mineCount), 10_000_000);
+  const clearAllMult = clearAllBps / 10000;
+  const exposureBudget = bank * 0.03;
+  const maxBetForExposure = clearAllMult > 0 ? exposureBudget / clearAllMult : Infinity;
+  const betNum = Number(betEve) || 0;
+  const overExposure = bank > 0 && betNum > maxBetForExposure;
+
   // ── Resume active game on mount / addr change ──────────────────────────────
   useEffect(() => {
     if (!addr || phase !== "idle") return;
@@ -155,6 +172,14 @@ export function MinesPanel() {
     if (!addr) { setErr("Connect a wallet."); return; }
     const wagerNum = Number(betEve);
     if (!(wagerNum > 0)) { setErr("Enter a positive bet."); return; }
+    // Pre-check the house exposure guard so the wallet never signs a doomed tx.
+    const bankNow = houseQ.data?.bankBalance ?? 0;
+    const capBps = Math.min(computeMinesMultiplierBps(mineCount, 25 - mineCount), 10_000_000);
+    const maxBet = bankNow > 0 ? (bankNow * 0.03) / (capBps / 10000) : Infinity;
+    if (wagerNum > maxBet) {
+      setErr(`BET BLOCKED — payout risk cap. Clearing all ${25 - mineCount} safe tiles at ${mineCount} mines pays up to ${(capBps / 10000).toFixed(0)}x, and the house only risks ${fmtEve(bankNow * 0.03)} EVE (3% of its ${fmtEve(bankNow)} EVE bank) on a single game. Bet ${fmtEve(Math.floor(maxBet * 1000) / 1000)} EVE or less, or pick fewer mines.`);
+      return;
+    }
     setBusy(true); setErr(null);
     // Clear previous game state before starting
     setRevealedSafe(new Set()); setSafeCount(0); setMultiplierBps(10000);
@@ -187,12 +212,18 @@ export function MinesPanel() {
       setPhase("playing");
       balQ.refetch();
     } catch (e: any) {
-      setErr(translateTxError(e));
+      const msg = String(e?.message ?? e ?? "");
+      if (/MoveAbort/.test(msg) && /mines::start/.test(msg) && /code:?\s*6\b/.test(msg)) {
+        const bankNow2 = houseQ.data?.bankBalance ?? 0;
+        setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(wagerNum)} EVE bet at ${mineCount} mines could win up to ${(Math.min(computeMinesMultiplierBps(mineCount, 25 - mineCount), 10_000_000) / 10000).toFixed(0)}x, more than the house risks per game (3% of its ${fmtEve(bankNow2)} EVE bank). Lower the bet or pick fewer mines.`);
+      } else {
+        setErr(translateTxError(e));
+      }
       setPhase("idle");
     } finally {
       setBusy(false);
     }
-  }, [addr, betEve, mineCount, dAppKit]);
+  }, [addr, betEve, mineCount, dAppKit, houseQ.data]);
 
   // ── Reveal tile ───────────────────────────────────────────────────────────
   const revealTile = useCallback(async (tile: number) => {
@@ -460,6 +491,9 @@ export function MinesPanel() {
                 </div>
                 <div style={{ color: "#666", fontSize: 10, marginTop: 4 }}>
                   {25 - mineCount} safe tiles · next reveal at {fmtMult(computeMinesMultiplierBps(mineCount, 1))}
+                  {bank > 0 && Number.isFinite(maxBetForExposure) && (
+                    <> · max bet <span style={{ color: overExposure ? GOLD : "#888" }}>{fmtEve(Math.floor(maxBetForExposure * 1000) / 1000)} EVE</span> (house risk cap)</>
+                  )}
                 </div>
               </div>
 
@@ -484,12 +518,19 @@ export function MinesPanel() {
               </label>
 
               <button
-                disabled={busy || !addr || phase === "starting"}
+                disabled={busy || !addr || phase === "starting" || overExposure}
                 onClick={startGame}
-                style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: busy || !addr ? "default" : "pointer", opacity: busy || !addr ? 0.5 : 1 }}
+                style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: busy || !addr || overExposure ? "default" : "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}
               >
                 {busy ? "SIGNING…" : "▲ START GAME"}
               </button>
+              {overExposure && (
+                <div style={{ color: GOLD, fontSize: 12, marginTop: 8, lineHeight: 1.6, background: "#1a1408", border: `1px solid ${GOLD}44`, padding: "10px 12px" }}>
+                  PAYOUT RISK CAP — clearing all {25 - mineCount} safe tiles at {mineCount} mines pays up to {clearAllMult.toFixed(0)}x,
+                  and the house risks at most {fmtEve(exposureBudget)} EVE (3% of its {fmtEve(bank)} EVE bank) per game.
+                  Bet {fmtEve(Math.floor(maxBetForExposure * 1000) / 1000)} EVE or less, or pick fewer mines.
+                </div>
+              )}
             </>
           ) : phase === "playing" ? (
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>

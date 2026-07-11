@@ -11,6 +11,9 @@
  *
  * House edge is MEASURED (scripts/edge_sim.py), not invented.
  * Cards use real EVE Frontier art (ship hulls, structure icons) — see casinoTheme.
+ *
+ * Nav (Phase 1): lobby grid + search + category rail + router swap.
+ * casinoView drives "lobby" vs "game" mode; game panels are lazy-mounted.
  */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -35,6 +38,14 @@ import { MinesPanel } from "./MinesPanel";
 import { DragonTowerPanel } from "./DragonTowerPanel";
 import { VideoPokerPanel } from "./VideoPokerPanel";
 import type { InstantGameKey } from "../lib/casinoGames";
+import {
+  CASINO_CATALOG,
+  CATEGORY_LABELS,
+  activeCategoriesFromCatalog,
+  type GameEntry,
+  type CasinoCategory,
+  type Variance,
+} from "../lib/casinoCatalog";
 
 const ACCENT = "#FF4700";
 const GOLD = "#E8B84B";
@@ -118,13 +129,22 @@ function HandRow({ label, cards, total, hideHole }: { label: string; cards: numb
 }
 
 type Phase = "idle" | "dealing" | "player" | "resolving" | "settled";
+type GameKey = "blackjack" | "mines" | "dragon_tower" | "video_poker" | InstantGameKey;
 
 export function CasinoPanel() {
   const dAppKit = useDAppKit();
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
 
-  const [game, setGame] = useState<"blackjack" | "mines" | "dragon_tower" | "video_poker" | InstantGameKey>("blackjack");
+  // ── Router state (Phase 1 nav) ────────────────────────────────────────────
+  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game"; gameKey: string }>({
+    mode: "lobby",
+    gameKey: "blackjack",
+  });
+  const [lobbySearch, setLobbySearch] = useState("");
+  const [lobbyCategory, setLobbyCategory] = useState<CasinoCategory | "all">("all");
+
+  // ── Blackjack state ───────────────────────────────────────────────────────
   const [betEve, setBetEve] = useState("10");
   const [phase, setPhase] = useState<Phase>("idle");
   const [hand, setHand] = useState<LiveHand | null>(null);
@@ -331,9 +351,9 @@ export function CasinoPanel() {
             if (still.active !== prevActive || (kind === "hit" && nowLen > prevLen)) {
               setSplitHand(still); refreshAll(); return;
             }
-            // unchanged = read lag → keep polling
+            // unchanged = read lag -> keep polling
           } else {
-            // Object consumed → the whole split settled in this action.
+            // Object consumed -> the whole split settled in this action.
             setPhase("resolving");
             const s = digest ? await resolveSplitSettleByDigest(digest) : null;
             if (s) { finishSplitSettle(s); refreshAll(); return; }
@@ -351,8 +371,14 @@ export function CasinoPanel() {
     finally { setBusy(false); }
   }, [splitHand, addr, dAppKit]);
 
+  // ── Navigation helpers ────────────────────────────────────────────────────
+  const openGame = (key: string) => setCasinoView({ mode: "game", gameKey: key });
+  const backToLobby = () => setCasinoView((prev) => ({ mode: "lobby", gameKey: prev.gameKey }));
+
   if (!CASINO_AVAILABLE) return <div style={{ color: "#888", padding: 24 }}>Casino is only available on Stillness.</div>;
 
+  // ── Derived ───────────────────────────────────────────────────────────────
+  const game = casinoView.gameKey as GameKey;
   const canDouble = hand && hand.playerCards.length === 2;
   const canSplit = !!hand && hand.playerCards.length === 2
     && hand.playerCards[0] % 13 === hand.playerCards[1] % 13
@@ -366,9 +392,19 @@ export function CasinoPanel() {
   const splitDealer = splitSettlement?.dealerCards ?? (splitHand ? [splitHand.dealerUpcard] : []);
   const activeLabel = splitHand?.active === 1 ? "B" : "A";
 
+  // ── Lobby derived ─────────────────────────────────────────────────────────
+  const query = lobbySearch.trim().toLowerCase();
+  const filteredGames = CASINO_CATALOG.filter((g) => {
+    const matchSearch = !query || g.name.toLowerCase().includes(query);
+    const matchCategory = lobbyCategory === "all" || g.category === lobbyCategory;
+    return matchSearch && matchCategory;
+  });
+  const activeCategories = activeCategoriesFromCatalog();
+  const gameEntry = CASINO_CATALOG.find((g) => g.key === casinoView.gameKey);
+
   return (
     <div style={{ maxWidth: 1080, margin: "0 auto" }}>
-      {/* Header */}
+      {/* ── Header (always visible) ── */}
       <div style={{ background: `linear-gradient(180deg, rgba(20,8,4,0.92), rgba(10,10,10,0.96)), url(banner-battle.png)`, backgroundSize: "cover", backgroundPosition: "center", border: `1px solid ${ACCENT}33`, padding: "18px 22px", marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
@@ -383,136 +419,193 @@ export function CasinoPanel() {
         </div>
       </div>
 
-      {/* Game selector */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-        {([
-          ["blackjack",        "✦ BLACKJACK"],
-          ["coinflip",         "◉ COINFLIP"],
-          ["dice",             "⚄ DICE"],
-          ["roulette",         "◎ ROULETTE"],
-          ["slots",            "▦ SLOTS"],
-          ["wheel",            "✦ WHEEL"],
-          ["limbo",            "▲ LIMBO"],
-          ["hilo",             "◆ HI-LO"],
-          ["plinko",           "⬢ PLINKO"],
-          ["keno",             "▣ KENO"],
-          ["sicbo",            "⚙ SIC BO"],
-          ["mines",            "⛨ MINES"],
-          ["crash",            "▲ CRASH"],
-          ["diamonds",         "◆ DIAMONDS"],
-          ["double_dice",      "⚄ DBL DICE"],
-          ["war",              "⚔ WAR"],
-          ["baccarat",         "◈ BACCARAT"],
-          ["three_card_poker", "◇ THREE CARD"],
-          ["dragon_tower",     "◆ DRAGON TOWER"],
-          ["video_poker",      "◈ VIDEO POKER"],
-        ] as const).map(([k, label]) => (
-          <button key={k} onClick={() => setGame(k)} style={{
-            background: game === k ? "#241009" : "#141414",
-            border: `1px solid ${game === k ? ACCENT : "#2a2a2a"}`,
-            color: game === k ? ACCENT : "#888",
-            fontSize: 12, fontWeight: 800, letterSpacing: "0.08em",
-            padding: "10px 16px", cursor: "pointer",
-          }}>{label}</button>
-        ))}
-      </div>
+      {/* ── Lobby / Game Router ── */}
+      {casinoView.mode === "lobby" ? (
 
-      {game === "mines" ? (
-        <MinesPanel />
-      ) : game === "dragon_tower" ? (
-        <DragonTowerPanel />
-      ) : game === "video_poker" ? (
-        <VideoPokerPanel />
-      ) : game !== "blackjack" ? (
-        <InstantGamePanel game={game as InstantGameKey} />
+        /* ── LOBBY ── */
+        <div>
+          {/* Search bar */}
+          <div style={{ marginBottom: 12 }}>
+            <input
+              type="text"
+              placeholder="Search games..."
+              value={lobbySearch}
+              onChange={(e) => setLobbySearch(e.target.value)}
+              style={{
+                width: "100%", boxSizing: "border-box",
+                background: "#111", border: `1px solid ${ACCENT}33`,
+                color: "#eee", fontSize: 13, padding: "10px 14px",
+                outline: "none", letterSpacing: "0.04em",
+              }}
+            />
+          </div>
+
+          {/* Category rail */}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+            <CategoryBtn label="ALL" active={lobbyCategory === "all"} onClick={() => setLobbyCategory("all")} />
+            {activeCategories.map((cat) => (
+              <CategoryBtn
+                key={cat}
+                label={CATEGORY_LABELS[cat]}
+                active={lobbyCategory === cat}
+                onClick={() => setLobbyCategory(cat)}
+              />
+            ))}
+          </div>
+
+          {/* Game grid */}
+          {filteredGames.length === 0 ? (
+            <div style={{ color: "#555", padding: "40px 0", textAlign: "center", fontSize: 13 }}>
+              No games match your search.
+            </div>
+          ) : (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: 12,
+            }}>
+              {filteredGames.map((entry) => (
+                <GameCard key={entry.key} entry={entry} onClick={() => openGame(entry.key)} />
+              ))}
+            </div>
+          )}
+        </div>
+
       ) : (
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        {/* Table */}
-        <div style={{ flex: "1 1 440px", minWidth: 340 }}>
-          <div style={{ background: `radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)`, border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
-            {inSplit ? (
-              <>
-                <HandRow label="DEALER" cards={splitDealer} total={splitSettlement?.dealerTotal ?? 0} hideHole={!!splitHand} />
-                <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
-                <HandRow
-                  label={splitHand && splitHand.active === 0 ? "HAND A ▸ PLAYING" : "HAND A"}
-                  cards={splitA}
-                  total={splitSettlement?.totalA ?? splitHand?.totalA ?? 0}
-                />
-                <HandRow
-                  label={splitHand && splitHand.active === 1 ? "HAND B ▸ PLAYING" : "HAND B"}
-                  cards={splitB}
-                  total={splitSettlement?.totalB ?? splitHand?.totalB ?? 0}
-                />
-              </>
-            ) : (
-              <>
-                <HandRow label="DEALER" cards={dealerCards} total={settlement?.dealerTotal ?? 0} hideHole={hideHole} />
-                <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
-                <HandRow label="YOU" cards={playerCards} total={settlement?.playerTotal ?? hand?.playerTotal ?? 0} />
-              </>
-            )}
 
-            {phase === "dealing" && <Center text="◇ shuffling on-chain…" color={GOLD} />}
-            {phase === "resolving" && <Center text="◇ dealer playing…" color={GOLD} />}
-            {phase === "settled" && settlement && <OutcomeBadge s={settlement} />}
-            {phase === "settled" && splitSettlement && <SplitOutcomeBadge s={splitSettlement} />}
+        /* ── GAME VIEW ── */
+        <div>
+          {/* Back button + breadcrumb */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+            <button
+              onClick={backToLobby}
+              style={{
+                background: "#1a1a1a", border: `1px solid ${ACCENT}55`,
+                color: ACCENT, fontSize: 12, fontWeight: 800,
+                letterSpacing: "0.08em", padding: "8px 14px", cursor: "pointer",
+              }}
+            >
+              ‹ LOBBY
+            </button>
+            <div style={{ fontSize: 11, letterSpacing: "0.06em" }}>
+              <span
+                style={{ color: "#777", cursor: "pointer" }}
+                onClick={backToLobby}
+              >LOBBY</span>
+              {gameEntry && (
+                <>
+                  <span style={{ color: "#444", margin: "0 6px" }}>›</span>
+                  <span style={{ color: "#888" }}>{CATEGORY_LABELS[gameEntry.category]}</span>
+                  <span style={{ color: "#444", margin: "0 6px" }}>›</span>
+                  <span style={{ color: ACCENT }}>{gameEntry.name}</span>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Controls */}
-          <div style={{ marginTop: 16, background: "#111", border: `1px solid ${ACCENT}22`, padding: 18 }}>
-            {phase === "player" && splitHand ? (
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <button disabled={busy} onClick={() => actSplitMove("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : `◆ HIT ${activeLabel}`}</button>
-                <button disabled={busy} onClick={() => actSplitMove("stand")} style={actionBtn("#666")}>■ STAND {activeLabel}</button>
-              </div>
-            ) : phase === "player" ? (
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <button disabled={busy} onClick={() => act("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : "◆ HIT"}</button>
-                <button disabled={busy} onClick={() => act("stand")} style={actionBtn("#666")}>■ STAND</button>
-                <button disabled={busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
-                {canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
-              </div>
-            ) : phase === "settled" ? (
-              <button onClick={newHand} style={dealBtn}>◈ NEW HAND</button>
-            ) : (
-              <>
-                <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
-                  <label style={{ flex: "1 1 160px" }}>
-                    <div style={lbl}>BET ($EVE)</div>
-                    <input value={betEve} onChange={(e) => setBetEve(e.target.value)} inputMode="decimal" style={input} />
-                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                      {[5, 10, 25, 100].map((v) => <button key={v} onClick={() => setBetEve(String(v))} style={chip}>{v}</button>)}
-                    </div>
-                  </label>
+          {/* Game panels — unchanged, lazy-mounted only in game mode */}
+          {game === "mines" ? (
+            <MinesPanel />
+          ) : game === "dragon_tower" ? (
+            <DragonTowerPanel />
+          ) : game === "video_poker" ? (
+            <VideoPokerPanel />
+          ) : game !== "blackjack" ? (
+            <InstantGamePanel game={game as InstantGameKey} />
+          ) : (
+
+            /* ── BLACKJACK TABLE ── */
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              {/* Table */}
+              <div style={{ flex: "1 1 440px", minWidth: 340 }}>
+                <div style={{ background: `radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)`, border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
+                  {inSplit ? (
+                    <>
+                      <HandRow label="DEALER" cards={splitDealer} total={splitSettlement?.dealerTotal ?? 0} hideHole={!!splitHand} />
+                      <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
+                      <HandRow
+                        label={splitHand && splitHand.active === 0 ? "HAND A ▸ PLAYING" : "HAND A"}
+                        cards={splitA}
+                        total={splitSettlement?.totalA ?? splitHand?.totalA ?? 0}
+                      />
+                      <HandRow
+                        label={splitHand && splitHand.active === 1 ? "HAND B ▸ PLAYING" : "HAND B"}
+                        cards={splitB}
+                        total={splitSettlement?.totalB ?? splitHand?.totalB ?? 0}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <HandRow label="DEALER" cards={dealerCards} total={settlement?.dealerTotal ?? 0} hideHole={hideHole} />
+                      <div style={{ height: 1, background: `${ACCENT}22`, margin: "4px 0 12px" }} />
+                      <HandRow label="YOU" cards={playerCards} total={settlement?.playerTotal ?? hand?.playerTotal ?? 0} />
+                    </>
+                  )}
+
+                  {phase === "dealing" && <Center text="◇ shuffling on-chain…" color={GOLD} />}
+                  {phase === "resolving" && <Center text="◇ dealer playing…" color={GOLD} />}
+                  {phase === "settled" && settlement && <OutcomeBadge s={settlement} />}
+                  {phase === "settled" && splitSettlement && <SplitOutcomeBadge s={splitSettlement} />}
                 </div>
-                <button disabled={busy || phase === "dealing" || !addr} onClick={deal} style={{ ...dealBtn, opacity: busy || !addr ? 0.5 : 1 }}>
-                  {busy ? "SIGNING…" : "◈ DEAL"}
-                </button>
-              </>
-            )}
-            {house?.paused && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>⚠ House paused.</div>}
-            {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
-            {house && phase !== "player" && (
-              <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
-                min {fmtEve(house.minBet)} · max {fmtEve(house.maxBet)} EVE · blackjack pays 3:2 · dealer stands on 17 · split same-rank pairs (aces: one card each)
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Feed */}
-        <div style={{ flex: "1 1 300px", minWidth: 280 }}>
-          <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.08em", marginBottom: 8 }}>◇ PROVABLY-FAIR FEED</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 560, overflowY: "auto" }}>
-            {(feedQ.data ?? []).length === 0 && <div style={{ color: "#555", fontSize: 12 }}>No hands yet. Deal the first.</div>}
-            {(feedQ.data ?? []).map((h, i) => <FeedRow key={h.txDigest + i} h={h} me={addr} />)}
-          </div>
-          <div style={{ color: "#555", fontSize: 10, marginTop: 10, lineHeight: 1.5 }}>
-            Each hand shuffles once via Sui on-chain randomness (0x8); your hit/stand/double replays that fixed deck. No re-rolls, no house cheating — the full deck is published on settlement for anyone to verify.
-          </div>
+                {/* Controls */}
+                <div style={{ marginTop: 16, background: "#111", border: `1px solid ${ACCENT}22`, padding: 18 }}>
+                  {phase === "player" && splitHand ? (
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <button disabled={busy} onClick={() => actSplitMove("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : `◆ HIT ${activeLabel}`}</button>
+                      <button disabled={busy} onClick={() => actSplitMove("stand")} style={actionBtn("#666")}>■ STAND {activeLabel}</button>
+                    </div>
+                  ) : phase === "player" ? (
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <button disabled={busy} onClick={() => act("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : "◆ HIT"}</button>
+                      <button disabled={busy} onClick={() => act("stand")} style={actionBtn("#666")}>■ STAND</button>
+                      <button disabled={busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
+                      {canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
+                    </div>
+                  ) : phase === "settled" ? (
+                    <button onClick={newHand} style={dealBtn}>◈ NEW HAND</button>
+                  ) : (
+                    <>
+                      <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
+                        <label style={{ flex: "1 1 160px" }}>
+                          <div style={lbl}>BET ($EVE)</div>
+                          <input value={betEve} onChange={(e) => setBetEve(e.target.value)} inputMode="decimal" style={input} />
+                          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                            {[5, 10, 25, 100].map((v) => <button key={v} onClick={() => setBetEve(String(v))} style={chip}>{v}</button>)}
+                          </div>
+                        </label>
+                      </div>
+                      <button disabled={busy || phase === "dealing" || !addr} onClick={deal} style={{ ...dealBtn, opacity: busy || !addr ? 0.5 : 1 }}>
+                        {busy ? "SIGNING…" : "◈ DEAL"}
+                      </button>
+                    </>
+                  )}
+                  {house?.paused && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>⚠ House paused.</div>}
+                  {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
+                  {house && phase !== "player" && (
+                    <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
+                      min {fmtEve(house.minBet)} · max {fmtEve(house.maxBet)} EVE · blackjack pays 3:2 · dealer stands on 17 · split same-rank pairs (aces: one card each)
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Feed */}
+              <div style={{ flex: "1 1 300px", minWidth: 280 }}>
+                <div style={{ color: "#888", fontSize: 11, letterSpacing: "0.08em", marginBottom: 8 }}>◇ PROVABLY-FAIR FEED</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 560, overflowY: "auto" }}>
+                  {(feedQ.data ?? []).length === 0 && <div style={{ color: "#555", fontSize: 12 }}>No hands yet. Deal the first.</div>}
+                  {(feedQ.data ?? []).map((h, i) => <FeedRow key={h.txDigest + i} h={h} me={addr} />)}
+                </div>
+                <div style={{ color: "#555", fontSize: 10, marginTop: 10, lineHeight: 1.5 }}>
+                  Each hand shuffles once via Sui on-chain randomness (0x8); your hit/stand/double replays that fixed deck. No re-rolls, no house cheating — the full deck is published on settlement for anyone to verify.
+                </div>
+              </div>
+            </div>
+            /* end BLACKJACK TABLE */
+          )}
         </div>
-      </div>
+        /* end GAME VIEW */
       )}
     </div>
   );
@@ -523,6 +616,8 @@ async function fetchHouseStateLive() {
   const { CASINO_HOUSE } = await import("../constants");
   return fetchHouseState(CASINO_HOUSE);
 }
+
+// ── Shared display helpers ────────────────────────────────────────────────────
 
 function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
   return (<div><div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em" }}>{label}</div><div style={{ color: color ?? ACCENT, fontSize: 18, fontWeight: 800 }}>{value}</div></div>);
@@ -566,6 +661,95 @@ function FeedRow({ h, me }: { h: any; me: string }) {
     </div>
   );
 }
+
+// ── Lobby components ──────────────────────────────────────────────────────────
+
+function CategoryBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: active ? "#241009" : "#141414",
+        border: `1px solid ${active ? ACCENT : "#2a2a2a"}`,
+        color: active ? ACCENT : "#888",
+        fontSize: 11, fontWeight: 800, letterSpacing: "0.08em",
+        padding: "8px 14px", cursor: "pointer",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+function VarianceBadge({ v }: { v: Variance }) {
+  let color = "#666";
+  let weight = 600;
+  if (v === "M")   { color = GOLD; }
+  if (v === "M-H") { color = GOLD; }
+  if (v === "H")   { color = ACCENT; weight = 700; }
+  if (v === "VH")  { color = ACCENT; weight = 900; }
+  return (
+    <div style={{
+      display: "inline-block",
+      color,
+      fontWeight: weight,
+      fontSize: 9,
+      letterSpacing: "0.08em",
+      border: `1px solid ${color}55`,
+      padding: "2px 5px",
+      marginTop: 4,
+    }}>
+      VAR {v}
+    </div>
+  );
+}
+
+function GameCard({ entry, onClick }: { entry: GameEntry; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? "#1a0f08" : "#111",
+        border: `1px solid ${hovered ? ACCENT + "77" : "#242424"}`,
+        padding: "18px 14px 14px",
+        cursor: "pointer",
+        transition: "background 0.12s, border-color 0.12s",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 0,
+      }}
+    >
+      <div style={{
+        fontSize: 30, lineHeight: 1,
+        color: hovered ? ACCENT : "#cc3a00",
+        marginBottom: 8,
+        transition: "color 0.12s",
+      }}>
+        {entry.glyph}
+      </div>
+      <div style={{
+        color: "#ddd", fontSize: 12, fontWeight: 800,
+        letterSpacing: "0.06em", textAlign: "center",
+        marginBottom: 4,
+      }}>
+        {entry.name}
+      </div>
+      <VarianceBadge v={entry.variance} />
+      <div style={{
+        color: "#777", fontSize: 10, lineHeight: 1.45,
+        marginTop: 8, textAlign: "center",
+      }}>
+        {entry.hook}
+      </div>
+    </div>
+  );
+}
+
+// ── CSS constants ─────────────────────────────────────────────────────────────
 
 const lbl: React.CSSProperties = { color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 };
 const input: React.CSSProperties = { background: "#161616", border: `1px solid ${ACCENT}33`, color: ACCENT, fontSize: 14, padding: "9px 12px", outline: "none", width: "100%", boxSizing: "border-box" };
