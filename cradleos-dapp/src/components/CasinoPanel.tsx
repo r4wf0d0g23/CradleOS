@@ -23,7 +23,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { CASINO_AVAILABLE } from "../constants";
 import {
-  fetchEveCoins, fetchHouseState, withGas,
+  fetchEveCoins, fetchHouseState, withGas, betPresets,
   buildDealTx, buildHitTx, buildStandTx, buildDoubleTx,
   buildSplitTx, buildSplitHitTx, buildSplitStandTx,
   fetchLiveHand, resolveDealByDigest, resolveSettleByDigest, fetchRecentLiveHands,
@@ -571,7 +571,7 @@ export function CasinoPanel() {
                           <div style={lbl}>BET ($EVE)</div>
                           <input value={betEve} onChange={(e) => setBetEve(e.target.value)} inputMode="decimal" style={input} />
                           <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                            {[5, 10, 25, 100].map((v) => <button key={v} onClick={() => setBetEve(String(v))} style={chip}>{v}</button>)}
+                            {betPresets({ maxBet: house?.maxBet, minBet: house?.minBet, walletEve: myEve }).map((v, i, arr) => <button key={v} onClick={() => setBetEve(String(v))} style={i === arr.length - 1 ? { ...chip, color: GOLD, border: `1px solid ${GOLD}44` } : chip}>{i === arr.length - 1 ? `MAX ${fmtEve(v)}` : fmtEve(v)}</button>)}
                           </div>
                         </label>
                       </div>

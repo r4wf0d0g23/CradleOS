@@ -203,6 +203,36 @@ export async function fetchHouseState(houseId: string): Promise<HouseState | nul
   };
 }
 
+/**
+ * Dynamic bet preset chips — derived from the effective per-game cap:
+ *   min( house exposure budget / max gross multiplier, house max_bet, wallet balance )
+ * rounded DOWN (whole EVE when the cap is ≥20, else 0.1 steps). Returns an
+ * ascending ladder ending at the exact cap (the MAX chip). Falls back to the
+ * classic static ladder while house/bank data is still loading.
+ */
+export function betPresets(opts: {
+  bank?: number;        // house bank (EVE) — exposure guard is 3% of this
+  grossMult?: number;   // game's max gross multiplier (x); omit if no on-chain exposure guard
+  maxBet?: number;      // house max_bet (EVE)
+  minBet?: number;      // house min_bet (EVE)
+  walletEve?: number;   // player balance (EVE)
+}): number[] {
+  const { bank = 0, grossMult = 0, maxBet = 0, minBet = 0, walletEve = 0 } = opts;
+  let cap = Infinity;
+  if (bank > 0 && grossMult > 0) cap = Math.min(cap, (bank * 0.03) / grossMult);
+  if (maxBet > 0) cap = Math.min(cap, maxBet);
+  if (walletEve > 0) cap = Math.min(cap, walletEve);
+  if (!Number.isFinite(cap) || cap <= 0) return [5, 10, 25, 100];
+  const fl = (v: number) => (cap >= 20 ? Math.floor(v) : Math.floor(v * 10) / 10);
+  const ladder = [fl(cap * 0.1), fl(cap * 0.25), fl(cap * 0.5), fl(cap)];
+  const out: number[] = [];
+  for (const v of ladder) {
+    if (v > 0 && v >= minBet && !out.includes(v)) out.push(v);
+  }
+  if (!out.length && minBet > 0) out.push(minBet);
+  return out;
+}
+
 /** Recent blackjack hands (provably-fair feed), newest first. */
 export async function fetchRecentHands(houseId: string, limit = 30): Promise<HandRecord[]> {
   if (!CASINO_PKG) return [];

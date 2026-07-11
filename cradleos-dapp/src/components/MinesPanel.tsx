@@ -21,7 +21,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
-import { fetchEveCoins, fetchHouseState, withGas } from "../lib/casino";
+import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casino";
 import { CASINO_HOUSE } from "../constants";
 import {
   buildMinesStartTx, buildMinesRevealTx, buildMinesCashoutTx,
@@ -508,10 +508,10 @@ export function MinesPanel() {
                   inputMode="decimal"
                   style={{ background: "#161616", border: `1px solid ${ACCENT}33`, color: ACCENT, fontSize: 14, padding: "9px 12px", outline: "none", width: "100%", boxSizing: "border-box" }}
                 />
-                <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                  {[5, 10, 25, 100].map((v) => (
-                    <button key={v} onClick={() => setBetEve(String(v))} style={{ background: "#1a1a1a", border: `1px solid ${ACCENT}44`, color: ACCENT, fontSize: 12, padding: "8px 12px", cursor: "pointer" }}>
-                      {v}
+                <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+                  {betPresets({ bank, grossMult: clearAllMult, maxBet: houseQ.data?.maxBet, minBet: houseQ.data?.minBet, walletEve: myEve }).map((v, i, arr) => (
+                    <button key={v} onClick={() => setBetEve(String(v))} style={{ background: "#1a1a1a", border: `1px solid ${i === arr.length - 1 ? GOLD : ACCENT}44`, color: i === arr.length - 1 ? GOLD : ACCENT, fontSize: 12, padding: "8px 12px", cursor: "pointer" }}>
+                      {i === arr.length - 1 ? `MAX ${fmtEve(v)}` : fmtEve(v)}
                     </button>
                   ))}
                 </div>
