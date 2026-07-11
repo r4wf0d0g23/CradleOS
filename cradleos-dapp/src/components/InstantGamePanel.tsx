@@ -13,17 +13,19 @@ import { fetchEveCoins, fetchHouseState, withGas } from "../lib/casino";
 import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
-  buildLimboTx, buildHiLoTx, buildPlinkoTx, buildKenoTx, buildSicBoTx,
+  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
-  resolveInstantByDigest, fetchRecentInstantPlays, rouletteColor,
+  resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
+  fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
   DIAMOND_GEMS, WAR_RANKS, DOUBLE_DICE_KINDS, doubleDiceExactMult, BACCARAT_KINDS, THREE_CARD_RANKS,
-  type InstantGameKey, type InstantResult,
+  type InstantGameKey, type InstantResult, type HiLoLiveGame,
 } from "../lib/casinoGames";
 import {
   CoinFlipStage, DiceRollStage, RouletteStage, SlotsStage, WheelStage, ResultFlash,
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
   BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
+  useCasinoKeyframes,
 } from "./CasinoAnimations";
 
 const ACCENT = "#FF4700";
@@ -94,7 +96,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
   // ── Game params — new games ────────────────────────────────────────────────
   const [limboBps, setLimboBps] = useState(20000); // 2x default
-  const [hiloHigher, setHiloHigher] = useState(true);
+  // Live two-step hi-lo: set after `start` deals the base card; cleared at settle.
+  const [hiloLive, setHiloLive] = useState<HiLoLiveGame | null>(null);
   const [kenoPicks, setKenoPicks] = useState<Set<number>>(new Set());
   const [sicboKind, setSicboKind] = useState(0);
   const [sicboTarget, setSicboTarget] = useState(1);
@@ -109,6 +112,16 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const LIMBO_LOG_BASE = Math.log(10_000_000 / 101);
   const limboSliderToMult = (s: number) => Math.round(101 * Math.exp((s / 10000) * LIMBO_LOG_BASE));
   const limboMultToSlider = (bps: number) => Math.round(10000 * Math.log(Math.max(101, bps) / 101) / LIMBO_LOG_BASE);
+
+  useCasinoKeyframes(); // base-card flip animation on the hi-lo start step
+
+  // Resume an abandoned live hi-lo hand (escrowed stake in an owned HiLoGame).
+  useEffect(() => {
+    if (game !== "hilo" || !addr) { return; }
+    let dead = false;
+    fetchOpenHiLoGame(addr).then((g) => { if (!dead && g) setHiloLive(g); });
+    return () => { dead = true; };
+  }, [game, addr]);
 
   const feedQ = useQuery({ queryKey: ["casinoInstantFeed"], queryFn: () => fetchRecentInstantPlays(20), refetchInterval: 15000 });
   const balQ  = useQuery({ queryKey: ["casinoEve", addr],  queryFn: () => fetchEveCoins(addr), enabled: !!addr, refetchInterval: 20000 });
@@ -136,7 +149,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "roulette"        ? buildRouletteTx(ids, raw, rKind, rTarget) :
           game === "slots"           ? buildSlotsTx(ids, raw) :
           game === "limbo"           ? buildLimboTx(ids, raw, BigInt(limboBps)) :
-          game === "hilo"            ? buildHiLoTx(ids, raw, hiloHigher) :
+          game === "hilo"            ? buildHiLoStartTx(ids, raw) :
           game === "plinko"          ? buildPlinkoTx(ids, raw) :
           game === "keno"            ? buildKenoTx(ids, raw, picksArr) :
           game === "sicbo"           ? buildSicBoTx(ids, raw, sicboKind, sicboTarget) :
@@ -160,6 +173,15 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       }
       const digest = txDigestOf(res);
       if (!digest) throw new Error("No tx digest returned.");
+      if (game === "hilo") {
+        // Two-step flow: the start tx only deals the base card. The player now
+        // calls HIGHER/LOWER with the base in view; settle happens in settleHiLo.
+        const live = await resolveHiLoStartByDigest(digest);
+        if (!live) throw new Error("Could not read the base card — if the bet left your wallet, reopen HI-LO to resume the hand.");
+        setHiloLive(live);
+        balQ.refetch();
+        return;
+      }
       const r = await resolveInstantByDigest(game, digest);
       if (!r) throw new Error("Could not read result — check the feed.");
       // All games now have animation stages — always use pending path.
@@ -174,8 +196,27 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       }
     } finally { setBusy(false); }
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
-      limboBps, hiloHigher, kenoPicks, sicboKind, sicboTarget,
+      limboBps, kenoPicks, sicboKind, sicboTarget,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind, dAppKit]);
+
+  // Settle a live hi-lo hand: player has seen the base, calls a direction.
+  const settleHiLo = useCallback(async (higher: boolean) => {
+    if (!addr || !hiloLive) { return; }
+    setBusy(true); setErr(null); setResult(null); setPending(null);
+    try {
+      const tx = await withGas(buildHiLoSettleTx(hiloLive.gameId, higher), addr);
+      const res = await signer().signAndExecuteTransaction({ transaction: tx });
+      const digest = txDigestOf(res);
+      if (!digest) throw new Error("No tx digest returned.");
+      const r = await resolveInstantByDigest("hilo", digest);
+      if (!r) throw new Error("Could not read result — check the feed.");
+      setHiloLive(null);
+      setPending(r);
+      feedQ.refetch(); balQ.refetch();
+    } catch (e: any) {
+      setErr(translateTxError(e));
+    } finally { setBusy(false); }
+  }, [addr, hiloLive, dAppKit]);
 
   const diceChance = diceOver ? 100 - diceTarget : diceTarget - 1;
   const diceMult   = diceChance >= 2 && diceChance <= 96 ? (98 / diceChance) : 0;
@@ -535,13 +576,49 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
             </div>
           )}
 
-          {/* HiLo */}
-          {game === "hilo" && (
-            <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-              <button onClick={() => setHiloHigher(true)}  style={pick(hiloHigher)}>▲ HIGHER</button>
-              <button onClick={() => setHiloHigher(false)} style={pick(!hiloHigher)}>▼ LOWER</button>
+          {/* HiLo — live two-step: base card dealt first, then the call */}
+          {game === "hilo" && !hiloLive && (
+            <div style={{ color: "#888", fontSize: 11, marginBottom: 12, lineHeight: 1.6 }}>
+              Place your bet to deal the <span style={{ color: GOLD }}>base card</span> — then call
+              HIGHER or LOWER with the card in view. Equal rank = push (stake returned).
             </div>
           )}
+          {game === "hilo" && hiloLive && (() => {
+            const hiMult = hiloCallMultiplier(hiloLive.base, true);
+            const loMult = hiloCallMultiplier(hiloLive.base, false);
+            const callBtn = (enabled: boolean): React.CSSProperties => ({
+              flex: "1 1 120px", background: "#181828", border: `1px solid ${enabled ? GOLD : "#333"}`,
+              color: enabled ? GOLD : "#555", fontSize: 13, fontWeight: 800, letterSpacing: "0.08em",
+              padding: "12px 10px", cursor: enabled ? "pointer" : "default", opacity: enabled ? 1 : 0.4,
+            });
+            return (
+              <div style={{ marginBottom: 12, textAlign: "center" }}>
+                <div style={{ color: "#666", fontSize: 9, letterSpacing: "0.1em", marginBottom: 6 }}>
+                  BASE CARD · {fmtEve(hiloLive.wager)} EVE STAKED
+                </div>
+                <div style={{
+                  width: 58, height: 76, margin: "0 auto 12px", background: "#181828",
+                  border: `2px solid ${GOLD}`, borderRadius: 8,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: `0 0 14px ${GOLD}55`,
+                  animation: "cas-card-flip 0.4s ease, cas-pop 0.3s ease 0.15s both",
+                }}>
+                  <div style={{ fontSize: 26, fontWeight: 900, color: GOLD }}>{HILO_RANKS[hiloLive.base] ?? "?"}</div>
+                </div>
+                <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+                  <button disabled={busy || hiMult <= 0} onClick={() => settleHiLo(true)} style={callBtn(!busy && hiMult > 0)}>
+                    ▲ HIGHER {hiMult > 0 ? `· ${hiMult.toFixed(2)}x` : "· —"}
+                  </button>
+                  <button disabled={busy || loMult <= 0} onClick={() => settleHiLo(false)} style={callBtn(!busy && loMult > 0)}>
+                    ▼ LOWER {loMult > 0 ? `· ${loMult.toFixed(2)}x` : "· —"}
+                  </button>
+                </div>
+                <div style={{ color: "#666", fontSize: 10, marginTop: 6 }}>
+                  {busy ? "SIGNING…" : "Same rank = push — stake returned."}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Keno */}
           {game === "keno" && (
@@ -685,7 +762,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           {/* Diamonds / War / Three Card Poker — no extra controls, just the bet */}
           {(game === "diamonds" || game === "war" || game === "three_card_poker") && null}
 
-          {/* Bet input (all games) */}
+          {/* Bet input (all games; hidden mid-hand in live hi-lo — stake already escrowed) */}
+          {!(game === "hilo" && hiloLive) && (<>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
             <label style={{ flex: "1 1 160px" }}>
               <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>BET ($EVE) · you have {fmtEve(myEve)}</div>
@@ -708,8 +786,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
             onClick={play}
             style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}
           >
-            {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel") ? "✦ SPIN" : "✦ PLAY"}
+            {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel") ? "✦ SPIN" : game === "hilo" ? "✦ DEAL BASE CARD" : "✦ PLAY"}
           </button>
+          </>)}
 
           {overExposure && (
             <div style={{ color: GOLD, fontSize: 12, marginTop: 8, lineHeight: 1.6, background: "#1a1408", border: `1px solid ${GOLD}44`, padding: "10px 12px" }}>

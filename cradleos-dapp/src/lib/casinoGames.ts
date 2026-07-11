@@ -15,6 +15,7 @@ import {
   CASINO_V3,
   CASINO_V5,
   CASINO_V7,
+  CASINO_V8,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -263,6 +264,83 @@ export function buildHiLoTx(coins: string[], wagerRaw: bigint, higher: boolean):
     arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.bool(higher)],
   });
   return tx;
+}
+
+// ── Live two-step Hi-Lo (v8) ────────────────────────────────────────────
+// start deals the base card VISIBLY (HiLoStarted event) and escrows the wager
+// in a player-owned HiLoGame object; settle draws the second card after the
+// player has seen the base and chosen a direction. HiLoDrawn (V5) still fires
+// at settle, so the provably-fair feed is unchanged.
+
+export interface HiLoLiveGame {
+  gameId: string;   // owned HiLoGame<EVE> object id
+  base: number;     // rank 0..12 (0=A, 12=K)
+  wager: number;    // EVE
+}
+
+export function buildHiLoStartTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::hilo::start`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
+export function buildHiLoSettleTx(gameId: string, higher: boolean): Transaction {
+  const tx = new Transaction();
+  tx.moveCall({
+    target: `${CASINO_PKG}::hilo::settle`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(gameId), tx.pure.bool(higher)],
+  });
+  return tx;
+}
+
+/** Read the dealt base card from a start tx. Retries on fullnode lag. */
+export async function resolveHiLoStartByDigest(digest: string): Promise<HiLoLiveGame | null> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    try {
+      const res = await rpc("sui_getTransactionBlock", [digest, { showEvents: true }]);
+      for (const e of res?.events ?? []) {
+        if (typeof e.type === "string" && e.type.endsWith("::hilo::HiLoStarted")) {
+          const f = e.parsedJson ?? {};
+          return {
+            gameId: String(f.game_id ?? ""),
+            base: Number(f.base ?? 0),
+            wager: Number(f.wager ?? 0) / 1e9,
+          };
+        }
+      }
+    } catch { /* fullnode lag — retry */ }
+    await new Promise((r) => setTimeout(r, 700));
+  }
+  return null;
+}
+
+/** Find an abandoned live hi-lo game (escrowed stake) owned by `owner`, if any. */
+export async function fetchOpenHiLoGame(owner: string): Promise<HiLoLiveGame | null> {
+  if (!CASINO_V8) return null;
+  try {
+    const res = await rpc("suix_getOwnedObjects", [owner, {
+      filter: { StructType: `${CASINO_V8}::hilo::HiLoGame<${EVE_COIN_TYPE}>` },
+      options: { showContent: true },
+    }, null, 5]);
+    const d = res?.data?.[0]?.data;
+    if (!d?.objectId) return null;
+    const f = d.content?.fields ?? {};
+    return {
+      gameId: d.objectId,
+      base: Number(f.base ?? 0),
+      wager: Number(f.wager ?? 0) / 1e9,
+    };
+  } catch { return null; }
+}
+
+/** Gross multiplier (x) for a hi-lo call given the visible base. 0 = impossible side. */
+export function hiloCallMultiplier(base: number, higher: boolean): number {
+  const count = higher ? 12 - base : base;
+  if (count <= 0) return 0;
+  return (9800 * 13) / count / 10000;
 }
 
 export function buildPlinkoTx(coins: string[], wagerRaw: bigint): Transaction {

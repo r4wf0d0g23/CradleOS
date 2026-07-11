@@ -337,11 +337,12 @@ export const RANDOM_OBJECT = "0x8";
 // UpgradeCap 0x76124b462d729eedd46e7dda64df819837d850651595cc8c2865dbe541c5ed29
 // Prior v1 pkg (orphaned, House drained back to cradle wallet):
 //   0x02ce3fd64b4e19fc608d48efca66d37708bc356cca0d9dc3d35221d3f7a7afbb
-// v7 upgrade (crash/diamonds/double_dice/war/baccarat/dragon_tower/video_poker/three_card_poker)
-// — published-at: moveCall targets. Upgrade tx BW4utkwZQoz82wgFXRkAPDmnrgFwoKN9frPD4aEnRT4h (2026-07-11).
+// v8 upgrade (live two-step Hi-Lo: hilo::start/settle + HiLoGame/HiLoStarted)
+// — published-at: moveCall targets. Upgrade tx 4zE29FTkKv9HB6iU4sw4U47qSdRqFV4LbaPzHNf3ioQE (2026-07-11).
+// v7 tx BW4utkwZQoz82wgFXRkAPDmnrgFwoKN9frPD4aEnRT4h (crash/diamonds/double_dice/war/baccarat/dragon_tower/video_poker/three_card_poker).
 // v6 tx 5m1rmB7EShihUmqJUdRWEnxn5goqi4jpw5vczEqjT64D (mines exposure fix).
 // v5 tx 8gxuNFsfvHByuMM9961K4jwitFTAaAJQR87dC5Hypsyi (limbo/hilo/plinko/keno/sicbo/mines added).
-export const CASINO_PKG_STILLNESS = "0xb66cb00e7b64d0ccf5544691cd3093f22e03c0eb22c90e85cabef5457bcde894";
+export const CASINO_PKG_STILLNESS = "0x005222bea5f40139a0dad2fc4bc67fe0292a7cd82e232ff00c6a6d3e1a7132c5";
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -362,6 +363,10 @@ export const CASINO_V5 = _serverEnv === "stillness" ? CASINO_V5_STILLNESS : "";
 // TowerGame + VideoPokerHand object structs also introduced in v7.
 export const CASINO_V7_STILLNESS = "0xb66cb00e7b64d0ccf5544691cd3093f22e03c0eb22c90e85cabef5457bcde894";
 export const CASINO_V7 = _serverEnv === "stillness" ? CASINO_V7_STILLNESS : "";
+// v8 introduced: hilo::HiLoGame<T> object + HiLoStarted event (live two-step hi-lo).
+// HiLoDrawn stays tagged under V5 (introduced there — feed queries unchanged).
+export const CASINO_V8_STILLNESS = "0x005222bea5f40139a0dad2fc4bc67fe0292a7cd82e232ff00c6a6d3e1a7132c5";
+export const CASINO_V8 = _serverEnv === "stillness" ? CASINO_V8_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).
