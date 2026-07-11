@@ -14,13 +14,14 @@ import {
   CASINO_PKG,
   CASINO_V3,
   CASINO_V5,
+  CASINO_V7,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
   SUI_TESTNET_RPC,
 } from "../constants";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -80,6 +81,40 @@ export const KENO_MAX_MULT: Record<number, number> = {
   1: 3.85, 2: 13, 3: 25, 4: 47, 5: 295, 6: 970,
 };
 
+// Gems for Diamonds game (7 types, indices 0-6, monospace-safe glyphs)
+export const DIAMOND_GEMS = ["◆", "◇", "◈", "❖", "⬢", "⬡", "⚙"];
+
+// Rank labels for war/baccarat/three_card_poker (0=Two..12=Ace)
+export const WAR_RANKS = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+
+// Double dice kind definitions
+export const DOUBLE_DICE_KINDS = [
+  { kind: 0, label: "UNDER 7",  grossMult: 2.3 },
+  { kind: 1, label: "OVER 7",   grossMult: 2.3 },
+  { kind: 2, label: "SEVEN",    grossMult: 5.5 },
+  { kind: 3, label: "ANY DBL",  grossMult: 5.5 },
+  { kind: 4, label: "EXACT",    grossMult: 34.2 },
+] as const;
+
+/** Client-side exact-sum multiplier for double dice EXACT bets (mirrors Move math). */
+export function doubleDiceExactMult(target: number): number {
+  const count = target <= 7 ? target - 1 : 13 - target;
+  return Math.round((36 / Math.max(1, count)) * 0.95 * 100) / 100;
+}
+
+// Baccarat kind definitions
+export const BACCARAT_KINDS = [
+  { kind: 0, label: "PLAYER",  mult: 2,   grossMult: 2 },
+  { kind: 1, label: "BANKER",  mult: 1.95, grossMult: 2 },
+  { kind: 2, label: "TIE",     mult: 9,   grossMult: 9 },
+] as const;
+
+// Three-card poker rank labels
+export const THREE_CARD_RANKS = ["HIGH","PAIR","FLUSH","STRAIGHT","THREE KIND","STR FLUSH"];
+
+// Card rank labels for war/baccarat/three_card_poker (0-12 = 0=Ace..12=K for standard; 
+// war uses 0=Two..12=Ace which maps to WAR_RANKS above)
+
 const GAMES: Record<InstantGameKey, GameDef> = {
   limbo: {
     module: "limbo", event: "LimboRolled",
@@ -120,6 +155,41 @@ const GAMES: Record<InstantGameKey, GameDef> = {
   wheel: {
     module: "wheel", event: "WheelSpun",
     describe: (f) => `segment ${f.segment} · ${(Number(f.multiplier_bps) / 10000).toFixed(1)}x`,
+  },
+  crash: {
+    module: "crash", event: "CrashRoundPlayed",
+    describe: (f) => `target ${(Number(f.target_bps) / 10000).toFixed(2)}x · crashed at ${(Number(f.crash_bps) / 10000).toFixed(2)}x`,
+  },
+  diamonds: {
+    module: "diamonds", event: "DiamondsDrawn",
+    describe: (f) => {
+      const gems = Array.isArray(f.gems) ? (f.gems as number[]).map((g) => DIAMOND_GEMS[g] ?? "?").join(" ") : "?????";
+      return `${gems} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`;
+    },
+  },
+  double_dice: {
+    module: "double_dice", event: "DoubleDiceRolled",
+    describe: (f) => `${f.d1}+${f.d2}=${Number(f.d1)+Number(f.d2)} · ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`,
+  },
+  war: {
+    module: "war", event: "WarPlayed",
+    describe: (f) => `player ${WAR_RANKS[Number(f.player_card)] ?? "?"} vs dealer ${WAR_RANKS[Number(f.dealer_card)] ?? "?"}`,
+  },
+  baccarat: {
+    module: "baccarat", event: "BaccaratPlayed",
+    describe: (f) => {
+      const kindLabel = ["PLAYER","BANKER","TIE"][Number(f.kind)] ?? "?";
+      const resultLabel = Number(f.result) === 0 ? "BANK WIN" : Number(f.result) === 1 ? "TIE" : "PLAYER WIN";
+      return `bet ${kindLabel} · ${resultLabel} · P${f.player_score} B${f.banker_score}`;
+    },
+  },
+  three_card_poker: {
+    module: "three_card_poker", event: "ThreeCardPlayed",
+    describe: (f) => {
+      const res = Number(f.result);
+      const resLabel = res === 0 ? "LOSS" : res === 1 ? "PUSH" : "WIN";
+      return `${resLabel} · P:${THREE_CARD_RANKS[Number(f.player_rank)] ?? "?"} D:${THREE_CARD_RANKS[Number(f.dealer_rank)] ?? "?"}`;
+    },
   },
 };
 
@@ -222,6 +292,62 @@ export function buildSicBoTx(coins: string[], wagerRaw: bigint, kind: number, ta
   return tx;
 }
 
+// ── v7 instant game builders ───────────────────────────────────────────────────
+
+export function buildCrashTx(coins: string[], wagerRaw: bigint, targetBps: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::crash::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u64(targetBps)],
+  });
+  return tx;
+}
+
+export function buildDiamondsTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::diamonds::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
+export function buildDoubleDiceTx(coins: string[], wagerRaw: bigint, kind: number, target: number): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::double_dice::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind), tx.pure.u8(target)],
+  });
+  return tx;
+}
+
+export function buildWarTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::war::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
+export function buildBaccaratTx(coins: string[], wagerRaw: bigint, kind: number): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::baccarat::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind)],
+  });
+  return tx;
+}
+
+export function buildThreeCardTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::three_card_poker::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
 // ── Resolution by digest ─────────────────────────────────────────────────────
 export async function resolveInstantByDigest(game: InstantGameKey, digest: string): Promise<InstantResult | null> {
   const def = GAMES[game];
@@ -252,10 +378,13 @@ export interface InstantFeedRow extends InstantResult { player: string; ts: numb
 
 // Event pkg routing: events tag under the package version where the module was FIRST introduced.
 // v1–v4 instant games (coinflip/dice/roulette/slots/wheel) tag under CASINO_V3.
-// v5 new games (limbo/hilo/plinko/keno/sicbo) tag under CASINO_V5 (fill after publish).
+// v5 new games (limbo/hilo/plinko/keno/sicbo) tag under CASINO_V5.
+// v7 new games (crash/diamonds/double_dice/war/baccarat/three_card_poker) tag under CASINO_V7.
 const EVENT_PKG: Record<InstantGameKey, string> = {
   coinflip: CASINO_V3, dice: CASINO_V3, roulette: CASINO_V3, slots: CASINO_V3, wheel: CASINO_V3,
   limbo: CASINO_V5, hilo: CASINO_V5, plinko: CASINO_V5, keno: CASINO_V5, sicbo: CASINO_V5,
+  crash: CASINO_V7, diamonds: CASINO_V7, double_dice: CASINO_V7, war: CASINO_V7,
+  baccarat: CASINO_V7, three_card_poker: CASINO_V7,
 };
 
 export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRow[]> {

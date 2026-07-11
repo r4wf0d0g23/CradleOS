@@ -33,6 +33,25 @@ const ACCENT = "#FF4700";
 const GOLD   = "#E8B84B";
 const GREEN  = "#3FCF6A";
 
+// ── one-time keyframe injection (Mines-specific additions) ────────────────────
+let minesKeyframesInjected = false;
+function useMinesKeyframes() {
+  useEffect(() => {
+    if (minesKeyframesInjected) return;
+    minesKeyframesInjected = true;
+    const el = document.createElement("style");
+    el.textContent = `
+      @keyframes mines-tile-safe { 0% { transform: scale(0.7) rotateY(90deg); opacity: 0; } 60% { transform: scale(1.15) rotateY(0deg); } 100% { transform: scale(1) rotateY(0deg); opacity: 1; } }
+      @keyframes mines-tile-mine { 0% { transform: scale(0.7) rotateY(90deg); opacity: 0; } 50% { transform: scale(1.25) rotateY(0deg); } 70% { transform: scale(1.1) translateX(-4px); } 80% { transform: scale(1.1) translateX(4px); } 90% { transform: scale(1.05) translateX(-2px); } 100% { transform: scale(1) rotateY(0deg); opacity: 1; } }
+      @keyframes mines-bust-cascade { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+      @keyframes mines-mult-pulse { 0%,100% { transform: scale(1); color: #E8B84B; } 50% { transform: scale(1.08); text-shadow: 0 0 12px #E8B84B88; } }
+      @keyframes mines-screen-shake { 0%,100% { transform: translateX(0) translateY(0); } 10% { transform: translateX(-6px) translateY(-3px); } 30% { transform: translateX(6px) translateY(3px); } 50% { transform: translateX(-4px) translateY(2px); } 70% { transform: translateX(4px) translateY(-2px); } 90% { transform: translateX(-2px) translateY(1px); } }
+      @keyframes mines-safe-glow { 0%,100% { box-shadow: inset 0 0 8px rgba(63,207,106,0.15); } 50% { box-shadow: inset 0 0 18px rgba(63,207,106,0.35), 0 0 10px rgba(63,207,106,0.2); } }
+    `;
+    document.head.appendChild(el);
+  }, []);
+}
+
 const MINE_COUNT_OPTIONS = [1, 3, 5, 10, 15, 20, 24];
 
 type MinesPhase = "idle" | "starting" | "playing" | "settling" | "done";
@@ -67,6 +86,7 @@ export function MinesPanel() {
   const [revealedSafe, setRevealedSafe] = useState<Set<number>>(new Set());
   const [safeCount, setSafeCount] = useState(0);
   const [multiplierBps, setMultiplierBps] = useState(10000);
+  const [multAnimating, setMultAnimating] = useState(false);
   const [pendingTile, setPendingTile] = useState<number | null>(null);
 
   // ── End-of-game state ──────────────────────────────────────────────────────
@@ -198,6 +218,8 @@ export function MinesPanel() {
         setRevealedSafe((prev) => new Set([...prev, tile]));
         setSafeCount(outcome.safeRevealed);
         setMultiplierBps(outcome.multiplierBps);
+        setMultAnimating(true);
+        setTimeout(() => setMultAnimating(false), 600);
       } else {
         // Bust — mine hit; game object consumed
         setMineMap(outcome.settle.mineMap);
@@ -246,6 +268,7 @@ export function MinesPanel() {
 
   // ── Tile render ───────────────────────────────────────────────────────────
   function TileButton({ idx }: { idx: number }) {
+    useMinesKeyframes();
     const state = getTileState(idx);
     const clickable = phase === "playing" && state === "unrevealed" && !busy;
     const bg =
@@ -268,6 +291,15 @@ export function MinesPanel() {
       state === "mine"    ? ACCENT :
       state === "pending" ? GOLD :
       clickable           ? "#666" : "#3a3a3a";
+    // Bust cascade: mines stagger in by position
+    const isBustMine = state === "mine" && isDone && busted;
+    const isRevealedSafe = state === "safe";
+    const cascadeDelay = `${(idx % 5) * 60 + Math.floor(idx / 5) * 40}ms`;
+    const animStyle = isBustMine
+      ? `mines-bust-cascade 0.35s ease ${cascadeDelay} both`
+      : isRevealedSafe
+      ? "mines-tile-safe 0.35s ease both"
+      : undefined;
     return (
       <button
         key={idx}
@@ -285,7 +317,12 @@ export function MinesPanel() {
           alignItems: "center",
           justifyContent: "center",
           transition: "background 0.15s, border-color 0.15s",
-          boxShadow: state === "safe" ? `inset 0 0 8px ${GREEN}22` : state === "mine" ? `inset 0 0 8px ${ACCENT}22` : "none",
+          boxShadow: state === "safe"
+            ? `inset 0 0 8px ${GREEN}22`
+            : state === "mine"
+            ? `inset 0 0 12px ${ACCENT}44`
+            : "none",
+          animation: animStyle,
         }}
       >
         {glyph}
@@ -320,7 +357,7 @@ export function MinesPanel() {
             <div style={{ marginTop: 14, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
               <div style={{ textAlign: "center" }}>
                 <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.06em" }}>CURRENT</div>
-                <div style={{ color: GOLD, fontSize: 24, fontWeight: 900 }}>{fmtMult(multiplierBps)}</div>
+                <div key={multiplierBps} style={{ color: GOLD, fontSize: 24, fontWeight: 900, animation: multAnimating ? "mines-mult-pulse 0.5s ease" : undefined }}>{fmtMult(multiplierBps)}</div>
               </div>
               {!isDone && (
                 <div style={{ textAlign: "center" }}>
@@ -382,7 +419,7 @@ export function MinesPanel() {
 
         {/* 5×5 tile grid */}
         {(phase === "playing" || phase === "settling" || phase === "done") && (
-          <div style={{ marginTop: 12, background: "#0d0d0d", border: `1px solid ${ACCENT}22`, padding: 14, borderRadius: 8 }}>
+          <div style={{ marginTop: 12, background: "#0d0d0d", border: `1px solid ${ACCENT}22`, padding: 14, borderRadius: 8, animation: isDone && busted ? "mines-screen-shake 0.45s ease" : undefined }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 5 }}>
               {Array.from({ length: 25 }, (_, i) => <TileButton key={i} idx={i} />)}
             </div>

@@ -32,6 +32,8 @@ import {
 import { SUIT_THEME, RANK_LABEL, RANK_SHIP, CARD_BACK, isFace } from "../lib/casinoTheme";
 import { InstantGamePanel } from "./InstantGamePanel";
 import { MinesPanel } from "./MinesPanel";
+import { DragonTowerPanel } from "./DragonTowerPanel";
+import { VideoPokerPanel } from "./VideoPokerPanel";
 import type { InstantGameKey } from "../lib/casinoGames";
 
 const ACCENT = "#FF4700";
@@ -122,7 +124,7 @@ export function CasinoPanel() {
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
 
-  const [game, setGame] = useState<"blackjack" | "mines" | InstantGameKey>("blackjack");
+  const [game, setGame] = useState<"blackjack" | "mines" | "dragon_tower" | "video_poker" | InstantGameKey>("blackjack");
   const [betEve, setBetEve] = useState("10");
   const [phase, setPhase] = useState<Phase>("idle");
   const [hand, setHand] = useState<LiveHand | null>(null);
@@ -384,18 +386,26 @@ export function CasinoPanel() {
       {/* Game selector */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
         {([
-          ["blackjack", "✦ BLACKJACK"],
-          ["coinflip",  "◉ COINFLIP"],
-          ["dice",      "⚄ DICE"],
-          ["roulette",  "◎ ROULETTE"],
-          ["slots",     "▦ SLOTS"],
-          ["wheel",     "✦ WHEEL"],
-          ["limbo",     "▲ LIMBO"],
-          ["hilo",      "◆ HI-LO"],
-          ["plinko",    "⬢ PLINKO"],
-          ["keno",      "▣ KENO"],
-          ["sicbo",     "⚙ SIC BO"],
-          ["mines",     "⛨ MINES"],
+          ["blackjack",        "✦ BLACKJACK"],
+          ["coinflip",         "◉ COINFLIP"],
+          ["dice",             "⚄ DICE"],
+          ["roulette",         "◎ ROULETTE"],
+          ["slots",            "▦ SLOTS"],
+          ["wheel",            "✦ WHEEL"],
+          ["limbo",            "▲ LIMBO"],
+          ["hilo",             "◆ HI-LO"],
+          ["plinko",           "⬢ PLINKO"],
+          ["keno",             "▣ KENO"],
+          ["sicbo",            "⚙ SIC BO"],
+          ["mines",            "⛨ MINES"],
+          ["crash",            "▲ CRASH"],
+          ["diamonds",         "◆ DIAMONDS"],
+          ["double_dice",      "⚄ DBL DICE"],
+          ["war",              "⚔ WAR"],
+          ["baccarat",         "◈ BACCARAT"],
+          ["three_card_poker", "◇ THREE CARD"],
+          ["dragon_tower",     "◆ DRAGON TOWER"],
+          ["video_poker",      "◈ VIDEO POKER"],
         ] as const).map(([k, label]) => (
           <button key={k} onClick={() => setGame(k)} style={{
             background: game === k ? "#241009" : "#141414",
@@ -409,6 +419,10 @@ export function CasinoPanel() {
 
       {game === "mines" ? (
         <MinesPanel />
+      ) : game === "dragon_tower" ? (
+        <DragonTowerPanel />
+      ) : game === "video_poker" ? (
+        <VideoPokerPanel />
       ) : game !== "blackjack" ? (
         <InstantGamePanel game={game as InstantGameKey} />
       ) : (
