@@ -13,13 +13,14 @@ import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
   CASINO_V3,
+  CASINO_V5,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
   SUI_TESTNET_RPC,
 } from "../constants";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -63,7 +64,43 @@ export const rouletteColor = (n: number) => (n === 0 ? "ZERO" : RED_SET.has(n) ?
 
 export const SLOT_SYMBOLS = ["◇", "◆", "✦", "⬢", "⚙", "⛨", "◉"]; // idx 0..6, webview-safe
 
+// HiLo card rank labels (0=A..12=K)
+export const HILO_RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+export const SICBO_KINDS = [
+  { kind: 0, label: "SMALL (4-10)",   mult: 2   },
+  { kind: 1, label: "BIG (11-17)",    mult: 2   },
+  { kind: 2, label: "SINGLE",         mult: 4   },
+  { kind: 3, label: "SPEC TRIP",      mult: 180 },
+  { kind: 4, label: "ANY TRIP",       mult: 30  },
+] as const;
+
+// Keno max payout by pick count (used for exposure guard)
+export const KENO_MAX_MULT: Record<number, number> = {
+  1: 3.85, 2: 13, 3: 25, 4: 47, 5: 295, 6: 970,
+};
+
 const GAMES: Record<InstantGameKey, GameDef> = {
+  limbo: {
+    module: "limbo", event: "LimboRolled",
+    describe: (f) => `target ${(Number(f.target_bps) / 10000).toFixed(2)}x · crashed at ${(Number(f.crash_bps) / 10000).toFixed(2)}x`,
+  },
+  hilo: {
+    module: "hilo", event: "HiLoDrawn",
+    describe: (f) => `base ${HILO_RANKS[Number(f.base)] ?? "?"} → drew ${HILO_RANKS[Number(f.drawn)] ?? "?"}${f.push ? " (PUSH)" : ""}`,
+  },
+  plinko: {
+    module: "plinko", event: "PlinkoDropped",
+    describe: (f) => `bucket ${f.bucket} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
+  },
+  keno: {
+    module: "keno", event: "KenoDrawn",
+    describe: (f) => `${f.matches}/${Array.isArray(f.picks) ? f.picks.length : 0} match · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
+  },
+  sicbo: {
+    module: "sicbo", event: "SicBoRolled",
+    describe: (f) => `${f.d1}+${f.d2}+${f.d3}=${Number(f.d1)+Number(f.d2)+Number(f.d3)} · ${f.payout > 0 ? "WIN" : "LOSS"}`,
+  },
   coinflip: {
     module: "coinflip", event: "FlipResult",
     describe: (f) => `${Number(f.choice) === 0 ? "HEADS" : "TAILS"} called · landed ${Number(f.result) === 0 ? "HEADS" : "TAILS"}`,
@@ -140,6 +177,51 @@ export function buildWheelTx(coins: string[], wagerRaw: bigint): Transaction {
   return tx;
 }
 
+export function buildLimboTx(coins: string[], wagerRaw: bigint, targetBps: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::limbo::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u64(targetBps)],
+  });
+  return tx;
+}
+
+export function buildHiLoTx(coins: string[], wagerRaw: bigint, higher: boolean): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::hilo::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.bool(higher)],
+  });
+  return tx;
+}
+
+export function buildPlinkoTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::plinko::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
+export function buildKenoTx(coins: string[], wagerRaw: bigint, picks: number[]): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::keno::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.vector("u8", picks)],
+  });
+  return tx;
+}
+
+export function buildSicBoTx(coins: string[], wagerRaw: bigint, kind: number, target: number): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::sicbo::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind), tx.pure.u8(target)],
+  });
+  return tx;
+}
+
 // ── Resolution by digest ─────────────────────────────────────────────────────
 export async function resolveInstantByDigest(game: InstantGameKey, digest: string): Promise<InstantResult | null> {
   const def = GAMES[game];
@@ -168,14 +250,21 @@ export async function resolveInstantByDigest(game: InstantGameKey, digest: strin
 // ── Feed: recent plays across all instant games ──────────────────────────────
 export interface InstantFeedRow extends InstantResult { player: string; ts: number; }
 
+// Event pkg routing: events tag under the package version where the module was FIRST introduced.
+// v1–v4 instant games (coinflip/dice/roulette/slots/wheel) tag under CASINO_V3.
+// v5 new games (limbo/hilo/plinko/keno/sicbo) tag under CASINO_V5 (fill after publish).
+const EVENT_PKG: Record<InstantGameKey, string> = {
+  coinflip: CASINO_V3, dice: CASINO_V3, roulette: CASINO_V3, slots: CASINO_V3, wheel: CASINO_V3,
+  limbo: CASINO_V5, hilo: CASINO_V5, plinko: CASINO_V5, keno: CASINO_V5, sicbo: CASINO_V5,
+};
+
 export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRow[]> {
   if (!CASINO_PKG) return [];
-  const keys = Object.keys(GAMES) as InstantGameKey[];
-  // Event types tag under the package version that INTRODUCED them (v3),
-  // regardless of later upgrades — moveCalls use CASINO_PKG, queries use V3.
+  // Skip games whose event package isn't populated yet (CASINO_V5 = "" before v5 publish).
+  const keys = (Object.keys(GAMES) as InstantGameKey[]).filter((k) => EVENT_PKG[k]);
   const results = await Promise.all(keys.map((k) =>
     rpc("suix_queryEvents", [
-      { MoveEventType: `${CASINO_V3}::${GAMES[k].module}::${GAMES[k].event}` },
+      { MoveEventType: `${EVENT_PKG[k]}::${GAMES[k].module}::${GAMES[k].event}` },
       null, limit, true,
     ]).then((r) => ({ k, data: r.data ?? [] })).catch(() => ({ k, data: [] }))
   ));

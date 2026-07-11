@@ -31,6 +31,7 @@ import {
 } from "../lib/casino";
 import { SUIT_THEME, RANK_LABEL, RANK_SHIP, CARD_BACK, isFace } from "../lib/casinoTheme";
 import { InstantGamePanel } from "./InstantGamePanel";
+import { MinesPanel } from "./MinesPanel";
 import type { InstantGameKey } from "../lib/casinoGames";
 
 const ACCENT = "#FF4700";
@@ -121,7 +122,7 @@ export function CasinoPanel() {
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
 
-  const [game, setGame] = useState<"blackjack" | InstantGameKey>("blackjack");
+  const [game, setGame] = useState<"blackjack" | "mines" | InstantGameKey>("blackjack");
   const [betEve, setBetEve] = useState("10");
   const [phase, setPhase] = useState<Phase>("idle");
   const [hand, setHand] = useState<LiveHand | null>(null);
@@ -384,11 +385,17 @@ export function CasinoPanel() {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
         {([
           ["blackjack", "✦ BLACKJACK"],
-          ["coinflip", "◉ COINFLIP"],
-          ["dice", "⚄ DICE"],
-          ["roulette", "◎ ROULETTE"],
-          ["slots", "▦ SLOTS"],
-          ["wheel", "✦ WHEEL"],
+          ["coinflip",  "◉ COINFLIP"],
+          ["dice",      "⚄ DICE"],
+          ["roulette",  "◎ ROULETTE"],
+          ["slots",     "▦ SLOTS"],
+          ["wheel",     "✦ WHEEL"],
+          ["limbo",     "▲ LIMBO"],
+          ["hilo",      "◆ HI-LO"],
+          ["plinko",    "⬢ PLINKO"],
+          ["keno",      "▣ KENO"],
+          ["sicbo",     "⚙ SIC BO"],
+          ["mines",     "⛨ MINES"],
         ] as const).map(([k, label]) => (
           <button key={k} onClick={() => setGame(k)} style={{
             background: game === k ? "#241009" : "#141414",
@@ -400,8 +407,10 @@ export function CasinoPanel() {
         ))}
       </div>
 
-      {game !== "blackjack" ? (
-        <InstantGamePanel game={game} />
+      {game === "mines" ? (
+        <MinesPanel />
+      ) : game !== "blackjack" ? (
+        <InstantGamePanel game={game as InstantGameKey} />
       ) : (
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {/* Table */}

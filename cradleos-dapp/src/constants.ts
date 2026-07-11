@@ -337,8 +337,11 @@ export const RANDOM_OBJECT = "0x8";
 // UpgradeCap 0x76124b462d729eedd46e7dda64df819837d850651595cc8c2865dbe541c5ed29
 // Prior v1 pkg (orphaned, House drained back to cradle wallet):
 //   0x02ce3fd64b4e19fc608d48efca66d37708bc356cca0d9dc3d35221d3f7a7afbb
-// v4 upgrade (3% exposure) — published-at: moveCall targets.
-export const CASINO_PKG_STILLNESS = "0xd54a21b9cc10d28595d5aba3cbe00810ff49bebf12e83ef786ecb0fc70e00f54";
+// v6 upgrade (mines exposure cap fix) — published-at: moveCall targets.
+// Upgrade tx 5m1rmB7EShihUmqJUdRWEnxn5goqi4jpw5vczEqjT64D (2026-07-11).
+// v5 tx 8gxuNFsfvHByuMM9961K4jwitFTAaAJQR87dC5Hypsyi (limbo/hilo/plinko/keno/sicbo/mines added).
+// Prior v4 published-at: 0xd54a21b9cc10d28595d5aba3cbe00810ff49bebf12e83ef786ecb0fc70e00f54
+export const CASINO_PKG_STILLNESS = "0x8501a9de2737efc42dfbb3e47f7f79e07472e594f7c0e6c1213029fb03356aa4";
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -348,6 +351,11 @@ export const CASINO_V2_STILLNESS = "0x8c342cdca493fdcd374419bc452095ec08c9a9c723
 export const CASINO_ORIGINAL_STILLNESS = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164";
 export const CASINO_PKG = _serverEnv === "stillness" ? CASINO_PKG_STILLNESS : "";
 export const CASINO_V3 = _serverEnv === "stillness" ? CASINO_V3_STILLNESS : "";
+// v5 pkg id: new instant-game + mines event types (LimboRolled, HiLoDrawn, PlinkoDropped, KenoDrawn,
+// SicBoRolled, MinesStarted, TileRevealed, MinesSettled were first introduced in v5).
+// v5 introduced these event types; they tag under the v5 package id forever.
+export const CASINO_V5_STILLNESS = "0x929272e41188cc14ed6916ad211d8aff86be02cf8e6996aa2eea9b54ed1a9c25";
+export const CASINO_V5 = _serverEnv === "stillness" ? CASINO_V5_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

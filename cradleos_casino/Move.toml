@@ -1,0 +1,16 @@
+[package]
+name = "cradleos_casino"
+edition = "2024"
+
+# published-at is filled in after the first publish (mirrors cradleos convention).
+# published-at = "0x..."
+
+[dependencies]
+# Sui framework is provided implicitly by the toolchain (system dependency).
+# sui::random, sui::coin, sui::balance, sui::event all live in sui-framework.
+
+[addresses]
+cradleos_casino = "0x0"
+
+[environments]
+testnet_stillness = "4c78adac"
