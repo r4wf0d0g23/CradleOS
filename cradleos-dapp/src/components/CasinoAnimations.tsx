@@ -1172,3 +1172,251 @@ export function SicBoStage({ d1, d2, d3, kind: _kind, target: _target, onDone }:
     </div>
   );
 }
+
+// ── PLINKO MULTI-DROP: staggered ball drops, per-landing ticks, climbing total ─
+const LAUNCH_STAGGER_MS = 280;
+const BALL_HUES = [
+  "radial-gradient(circle at 35% 30%, #ff9966, #cc3300)",
+  "radial-gradient(circle at 35% 30%, #ffb84d, #cc6600)",
+  "radial-gradient(circle at 35% 30%, #ff7755, #aa2200)",
+  "radial-gradient(circle at 35% 30%, #ffcc44, #cc8800)",
+  "radial-gradient(circle at 35% 30%, #ff8844, #bb4400)",
+  "radial-gradient(circle at 35% 30%, #ffaa33, #dd6600)",
+  "radial-gradient(circle at 35% 30%, #ff6633, #992200)",
+  "radial-gradient(circle at 35% 30%, #ffbb55, #dd7700)",
+  "radial-gradient(circle at 35% 30%, #ff8822, #cc4400)",
+  "radial-gradient(circle at 35% 30%, #ffaa66, #bb5500)",
+];
+
+interface MultiBallState {
+  row: number;  // -1 = waiting, 0..PLINKO_ROWS-1 = in flight, PLINKO_ROWS = landed
+  col: number;
+  landed: boolean;
+}
+
+export function PlinkoMultiStage({
+  paths,
+  buckets,
+  payouts,
+  wager,
+  mults,
+  onDone,
+}: {
+  paths: number[];
+  buckets: number[];
+  payouts: number[];
+  wager: number;
+  mults?: number[];
+  onDone: () => void;
+}) {
+  useCasinoKeyframes();
+  const bucketMults = mults ?? PLINKO_BUCKET_MULTS;
+  const count = paths.length;
+
+  const [balls, setBalls] = useState<MultiBallState[]>(() =>
+    paths.map(() => ({ row: -1, col: PLINKO_ROWS / 2, landed: false }))
+  );
+  const [landedPayouts, setLandedPayouts] = useState<(number | null)[]>(() => paths.map(() => null));
+  const [runningTotal, setRunningTotal] = useState(0);
+  const [allDone, setAllDone] = useState(false);
+
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    paths.forEach((path, ballIdx) => {
+      const launchDelay = ballIdx * LAUNCH_STAGGER_MS;
+      const col = PLINKO_ROWS / 2;
+
+      const scheduleRow = (currentRow: number, currentCol: number, delay: number) => {
+        const t = setTimeout(() => {
+          if (currentRow >= PLINKO_ROWS) {
+            // Ball landed
+            setBalls((prev) => {
+              const next = prev.map((b, i) =>
+                i === ballIdx ? { row: PLINKO_ROWS, col: buckets[ballIdx], landed: true } : b
+              );
+              return next;
+            });
+            setLandedPayouts((prev) => {
+              const next = [...prev];
+              next[ballIdx] = payouts[ballIdx] ?? 0;
+              return next;
+            });
+            setRunningTotal((prev) => prev + (payouts[ballIdx] ?? 0));
+          } else {
+            const goRight = ((path >> currentRow) & 1) === 1;
+            const nextCol = currentCol + (goRight ? 0.5 : -0.5);
+            setBalls((prev) => {
+              const next = prev.map((b, i) =>
+                i === ballIdx ? { row: currentRow, col: nextCol, landed: false } : b
+              );
+              return next;
+            });
+            const nextDelay = Math.max(60, 220 - currentRow * 13);
+            scheduleRow(currentRow + 1, nextCol, nextDelay);
+          }
+        }, delay);
+        timers.push(t);
+      };
+
+      // Initial launch after stagger
+      const launchT = setTimeout(() => {
+        setBalls((prev) =>
+          prev.map((b, i) => (i === ballIdx ? { ...b, row: 0 } : b))
+        );
+        scheduleRow(0, col, Math.max(60, 220));
+      }, launchDelay);
+      timers.push(launchT);
+    });
+
+    // After last ball lands + 600ms beat, call onDone
+    const totalDuration = (count - 1) * LAUNCH_STAGGER_MS + PLINKO_ROWS * 130 + 800;
+    const doneT = setTimeout(() => {
+      setAllDone(true);
+      setTimeout(onDone, 400);
+    }, totalDuration);
+    timers.push(doneT);
+
+    timersRef.current = timers;
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const cellW = 24;
+  const rowH = 20;
+  const boardW = PLINKO_BUCKETS * cellW;
+  const boardH = (PLINKO_ROWS + 2) * rowH;
+
+  const perDrop = count > 0 ? wager / count : 0;
+  const net = runningTotal - wager;
+  const totalColor = allDone
+    ? net > 0 ? GREEN : net === 0 ? GOLD : ACCENT
+    : GOLD;
+
+  // Count landings per bucket for flash intensity
+  const landingCounts: number[] = Array(PLINKO_BUCKETS).fill(0);
+  balls.forEach((b, i) => {
+    if (b.landed) landingCounts[buckets[i]]++;
+  });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "8px 0" }}>
+      {/* Running total */}
+      <div style={{ marginBottom: 6, textAlign: "center", minHeight: 28 }}>
+        <span style={{ color: "#555", fontSize: 10, letterSpacing: "0.08em" }}>TOTAL </span>
+        <span style={{
+          color: totalColor,
+          fontSize: 22,
+          fontWeight: 900,
+          transition: "color 0.4s",
+          animation: runningTotal > 0 ? "cas-multiplier-climb 0.3s ease" : undefined,
+        }}>
+          {runningTotal.toFixed(4)} EVE
+        </span>
+        {allDone && (
+          <span style={{
+            marginLeft: 8,
+            color: net > 0 ? GREEN : net === 0 ? GOLD : ACCENT,
+            fontSize: 13,
+            fontWeight: 700,
+            animation: "cas-pop 0.4s ease",
+          }}>
+            ({net > 0 ? "+" : ""}{net.toFixed(4)})
+          </span>
+        )}
+      </div>
+
+      <div style={{ position: "relative", width: boardW, height: boardH, overflow: "hidden", background: "#080810", border: "1px solid #222", borderRadius: 8 }}>
+        {/* Pegs */}
+        {Array.from({ length: PLINKO_ROWS }, (_, row) =>
+          Array.from({ length: row + 2 }, (_, pegIdx) => {
+            const pegX = (PLINKO_ROWS / 2 - row / 2 + pegIdx) * cellW;
+            const pegY = (row + 0.5) * rowH - 3;
+            return (
+              <div key={`p-${row}-${pegIdx}`} style={{
+                position: "absolute",
+                left: pegX - 3, top: pegY,
+                width: 6, height: 6,
+                borderRadius: "50%",
+                background: "#334",
+                boxShadow: "0 0 3px #556",
+              }} />
+            );
+          })
+        )}
+
+        {/* Balls */}
+        {balls.map((ball, i) => {
+          if (ball.row === -1) return null;
+          const ballX = ball.col * cellW;
+          const ballY = ball.row === -1 ? -rowH : (ball.row + 0.5) * rowH;
+          return (
+            <div key={`ball-${i}`} style={{
+              position: "absolute",
+              left: ballX - 7,
+              top: ballY - 7,
+              width: 14, height: 14,
+              borderRadius: "50%",
+              background: BALL_HUES[i % BALL_HUES.length],
+              boxShadow: `0 0 6px ${ACCENT}`,
+              transition: "top 0.12s cubic-bezier(0.25,0.46,0.45,0.94), left 0.12s ease",
+              zIndex: 10 + i,
+              opacity: ball.landed ? 0 : 1,
+            }} />
+          );
+        })}
+
+        {/* Per-landing "+payout" ticks */}
+        {landedPayouts.map((p, i) => {
+          if (p === null) return null;
+          const bkt = buckets[i];
+          const bx = (bkt + 0.5) * cellW;
+          const mult = perDrop > 0 ? p / perDrop : 0;
+          const col = mult >= 2 ? GOLD : p > perDrop ? GREEN : "#888";
+          return (
+            <div key={`tick-${i}`} style={{
+              position: "absolute",
+              left: bx - 18,
+              bottom: rowH + (i % 3) * 14 + 4,
+              width: 36,
+              textAlign: "center",
+              color: col,
+              fontSize: 9,
+              fontWeight: 800,
+              animation: "cas-multiplier-climb 0.35s ease forwards",
+              pointerEvents: "none",
+              zIndex: 30,
+            }}>
+              +{p.toFixed(3)}
+            </div>
+          );
+        })}
+
+        {/* Buckets */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: rowH, display: "flex" }}>
+          {Array.from({ length: PLINKO_BUCKETS }, (_, b) => {
+            const landCount = landingCounts[b];
+            const mult = bucketMults[b] ?? 0;
+            const col = mult >= 8 ? GOLD : mult >= 2 ? GREEN : "#555";
+            const isActive = landCount > 0;
+            return (
+              <div key={b} style={{
+                flex: 1,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: isActive ? `${col}44` : "transparent",
+                border: `1px solid ${isActive ? col : "#1a1a2a"}`,
+                borderRadius: 3,
+                animation: isActive ? "cas-glow-gold 0.8s ease infinite" : undefined,
+                transition: "background 0.3s",
+                fontSize: 7, color: col, fontWeight: 800,
+              }}>
+                {mult >= 1 ? `${mult}x` : mult > 0 ? `${mult.toFixed(2).replace(/^0/, "").replace(/0+$/, "")}x` : "0"}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}

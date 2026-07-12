@@ -24,7 +24,7 @@ import {
 import {
   CoinFlipStage, DiceRollStage, RouletteStage, SlotsStage, WheelStage, ResultFlash,
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
-  BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
+  BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, PlinkoMultiStage, KenoStage, SicBoStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -101,6 +101,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [plinkoMode, setPlinkoMode] = useState(-1); // -1 CLASSIC · 0 LOW · 1 MED · 2 HIGH
   const [plinkoDrops, setPlinkoDrops] = useState(1); // 1 = single (unchanged), 2/5/10 = multi
   const [plinkoMultiResult, setPlinkoMultiResult] = useState<PlinkoMultiResult | null>(null);
+  const [plinkoMultiPending, setPlinkoMultiPending] = useState<PlinkoMultiResult | null>(null);
   const [kenoPicks, setKenoPicks] = useState<Set<number>>(new Set());
   const [sicboKind, setSicboKind] = useState(0);
   const [sicboTarget, setSicboTarget] = useState(1);
@@ -139,7 +140,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     if (game === "keno" && (kenoPicks.size < 1 || kenoPicks.size > 6)) {
       setErr("Pick 1–6 numbers for Keno."); return;
     }
-    setBusy(true); setErr(null); setResult(null); setPending(null); setPlinkoMultiResult(null);
+    setBusy(true); setErr(null); setResult(null); setPending(null); setPlinkoMultiResult(null); setPlinkoMultiPending(null);
     try {
       const raw = BigInt(Math.floor(wager * 1e9));
       const picksArr = Array.from(kenoPicks).sort((a, b) => a - b);
@@ -189,7 +190,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
         // Multi-drop: resolve via PlinkoMultiDropped event
         const mr = await resolvePlinkoMultiByDigest(digest);
         if (!mr) throw new Error("Could not read multi-drop result — check the feed.");
-        setPlinkoMultiResult(mr);
+        setPlinkoMultiPending(mr);
         feedQ.refetch(); balQ.refetch();
         return;
       }
@@ -273,6 +274,18 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 4 }}>{GAME_BLURB[game]}</div>
 
           <div style={{ position: "relative" }}>
+            {/* Multi-drop plinko animation — runs before list receipt is shown */}
+            {plinkoMultiPending && game === "plinko" && plinkoDrops > 1 && (
+              <PlinkoMultiStage
+                key={plinkoMultiPending.count + "-" + plinkoMultiPending.totalPayout}
+                paths={plinkoMultiPending.paths}
+                buckets={plinkoMultiPending.buckets}
+                payouts={plinkoMultiPending.payouts}
+                wager={plinkoMultiPending.wager}
+                mults={(PLINKO_MODES.find((m) => m.mode === plinkoMode)?.mults ?? undefined) as number[] | undefined}
+                onDone={() => { setPlinkoMultiResult(plinkoMultiPending); setPlinkoMultiPending(null); }}
+              />
+            )}
             {pending ? (
               <>
                 {/* Animated stages — all games */}
@@ -713,7 +726,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>DROPS</div>
               <div style={{ display: "flex", gap: 6 }}>
                 {[1, 2, 5, 10].map((n) => (
-                  <button key={n} onClick={() => { setPlinkoDrops(n); setPlinkoMultiResult(null); }} style={pick(plinkoDrops === n)}>
+                  <button key={n} onClick={() => { setPlinkoDrops(n); setPlinkoMultiResult(null); setPlinkoMultiPending(null); }} style={pick(plinkoDrops === n)}>
                     {n === 1 ? "1" : `×${n}`}
                   </button>
                 ))}
