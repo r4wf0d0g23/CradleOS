@@ -17,8 +17,9 @@
 
 ---
 
-## LIVE TODAY (19 games)
-Original 6 + two 2026-07-11 batches. These retroactively define the catalog baseline; several predate the protocol and will get a Stage-3 polish pass.
+## LIVE TODAY (23 games)
+Original 6 + three 2026-07-11 batches + three_card_poker (was live, not listed) + 2026-07-12 batch (3 new games).
+These retroactively define the catalog baseline; several predate the protocol and will get a Stage-3 polish pass.
 
 | # | Game | Class | Var | Notes |
 |---|------|-------|-----|-------|
@@ -41,6 +42,10 @@ Original 6 + two 2026-07-11 batches. These retroactively define the catalog base
 | 17 | Baccarat | I | L | P/B/T |
 | 18 | Dragon Tower | S | H | climb 9 rows |
 | 19 | Video Poker (Jacks+) | S | M-H | draw/hold |
+| 20 | Three Card Poker | I | H | ante + bonus payouts up to 6x |
+| 21 | Dragon Tiger | I | L | two-card duel, 2.94% edge, 2× win / 9× tie |
+| 22 | Under/Over 7 | I | L | two dice, UNDER/7/OVER, 3.33%/5.0% edge |
+| 23 | Ore Refine Gamble | I | H | EVE-native, 5 tiers, 3.0% edge, 20× max |
 
 ---
 
@@ -195,7 +200,7 @@ Games themed to EVE Frontier lore/mechanics — nobody else can build these. Str
 ---
 
 ## Totals
-- **Live now:** 19
+- **Live now:** 23 (updated 2026-07-12: +three_card_poker retroactive + dragon_tiger + under_over_7 + ore_refine)
 - **Planned:** 105 distinct games across 10 categories (A–J), IDs 20–124 above (de-duplicated 2026-07-11: Dragon Tiger consolidated at #103; #84 placeholder replaced with Slide).
 - **Grand total (live + planned): 124 distinct games** — 24 games of margin above the 100 floor for Gate-0 cuts.
 - **Grand target:** 100+ concurrently live. Runway sits well above the floor so we can cut weak candidates at Gate 0 and still clear 100.
@@ -215,3 +220,30 @@ Current flat tab bar (19 tabs) does NOT scale. Redesign required before catalog 
 
 ## Continuous
 Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the protocol and this roadmap. Re-rank quarterly. This directive stands until 100+ are live and healthy.
+
+---
+
+## Progress Log
+
+### 2026-07-12 — Batch run (casino-roadmap-builder cron)
+
+**Games advanced to LIVE:**
+- **Dragon Tiger (#103)** — [I], Var L — v16 pkg `0x771ecec5`, smoke Digest `GaCfLgNipsoH5vKwuQvRPVct68HtcA8Mt8m2zsaTEi2M`. Dragon 9 > Tiger 3, payout 2x ✓
+- **Under/Over 7 (#21)** — [I], Var L — v16 pkg, smoke Digest `8ojVZdfpM2L2wfycJAcU6VQkFmLc1wcZm3m312zvDeYG`. d1+d2=7, bet UNDER → LOSS ✓
+- **Ore Refine Gamble (#117)** — [I], Var H, Category J — v16 pkg, smoke Digest `7CttzfKfDy92qvmX5kGzAdUA4tnSNEXiR27TtR59svFR`. Tier 3 PARTIAL, payout match exact ✓
+
+**On-chain:** v16 = `0x771ecec58588d78ac75da040ae58cde42bbedab433d698970098eb2525e53b92` (type-introducing) / v17 = `0x24500dde39bf459e88341ee68427dea72a883bad6149c8a86096ba506f91702c` (CASINO_PKG, double-publish)
+
+**Fixed:** plinko.move EBadCount missing constant (103/103 tests green).
+
+**Fixed pre-existing:** casino3d/controls.ts + hud.tsx stubs (TSC 0 errors, unblocked build).
+
+**Deployed:** CF Pages `index-BH18SsdV.js` (v17 id verified) + gh-pages `index-C6ZFgavC.js` (v17 id verified). Both live.
+
+**Catalog:** 23 live games. Total (live + planned): 124.
+
+**NEXT RUN SHOULD PICK:**
+1. Risk Wheel (#38) — engine reuse (wheel.move), 3 mode tables, pure paytable, Gate-1 spec done
+2. Money Wheel / Big Six (#37) — wheel engine, 54-segment, Gate-1 spec done
+3. Andar Bahar (#104) — card deal engine, variable-length reveal, Gate-1 spec done
+Priority: all three are instant, all have Gate-1 designs in BATCH_01_DESIGNS.md.
