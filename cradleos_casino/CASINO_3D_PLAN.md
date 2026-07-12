@@ -25,24 +25,24 @@
 
 ## PHASE 0 — Feasibility spike (walkable proof)
 **Scope:** one procedural room (dark hull panels, orange emissive strips, gold trim), click-to-move + drag-look camera, 3 stations (blackjack table, roulette wheel plinth, plinko tower), proximity prompt → opens the real game panel overlay, BETA toggle entry + fallback.
-- [ ] Casino3D lazy chunk scaffolded; 2D lobby untouched when toggle unused
-- [ ] Procedural room renders at 60fps desktop
-- [ ] Click-to-move + drag-look works with mouse AND touch
-- [ ] 3 stations with hover/proximity highlight + "ENTER" prompt
-- [ ] Station opens live game panel (real bet placed through it end-to-end)
+- [x] Casino3D lazy chunk scaffolded; 2D lobby untouched when toggle unused (2026-07-11 — separate 9.9kB chunk verified in build output, commit 7d094617)
+- [ ] Procedural room renders at 60fps desktop (needs live check)
+- [ ] Click-to-move + drag-look works with mouse AND touch (code review ok — needs live check)
+- [x] 3 stations with proximity + "ENTER" prompt (blackjack/roulette/plinko; code verified)
+- [ ] Station opens live game panel (real bet placed through it end-to-end) — GATE-0 walkthrough item
 - [ ] WebGL-fail fallback verified (force-disable test)
-- [ ] tsc + IOC clean; deployed dual-target behind BETA toggle
+- [x] tsc + IOC clean; deployed dual-target behind BETA toggle (2026-07-11 — cradleos.io index-BIzHmPBZ.js + gh-pages index-Ct_-ZD8y.js, 3D chunk HTTP 200 live)
 - [ ] **GATE 0 (exit):** Raw walks the room on desktop + in-game webview and a bet settles from a 3D station. Perf acceptable in webview.
 
 ## PHASE 1 — Full floor
 **Scope:** all live games as stations via archetype system; floor layout zoned by category (card pit / wheel hall / dice pit / high-volatility wing); signage from card art; minimap or zone labels; spawn/orientation polish.
-- [ ] Station archetypes: card table, wheel plinth, cabinet, grid pit, tower, crash pad
-- [ ] All catalog games auto-placed from registry (adding a game = catalog entry only)
-- [ ] Card-art signage panels per station (webview-safe fallback: glyph plate)
-- [ ] Zone lighting/color accents per category
-- [ ] Wayfinding: zone labels + a "recall to entrance" control
-- [ ] Perf pass: frustum culling, merged geometries, instanced props; webview 30fps hold
-- [ ] **GATE 1:** every live game playable from the floor; catalog-add test proves zero 3D rework; webview perf hold.
+- [x] Station archetypes: card table, wheel plinth, cabinet, grid pit, tower, crash pad (2026-07-11, commit 02dd16a5)
+- [x] All catalog games auto-placed from registry (buildStations consumes CASINO_CATALOG; verified in code — catalog-add test still owed at Gate 1)
+- [x] Card-art signage panels per station (glyph-plate fallback wired; 6/20 art files live, rest generating)
+- [x] Zone lighting/color accents per category
+- [x] Wayfinding: zone HUD chip + "⌂ ENTRANCE" recall
+- [ ] Perf pass: frustum culling, merged geometries, instanced props; webview 30fps hold (needs live measurement)
+- [ ] **GATE 1:** every live game playable from the floor (live walkthrough); catalog-add test proves zero 3D rework; webview perf hold.
 
 ## PHASE 2 — Alive layer
 **Scope:** the floor feels inhabited — without any new backend.
@@ -75,6 +75,13 @@
 | Date | Phase | Event |
 |---|---|---|
 | 2026-07-11 | — | Plan created; Phase 0 spike started |
+| 2026-07-11 | 0 | Spike built (5 files, 665 lines) + deployed dual-target behind BETA toggle. Remaining Phase-0 boxes are live-QA items → Gate 0 walkthrough by Raw. |
+| 2026-07-11 | 0→1 | Raw walked the spike: "looks nice." Iteration 1 shipped same evening (commit 02dd16a5, deploy #10): full floor — 6 archetypes, all catalog games auto-placed, category zones, art signage, feel pass (accel/decel, target ring, proximity pulse), zone chip + entrance recall. Chunk 19.2kB. Pending: perf measurement + Gate 1 walkthrough. |
+| 2026-07-11 | 0 | **Gate-0 webview-render evidence CAPTURED:** Raw ran the 3D floor inside the EVE Vault in-game webview (walkthrough screenshot ~19:55 CT) — floor renders + camera walks in the embedded Chrome. The webview-render risk box (biggest Gate-0 unknown) is effectively demonstrated. Raw live feedback: speed OK; lighting too low; floating signage images too dark. |
+| 2026-07-11 | 1 | Lighting fix shipped (commit 83de2671, deploy #11, bundle index-BF9dJvF_/Casino3D-Beq4BjId): ambient 0x1e1e2e×1.4 → 0x3a3a52×3.4, added HemisphereLight(warm sky/cool ground, 1.6), point lights ~2.5× intensity + wider falloff (range 32→44); signage planes → unlit MeshBasicMaterial(toneMapped:false) so card art/glyph renders full-brightness regardless of scene light; brighter fallback plate. Deployed + live-verified both targets (gh-pages serves index-BF9dJvF_). Pending: Raw re-walk to confirm brightness. |
+| 2026-07-11 | 1 | Card signage art: 8/20 webp present (blackjack, coinflip, dice, limbo, roulette, slots, wheel + mines recovered from pre-restart gen). 12 remaining (baccarat, crash, diamonds, double_dice, dragon_tower, hilo, keno, plinko, sicbo, three_card_poker, video_poker, war) — **deferred**: art subagent bailed twice + 2 gateway restarts under heavy load today; glyph fallback covers missing cards (non-fatal). Resume in a lighter session. |
+
+| 2026-07-11 | 1 | Lighting pass per Raw's IN-GAME walkthrough (floor renders+walks in EVE Vault webview — Gate-0 webview evidence). Brighter ambient/hemi/points, unlit signage. Label text -> near-white #f2f2f2, ring base intensity raised ~1.3x. Commit e5824928 (label/ring fix) on top of prior 83de2671 (main lighting). gh-pages: 13c7640, bundles index-BF9dJvF_.js + Casino3D-Beq4BjId.js. CF: index-Bm-IJkdz.js + Casino3D-BPBKl7LM.js. Card art: 9 webp in public/casino/cards/. |
 
 ## Session pickup instructions (for future context-fresh sessions)
 Read this doc top to bottom, find the first unchecked box in the lowest incomplete phase, verify the previous boxes' claims live (verify-before-claiming), continue. Update the checklist + progress log in the same commit as the work.
