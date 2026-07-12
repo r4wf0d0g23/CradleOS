@@ -10,6 +10,7 @@ import { PlayerCardModal } from "./PlayerCardModal";
 import {
   SUI_GRAPHQL,
   SUI_TESTNET_RPC_DIRECT as SUI_RPC,
+  SUI_TESTNET_RPC_FALLBACK as SUI_RPC_FALLBACK,
   WORLD_PKG_STILLNESS as WORLD_PKG,
   OBJECT_REGISTRY_STILLNESS as OBJECT_REGISTRY,
 } from "../constants";
@@ -191,6 +192,17 @@ export async function fetchKillsViaEvents(
   const stopAt = windowSeconds === null ? 0 : Math.floor(Date.now() / 1000) - windowSeconds;
   const out: any[] = [];
   let cursor: any = null;
+  // Endpoint the current page is querying. We start on the caching proxy (fast,
+  // coalesced) but some of its upstream fullnodes have PRUNED old transaction
+  // events and return JSON-RPC -32603 "Could not find the referenced transaction
+  // events" mid-pagination. Before this fallback, that error silently halted
+  // the whole walk (json.result undefined -> break), making every kill older
+  // than the poison cursor invisible on 30d/ALL (Raw report 2026-07-12:
+  // "Michael JD" + earlier-world kills missing). blockvision retains full
+  // history, so on -32603 we permanently switch this walk to the fallback and
+  // RE-TRY the same cursor rather than giving up.
+  let endpoint = SUI_RPC;
+  let switchedToFallback = false;
 
   for (let page = 0; page < maxPages; page++) {
     const body = {
@@ -203,14 +215,29 @@ export async function fetchKillsViaEvents(
     };
     let json: any;
     try {
-      const res = await rpcFetchWithRetry(SUI_RPC, {
+      const res = await rpcFetchWithRetry(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
       json = await res.json();
     } catch {
-      break; // network failure; return what we have
+      // Network failure on the proxy: try the fallback once before giving up.
+      if (!switchedToFallback) {
+        switchedToFallback = true;
+        endpoint = SUI_RPC_FALLBACK;
+        page--; // retry the same cursor on the fallback
+        continue;
+      }
+      break; // fallback also failed; return what we have
+    }
+    // Pruned-tx / referenced-events error: the current upstream can't serve this
+    // cursor. Switch to the full-history fallback and retry the SAME cursor.
+    if (json?.error && !switchedToFallback) {
+      switchedToFallback = true;
+      endpoint = SUI_RPC_FALLBACK;
+      page--; // retry the same cursor on the fallback
+      continue;
     }
     const result = json?.result;
     if (!result || !Array.isArray(result.data)) break;
@@ -701,7 +728,11 @@ function KillFeedTab({
         />
       </div>
       {filtered.length === 0 ? (
-        <div style={S.empty}>No kills recorded on-chain yet</div>
+        <div style={S.empty}>
+          {kills.length === 0
+            ? "No kills recorded on-chain yet"
+            : `No kills match the current filter (${kills.length} loaded)`}
+        </div>
       ) : (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "48px 44px minmax(0,1fr) 40px minmax(0,1fr) 110px 24px", gap: "0 8px", padding: "3px 8px 5px", borderBottom: "1px solid rgba(255,255,255,0.12)", marginBottom: 2 }}>
