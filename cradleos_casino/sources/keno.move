@@ -113,7 +113,9 @@ module cradleos_casino::keno {
         let mut out: vector<u8> = vector[];
         let mut k = 0u8;
         while (k < DRAW) {
-            let hi = (len - 1 - (k as u64)) as u64;
+            // FIX v14: hi is constant (len-1); lo advances (k).
+            // The old code shrank hi each step → bias against high-position elements.
+            let hi = len - 1;
             let pick_idx = random::generate_u64_in_range(g, k as u64, hi);
             // swap pool[k] <-> pool[pick_idx], then take pool[k]
             vector::swap(&mut pool, k as u64, pick_idx);
@@ -185,6 +187,37 @@ module cradleos_casino::keno {
         let picks = vector[5u8, 10, 15];
         let drawn = vector[1u8, 5, 9, 15, 22, 30, 31, 32, 33, 34];
         assert!(count_matches(&picks, &drawn) == 2, 4); // 5 and 15 hit
+    }
+
+    // ── v14: verify draw_numbers returns 10 distinct values in 1..40 ──────────
+    #[test]
+    fun test_draw_distinct_in_range() {
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, @0xAD);
+        {
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let mut g = random::new_generator(&r, ctx);
+            let drawn = draw_numbers(&mut g);
+            // Exactly DRAW numbers returned.
+            let n = vector::length(&drawn);
+            assert!(n == (DRAW as u64), 0);
+            // All in range 1..POOL and pairwise distinct.
+            let mut i = 0;
+            while (i < n) {
+                let vi = *vector::borrow(&drawn, i);
+                assert!(vi >= 1 && vi <= POOL, 1);
+                let mut j = i + 1;
+                while (j < n) {
+                    assert!(*vector::borrow(&drawn, j) != vi, 2);
+                    j = j + 1;
+                };
+                i = i + 1;
+            };
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
     }
 
     #[test]

@@ -146,7 +146,11 @@ module cradleos_casino::mines {
         let mut mine_map = 0u32;
         let mut placed = 0u8;
         while (placed < mines) {
-            let hi = (TILES - 1 - placed) as u64;
+            // FIX v14: hi is constant (TILES-1); lo advances (placed).
+            // The old code shrank hi each step → [placed, TILES-1-placed] which
+            // inverts at placed=13 (range [13,11]) causing EInvalidRange aborts
+            // for 14–24 mines, and biases high-index tiles for fewer mines.
+            let hi = (TILES - 1) as u64;
             let pick = random::generate_u64_in_range(&mut g, placed as u64, hi);
             vector::swap(&mut idx, placed as u64, pick);
             let tile = *vector::borrow(&idx, placed as u64);
@@ -288,6 +292,86 @@ module cradleos_casino::mines {
         assert!(multiplier_after(5, 0) == 10000, 3);
         // clear-all for 24 mines (1 safe tile): (25/1)*0.97 = 24.25x = 242500 bps
         assert!(clear_all_multiplier(24) == 242500, 4);
+    }
+
+    #[test_only]
+    fun popcount32(mut v: u32): u8 {
+        let mut count = 0u8;
+        while (v != 0) { count = count + ((v & 1) as u8); v = v >> 1; };
+        count
+    }
+
+    // ── v14 edge-case tests: Fisher-Yates fix ────────────────────────────────
+    #[test]
+    fun test_mines_24_places_exactly_24() {
+        // mines=24 aborted every time before v14 fix (EInvalidRange at placed=13).
+        // After fix: mine_map must have exactly 24 bits set, all within bits 0..24.
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(100_000_000, ctx);
+            let cap = house::create<SUI>(seed, 100_000, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(100, ctx);
+            start<SUI>(&mut house, &r, bet, 24, ctx);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let game = test_scenario::take_from_sender<MinesGame<SUI>>(&sc);
+            assert!(game.mines == 24, 0);
+            assert!(popcount32(game.mine_map) == 24, 1);
+            // Only tile-indices 0..24 are valid; no bit above bit-24 should be set.
+            assert!(game.mine_map < (1u32 << 25), 2);
+            test_scenario::return_to_sender(&sc, game);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test]
+    fun test_mines_1_places_exactly_1() {
+        // mines=1: exactly one mine placed; mine_map has exactly 1 bit set.
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(100_000_000, ctx);
+            let cap = house::create<SUI>(seed, 100_000, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(100, ctx);
+            start<SUI>(&mut house, &r, bet, 1, ctx);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let game = test_scenario::take_from_sender<MinesGame<SUI>>(&sc);
+            assert!(game.mines == 1, 0);
+            assert!(popcount32(game.mine_map) == 1, 1);
+            assert!(game.mine_map < (1u32 << 25), 2);
+            test_scenario::return_to_sender(&sc, game);
+        };
+        test_scenario::end(sc);
     }
 
     #[test]
