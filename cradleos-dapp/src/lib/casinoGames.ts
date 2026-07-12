@@ -195,7 +195,7 @@ const GAMES: Record<InstantGameKey, GameDef> = {
     module: "baccarat", event: "BaccaratPlayed",
     describe: (f) => {
       const kindLabel = ["PLAYER","BANKER","TIE"][Number(f.kind)] ?? "?";
-      const resultLabel = Number(f.result) === 0 ? "BANK WIN" : Number(f.result) === 1 ? "TIE" : "PLAYER WIN";
+      const resultLabel = Number(f.result) === 0 ? "PLAYER WIN" : Number(f.result) === 1 ? "BANK WIN" : "TIE";
       return `bet ${kindLabel} · ${resultLabel} · P${f.player_score} B${f.banker_score}`;
     },
   },

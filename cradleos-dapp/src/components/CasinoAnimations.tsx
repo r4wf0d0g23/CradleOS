@@ -50,6 +50,7 @@ export function useCasinoKeyframes() {
       @keyframes cas-held-pulse { 0%,100% { box-shadow: 0 0 8px ${GREEN}66; } 50% { box-shadow: 0 0 20px ${GREEN}cc; } }
       @keyframes cas-card-deal { 0% { transform: translateX(-30px) rotate(-5deg); opacity: 0; } 100% { transform: translateX(0) rotate(0deg); opacity: 1; } }
       @keyframes cas-win-hand { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+      @keyframes cas-tick-fade { 0% { opacity: 1; } 100% { opacity: 0; } }
     `;
     document.head.appendChild(el);
   }, []);
@@ -773,7 +774,7 @@ export function BaccaratStage({ playerCards, bankerCards, playerScore, bankerSco
   bankerCards: number[];
   playerScore: number;
   bankerScore: number;
-  result: number; // 0=banker, 1=tie, 2=player
+  result: number; // 0=player win, 1=banker win, 2=tie
   onDone: () => void;
 }) {
   useCasinoKeyframes();
@@ -793,18 +794,19 @@ export function BaccaratStage({ playerCards, bankerCards, playerScore, bankerSco
     return () => clearTimeout(t);
   }, []);
 
+  // 0=player win → player glows green; 1=banker win → banker glows green; 2=tie → both gold
   const playerHighlight = (): "green" | "red" | "gold" | undefined => {
-    if (result === 1) return "gold";
-    if (result === 2) return "green";
-    return "red";
-  };
-  const bankerHighlight = (): "green" | "red" | "gold" | undefined => {
-    if (result === 1) return "gold";
+    if (result === 2) return "gold";
     if (result === 0) return "green";
     return "red";
   };
-  const resultLabel = result === 0 ? "BANKER WINS" : result === 1 ? "TIE" : "PLAYER WINS";
-  const resultColor = result === 1 ? GOLD : result === 2 ? GREEN : ACCENT;
+  const bankerHighlight = (): "green" | "red" | "gold" | undefined => {
+    if (result === 2) return "gold";
+    if (result === 1) return "green";
+    return "red";
+  };
+  const resultLabel = result === 0 ? "PLAYER WINS" : result === 1 ? "BANKER WINS" : "TIE";
+  const resultColor = result === 0 ? GREEN : result === 1 ? ACCENT : GOLD;
 
   return (
     <div style={{ padding: "10px 0" }}>
@@ -1002,8 +1004,8 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
     return () => clearTimeout(animRef.current);
   }, []);
 
-  const cellW = 24; // px per column unit
-  const rowH = 20;  // px per row
+  const cellW = 18; // px per column unit (compact for narrow webview)
+  const rowH = 16;  // px per row (compact)
   const boardW = PLINKO_BUCKETS * cellW;
   const boardH = (PLINKO_ROWS + 2) * rowH;
 
@@ -1039,12 +1041,12 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
         {/* Ball */}
         <div style={{
           position: "absolute",
-          left: ballX - 7,
-          top: ballY - 7,
-          width: 14, height: 14,
+          left: ballX - 5,
+          top: ballY - 5,
+          width: 11, height: 11,
           borderRadius: "50%",
           background: "radial-gradient(circle at 35% 30%, #ff9966, #cc3300)",
-          boxShadow: `0 0 8px ${ACCENT}`,
+          boxShadow: `0 0 6px ${ACCENT}`,
           animation: "cas-plinko-fall 0.08s ease",
           transition: "top 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.12s ease",
           zIndex: 10,
@@ -1289,8 +1291,8 @@ export function PlinkoMultiStage({
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  const cellW = 24;
-  const rowH = 20;
+  const cellW = 18; // compact for narrow webview
+  const rowH = 16;
   const boardW = PLINKO_BUCKETS * cellW;
   const boardH = (PLINKO_ROWS + 2) * rowH;
 
@@ -1313,7 +1315,7 @@ export function PlinkoMultiStage({
         <span style={{ color: "#555", fontSize: 10, letterSpacing: "0.08em" }}>TOTAL </span>
         <span style={{
           color: totalColor,
-          fontSize: 22,
+          fontSize: 16,
           fontWeight: 900,
           transition: "color 0.4s",
           animation: runningTotal > 0 ? "cas-multiplier-climb 0.3s ease" : undefined,
@@ -1360,9 +1362,9 @@ export function PlinkoMultiStage({
           return (
             <div key={`ball-${i}`} style={{
               position: "absolute",
-              left: ballX - 7,
-              top: ballY - 7,
-              width: 14, height: 14,
+              left: ballX - 5,
+              top: ballY - 5,
+              width: 11, height: 11,
               borderRadius: "50%",
               background: BALL_HUES[i % BALL_HUES.length],
               boxShadow: `0 0 6px ${ACCENT}`,
@@ -1373,31 +1375,35 @@ export function PlinkoMultiStage({
           );
         })}
 
-        {/* Per-landing "+payout" ticks */}
-        {landedPayouts.map((p, i) => {
-          if (p === null) return null;
-          const bkt = buckets[i];
-          const bx = (bkt + 0.5) * cellW;
-          const mult = perDrop > 0 ? p / perDrop : 0;
-          const col = mult >= 2 ? GOLD : p > perDrop ? GREEN : "#888";
-          return (
-            <div key={`tick-${i}`} style={{
-              position: "absolute",
-              left: bx - 18,
-              bottom: rowH + (i % 3) * 14 + 4,
-              width: 36,
-              textAlign: "center",
-              color: col,
-              fontSize: 9,
-              fontWeight: 800,
-              animation: "cas-multiplier-climb 0.35s ease forwards",
-              pointerEvents: "none",
-              zIndex: 30,
-            }}>
-              +{p.toFixed(3)}
-            </div>
-          );
-        })}
+        {/* Per-landing "+payout" ticks — stacked per bucket, fade after 2.5s */}
+        {(() => {
+          const bktStack: number[] = Array(PLINKO_BUCKETS).fill(0);
+          return landedPayouts.map((p, i) => {
+            if (p === null) return null;
+            const bkt = buckets[i];
+            const stackIdx = bktStack[bkt]++;
+            const bx = (bkt + 0.5) * cellW;
+            const mult = perDrop > 0 ? p / perDrop : 0;
+            const col = mult >= 2 ? GOLD : p > perDrop ? GREEN : "#888";
+            return (
+              <div key={`tick-${i}`} style={{
+                position: "absolute",
+                left: bx - 18,
+                bottom: rowH + stackIdx * 12 + 4,
+                width: 36,
+                textAlign: "center",
+                color: col,
+                fontSize: 9,
+                fontWeight: 800,
+                animation: "cas-multiplier-climb 0.35s ease forwards, cas-tick-fade 0.5s ease 2s forwards",
+                pointerEvents: "none",
+                zIndex: 30,
+              }}>
+                +{p.toFixed(3)}
+              </div>
+            );
+          });
+        })()}
 
         {/* Buckets */}
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: rowH, display: "flex" }}>

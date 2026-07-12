@@ -251,7 +251,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "wheel"   ? 10
     : game === "limbo"   ? Math.max(1.01, limboMult)
     : game === "hilo"    ? 13
-    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130) * (plinkoDrops > 1 ? plinkoDrops : 1)
+    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130)  // per-ball guard (operator ruling 2026-07-11)
     : game === "keno"    ? (KENO_MAX_MULT[kenoPicks.size] ?? 970)
     : game === "sicbo"   ? (sicboKind === 3 ? 180 : sicboKind === 4 ? 30 : sicboKind === 2 ? 4 : 2)
     : game === "crash"   ? Math.max(1.01, crashMult)
@@ -271,7 +271,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       <div style={{ flex: "1 1 440px", minWidth: 340 }}>
 
         {/* Result stage */}
-        <div style={{ background: "radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", minHeight: 150, boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
+        <div style={{ background: "radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "14px 16px", minHeight: 100, boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>{GAME_TITLE[game]}</div>
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 4 }}>{GAME_BLURB[game]}</div>
 
@@ -480,8 +480,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   const pCards = Array.isArray(result.fields.player_cards) ? (result.fields.player_cards as number[]) : [];
                   const bCards = Array.isArray(result.fields.banker_cards) ? (result.fields.banker_cards as number[]) : [];
                   const resultNum = Number(result.fields.result);
-                  const resultLabel = resultNum === 0 ? "BANKER WINS" : resultNum === 1 ? "TIE" : "PLAYER WINS";
-                  const resultColor = resultNum === 1 ? GOLD : resultNum === 2 ? GREEN : ACCENT;
+                  const resultLabel = resultNum === 0 ? "PLAYER WINS" : resultNum === 1 ? "BANKER WINS" : "TIE";
+                  const resultColor = resultNum === 0 ? GREEN : resultNum === 1 ? ACCENT : GOLD;
                   // Cards for baccarat use 0-51 encoding (rank=idx%13, suit=idx/13), ranks 0=Ace..12=K
                   const BACC_RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
                   const cardLabel = (c: number) => BACC_RANKS[c % 13] ?? "?";
@@ -581,7 +581,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
         </div>
 
         {/* Controls */}
-        <div style={{ marginTop: 16, background: "#111", border: `1px solid ${ACCENT}22`, padding: 18 }}>
+        <div style={{ marginTop: 10, background: "#111", border: `1px solid ${ACCENT}22`, padding: "12px 14px" }}>
 
           {/* Coinflip */}
           {game === "coinflip" && (
@@ -704,8 +704,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
           {/* Plinko — risk mode selector */}
           {game === "plinko" && (
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>RISK MODE</div>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>RISK MODE</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {PLINKO_MODES.map((m) => (
                   <button key={m.mode} onClick={() => setPlinkoMode(m.mode)} style={pick(plinkoMode === m.mode)}>
@@ -724,8 +724,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
           {/* Plinko — drops selector (v12 multi-drop) */}
           {game === "plinko" && (
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>DROPS</div>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>DROPS</div>
               <div style={{ display: "flex", gap: 6 }}>
                 {[1, 2, 5, 10].map((n) => (
                   <button key={n} onClick={() => { setPlinkoDrops(n); setPlinkoMultiResult(null); setPlinkoMultiPending(null); }} style={pick(plinkoDrops === n)}>
@@ -902,18 +902,21 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
             </label>
           </div>
 
-          {game === "plinko" && plinkoDrops > 1 && betNum > 0 && (
-            <div style={{ marginTop: 10, padding: "8px 12px", background: "#1a1408", border: `1px solid ${GOLD}55`, textAlign: "center", fontSize: 13, fontWeight: 800, letterSpacing: "0.05em", color: GOLD, fontFamily: "monospace" }}>
-              {plinkoDrops} BALLS × {betEve} EVE = {fmtEve(betNum * plinkoDrops)} EVE TOTAL
-            </div>
-          )}
-          <button
-            disabled={busy || !addr || overExposure || (!!pending && !result)}
-            onClick={play}
-            style={{ marginTop: 14, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}
-          >
-            {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel") ? "✦ SPIN" : game === "hilo" ? "✦ DEAL BASE CARD" : "✦ PLAY"}
-          </button>
+          {/* Sticky action area — total cost + play button always visible */}
+          <div style={{ position: "sticky", bottom: 0, zIndex: 5, background: "#111", paddingTop: 8, borderTop: "1px solid #1a1a1a" }}>
+            {game === "plinko" && plinkoDrops > 1 && betNum > 0 && (
+              <div style={{ marginBottom: 6, padding: "8px 12px", background: "#1a1408", border: `1px solid ${GOLD}55`, textAlign: "center", fontSize: 13, fontWeight: 800, letterSpacing: "0.05em", color: GOLD, fontFamily: "monospace" }}>
+                {plinkoDrops} BALLS × {betEve} EVE = {fmtEve(betNum * plinkoDrops)} EVE TOTAL
+              </div>
+            )}
+            <button
+              disabled={busy || !addr || overExposure || (!!pending && !result)}
+              onClick={play}
+              style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}
+            >
+              {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel") ? "✦ SPIN" : game === "hilo" ? "✦ DEAL BASE CARD" : "✦ PLAY"}
+            </button>
+          </div>
           </>)}
 
           {overExposure && (
