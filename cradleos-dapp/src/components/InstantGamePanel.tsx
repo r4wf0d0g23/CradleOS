@@ -10,6 +10,7 @@ import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casino";
+import { getPaytable } from "../lib/casinoPaytables";
 import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
@@ -50,6 +51,31 @@ function fmtEve(n: number): string { return n.toLocaleString(undefined, { maximu
 const SLOTS_TRIPLE_MULT = [3.6, 5, 6, 12, 18, 36, 60];      // x, per symbol idx 0..6
 const SLOTS_STRIP_WEIGHT = [4, 3, 3, 2, 2, 1, 1];           // reel stops per symbol (of 16)
 const SLOTS_TWO_MATCH_MULT = 1.8;                            // x, any two matching
+
+// ── Generic paytable (all instant games except slots, which has its own richer
+//    glyph renderer below). Data lives in casinoPaytables.ts (mirrors contracts).
+function GamePaytable({ game }: { game: string }) {
+  const pt = getPaytable(game);
+  if (!pt) return null;
+  return (
+    <div style={{ marginTop: 12, background: "#0d0d0d", border: `1px solid ${ACCENT}22`, padding: "12px 14px" }}>
+      <div style={{ color: ACCENT, fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 8 }}>▦ PAYTABLE · multiplier on your bet</div>
+      {pt.rows.map((r, i) => (
+        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", borderBottom: "1px solid #1c1c1c", gap: 10 }}>
+          <span style={{ fontSize: 12, color: r.top ? GOLD : "#ccc", lineHeight: 1.3 }}>{r.label}</span>
+          <span style={{ display: "flex", gap: 12, alignItems: "baseline", flexShrink: 0 }}>
+            {r.prob && <span style={{ color: "#666", fontSize: 10 }}>{r.prob}</span>}
+            <span style={{ color: r.top ? GOLD : GREEN, fontSize: 13, fontWeight: 800, minWidth: 54, textAlign: "right" }}>{r.mult}</span>
+          </span>
+        </div>
+      ))}
+      {pt.note && <div style={{ color: "#888", fontSize: 11, marginTop: 8, lineHeight: 1.5 }}>{pt.note}</div>}
+      <div style={{ color: "#555", fontSize: 10, marginTop: 6 }}>
+        return to player <b style={{ color: "#888" }}>{pt.rtp}</b> · house edge <b style={{ color: "#888" }}>{pt.edge}</b>
+      </div>
+    </div>
+  );
+}
 
 function SlotsPaytable() {
   const row = (label: React.ReactNode, mult: string, prob: string, top?: boolean) => (
@@ -1043,7 +1069,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             </div>
           )}
-          {game === "slots" && <SlotsPaytable />}
+          {game === "slots" ? <SlotsPaytable /> : <GamePaytable game={game} />}
           {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
           <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
             single-tx settle · randomness from Sui beacon (0x8) · max win per bet: 3% of house bank · full outcome in the result event
