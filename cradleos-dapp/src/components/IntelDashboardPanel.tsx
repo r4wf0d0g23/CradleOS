@@ -79,6 +79,47 @@ async function resolveCharactersViaIndex(
   return out;
 }
 
+// Kill feed via the CradleOS character-index service — the killmails table
+// mirrors the COMPLETE event history from the DGX2 local fullnode (public
+// proxies prune old tx events and poison deep pagination at ~300-450 kills),
+// with killer/victim names + tribe ids pre-joined server-side. Returns null
+// on any failure so the caller can fall back to the on-chain event walk.
+async function fetchKillsViaIndex(
+  windowSeconds: number | null,
+): Promise<{ kills: any[]; resolutions: Map<string, CharResolution> } | null> {
+  try {
+    const since = windowSeconds === null ? 0 : Math.floor(Date.now() / 1000) - windowSeconds;
+    const url = `${CHARACTER_INDEX_URL}/kills?server=${encodeURIComponent(SERVER_ENV)}&since=${since}&limit=5000`;
+    const r = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!r.ok) return null;
+    const json = await r.json() as { kills?: any[] };
+    if (!Array.isArray(json.kills)) return null;
+    const resolutions = new Map<string, CharResolution>();
+    const seed = (itemId: string, name: string, tribeId: number) => {
+      if (itemId && name) resolutions.set(itemId, { name, tribeId: tribeId > 0 ? tribeId : undefined });
+    };
+    const kills = json.kills.map((row) => {
+      seed(row.killer_item_id, row.killer_name, Number(row.killer_tribe_id ?? 0));
+      seed(row.victim_item_id, row.victim_name, Number(row.victim_tribe_id ?? 0));
+      return {
+        objectId: `evt:${row.tx_digest}:${row.event_seq}`,
+        key: { item_id: row.key_item_id },
+        kill_timestamp: String(row.kill_timestamp),
+        killer_id: { item_id: row.killer_item_id },
+        victim_id: { item_id: row.victim_item_id },
+        solar_system_id: { item_id: row.solar_system_id },
+        reported_by_character_id: { item_id: row.reported_by_item_id },
+        loss_type: row.loss_type ? { "@variant": row.loss_type, fields: {} } : undefined,
+        _txDigest: row.tx_digest,
+        _blockTimeMs: row.block_time_ms || undefined,
+      };
+    });
+    return { kills, resolutions };
+  } catch {
+    return null;
+  }
+}
+
 async function resolveCharactersByItemIds(itemIds: string[], tenant?: string): Promise<Map<string, CharResolution>> {
   // Try both tenants if not specified — covers cross-env edge cases
   const tenantToUse = tenant ?? SERVER_ENV;
@@ -1686,14 +1727,28 @@ export function IntelDashboardPanel() {
     setKillsLoadProgress(0);
     setCharsLoading(true);
 
-    const k = await fetchKillsViaEvents(
-      WORLD_PKG,
-      KILL_WINDOW_SECONDS[window],
-      window === "ALL" ? 200 : 100,
-      (loaded) => {
-        if (killsLoadSeq.current === mySeq) setKillsLoadProgress(loaded);
-      },
-    );
+    // Primary: the character-index killmail table — complete history from the
+    // local fullnode, names pre-joined, one round trip. Fallback: the legacy
+    // on-chain event walk (proxy + blockvision), which suffers pruned-cursor
+    // truncation on deep windows but keeps the feed alive if the index is down.
+    const viaIndex = await fetchKillsViaIndex(KILL_WINDOW_SECONDS[window]);
+    if (killsLoadSeq.current !== mySeq) return;
+    let k: any[];
+    let seedResolutions: Map<string, CharResolution> | null = null;
+    if (viaIndex) {
+      k = viaIndex.kills;
+      seedResolutions = viaIndex.resolutions;
+      setKillsLoadProgress(k.length);
+    } else {
+      k = await fetchKillsViaEvents(
+        WORLD_PKG,
+        KILL_WINDOW_SECONDS[window],
+        window === "ALL" ? 200 : 100,
+        (loaded) => {
+          if (killsLoadSeq.current === mySeq) setKillsLoadProgress(loaded);
+        },
+      );
+    }
     if (killsLoadSeq.current !== mySeq) return; // stale; a newer load is in flight
     setKills(k);
     setKillsLastFetchedAt(Date.now());
@@ -1714,7 +1769,15 @@ export function IntelDashboardPanel() {
     // creation event on this world via background polling, so a 7d kill window
     // resolves immediately. Anything still missing afterwards falls through
     // to the slower GraphQL derived-address path below.
-    let resolvedMap = await resolveCharactersViaIndex([...allCharIds], detectedTenant ?? SERVER_ENV);
+    // Names already pre-joined by /index/kills seed the map for free; only the
+    // remainder (e.g. reported_by ids, or fallback-path loads) goes through the
+    // bulk-resolve POST.
+    const resolvedMap = new Map<string, CharResolution>(seedResolutions ?? []);
+    const unseeded = [...allCharIds].filter((id) => !resolvedMap.has(id));
+    if (unseeded.length > 0) {
+      const idxBatch = await resolveCharactersViaIndex(unseeded, detectedTenant ?? SERVER_ENV);
+      for (const [id, info] of idxBatch.entries()) resolvedMap.set(id, info);
+    }
     if (killsLoadSeq.current !== mySeq) return;
 
     // Phase 2b: GraphQL derived-address fallback for whatever the index
