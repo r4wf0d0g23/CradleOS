@@ -27,5 +27,5 @@ deps = { std = "MoveStdlib", sui = "Sui" }
 [env.testnet_stillness]
 chain-id = "4c78adac"
 original-published-id = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164"
-latest-published-id = "0xfbca70d4fc7856028bbdbb5f62b7968f9165d096676280f6152ca001d284b056"
-published-version = "11"
+latest-published-id = "0xe28fcf20b93ffc759bda93d73d033a66c24fe6a41a6d3a017f1cf1d684bb984a"
+published-version = "12"

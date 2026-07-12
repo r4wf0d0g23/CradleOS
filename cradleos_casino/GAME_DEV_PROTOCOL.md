@@ -101,6 +101,36 @@ All Move tests pass, live smoke test verified with decoded event, tsc clean. Bou
 
 ---
 
+## ASSET STUDIO (production-phase capability — feeds Stages 1-3)
+
+> Added per Raw 2026-07-11: a dedicated "UI group" that generates EVE-Frontier-authentic assets for game displays and visual elements, so every game draws from a shared, lore-true art system instead of ad-hoc glyphs. This extravagates the player experience and is a core piece of the EVE-native moat (category J and beyond).
+
+**What it is:** a shared asset pipeline + registry that any game's Design (Stage 1) and Polish (Stage 3) stages pull from. Games should never invent one-off art; they request assets from the studio, which produces on-theme, reusable, webview-safe visual elements.
+
+**Sources (in priority order):**
+1. **Extracted game assets** — real EVE Frontier client art (ship hulls, structures, ore, module icons) via the datamine pipeline + `public/data/asset-registry.json` (canonical registry of extracted 3D models/sprites). Highest authenticity; already powers blackjack card art in `casinoTheme.ts`.
+2. **Generated assets** — `image_generate` (transparent PNG/webp) for themed backgrounds, symbols, gem/reel faces, banners, category icons, win/jackpot flourishes. Prompt from EVE Frontier lore + the CradleOS aesthetic (dark, industrial, ACCENT #FF4700 / GOLD #E8B84B). Use the DGX2 Qwen3-VL stack for classification/QA of generated art where useful.
+3. **Vector/CSS primitives** — for anything that must render crisply at any size or animate cheaply (wheels, plinko pegs, dice pips). Monaco/webview-safe glyphs remain the fallback for in-game-browser text contexts where color art can't load.
+
+**Studio outputs (all registered, reusable across games):**
+- **Symbol sets** — slot symbols, gem types, card faces, dice faces, keno tiles — themed to EVE assets (ore types, ship classes, modules) not generic casino icons.
+- **Backgrounds / felt / table skins** per category (dice pit, card table, reel cabinet, anomaly-dive backdrop).
+- **Category + game icons** for the lobby grid (NAV_PLAN) — one per game, on-theme.
+- **Reveal-moment art** — win bursts, jackpot flares, bust explosions, tier-up flourishes.
+- **EVE-native game art** — category J games get bespoke lore art (jump gates, killmails, refineries, the Keeper).
+
+**Registry discipline (mirror `asset-registry.json`):** every studio asset gets a registry entry `{ key, kind, source (extracted|generated|vector), theme, path, usedBy: [gameKeys], webviewSafe: bool, license }`. Games reference assets by key. This makes art reusable, auditable, and swappable (re-skin a whole category by swapping registry entries).
+
+**Constraints:** in-game webview can't render color-emoji and may fail to load some remote art (PNA/URL issues) — every game MUST degrade gracefully to a webview-safe glyph/vector fallback if an image asset fails to load (silent onError fallback, like the KeeperPanel RAG-image pattern). Assets are attachments, sized/optimized for fast load; lazy-load per game (don't ship 100 games' art on lobby mount).
+
+**Where it plugs into the protocol:**
+- **Stage 1 (Design):** the UX spec names which studio assets the game needs (existing or to-be-generated). If new art is needed, an asset request is filed here.
+- **Stage 2 (Build):** functional UI wires asset keys (with glyph fallbacks) — art can be placeholder.
+- **Stage 3 (Polish):** final assets in, registered, QA'd for webview rendering + load speed. Part of the Gate-3 visual sign-off.
+- **Continuous:** the studio's library grows with each game; periodic art-refresh passes re-skin older games to the current bar. A future dedicated asset-studio agent/sub-crew can own this pipeline as the catalog scales toward 100+.
+
+---
+
 ## STAGE 3 — POLISH (visual QA — the returning-player gate)
 
 **Goal:** the game is *fun to look at*. This is the stage Raw called out — returning players come back for polish.
@@ -118,6 +148,7 @@ All Move tests pass, live smoke test verified with decoded event, tsc clean. Bou
 - [ ] Sound cues fire (win/loss/deal) where wired.
 - [ ] Provably-fair feed row appears and reads correctly.
 - [ ] Matches the CradleOS dark/EVE aesthetic (ACCENT #FF4700, GOLD #E8B84B, GREEN #3FCF6A).
+- [ ] Uses Asset Studio assets (EVE-themed, registered) where applicable; every image asset has a webview-safe glyph/vector fallback that renders if the art fails to load.
 - [ ] Motion is smooth (no jank) on the target hardware.
 
 ### GATE 3 — Visual sign-off

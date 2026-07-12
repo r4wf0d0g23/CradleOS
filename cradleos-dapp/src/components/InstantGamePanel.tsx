@@ -13,13 +13,13 @@ import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casi
 import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
-  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
+  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, buildPlinkoMultiTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
-  resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
+  resolveInstantByDigest, resolveHiLoStartByDigest, resolvePlinkoMultiByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
   DIAMOND_GEMS, WAR_RANKS, DOUBLE_DICE_KINDS, doubleDiceExactMult, BACCARAT_KINDS, THREE_CARD_RANKS,
-  type InstantGameKey, type InstantResult, type HiLoLiveGame,
+  type InstantGameKey, type InstantResult, type HiLoLiveGame, type PlinkoMultiResult,
 } from "../lib/casinoGames";
 import {
   CoinFlipStage, DiceRollStage, RouletteStage, SlotsStage, WheelStage, ResultFlash,
@@ -99,6 +99,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   // Live two-step hi-lo: set after `start` deals the base card; cleared at settle.
   const [hiloLive, setHiloLive] = useState<HiLoLiveGame | null>(null);
   const [plinkoMode, setPlinkoMode] = useState(-1); // -1 CLASSIC · 0 LOW · 1 MED · 2 HIGH
+  const [plinkoDrops, setPlinkoDrops] = useState(1); // 1 = single (unchanged), 2/5/10 = multi
+  const [plinkoMultiResult, setPlinkoMultiResult] = useState<PlinkoMultiResult | null>(null);
   const [kenoPicks, setKenoPicks] = useState<Set<number>>(new Set());
   const [sicboKind, setSicboKind] = useState(0);
   const [sicboTarget, setSicboTarget] = useState(1);
@@ -137,7 +139,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     if (game === "keno" && (kenoPicks.size < 1 || kenoPicks.size > 6)) {
       setErr("Pick 1–6 numbers for Keno."); return;
     }
-    setBusy(true); setErr(null); setResult(null); setPending(null);
+    setBusy(true); setErr(null); setResult(null); setPending(null); setPlinkoMultiResult(null);
     try {
       const raw = BigInt(Math.floor(wager * 1e9));
       const picksArr = Array.from(kenoPicks).sort((a, b) => a - b);
@@ -151,7 +153,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "slots"           ? buildSlotsTx(ids, raw) :
           game === "limbo"           ? buildLimboTx(ids, raw, BigInt(limboBps)) :
           game === "hilo"            ? buildHiLoStartTx(ids, raw) :
-          game === "plinko"          ? (plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
+          game === "plinko"          ? (plinkoDrops > 1 ? buildPlinkoMultiTx(ids, raw, plinkoMode, plinkoDrops) : plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
           game === "keno"            ? buildKenoTx(ids, raw, picksArr) :
           game === "sicbo"           ? buildSicBoTx(ids, raw, sicboKind, sicboTarget) :
           game === "crash"           ? buildCrashTx(ids, raw, BigInt(crashBps)) :
@@ -183,6 +185,14 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
         balQ.refetch();
         return;
       }
+      if (game === "plinko" && plinkoDrops > 1) {
+        // Multi-drop: resolve via PlinkoMultiDropped event
+        const mr = await resolvePlinkoMultiByDigest(digest);
+        if (!mr) throw new Error("Could not read multi-drop result — check the feed.");
+        setPlinkoMultiResult(mr);
+        feedQ.refetch(); balQ.refetch();
+        return;
+      }
       const r = await resolveInstantByDigest(game, digest);
       if (!r) throw new Error("Could not read result — check the feed.");
       // All games now have animation stages — always use pending path.
@@ -197,7 +207,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       }
     } finally { setBusy(false); }
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
-      limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
+      limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode, plinkoDrops,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind, dAppKit]);
 
   // Settle a live hi-lo hand: player has seen the base, calls a direction.
@@ -318,6 +328,44 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                     <div style={{ color: "#666", fontSize: 11, letterSpacing: "0.08em" }}>BUCKET {Number(result.fields.bucket)} / 12</div>
                     <div style={{ color: Number(result.fields.multiplier_bps) >= 20000 ? GOLD : result.payout > 0 ? GREEN : "#888", fontSize: 40, fontWeight: 900 }}>
                       {(Number(result.fields.multiplier_bps) / 10000).toFixed(2)}x
+                    </div>
+                  </div>
+                )}
+
+                {/* Multi-drop result panel (v12) */}
+                {plinkoMultiResult && game === "plinko" && plinkoDrops > 1 && (
+                  <div style={{ padding: "14px 0 4px" }}>
+                    <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.08em", marginBottom: 8 }}>
+                      {plinkoMultiResult.count} DROPS · TOTAL {plinkoMultiResult.totalPayout > plinkoMultiResult.wager ? (
+                        <span style={{ color: GREEN }}>+{(plinkoMultiResult.totalPayout - plinkoMultiResult.wager).toFixed(4)} EVE</span>
+                      ) : (
+                        <span style={{ color: ACCENT }}>{(plinkoMultiResult.totalPayout - plinkoMultiResult.wager).toFixed(4)} EVE</span>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                      {plinkoMultiResult.buckets.map((bucket, i) => {
+                        const payout = plinkoMultiResult.payouts[i] ?? 0;
+                        const perDrop = plinkoMultiResult.wager / plinkoMultiResult.count;
+                        const mult = perDrop > 0 ? payout / perDrop : 0;
+                        const isWin = payout > perDrop;
+                        return (
+                          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, padding: "3px 6px", background: "#0f1a10", borderRadius: 4, border: `1px solid ${isWin ? GREEN + "44" : "#1a1a1a"}` }}>
+                            <span style={{ color: "#555", minWidth: 14 }}>#{i + 1}</span>
+                            <span style={{ color: "#888" }}>bucket {bucket}</span>
+                            <span style={{ color: mult >= 2 ? GOLD : isWin ? GREEN : "#888", fontWeight: 700, marginLeft: "auto" }}>{mult.toFixed(2)}x</span>
+                            <span style={{ color: isWin ? GREEN : "#666" }}>{payout.toFixed(4)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div style={{ marginTop: 8, textAlign: "center", fontSize: 13, fontWeight: 800 }}>
+                      <span style={{ color: "#666" }}>TOTAL: </span>
+                      <span style={{ color: plinkoMultiResult.totalPayout >= plinkoMultiResult.wager ? GREEN : ACCENT }}>
+                        {plinkoMultiResult.totalPayout.toFixed(4)} EVE
+                      </span>
+                      <span style={{ color: "#555", fontSize: 10, marginLeft: 6 }}>
+                        ({(plinkoMultiResult.totalPayout / plinkoMultiResult.wager).toFixed(2)}x)
+                      </span>
                     </div>
                   </div>
                 )}
@@ -638,6 +686,25 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   : plinkoMode === 2 ? "Boom or bust — center zone pays 0, edge jackpot 500x."
                   : "The original board — 130x edge jackpots, 0.49x center."}
               </div>
+            </div>
+          )}
+
+          {/* Plinko — drops selector (v12 multi-drop) */}
+          {game === "plinko" && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>DROPS</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {[1, 2, 5, 10].map((n) => (
+                  <button key={n} onClick={() => { setPlinkoDrops(n); setPlinkoMultiResult(null); }} style={pick(plinkoDrops === n)}>
+                    {n === 1 ? "1" : `×${n}`}
+                  </button>
+                ))}
+              </div>
+              {plinkoDrops > 1 && (
+                <div style={{ color: "#666", fontSize: 10, marginTop: 6 }}>
+                  {plinkoDrops} balls, one signature — total wager split equally across drops.
+                </div>
+              )}
             </div>
           )}
 

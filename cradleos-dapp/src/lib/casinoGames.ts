@@ -18,6 +18,7 @@ import {
   CASINO_V7,
   CASINO_V8,
   CASINO_V10,
+  CASINO_PLINKO_MULTI,
   CASINO_ORIGINAL,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
@@ -378,6 +379,79 @@ export function buildPlinkoModeTx(coins: string[], wagerRaw: bigint, mode: numbe
   return tx;
 }
 
+/**
+ * Plinko multi-drop (v12): N balls (2..=10) in one tx, one signature.
+ * mode: 0=LOW 1=MED 2=HIGH 3=CLASSIC. wagerRaw = TOTAL across all drops.
+ */
+export function buildPlinkoMultiTx(coins: string[], wagerRaw: bigint, mode: number, count: number): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  // map UI mode: -1=CLASSIC → contract mode 3
+  const contractMode = mode < 0 ? 3 : mode;
+  tx.moveCall({
+    target: `${CASINO_PKG}::plinko::play_multi`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(contractMode), tx.pure.u8(count)],
+  });
+  return tx;
+}
+
+export interface PlinkoMultiResult {
+  wager: number;        // EVE total
+  totalPayout: number;  // EVE gross
+  mode: number;         // 0-3
+  count: number;
+  paths: number[];
+  buckets: number[];
+  payouts: number[];    // EVE gross per drop
+  txDigest: string;
+}
+
+/** Resolve a play_multi tx by digest — returns null if not found within retry window. */
+export async function resolvePlinkoMultiByDigest(digest: string): Promise<PlinkoMultiResult | null> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    try {
+      const res = await rpc("sui_getTransactionBlock", [digest, { showEvents: true }]);
+      for (const e of res?.events ?? []) {
+        if (typeof e.type === "string" && e.type.endsWith("::plinko::PlinkoMultiDropped")) {
+          const f = e.parsedJson ?? {};
+          // paths/buckets come back as base64 bytes; decode them
+          const decodePaths = (raw: unknown): number[] => {
+            if (Array.isArray(raw)) return raw.map(Number);
+            if (typeof raw === "string") {
+              const bin = atob(raw);
+              const result: number[] = [];
+              for (let i = 0; i < bin.length; i += 2) {
+                result.push(bin.charCodeAt(i) | (bin.charCodeAt(i + 1) << 8));
+              }
+              return result;
+            }
+            return [];
+          };
+          const decodeBytes = (raw: unknown): number[] => {
+            if (Array.isArray(raw)) return raw.map(Number);
+            if (typeof raw === "string") {
+              const bin = atob(raw);
+              return Array.from(bin).map((c) => c.charCodeAt(0));
+            }
+            return [];
+          };
+          return {
+            wager: Number(f.wager ?? 0) / 1e9,
+            totalPayout: Number(f.total_payout ?? 0) / 1e9,
+            mode: Number(f.mode ?? 0),
+            count: Number(f.count ?? 0),
+            paths: decodePaths(f.paths),
+            buckets: decodeBytes(f.buckets),
+            payouts: (f.payouts as string[] ?? []).map((p) => Number(p) / 1e9),
+            txDigest: digest,
+          };
+        }
+      }
+    } catch { /* fullnode lag — retry */ }
+    await new Promise((r) => setTimeout(r, 700));
+  }
+  return null;
+}
+
 export function buildKenoTx(coins: string[], wagerRaw: bigint, picks: number[]): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
@@ -526,6 +600,18 @@ const STATEFUL_FEED: { label: string; pkg: string; module: string; event: string
   {
     label: "plinko", pkg: CASINO_V10, module: "plinko", event: "PlinkoModeDropped",
     describe: (f) => `${PLINKO_MODE_LABEL[Number(f.mode ?? 0)] ?? "?"} · bucket ${f.bucket} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
+  },
+  {
+    // v12 multi-drop: total_payout covers all N drops in one tx
+    label: "plinko", pkg: CASINO_PLINKO_MULTI, module: "plinko", event: "PlinkoMultiDropped",
+    describe: (f) => {
+      const modeLabel = Number(f.mode ?? 0) === 3 ? "CLASSIC" : (PLINKO_MODE_LABEL[Number(f.mode ?? 0)] ?? "?");
+      const count = Number(f.count ?? 0);
+      const totalPayout = Number(f.total_payout ?? 0) / 1e9;
+      const wager = Number(f.wager ?? 0) / 1e9;
+      const totalX = wager > 0 ? (totalPayout / wager).toFixed(2) : "0.00";
+      return `${modeLabel} ×${count} drops · ${totalX}x total`;
+    },
   },
 ];
 

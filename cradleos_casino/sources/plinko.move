@@ -22,6 +22,7 @@ module cradleos_casino::plinko {
 
     const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
+    const EBadCount:    u64 = 3;
 
     const ROWS: u8 = 12;
     /// Gross multiplier (bps) per bucket 0..12.
@@ -178,6 +179,93 @@ module cradleos_casino::plinko {
         event::emit(PlinkoModeDropped { player, wager: amount, mode, path, bucket, multiplier_bps, payout });
     }
 
+    // ── Multi-drop (v12) — N balls, one transaction, one signature ──────────
+    // mode: 0=LOW 1=MED 2=HIGH 3=CLASSIC (mirrors play / play_mode)
+    // count: 2..=10 balls; any dust from integer division (amount % count) is house's.
+    // Exposure guard: total worst-case payout = per_drop * mult_x * count.
+    // We use the per-mode guard (mode_max_mult_x) for modes 0-2, MAX_MULT_X for classic.
+
+    public struct PlinkoMultiDropped has copy, drop {
+        player:       address,
+        wager:        u64,       // TOTAL wager (full coin amount)
+        mode:         u8,        // 0=LOW 1=MED 2=HIGH 3=CLASSIC
+        count:        u8,        // number of balls dropped
+        paths:        vector<u16>,
+        buckets:      vector<u8>,
+        payouts:      vector<u64>,
+        total_payout: u64,
+    }
+
+    entry fun play_multi<T>(
+        house: &mut House<T>,
+        r: &Random,
+        wager: Coin<T>,
+        mode: u8,
+        count: u8,
+        ctx: &mut TxContext,
+    ) {
+        assert!(mode <= 3, EBadMode);
+        assert!(count >= 2 && count <= 10, EBadCount);
+
+        let player = tx_context::sender(ctx);
+        let amount = house::take_wager_amount(house, &wager);
+
+        let per_drop = amount / (count as u64);
+        // per_drop must be at least 1 mist (dust check)
+        assert!(per_drop >= 1, EBadCount);
+
+        // Exposure guard: worst-case total payout = per_drop * mult_x * count.
+        // Any dust (amount - per_drop * count) is implicitly house's.
+        let mult_x = if (mode <= 2) { mode_max_mult_x(mode) } else { MAX_MULT_X };
+        assert!(per_drop * mult_x * (count as u64) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+
+        house::deposit_stake(house, coin::into_balance(wager));
+
+        let mut g = random::new_generator(r, ctx);
+        let mut paths   = vector::empty<u16>();
+        let mut buckets = vector::empty<u8>();
+        let mut payouts = vector::empty<u64>();
+        let mut total_payout = 0u64;
+
+        let mut drop_i = 0u8;
+        while (drop_i < count) {
+            let mut path   = 0u16;
+            let mut bucket = 0u8;
+            let mut row    = 0u8;
+            while (row < ROWS) {
+                let bounce = random::generate_u8_in_range(&mut g, 0, 1);
+                if (bounce == 1) {
+                    path   = path | (1u16 << (row as u8));
+                    bucket = bucket + 1;
+                };
+                row = row + 1;
+            };
+            let payout_i = if (mode <= 2) {
+                payout_for_mode(per_drop, mode, bucket)
+            } else {
+                payout_for(per_drop, bucket)
+            };
+            vector::push_back(&mut paths,   path);
+            vector::push_back(&mut buckets, bucket);
+            vector::push_back(&mut payouts, payout_i);
+            total_payout = total_payout + payout_i;
+            drop_i = drop_i + 1;
+        };
+
+        house::pay_winnings(house, total_payout, player, ctx);
+
+        event::emit(PlinkoMultiDropped {
+            player,
+            wager:  amount,
+            mode,
+            count,
+            paths,
+            buckets,
+            payouts,
+            total_payout,
+        });
+    }
+
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
@@ -281,6 +369,112 @@ module cradleos_casino::plinko {
             test_scenario::return_shared(r);
         };
         test_scenario::end(sc);
+    }
+
+    #[test]
+    fun test_multi_drop_settles() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(10_000_000, ctx);
+            let cap = house::create<SUI>(seed, 10_000, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(500, ctx); // 5 drops × 100
+            play_multi<SUI>(&mut house, &r, bet, 0, 5, ctx); // LOW, 5 balls
+            assert!(house::bets_settled(&house) == 1, 0);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test, expected_failure(abort_code = EBadCount)]
+    fun test_multi_drop_rejects_count_1() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(10_000_000, ctx);
+            let cap = house::create<SUI>(seed, 10_000, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(100, ctx);
+            play_multi<SUI>(&mut house, &r, bet, 0, 1, ctx); // count=1 invalid
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test, expected_failure(abort_code = EBadCount)]
+    fun test_multi_drop_rejects_count_11() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(10_000_000, ctx);
+            let cap = house::create<SUI>(seed, 10_000, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(100, ctx);
+            play_multi<SUI>(&mut house, &r, bet, 0, 11, ctx); // count=11 invalid
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test]
+    fun test_multi_payout_accumulation() {
+        // Pure-math: verify sum of payouts over a fixed bucket list == hand-computed total.
+        // Use LOW mode (mode=0), per_drop=1000 each, 5 buckets: [0, 3, 6, 9, 12]
+        // LOW_BPS: [50000, 20000, 15000, 12000, 10000, 8500, 9000, 8500, 10000, 12000, 15000, 20000, 50000]
+        // payout_for_mode(1000, 0, 0)  = 1000 * 50000 / 10000 = 5000
+        // payout_for_mode(1000, 0, 3)  = 1000 * 12000 / 10000 = 1200
+        // payout_for_mode(1000, 0, 6)  = 1000 * 9000  / 10000 = 900
+        // payout_for_mode(1000, 0, 9)  = 1000 * 12000 / 10000 = 1200
+        // payout_for_mode(1000, 0, 12) = 1000 * 50000 / 10000 = 5000
+        // total = 5000 + 1200 + 900 + 1200 + 5000 = 13300
+        let per_drop = 1000u64;
+        let test_buckets = vector[0u8, 3u8, 6u8, 9u8, 12u8];
+        let expected_payouts = vector[5000u64, 1200u64, 900u64, 1200u64, 5000u64];
+        let expected_total = 13300u64;
+        let mut acc = 0u64;
+        let mut i = 0u64;
+        while (i < 5) {
+            let bucket = *vector::borrow(&test_buckets, i);
+            let payout = payout_for_mode(per_drop, 0, bucket);
+            assert!(payout == *vector::borrow(&expected_payouts, i), (i as u64));
+            acc = acc + payout;
+            i = i + 1;
+        };
+        assert!(acc == expected_total, 99);
     }
 
     #[test]
