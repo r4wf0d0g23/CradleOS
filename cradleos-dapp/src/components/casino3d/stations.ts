@@ -136,21 +136,23 @@ function makeSignage(key: string, glyph: string): THREE.Mesh {
   const fc = document.createElement("canvas");
   fc.width = 160; fc.height = 120;
   const fctx = fc.getContext("2d")!;
-  fctx.fillStyle = "#0d0d18";
+  fctx.fillStyle = "#1c1c2e";
   fctx.fillRect(0, 0, 160, 120);
-  fctx.fillStyle = "#e8b84b";
+  fctx.fillStyle = "#ffcf5a";
   fctx.font = "bold 52px monospace";
   fctx.textAlign = "center";
   fctx.textBaseline = "middle";
   fctx.fillText(glyph, 80, 60);
   const fallbackTex = new THREE.CanvasTexture(fc);
-  const fallbackMat = new THREE.MeshStandardMaterial({ map: fallbackTex, roughness: 0.9 });
+  // Unlit material — signage/art renders at full texture brightness regardless of scene
+  // lighting (Raw feedback 2026-07-11: floating signage images too dark in webview).
+  const fallbackMat = new THREE.MeshBasicMaterial({ map: fallbackTex, toneMapped: false });
   const mesh = new THREE.Mesh(geo, fallbackMat);
 
   new THREE.TextureLoader().load(
     `${import.meta.env.BASE_URL}casino/cards/${key}.webp`,
     (tex) => {
-      mesh.material = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 });
+      mesh.material = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
       fallbackTex.dispose();
     },
     undefined,

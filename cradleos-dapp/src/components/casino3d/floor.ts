@@ -37,19 +37,25 @@ const ZONE_TRIM: { x: number; z: number; w: number; d: number; color: number }[]
 
 export function buildFloor(scene: THREE.Scene): void {
   // ── Lights ──────────────────────────────────────────────────────────────────
-  const ambient = new THREE.AmbientLight(0x1e1e2e, 1.4);
+  // Ambient raised ~2.4x + brighter tint (Raw feedback 2026-07-11: floor too dark in webview).
+  const ambient = new THREE.AmbientLight(0x3a3a52, 3.4);
   scene.add(ambient);
 
-  // 5 point lights spread across the longer hall
+  // Hemisphere fill: warm sky, cool ground bounce — lifts overall floor brightness evenly.
+  const hemi = new THREE.HemisphereLight(0xffd9a0, 0x101018, 1.6);
+  hemi.position.set(0, HALL_H, 0);
+  scene.add(hemi);
+
+  // 5 point lights spread across the longer hall (intensity ~2.5x + wider falloff range).
   const lights: [number, number, number, number, number][] = [
-    [-22, 3.5,  0,   0xffa040, 1.6], // cards zone
-    [ -8, 3.5, -8,   0xffc060, 1.4], // dice/wheels
-    [  6, 3.5,  -8,  0xffa040, 1.4], // grid/crash
-    [ 22, 3.5,  0,   0xffc060, 1.5], // drop/slots
-    [  0, 3.5,  10,  0xffb050, 1.3], // entrance area
+    [-22, 3.8,  0,   0xffb060, 4.0], // cards zone
+    [ -8, 3.8, -8,   0xffc878, 3.6], // dice/wheels
+    [  6, 3.8,  -8,  0xffb060, 3.6], // grid/crash
+    [ 22, 3.8,  0,   0xffc878, 3.8], // drop/slots
+    [  0, 3.8,  10,  0xffc068, 3.4], // entrance area
   ];
   for (const [x, y, z, color, intensity] of lights) {
-    const pl = new THREE.PointLight(color, intensity, 32, 1.4);
+    const pl = new THREE.PointLight(color, intensity, 44, 1.2);
     pl.position.set(x, y, z);
     scene.add(pl);
   }
