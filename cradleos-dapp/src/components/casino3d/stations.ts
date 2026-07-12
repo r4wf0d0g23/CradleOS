@@ -1,4 +1,24 @@
+/**
+ * stations.ts — Full casino floor: archetypes + auto-layout from CASINO_CATALOG.
+ *
+ * Archetypes (primitives only, ≤~600 tris each):
+ *   cardTable   — blackjack, hilo, baccarat, three_card_poker, war, video_poker
+ *   wheelPlinth — roulette, wheel  (spinning disc tick)
+ *   cabinet     — slots, keno, coinflip  (upright box w/ emissive screen)
+ *   gridPit     — mines, diamonds, double_dice, sicbo, dice  (low table w/ grid inlay)
+ *   tower       — plinko, dragon_tower  (tall board w/ pegs/ledges)
+ *   crashPad    — crash, limbo  (angled rail w/ emissive trail)
+ *
+ * buildStations(scene, catalog) → { stations, zones }
+ *   Groups catalog entries by category, places them in zones around the hall.
+ */
+
 import * as THREE from "three";
+import type { GameEntry } from "../../lib/casinoCatalog";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Public types
+// ─────────────────────────────────────────────────────────────────────────────
 
 export interface Station {
   key: string;
@@ -7,64 +27,189 @@ export interface Station {
   radius: number;
   group: THREE.Group;
   tick?: (dt: number) => void;
+  setNear?: (near: boolean) => void;
 }
 
-// ── Label sprite ──
+export interface ZoneInfo {
+  category: string;
+  label: string;
+  center: THREE.Vector3;
+  accent: number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Archetype map  (key → which archetype mesh to use)
+// ─────────────────────────────────────────────────────────────────────────────
+
+type ArchetypeName = "cardTable" | "wheelPlinth" | "cabinet" | "gridPit" | "tower" | "crashPad";
+
+const ARCHETYPE_BY_KEY: Record<string, ArchetypeName> = {
+  blackjack:       "cardTable",
+  hilo:            "cardTable",
+  baccarat:        "cardTable",
+  three_card_poker:"cardTable",
+  war:             "cardTable",
+  video_poker:     "cardTable",
+  roulette:        "wheelPlinth",
+  wheel:           "wheelPlinth",
+  slots:           "cabinet",
+  keno:            "cabinet",
+  coinflip:        "cabinet",
+  mines:           "gridPit",
+  diamonds:        "gridPit",
+  double_dice:     "gridPit",
+  sicbo:           "gridPit",
+  dice:            "gridPit",
+  plinko:          "tower",
+  dragon_tower:    "tower",
+  crash:           "crashPad",
+  limbo:           "crashPad",
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Zone configuration  (category → center, label, accent color)
+// Hall size: 64×36m  (ROOM_BOUNDS: minX:-32, maxX:32, minZ:-18, maxZ:18)
+// Entrance at (0,1.7,14).  Zones avoid the front approach corridor.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ZONE_CONFIG: Record<string, { cx: number; cz: number; label: string; accent: number }> = {
+  cards:   { cx: -22, cz:   0, label: "CARDS",   accent: 0xe8c060 },
+  dice:    { cx: -14, cz: -10, label: "DICE",     accent: 0xff6020 },
+  wheels:  { cx:  -4, cz: -12, label: "WHEELS",   accent: 0xff4700 },
+  grid:    { cx:   6, cz: -12, label: "GRID",     accent: 0xffa030 },
+  crash:   { cx:  18, cz:  -8, label: "CRASH",    accent: 0xff2010 },
+  drop:    { cx:  24, cz:   0, label: "DROP",     accent: 0xe0b840 },
+  slots:   { cx:  20, cz:   8, label: "SLOTS",    accent: 0xd09040 },
+  duels:   { cx: -20, cz:   8, label: "DUELS",    accent: 0xc07830 },
+  lottery: { cx:   0, cz:   8, label: "LOTTERY",  accent: 0xb8c040 },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Grid positions for N stations in a zone, spacing S metres. */
+function zonePositions(count: number, cx: number, cz: number, S = 5): [number, number][] {
+  const cols = count <= 1 ? 1 : count <= 2 ? 2 : count <= 4 ? 2 : 3;
+  const rows = Math.ceil(count / cols);
+  const out: [number, number][] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (out.length >= count) break;
+      out.push([
+        cx + (c - (cols - 1) / 2) * S,
+        cz + (r - (rows - 1) / 2) * S,
+      ]);
+    }
+  }
+  return out;
+}
+
+/** Floating name sprite — monospace canvas, NO emoji. */
 function makeLabel(text: string): THREE.Sprite {
+  const W = 320; const H = 64;
   const canvas = document.createElement("canvas");
-  canvas.width  = 256;
-  canvas.height = 64;
+  canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d")!;
-  ctx.clearRect(0, 0, 256, 64);
-  ctx.fillStyle = "rgba(10,10,18,0.82)";
-  ctx.fillRect(0, 0, 256, 64);
+  ctx.fillStyle = "rgba(10,10,18,0.86)";
+  ctx.fillRect(0, 0, W, H);
   ctx.strokeStyle = "#ff4700";
   ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, 254, 62);
+  ctx.strokeRect(1, 1, W - 2, H - 2);
   ctx.fillStyle = "#e8b84b";
-  ctx.font = "bold 22px monospace";
+  ctx.font = "bold 20px monospace";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(text.toUpperCase(), 128, 32);
+  ctx.fillText(text.toUpperCase(), W / 2, H / 2);
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(1.8, 0.45, 1);
+  sprite.scale.set(2.2, 0.44, 1);
   return sprite;
 }
 
-// ── Signage plane ──
-function makeSignage(key: string): THREE.Mesh {
+/** Signage plane: tries to load webp; on error draws glyph on dark plate. */
+function makeSignage(key: string, glyph: string): THREE.Mesh {
   const geo = new THREE.PlaneGeometry(1.6, 1.2);
-  const fallbackMat = new THREE.MeshStandardMaterial({ color: 0x111118, roughness: 0.9 });
+
+  // Glyph fallback canvas
+  const fc = document.createElement("canvas");
+  fc.width = 160; fc.height = 120;
+  const fctx = fc.getContext("2d")!;
+  fctx.fillStyle = "#0d0d18";
+  fctx.fillRect(0, 0, 160, 120);
+  fctx.fillStyle = "#e8b84b";
+  fctx.font = "bold 52px monospace";
+  fctx.textAlign = "center";
+  fctx.textBaseline = "middle";
+  fctx.fillText(glyph, 80, 60);
+  const fallbackTex = new THREE.CanvasTexture(fc);
+  const fallbackMat = new THREE.MeshStandardMaterial({ map: fallbackTex, roughness: 0.9 });
   const mesh = new THREE.Mesh(geo, fallbackMat);
 
-  const loader = new THREE.TextureLoader();
-  loader.load(
+  new THREE.TextureLoader().load(
     `${import.meta.env.BASE_URL}casino/cards/${key}.webp`,
     (tex) => {
-      const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 });
-      mesh.material = mat;
+      mesh.material = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 });
+      fallbackTex.dispose();
     },
     undefined,
-    () => {
-      // silent fail — keep fallback dark material
-    },
+    () => { /* keep glyph fallback */ },
   );
   return mesh;
 }
 
-// ── Blackjack ──
-function buildBlackjack(scene: THREE.Scene): Station {
+/** Flat base ring that pulses when nearest station. */
+function makeBaseRing(accent: number): {
+  mesh: THREE.Mesh;
+  tick: (dt: number) => void;
+  setNear: (near: boolean) => void;
+} {
+  const geo = new THREE.RingGeometry(1.05, 1.25, 24);
+  const mat = new THREE.MeshStandardMaterial({
+    color: accent,
+    emissive: new THREE.Color(accent),
+    emissiveIntensity: 0.08,
+    roughness: 0.4,
+    transparent: true,
+    opacity: 0.5,
+    side: THREE.DoubleSide,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.015;
+
+  let near = false;
+  let phase = 0;
+  const setNear = (n: boolean) => { near = n; };
+  const tick = (dt: number) => {
+    phase += dt * (near ? 3.2 : 0.6);
+    mat.emissiveIntensity = near
+      ? 0.55 + 0.4 * Math.sin(phase)
+      : 0.06 + 0.06 * Math.sin(phase * 0.7);
+    mat.opacity = near ? 0.92 : 0.45;
+  };
+  return { mesh, tick, setNear };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Archetype builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildCardTable(
+  key: string, name: string, glyph: string,
+  pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
   const group = new THREE.Group();
-  const pos = new THREE.Vector3(-10, 0, -4);
+  const ring = makeBaseRing(accent);
+  group.add(ring.mesh);
 
   // Table body
-  const tableGeo = new THREE.BoxGeometry(2.2, 0.9, 1.2);
-  const tableMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
-  const table = new THREE.Mesh(tableGeo, tableMat);
-  table.position.y = 0.45;
-  group.add(table);
+  const bodyGeo = new THREE.BoxGeometry(2.2, 0.9, 1.2);
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = 0.45;
+  group.add(body);
 
   // Felt top
   const feltGeo = new THREE.PlaneGeometry(2.0, 1.0);
@@ -74,42 +219,58 @@ function buildBlackjack(scene: THREE.Scene): Station {
   felt.position.y = 0.91;
   group.add(felt);
 
-  // Gold rim edges (4 sides)
-  const goldMat = new THREE.MeshStandardMaterial({
-    color: 0xe8b84b, emissive: new THREE.Color(0xe8b84b), emissiveIntensity: 0.15, metalness: 0.7, roughness: 0.3,
+  // Gold rim (4 edges)
+  const rimMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, emissive: new THREE.Color(0xe8b84b), emissiveIntensity: 0.12,
+    metalness: 0.7, roughness: 0.3,
   });
-  const rimPositions: [number, number, number, number, number, number][] = [
-    [0,     0.91, -0.6, 2.2, 0.04, 0.04],
-    [0,     0.91,  0.6, 2.2, 0.04, 0.04],
-    [-1.1,  0.91,  0,   0.04, 0.04, 1.2],
-    [ 1.1,  0.91,  0,   0.04, 0.04, 1.2],
+  const rims: [number, number, number, number, number, number][] = [
+    [0, 0.91, -0.6, 2.2, 0.04, 0.04],
+    [0, 0.91,  0.6, 2.2, 0.04, 0.04],
+    [-1.1, 0.91, 0, 0.04, 0.04, 1.2],
+    [ 1.1, 0.91, 0, 0.04, 0.04, 1.2],
   ];
-  for (const [x, y, z, w, h, d] of rimPositions) {
-    const rg = new THREE.BoxGeometry(w, h, d);
-    const rm = new THREE.Mesh(rg, goldMat);
-    rm.position.set(x, y, z);
-    group.add(rm);
+  for (const [x, y, z, w, h, d] of rims) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), rimMat);
+    m.position.set(x, y, z);
+    group.add(m);
   }
 
-  // Label + signage
-  const label = makeLabel("BLACKJACK");
-  label.position.set(0, 2.6, 0);
+  // Accent strip along base
+  const stripMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.3, roughness: 0.4,
+  });
+  const strip = new THREE.Mesh(new THREE.BoxGeometry(2.24, 0.06, 1.24), stripMat);
+  strip.position.y = 0.03;
+  group.add(strip);
+
+  const label = makeLabel(glyph + " " + name);
+  label.position.set(0, 2.5, 0);
   group.add(label);
 
-  const sign = makeSignage("blackjack");
-  sign.position.set(0, 3.2, -0.62);
+  const sign = makeSignage(key, glyph);
+  sign.position.set(0, 3.1, -0.65);
   group.add(sign);
 
   group.position.copy(pos);
   scene.add(group);
 
-  return { key: "blackjack", name: "BLACKJACK", position: pos, radius: 2.2, group };
+  return {
+    key, name, position: pos, radius: 2.2, group,
+    tick: (dt) => ring.tick(dt),
+    setNear: ring.setNear,
+  };
 }
 
-// ── Roulette ──
-function buildRoulette(scene: THREE.Scene): Station {
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildWheelPlinth(
+  key: string, name: string, glyph: string,
+  pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
   const group = new THREE.Group();
-  const pos = new THREE.Vector3(0, 0, 0);
+  const ring = makeBaseRing(accent);
+  group.add(ring.mesh);
 
   // Plinth
   const plinthGeo = new THREE.CylinderGeometry(0.9, 1.0, 1.0, 16);
@@ -119,102 +280,379 @@ function buildRoulette(scene: THREE.Scene): Station {
   group.add(plinth);
 
   // Wheel disc
-  const wheelGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.06, 32);
+  const wheelGeo = new THREE.CylinderGeometry(0.83, 0.83, 0.06, 24);
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x181818, roughness: 0.5, metalness: 0.5 });
   const wheel = new THREE.Mesh(wheelGeo, wheelMat);
   wheel.position.y = 1.04;
   group.add(wheel);
 
-  // Orange ring
-  const ringGeo = new THREE.TorusGeometry(0.78, 0.06, 8, 32);
-  const ringMat = new THREE.MeshStandardMaterial({
-    color: 0xff4700, emissive: new THREE.Color(0xff4700), emissiveIntensity: 0.7, roughness: 0.3,
+  // Emissive ring on disc
+  const discRingGeo = new THREE.TorusGeometry(0.76, 0.055, 6, 24);
+  const discRingMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.7, roughness: 0.3,
   });
-  const ring = new THREE.Mesh(ringGeo, ringMat);
-  ring.rotation.x = Math.PI / 2;
-  ring.position.y = 1.08;
-  group.add(ring);
+  const discRing = new THREE.Mesh(discRingGeo, discRingMat);
+  discRing.rotation.x = Math.PI / 2;
+  discRing.position.y = 1.08;
+  group.add(discRing);
 
-  // Label + signage
-  const label = makeLabel("ROULETTE");
+  const label = makeLabel(glyph + " " + name);
   label.position.set(0, 2.6, 0);
   group.add(label);
 
-  const sign = makeSignage("roulette");
-  sign.position.set(0, 3.2, -1.1);
+  const sign = makeSignage(key, glyph);
+  sign.position.set(0, 3.2, -1.05);
   group.add(sign);
 
   group.position.copy(pos);
   scene.add(group);
 
   let rot = 0;
-  const tick = (dt: number) => {
-    rot += dt * 0.4;
-    wheel.rotation.y = rot;
-    ring.rotation.z  = rot * 0.5;
+  return {
+    key, name, position: pos, radius: 2.2, group,
+    tick: (dt) => {
+      rot += dt * 0.45;
+      wheel.rotation.y = rot;
+      discRing.rotation.z = rot * 0.5;
+      ring.tick(dt);
+    },
+    setNear: ring.setNear,
   };
-
-  return { key: "roulette", name: "ROULETTE", position: pos, radius: 2.2, group, tick };
 }
 
-// ── Plinko ──
-function buildPlinko(scene: THREE.Scene): Station {
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildCabinet(
+  key: string, name: string, glyph: string,
+  pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
   const group = new THREE.Group();
-  const pos = new THREE.Vector3(10, 0, 4);
+  const ring = makeBaseRing(accent);
+  group.add(ring.mesh);
 
-  // Board
-  const boardGeo = new THREE.BoxGeometry(1.2, 3.0, 0.4);
-  const boardMat = new THREE.MeshStandardMaterial({ color: 0x0e0e18, roughness: 0.85 });
-  const board = new THREE.Mesh(boardGeo, boardMat);
-  board.position.y = 1.5;
-  group.add(board);
+  // Cabinet body
+  const cabinetGeo = new THREE.BoxGeometry(1.1, 2.4, 0.55);
+  const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x101018, roughness: 0.85 });
+  const cabinet = new THREE.Mesh(cabinetGeo, cabinetMat);
+  cabinet.position.y = 1.2;
+  group.add(cabinet);
 
-  // Pegs (~30 in offset rows)
-  const pegGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.12, 8);
-  const pegMat = new THREE.MeshStandardMaterial({ color: 0xe8b84b, metalness: 0.7, roughness: 0.3 });
-  const cols = 5;
-  for (let row = 0; row < 6; row++) {
-    const offset = (row % 2 === 0) ? 0 : 0.11;
-    for (let col = 0; col < cols; col++) {
-      const pg = new THREE.Mesh(pegGeo, pegMat);
-      pg.rotation.x = Math.PI / 2;
-      pg.position.set(
-        -0.44 + col * 0.22 + offset,
-        2.8 - row * 0.36,
-        0.21,
-      );
-      group.add(pg);
-    }
-  }
-
-  // Emissive orange ball at bottom
-  const ballGeo = new THREE.SphereGeometry(0.08, 12, 8);
-  const ballMat = new THREE.MeshStandardMaterial({
-    color: 0xff4700, emissive: new THREE.Color(0xff4700), emissiveIntensity: 1.0, roughness: 0.3,
+  // Emissive screen panel (front face inset)
+  const screenGeo = new THREE.PlaneGeometry(0.8, 0.7);
+  const screenMat = new THREE.MeshStandardMaterial({
+    color: 0x060615,
+    emissive: new THREE.Color(accent),
+    emissiveIntensity: 0.5,
+    roughness: 0.3,
   });
-  const ball = new THREE.Mesh(ballGeo, ballMat);
-  ball.position.set(0, 0.6, 0.21);
-  group.add(ball);
+  const screen = new THREE.Mesh(screenGeo, screenMat);
+  screen.position.set(0, 1.55, 0.29);
+  group.add(screen);
 
-  // Label + signage
-  const label = makeLabel("PLINKO");
-  label.position.set(0, 4.0, 0);
+  // Screen border
+  const borderMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.25, roughness: 0.4,
+  });
+  const hb = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.04, 0.04), borderMat);
+  hb.position.set(0, 1.93, 0.29); group.add(hb);
+  const hb2 = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.04, 0.04), borderMat);
+  hb2.position.set(0, 1.17, 0.29); group.add(hb2);
+  const vb1 = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.76, 0.04), borderMat);
+  vb1.position.set(-0.42, 1.55, 0.29); group.add(vb1);
+  const vb2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.76, 0.04), borderMat);
+  vb2.position.set( 0.42, 1.55, 0.29); group.add(vb2);
+
+  // Top accent bar
+  const topBar = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.08, 0.58), borderMat);
+  topBar.position.set(0, 2.44, 0);
+  group.add(topBar);
+
+  const label = makeLabel(glyph + " " + name);
+  label.position.set(0, 3.2, 0);
   group.add(label);
 
-  const sign = makeSignage("plinko");
-  sign.position.set(0, 4.6, -0.22);
+  const sign = makeSignage(key, glyph);
+  sign.position.set(0, 3.8, -0.32);
   group.add(sign);
 
   group.position.copy(pos);
   scene.add(group);
 
-  return { key: "plinko", name: "PLINKO", position: pos, radius: 2.2, group };
+  let phase = 0;
+  return {
+    key, name, position: pos, radius: 2.2, group,
+    tick: (dt) => {
+      phase += dt * 1.2;
+      screenMat.emissiveIntensity = 0.38 + 0.18 * Math.sin(phase);
+      ring.tick(dt);
+    },
+    setNear: ring.setNear,
+  };
 }
 
-export function buildStations(scene: THREE.Scene): Station[] {
-  return [
-    buildBlackjack(scene),
-    buildRoulette(scene),
-    buildPlinko(scene),
-  ];
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildGridPit(
+  key: string, name: string, glyph: string,
+  pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
+  const group = new THREE.Group();
+  const ring = makeBaseRing(accent);
+  group.add(ring.mesh);
+
+  // Low table
+  const tableGeo = new THREE.BoxGeometry(2.4, 0.7, 1.8);
+  const tableMat = new THREE.MeshStandardMaterial({ color: 0x111118, roughness: 0.85 });
+  const table = new THREE.Mesh(tableGeo, tableMat);
+  table.position.y = 0.35;
+  group.add(table);
+
+  // Grid inlay (top face)
+  const gridTopGeo = new THREE.PlaneGeometry(2.2, 1.6);
+  const gridTopMat = new THREE.MeshStandardMaterial({ color: 0x090912, roughness: 0.9 });
+  const gridTop = new THREE.Mesh(gridTopGeo, gridTopMat);
+  gridTop.rotation.x = -Math.PI / 2;
+  gridTop.position.y = 0.71;
+  group.add(gridTop);
+
+  // Grid lines (4 horizontal + 4 vertical = 8 thin boxes)
+  const gridLineMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.35, roughness: 0.4,
+  });
+  for (let i = 0; i < 4; i++) {
+    const hLine = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.02, 0.025), gridLineMat);
+    hLine.position.set(0, 0.72, -0.6 + i * 0.4);
+    group.add(hLine);
+  }
+  for (let i = 0; i < 5; i++) {
+    const vLine = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.02, 1.6), gridLineMat);
+    vLine.position.set(-1.1 + i * 0.55, 0.72, 0);
+    group.add(vLine);
+  }
+
+  const label = makeLabel(glyph + " " + name);
+  label.position.set(0, 2.4, 0);
+  group.add(label);
+
+  const sign = makeSignage(key, glyph);
+  sign.position.set(0, 3.0, -0.95);
+  group.add(sign);
+
+  group.position.copy(pos);
+  scene.add(group);
+
+  return {
+    key, name, position: pos, radius: 2.2, group,
+    tick: (dt) => ring.tick(dt),
+    setNear: ring.setNear,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildTower(
+  key: string, name: string, glyph: string,
+  pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
+  const group = new THREE.Group();
+  const ring = makeBaseRing(accent);
+  group.add(ring.mesh);
+
+  // Board back-panel
+  const boardGeo = new THREE.BoxGeometry(1.3, 3.2, 0.3);
+  const boardMat = new THREE.MeshStandardMaterial({ color: 0x0d0d18, roughness: 0.85 });
+  const board = new THREE.Mesh(boardGeo, boardMat);
+  board.position.y = 1.6;
+  group.add(board);
+
+  // Side supports
+  const supportMat = new THREE.MeshStandardMaterial({ color: 0x181820, roughness: 0.8 });
+  const lSupport = new THREE.Mesh(new THREE.BoxGeometry(0.12, 3.4, 0.12), supportMat);
+  lSupport.position.set(-0.71, 1.7, 0); group.add(lSupport);
+  const rSupport = new THREE.Mesh(new THREE.BoxGeometry(0.12, 3.4, 0.12), supportMat);
+  rSupport.position.set( 0.71, 1.7, 0); group.add(rSupport);
+
+  // Peg rows (4 rows × 4 pegs = 16 pegs, ~16 × 12t = 192t)
+  const pegMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, metalness: 0.7, roughness: 0.3,
+  });
+  for (let row = 0; row < 4; row++) {
+    const offset = (row % 2 === 0) ? 0 : 0.14;
+    for (let col = 0; col < 4; col++) {
+      const pg = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.18), pegMat);
+      pg.position.set(-0.42 + col * 0.28 + offset, 2.9 - row * 0.44, 0.15);
+      group.add(pg);
+    }
+  }
+
+  // Ledge bars (3 horizontal bars)
+  const ledgeMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.3, roughness: 0.4,
+  });
+  for (let i = 0; i < 3; i++) {
+    const ledge = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.05, 0.22), ledgeMat);
+    ledge.position.set(0, 1.0 + i * 0.8, 0.12);
+    group.add(ledge);
+  }
+
+  // Emissive bottom catch
+  const catchMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.8, roughness: 0.3,
+  });
+  const catchMesh = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.08, 0.3), catchMat);
+  catchMesh.position.set(0, 0.5, 0.12);
+  group.add(catchMesh);
+
+  const label = makeLabel(glyph + " " + name);
+  label.position.set(0, 4.0, 0);
+  group.add(label);
+
+  const sign = makeSignage(key, glyph);
+  sign.position.set(0, 4.6, -0.2);
+  group.add(sign);
+
+  group.position.copy(pos);
+  scene.add(group);
+
+  return {
+    key, name, position: pos, radius: 2.2, group,
+    tick: (dt) => ring.tick(dt),
+    setNear: ring.setNear,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildCrashPad(
+  key: string, name: string, glyph: string,
+  pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
+  const group = new THREE.Group();
+  const ring = makeBaseRing(accent);
+  group.add(ring.mesh);
+
+  // Angled launch rail (inclined box)
+  const railGeo = new THREE.BoxGeometry(0.3, 2.4, 0.25);
+  const railMat = new THREE.MeshStandardMaterial({ color: 0x111120, roughness: 0.8 });
+  const rail = new THREE.Mesh(railGeo, railMat);
+  rail.rotation.z = 0.38; // ~22° incline
+  rail.position.set(0, 1.2, 0);
+  group.add(rail);
+
+  // Rail frame sides
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0x181828, roughness: 0.75 });
+  const lFrame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.6, 0.08), frameMat);
+  lFrame.rotation.z = 0.38;
+  lFrame.position.set(-0.55, 1.25, 0); group.add(lFrame);
+  const rFrame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.6, 0.08), frameMat);
+  rFrame.rotation.z = 0.38;
+  rFrame.position.set( 0.55, 1.25, 0); group.add(rFrame);
+
+  // Emissive trail strip along rail
+  const trailMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.9,
+    roughness: 0.3, transparent: true, opacity: 0.85,
+  });
+  const trail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 2.1, 0.1), trailMat);
+  trail.rotation.z = 0.38;
+  trail.position.set(0, 1.1, 0.14);
+  group.add(trail);
+
+  // Launch platform base
+  const baseMat = new THREE.MeshStandardMaterial({ color: 0x0e0e1c, roughness: 0.85 });
+  const base = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.16, 0.9), baseMat);
+  base.position.set(0, 0.08, 0);
+  group.add(base);
+
+  // Accent base stripe
+  const basestripMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.35, roughness: 0.4,
+  });
+  const baseStrip = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.04, 0.04), basestripMat);
+  baseStrip.position.set(0, 0.16, 0.47);
+  group.add(baseStrip);
+
+  const label = makeLabel(glyph + " " + name);
+  label.position.set(0, 3.2, 0);
+  group.add(label);
+
+  const sign = makeSignage(key, glyph);
+  sign.position.set(0, 3.8, -0.15);
+  group.add(sign);
+
+  group.position.copy(pos);
+  scene.add(group);
+
+  let phase = 0;
+  return {
+    key, name, position: pos, radius: 2.2, group,
+    tick: (dt) => {
+      phase += dt * 1.8;
+      trailMat.emissiveIntensity = 0.7 + 0.3 * Math.abs(Math.sin(phase));
+      ring.tick(dt);
+    },
+    setNear: ring.setNear,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Archetype dispatch
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildStation(
+  entry: GameEntry, pos: THREE.Vector3, scene: THREE.Scene, accent: number,
+): Station {
+  const archetype: ArchetypeName = ARCHETYPE_BY_KEY[entry.key] ?? "cardTable";
+  const p = pos.clone();
+  switch (archetype) {
+    case "cardTable":   return buildCardTable  (entry.key, entry.name, entry.glyph, p, scene, accent);
+    case "wheelPlinth": return buildWheelPlinth(entry.key, entry.name, entry.glyph, p, scene, accent);
+    case "cabinet":     return buildCabinet    (entry.key, entry.name, entry.glyph, p, scene, accent);
+    case "gridPit":     return buildGridPit    (entry.key, entry.name, entry.glyph, p, scene, accent);
+    case "tower":       return buildTower      (entry.key, entry.name, entry.glyph, p, scene, accent);
+    case "crashPad":    return buildCrashPad   (entry.key, entry.name, entry.glyph, p, scene, accent);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Public API
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildStations(
+  scene: THREE.Scene,
+  catalog: GameEntry[],
+): { stations: Station[]; zones: ZoneInfo[] } {
+  const live = catalog.filter((g) => g.status === "live");
+
+  // Group by category
+  const byCategory = new Map<string, GameEntry[]>();
+  for (const g of live) {
+    const arr = byCategory.get(g.category) ?? [];
+    arr.push(g);
+    byCategory.set(g.category, arr);
+  }
+
+  const stations: Station[] = [];
+  const zones: ZoneInfo[] = [];
+
+  for (const [cat, entries] of byCategory) {
+    const cfg = ZONE_CONFIG[cat];
+    if (!cfg) continue; // eve-native etc — skip unknown zones
+
+    zones.push({
+      category: cat,
+      label: cfg.label,
+      center: new THREE.Vector3(cfg.cx, 0, cfg.cz),
+      accent: cfg.accent,
+    });
+
+    const positions = zonePositions(entries.length, cfg.cx, cfg.cz, 5);
+    for (let i = 0; i < entries.length; i++) {
+      const [x, z] = positions[i];
+      const pos = new THREE.Vector3(x, 0, z);
+      stations.push(buildStation(entries[i], pos, scene, cfg.accent));
+    }
+  }
+
+  return { stations, zones };
 }
