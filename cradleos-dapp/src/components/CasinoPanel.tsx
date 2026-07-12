@@ -660,13 +660,16 @@ function Center({ text, color }: { text: string; color: string }) {
 }
 function SplitOutcomeBadge({ s }: { s: SplitSettlement }) {
   const net = s.payout - s.wager;
-  const col = net > 0 ? GREEN : net === 0 ? "#9a9a8a" : ACCENT;
+  const isPartial = s.payout > 0 && net < 0;
+  const isPush = s.payout > 0 && net === 0;
+  const col = net > 0 ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
+  const deltaText = net > 0 ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
   return (
     <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
       <div style={{ color: col, fontSize: 20, fontWeight: 900, letterSpacing: "0.08em" }}>
         A: {outcomeLabel(s.outcomeA)} · B: {outcomeLabel(s.outcomeB)}
       </div>
-      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{net > 0 ? `+${fmtEve(net)}` : net < 0 ? fmtEve(net) : "±0"} EVE</div>
+      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{deltaText}</div>
     </div>
   );
 }
@@ -675,10 +678,11 @@ function OutcomeBadge({ s }: { s: LiveSettlement }) {
   const push = s.outcome === OUT_PUSH;
   const col = s.outcome === OUT_BLACKJACK ? GOLD : win ? GREEN : push ? "#9a9a8a" : ACCENT;
   const net = s.payout - s.wager;
+  const odeltaText = net > 0 ? `+${fmtEve(net)} EVE` : net === 0 ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
   return (
     <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
       <div style={{ color: col, fontSize: 24, fontWeight: 900, letterSpacing: "0.1em" }}>{outcomeLabel(s.outcome)}{s.doubled ? " ×2" : ""}</div>
-      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{net > 0 ? `+${fmtEve(net)}` : net < 0 ? fmtEve(net) : "±0"} EVE</div>
+      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{odeltaText}</div>
     </div>
   );
 }

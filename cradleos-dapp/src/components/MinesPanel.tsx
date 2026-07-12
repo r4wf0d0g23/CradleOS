@@ -419,9 +419,14 @@ export function MinesPanel() {
               <div style={{ color: busted ? ACCENT : GREEN, fontSize: 28, fontWeight: 900, letterSpacing: "0.08em" }}>
                 {busted ? "⛨ BUSTED" : "◉ CASHED OUT"}
               </div>
-              <div style={{ color: net > 0 ? GREEN : ACCENT, fontSize: 16, marginTop: 4, fontWeight: 800 }}>
-                {net > 0 ? `+${fmtEve(net)}` : `${fmtEve(net)}`} EVE
-              </div>
+              {(() => {
+                const isWin = net > 0;
+                const isPush = payout > 0 && net === 0;
+                const isPartial = payout > 0 && net < 0;
+                const dColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
+                const dText = isWin ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
+                return <div style={{ color: dColor, fontSize: 16, marginTop: 4, fontWeight: 800 }}>{dText}</div>;
+              })()}
               {!busted && payout > 0 && (
                 <div style={{ color: "#888", fontSize: 11, marginTop: 2 }}>
                   gross payout {fmtEve(payout)} EVE · {fmtMult(multiplierBps)} multiplier

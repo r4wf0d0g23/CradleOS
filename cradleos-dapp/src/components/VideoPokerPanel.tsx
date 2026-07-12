@@ -363,9 +363,14 @@ export function VideoPokerPanel() {
                   {handRankDef?.label ?? "LOSS"}
                   {handRankDef && handRankDef.mult > 0 ? ` · ${handRankDef.mult}x` : ""}
                 </div>
-                <div style={{ color: net > 0 ? GREEN : ACCENT, fontSize: 18, fontWeight: 800, marginTop: 4 }}>
-                  {net > 0 ? `+${fmtEve(net)}` : `${fmtEve(net)}`} EVE
-                </div>
+                {(() => {
+                  const isWin = net > 0;
+                  const isPush = settle.payout > 0 && net === 0;
+                  const isPartial = settle.payout > 0 && net < 0;
+                  const dColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
+                  const dText = isWin ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
+                  return <div style={{ color: dColor, fontSize: 18, fontWeight: 800, marginTop: 4 }}>{dText}</div>;
+                })()}
                 {net > 0 && (
                   <div style={{ color: "#888", fontSize: 11, marginTop: 2 }}>
                     gross payout {fmtEve(settle.payout)} EVE
