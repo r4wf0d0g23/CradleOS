@@ -154,7 +154,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "slots"           ? buildSlotsTx(ids, raw) :
           game === "limbo"           ? buildLimboTx(ids, raw, BigInt(limboBps)) :
           game === "hilo"            ? buildHiLoStartTx(ids, raw) :
-          game === "plinko"          ? (plinkoDrops > 1 ? buildPlinkoMultiTx(ids, raw, plinkoMode, plinkoDrops) : plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
+          game === "plinko"          ? (plinkoDrops > 1 ? buildPlinkoMultiTx(ids, raw * BigInt(plinkoDrops), plinkoMode, plinkoDrops) : plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
           game === "keno"            ? buildKenoTx(ids, raw, picksArr) :
           game === "sicbo"           ? buildSicBoTx(ids, raw, sicboKind, sicboTarget) :
           game === "crash"           ? buildCrashTx(ids, raw, BigInt(crashBps)) :
@@ -201,7 +201,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /plinko::play_multi/.test(msg) && /code:?\s*1\b/.test(msg)) {
+        setErr(`Total bet exceeds house exposure limit — lower the bet or ball count. (${plinkoDrops} balls × ${fmtEve(betNum)} EVE = ${fmtEve(betNum * plinkoDrops)} EVE total; house limit: ${fmtEve(exposureBudget)} EVE per play)`);
+      } else if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
@@ -249,7 +251,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "wheel"   ? 10
     : game === "limbo"   ? Math.max(1.01, limboMult)
     : game === "hilo"    ? 13
-    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130)
+    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130) * (plinkoDrops > 1 ? plinkoDrops : 1)
     : game === "keno"    ? (KENO_MAX_MULT[kenoPicks.size] ?? 970)
     : game === "sicbo"   ? (sicboKind === 3 ? 180 : sicboKind === 4 ? 30 : sicboKind === 2 ? 4 : 2)
     : game === "crash"   ? Math.max(1.01, crashMult)
@@ -733,7 +735,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
               {plinkoDrops > 1 && (
                 <div style={{ color: "#666", fontSize: 10, marginTop: 6 }}>
-                  {plinkoDrops} balls, one signature — total wager split equally across drops.
+                  per-ball wager — you are charged bet × count per play.
                 </div>
               )}
             </div>
@@ -885,7 +887,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           {!(game === "hilo" && hiloLive) && (<>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
             <label style={{ flex: "1 1 160px" }}>
-              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>BET ($EVE) · you have {fmtEve(myEve)}</div>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>{game === "plinko" && plinkoDrops > 1 ? "BET PER BALL ($EVE)" : "BET ($EVE)"} · you have {fmtEve(myEve)}</div>
               <input
                 value={betEve}
                 onChange={(e) => setBetEve(e.target.value)}
@@ -900,6 +902,11 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
             </label>
           </div>
 
+          {game === "plinko" && plinkoDrops > 1 && betNum > 0 && (
+            <div style={{ marginTop: 10, padding: "8px 12px", background: "#1a1408", border: `1px solid ${GOLD}55`, textAlign: "center", fontSize: 13, fontWeight: 800, letterSpacing: "0.05em", color: GOLD, fontFamily: "monospace" }}>
+              {plinkoDrops} BALLS × {betEve} EVE = {fmtEve(betNum * plinkoDrops)} EVE TOTAL
+            </div>
+          )}
           <button
             disabled={busy || !addr || overExposure || (!!pending && !result)}
             onClick={play}

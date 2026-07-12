@@ -985,7 +985,6 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
         setBallRow(PLINKO_ROWS);
         setBallCol(bucket);
         setLanded(true);
-        setTimeout(onDone, 600);
         return;
       }
       // bit row of path: 0 = left, 1 = right
@@ -1085,6 +1084,14 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
           <div style={{ color: "#666", fontSize: 9, letterSpacing: "0.1em" }}>BUCKET {bucket}</div>
           <div style={{ color: bucketColor, fontSize: 28, fontWeight: 900 }}>{bucketMult}x</div>
         </div>
+      )}
+      {landed && (
+        <button
+          onClick={onDone}
+          style={{ marginTop: 10, background: "#0c1c12", border: `1px solid ${ACCENT}`, color: ACCENT, fontSize: 12, fontWeight: 800, letterSpacing: "0.1em", padding: "8px 18px", cursor: "pointer" }}
+        >
+          CONTINUE ▸
+        </button>
       )}
     </div>
   );
@@ -1275,7 +1282,6 @@ export function PlinkoMultiStage({
     const totalDuration = (count - 1) * LAUNCH_STAGGER_MS + PLINKO_ROWS * 130 + 800;
     const doneT = setTimeout(() => {
       setAllDone(true);
-      setTimeout(onDone, 400);
     }, totalDuration);
     timers.push(doneT);
 
@@ -1362,7 +1368,7 @@ export function PlinkoMultiStage({
               boxShadow: `0 0 6px ${ACCENT}`,
               transition: "top 0.12s cubic-bezier(0.25,0.46,0.45,0.94), left 0.12s ease",
               zIndex: 10 + i,
-              opacity: ball.landed ? 0 : 1,
+              opacity: 1,
             }} />
           );
         })}
@@ -1417,6 +1423,14 @@ export function PlinkoMultiStage({
           })}
         </div>
       </div>
+      {allDone && (
+        <button
+          onClick={onDone}
+          style={{ marginTop: 10, background: "#0c1c12", border: `1px solid ${ACCENT}`, color: ACCENT, fontSize: 12, fontWeight: 800, letterSpacing: "0.1em", padding: "8px 18px", cursor: "pointer" }}
+        >
+          CONTINUE ▸
+        </button>
+      )}
     </div>
   );
 }
