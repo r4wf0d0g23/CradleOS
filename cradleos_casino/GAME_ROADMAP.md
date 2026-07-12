@@ -46,6 +46,8 @@ These retroactively define the catalog baseline; several predate the protocol an
 | 21 | Dragon Tiger | I | L | two-card duel, 2.94% edge, 2× win / 9× tie |
 | 22 | Under/Over 7 | I | L | two dice, UNDER/7/OVER, 3.33%/5.0% edge |
 | 23 | Ore Refine Gamble | I | H | EVE-native, 5 tiers, 3.0% edge, 20× max |
+| 24 | Risk Wheel | I | L-VH | 3-mode volatility selector, 20 seg, 3-4% edge, 13.5x max |
+| 25 | Money Wheel | I | M | 54-seg Big Six, 18x jackpot, 3.33% edge |
 
 ---
 
@@ -75,8 +77,8 @@ These retroactively define the catalog baseline; several predate the protocol an
 |---|------|-------|-----|---------------|
 | 35 | American Roulette (00) | I | L-VH | double-zero variant |
 | 36 | Mini Roulette (13-pocket) | I | M | faster, higher edge |
-| 37 | Money Wheel (Big Six) | I | M | 54-segment |
-| 38 | Risk Wheel (low/med/high) | I | L-VH | selectable volatility |
+| 37 | ~~Money Wheel (Big Six)~~ | I | M | LIVE as #25 above |
+| 38 | ~~Risk Wheel (low/med/high)~~ | I | L-VH | LIVE as #24 above |
 | 39 | Bonus Wheel (multipliers) | I | H | streak-triggered |
 | 40 | Dreamcatcher-style | I | H | segment + multiplier spins |
 | 41 | Spin-the-Bottle range | I | M | arc-target |
@@ -200,7 +202,7 @@ Games themed to EVE Frontier lore/mechanics — nobody else can build these. Str
 ---
 
 ## Totals
-- **Live now:** 23 (updated 2026-07-12: +three_card_poker retroactive + dragon_tiger + under_over_7 + ore_refine)
+- **Live now:** 25 (updated 2026-07-12 run 2: +risk_wheel + money_wheel)
 - **Planned:** 105 distinct games across 10 categories (A–J), IDs 20–124 above (de-duplicated 2026-07-11: Dragon Tiger consolidated at #103; #84 placeholder replaced with Slide).
 - **Grand total (live + planned): 124 distinct games** — 24 games of margin above the 100 floor for Gate-0 cuts.
 - **Grand target:** 100+ concurrently live. Runway sits well above the floor so we can cut weak candidates at Gate 0 and still clear 100.
@@ -225,6 +227,24 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 ## Progress Log
 
+### 2026-07-12 — Run 2 (casino-roadmap-builder cron, 18:00 CT)
+
+**Games advanced to LIVE:**
+- **Risk Wheel (#38)** — [I], Var L-VH — v18 pkg `0xc3d6686e`, smoke TX `4sXN2qxsjGw6kHv8er7otcdhvPYte4TX2KveavFaPt4z`. LOW mode, seg=0, bust (0 bps) = 0 payout ✔
+- **Money Wheel (#37)** — [I], Var M — v18 pkg, smoke TX `FgRbERQLvsDFLZtSJAoQfNmE1L8SNMck9JsMFZWKfddt`. seg=3, bust (0 bps) = 0 payout ✔
+
+**Tests:** risk_wheel 5/5 ✅ · money_wheel 3/3 ✅. TSC clean. IOC clean.
+
+**Note:** Both modules were deployed in v18 by the prior run (which crashed before updating roadmap + gh-pages). This run completed: live smoke tests, gh-pages deploy (index-DyzHC5yL.js), roadmap update, source commit `7e4b2a6d`.
+
+**CF bundle:** `index-DuDGnMig.js` (deployed by prior run) ✔ · **gh-pages:** `index-DyzHC5yL.js` ✔
+
+**Catalog:** 25 live games. Risk Wheel + Money Wheel both have real spinning-wheel animation stages (RiskWheelStage 3s, MoneyWheelStage 4s premium).
+
+**NEXT RUN SHOULD PICK:** Andar Bahar (#104) — card deal engine, Gate-1 spec done.
+
+---
+
 ### 2026-07-12 — Batch run (casino-roadmap-builder cron)
 
 **Games advanced to LIVE:**
@@ -243,7 +263,7 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 **Catalog:** 23 live games. Total (live + planned): 124.
 
 **NEXT RUN SHOULD PICK:**
-1. Risk Wheel (#38) — engine reuse (wheel.move), 3 mode tables, pure paytable, Gate-1 spec done
-2. Money Wheel / Big Six (#37) — wheel engine, 54-segment, Gate-1 spec done
-3. Andar Bahar (#104) — card deal engine, variable-length reveal, Gate-1 spec done
-Priority: all three are instant, all have Gate-1 designs in BATCH_01_DESIGNS.md.
+1. Andar Bahar (#104) — card deal engine, variable-length reveal, Gate-1 spec done in BATCH_01_DESIGNS.md
+2. Scratch Cards (#74) — instant, 9-tile reveal, EVE-themed symbols, Gate-1 spec in BATCH_01_DESIGNS.md
+3. Plinko Risk Modes (#63) — plinko.move extension, LOW/MED/HIGH board tables, Gate-1 spec ready
+All three are instant [I], all have Gate-1 designs. Andar Bahar is highest priority (unique mechanics, long anticipation window).
