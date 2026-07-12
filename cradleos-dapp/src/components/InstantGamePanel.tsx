@@ -336,11 +336,13 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {plinkoMultiResult && game === "plinko" && plinkoDrops > 1 && (
                   <div style={{ padding: "14px 0 4px" }}>
                     <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.08em", marginBottom: 8 }}>
-                      {plinkoMultiResult.count} DROPS · TOTAL {plinkoMultiResult.totalPayout > plinkoMultiResult.wager ? (
-                        <span style={{ color: GREEN }}>+{(plinkoMultiResult.totalPayout - plinkoMultiResult.wager).toFixed(4)} EVE</span>
-                      ) : (
-                        <span style={{ color: ACCENT }}>{(plinkoMultiResult.totalPayout - plinkoMultiResult.wager).toFixed(4)} EVE</span>
-                      )}
+                      {plinkoMultiResult.count} DROPS · TOTAL {(() => {
+                        const mNet = plinkoMultiResult.totalPayout - plinkoMultiResult.wager;
+                        if (mNet > 0) return <span style={{ color: GREEN }}>+{mNet.toFixed(4)} EVE</span>;
+                        if (mNet === 0) return <span style={{ color: "#E8B84B" }}>±0 EVE</span>;
+                        if (plinkoMultiResult.totalPayout > 0) return <span style={{ color: "#E8B84B" }}>−{Math.abs(mNet).toFixed(4)} EVE</span>;
+                        return <span style={{ color: ACCENT }}>−{plinkoMultiResult.wager.toFixed(4)} EVE</span>;
+                      })()}
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                       {plinkoMultiResult.buckets.map((bucket, i) => {
@@ -360,7 +362,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                     </div>
                     <div style={{ marginTop: 8, textAlign: "center", fontSize: 13, fontWeight: 800 }}>
                       <span style={{ color: "#666" }}>TOTAL: </span>
-                      <span style={{ color: plinkoMultiResult.totalPayout >= plinkoMultiResult.wager ? GREEN : ACCENT }}>
+                      <span style={{ color: plinkoMultiResult.totalPayout > plinkoMultiResult.wager ? GREEN : plinkoMultiResult.totalPayout > 0 ? "#E8B84B" : ACCENT }}>
                         {plinkoMultiResult.totalPayout.toFixed(4)} EVE
                       </span>
                       <span style={{ color: "#555", fontSize: 10, marginLeft: 6 }}>
@@ -526,16 +528,32 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   );
                 })()}
 
-                {result && <ResultFlash key={`flash-${result.txDigest}`} win={result.payout > 0} />}
-                {result ? (
-                  <div style={{ textAlign: "center", padding: "4px 0 6px" }}>
-                    <div style={{ color: "#ccc", fontSize: 13 }}>{result.detail}</div>
-                    <div style={{ color: result.payout > 0 ? GREEN : ACCENT, fontSize: 26, fontWeight: 900, marginTop: 4 }}>
-                      {result.payout > 0 ? `WIN +${fmtEve(result.payout - result.wager)} EVE` : `LOSS −${fmtEve(result.wager)} EVE`}
+                {result && (() => {
+                  const _net = result.payout - result.wager;
+                  const _isPush = result.payout > 0 && _net === 0;
+                  const _isPartial = result.payout > 0 && _net < 0;
+                  const _isWin = _net > 0;
+                  return <ResultFlash key={`flash-${result.txDigest}`} win={_isWin} partial={_isPartial || _isPush} />;
+                })()}
+                {result ? (() => {
+                  const net = result.payout - result.wager;
+                  const isPush = result.payout > 0 && net === 0;
+                  const isPartial = result.payout > 0 && net < 0;
+                  const isWin = net > 0;
+                  const labelColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
+                  const labelText = isWin
+                    ? `WIN +${fmtEve(net)} EVE`
+                    : isPush ? `PUSH ±0 EVE`
+                    : isPartial ? `PARTIAL −${fmtEve(Math.abs(net))} EVE`
+                    : `LOSS −${fmtEve(result.wager)} EVE`;
+                  return (
+                    <div style={{ textAlign: "center", padding: "4px 0 6px" }}>
+                      <div style={{ color: "#ccc", fontSize: 13 }}>{result.detail}</div>
+                      <div style={{ color: labelColor, fontSize: 26, fontWeight: 900, marginTop: 4 }}>{labelText}</div>
+                      {result.payout > 0 && <div style={{ color: "#888", fontSize: 11 }}>gross payout {fmtEve(result.payout)} EVE</div>}
                     </div>
-                    {result.payout > 0 && <div style={{ color: "#888", fontSize: 11 }}>gross payout {fmtEve(result.payout)} EVE</div>}
-                  </div>
-                ) : (
+                  );
+                })() : (
                   <div style={{ color: GOLD, fontSize: 11, textAlign: "center", letterSpacing: "0.15em", paddingBottom: 6 }}>◇ · · ·</div>
                 )}
               </>
@@ -908,7 +926,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 <span style={{ color: "#555", marginLeft: 6 }}>{r.detail}</span>
               </div>
               <div>
-                <span style={{ color: r.payout > 0 ? GREEN : ACCENT, fontWeight: 700 }}>{r.payout > 0 ? `+${fmtEve(r.payout - r.wager)}` : `−${fmtEve(r.wager)}`}</span>
+                <span style={{ color: (() => { const n = r.payout - r.wager; return n > 0 ? GREEN : r.payout > 0 ? "#E8B84B" : ACCENT; })(), fontWeight: 700 }}>{(() => { const n = r.payout - r.wager; return n > 0 ? `+${fmtEve(n)}` : r.payout > 0 && n === 0 ? `±0` : r.payout > 0 ? `−${fmtEve(Math.abs(n))}` : `−${fmtEve(r.wager)}`; })()}</span>
               </div>
             </div>
           ))}

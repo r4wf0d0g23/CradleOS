@@ -255,12 +255,17 @@ export function WheelStage({ segment, onDone }: { segment: number; onDone: () =>
 }
 
 // ── WIN/LOSS flash overlay ───────────────────────────────────────────────────
-export function ResultFlash({ win }: { win: boolean }) {
+export function ResultFlash({ win, partial }: { win: boolean; partial?: boolean }) {
   useCasinoKeyframes();
+  const color = win
+    ? "rgba(63,207,106,0.35)"
+    : partial
+      ? "rgba(232,184,75,0.25)"
+      : "rgba(255,71,0,0.3)";
   return (
     <div style={{
       position: "absolute", inset: 0, pointerEvents: "none", borderRadius: 12,
-      background: win ? "radial-gradient(ellipse, rgba(63,207,106,0.35), transparent 70%)" : "radial-gradient(ellipse, rgba(255,71,0,0.3), transparent 70%)",
+      background: `radial-gradient(ellipse, ${color}, transparent 70%)`,
       animation: "cas-flash 1.4s ease-out forwards",
     }} />
   );
