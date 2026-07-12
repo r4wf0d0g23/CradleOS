@@ -377,7 +377,13 @@ export default function Casino3D({ onExit, onOpenGame }: Props) {
       if (frameIdx % 5 === 0) {
         cam2d.set(camera.position.x, camera.position.z);
 
-        // Nearest station
+        // ── Distance-reveal constants ──────────────────────────────────────
+        const LABEL_FULL = 7;   // m — fully opaque inside this radius
+        const LABEL_HIDE = 13;  // m — invisible beyond this radius
+        const LABEL_BASE_W = 1.3; // world-space sprite width
+        const LABEL_BASE_H = 1.3 * (64 / 320); // height proportional to canvas
+
+        // Nearest station (full scan)
         let nearestSt: Station | null = null;
         let nearestStDist = Infinity;
         for (let i = 0; i < stations.length; i++) {
@@ -385,18 +391,49 @@ export default function Casino3D({ onExit, onOpenGame }: Props) {
           const dx = cam2d.x - st.position.x;
           const dz = cam2d.y - st.position.z;
           const d  = Math.sqrt(dx * dx + dz * dz);
-          if (d < st.radius && d < nearestStDist) {
+          if (d < nearestStDist) {
             nearestStDist = d;
             nearestSt     = st;
           }
         }
 
-        // Update setNear flags (only when changed)
-        if (nearestSt !== nearStRef.current) {
+        // Update setNear flags (only when changed; based on interaction radius)
+        const inRadius = nearestSt && nearestStDist < (nearestSt?.radius ?? 0);
+        const activeSt = inRadius ? nearestSt : null;
+        if (activeSt !== nearStRef.current) {
           nearStRef.current?.setNear?.(false);
-          nearestSt?.setNear?.(true);
-          nearStRef.current = nearestSt;
-          setNearStation(nearestSt);
+          activeSt?.setNear?.(true);
+          nearStRef.current = activeSt;
+          setNearStation(activeSt);
+        }
+
+        // ── Per-station label visibility + opacity ─────────────────────────
+        for (let i = 0; i < stations.length; i++) {
+          const st = stations[i];
+          const lbl = st.label;
+          const dx = cam2d.x - st.position.x;
+          const dz = cam2d.y - st.position.z;
+          const d  = Math.sqrt(dx * dx + dz * dz);
+
+          if (d >= LABEL_HIDE) {
+            lbl.visible = false;
+          } else {
+            lbl.visible = true;
+            const mat = lbl.material as THREE.SpriteMaterial;
+            const isNearest = st === nearestSt;
+            if (d <= LABEL_FULL) {
+              mat.opacity = 1.0;
+              // Slight emphasis on nearest station
+              const w = isNearest ? LABEL_BASE_W * 1.15 : LABEL_BASE_W;
+              const h = isNearest ? LABEL_BASE_H * 1.15 : LABEL_BASE_H;
+              lbl.scale.set(w, h, 1);
+            } else {
+              // Linear fade 7 → 13 m
+              const t = (d - LABEL_FULL) / (LABEL_HIDE - LABEL_FULL);
+              mat.opacity = 1.0 - t;
+              lbl.scale.set(LABEL_BASE_W, LABEL_BASE_H, 1);
+            }
+          }
         }
 
         // Nearest zone (by proximity to zone center, within 12m)

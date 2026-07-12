@@ -26,6 +26,7 @@ export interface Station {
   position: THREE.Vector3;
   radius: number;
   group: THREE.Group;
+  label: THREE.Sprite;         // world-sized name label (distance-revealed by Casino3D)
   tick?: (dt: number) => void;
   setNear?: (near: boolean) => void;
   triggerPulse?: () => void;   // 3-second activity surge (feed-driven)
@@ -107,8 +108,9 @@ function zonePositions(count: number, cx: number, cz: number, S = 5): [number, n
 }
 
 /** Floating name sprite — monospace canvas, NO emoji.
- *  sizeAttenuation=false → every label is the same screen-space size regardless
- *  of world height (tower labels at y=4 no longer appear tiny vs table labels at y=2.4).
+ *  sizeAttenuation=true → world-sized label that shrinks with distance.
+ *  World width ~1.3 m; height proportional to canvas aspect (320/64 = 5).
+ *  transparency + depthWrite=false prevents z-fighting during proximity fades.
  */
 function makeLabel(text: string): THREE.Sprite {
   const W = 320; const H = 64;
@@ -128,11 +130,49 @@ function makeLabel(text: string): THREE.Sprite {
   ctx.textBaseline = "middle";
   ctx.fillText(text.toUpperCase(), W / 2, H / 2);
   const tex = new THREE.CanvasTexture(canvas);
-  // sizeAttenuation=false: sprite renders at fixed screen-space size (no perspective shrink).
-  // scale.set(x,y,1) where x≈viewport_width/2.5, y=x*(H/W). Calibrated for FOV 68°, ~600-900px viewport.
-  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, sizeAttenuation: false });
+  // sizeAttenuation=true: world-space sprite — perspective-correct, smaller at distance.
+  // scale = (worldWidth, worldHeight, 1); aspect = W/H = 5.
+  const mat = new THREE.SpriteMaterial({
+    map: tex,
+    transparent: true,
+    depthWrite: false,
+    sizeAttenuation: true,
+  });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(0.42, 0.084, 1);
+  sprite.scale.set(1.3, 1.3 * (H / W), 1); // ~1.3 m wide × 0.26 m tall in world space
+  return sprite;
+}
+
+/** Zone label sprite — larger canvas, ~2 m wide world-space.
+ *  Always visible (opacity managed externally if needed).
+ */
+function makeZoneLabel(text: string, accent: number): THREE.Sprite {
+  const W = 400; const H = 80;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d")!;
+  const r = (accent >> 16) & 0xff;
+  const g = (accent >> 8) & 0xff;
+  const b = accent & 0xff;
+  ctx.fillStyle = `rgba(${r >> 1},${g >> 1},${b >> 1},0.72)`;
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = `rgb(${r},${g},${b})`;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(2, 2, W - 4, H - 4);
+  ctx.fillStyle = `rgb(${Math.min(255,r+60)},${Math.min(255,g+60)},${Math.min(255,b+60)})`;
+  ctx.font = "bold 30px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text.toUpperCase(), W / 2, H / 2);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({
+    map: tex,
+    transparent: true,
+    depthWrite: false,
+    sizeAttenuation: true,
+  });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(2.0, 2.0 * (H / W), 1); // ~2 m wide × 0.4 m tall
   return sprite;
 }
 
@@ -274,7 +314,7 @@ function buildCardTable(
   group.add(strip);
 
   const label = makeLabel(glyph + " " + name);
-  label.position.set(0, 2.5, 0);
+  label.position.set(0, 2.4, 0);
   group.add(label);
 
   const sign = makeSignage(key, glyph);
@@ -285,7 +325,7 @@ function buildCardTable(
   scene.add(group);
 
   return {
-    key, name, position: pos, radius: 2.2, group,
+    key, name, position: pos, radius: 2.2, group, label,
     tick: (dt) => ring.tick(dt),
     setNear: ring.setNear,
     triggerPulse: ring.triggerPulse,
@@ -336,7 +376,7 @@ function buildWheelPlinth(
   group.add(pocket);
 
   const label = makeLabel(glyph + " " + name);
-  label.position.set(0, 2.6, 0);
+  label.position.set(0, 2.4, 0);
   group.add(label);
 
   const sign = makeSignage(key, glyph);
@@ -349,7 +389,7 @@ function buildWheelPlinth(
   let rot = 0;
   let colorPhase = 0;
   return {
-    key, name, position: pos, radius: 2.2, group,
+    key, name, position: pos, radius: 2.2, group, label,
     tick: (dt) => {
       rot += dt * 0.45;
       wheel.rotation.y = rot;
@@ -412,7 +452,7 @@ function buildCabinet(
   group.add(topBar);
 
   const label = makeLabel(glyph + " " + name);
-  label.position.set(0, 3.2, 0);
+  label.position.set(0, 2.8, 0);
   group.add(label);
 
   const sign = makeSignage(key, glyph);
@@ -424,7 +464,7 @@ function buildCabinet(
 
   let phase = 0;
   return {
-    key, name, position: pos, radius: 2.2, group,
+    key, name, position: pos, radius: 2.2, group, label,
     tick: (dt) => {
       phase += dt * 1.2;
       // Richer flicker: primary wave + faster harmonic
@@ -488,7 +528,7 @@ function buildGridPit(
   scene.add(group);
 
   return {
-    key, name, position: pos, radius: 2.2, group,
+    key, name, position: pos, radius: 2.2, group, label,
     tick: (dt) => ring.tick(dt),
     setNear: ring.setNear,
     triggerPulse: ring.triggerPulse,
@@ -558,7 +598,7 @@ function buildTower(
   group.add(catchMesh);
 
   const label = makeLabel(glyph + " " + name);
-  label.position.set(0, 4.0, 0);
+  label.position.set(0, 3.8, 0);
   group.add(label);
 
   const sign = makeSignage(key, glyph);
@@ -569,7 +609,7 @@ function buildTower(
   scene.add(group);
 
   return {
-    key, name, position: pos, radius: 2.2, group,
+    key, name, position: pos, radius: 2.2, group, label,
     tick: (dt) => ring.tick(dt),
     setNear: ring.setNear,
     triggerPulse: ring.triggerPulse,
@@ -628,7 +668,7 @@ function buildCrashPad(
   group.add(baseStrip);
 
   const label = makeLabel(glyph + " " + name);
-  label.position.set(0, 3.2, 0);
+  label.position.set(0, 2.8, 0);
   group.add(label);
 
   const sign = makeSignage(key, glyph);
@@ -640,7 +680,7 @@ function buildCrashPad(
 
   let phase = 0;
   return {
-    key, name, position: pos, radius: 2.2, group,
+    key, name, position: pos, radius: 2.2, group, label,
     tick: (dt) => {
       phase += dt * 1.8;
       // Brighter trail with sharper flicker for crash-pad drama
@@ -702,6 +742,11 @@ export function buildStations(
       center: new THREE.Vector3(cfg.cx, 0, cfg.cz),
       accent: cfg.accent,
     });
+
+    // Zone label sprite — world-sized, ~2 m wide, placed above zone center
+    const zoneLbl = makeZoneLabel(cfg.label, cfg.accent);
+    zoneLbl.position.set(cfg.cx, 3.8, cfg.cz);
+    scene.add(zoneLbl);
 
     const positions = zonePositions(entries.length, cfg.cx, cfg.cz, 5);
     for (let i = 0; i < entries.length; i++) {
