@@ -1,10 +1,11 @@
 // Ambient video backdrop for casino table surfaces.
 //
-// Renders a muted looping EVE Frontier flight video (self-hosted at
-// public/media/table-bg.mp4 — 3.8MB, sourced from cdn.evefrontier.com) behind
-// the table content, with a per-table tint gradient so each surface keeps its
-// hue identity (green felt, mines purple, tower amber, poker olive) and text /
-// cards / chips stay readable.
+// Renders one of the muted looping EVE Frontier reels (self-hosted in
+// public/media/, sourced from cdn.evefrontier.com) behind the table content,
+// picked at random per mount — tables feel alive and slightly different every
+// visit. A per-table tint gradient keeps each surface's hue identity (green
+// felt, mines purple, tower amber, poker olive) and text / cards / chips
+// readable.
 //
 // Usage: the host container must have `position: "relative"`,
 // `isolation: "isolate"` and `overflow: "hidden"` (isolation guarantees the
@@ -19,19 +20,32 @@ const PREFERS_REDUCED_MOTION =
   typeof window !== "undefined" &&
   !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+// Ambient reel pool — add new self-hosted clips here and they enter rotation.
+const REELS = ["media/table-bg.mp4", "media/table-bg-signal.webm"];
+
 export function TableVideoBackdrop({ tint }: { tint: string }) {
   const [failed, setFailed] = React.useState(false);
+  // Random pick, stable for the lifetime of this mount. If the chosen reel
+  // fails to play we fall through to the next before giving up entirely.
+  const [reelIdx, setReelIdx] = React.useState(() => Math.floor(Math.random() * REELS.length));
+  const [attempts, setAttempts] = React.useState(0);
   if (PREFERS_REDUCED_MOTION || failed) return null;
+  const onError = () => {
+    if (attempts + 1 >= REELS.length) { setFailed(true); return; }
+    setAttempts(attempts + 1);
+    setReelIdx((reelIdx + 1) % REELS.length);
+  };
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: -1, pointerEvents: "none", borderRadius: "inherit", overflow: "hidden" }}>
       <video
+        key={REELS[reelIdx]}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        src={`${import.meta.env.BASE_URL}media/table-bg.mp4`}
-        onError={() => setFailed(true)}
+        src={`${import.meta.env.BASE_URL}${REELS[reelIdx]}`}
+        onError={onError}
         style={{
           position: "absolute",
           inset: 0,
