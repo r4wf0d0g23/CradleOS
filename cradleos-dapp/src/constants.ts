@@ -346,7 +346,9 @@ export const RANDOM_OBJECT = "0x8";
 // v7 tx BW4utkwZQoz82wgFXRkAPDmnrgFwoKN9frPD4aEnRT4h (crash/diamonds/double_dice/war/baccarat/dragon_tower/video_poker/three_card_poker).
 // v6 tx 5m1rmB7EShihUmqJUdRWEnxn5goqi4jpw5vczEqjT64D (mines exposure fix).
 // v5 tx 8gxuNFsfvHByuMM9961K4jwitFTAaAJQR87dC5Hypsyi (limbo/hilo/plinko/keno/sicbo/mines added).
-export const CASINO_PKG_STILLNESS = "0xe28fcf20b93ffc759bda93d73d033a66c24fe6a41a6d3a017f1cf1d684bb984a";
+// v13 upgrade (per-ball exposure guard — operator ruling 2026-07-11) —
+// moveCall targets. Tx AsGb2LZmQ83KXEaeTmBsNeDiKxqtrUVHvpGVnWwh4MhP.
+export const CASINO_PKG_STILLNESS = "0x43de12dce6c3c318953f5f07c13c214a0ba1e1b99f3bbf32cf2af17a0494b1e6";
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";

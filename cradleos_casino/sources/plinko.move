@@ -214,10 +214,14 @@ module cradleos_casino::plinko {
         // per_drop must be at least 1 mist (dust check)
         assert!(per_drop >= 1, EBadCount);
 
-        // Exposure guard: worst-case total payout = per_drop * mult_x * count.
-        // Any dust (amount - per_drop * count) is implicitly house's.
+        // Exposure guard: per-ball worst-case payout ≤ 3% of bank.
+        // Operator ruling (2026-07-11): risk limits evaluate per ball, not total
+        // bet. N single drops each pass the 3%-of-bank guard individually, so
+        // batching N balls in one tx must not be stricter. The theoretical
+        // all-balls-hit-max case (~(1/2048)^N for HIGH edges) is accepted as
+        // tolerable tail risk. Any dust (amount - per_drop * count) is house's.
         let mult_x = if (mode <= 2) { mode_max_mult_x(mode) } else { MAX_MULT_X };
-        assert!(per_drop * mult_x * (count as u64) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        assert!(per_drop * mult_x <= house::bank_balance(house) * 3 / 100, EMaxExposure);
 
         house::deposit_stake(house, coin::into_balance(wager));
 
