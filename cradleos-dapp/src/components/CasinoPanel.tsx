@@ -15,8 +15,7 @@
  * Nav (Phase 1): lobby grid + search + category rail + router swap.
  * casinoView drives "lobby" vs "game" mode; game panels are lazy-mounted.
  */
-import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
-const Casino3D = React.lazy(() => import("./casino3d/Casino3D"));
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -138,7 +137,7 @@ export function CasinoPanel() {
   const addr = account?.address ?? "";
 
   // ── Router state (Phase 1 nav) ────────────────────────────────────────────
-  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game" | "floor3d"; gameKey: string }>({
+  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game"; gameKey: string }>({
     mode: "lobby",
     gameKey: "blackjack",
   });
@@ -410,7 +409,7 @@ export function CasinoPanel() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ color: ACCENT, fontSize: 22, fontWeight: 800, letterSpacing: "0.12em" }}>◈ CRADLE CASINO</div>
-            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>{CASINO_CATALOG.length} PROVABLY-FAIR GAMES · ON-CHAIN · SETTLED IN $EVE</div>
+            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>INTERACTIVE BLACKJACK · PROVABLY FAIR · SETTLED IN $EVE</div>
           </div>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             <Stat label="HOUSE BANK" value={house ? `${fmtEve(house.bankBalance)} EVE` : "—"} />
@@ -454,26 +453,6 @@ export function CasinoPanel() {
             ))}
           </div>
 
-          {/* 3D Floor entry */}
-          <div style={{ marginBottom: 16 }}>
-            <button
-              onClick={() => setCasinoView((prev) => ({ mode: "floor3d", gameKey: prev.gameKey }))}
-              style={{
-                background: "#0a0a12",
-                border: `1px solid #FF470088`,
-                color: "#FF4700",
-                fontSize: 12,
-                fontWeight: 800,
-                letterSpacing: "0.08em",
-                padding: "10px 20px",
-                cursor: "pointer",
-                width: "100%",
-              }}
-            >
-              {"◈ 3D FLOOR (BETA)"}
-            </button>
-          </div>
-
           {/* Game grid */}
           {filteredGames.length === 0 ? (
             <div style={{ color: "#555", padding: "40px 0", textAlign: "center", fontSize: 13 }}>
@@ -490,18 +469,6 @@ export function CasinoPanel() {
               ))}
             </div>
           )}
-        </div>
-
-      ) : casinoView.mode === "floor3d" ? (
-
-        /* ── 3D FLOOR VIEW ── */
-        <div style={{ position: "relative", width: "100%", height: "70vh", minHeight: 480 }}>
-          <Suspense fallback={<div style={{ color: "#888", padding: 40, fontFamily: "monospace" }}>LOADING 3D FLOOR...</div>}>
-            <Casino3D
-              onExit={backToLobby}
-              onOpenGame={(k: string) => setCasinoView({ mode: "game", gameKey: k })}
-            />
-          </Suspense>
         </div>
 
       ) : (
@@ -660,16 +627,13 @@ function Center({ text, color }: { text: string; color: string }) {
 }
 function SplitOutcomeBadge({ s }: { s: SplitSettlement }) {
   const net = s.payout - s.wager;
-  const isPartial = s.payout > 0 && net < 0;
-  const isPush = s.payout > 0 && net === 0;
-  const col = net > 0 ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
-  const deltaText = net > 0 ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
+  const col = net > 0 ? GREEN : net === 0 ? "#9a9a8a" : ACCENT;
   return (
     <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
       <div style={{ color: col, fontSize: 20, fontWeight: 900, letterSpacing: "0.08em" }}>
         A: {outcomeLabel(s.outcomeA)} · B: {outcomeLabel(s.outcomeB)}
       </div>
-      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{deltaText}</div>
+      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{net > 0 ? `+${fmtEve(net)}` : net < 0 ? fmtEve(net) : "±0"} EVE</div>
     </div>
   );
 }
@@ -678,11 +642,10 @@ function OutcomeBadge({ s }: { s: LiveSettlement }) {
   const push = s.outcome === OUT_PUSH;
   const col = s.outcome === OUT_BLACKJACK ? GOLD : win ? GREEN : push ? "#9a9a8a" : ACCENT;
   const net = s.payout - s.wager;
-  const odeltaText = net > 0 ? `+${fmtEve(net)} EVE` : net === 0 ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
   return (
     <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
       <div style={{ color: col, fontSize: 24, fontWeight: 900, letterSpacing: "0.1em" }}>{outcomeLabel(s.outcome)}{s.doubled ? " ×2" : ""}</div>
-      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{odeltaText}</div>
+      <div style={{ color: col, fontSize: 14, marginTop: 2 }}>{net > 0 ? `+${fmtEve(net)}` : net < 0 ? fmtEve(net) : "±0"} EVE</div>
     </div>
   );
 }
