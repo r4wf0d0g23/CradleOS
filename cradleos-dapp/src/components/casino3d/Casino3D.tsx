@@ -177,6 +177,10 @@ export default function Casino3D({ onExit, onOpenGame }: Props) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.shadowMap.enabled = false;
+    // Linear tone mapping: canvas sRGB pixel = output pixel (identity).
+    // Walls use MeshBasicMaterial + SRGBColorSpace + fog:false for guaranteed visibility.
+    renderer.toneMapping = THREE.LinearToneMapping;
+    renderer.toneMappingExposure = 1.0;
     container.appendChild(renderer.domElement);
 
     // ── Scene ────────────────────────────────────────────────────────────────

@@ -15,6 +15,7 @@
 
 import * as THREE from "three";
 import type { GameEntry } from "../../lib/casinoCatalog";
+import { getSharedHullTex } from "./floor";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public types
@@ -311,16 +312,24 @@ function buildCardTable(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Table body — hull-metal PBR
+  // Table body — hull-panel texture, self-emissive so it reads in dark bunker
+  const hullTex = getSharedHullTex().clone();
+  hullTex.repeat.set(2, 1); hullTex.needsUpdate = true;
   const bodyGeo = new THREE.BoxGeometry(2.2, 0.9, 1.2);
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1510, map: hullTex, roughness: 0.75, metalness: 0.82,
+    emissive: new THREE.Color(0x1a1510), emissiveIntensity: 0.6,
+  });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
   body.position.y = 0.45;
   group.add(body);
 
-  // Felt top — brighter green for readability from distance
+  // Glowing amber surface — emissive for readability in dark scene
   const feltGeo = new THREE.PlaneGeometry(2.0, 1.0);
-  const feltMat = new THREE.MeshStandardMaterial({ color: 0x163a16, roughness: 0.95 });
+  const feltMat = new THREE.MeshStandardMaterial({
+    color: 0x0a1808, emissive: new THREE.Color(accent),
+    emissiveIntensity: 0.6, roughness: 0.85, toneMapped: false,
+  });
   const felt = new THREE.Mesh(feltGeo, feltMat);
   felt.rotation.x = -Math.PI / 2;
   felt.position.y = 0.91;
@@ -334,10 +343,10 @@ function buildCardTable(
   inlay.position.set(0, 0.912, 0);
   group.add(inlay);
 
-  // Gold rim (4 edges)
+  // Gold rim (4 edges) — bright emissive for edge definition
   const rimMat = new THREE.MeshStandardMaterial({
-    color: 0xe8b84b, emissive: new THREE.Color(0xe8b84b), emissiveIntensity: 0.12,
-    metalness: 0.7, roughness: 0.3,
+    color: 0xe8b84b, emissive: new THREE.Color(0xe8b84b),
+    emissiveIntensity: 0.9, metalness: 0.7, roughness: 0.3, toneMapped: false,
   });
   const rims: [number, number, number, number, number, number][] = [
     [0, 0.91, -0.6, 2.2, 0.04, 0.04],
