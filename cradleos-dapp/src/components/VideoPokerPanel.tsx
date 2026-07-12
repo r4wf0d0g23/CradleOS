@@ -10,6 +10,7 @@
  * Paytable: Jacks or Better (1x) through Royal Flush (250x).
  */
 import { useState, useCallback, useEffect } from "react";
+import { TableVideoBackdrop } from "./TableVideoBackdrop";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -313,7 +314,8 @@ export function VideoPokerPanel() {
     <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
       <div style={{ flex: "1 1 440px", minWidth: 340 }}>
         {/* Header */}
-        <div style={{ background: "radial-gradient(ellipse at 50% 10%, #14190a 0%, #0c0c0c 55%, #060606 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "18px 20px", boxShadow: "inset 0 0 60px rgba(0,0,0,0.7)" }}>
+        <div style={{ background: "radial-gradient(ellipse at 50% 10%, #14190a 0%, #0c0c0c 55%, #060606 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "18px 20px", boxShadow: "inset 0 0 60px rgba(0,0,0,0.7)", position: "relative", isolation: "isolate", overflow: "hidden" }}>
+          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 10%, rgba(20,25,10,0.55) 0%, rgba(12,12,12,0.68) 55%, rgba(6,6,6,0.85) 100%)" />
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>◈ VIDEO POKER</div>
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>
             Jacks or Better. Deal 5 cards, choose which to hold, draw replacements. Best hand wins.
@@ -363,14 +365,9 @@ export function VideoPokerPanel() {
                   {handRankDef?.label ?? "LOSS"}
                   {handRankDef && handRankDef.mult > 0 ? ` · ${handRankDef.mult}x` : ""}
                 </div>
-                {(() => {
-                  const isWin = net > 0;
-                  const isPush = settle.payout > 0 && net === 0;
-                  const isPartial = settle.payout > 0 && net < 0;
-                  const dColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
-                  const dText = isWin ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
-                  return <div style={{ color: dColor, fontSize: 18, fontWeight: 800, marginTop: 4 }}>{dText}</div>;
-                })()}
+                <div style={{ color: net > 0 ? GREEN : ACCENT, fontSize: 18, fontWeight: 800, marginTop: 4 }}>
+                  {net > 0 ? `+${fmtEve(net)}` : `${fmtEve(net)}`} EVE
+                </div>
                 {net > 0 && (
                   <div style={{ color: "#888", fontSize: 11, marginTop: 2 }}>
                     gross payout {fmtEve(settle.payout)} EVE
