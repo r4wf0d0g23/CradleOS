@@ -252,13 +252,21 @@ export function MinesPanel() {
         setMultAnimating(true);
         setTimeout(() => setMultAnimating(false), 600);
       } else {
-        // Bust — mine hit; game object consumed
-        setMineMap(outcome.settle.mineMap);
-        setBusted(true);
-        setPayout(0);
-        setFinalWager(outcome.settle.wager);
-        setMultiplierBps(outcome.settle.multiplierBps);
-        setSafeCount(outcome.settle.safeRevealed);
+        // Game settled on this reveal. Two cases:
+        //   busted=true  → mine hit (loss, payout 0)
+        //   busted=false → LAST safe tile revealed → mines::reveal auto-cashes-out
+        //                   the whole board at top mult (settle_win emits
+        //                   MinesSettled busted:false, payout>0). Do NOT hardcode
+        //                   a bust here — honor the on-chain event, else a
+        //                   full-board-clear WIN renders as '⛨ BUSTED'.
+        //                   (Same bug class fixed in Dragon Tower 2026-07-12.)
+        const s = outcome.settle;
+        setMineMap(s.mineMap);
+        setBusted(s.busted);
+        setPayout(s.busted ? 0 : s.payout);
+        setFinalWager(s.wager);
+        setMultiplierBps(s.multiplierBps);
+        setSafeCount(s.safeRevealed);
         setPhase("done");
       }
       balQ.refetch();
@@ -417,16 +425,11 @@ export function MinesPanel() {
           {isDone && (
             <div style={{ marginTop: 14, textAlign: "center", padding: "10px 0 4px" }}>
               <div style={{ color: busted ? ACCENT : GREEN, fontSize: 28, fontWeight: 900, letterSpacing: "0.08em" }}>
-                {busted ? "⛨ BUSTED" : "◉ CASHED OUT"}
+                {busted ? "⛨ BUSTED" : (safeCount >= 25 - currentMines ? "◉ BOARD CLEARED" : "◉ CASHED OUT")}
               </div>
-              {(() => {
-                const isWin = net > 0;
-                const isPush = payout > 0 && net === 0;
-                const isPartial = payout > 0 && net < 0;
-                const dColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
-                const dText = isWin ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
-                return <div style={{ color: dColor, fontSize: 16, marginTop: 4, fontWeight: 800 }}>{dText}</div>;
-              })()}
+              <div style={{ color: net > 0 ? GREEN : ACCENT, fontSize: 16, marginTop: 4, fontWeight: 800 }}>
+                {net > 0 ? `+${fmtEve(net)}` : `${fmtEve(net)}`} EVE
+              </div>
               {!busted && payout > 0 && (
                 <div style={{ color: "#888", fontSize: 11, marginTop: 2 }}>
                   gross payout {fmtEve(payout)} EVE · {fmtMult(multiplierBps)} multiplier
