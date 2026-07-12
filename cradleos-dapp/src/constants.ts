@@ -352,7 +352,11 @@ export const RANDOM_OBJECT = "0x8";
 // Tx Ge4962YZSTmE9d72qhEYytTsJgHMp2Yvzqq2sMCxTNWj.
 // v15 upgrade (plinko per-ball max_bet fix: take_wager_amount_multi — 2026-07-12) —
 // Tx 5eG3ogXQ46hvP3tQ2TAZmBj3EFbRLe43T5VoQRrB6GqB.
-export const CASINO_PKG_STILLNESS = "0x14c7dde815cf33efb0e46071750c80e41982fd2caa24d15a36fb5c1067060cf4";
+// v16 upgrade (dragon_tiger + under_over_7 + ore_refine — 3 new games, 2026-07-12) —
+// Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
+// v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
+// moveCall target.
+export const CASINO_PKG_STILLNESS = "0x24500dde39bf459e88341ee68427dea72a883bad6149c8a86096ba506f91702c";
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -391,6 +395,10 @@ export const CASINO_V10 = _serverEnv === "stillness" ? CASINO_V10_STILLNESS : ""
 // This pins PlinkoMultiDropped event queries to the defining package id.
 export const CASINO_PLINKO_MULTI_STILLNESS = "0xe28fcf20b93ffc759bda93d73d033a66c24fe6a41a6d3a017f1cf1d684bb984a";
 export const CASINO_PLINKO_MULTI = _serverEnv === "stillness" ? CASINO_PLINKO_MULTI_STILLNESS : "";
+// v16 introduced: dragon_tiger::DragonTigerPlayed, under_over_7::UnderOver7Rolled,
+// ore_refine::OreRefined event types. Tag under v16 id forever.
+export const CASINO_V16_STILLNESS = "0x771ecec58588d78ac75da040ae58cde42bbedab433d698970098eb2525e53b92";
+export const CASINO_V16 = _serverEnv === "stillness" ? CASINO_V16_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

@@ -20,6 +20,7 @@ import {
   CASINO_V10,
   CASINO_PLINKO_MULTI,
   CASINO_ORIGINAL,
+  CASINO_V16,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -27,7 +28,7 @@ import {
 } from "../constants";
 import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -128,6 +129,17 @@ export const BACCARAT_KINDS = [
 // Three-card poker rank labels
 export const THREE_CARD_RANKS = ["HIGH","PAIR","FLUSH","STRAIGHT","THREE KIND","STR FLUSH"];
 
+// Dragon Tiger constants
+export const DRAGON_TIGER_BET_LABELS = ["DRAGON", "TIGER", "TIE"];
+export const WAR_RANKS_13 = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"]; // 0-12
+
+// Under/Over 7 constants
+export const UNDER_OVER_7_KIND_LABELS = ["UNDER", "EXACTLY 7", "OVER"];
+
+// Ore Refine constants
+export const ORE_REFINE_TIER_LABELS = ["BASIC","STANDARD","ADVANCED","INDUSTRIAL","CRITICAL"];
+export const ORE_REFINE_OUTCOME_LABELS = ["SLAG","PARTIAL","YIELD","BONUS"];
+
 // Card rank labels for war/baccarat/three_card_poker (0-12 = 0=Ace..12=K for standard; 
 // war uses 0=Two..12=Ace which maps to WAR_RANKS above)
 
@@ -195,7 +207,7 @@ const GAMES: Record<InstantGameKey, GameDef> = {
     module: "baccarat", event: "BaccaratPlayed",
     describe: (f) => {
       const kindLabel = ["PLAYER","BANKER","TIE"][Number(f.kind)] ?? "?";
-      const resultLabel = Number(f.result) === 0 ? "PLAYER WIN" : Number(f.result) === 1 ? "BANK WIN" : "TIE";
+      const resultLabel = Number(f.result) === 0 ? "BANK WIN" : Number(f.result) === 1 ? "TIE" : "PLAYER WIN";
       return `bet ${kindLabel} · ${resultLabel} · P${f.player_score} B${f.banker_score}`;
     },
   },
@@ -205,6 +217,30 @@ const GAMES: Record<InstantGameKey, GameDef> = {
       const res = Number(f.result);
       const resLabel = res === 0 ? "LOSS" : res === 1 ? "PUSH" : "WIN";
       return `${resLabel} · P:${THREE_CARD_RANKS[Number(f.player_rank)] ?? "?"} D:${THREE_CARD_RANKS[Number(f.dealer_rank)] ?? "?"}`;
+    },
+  },
+  dragon_tiger: {
+    module: "dragon_tiger", event: "DragonTigerPlayed",
+    describe: (f) => {
+      const bet = DRAGON_TIGER_BET_LABELS[Number(f.bet_type)] ?? "?";
+      const dr = WAR_RANKS_13[Number(f.dragon_rank)] ?? "?";
+      const tr = WAR_RANKS_13[Number(f.tiger_rank)] ?? "?";
+      return `${bet} · Dragon ${dr} vs Tiger ${tr} · ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
+    },
+  },
+  under_over_7: {
+    module: "under_over_7", event: "UnderOver7Rolled",
+    describe: (f) => {
+      const kind = UNDER_OVER_7_KIND_LABELS[Number(f.kind)] ?? "?";
+      return `${kind} · ${f.d1}+${f.d2}=${Number(f.sum)} · ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
+    },
+  },
+  ore_refine: {
+    module: "ore_refine", event: "OreRefined",
+    describe: (f) => {
+      const tier = ORE_REFINE_TIER_LABELS[Number(f.tier) - 1] ?? "?";
+      const outcome = ORE_REFINE_OUTCOME_LABELS[Number(f.outcome)] ?? "?";
+      return `${tier} · ${outcome} · ${Number(f.payout) > 0 ? (Number(f.payout) / 1e9).toFixed(1) + " EVE" : "SLAG"}`;
     },
   },
 };
@@ -526,6 +562,33 @@ export function buildThreeCardTx(coins: string[], wagerRaw: bigint): Transaction
   return tx;
 }
 
+export function buildDragonTigerTx(coins: string[], wagerRaw: bigint, betType: 0 | 1 | 2): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::dragon_tiger::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(betType)],
+  });
+  return tx;
+}
+
+export function buildUnderOver7Tx(coins: string[], wagerRaw: bigint, kind: 0 | 1 | 2): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::under_over_7::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind)],
+  });
+  return tx;
+}
+
+export function buildOreRefineTx(coins: string[], wagerRaw: bigint, tier: 1 | 2 | 3 | 4 | 5): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::ore_refine::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(tier)],
+  });
+  return tx;
+}
+
 // ── Resolution by digest ─────────────────────────────────────────────────────
 export async function resolveInstantByDigest(game: InstantGameKey, digest: string): Promise<InstantResult | null> {
   const def = GAMES[game];
@@ -566,6 +629,8 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   limbo: CASINO_V5, hilo: CASINO_V5, plinko: CASINO_V5, keno: CASINO_V5, sicbo: CASINO_V5,
   crash: CASINO_V7, diamonds: CASINO_V7, double_dice: CASINO_V7, war: CASINO_V7,
   baccarat: CASINO_V7, three_card_poker: CASINO_V7,
+  // v16 new games: DragonTigerPlayed, UnderOver7Rolled, OreRefined introduced in v16.
+  dragon_tiger: CASINO_V16, under_over_7: CASINO_V16, ore_refine: CASINO_V16,
 };
 
 // Stateful games' settle events — merged into the all-games feed. Each event

@@ -249,6 +249,36 @@ export const CASINO_CATALOG: GameEntry[] = [
     hook: "Jacks or Better — hold your best cards and draw to win",
     status: "live",
   },
+  {
+    key: "dragon_tiger",
+    name: "DRAGON TIGER",
+    category: "duels",
+    variance: "L",
+    buildClass: "I",
+    glyph: "\u25CE",   // ◎  BULLSEYE
+    hook: "One card each. Dragon vs Tiger — highest rank wins. Fastest card game on-chain.",
+    status: "live",
+  },
+  {
+    key: "under_over_7",
+    name: "UNDER/OVER 7",
+    category: "dice",
+    variance: "L",
+    buildClass: "I",
+    glyph: "\u25A3",   // \u25A3  WHITE SQUARE CONTAINING BLACK SMALL SQUARE
+    hook: "Two dice — bet the sum falls under 7, over 7, or exactly 7.",
+    status: "live",
+  },
+  {
+    key: "ore_refine",
+    name: "ORE REFINE",
+    category: "eve-native",
+    variance: "H",
+    buildClass: "I",
+    glyph: "\u229E",   // ⊞  SQUARED PLUS
+    hook: "Risk your ore through 5 refine intensities. BASIC to CRITICAL — BONUS yields up to 20x.",
+    status: "live",
+  },
 ];
 
 /** Display labels for the category rail buttons. */

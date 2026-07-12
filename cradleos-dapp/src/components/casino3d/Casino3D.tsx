@@ -322,7 +322,7 @@ export default function Casino3D({ onExit, onOpenGame }: Props) {
     const activeRings: ReturnType<typeof makeTargetRing>[] = [];
 
     const controls = new FloorControls(camera, renderer.domElement, ROOM_BOUNDS, {
-      onClickTarget: (pos) => {
+      onClickTarget: (pos: THREE.Vector3) => {
         activeRings.push(makeTargetRing(scene, pos));
       },
     });

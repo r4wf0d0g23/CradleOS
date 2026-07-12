@@ -46,11 +46,11 @@ export function useCasinoKeyframes() {
       @keyframes cas-multiplier-climb { 0% { transform: translateY(4px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
       @keyframes cas-tile-pop { 0% { transform: scale(0.8); opacity: 0.4; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
       @keyframes cas-mine-shake { 0%,100% { transform: translateX(0) translateY(0); } 25% { transform: translateX(-4px) translateY(-2px) rotate(-3deg); } 75% { transform: translateX(4px) translateY(2px) rotate(3deg); } }
+      @keyframes cas-bar-fill { from { width: 0%; } to { width: 100%; } }
       @keyframes cas-ascend-row { 0% { transform: translateY(10px); opacity: 0.3; } 100% { transform: translateY(0); opacity: 1; } }
       @keyframes cas-held-pulse { 0%,100% { box-shadow: 0 0 8px ${GREEN}66; } 50% { box-shadow: 0 0 20px ${GREEN}cc; } }
       @keyframes cas-card-deal { 0% { transform: translateX(-30px) rotate(-5deg); opacity: 0; } 100% { transform: translateX(0) rotate(0deg); opacity: 1; } }
       @keyframes cas-win-hand { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-      @keyframes cas-tick-fade { 0% { opacity: 1; } 100% { opacity: 0; } }
     `;
     document.head.appendChild(el);
   }, []);
@@ -256,17 +256,12 @@ export function WheelStage({ segment, onDone }: { segment: number; onDone: () =>
 }
 
 // ── WIN/LOSS flash overlay ───────────────────────────────────────────────────
-export function ResultFlash({ win, partial }: { win: boolean; partial?: boolean }) {
+export function ResultFlash({ win }: { win: boolean }) {
   useCasinoKeyframes();
-  const color = win
-    ? "rgba(63,207,106,0.35)"
-    : partial
-      ? "rgba(232,184,75,0.25)"
-      : "rgba(255,71,0,0.3)";
   return (
     <div style={{
       position: "absolute", inset: 0, pointerEvents: "none", borderRadius: 12,
-      background: `radial-gradient(ellipse, ${color}, transparent 70%)`,
+      background: win ? "radial-gradient(ellipse, rgba(63,207,106,0.35), transparent 70%)" : "radial-gradient(ellipse, rgba(255,71,0,0.3), transparent 70%)",
       animation: "cas-flash 1.4s ease-out forwards",
     }} />
   );
@@ -774,7 +769,7 @@ export function BaccaratStage({ playerCards, bankerCards, playerScore, bankerSco
   bankerCards: number[];
   playerScore: number;
   bankerScore: number;
-  result: number; // 0=player win, 1=banker win, 2=tie
+  result: number; // 0=banker, 1=tie, 2=player
   onDone: () => void;
 }) {
   useCasinoKeyframes();
@@ -794,19 +789,18 @@ export function BaccaratStage({ playerCards, bankerCards, playerScore, bankerSco
     return () => clearTimeout(t);
   }, []);
 
-  // 0=player win → player glows green; 1=banker win → banker glows green; 2=tie → both gold
   const playerHighlight = (): "green" | "red" | "gold" | undefined => {
-    if (result === 2) return "gold";
-    if (result === 0) return "green";
+    if (result === 1) return "gold";
+    if (result === 2) return "green";
     return "red";
   };
   const bankerHighlight = (): "green" | "red" | "gold" | undefined => {
-    if (result === 2) return "gold";
-    if (result === 1) return "green";
+    if (result === 1) return "gold";
+    if (result === 0) return "green";
     return "red";
   };
-  const resultLabel = result === 0 ? "PLAYER WINS" : result === 1 ? "BANKER WINS" : "TIE";
-  const resultColor = result === 0 ? GREEN : result === 1 ? ACCENT : GOLD;
+  const resultLabel = result === 0 ? "BANKER WINS" : result === 1 ? "TIE" : "PLAYER WINS";
+  const resultColor = result === 1 ? GOLD : result === 2 ? GREEN : ACCENT;
 
   return (
     <div style={{ padding: "10px 0" }}>
@@ -987,6 +981,7 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
         setBallRow(PLINKO_ROWS);
         setBallCol(bucket);
         setLanded(true);
+        setTimeout(onDone, 600);
         return;
       }
       // bit row of path: 0 = left, 1 = right
@@ -1004,8 +999,8 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
     return () => clearTimeout(animRef.current);
   }, []);
 
-  const cellW = 18; // px per column unit (compact for narrow webview)
-  const rowH = 16;  // px per row (compact)
+  const cellW = 24; // px per column unit
+  const rowH = 20;  // px per row
   const boardW = PLINKO_BUCKETS * cellW;
   const boardH = (PLINKO_ROWS + 2) * rowH;
 
@@ -1041,12 +1036,12 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
         {/* Ball */}
         <div style={{
           position: "absolute",
-          left: ballX - 5,
-          top: ballY - 5,
-          width: 11, height: 11,
+          left: ballX - 7,
+          top: ballY - 7,
+          width: 14, height: 14,
           borderRadius: "50%",
           background: "radial-gradient(circle at 35% 30%, #ff9966, #cc3300)",
-          boxShadow: `0 0 6px ${ACCENT}`,
+          boxShadow: `0 0 8px ${ACCENT}`,
           animation: "cas-plinko-fall 0.08s ease",
           transition: "top 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.12s ease",
           zIndex: 10,
@@ -1086,14 +1081,6 @@ export function PlinkoStage({ path, bucket, mults, onDone }: { path: number; buc
           <div style={{ color: "#666", fontSize: 9, letterSpacing: "0.1em" }}>BUCKET {bucket}</div>
           <div style={{ color: bucketColor, fontSize: 28, fontWeight: 900 }}>{bucketMult}x</div>
         </div>
-      )}
-      {landed && (
-        <button
-          onClick={onDone}
-          style={{ marginTop: 10, background: "#0c1c12", border: `1px solid ${ACCENT}`, color: ACCENT, fontSize: 12, fontWeight: 800, letterSpacing: "0.1em", padding: "8px 18px", cursor: "pointer" }}
-        >
-          CONTINUE ▸
-        </button>
       )}
     </div>
   );
@@ -1182,260 +1169,179 @@ export function SicBoStage({ d1, d2, d3, kind: _kind, target: _target, onDone }:
   );
 }
 
-// ── PLINKO MULTI-DROP: staggered ball drops, per-landing ticks, climbing total ─
-const LAUNCH_STAGGER_MS = 280;
-const BALL_HUES = [
-  "radial-gradient(circle at 35% 30%, #ff9966, #cc3300)",
-  "radial-gradient(circle at 35% 30%, #ffb84d, #cc6600)",
-  "radial-gradient(circle at 35% 30%, #ff7755, #aa2200)",
-  "radial-gradient(circle at 35% 30%, #ffcc44, #cc8800)",
-  "radial-gradient(circle at 35% 30%, #ff8844, #bb4400)",
-  "radial-gradient(circle at 35% 30%, #ffaa33, #dd6600)",
-  "radial-gradient(circle at 35% 30%, #ff6633, #992200)",
-  "radial-gradient(circle at 35% 30%, #ffbb55, #dd7700)",
-  "radial-gradient(circle at 35% 30%, #ff8822, #cc4400)",
-  "radial-gradient(circle at 35% 30%, #ffaa66, #bb5500)",
-];
+// ── DRAGON TIGER: two cards flip, Dragon vs Tiger ────────────────────────────
+const DT_RANKS = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
 
-interface MultiBallState {
-  row: number;  // -1 = waiting, 0..PLINKO_ROWS-1 = in flight, PLINKO_ROWS = landed
-  col: number;
-  landed: boolean;
-}
-
-export function PlinkoMultiStage({
-  paths,
-  buckets,
-  payouts,
-  wager,
-  mults,
-  onDone,
-}: {
-  paths: number[];
-  buckets: number[];
-  payouts: number[];
-  wager: number;
-  mults?: number[];
-  onDone: () => void;
+function DuelCard({ rank, label, delayMs, isWinner, isTie }: {
+  rank: number; label: string; delayMs: number; isWinner: boolean; isTie: boolean;
 }) {
   useCasinoKeyframes();
-  const bucketMults = mults ?? PLINKO_BUCKET_MULTS;
-  const count = paths.length;
-
-  const [balls, setBalls] = useState<MultiBallState[]>(() =>
-    paths.map(() => ({ row: -1, col: PLINKO_ROWS / 2, landed: false }))
-  );
-  const [landedPayouts, setLandedPayouts] = useState<(number | null)[]>(() => paths.map(() => null));
-  const [runningTotal, setRunningTotal] = useState(0);
-  const [allDone, setAllDone] = useState(false);
-
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-
+  const [flipped, setFlipped] = useState(false);
   useEffect(() => {
-    const timers: ReturnType<typeof setTimeout>[] = [];
-
-    paths.forEach((path, ballIdx) => {
-      const launchDelay = ballIdx * LAUNCH_STAGGER_MS;
-      const col = PLINKO_ROWS / 2;
-
-      const scheduleRow = (currentRow: number, currentCol: number, delay: number) => {
-        const t = setTimeout(() => {
-          if (currentRow >= PLINKO_ROWS) {
-            // Ball landed
-            setBalls((prev) => {
-              const next = prev.map((b, i) =>
-                i === ballIdx ? { row: PLINKO_ROWS, col: buckets[ballIdx], landed: true } : b
-              );
-              return next;
-            });
-            setLandedPayouts((prev) => {
-              const next = [...prev];
-              next[ballIdx] = payouts[ballIdx] ?? 0;
-              return next;
-            });
-            setRunningTotal((prev) => prev + (payouts[ballIdx] ?? 0));
-          } else {
-            const goRight = ((path >> currentRow) & 1) === 1;
-            const nextCol = currentCol + (goRight ? 0.5 : -0.5);
-            setBalls((prev) => {
-              const next = prev.map((b, i) =>
-                i === ballIdx ? { row: currentRow, col: nextCol, landed: false } : b
-              );
-              return next;
-            });
-            const nextDelay = Math.max(60, 220 - currentRow * 13);
-            scheduleRow(currentRow + 1, nextCol, nextDelay);
-          }
-        }, delay);
-        timers.push(t);
-      };
-
-      // Initial launch after stagger
-      const launchT = setTimeout(() => {
-        setBalls((prev) =>
-          prev.map((b, i) => (i === ballIdx ? { ...b, row: 0 } : b))
-        );
-        scheduleRow(0, col, Math.max(60, 220));
-      }, launchDelay);
-      timers.push(launchT);
-    });
-
-    // After last ball lands + 600ms beat, call onDone
-    const totalDuration = (count - 1) * LAUNCH_STAGGER_MS + PLINKO_ROWS * 130 + 800;
-    const doneT = setTimeout(() => {
-      setAllDone(true);
-    }, totalDuration);
-    timers.push(doneT);
-
-    timersRef.current = timers;
-    return () => timers.forEach(clearTimeout);
+    const t = setTimeout(() => setFlipped(true), delayMs);
+    return () => clearTimeout(t);
   }, []);
-
-  const cellW = 18; // compact for narrow webview
-  const rowH = 16;
-  const boardW = PLINKO_BUCKETS * cellW;
-  const boardH = (PLINKO_ROWS + 2) * rowH;
-
-  const perDrop = count > 0 ? wager / count : 0;
-  const net = runningTotal - wager;
-  const totalColor = allDone
-    ? net > 0 ? GREEN : net === 0 ? GOLD : ACCENT
-    : GOLD;
-
-  // Count landings per bucket for flash intensity
-  const landingCounts: number[] = Array(PLINKO_BUCKETS).fill(0);
-  balls.forEach((b, i) => {
-    if (b.landed) landingCounts[buckets[i]]++;
-  });
-
+  const borderColor = !flipped ? "#333" : isWinner ? GREEN : isTie ? GOLD : ACCENT;
+  const glowAnim = !flipped ? undefined : isWinner ? "cas-glow-green 1s ease infinite" : isTie ? "cas-glow-gold 1s ease infinite" : undefined;
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "8px 0" }}>
-      {/* Running total */}
-      <div style={{ marginBottom: 6, textAlign: "center", minHeight: 28 }}>
-        <span style={{ color: "#555", fontSize: 10, letterSpacing: "0.08em" }}>TOTAL </span>
-        <span style={{
-          color: totalColor,
-          fontSize: 16,
-          fontWeight: 900,
-          transition: "color 0.4s",
-          animation: runningTotal > 0 ? "cas-multiplier-climb 0.3s ease" : undefined,
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+      <div style={{ fontSize: 10, color: "#777", letterSpacing: "0.12em", fontWeight: 700 }}>{label}</div>
+      <div style={{ perspective: 400, width: 72, height: 96 }}>
+        <div style={{
+          position: "relative", width: "100%", height: "100%",
+          transformStyle: "preserve-3d",
+          transform: flipped ? "rotateY(0deg)" : "rotateY(180deg)",
+          transition: `transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${delayMs}ms`,
         }}>
-          {runningTotal.toFixed(4)} EVE
-        </span>
-        {allDone && (
-          <span style={{
-            marginLeft: 8,
-            color: net > 0 ? GREEN : net === 0 ? GOLD : ACCENT,
-            fontSize: 13,
-            fontWeight: 700,
-            animation: "cas-pop 0.4s ease",
+          <div style={{
+            position: "absolute", inset: 0, backfaceVisibility: "hidden",
+            background: "linear-gradient(135deg, #1a1a2e, #0f0f1a)",
+            border: `2px solid ${borderColor}`, borderRadius: 8,
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+            boxShadow: isWinner && flipped ? `0 0 18px ${GREEN}88` : "none",
+            animation: glowAnim, transition: "border-color 0.3s",
           }}>
-            ({net > 0 ? "+" : ""}{net.toFixed(4)})
-          </span>
-        )}
-      </div>
-
-      <div style={{ position: "relative", width: boardW, height: boardH, overflow: "hidden", background: "#080810", border: "1px solid #222", borderRadius: 8 }}>
-        {/* Pegs */}
-        {Array.from({ length: PLINKO_ROWS }, (_, row) =>
-          Array.from({ length: row + 2 }, (_, pegIdx) => {
-            const pegX = (PLINKO_ROWS / 2 - row / 2 + pegIdx) * cellW;
-            const pegY = (row + 0.5) * rowH - 3;
-            return (
-              <div key={`p-${row}-${pegIdx}`} style={{
-                position: "absolute",
-                left: pegX - 3, top: pegY,
-                width: 6, height: 6,
-                borderRadius: "50%",
-                background: "#334",
-                boxShadow: "0 0 3px #556",
-              }} />
-            );
-          })
-        )}
-
-        {/* Balls */}
-        {balls.map((ball, i) => {
-          if (ball.row === -1) return null;
-          const ballX = ball.col * cellW;
-          const ballY = ball.row === -1 ? -rowH : (ball.row + 0.5) * rowH;
-          return (
-            <div key={`ball-${i}`} style={{
-              position: "absolute",
-              left: ballX - 5,
-              top: ballY - 5,
-              width: 11, height: 11,
-              borderRadius: "50%",
-              background: BALL_HUES[i % BALL_HUES.length],
-              boxShadow: `0 0 6px ${ACCENT}`,
-              transition: "top 0.12s cubic-bezier(0.25,0.46,0.45,0.94), left 0.12s ease",
-              zIndex: 10 + i,
-              opacity: 1,
-            }} />
-          );
-        })}
-
-        {/* Per-landing "+payout" ticks — stacked per bucket, fade after 2.5s */}
-        {(() => {
-          const bktStack: number[] = Array(PLINKO_BUCKETS).fill(0);
-          return landedPayouts.map((p, i) => {
-            if (p === null) return null;
-            const bkt = buckets[i];
-            const stackIdx = bktStack[bkt]++;
-            const bx = (bkt + 0.5) * cellW;
-            const mult = perDrop > 0 ? p / perDrop : 0;
-            const col = mult >= 2 ? GOLD : p > perDrop ? GREEN : "#888";
-            return (
-              <div key={`tick-${i}`} style={{
-                position: "absolute",
-                left: bx - 18,
-                bottom: rowH + stackIdx * 12 + 4,
-                width: 36,
-                textAlign: "center",
-                color: col,
-                fontSize: 9,
-                fontWeight: 800,
-                animation: "cas-multiplier-climb 0.35s ease forwards, cas-tick-fade 0.5s ease 2s forwards",
-                pointerEvents: "none",
-                zIndex: 30,
-              }}>
-                +{p.toFixed(3)}
-              </div>
-            );
-          });
-        })()}
-
-        {/* Buckets */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: rowH, display: "flex" }}>
-          {Array.from({ length: PLINKO_BUCKETS }, (_, b) => {
-            const landCount = landingCounts[b];
-            const mult = bucketMults[b] ?? 0;
-            const col = mult >= 8 ? GOLD : mult >= 2 ? GREEN : "#555";
-            const isActive = landCount > 0;
-            return (
-              <div key={b} style={{
-                flex: 1,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                background: isActive ? `${col}44` : "transparent",
-                border: `1px solid ${isActive ? col : "#1a1a2a"}`,
-                borderRadius: 3,
-                animation: isActive ? "cas-glow-gold 0.8s ease infinite" : undefined,
-                transition: "background 0.3s",
-                fontSize: 7, color: col, fontWeight: 800,
-              }}>
-                {mult >= 1 ? `${mult}x` : mult > 0 ? `${mult.toFixed(2).replace(/^0/, "").replace(/0+$/, "")}x` : "0"}
-              </div>
-            );
-          })}
+            <div style={{ fontSize: 28, fontWeight: 900, color: isWinner ? GREEN : isTie ? GOLD : "#ccc" }}>
+              {DT_RANKS[rank] ?? "?"}
+            </div>
+            <div style={{ fontSize: 9, color: "#666", letterSpacing: "0.1em", marginTop: 2 }}>RANK {rank + 1}</div>
+          </div>
+          <div style={{
+            position: "absolute", inset: 0, backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            background: "repeating-linear-gradient(45deg, #1a0a04 0px, #1a0a04 4px, #0d0504 4px, #0d0504 8px)",
+            border: `2px solid ${ACCENT}44`, borderRadius: 8,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 20, color: `${ACCENT}44`,
+          }}>◈</div>
         </div>
       </div>
-      {allDone && (
-        <button
-          onClick={onDone}
-          style={{ marginTop: 10, background: "#0c1c12", border: `1px solid ${ACCENT}`, color: ACCENT, fontSize: 12, fontWeight: 800, letterSpacing: "0.1em", padding: "8px 18px", cursor: "pointer" }}
-        >
-          CONTINUE ▸
-        </button>
+    </div>
+  );
+}
+
+export function DragonTigerStage({
+  dragonRank, tigerRank, betType, onDone,
+}: { dragonRank: number; tigerRank: number; betType: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  useEffect(() => {
+    const t = setTimeout(onDone, 2600);
+    return () => clearTimeout(t);
+  }, []);
+  const dragonWins = dragonRank > tigerRank;
+  const tigerWins  = tigerRank > dragonRank;
+  const isTie      = dragonRank === tigerRank;
+  const betDragon  = betType === 0;
+  const betTiger   = betType === 1;
+  const betTieSide = betType === 2;
+  const dragonIsWinner = betDragon ? dragonWins : betTieSide ? isTie : false;
+  const tigerIsWinner  = betTiger  ? tigerWins  : betTieSide ? isTie : false;
+  let outcome: string;
+  if (isTie)           outcome = betTieSide ? "TIE  9x WIN" : "TIE  HALF RETURNED";
+  else if (dragonWins) outcome = betDragon  ? "DRAGON WINS" : betTieSide ? "TIE BUST" : "TIGER LOSES";
+  else                 outcome = betTiger   ? "TIGER WINS"  : betTieSide ? "TIE BUST" : "DRAGON LOSES";
+  return (
+    <div style={{ textAlign: "center", padding: "12px 0" }}>
+      <div style={{ display: "flex", gap: 24, justifyContent: "center", alignItems: "flex-start" }}>
+        <DuelCard rank={dragonRank} label="DRAGON" delayMs={100} isWinner={dragonIsWinner} isTie={isTie} />
+        <div style={{ color: "#333", fontSize: 22, fontWeight: 900, marginTop: 32 }}>VS</div>
+        <DuelCard rank={tigerRank}  label="TIGER"  delayMs={550} isWinner={tigerIsWinner}  isTie={isTie} />
+      </div>
+      <div style={{ color: "#777", fontSize: 10, marginTop: 8, animation: "cas-slide-down 0.4s ease 0.9s both" }}>
+        {outcome}
+      </div>
+    </div>
+  );
+}
+
+// ── UNDER/OVER 7: two dice tumble, sum with zone label ───────────────────────
+export function UnderOver7Stage({
+  d1, d2, kind, onDone,
+}: { d1: number; d2: number; kind: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  const [bothDone, setBothDone] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(onDone, 2600);
+    return () => clearTimeout(t);
+  }, []);
+  const sum = d1 + d2;
+  const allSettled = bothDone >= 2;
+  const isUnder = sum >= 2 && sum <= 6;
+  const isSeven = sum === 7;
+  const won = (kind === 0 && isUnder) || (kind === 1 && isSeven) || (kind === 2 && sum >= 8);
+  const kindLabel = ["UNDER","EXACTLY 7","OVER"][kind] ?? "?";
+  const zoneColor = isSeven ? GOLD : isUnder ? GREEN : ACCENT;
+  const zoneLabel = isSeven ? "SEVEN" : isUnder ? "UNDER" : "OVER";
+  return (
+    <div style={{ textAlign: "center", padding: "12px 0" }}>
+      <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "center" }}>
+        <SingleDie finalVal={d1} delayMs={0}   onSettled={() => setBothDone((p) => p + 1)} />
+        <div style={{ color: "#444", fontSize: 20, fontWeight: 900 }}>+</div>
+        <SingleDie finalVal={d2} delayMs={350} onSettled={() => setBothDone((p) => p + 1)} />
+      </div>
+      {allSettled && (
+        <div style={{ marginTop: 10, animation: "cas-pop 0.4s ease" }}>
+          <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.1em" }}>SUM</div>
+          <div style={{ color: GOLD, fontSize: 36, fontWeight: 900 }}>{sum}</div>
+          <div style={{ fontSize: 10, color: zoneColor, letterSpacing: "0.1em", fontWeight: 700 }}>
+            {zoneLabel}  {kindLabel} bet  {won ? "WIN" : "LOSS"}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ORE REFINE: EVE-native refinery processing bar ───────────────────────────
+const ORE_OUTCOME_COLORS = ["#cc3333", "#cc8833", GREEN, GOLD];
+const ORE_OUTCOME_LABELS = ["CONTAMINATED", "PARTIAL YIELD", "CLEAN EXTRACTION", "RARE ISOTOPE"];
+const ORE_TIER_LABELS    = ["BASIC","STANDARD","ADVANCED","INDUSTRIAL","CRITICAL"];
+
+export function OreRefineStage({
+  tier, outcome, onDone,
+}: { tier: number; outcome: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  const [phase, setPhase] = useState<"processing" | "reveal">("processing");
+  const processDuration = 800 + tier * 400;
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("reveal"), processDuration);
+    const t2 = setTimeout(onDone, processDuration + 1600);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  const col   = ORE_OUTCOME_COLORS[outcome] ?? GOLD;
+  const label = ORE_OUTCOME_LABELS[outcome] ?? "UNKNOWN";
+  const tLabel = ORE_TIER_LABELS[tier - 1] ?? "?";
+  return (
+    <div style={{ textAlign: "center", padding: "16px 0" }}>
+      <div style={{ color: "#777", fontSize: 10, letterSpacing: "0.12em", marginBottom: 10 }}>
+        REFINE INTENSITY: <span style={{ color: GOLD, fontWeight: 700 }}>{tLabel}</span>
+      </div>
+      {phase === "processing" && (
+        <div style={{ padding: "0 16px" }}>
+          <div style={{ height: 8, background: "#111", borderRadius: 4, border: "1px solid #333", overflow: "hidden" }}>
+            <div style={{
+              height: "100%", background: `linear-gradient(90deg, ${ACCENT}, ${GOLD})`,
+              borderRadius: 4,
+              animation: `cas-bar-fill ${processDuration}ms linear forwards`,
+            }} />
+          </div>
+          <div style={{ color: "#555", fontSize: 10, marginTop: 6 }}>PROCESSING ORE...</div>
+        </div>
+      )}
+      {phase === "reveal" && (
+        <div style={{ animation: "cas-pop 0.4s ease" }}>
+          <div style={{ fontSize: 28, color: col, fontWeight: 900, letterSpacing: "0.05em" }}>
+            {outcome === 0 ? "\u2717" : outcome === 3 ? "\u25c6" : "\u25a3"}
+          </div>
+          <div style={{ color: col, fontSize: 14, fontWeight: 700, letterSpacing: "0.08em", marginTop: 4 }}>
+            {label}
+          </div>
+          {outcome === 3 && (
+            <div style={{ color: GOLD, fontSize: 10, marginTop: 4, animation: "cas-glow-gold 1.5s ease infinite" }}>
+              ISOTOPE DETECTED
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

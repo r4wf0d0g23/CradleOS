@@ -13,18 +13,21 @@ import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casi
 import { CASINO_HOUSE } from "../constants";
 import {
   buildCoinflipTx, buildDiceTx, buildRouletteTx, buildSlotsTx, buildWheelTx,
-  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, buildPlinkoMultiTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
+  buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
-  resolveInstantByDigest, resolveHiLoStartByDigest, resolvePlinkoMultiByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
+  buildDragonTigerTx, buildUnderOver7Tx, buildOreRefineTx,
+  resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
   DIAMOND_GEMS, WAR_RANKS, DOUBLE_DICE_KINDS, doubleDiceExactMult, BACCARAT_KINDS, THREE_CARD_RANKS,
-  type InstantGameKey, type InstantResult, type HiLoLiveGame, type PlinkoMultiResult,
+  DRAGON_TIGER_BET_LABELS, ORE_REFINE_TIER_LABELS, ORE_REFINE_OUTCOME_LABELS, WAR_RANKS_13,
+  type InstantGameKey, type InstantResult, type HiLoLiveGame,
 } from "../lib/casinoGames";
 import {
   CoinFlipStage, DiceRollStage, RouletteStage, SlotsStage, WheelStage, ResultFlash,
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
-  BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, PlinkoMultiStage, KenoStage, SicBoStage,
+  BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
+  DragonTigerStage, UnderOver7Stage, OreRefineStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -45,6 +48,7 @@ const GAME_TITLE: Record<InstantGameKey, string> = {
   limbo: "▲ LIMBO", hilo: "◆ HI-LO", plinko: "⬢ PLINKO", keno: "▣ KENO", sicbo: "⚙ SIC BO",
   crash: "▲ CRASH", diamonds: "◆ DIAMONDS", double_dice: "⚄ DOUBLE DICE", war: "⚔ WAR",
   baccarat: "◈ BACCARAT", three_card_poker: "◇ THREE CARD",
+  dragon_tiger: "◎ DRAGON TIGER", under_over_7: "▣ UNDER/OVER 7", ore_refine: "⊞ ORE REFINE",
 };
 const GAME_BLURB: Record<InstantGameKey, string> = {
   coinflip: "Call it. Win pays 1.96x.",
@@ -63,6 +67,9 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   war: "One card each — highest rank wins 2x. Tie returns half. No skill required, just pure frontier fortune.",
   baccarat: "Player vs Banker. Bet on who gets closest to 9. Tie pays 9x.",
   three_card_poker: "Three cards each. Beat the dealer — qualify with Q-high to unlock bonus payouts up to 6x.",
+  dragon_tiger: "One card each. Dragon vs Tiger — highest rank wins 2x. Tie returns half. Tie side bet pays 9x.",
+  under_over_7: "Two dice. Bet whether the sum falls Under 7 (2.32x), Exactly 7 (5.70x), or Over 7 (2.32x).",
+  ore_refine: "Risk your stake through 5 refine intensities. BASIC (2x) → CRITICAL (20x). All tiers: 3% house edge.",
 };
 
 export function InstantGamePanel({ game }: { game: InstantGameKey }) {
@@ -99,9 +106,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   // Live two-step hi-lo: set after `start` deals the base card; cleared at settle.
   const [hiloLive, setHiloLive] = useState<HiLoLiveGame | null>(null);
   const [plinkoMode, setPlinkoMode] = useState(-1); // -1 CLASSIC · 0 LOW · 1 MED · 2 HIGH
-  const [plinkoDrops, setPlinkoDrops] = useState(1); // 1 = single (unchanged), 2/5/10 = multi
-  const [plinkoMultiResult, setPlinkoMultiResult] = useState<PlinkoMultiResult | null>(null);
-  const [plinkoMultiPending, setPlinkoMultiPending] = useState<PlinkoMultiResult | null>(null);
+  const [plinkoDrops, _setPlinkoDrops] = useState(1); // multi-drop count (default 1 = classic single)
   const [kenoPicks, setKenoPicks] = useState<Set<number>>(new Set());
   const [sicboKind, setSicboKind] = useState(0);
   const [sicboTarget, setSicboTarget] = useState(1);
@@ -111,6 +116,10 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [doubleDiceKind, setDoubleDiceKind] = useState(0);
   const [doubleDiceTarget, setDoubleDiceTarget] = useState(7); // sum 2-12 for EXACT
   const [baccaratKind, setBaccaratKind] = useState(0); // 0=PLAYER 1=BANKER 2=TIE
+  // ── Game params — v16 games (dragon_tiger / under_over_7 / ore_refine)
+  const [dragonTigerBet, setDragonTigerBet] = useState<0|1|2>(0); // 0=Dragon 1=Tiger 2=Tie
+  const [underOver7Kind, setUnderOver7Kind] = useState<0|1|2>(0); // 0=UNDER 1=EXACTLY7 2=OVER
+  const [oreTier, setOreTier] = useState<1|2|3|4|5>(1);           // 1=BASIC..5=CRITICAL
 
   // Log-scale limbo slider helpers (slider 0..10000 → 1.01x..1000x)
   const LIMBO_LOG_BASE = Math.log(10_000_000 / 101);
@@ -140,7 +149,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     if (game === "keno" && (kenoPicks.size < 1 || kenoPicks.size > 6)) {
       setErr("Pick 1–6 numbers for Keno."); return;
     }
-    setBusy(true); setErr(null); setResult(null); setPending(null); setPlinkoMultiResult(null); setPlinkoMultiPending(null);
+    setBusy(true); setErr(null); setResult(null); setPending(null);
     try {
       const raw = BigInt(Math.floor(wager * 1e9));
       const picksArr = Array.from(kenoPicks).sort((a, b) => a - b);
@@ -154,7 +163,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "slots"           ? buildSlotsTx(ids, raw) :
           game === "limbo"           ? buildLimboTx(ids, raw, BigInt(limboBps)) :
           game === "hilo"            ? buildHiLoStartTx(ids, raw) :
-          game === "plinko"          ? (plinkoDrops > 1 ? buildPlinkoMultiTx(ids, raw * BigInt(plinkoDrops), plinkoMode, plinkoDrops) : plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
+          game === "plinko"          ? (plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
           game === "keno"            ? buildKenoTx(ids, raw, picksArr) :
           game === "sicbo"           ? buildSicBoTx(ids, raw, sicboKind, sicboTarget) :
           game === "crash"           ? buildCrashTx(ids, raw, BigInt(crashBps)) :
@@ -163,6 +172,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "war"             ? buildWarTx(ids, raw) :
           game === "baccarat"        ? buildBaccaratTx(ids, raw, baccaratKind) :
           game === "three_card_poker" ? buildThreeCardTx(ids, raw) :
+          game === "dragon_tiger"       ? buildDragonTigerTx(ids, raw, dragonTigerBet) :
+          game === "under_over_7"       ? buildUnderOver7Tx(ids, raw, underOver7Kind) :
+          game === "ore_refine"         ? buildOreRefineTx(ids, raw, oreTier) :
           buildWheelTx(ids, raw);
         return withGas(t, addr);
       };
@@ -186,14 +198,6 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
         balQ.refetch();
         return;
       }
-      if (game === "plinko" && plinkoDrops > 1) {
-        // Multi-drop: resolve via PlinkoMultiDropped event
-        const mr = await resolvePlinkoMultiByDigest(digest);
-        if (!mr) throw new Error("Could not read multi-drop result — check the feed.");
-        setPlinkoMultiPending(mr);
-        feedQ.refetch(); balQ.refetch();
-        return;
-      }
       const r = await resolveInstantByDigest(game, digest);
       if (!r) throw new Error("Could not read result — check the feed.");
       // All games now have animation stages — always use pending path.
@@ -201,17 +205,16 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /plinko::play_multi/.test(msg) && /code:?\s*1\b/.test(msg)) {
-        setErr(`Total bet exceeds house exposure limit — lower the bet or ball count. (${plinkoDrops} balls × ${fmtEve(betNum)} EVE = ${fmtEve(betNum * plinkoDrops)} EVE total; house limit: ${fmtEve(exposureBudget)} EVE per play)`);
-      } else if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
       }
     } finally { setBusy(false); }
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
-      limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode, plinkoDrops,
-      crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind, dAppKit]);
+      limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
+      crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind,
+      dragonTigerBet, underOver7Kind, oreTier, dAppKit]);
 
   // Settle a live hi-lo hand: player has seen the base, calls a direction.
   const settleHiLo = useCallback(async (higher: boolean) => {
@@ -251,7 +254,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "wheel"   ? 10
     : game === "limbo"   ? Math.max(1.01, limboMult)
     : game === "hilo"    ? 13
-    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130)  // per-ball guard (operator ruling 2026-07-11)
+    : game === "plinko"  ? (PLINKO_MODES.find((m) => m.mode === plinkoMode)?.maxMult ?? 130)
     : game === "keno"    ? (KENO_MAX_MULT[kenoPicks.size] ?? 970)
     : game === "sicbo"   ? (sicboKind === 3 ? 180 : sicboKind === 4 ? 30 : sicboKind === 2 ? 4 : 2)
     : game === "crash"   ? Math.max(1.01, crashMult)
@@ -260,6 +263,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "war"     ? 2
     : game === "baccarat" ? (baccaratKind === 2 ? 9 : 2)
     : game === "three_card_poker" ? 6
+    : game === "dragon_tiger"   ? (dragonTigerBet === 2 ? 9 : 2)
+    : game === "under_over_7"   ? (underOver7Kind === 1 ? 5.7 : 2.32)
+    : game === "ore_refine"     ? [2, 4, 6, 15, 20][oreTier - 1] ?? 2
     : 2;
   const exposureBudget    = bank * EXPOSURE_PCT;
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
@@ -278,23 +284,11 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       <div style={{ flex: "1 1 440px", minWidth: 340 }}>
 
         {/* Result stage */}
-        <div style={{ background: "radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "14px 16px", minHeight: 100, boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
+        <div style={{ background: "radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", minHeight: 150, boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)" }}>
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>{GAME_TITLE[game]}</div>
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 4 }}>{GAME_BLURB[game]}</div>
 
           <div style={{ position: "relative" }}>
-            {/* Multi-drop plinko animation — runs before list receipt is shown */}
-            {plinkoMultiPending && game === "plinko" && plinkoDrops > 1 && (
-              <PlinkoMultiStage
-                key={plinkoMultiPending.count + "-" + plinkoMultiPending.totalPayout}
-                paths={plinkoMultiPending.paths}
-                buckets={plinkoMultiPending.buckets}
-                payouts={plinkoMultiPending.payouts}
-                wager={plinkoMultiPending.wager}
-                mults={(PLINKO_MODES.find((m) => m.mode === plinkoMode)?.mults ?? undefined) as number[] | undefined}
-                onDone={() => { setPlinkoMultiResult(plinkoMultiPending); setPlinkoMultiPending(null); }}
-              />
-            )}
             {pending ? (
               <>
                 {/* Animated stages — all games */}
@@ -310,6 +304,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "war"              && <WarStage        key={pending.txDigest} playerCard={Number(pending.fields.player_card)} dealerCard={Number(pending.fields.dealer_card)} onDone={() => reveal(pending)} />}
                 {game === "baccarat"         && <BaccaratStage   key={pending.txDigest} playerCards={Array.isArray(pending.fields.player_cards) ? (pending.fields.player_cards as number[]) : []} bankerCards={Array.isArray(pending.fields.banker_cards) ? (pending.fields.banker_cards as number[]) : []} playerScore={Number(pending.fields.player_score)} bankerScore={Number(pending.fields.banker_score)} result={Number(pending.fields.result)} onDone={() => reveal(pending)} />}
                 {game === "three_card_poker" && <ThreeCardStage  key={pending.txDigest} playerCards={Array.isArray(pending.fields.player_cards) ? (pending.fields.player_cards as number[]) : []} dealerCards={Array.isArray(pending.fields.dealer_cards) ? (pending.fields.dealer_cards as number[]) : []} result={Number(pending.fields.result)} dealerQualified={Boolean(pending.fields.dealer_qualified)} onDone={() => reveal(pending)} />}
+                {game === "dragon_tiger"    && <DragonTigerStage key={pending.txDigest} dragonRank={Number(pending.fields.dragon_rank)} tigerRank={Number(pending.fields.tiger_rank)} betType={Number(pending.fields.bet_type)} onDone={() => reveal(pending)} />}
+                {game === "under_over_7"    && <UnderOver7Stage  key={pending.txDigest} d1={Number(pending.fields.d1)} d2={Number(pending.fields.d2)} kind={Number(pending.fields.kind)} onDone={() => reveal(pending)} />}
+                {game === "ore_refine"      && <OreRefineStage   key={pending.txDigest} tier={Number(pending.fields.tier)} outcome={Number(pending.fields.outcome)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
                 {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}
@@ -350,46 +347,6 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                     <div style={{ color: "#666", fontSize: 11, letterSpacing: "0.08em" }}>BUCKET {Number(result.fields.bucket)} / 12</div>
                     <div style={{ color: Number(result.fields.multiplier_bps) >= 20000 ? GOLD : result.payout > 0 ? GREEN : "#888", fontSize: 40, fontWeight: 900 }}>
                       {(Number(result.fields.multiplier_bps) / 10000).toFixed(2)}x
-                    </div>
-                  </div>
-                )}
-
-                {/* Multi-drop result panel (v12) */}
-                {plinkoMultiResult && game === "plinko" && plinkoDrops > 1 && (
-                  <div style={{ padding: "14px 0 4px" }}>
-                    <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.08em", marginBottom: 8 }}>
-                      {plinkoMultiResult.count} DROPS · TOTAL {(() => {
-                        const mNet = plinkoMultiResult.totalPayout - plinkoMultiResult.wager;
-                        if (mNet > 0) return <span style={{ color: GREEN }}>+{mNet.toFixed(4)} EVE</span>;
-                        if (mNet === 0) return <span style={{ color: "#E8B84B" }}>±0 EVE</span>;
-                        if (plinkoMultiResult.totalPayout > 0) return <span style={{ color: "#E8B84B" }}>−{Math.abs(mNet).toFixed(4)} EVE</span>;
-                        return <span style={{ color: ACCENT }}>−{plinkoMultiResult.wager.toFixed(4)} EVE</span>;
-                      })()}
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                      {plinkoMultiResult.buckets.map((bucket, i) => {
-                        const payout = plinkoMultiResult.payouts[i] ?? 0;
-                        const perDrop = plinkoMultiResult.wager / plinkoMultiResult.count;
-                        const mult = perDrop > 0 ? payout / perDrop : 0;
-                        const isWin = payout > perDrop;
-                        return (
-                          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, padding: "3px 6px", background: "#0f1a10", borderRadius: 4, border: `1px solid ${isWin ? GREEN + "44" : "#1a1a1a"}` }}>
-                            <span style={{ color: "#555", minWidth: 14 }}>#{i + 1}</span>
-                            <span style={{ color: "#888" }}>bucket {bucket}</span>
-                            <span style={{ color: mult >= 2 ? GOLD : isWin ? GREEN : "#888", fontWeight: 700, marginLeft: "auto" }}>{mult.toFixed(2)}x</span>
-                            <span style={{ color: isWin ? GREEN : "#666" }}>{payout.toFixed(4)}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div style={{ marginTop: 8, textAlign: "center", fontSize: 13, fontWeight: 800 }}>
-                      <span style={{ color: "#666" }}>TOTAL: </span>
-                      <span style={{ color: plinkoMultiResult.totalPayout > plinkoMultiResult.wager ? GREEN : plinkoMultiResult.totalPayout > 0 ? "#E8B84B" : ACCENT }}>
-                        {plinkoMultiResult.totalPayout.toFixed(4)} EVE
-                      </span>
-                      <span style={{ color: "#555", fontSize: 10, marginLeft: 6 }}>
-                        ({(plinkoMultiResult.totalPayout / plinkoMultiResult.wager).toFixed(2)}x)
-                      </span>
                     </div>
                   </div>
                 )}
@@ -487,8 +444,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   const pCards = Array.isArray(result.fields.player_cards) ? (result.fields.player_cards as number[]) : [];
                   const bCards = Array.isArray(result.fields.banker_cards) ? (result.fields.banker_cards as number[]) : [];
                   const resultNum = Number(result.fields.result);
-                  const resultLabel = resultNum === 0 ? "PLAYER WINS" : resultNum === 1 ? "BANKER WINS" : "TIE";
-                  const resultColor = resultNum === 0 ? GREEN : resultNum === 1 ? ACCENT : GOLD;
+                  const resultLabel = resultNum === 0 ? "BANKER WINS" : resultNum === 1 ? "TIE" : "PLAYER WINS";
+                  const resultColor = resultNum === 1 ? GOLD : resultNum === 2 ? GREEN : ACCENT;
                   // Cards for baccarat use 0-51 encoding (rank=idx%13, suit=idx/13), ranks 0=Ace..12=K
                   const BACC_RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
                   const cardLabel = (c: number) => BACC_RANKS[c % 13] ?? "?";
@@ -550,32 +507,87 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   );
                 })()}
 
-                {result && (() => {
-                  const _net = result.payout - result.wager;
-                  const _isPush = result.payout > 0 && _net === 0;
-                  const _isPartial = result.payout > 0 && _net < 0;
-                  const _isWin = _net > 0;
-                  return <ResultFlash key={`flash-${result.txDigest}`} win={_isWin} partial={_isPartial || _isPush} />;
-                })()}
-                {result ? (() => {
-                  const net = result.payout - result.wager;
-                  const isPush = result.payout > 0 && net === 0;
-                  const isPartial = result.payout > 0 && net < 0;
-                  const isWin = net > 0;
-                  const labelColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
-                  const labelText = isWin
-                    ? `WIN +${fmtEve(net)} EVE`
-                    : isPush ? `PUSH ±0 EVE`
-                    : isPartial ? `PARTIAL −${fmtEve(Math.abs(net))} EVE`
-                    : `LOSS −${fmtEve(result.wager)} EVE`;
+                
+                {result && game === "dragon_tiger" && (() => {
+                  const dr = Number(result.fields.dragon_rank);
+                  const tr = Number(result.fields.tiger_rank);
+                  const bt = Number(result.fields.bet_type);
+                  const isTie = dr === tr;
+                  const betLabel = (DRAGON_TIGER_BET_LABELS as string[])[bt] ?? "?";
+                  const payout = Number(result.fields.payout);
+                  const resColor = payout > 0 ? GREEN : (isTie && bt !== 2) ? GOLD : ACCENT;
+                  const resLabel = payout > 0 ? "WIN" : (isTie && bt !== 2) ? "HALF RETURNED" : "LOSS";
                   return (
-                    <div style={{ textAlign: "center", padding: "4px 0 6px" }}>
-                      <div style={{ color: "#ccc", fontSize: 13 }}>{result.detail}</div>
-                      <div style={{ color: labelColor, fontSize: 26, fontWeight: 900, marginTop: 4 }}>{labelText}</div>
-                      {result.payout > 0 && <div style={{ color: "#888", fontSize: 11 }}>gross payout {fmtEve(result.payout)} EVE</div>}
+                    <div style={{ padding: "14px 0 4px", textAlign: "center" }}>
+                      <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 8 }}>
+                        <div>
+                          <div style={{ color: "#666", fontSize: 10, marginBottom: 4 }}>DRAGON</div>
+                          <div style={{ color: dr >= tr ? GREEN : ACCENT, fontSize: 28, fontWeight: 900 }}>
+                            {(WAR_RANKS_13 as string[])[dr] ?? "?"}
+                          </div>
+                        </div>
+                        <div style={{ color: "#555", fontSize: 22, fontWeight: 900, paddingTop: 20 }}>VS</div>
+                        <div>
+                          <div style={{ color: "#666", fontSize: 10, marginBottom: 4 }}>TIGER</div>
+                          <div style={{ color: tr >= dr ? GREEN : ACCENT, fontSize: 28, fontWeight: 900 }}>
+                            {(WAR_RANKS_13 as string[])[tr] ?? "?"}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ color: "#666", fontSize: 9, marginBottom: 4 }}>BET: {betLabel}</div>
+                      <div style={{ color: resColor, fontSize: 20, fontWeight: 900 }}>{resLabel}</div>
                     </div>
                   );
-                })() : (
+                })()}
+
+                {result && game === "under_over_7" && (() => {
+                  const d1 = Number(result.fields.d1);
+                  const d2 = Number(result.fields.d2);
+                  const sum = d1 + d2;
+                  const kind = Number(result.fields.kind);
+                  const kindLabel = ["UNDER","EXACTLY 7","OVER"][kind] ?? "?";
+                  const won = Number(result.fields.payout) > 0;
+                  const zoneColor = sum === 7 ? GOLD : sum < 7 ? GREEN : ACCENT;
+                  return (
+                    <div style={{ padding: "14px 0 4px", textAlign: "center" }}>
+                      <div style={{ color: "#666", fontSize: 10, marginBottom: 4 }}>BET: {kindLabel}</div>
+                      <div style={{ fontSize: 10, color: "#666" }}>{d1} + {d2}</div>
+                      <div style={{ color: zoneColor, fontSize: 36, fontWeight: 900 }}>{sum}</div>
+                      <div style={{ color: won ? GREEN : ACCENT, fontSize: 18, fontWeight: 900, marginTop: 4 }}>
+                        {won ? "WIN" : "LOSS"}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {result && game === "ore_refine" && (() => {
+                  const outcome = Number(result.fields.outcome);
+                  const tier = Number(result.fields.tier);
+                  const tierLabel = (ORE_REFINE_TIER_LABELS as string[])[tier - 1] ?? "?";
+                  const outcomeLabel = (ORE_REFINE_OUTCOME_LABELS as string[])[outcome] ?? "?";
+                  const outcomeColor = ["#cc3333","#cc8833",GREEN,GOLD][outcome] ?? GOLD;
+                  return (
+                    <div style={{ padding: "14px 0 4px", textAlign: "center" }}>
+                      <div style={{ color: "#666", fontSize: 10, marginBottom: 4 }}>
+                        INTENSITY: <span style={{ color: GOLD }}>{tierLabel}</span>
+                      </div>
+                      <div style={{ color: outcomeColor, fontSize: 24, fontWeight: 900, letterSpacing: "0.06em" }}>
+                        {outcomeLabel}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {result && <ResultFlash key={`flash-${result.txDigest}`} win={result.payout > 0} />}
+                {result ? (
+                  <div style={{ textAlign: "center", padding: "4px 0 6px" }}>
+                    <div style={{ color: "#ccc", fontSize: 13 }}>{result.detail}</div>
+                    <div style={{ color: result.payout > 0 ? GREEN : ACCENT, fontSize: 26, fontWeight: 900, marginTop: 4 }}>
+                      {result.payout > 0 ? `WIN +${fmtEve(result.payout - result.wager)} EVE` : `LOSS −${fmtEve(result.wager)} EVE`}
+                    </div>
+                    {result.payout > 0 && <div style={{ color: "#888", fontSize: 11 }}>gross payout {fmtEve(result.payout)} EVE</div>}
+                  </div>
+                ) : (
                   <div style={{ color: GOLD, fontSize: 11, textAlign: "center", letterSpacing: "0.15em", paddingBottom: 6 }}>◇ · · ·</div>
                 )}
               </>
@@ -588,7 +600,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
         </div>
 
         {/* Controls */}
-        <div style={{ marginTop: 10, background: "#111", border: `1px solid ${ACCENT}22`, padding: "12px 14px" }}>
+        <div style={{ marginTop: 16, background: "#111", border: `1px solid ${ACCENT}22`, padding: 18 }}>
 
           {/* Coinflip */}
           {game === "coinflip" && (
@@ -711,8 +723,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
           {/* Plinko — risk mode selector */}
           {game === "plinko" && (
-            <div style={{ marginBottom: 8 }}>
-              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>RISK MODE</div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>RISK MODE</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {PLINKO_MODES.map((m) => (
                   <button key={m.mode} onClick={() => setPlinkoMode(m.mode)} style={pick(plinkoMode === m.mode)}>
@@ -726,25 +738,6 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   : plinkoMode === 2 ? "Boom or bust — center zone pays 0, edge jackpot 500x."
                   : "The original board — 130x edge jackpots, 0.49x center."}
               </div>
-            </div>
-          )}
-
-          {/* Plinko — drops selector (v12 multi-drop) */}
-          {game === "plinko" && (
-            <div style={{ marginBottom: 8 }}>
-              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>DROPS</div>
-              <div style={{ display: "flex", gap: 6 }}>
-                {[1, 2, 5, 10].map((n) => (
-                  <button key={n} onClick={() => { setPlinkoDrops(n); setPlinkoMultiResult(null); setPlinkoMultiPending(null); }} style={pick(plinkoDrops === n)}>
-                    {n === 1 ? "1" : `×${n}`}
-                  </button>
-                ))}
-              </div>
-              {plinkoDrops > 1 && (
-                <div style={{ color: "#666", fontSize: 10, marginTop: 6 }}>
-                  per-ball wager — you are charged bet × count per play.
-                </div>
-              )}
             </div>
           )}
 
@@ -890,11 +883,71 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           {/* Diamonds / War / Three Card Poker — no extra controls, just the bet */}
           {(game === "diamonds" || game === "war" || game === "three_card_poker") && null}
 
+          {/* Dragon Tiger — bet type selector */}
+          {game === "dragon_tiger" && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
+              {([["DRAGON", 0], ["TIGER", 1], ["TIE (9x)", 2]] as [string, 0|1|2][]).map(([label, v]) => (
+                <button key={v} onClick={() => setDragonTigerBet(v)} style={{
+                  flex: "1 1 80px", padding: "8px 4px", background: dragonTigerBet === v ? "#FF4700" : "#1a1a1a",
+                  border: `1px solid ${dragonTigerBet === v ? "#FF4700" : "#333"}`,
+                  color: dragonTigerBet === v ? "#fff" : "#aaa", borderRadius: 4, cursor: "pointer",
+                  fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
+                }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Under/Over 7 — kind selector */}
+          {game === "under_over_7" && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
+              {([["UNDER (2.32x)", 0], ["EXACTLY 7 (5.7x)", 1], ["OVER (2.32x)", 2]] as [string, 0|1|2][]).map(([label, v]) => (
+                <button key={v} onClick={() => setUnderOver7Kind(v)} style={{
+                  flex: "1 1 80px", padding: "8px 4px", background: underOver7Kind === v ? "#FF4700" : "#1a1a1a",
+                  border: `1px solid ${underOver7Kind === v ? "#FF4700" : "#333"}`,
+                  color: underOver7Kind === v ? "#fff" : "#aaa", borderRadius: 4, cursor: "pointer",
+                  fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
+                }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Ore Refine — tier selector */}
+          {game === "ore_refine" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em" }}>REFINE INTENSITY</div>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                {([
+                  ["BASIC", 1, "2x", "#3FCF6A"],
+                  ["STANDARD", 2, "4x", "#7FC8FF"],
+                  ["ADVANCED", 3, "6x", "#E8B84B"],
+                  ["INDUSTRIAL", 4, "15x", "#FF4700"],
+                  ["CRITICAL", 5, "20x", "#cc3333"],
+                ] as [string, 1|2|3|4|5, string, string][]).map(([label, v, mult, col]) => (
+                  <button key={v} onClick={() => setOreTier(v)} style={{
+                    flex: "1 1 60px", padding: "8px 4px",
+                    background: oreTier === v ? col + "22" : "#1a1a1a",
+                    border: `1px solid ${oreTier === v ? col : "#333"}`,
+                    color: oreTier === v ? col : "#888", borderRadius: 4, cursor: "pointer",
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", lineHeight: 1.4,
+                    textAlign: "center",
+                  }}>
+                    <div>{label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 900 }}>{mult}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Bet input (all games; hidden mid-hand in live hi-lo — stake already escrowed) */}
           {!(game === "hilo" && hiloLive) && (<>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
             <label style={{ flex: "1 1 160px" }}>
-              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>{game === "plinko" && plinkoDrops > 1 ? "BET PER BALL ($EVE)" : "BET ($EVE)"} · you have {fmtEve(myEve)}</div>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 4 }}>BET ($EVE) · you have {fmtEve(myEve)}</div>
               <input
                 value={betEve}
                 onChange={(e) => setBetEve(e.target.value)}
@@ -966,7 +1019,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 <span style={{ color: "#555", marginLeft: 6 }}>{r.detail}</span>
               </div>
               <div>
-                <span style={{ color: (() => { const n = r.payout - r.wager; return n > 0 ? GREEN : r.payout > 0 ? "#E8B84B" : ACCENT; })(), fontWeight: 700 }}>{(() => { const n = r.payout - r.wager; return n > 0 ? `+${fmtEve(n)}` : r.payout > 0 && n === 0 ? `±0` : r.payout > 0 ? `−${fmtEve(Math.abs(n))}` : `−${fmtEve(r.wager)}`; })()}</span>
+                <span style={{ color: r.payout > 0 ? GREEN : ACCENT, fontWeight: 700 }}>{r.payout > 0 ? `+${fmtEve(r.payout - r.wager)}` : `−${fmtEve(r.wager)}`}</span>
               </div>
             </div>
           ))}
