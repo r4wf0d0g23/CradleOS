@@ -116,7 +116,10 @@ function makeLabel(text: string): THREE.Sprite {
   ctx.strokeStyle = "#ff4700";
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, W - 2, H - 2);
-  ctx.fillStyle = "#e8b84b";
+  // Near-white label text with shadow for readability (Raw feedback 2026-07-11: labels too dim).
+  ctx.shadowColor = "rgba(0,0,0,0.9)";
+  ctx.shadowBlur = 4;
+  ctx.fillStyle = "#f2f2f2";
   ctx.font = "bold 20px monospace";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -171,7 +174,7 @@ function makeBaseRing(accent: number): {
   const mat = new THREE.MeshStandardMaterial({
     color: accent,
     emissive: new THREE.Color(accent),
-    emissiveIntensity: 0.08,
+    emissiveIntensity: 0.11,  // raised ~1.3x from 0.08 (Raw feedback: ring too dim)
     roughness: 0.4,
     transparent: true,
     opacity: 0.5,
@@ -187,8 +190,8 @@ function makeBaseRing(accent: number): {
   const tick = (dt: number) => {
     phase += dt * (near ? 3.2 : 0.6);
     mat.emissiveIntensity = near
-      ? 0.55 + 0.4 * Math.sin(phase)
-      : 0.06 + 0.06 * Math.sin(phase * 0.7);
+      ? 0.72 + 0.4 * Math.sin(phase)   // raised ~1.3x from 0.55
+      : 0.08 + 0.08 * Math.sin(phase * 0.7);  // raised ~1.3x from 0.06
     mat.opacity = near ? 0.92 : 0.45;
   };
   return { mesh, tick, setNear };
