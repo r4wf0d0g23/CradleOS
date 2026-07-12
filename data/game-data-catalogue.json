@@ -1,0 +1,679 @@
+{
+  "structures": [
+    {
+      "typeID": 1032744,
+      "label": "Mini Printer",
+      "text": "Mini Printer",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032745,
+      "label": "Printer",
+      "text": "Printer",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032746,
+      "label": "Heavy Printer",
+      "text": "Heavy Printer",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032747,
+      "label": "Refinery",
+      "text": "Refinery",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032748,
+      "label": "Heavy Refinery",
+      "text": "Heavy Refinery",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032749,
+      "label": "Mini Berth",
+      "text": "Mini Berth",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032750,
+      "label": "Berth",
+      "text": "Berth",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032751,
+      "label": "Heavy Berth",
+      "text": "Heavy Berth",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032752,
+      "label": "Assembler",
+      "text": "Assembler",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032753,
+      "label": "Shelter",
+      "text": "Shelter",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032754,
+      "label": "Heavy Shelter",
+      "text": "Heavy Shelter",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032755,
+      "label": "Mini Gate",
+      "text": "Mini Gate",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032756,
+      "label": "Heavy Gate",
+      "text": "Heavy Gate",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032757,
+      "label": "Mini Storage",
+      "text": "Mini Storage",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032758,
+      "label": "Storage",
+      "text": "Storage",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032759,
+      "label": "Heavy Storage",
+      "text": "Heavy Storage",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032761,
+      "label": "Relay",
+      "text": "Relay",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032762,
+      "label": "Monolith 1",
+      "text": "Monolith 1",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032763,
+      "label": "Monolith 2",
+      "text": "Monolith 2",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032764,
+      "label": "Wall 1",
+      "text": "Wall 1",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032765,
+      "label": "Wall 2",
+      "text": "Wall 2",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032766,
+      "label": "RAINMAKER I",
+      "text": "RAINMAKER I",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032767,
+      "label": "RAINMAKER II",
+      "text": "RAINMAKER II",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032768,
+      "label": "HARBINGER I",
+      "text": "HARBINGER I",
+      "desc": null,
+      "group": "Structures"
+    },
+    {
+      "typeID": 1032769,
+      "label": "HARBINGER II",
+      "text": "HARBINGER II",
+      "desc": null,
+      "group": "Structures"
+    }
+  ],
+  "turrets": [
+    {
+      "typeID": 1035947,
+      "label": "Mini Turret",
+      "text": "Mini Turret",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1035955,
+      "label": "Mini Turret (alt)",
+      "text": "Mini Turret",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1036365,
+      "label": "Turret",
+      "text": "Turret",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1036375,
+      "label": "Turret (alt)",
+      "text": "Turret",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1036367,
+      "label": "Turret - Autocannon",
+      "text": "Turret - Autocannon",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1036369,
+      "label": "Turret - Plasma",
+      "text": "Turret - Plasma",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1037106,
+      "label": "Turret - Howitzer",
+      "text": "Turret - Howitzer",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1036371,
+      "label": "Heavy Turret",
+      "text": "Heavy Turret",
+      "desc": null,
+      "group": "Turrets"
+    },
+    {
+      "typeID": 1036377,
+      "label": "Heavy Turret (alt)",
+      "text": "Heavy Turret",
+      "desc": null,
+      "group": "Turrets"
+    }
+  ],
+  "shells_and_nursery": [
+    {
+      "typeID": 1034901,
+      "label": "Aggressive Shell",
+      "text": "Aggressive Shell",
+      "desc": null,
+      "group": "Shell System"
+    },
+    {
+      "typeID": 1034902,
+      "label": "Rugged Shell",
+      "text": "Rugged Shell",
+      "desc": null,
+      "group": "Shell System"
+    },
+    {
+      "typeID": 1034903,
+      "label": "Blank Shell",
+      "text": "Blank Shell",
+      "desc": null,
+      "group": "Shell System"
+    },
+    {
+      "typeID": 1034926,
+      "label": "Ancient Shell",
+      "text": "Ancient Shell",
+      "desc": null,
+      "group": "Shell System"
+    },
+    {
+      "typeID": 1034928,
+      "label": "Synthetic Mining Shell",
+      "text": "Synthetic Mining Shell",
+      "desc": null,
+      "group": "Shell System"
+    },
+    {
+      "typeID": 1034924,
+      "label": "Nursery",
+      "text": "Nursery",
+      "desc": null,
+      "group": "Shell System"
+    },
+    {
+      "typeID": 1036920,
+      "label": "Deployable Nursery Medium",
+      "text": "Deployable Nursery Medium",
+      "desc": null,
+      "group": "Shell System"
+    }
+  ],
+  "refuge": [
+    {
+      "typeID": 1015358,
+      "label": "Refuge (description)",
+      "text": null,
+      "desc": null,
+      "group": "Refuge"
+    }
+  ],
+  "ecosystem_dungeons": [
+    {
+      "typeID": 1036889,
+      "label": "Transitional Entry Dungeon 1",
+      "text": "Transitional Entry Dungeon 1",
+      "desc": null,
+      "group": "Ecosystem"
+    },
+    {
+      "typeID": 1036890,
+      "label": "Ecosystem 21 Entry Dungeon",
+      "text": "Ecosystem 21 Entry Dungeon",
+      "desc": null,
+      "group": "Ecosystem"
+    },
+    {
+      "typeID": 1036891,
+      "label": "Ecosystem 22 Entry Beacon",
+      "text": "Ecosystem 22 Entry Beacon",
+      "desc": null,
+      "group": "Ecosystem"
+    }
+  ],
+  "sanctuary_new_structures": [
+    {
+      "typeID": 1032766,
+      "label": "RAINMAKER I",
+      "text": "RAINMAKER I",
+      "desc": null,
+      "group": "New This Cycle"
+    },
+    {
+      "typeID": 1032767,
+      "label": "RAINMAKER II",
+      "text": "RAINMAKER II",
+      "desc": null,
+      "group": "New This Cycle"
+    },
+    {
+      "typeID": 1032768,
+      "label": "HARBINGER I",
+      "text": "HARBINGER I",
+      "desc": null,
+      "group": "New This Cycle"
+    },
+    {
+      "typeID": 1032769,
+      "label": "HARBINGER II",
+      "text": "HARBINGER II",
+      "desc": null,
+      "group": "New This Cycle"
+    }
+  ],
+  "kitbash_strings": [
+    {
+      "typeID": 1018570,
+      "text": "Kitbash Framework Antenna ",
+      "desc": null
+    },
+    {
+      "typeID": 1018571,
+      "text": "Kitbash Framework Antenna ",
+      "desc": null
+    },
+    {
+      "typeID": 1037952,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037953,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037954,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037955,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037956,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037957,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037958,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037959,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037960,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037961,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037962,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037963,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037964,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037965,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037966,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037967,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037968,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037969,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037970,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037971,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1038170,
+      "text": "KitBash Module Big 19v01",
+      "desc": null
+    },
+    {
+      "typeID": 1038171,
+      "text": "KitBash Module Big 19v02",
+      "desc": null
+    },
+    {
+      "typeID": 1038265,
+      "text": "KitBash Module Big 14v22",
+      "desc": null
+    },
+    {
+      "typeID": 1038269,
+      "text": "KitBash Module Big 12v02",
+      "desc": null
+    },
+    {
+      "typeID": 1038271,
+      "text": "KitBash Module Big 14v23",
+      "desc": null
+    },
+    {
+      "typeID": 1039375,
+      "text": "Kitbash",
+      "desc": null
+    },
+    {
+      "typeID": 1019532,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019533,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019534,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019535,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019536,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019537,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019538,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019539,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019540,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019541,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019542,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019543,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019544,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019545,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019546,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019547,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019548,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019549,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1019550,
+      "text": "Kitbash Small Module",
+      "desc": null
+    },
+    {
+      "typeID": 1018572,
+      "text": "Kitbash Framework Panel",
+      "desc": null
+    },
+    {
+      "typeID": 1018573,
+      "text": "Kitbash Framework Panel",
+      "desc": null
+    },
+    {
+      "typeID": 1018574,
+      "text": "Kitbash Framework Panel",
+      "desc": null
+    },
+    {
+      "typeID": 1018575,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018576,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018577,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018578,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018579,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018580,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018581,
+      "text": "Kitbash Framework Set",
+      "desc": null
+    },
+    {
+      "typeID": 1018584,
+      "text": "Kitbash Framework Corner",
+      "desc": null
+    },
+    {
+      "typeID": 1018590,
+      "text": "Kitbash Module Small",
+      "desc": null
+    },
+    {
+      "typeID": 1018591,
+      "text": "Kitbash Module Small",
+      "desc": null
+    },
+    {
+      "typeID": 1037972,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037973,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037974,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    },
+    {
+      "typeID": 1037975,
+      "text": "Kitbash Frame Antenna",
+      "desc": null
+    }
+  ]
+}
