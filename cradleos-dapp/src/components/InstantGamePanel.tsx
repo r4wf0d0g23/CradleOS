@@ -513,9 +513,10 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {result && game === "baccarat" && (() => {
                   const pCards = Array.isArray(result.fields.player_cards) ? (result.fields.player_cards as number[]) : [];
                   const bCards = Array.isArray(result.fields.banker_cards) ? (result.fields.banker_cards as number[]) : [];
+                  // Contract baccarat.move result enum: 0=PLAYER win, 1=BANKER win, 2=TIE.
                   const resultNum = Number(result.fields.result);
-                  const resultLabel = resultNum === 0 ? "BANKER WINS" : resultNum === 1 ? "TIE" : "PLAYER WINS";
-                  const resultColor = resultNum === 1 ? GOLD : resultNum === 2 ? GREEN : ACCENT;
+                  const resultLabel = resultNum === 0 ? "PLAYER WINS" : resultNum === 1 ? "BANKER WINS" : "TIE";
+                  const resultColor = resultNum === 2 ? GOLD : resultNum === 0 ? GREEN : ACCENT;
                   // Cards for baccarat use 0-51 encoding (rank=idx%13, suit=idx/13), ranks 0=Ace..12=K
                   const BACC_RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
                   const cardLabel = (c: number) => BACC_RANKS[c % 13] ?? "?";

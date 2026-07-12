@@ -769,7 +769,7 @@ export function BaccaratStage({ playerCards, bankerCards, playerScore, bankerSco
   bankerCards: number[];
   playerScore: number;
   bankerScore: number;
-  result: number; // 0=banker, 1=tie, 2=player
+  result: number; // contract baccarat.move: 0=player win, 1=banker win, 2=tie
   onDone: () => void;
 }) {
   useCasinoKeyframes();
@@ -789,18 +789,19 @@ export function BaccaratStage({ playerCards, bankerCards, playerScore, bankerSco
     return () => clearTimeout(t);
   }, []);
 
+  // Contract result enum: 0=player win, 1=banker win, 2=tie.
   const playerHighlight = (): "green" | "red" | "gold" | undefined => {
-    if (result === 1) return "gold";
-    if (result === 2) return "green";
+    if (result === 2) return "gold";   // tie
+    if (result === 0) return "green";  // player wins
     return "red";
   };
   const bankerHighlight = (): "green" | "red" | "gold" | undefined => {
-    if (result === 1) return "gold";
-    if (result === 0) return "green";
+    if (result === 2) return "gold";   // tie
+    if (result === 1) return "green";  // banker wins
     return "red";
   };
-  const resultLabel = result === 0 ? "BANKER WINS" : result === 1 ? "TIE" : "PLAYER WINS";
-  const resultColor = result === 1 ? GOLD : result === 2 ? GREEN : ACCENT;
+  const resultLabel = result === 0 ? "PLAYER WINS" : result === 1 ? "BANKER WINS" : "TIE";
+  const resultColor = result === 2 ? GOLD : result === 0 ? GREEN : ACCENT;
 
   return (
     <div style={{ padding: "10px 0" }}>
