@@ -208,7 +208,7 @@ module cradleos_casino::plinko {
         assert!(count >= 2 && count <= 10, EBadCount);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount_multi(house, &wager, (count as u64));
 
         let per_drop = amount / (count as u64);
         // per_drop must be at least 1 mist (dust check)
@@ -479,6 +479,97 @@ module cradleos_casino::plinko {
             i = i + 1;
         };
         assert!(acc == expected_total, 99);
+    }
+
+    // ── take_wager_amount_multi per-ball tests (v15) ─────────────────────────
+
+    #[test]
+    /// per-ball == max_bet, total = max_bet × count  → must succeed
+    fun test_multi_per_ball_equals_max_bet_passes() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let max_bet = 500u64;
+        let count   = 10u8;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            // bank = 10_000_000; max_bet = 500; min_bet = 1
+            let seed = coin::mint_for_testing<SUI>(10_000_000, ctx);
+            let cap = house::create<SUI>(seed, max_bet, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            // total = 500 × 10 = 5000 (whole-coin > max_bet, but per-ball = max_bet → ok)
+            let bet = coin::mint_for_testing<SUI>((max_bet * (count as u64)), ctx);
+            play_multi<SUI>(&mut house, &r, bet, 0, count, ctx); // LOW mode
+            assert!(house::bets_settled(&house) == 1, 0);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test]
+    /// whole-coin > max_bet but per-ball ≤ max_bet → must succeed
+    fun test_multi_whole_coin_exceeds_max_but_per_ball_ok() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(10_000_000, ctx);
+            let cap = house::create<SUI>(seed, 500, 1, ctx); // max_bet = 500
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            // per-ball = 400 ≤ 500; total = 800 > 500 → must pass
+            let bet = coin::mint_for_testing<SUI>(800, ctx); // 2 balls × 400
+            play_multi<SUI>(&mut house, &r, bet, 0, 2, ctx); // LOW mode
+            assert!(house::bets_settled(&house) == 1, 0);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test, expected_failure(abort_code = 2, location = cradleos_casino::house)]
+    /// per-ball > max_bet → must abort code 2 (EBetTooLarge)
+    fun test_multi_per_ball_exceeds_max_aborts() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(10_000_000, ctx);
+            let cap = house::create<SUI>(seed, 500, 1, ctx); // max_bet = 500
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            // per-ball = 600 > 500 → must abort EBetTooLarge (code 2)
+            let bet = coin::mint_for_testing<SUI>(1200, ctx); // 2 balls × 600
+            play_multi<SUI>(&mut house, &r, bet, 0, 2, ctx);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
     }
 
     #[test]

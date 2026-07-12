@@ -265,6 +265,13 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
   const betNum      = Number(betEve) || 0;
   const overExposure = bank > 0 && betNum > maxBetForExposure;
+  // For plinko multi-drop: house max_bet is PER-BALL. A per-ball bet > houseMaxBet aborts
+  // take_wager_amount_multi (code 2). Cap is min(exposureDerived, houseMaxBet) per-ball.
+  // Do NOT compare betNum×count against houseMaxBet — that’s the old (wrong) semantics.
+  const houseMaxBetEve = houseQ.data?.maxBet ?? Infinity;
+  const overHouseMaxBet = game === "plinko" && plinkoDrops > 1
+    ? betNum > houseMaxBetEve   // per-ball exceeds house per-ball cap
+    : false;                     // single-drop: already covered by overExposure
 
   return (
     <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -910,9 +917,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             )}
             <button
-              disabled={busy || !addr || overExposure || (!!pending && !result)}
+              disabled={busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
               onClick={play}
-              style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure ? 0.5 : 1 }}
+              style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure || overHouseMaxBet ? 0.5 : 1 }}
             >
               {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel") ? "✦ SPIN" : game === "hilo" ? "✦ DEAL BASE CARD" : "✦ PLAY"}
             </button>
@@ -927,6 +934,16 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 The house risks at most <b>{fmtEve(exposureBudget)} EVE</b> per play — 3% of its {fmtEve(bank)} EVE bank — so it can always pay every winner.
               </div>
               <div style={{ marginTop: 4 }}>▸ Max bet here right now: <b>{fmtEve(Math.floor(maxBetForExposure))} EVE</b> — or switch to shorter odds. This limit rises as the bank grows.</div>
+            </div>
+          )}
+          {overHouseMaxBet && (
+            <div style={{ color: GOLD, fontSize: 12, marginTop: 8, lineHeight: 1.6, background: "#1a1408", border: `1px solid ${GOLD}44`, padding: "10px 12px" }}>
+              <div style={{ fontWeight: 800, letterSpacing: "0.06em" }}>⚠ BET TOO LARGE — HOUSE PER-BALL CAP</div>
+              <div style={{ marginTop: 4, color: "#c9b478" }}>
+                The house maximum is <b>{fmtEve(houseMaxBetEve)} EVE per ball</b>.
+                Your per-ball bet of <b>{fmtEve(betNum)} EVE</b> exceeds this limit.
+                Lower your per-ball bet to {fmtEve(Math.min(maxBetForExposure, houseMaxBetEve))} EVE or less.
+              </div>
             </div>
           )}
           {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}

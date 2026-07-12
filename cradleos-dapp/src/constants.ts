@@ -350,7 +350,9 @@ export const RANDOM_OBJECT = "0x8";
 // moveCall targets. Tx AsGb2LZmQ83KXEaeTmBsNeDiKxqtrUVHvpGVnWwh4MhP.
 // v14 upgrade (Fisher-Yates fix: mines 14-24 aborted; uniformity restored — 2026-07-12) —
 // Tx Ge4962YZSTmE9d72qhEYytTsJgHMp2Yvzqq2sMCxTNWj.
-export const CASINO_PKG_STILLNESS = "0xb27de2c39787f6401eea992cafb948c603c2828a65a13b5b3a5fd94463e9997d";
+// v15 upgrade (plinko per-ball max_bet fix: take_wager_amount_multi — 2026-07-12) —
+// Tx 5eG3ogXQ46hvP3tQ2TAZmBj3EFbRLe43T5VoQRrB6GqB.
+export const CASINO_PKG_STILLNESS = "0x14c7dde815cf33efb0e46071750c80e41982fd2caa24d15a36fb5c1067060cf4";
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";

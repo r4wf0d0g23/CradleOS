@@ -216,6 +216,18 @@ module cradleos_casino::house {
         amount
     }
 
+    /// Multi-bet variant: validates PER-BET amount (amount/count) against limits.
+    /// Use for games like plinko play_multi where a single coin covers N independent bets.
+    public(package) fun take_wager_amount_multi<T>(house: &House<T>, wager: &Coin<T>, count: u64): u64 {
+        assert!(!house.paused, EGamePaused);
+        assert!(count >= 1, EZeroAmount);
+        let amount = coin::value(wager);
+        let per_bet = amount / count;
+        assert!(per_bet >= house.min_bet, EBetBelowMin);
+        assert!(per_bet <= house.max_bet, EBetTooLarge);
+        amount
+    }
+
     /// Deposit an escrowed stake Balance into the bank (called at settlement by
     /// commit-reveal games). Advances lifetime wagered accounting.
     public(package) fun deposit_stake<T>(house: &mut House<T>, stake: Balance<T>) {
