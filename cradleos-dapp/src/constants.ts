@@ -356,7 +356,7 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0x24500dde39bf459e88341ee68427dea72a883bad6149c8a86096ba506f91702c";
+export const CASINO_PKG_STILLNESS = "0xc3d6686ecaab88df8a43288cd3545236100ed847177004c3a2f6fefbfed83623"; // v18, upgraded 2026-07-12
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -399,6 +399,10 @@ export const CASINO_PLINKO_MULTI = _serverEnv === "stillness" ? CASINO_PLINKO_MU
 // ore_refine::OreRefined event types. Tag under v16 id forever.
 export const CASINO_V16_STILLNESS = "0x771ecec58588d78ac75da040ae58cde42bbedab433d698970098eb2525e53b92";
 export const CASINO_V16 = _serverEnv === "stillness" ? CASINO_V16_STILLNESS : "";
+// v18 introduced: risk_wheel::RiskWheelSpun, money_wheel::MoneyWheelSpun event types.
+// CASINO_PKG = CASINO_V18 (single publish — no double-publish this time).
+export const CASINO_V18_STILLNESS = "0xc3d6686ecaab88df8a43288cd3545236100ed847177004c3a2f6fefbfed83623";
+export const CASINO_V18 = _serverEnv === "stillness" ? CASINO_V18_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

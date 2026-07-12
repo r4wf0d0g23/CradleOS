@@ -21,6 +21,7 @@ import {
   CASINO_PLINKO_MULTI,
   CASINO_ORIGINAL,
   CASINO_V16,
+  CASINO_V18,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -28,7 +29,7 @@ import {
 } from "../constants";
 import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -243,6 +244,18 @@ const GAMES: Record<InstantGameKey, GameDef> = {
       const outcome = ORE_REFINE_OUTCOME_LABELS[Number(f.outcome)] ?? "?";
       return `${tier} · ${outcome} · ${Number(f.payout) > 0 ? (Number(f.payout) / 1e9).toFixed(1) + " EVE" : "SLAG"}`;
     },
+  },
+  // ── v18 games ──────────────────────────────────────────────────────────────
+  risk_wheel: {
+    module: "risk_wheel", event: "RiskWheelSpun",
+    describe: (f) => {
+      const modeLabel = (["LOW", "MED", "HIGH"] as const)[Number(f.mode)] ?? "?";
+      return `${modeLabel} · seg ${f.segment} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`;
+    },
+  },
+  money_wheel: {
+    module: "money_wheel", event: "MoneyWheelSpun",
+    describe: (f) => `seg ${f.segment} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
   },
 };
 
@@ -590,6 +603,26 @@ export function buildOreRefineTx(coins: string[], wagerRaw: bigint, tier: 1 | 2 
   return tx;
 }
 
+// ── v18 tx builders ──────────────────────────────────────────────────────────────
+
+export function buildRiskWheelTx(coins: string[], wagerRaw: bigint, mode: 0 | 1 | 2): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::risk_wheel::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(mode)],
+  });
+  return tx;
+}
+
+export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::money_wheel::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
 // ── Resolution by digest ─────────────────────────────────────────────────────
 export async function resolveInstantByDigest(game: InstantGameKey, digest: string): Promise<InstantResult | null> {
   const def = GAMES[game];
@@ -632,6 +665,8 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   baccarat: CASINO_V7, three_card_poker: CASINO_V7,
   // v16 new games: DragonTigerPlayed, UnderOver7Rolled, OreRefined introduced in v16.
   dragon_tiger: CASINO_V16, under_over_7: CASINO_V16, ore_refine: CASINO_V16,
+  // v18 new games: RiskWheelSpun, MoneyWheelSpun introduced in v18.
+  risk_wheel: CASINO_V18, money_wheel: CASINO_V18,
 };
 
 // Stateful games' settle events — merged into the all-games feed. Each event

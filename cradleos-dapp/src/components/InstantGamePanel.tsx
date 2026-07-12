@@ -17,6 +17,7 @@ import {
   buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
   buildDragonTigerTx, buildUnderOver7Tx, buildOreRefineTx,
+  buildRiskWheelTx, buildMoneyWheelTx,
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
@@ -29,6 +30,7 @@ import {
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
   BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
   DragonTigerStage, UnderOver7Stage, OreRefineStage,
+  RiskWheelStage, MoneyWheelStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -119,6 +121,7 @@ const GAME_TITLE: Record<InstantGameKey, string> = {
   crash: "▲ CRASH", diamonds: "◆ DIAMONDS", double_dice: "⚄ DOUBLE DICE", war: "⚔ WAR",
   baccarat: "◈ BACCARAT", three_card_poker: "◇ THREE CARD",
   dragon_tiger: "◎ DRAGON TIGER", under_over_7: "▣ UNDER/OVER 7", ore_refine: "⊞ ORE REFINE",
+  risk_wheel: "◉ RISK WHEEL", money_wheel: "✦ MONEY WHEEL",
 };
 const GAME_BLURB: Record<InstantGameKey, string> = {
   coinflip: "Call it. Win pays 1.96x.",
@@ -140,6 +143,8 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   dragon_tiger: "One card each. Dragon vs Tiger — highest rank wins 2x. Tie returns half. Tie side bet pays 9x.",
   under_over_7: "Two dice. Bet whether the sum falls Under 7 (2.32x), Exactly 7 (5.70x), or Over 7 (2.32x).",
   ore_refine: "Risk your stake through 5 refine intensities. BASIC (2x) → CRITICAL (20x). All tiers: 3% house edge.",
+  risk_wheel: "Spin with your chosen volatility. LOW: frequent 1.4x/3x wins, 3% edge. MED: balanced 10x top, 4%. HIGH: rare 13.5x jackpot, 4%.",
+  money_wheel: "54-segment wheel. The rare 18x jackpot glows on every spin. Edge 3.33% across all tiers.",
 };
 
 export function InstantGamePanel({ game }: { game: InstantGameKey }) {
@@ -190,6 +195,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [dragonTigerBet, setDragonTigerBet] = useState<0|1|2>(0); // 0=Dragon 1=Tiger 2=Tie
   const [underOver7Kind, setUnderOver7Kind] = useState<0|1|2>(0); // 0=UNDER 1=EXACTLY7 2=OVER
   const [oreTier, setOreTier] = useState<1|2|3|4|5>(1);           // 1=BASIC..5=CRITICAL
+  const [riskWheelMode, setRiskWheelMode] = useState<0|1|2>(0);    // 0=LOW 1=MED 2=HIGH
 
   // Log-scale limbo slider helpers (slider 0..10000 → 1.01x..1000x)
   const LIMBO_LOG_BASE = Math.log(10_000_000 / 101);
@@ -245,6 +251,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "dragon_tiger"       ? buildDragonTigerTx(ids, raw, dragonTigerBet) :
           game === "under_over_7"       ? buildUnderOver7Tx(ids, raw, underOver7Kind) :
           game === "ore_refine"         ? buildOreRefineTx(ids, raw, oreTier) :
+          game === "risk_wheel"         ? buildRiskWheelTx(ids, raw, riskWheelMode) :
+          game === "money_wheel"        ? buildMoneyWheelTx(ids, raw) :
           buildWheelTx(ids, raw);
         return withGas(t, addr);
       };
@@ -275,7 +283,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
@@ -284,7 +292,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
       limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind,
-      dragonTigerBet, underOver7Kind, oreTier, dAppKit]);
+      dragonTigerBet, underOver7Kind, oreTier, riskWheelMode, dAppKit]);
 
   // Settle a live hi-lo hand: player has seen the base, calls a direction.
   const settleHiLo = useCallback(async (higher: boolean) => {
@@ -336,6 +344,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "dragon_tiger"   ? (dragonTigerBet === 2 ? 9 : 2)
     : game === "under_over_7"   ? (underOver7Kind === 1 ? 5.7 : 2.32)
     : game === "ore_refine"     ? [2, 4, 6, 15, 20][oreTier - 1] ?? 2
+    : game === "risk_wheel"     ? [3, 10, 14][riskWheelMode] ?? 3
+    : game === "money_wheel"    ? 18
     : 2;
   const exposureBudget    = bank * EXPOSURE_PCT;
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
@@ -377,6 +387,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "dragon_tiger"    && <DragonTigerStage key={pending.txDigest} dragonRank={Number(pending.fields.dragon_rank)} tigerRank={Number(pending.fields.tiger_rank)} betType={Number(pending.fields.bet_type)} onDone={() => reveal(pending)} />}
                 {game === "under_over_7"    && <UnderOver7Stage  key={pending.txDigest} d1={Number(pending.fields.d1)} d2={Number(pending.fields.d2)} kind={Number(pending.fields.kind)} onDone={() => reveal(pending)} />}
                 {game === "ore_refine"      && <OreRefineStage   key={pending.txDigest} tier={Number(pending.fields.tier)} outcome={Number(pending.fields.outcome)} onDone={() => reveal(pending)} />}
+                {game === "risk_wheel"      && <RiskWheelStage   key={pending.txDigest} mode={Number(pending.fields.mode)} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
+                {game === "money_wheel"     && <MoneyWheelStage  key={pending.txDigest} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
                 {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}
@@ -1014,6 +1026,32 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
             </div>
           )}
 
+          {/* Risk Wheel — mode selector */}
+          {game === "risk_wheel" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em" }}>RISK MODE</div>
+              <div style={{ display: "flex", gap: 4 }}>
+                {([
+                  ["LOW",  0, "3x",    "#3FCF6A"],
+                  ["MED",  1, "10x",   "#7FC8FF"],
+                  ["HIGH", 2, "13.5x", "#FF4700"],
+                ] as [string, 0|1|2, string, string][]).map(([label, v, maxMult, col]) => (
+                  <button key={v} onClick={() => setRiskWheelMode(v)} style={{
+                    flex: "1 1 80px", padding: "8px 4px",
+                    background: riskWheelMode === v ? col + "22" : "#1a1a1a",
+                    border: `1px solid ${riskWheelMode === v ? col : "#333"}`,
+                    color: riskWheelMode === v ? col : "#888", borderRadius: 4, cursor: "pointer",
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", lineHeight: 1.4,
+                    textAlign: "center",
+                  }}>
+                    <div>{label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 900 }}>{maxMult}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Bet input (all games; hidden mid-hand in live hi-lo — stake already escrowed) */}
           {!(game === "hilo" && hiloLive) && (<>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
@@ -1045,7 +1083,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               onClick={play}
               style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure || overHouseMaxBet ? 0.5 : 1 }}
             >
-              {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel") ? "✦ SPIN" : game === "hilo" ? "✦ DEAL BASE CARD" : "✦ PLAY"}
+              {busy ? "SIGNING…" : (game === "slots" || game === "plinko" || game === "wheel" || game === "risk_wheel" || game === "money_wheel") ? "✦ SPIN" : game === "hilo" ? "✦ DEAL BASE CARD" : "✦ PLAY"}
             </button>
           </div>
           </>)}

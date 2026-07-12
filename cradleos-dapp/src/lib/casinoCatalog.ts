@@ -30,7 +30,7 @@ export type CasinoCategory =
   | "lottery"
   | "eve-native";
 
-export type Variance = "L" | "M" | "H" | "VH" | "M-H";
+export type Variance = "L" | "M" | "H" | "VH" | "M-H" | "L-VH";
 
 export type BuildClass = "I" | "S";
 
@@ -277,6 +277,26 @@ export const CASINO_CATALOG: GameEntry[] = [
     buildClass: "I",
     glyph: "\u229E",   // ⊞  SQUARED PLUS
     hook: "Risk your ore through 5 refine intensities. BASIC to CRITICAL — BONUS yields up to 20x.",
+    status: "live",
+  },
+  {
+    key: "risk_wheel",
+    name: "RISK WHEEL",
+    category: "wheels",
+    variance: "L-VH",
+    buildClass: "I",
+    glyph: "\u25c9",
+    hook: "Choose your volatility: LOW (3x cap, 3% edge), MED (10x, 4%), HIGH (13.5x jackpot, 4%). One wheel, three profiles.",
+    status: "live",
+  },
+  {
+    key: "money_wheel",
+    name: "MONEY WHEEL",
+    category: "wheels",
+    variance: "M",
+    buildClass: "I",
+    glyph: "\u2726",
+    hook: "54-segment Big Six-style wheel. The 18x jackpot segment glows on every spin. Edge 3.33%.",
     status: "live",
   },
 ];

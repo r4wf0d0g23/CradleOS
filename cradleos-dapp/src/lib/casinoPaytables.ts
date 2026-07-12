@@ -188,6 +188,32 @@ export const VARIABLE_PAYTABLES: Partial<Record<string, Paytable>> = {
     rtp: "≈96.6%", edge: "≈3.4%",
     note: "Ante only. Beat the dealer; dealer qualifies with Queen-high. Note: in 3-card poker a STRAIGHT beats a FLUSH.",
   },
+  risk_wheel: {
+    rows: [
+      { label: "LOW mode — jackpot 3.0x", mult: "3.0x",   prob: "5.0%", top: true },
+      { label: "LOW mode — mid win 1.4x", mult: "1.4x",   prob: "20.0%" },
+      { label: "LOW mode — small win 1.2x", mult: "1.2x",  prob: "45.0%" },
+      { label: "MED mode — jackpot 10x",   mult: "10x",   prob: "5.0%", top: true },
+      { label: "MED mode — win 1.6x",       mult: "1.6x",  prob: "10.0%" },
+      { label: "MED mode — win 1.2x",       mult: "1.2x",  prob: "25.0%" },
+      { label: "HIGH mode — jackpot 13.5x", mult: "13.5x", prob: "5.0%", top: true },
+      { label: "HIGH mode — win 1.3x",       mult: "1.3x",  prob: "5.0%" },
+      { label: "HIGH mode — win 1.1x",       mult: "1.1x",  prob: "20.0%" },
+    ],
+    rtp: "97.0% (LOW) / 96.0% (MED/HIGH)", edge: "3.0% (LOW) / 4.0% (MED/HIGH)",
+    note: "Select LOW, MED, or HIGH risk mode before spinning. All modes use 20 segments. Choose your volatility.",
+  },
+  money_wheel: {
+    rows: [
+      { label: "Jackpot — 18x",       mult: "18x",  prob: "1.85%", top: true },
+      { label: "Gold tier — 1.6x",    mult: "1.6x", prob: "5.56%" },
+      { label: "Blue tier — 1.2x",    mult: "1.2x", prob: "14.81%" },
+      { label: "Green tier — 1.1x",   mult: "1.1x", prob: "33.33%" },
+      { label: "Bust — 0x",           mult: "0x",   prob: "44.44%" },
+    ],
+    rtp: "96.67%", edge: "3.33%",
+    note: "54-segment wheel. One jackpot segment glows every spin. Long deceleration for premium anticipation.",
+  },
 };
 
 /** Lookup a paytable for any game (fixed or variable). */

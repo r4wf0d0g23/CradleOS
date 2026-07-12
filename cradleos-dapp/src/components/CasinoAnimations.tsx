@@ -1347,3 +1347,157 @@ export function OreRefineStage({
     </div>
   );
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// v18 STAGES — Risk Wheel + Money Wheel
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── RISK WHEEL: 20 segments, three colour-coded risk modes ────────────────────
+// mode 0=LOW (green palette), 1=MED (blue palette), 2=HIGH (red/orange palette)
+
+const RISK_SEGMENTS_LOW  = [0,0,0,0,0,0,12000,12000,12000,12000,12000,12000,12000,12000,12000,14000,14000,14000,14000,30000];
+const RISK_SEGMENTS_MED  = [0,0,0,0,0,0,0,0,0,0,0,0,12000,12000,12000,12000,12000,16000,16000,100000];
+const RISK_SEGMENTS_HIGH = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,11000,11000,11000,11000,13000,135000];
+
+function riskColFor(bps: number, mode: number): string {
+  if (bps === 0) return "#1a1a1a";
+  if (mode === 0) {
+    // LOW: green palette
+    return bps >= 30000 ? "#2a6a40" : bps >= 14000 ? "#1a4a2a" : "#112a1a";
+  } else if (mode === 1) {
+    // MED: blue palette (same as existing WheelStage)
+    return bps >= 100000 ? "#8a6a10" : bps >= 16000 ? "#3d2a63" : "#274a63";
+  } else {
+    // HIGH: red/orange palette
+    return bps >= 135000 ? "#8a3a10" : bps >= 13000 ? "#5a2a10" : "#3a1a10";
+  }
+}
+
+const RISK_MODE_META = [
+  { label: "LOW",  accentCol: GREEN,  maxLabel: "3x"   },
+  { label: "MED",  accentCol: "#7FC8FF", maxLabel: "10x"  },
+  { label: "HIGH", accentCol: ACCENT, maxLabel: "13.5x" },
+] as const;
+
+export function RiskWheelStage({ mode, segment, onDone }: { mode: number; segment: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  const [angle, setAngle] = useState(0);
+  const [done, setDone] = useState(false);
+  const segs = mode === 0 ? RISK_SEGMENTS_LOW : mode === 1 ? RISK_SEGMENTS_MED : RISK_SEGMENTS_HIGH;
+  const meta = RISK_MODE_META[mode] ?? RISK_MODE_META[1];
+
+  useEffect(() => {
+    const segDeg = 360 / 20;
+    const target = 4 * 360 + (360 - (segment * segDeg + segDeg / 2));
+    requestAnimationFrame(() => requestAnimationFrame(() => setAngle(target)));
+    const t = setTimeout(() => { setDone(true); onDone(); }, 3100);
+    return () => clearTimeout(t);
+  }, []);
+
+  const segDeg = 360 / 20;
+  const stops = segs.map((b, i) =>
+    `${riskColFor(b, mode)} ${(i * segDeg).toFixed(2)}deg ${((i + 1) * segDeg).toFixed(2)}deg`
+  ).join(", ");
+  const mult = segs[segment] / 10000;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px 0" }}>
+      {/* Mode badge */}
+      <div style={{ color: meta.accentCol, fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", marginBottom: 6 }}>
+        {meta.label} RISK &nbsp;·&nbsp; MAX {meta.maxLabel}
+      </div>
+      <div style={{ color: meta.accentCol, fontSize: 18, lineHeight: 1, marginBottom: -4, zIndex: 2 }}>▼</div>
+      <div style={{ position: "relative", width: 190, height: 190 }}>
+        <div style={{
+          position: "absolute", inset: 0, borderRadius: "50%",
+          background: `conic-gradient(${stops})`,
+          border: `6px solid ${meta.accentCol}55`,
+          boxShadow: `0 0 24px rgba(0,0,0,0.7), 0 0 12px ${meta.accentCol}33, inset 0 0 30px rgba(0,0,0,0.55)`,
+          transform: `rotate(${angle}deg)`,
+          transition: "transform 3s cubic-bezier(0.15, 0.85, 0.25, 1)",
+        }} />
+        <div style={{ position: "absolute", inset: 58, borderRadius: "50%", background: "radial-gradient(circle at 40% 35%, #2a2118, #14100a)", border: `2px solid ${meta.accentCol}33`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {done && (
+            <div style={{ textAlign: "center", animation: "cas-pulse 0.4s ease" }}>
+              <div style={{ fontSize: 22, fontWeight: 900, color: mult > 0 ? meta.accentCol : ACCENT }}>
+                {mult > 0 ? `${mult}x` : "0x"}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MONEY WHEEL: 54-segment big wheel, jackpot in the orange tier ─────────────
+const MONEY_SEGS: number[] = [
+  ...Array(24).fill(0),          // bust
+  ...Array(18).fill(11000),      // 1.1x
+  ...Array(8).fill(12000),       // 1.2x
+  ...Array(3).fill(16000),       // 1.6x
+  180000,                        // 18x jackpot
+];
+
+function moneyColFor(bps: number): string {
+  if (bps === 0)      return "#1a1614";   // dark bust
+  if (bps === 11000)  return "#1a2a1a";   // green tint
+  if (bps === 12000)  return "#1a2240";   // blue tint
+  if (bps === 16000)  return "#3a3010";   // gold tint
+  return "#4a2210";                       // orange jackpot
+}
+
+export function MoneyWheelStage({ segment, onDone }: { segment: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  const [angle, setAngle] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const segDeg = 360 / 54;
+    const target = 6 * 360 + (360 - (segment * segDeg + segDeg / 2));
+    requestAnimationFrame(() => requestAnimationFrame(() => setAngle(target)));
+    // Longer spin for 54-segment wheel (more drama)
+    const t = setTimeout(() => { setDone(true); onDone(); }, 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const segDeg = 360 / 54;
+  const stops = MONEY_SEGS.map((b, i) =>
+    `${moneyColFor(b)} ${(i * segDeg).toFixed(2)}deg ${((i + 1) * segDeg).toFixed(2)}deg`
+  ).join(", ");
+  const mult = MONEY_SEGS[segment] / 10000;
+  const isJackpot = MONEY_SEGS[segment] === 180000;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px 0" }}>
+      <div style={{ color: GOLD, fontSize: 10, letterSpacing: "0.10em", marginBottom: 6, fontWeight: 700 }}>
+        MONEY WHEEL &nbsp;·&nbsp; 54 SEGMENTS &nbsp;·&nbsp; JACKPOT 18x
+      </div>
+      <div style={{ color: GOLD, fontSize: 18, lineHeight: 1, marginBottom: -4, zIndex: 2 }}>▼</div>
+      <div style={{ position: "relative", width: 200, height: 200 }}>
+        <div style={{
+          position: "absolute", inset: 0, borderRadius: "50%",
+          background: `conic-gradient(${stops})`,
+          border: "6px solid #6a4a10",
+          boxShadow: "0 0 30px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.55)",
+          transform: `rotate(${angle}deg)`,
+          // Slower ease — 54 segments, premium feel
+          transition: "transform 4s cubic-bezier(0.1, 0.82, 0.2, 1)",
+        }} />
+        {/* Centre hub */}
+        <div style={{ position: "absolute", inset: 64, borderRadius: "50%", background: "radial-gradient(circle at 40% 35%, #2a2118, #14100a)", border: "2px solid #6a4a1055", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {done && (
+            <div style={{ textAlign: "center", animation: "cas-pulse 0.4s ease" }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: mult > 0 ? GOLD : ACCENT }}>
+                {mult > 0 ? `${mult}x` : "0x"}
+              </div>
+              {isJackpot && (
+                <div style={{ fontSize: 8, color: ACCENT, fontWeight: 700, letterSpacing: "0.06em", animation: "cas-glow-gold 1s ease infinite" }}>JACKPOT</div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
