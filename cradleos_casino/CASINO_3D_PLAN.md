@@ -46,10 +46,10 @@
 
 ## PHASE 2 — Alive layer
 **Scope:** the floor feels inhabited — without any new backend.
-- [ ] Presence holograms: recent bettors from the provably-fair feed rendered as silhouettes at the station they played (wallet-hash → color/height variation)
-- [ ] Animated station props: roulette wheel idles/spins on live plays, plinko ball drops when the feed shows a drop, slots reels tick
+- [x] Presence holograms: recent bettors from the provably-fair feed rendered as silhouettes at the station they played (wallet-hash → color/height variation) — pooled 8 slots, capsule+sphere MeshBasicMaterial, 10-min TTL (iteration 2, commit b3934d71)
+- [x] Animated station props on live plays: 15s feed poll fires triggerPulse() on base ring + rising orange activity-pulse ring at station position (iteration 2, commit b3934d71)
 - [ ] Wall screens streaming the live feed (canvas texture) + house bank ticker
-- [ ] Jackpot moment: klaxon light sweep + sound when feed shows a >50x win
+- [x] Jackpot moment: wall seam strips flash gold for 2s when payout/wager >= 25 (iteration 2, commit b3934d71)
 - [ ] Extracted EVE ship models (asset-registry.json) as hangar decor beyond windows
 - [ ] **GATE 2:** floor visibly reacts to real on-chain activity within one feed-poll interval; no perf regression.
 
@@ -82,6 +82,7 @@
 | 2026-07-11 | 1 | Card signage art: 8/20 webp present (blackjack, coinflip, dice, limbo, roulette, slots, wheel + mines recovered from pre-restart gen). 12 remaining (baccarat, crash, diamonds, double_dice, dragon_tower, hilo, keno, plinko, sicbo, three_card_poker, video_poker, war) — **deferred**: art subagent bailed twice + 2 gateway restarts under heavy load today; glyph fallback covers missing cards (non-fatal). Resume in a lighter session. |
 
 | 2026-07-11 | 1 | Lighting pass per Raw's IN-GAME walkthrough (floor renders+walks in EVE Vault webview — Gate-0 webview evidence). Brighter ambient/hemi/points, unlit signage. Label text -> near-white #f2f2f2, ring base intensity raised ~1.3x. Commit e5824928 (label/ring fix) on top of prior 83de2671 (main lighting). gh-pages: 13c7640, bundles index-BF9dJvF_.js + Casino3D-Beq4BjId.js. CF: index-Bm-IJkdz.js + Casino3D-BPBKl7LM.js. Card art: 9 webp in public/casino/cards/. |
+| 2026-07-11 | 1→2 | Iteration 2: label consistency (sizeAttenuation=false, uniform screen-space scale 0.42×0.084), station richness (cardTable orange felt inlay, wheelPlinth slow pocket-ring pulse, cabinet richer flicker, gridPit glow lines +0.23, tower edge-light strips, crashPad brighter trail), feed-reactive floor (15s poll, activity pulses, presence holograms pool-8, jackpot klaxon). Commit b3934d71, bundles index-yQfCV3tf.js + Casino3D-BBaYv4hn.js. Card art: 12 webp. |
 
 ## Session pickup instructions (for future context-fresh sessions)
 Read this doc top to bottom, find the first unchecked box in the lowest incomplete phase, verify the previous boxes' claims live (verify-before-claiming), continue. Update the checklist + progress log in the same commit as the work.
