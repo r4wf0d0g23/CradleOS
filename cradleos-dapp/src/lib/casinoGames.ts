@@ -606,10 +606,21 @@ const STATEFUL_FEED: { label: string; pkg: string; module: string; event: string
     label: "plinko", pkg: CASINO_PLINKO_MULTI, module: "plinko", event: "PlinkoMultiDropped",
     describe: (f) => {
       const modeLabel = Number(f.mode ?? 0) === 3 ? "CLASSIC" : (PLINKO_MODE_LABEL[Number(f.mode ?? 0)] ?? "?");
-      const count = Number(f.count ?? 0);
+      const count = Number(f.count ?? 1);
+      const wagerMist = Number(f.wager ?? 0);
+      const perDropWager = count > 0 ? wagerMist / count : 0;
+      if (Array.isArray(f.payouts) && perDropWager > 0) {
+        const mults = (f.payouts as any[]).map((p) => {
+          const mult = Number(p) / perDropWager;
+          const s = mult.toFixed(2).replace(/\.?0+$/, "");
+          return `${s}x`;
+        });
+        return `${modeLabel} ×${count} · ${mults.join("·")}`;
+      }
+      // fallback to aggregate if payouts array unavailable
       const totalPayout = Number(f.total_payout ?? 0) / 1e9;
-      const wager = Number(f.wager ?? 0) / 1e9;
-      const totalX = wager > 0 ? (totalPayout / wager).toFixed(2) : "0.00";
+      const wagerSui = wagerMist / 1e9;
+      const totalX = wagerSui > 0 ? (totalPayout / wagerSui).toFixed(2) : "0.00";
       return `${modeLabel} ×${count} drops · ${totalX}x total`;
     },
   },
@@ -654,7 +665,7 @@ export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRo
       rows.push({
         game: d.label,
         wager: Number(f.wager ?? 0) / 1e9,
-        payout: Number(f.payout ?? 0) / 1e9,
+        payout: Number(f.payout ?? f.total_payout ?? 0) / 1e9,
         detail: d.describe(f),
         fields: f,
         txDigest: e.id?.txDigest ?? "",
