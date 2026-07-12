@@ -213,11 +213,16 @@ export function DragonTowerPanel() {
         setMultAnimating(true);
         setTimeout(() => setMultAnimating(false), 500);
       } else {
-        // Dragon hit
+        // Game settled on this pick. Two cases:
+        //   busted=true  → dragon hit (loss, payout 0)
+        //   busted=false → final (top) row cleared → contract auto-settles a WIN
+        //                   (settle_win in dragon_tower.move emits TowerSettled
+        //                    busted:false, payout>0 alongside RowClimbed). Do NOT
+        //                    hardcode a loss here — honor the on-chain event.
         const s = outcome.settle;
         setDragonPos(s.dragonPos);
-        setBusted(true);
-        setPayout(0);
+        setBusted(s.busted);
+        setPayout(s.busted ? 0 : s.payout);
         setFinalWager(s.wager);
         setFinalMult(s.multiplierBps);
         setRowsClimbed(s.rowsClimbed);
@@ -328,16 +333,11 @@ export function DragonTowerPanel() {
           {isDone && (
             <div style={{ marginTop: 14, textAlign: "center", padding: "10px 0 4px" }}>
               <div style={{ color: busted ? ACCENT : GREEN, fontSize: 28, fontWeight: 900, letterSpacing: "0.08em" }}>
-                {busted ? "◆ DRAGON FOUND YOU" : "◉ CASHED OUT"}
+                {busted ? "◆ DRAGON FOUND YOU" : (rowsClimbed >= TOWER_ROWS ? "◉ TOWER CLEARED — DRAGON SLAIN" : "◉ CASHED OUT")}
               </div>
-              {(() => {
-                const isWin = net > 0;
-                const isPush = payout > 0 && net === 0;
-                const isPartial = payout > 0 && net < 0;
-                const dColor = isWin ? GREEN : (isPartial || isPush) ? "#E8B84B" : ACCENT;
-                const dText = isWin ? `+${fmtEve(net)} EVE` : isPush ? "\u00B10 EVE" : `\u2212${fmtEve(Math.abs(net))} EVE`;
-                return <div style={{ color: dColor, fontSize: 16, marginTop: 4, fontWeight: 800 }}>{dText}</div>;
-              })()}
+              <div style={{ color: net > 0 ? GREEN : ACCENT, fontSize: 16, marginTop: 4, fontWeight: 800 }}>
+                {net > 0 ? `+${fmtEve(net)}` : `${fmtEve(net)}`} EVE
+              </div>
               {!busted && payout > 0 && (
                 <div style={{ color: "#888", fontSize: 11, marginTop: 2 }}>
                   gross payout {fmtEve(payout)} EVE · {fmtMult(finalMult)} multiplier
