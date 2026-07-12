@@ -19,7 +19,7 @@ import {
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
-  DIAMOND_GEMS, WAR_RANKS, DOUBLE_DICE_KINDS, doubleDiceExactMult, BACCARAT_KINDS, THREE_CARD_RANKS,
+  DIAMOND_GEMS, WAR_RANKS, DOUBLE_DICE_KINDS, doubleDiceExactMult, BACCARAT_KINDS, THREE_CARD_RANKS, SLOT_SYMBOLS,
   DRAGON_TIGER_BET_LABELS, ORE_REFINE_TIER_LABELS, ORE_REFINE_OUTCOME_LABELS, WAR_RANKS_13,
   type InstantGameKey, type InstantResult, type HiLoLiveGame,
 } from "../lib/casinoGames";
@@ -41,6 +41,50 @@ function txDigestOf(result: any): string {
     ?? result?.digest ?? result?.effects?.transactionDigest ?? "";
 }
 function fmtEve(n: number): string { return n.toLocaleString(undefined, { maximumFractionDigits: 3 }); }
+
+// ── Slots paytable ────────────────────────────────────────────────────────────
+// Mirrors slots.move exactly (source of truth): TRIPLE_BPS per symbol + a flat
+// TWO_MATCH_BPS for any two matching. Reel strip weights the 7 symbols:
+//   [0×4, 1×3, 2×3, 3×2, 4×2, 5×1, 6×1]  (16 stops, same for all 3 reels)
+// If slots.move's TRIPLE_BPS / TWO_MATCH_BPS / strip() ever change, update here.
+const SLOTS_TRIPLE_MULT = [3.6, 5, 6, 12, 18, 36, 60];      // x, per symbol idx 0..6
+const SLOTS_STRIP_WEIGHT = [4, 3, 3, 2, 2, 1, 1];           // reel stops per symbol (of 16)
+const SLOTS_TWO_MATCH_MULT = 1.8;                            // x, any two matching
+
+function SlotsPaytable() {
+  const row = (label: React.ReactNode, mult: string, prob: string, top?: boolean) => (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", borderBottom: "1px solid #1c1c1c" }}>
+      <span style={{ fontSize: 15, letterSpacing: "0.12em", color: top ? GOLD : "#ccc" }}>{label}</span>
+      <span style={{ display: "flex", gap: 12, alignItems: "baseline" }}>
+        <span style={{ color: "#666", fontSize: 10 }}>{prob}</span>
+        <span style={{ color: top ? GOLD : GREEN, fontSize: 13, fontWeight: 800, minWidth: 46, textAlign: "right" }}>{mult}</span>
+      </span>
+    </div>
+  );
+  return (
+    <div style={{ marginTop: 12, background: "#0d0d0d", border: `1px solid ${ACCENT}22`, padding: "12px 14px" }}>
+      <div style={{ color: ACCENT, fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 8 }}>▦ PAYTABLE · multiplier on your bet</div>
+      {SLOTS_TRIPLE_MULT.map((m, i) => {
+        const w = SLOTS_STRIP_WEIGHT[i];
+        const p = Math.pow(w / 16, 3) * 100;
+        return (
+          <React.Fragment key={i}>
+            {row(
+              <>{SLOT_SYMBOLS[i]} {SLOT_SYMBOLS[i]} {SLOT_SYMBOLS[i]}{i === 6 ? "  JACKPOT" : ""}</>,
+              `${m}x`,
+              `${p < 0.1 ? p.toFixed(3) : p.toFixed(2)}%`,
+              i === 6,
+            )}
+          </React.Fragment>
+        );
+      })}
+      {row(<>any two matching</>, `${SLOTS_TWO_MATCH_MULT}x`, "41.6%", false)}
+      <div style={{ color: "#555", fontSize: 10, marginTop: 8, lineHeight: 1.5 }}>
+        Three reels, one 16-stop weighted strip. Rarer symbols pay more. ~95.96% return (≈4% house edge). Max win 60x.
+      </div>
+    </div>
+  );
+}
 function shortAddr(a: string): string { return a ? `${a.slice(0, 6)}…${a.slice(-4)}` : "—"; }
 
 const GAME_TITLE: Record<InstantGameKey, string> = {
@@ -999,6 +1043,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             </div>
           )}
+          {game === "slots" && <SlotsPaytable />}
           {err && <div style={{ color: ACCENT, fontSize: 12, marginTop: 8 }}>{err}</div>}
           <div style={{ color: "#666", fontSize: 10, marginTop: 8 }}>
             single-tx settle · randomness from Sui beacon (0x8) · max win per bet: 3% of house bank · full outcome in the result event
