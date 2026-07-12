@@ -28,6 +28,7 @@ export interface Station {
   group: THREE.Group;
   tick?: (dt: number) => void;
   setNear?: (near: boolean) => void;
+  triggerPulse?: () => void;   // 3-second activity surge (feed-driven)
 }
 
 export interface ZoneInfo {
@@ -105,7 +106,10 @@ function zonePositions(count: number, cx: number, cz: number, S = 5): [number, n
   return out;
 }
 
-/** Floating name sprite — monospace canvas, NO emoji. */
+/** Floating name sprite — monospace canvas, NO emoji.
+ *  sizeAttenuation=false → every label is the same screen-space size regardless
+ *  of world height (tower labels at y=4 no longer appear tiny vs table labels at y=2.4).
+ */
 function makeLabel(text: string): THREE.Sprite {
   const W = 320; const H = 64;
   const canvas = document.createElement("canvas");
@@ -116,18 +120,19 @@ function makeLabel(text: string): THREE.Sprite {
   ctx.strokeStyle = "#ff4700";
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, W - 2, H - 2);
-  // Near-white label text with shadow for readability (Raw feedback 2026-07-11: labels too dim).
   ctx.shadowColor = "rgba(0,0,0,0.9)";
   ctx.shadowBlur = 4;
   ctx.fillStyle = "#f2f2f2";
-  ctx.font = "bold 20px monospace";
+  ctx.font = "bold 22px monospace";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(text.toUpperCase(), W / 2, H / 2);
   const tex = new THREE.CanvasTexture(canvas);
-  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
+  // sizeAttenuation=false: sprite renders at fixed screen-space size (no perspective shrink).
+  // scale.set(x,y,1) where x≈viewport_width/2.5, y=x*(H/W). Calibrated for FOV 68°, ~600-900px viewport.
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, sizeAttenuation: false });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(2.2, 0.44, 1);
+  sprite.scale.set(0.42, 0.084, 1);
   return sprite;
 }
 
@@ -164,17 +169,20 @@ function makeSignage(key: string, glyph: string): THREE.Mesh {
   return mesh;
 }
 
-/** Flat base ring that pulses when nearest station. */
+/** Flat base ring that pulses when nearest station.
+ *  Also supports a 3-second activity surge (feed-driven via triggerPulse).
+ */
 function makeBaseRing(accent: number): {
   mesh: THREE.Mesh;
   tick: (dt: number) => void;
   setNear: (near: boolean) => void;
+  triggerPulse: () => void;
 } {
   const geo = new THREE.RingGeometry(1.05, 1.25, 24);
   const mat = new THREE.MeshStandardMaterial({
     color: accent,
     emissive: new THREE.Color(accent),
-    emissiveIntensity: 0.11,  // raised ~1.3x from 0.08 (Raw feedback: ring too dim)
+    emissiveIntensity: 0.11,
     roughness: 0.4,
     transparent: true,
     opacity: 0.5,
@@ -186,15 +194,23 @@ function makeBaseRing(accent: number): {
 
   let near = false;
   let phase = 0;
+  let pulseTime = 0;   // counts down from 3.0 s
   const setNear = (n: boolean) => { near = n; };
+  const triggerPulse = () => { pulseTime = 3.0; };
   const tick = (dt: number) => {
     phase += dt * (near ? 3.2 : 0.6);
+    if (pulseTime > 0) {
+      pulseTime -= dt;
+      mat.emissiveIntensity = 1.3 + 0.5 * Math.sin(pulseTime * 9);
+      mat.opacity = 0.98;
+      return;
+    }
     mat.emissiveIntensity = near
-      ? 0.72 + 0.4 * Math.sin(phase)   // raised ~1.3x from 0.55
-      : 0.08 + 0.08 * Math.sin(phase * 0.7);  // raised ~1.3x from 0.06
+      ? 0.72 + 0.4 * Math.sin(phase)
+      : 0.08 + 0.08 * Math.sin(phase * 0.7);
     mat.opacity = near ? 0.92 : 0.45;
   };
-  return { mesh, tick, setNear };
+  return { mesh, tick, setNear, triggerPulse };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -216,13 +232,21 @@ function buildCardTable(
   body.position.y = 0.45;
   group.add(body);
 
-  // Felt top
+  // Felt top — brighter green for readability from distance
   const feltGeo = new THREE.PlaneGeometry(2.0, 1.0);
-  const feltMat = new THREE.MeshStandardMaterial({ color: 0x0a2a0a, roughness: 0.95 });
+  const feltMat = new THREE.MeshStandardMaterial({ color: 0x163a16, roughness: 0.95 });
   const felt = new THREE.Mesh(feltGeo, feltMat);
   felt.rotation.x = -Math.PI / 2;
   felt.position.y = 0.91;
   group.add(felt);
+
+  // Orange felt inlay line — thin emissive strip across felt centre
+  const inlayMat = new THREE.MeshStandardMaterial({
+    color: 0xff6820, emissive: new THREE.Color(0xff6820), emissiveIntensity: 0.5, roughness: 0.35,
+  });
+  const inlay = new THREE.Mesh(new THREE.BoxGeometry(1.82, 0.018, 0.055), inlayMat);
+  inlay.position.set(0, 0.912, 0);
+  group.add(inlay);
 
   // Gold rim (4 edges)
   const rimMat = new THREE.MeshStandardMaterial({
@@ -264,6 +288,7 @@ function buildCardTable(
     key, name, position: pos, radius: 2.2, group,
     tick: (dt) => ring.tick(dt),
     setNear: ring.setNear,
+    triggerPulse: ring.triggerPulse,
   };
 }
 
@@ -300,6 +325,15 @@ function buildWheelPlinth(
   discRing.rotation.x = Math.PI / 2;
   discRing.position.y = 1.08;
   group.add(discRing);
+  // Pocket ring — second outer ring that slow-pulses for richness
+  const pocketGeo = new THREE.TorusGeometry(0.68, 0.03, 4, 20);
+  const pocketMat = new THREE.MeshStandardMaterial({
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.3, roughness: 0.4,
+  });
+  const pocket = new THREE.Mesh(pocketGeo, pocketMat);
+  pocket.rotation.x = Math.PI / 2;
+  pocket.position.y = 1.07;
+  group.add(pocket);
 
   const label = makeLabel(glyph + " " + name);
   label.position.set(0, 2.6, 0);
@@ -313,15 +347,20 @@ function buildWheelPlinth(
   scene.add(group);
 
   let rot = 0;
+  let colorPhase = 0;
   return {
     key, name, position: pos, radius: 2.2, group,
     tick: (dt) => {
       rot += dt * 0.45;
       wheel.rotation.y = rot;
       discRing.rotation.z = rot * 0.5;
+      // Slow pocket-ring colour pulse between 0.3 and 0.85
+      colorPhase += dt * 0.35;
+      pocketMat.emissiveIntensity = 0.3 + 0.55 * (0.5 + 0.5 * Math.sin(colorPhase));
       ring.tick(dt);
     },
     setNear: ring.setNear,
+    triggerPulse: ring.triggerPulse,
   };
 }
 
@@ -342,12 +381,12 @@ function buildCabinet(
   cabinet.position.y = 1.2;
   group.add(cabinet);
 
-  // Emissive screen panel (front face inset)
+  // Emissive screen panel (front face inset) — brighter base for cabinet readability
   const screenGeo = new THREE.PlaneGeometry(0.8, 0.7);
   const screenMat = new THREE.MeshStandardMaterial({
     color: 0x060615,
     emissive: new THREE.Color(accent),
-    emissiveIntensity: 0.5,
+    emissiveIntensity: 0.68,
     roughness: 0.3,
   });
   const screen = new THREE.Mesh(screenGeo, screenMat);
@@ -388,10 +427,12 @@ function buildCabinet(
     key, name, position: pos, radius: 2.2, group,
     tick: (dt) => {
       phase += dt * 1.2;
-      screenMat.emissiveIntensity = 0.38 + 0.18 * Math.sin(phase);
+      // Richer flicker: primary wave + faster harmonic
+      screenMat.emissiveIntensity = 0.58 + 0.18 * Math.sin(phase) + 0.07 * Math.sin(phase * 3.7);
       ring.tick(dt);
     },
     setNear: ring.setNear,
+    triggerPulse: ring.triggerPulse,
   };
 }
 
@@ -420,9 +461,9 @@ function buildGridPit(
   gridTop.position.y = 0.71;
   group.add(gridTop);
 
-  // Grid lines (4 horizontal + 4 vertical = 8 thin boxes)
+  // Grid lines — brighter glow for pit readability from across the hall
   const gridLineMat = new THREE.MeshStandardMaterial({
-    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.35, roughness: 0.4,
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.58, roughness: 0.4,
   });
   for (let i = 0; i < 4; i++) {
     const hLine = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.02, 0.025), gridLineMat);
@@ -450,6 +491,7 @@ function buildGridPit(
     key, name, position: pos, radius: 2.2, group,
     tick: (dt) => ring.tick(dt),
     setNear: ring.setNear,
+    triggerPulse: ring.triggerPulse,
   };
 }
 
@@ -490,14 +532,21 @@ function buildTower(
     }
   }
 
-  // Ledge bars (3 horizontal bars)
+  // Ledge bars (3 horizontal bars) — brighter edge lights
   const ledgeMat = new THREE.MeshStandardMaterial({
-    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.3, roughness: 0.4,
+    color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.55, roughness: 0.4,
   });
   for (let i = 0; i < 3; i++) {
     const ledge = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.05, 0.22), ledgeMat);
     ledge.position.set(0, 1.0 + i * 0.8, 0.12);
     group.add(ledge);
+    // Thin front-edge light strip on each ledge
+    const edgeMat = new THREE.MeshStandardMaterial({
+      color: accent, emissive: new THREE.Color(accent), emissiveIntensity: 0.85, roughness: 0.3,
+    });
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.04, 0.03), edgeMat);
+    edge.position.set(0, 1.0 + i * 0.8 + 0.02, 0.235);
+    group.add(edge);
   }
 
   // Emissive bottom catch
@@ -523,6 +572,7 @@ function buildTower(
     key, name, position: pos, radius: 2.2, group,
     tick: (dt) => ring.tick(dt),
     setNear: ring.setNear,
+    triggerPulse: ring.triggerPulse,
   };
 }
 
@@ -593,10 +643,12 @@ function buildCrashPad(
     key, name, position: pos, radius: 2.2, group,
     tick: (dt) => {
       phase += dt * 1.8;
-      trailMat.emissiveIntensity = 0.7 + 0.3 * Math.abs(Math.sin(phase));
+      // Brighter trail with sharper flicker for crash-pad drama
+      trailMat.emissiveIntensity = 0.82 + 0.38 * Math.abs(Math.sin(phase));
       ring.tick(dt);
     },
     setNear: ring.setNear,
+    triggerPulse: ring.triggerPulse,
   };
 }
 

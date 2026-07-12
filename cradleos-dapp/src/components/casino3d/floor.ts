@@ -35,7 +35,12 @@ const ZONE_TRIM: { x: number; z: number; w: number; d: number; color: number }[]
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function buildFloor(scene: THREE.Scene): void {
+export interface FloorControls {
+  tick: (dt: number) => void;
+  triggerKlaxon: () => void;
+}
+
+export function buildFloor(scene: THREE.Scene): FloorControls {
   // ── Lights ──────────────────────────────────────────────────────────────────
   // Ambient raised ~2.4x + brighter tint (Raw feedback 2026-07-11: floor too dark in webview).
   const ambient = new THREE.AmbientLight(0x3a3a52, 3.4);
@@ -160,4 +165,24 @@ export function buildFloor(scene: THREE.Scene): void {
     strip.position.set(21.5, 0.02, 0);
     scene.add(strip);
   }
+
+  // ── Klaxon flash controller (jackpot moment: wall seams pulse gold for 2s)
+  let klaxonTime = 0;
+  return {
+    triggerKlaxon() { klaxonTime = 2.0; },
+    tick(dt: number) {
+      if (klaxonTime <= 0) return;
+      klaxonTime -= dt;
+      if (klaxonTime <= 0) {
+        seamMat.color.setHex(ACCENT_ORG);
+        seamMat.emissive.setHex(ACCENT_ORG);
+        seamMat.emissiveIntensity = 0.9;
+        return;
+      }
+      const gold = Math.sin(klaxonTime * 12) > 0;
+      seamMat.color.setHex(gold ? GOLD : ACCENT_ORG);
+      seamMat.emissive.setHex(gold ? GOLD : ACCENT_ORG);
+      seamMat.emissiveIntensity = gold ? 2.2 : 0.9;
+    },
+  };
 }
