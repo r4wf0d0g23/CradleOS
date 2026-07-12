@@ -176,37 +176,83 @@ function makeZoneLabel(text: string, accent: number): THREE.Sprite {
   return sprite;
 }
 
-/** Signage plane: tries to load webp; on error draws glyph on dark plate. */
-function makeSignage(key: string, glyph: string): THREE.Mesh {
-  const geo = new THREE.PlaneGeometry(1.6, 1.2);
+/**
+ * Signage poster panel: card-art webp lit poster with gold-trim frame + orange neon strip.
+ * Returns a THREE.Group containing:
+ *   - poster plane (card art or glyph fallback, MeshBasicMaterial — always full brightness)
+ *   - thin dark backing plate (adds depth to the framed poster)
+ *   - gold-trim frame (4 thin BoxGeometry bars, MeshStandardMaterial gold)
+ *   - orange neon strip above poster (emissive, dominant mood detail)
+ * Fails soft on texture 404 (keeps glyph fallback).
+ */
+function makeSignage(key: string, glyph: string): THREE.Group {
+  const PW = 1.8, PH = 1.35; // poster world dimensions
+  const group = new THREE.Group();
 
+  // ── Backing plate (slightly larger than poster, dark metal) ────────────────
+  const plateMat = new THREE.MeshStandardMaterial({
+    color: 0x0d0c0b, roughness: 0.78, metalness: 0.75,
+  });
+  const plate = new THREE.Mesh(new THREE.PlaneGeometry(PW + 0.14, PH + 0.14), plateMat);
+  plate.position.z = -0.015;
+  group.add(plate);
+
+  // ── Poster plane ───────────────────────────────────────────────────────────
   // Glyph fallback canvas
   const fc = document.createElement("canvas");
-  fc.width = 160; fc.height = 120;
+  fc.width = 180; fc.height = 135;
   const fctx = fc.getContext("2d")!;
   fctx.fillStyle = "#1c1c2e";
-  fctx.fillRect(0, 0, 160, 120);
+  fctx.fillRect(0, 0, 180, 135);
   fctx.fillStyle = "#ffcf5a";
-  fctx.font = "bold 52px monospace";
+  fctx.font = "bold 54px monospace";
   fctx.textAlign = "center";
   fctx.textBaseline = "middle";
-  fctx.fillText(glyph, 80, 60);
+  fctx.fillText(glyph, 90, 67);
   const fallbackTex = new THREE.CanvasTexture(fc);
-  // Unlit material — signage/art renders at full texture brightness regardless of scene
-  // lighting (Raw feedback 2026-07-11: floating signage images too dark in webview).
+  // MeshBasicMaterial = unlit, renders at full brightness regardless of scene lighting.
   const fallbackMat = new THREE.MeshBasicMaterial({ map: fallbackTex, toneMapped: false });
-  const mesh = new THREE.Mesh(geo, fallbackMat);
+  const poster = new THREE.Mesh(new THREE.PlaneGeometry(PW, PH), fallbackMat);
+  group.add(poster);
 
   new THREE.TextureLoader().load(
     `${import.meta.env.BASE_URL}casino/cards/${key}.webp`,
     (tex) => {
-      mesh.material = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
+      poster.material = new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
       fallbackTex.dispose();
     },
     undefined,
     () => { /* keep glyph fallback */ },
   );
-  return mesh;
+
+  // ── Gold-trim frame (4 bars: top, bottom, left, right) ────────────────────
+  const frameMat = new THREE.MeshStandardMaterial({
+    color: 0xe8b84b, emissive: new THREE.Color(0xe8b84b),
+    emissiveIntensity: 0.18, metalness: 0.8, roughness: 0.28,
+  });
+  const FT = 0.055; // frame thickness
+  const frameSegs: [number, number, number, number, number, number][] = [
+    [0,         PH/2 + FT/2, 0, PW + FT*2, FT,  FT], // top bar
+    [0,        -PH/2 - FT/2, 0, PW + FT*2, FT,  FT], // bottom bar
+    [-PW/2 - FT/2, 0,        0, FT, PH,         FT], // left bar
+    [ PW/2 + FT/2, 0,        0, FT, PH,         FT], // right bar
+  ];
+  for (const [fx, fy, fz, fw, fh, fd] of frameSegs) {
+    const fb = new THREE.Mesh(new THREE.BoxGeometry(fw, fh, fd), frameMat);
+    fb.position.set(fx, fy, fz);
+    group.add(fb);
+  }
+
+  // ── Orange neon strip above poster ────────────────────────────────────────
+  const neonStripMat = new THREE.MeshStandardMaterial({
+    color: 0xff6600, emissive: new THREE.Color(0xff6600),
+    emissiveIntensity: 2.8, roughness: 0.25, metalness: 0.0,
+  });
+  const neonStrip = new THREE.Mesh(new THREE.BoxGeometry(PW + 0.18, 0.055, 0.055), neonStripMat);
+  neonStrip.position.set(0, PH/2 + FT + 0.06, 0);
+  group.add(neonStrip);
+
+  return group;
 }
 
 /** Flat base ring that pulses when nearest station.
@@ -265,9 +311,9 @@ function buildCardTable(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Table body
+  // Table body — hull-metal PBR
   const bodyGeo = new THREE.BoxGeometry(2.2, 0.9, 1.2);
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
   body.position.y = 0.45;
   group.add(body);
@@ -342,9 +388,9 @@ function buildWheelPlinth(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Plinth
+  // Plinth — hull-metal PBR
   const plinthGeo = new THREE.CylinderGeometry(0.9, 1.0, 1.0, 16);
-  const plinthMat = new THREE.MeshStandardMaterial({ color: 0x111118, roughness: 0.8 });
+  const plinthMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
   const plinth = new THREE.Mesh(plinthGeo, plinthMat);
   plinth.position.y = 0.5;
   group.add(plinth);
@@ -414,9 +460,9 @@ function buildCabinet(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Cabinet body
+  // Cabinet body — hull-metal PBR
   const cabinetGeo = new THREE.BoxGeometry(1.1, 2.4, 0.55);
-  const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x101018, roughness: 0.85 });
+  const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
   const cabinet = new THREE.Mesh(cabinetGeo, cabinetMat);
   cabinet.position.y = 1.2;
   group.add(cabinet);
@@ -486,9 +532,9 @@ function buildGridPit(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Low table
+  // Low table — hull-metal PBR
   const tableGeo = new THREE.BoxGeometry(2.4, 0.7, 1.8);
-  const tableMat = new THREE.MeshStandardMaterial({ color: 0x111118, roughness: 0.85 });
+  const tableMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
   const table = new THREE.Mesh(tableGeo, tableMat);
   table.position.y = 0.35;
   group.add(table);
@@ -545,9 +591,9 @@ function buildTower(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Board back-panel
+  // Board back-panel — hull-metal PBR
   const boardGeo = new THREE.BoxGeometry(1.3, 3.2, 0.3);
-  const boardMat = new THREE.MeshStandardMaterial({ color: 0x0d0d18, roughness: 0.85 });
+  const boardMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
   const board = new THREE.Mesh(boardGeo, boardMat);
   board.position.y = 1.6;
   group.add(board);
@@ -626,9 +672,9 @@ function buildCrashPad(
   const ring = makeBaseRing(accent);
   group.add(ring.mesh);
 
-  // Angled launch rail (inclined box)
+  // Angled launch rail — hull-metal PBR
   const railGeo = new THREE.BoxGeometry(0.3, 2.4, 0.25);
-  const railMat = new THREE.MeshStandardMaterial({ color: 0x111120, roughness: 0.8 });
+  const railMat = new THREE.MeshStandardMaterial({ color: 0x1a1510, roughness: 0.75, metalness: 0.85 });
   const rail = new THREE.Mesh(railGeo, railMat);
   rail.rotation.z = 0.38; // ~22° incline
   rail.position.set(0, 1.2, 0);

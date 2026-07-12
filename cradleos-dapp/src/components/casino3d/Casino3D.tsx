@@ -181,8 +181,9 @@ export default function Casino3D({ onExit, onOpenGame }: Props) {
 
     // ── Scene ────────────────────────────────────────────────────────────────
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x040408);
-    scene.fog = new THREE.Fog(0x040408, 24, 52);
+    // Art-direction restyle (Raw 2026-07-12): dark bunker + exponential haze
+    scene.background = new THREE.Color(0x0a0808);
+    scene.fog = new THREE.FogExp2(0x0a0808, 0.028);
 
     // ── Camera ───────────────────────────────────────────────────────────────
     const camera = new THREE.PerspectiveCamera(
