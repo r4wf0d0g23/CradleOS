@@ -142,7 +142,7 @@ module cradleos_casino::mines {
         // 1..24 mines (need at least one safe tile and at least one mine).
         assert!(mines >= 1 && mines <= 24, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         // Exposure: the house must be able to pay a full clear at max multiplier.
         let top = clear_all_multiplier(mines);
         let max_pay = (((amount as u128) * (top as u128) / 10000) as u64);

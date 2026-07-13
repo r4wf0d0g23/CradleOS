@@ -22,6 +22,8 @@ module cradleos_casino::house {
     use sui::balance::{Self, Balance};
     use sui::coin::{Self, Coin};
     use sui::event;
+    use sui::dynamic_field as df;
+    use sui::vec_set::{Self, VecSet};
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const ENotAdmin:          u64 = 0;
@@ -30,6 +32,13 @@ module cradleos_casino::house {
     const EBetBelowMin:       u64 = 3;
     const EHouseInsufficient: u64 = 4;
     const EGamePaused:        u64 = 5;
+    /// Sender is on the House ban list — barred from placing any wager (v24).
+    const EBanned:            u64 = 6;
+
+    /// Dynamic-field key for the lazily-created VecSet<address> ban list (v24).
+    /// Stored as a dynamic field (NOT a struct field) so this is upgrade-safe —
+    /// Sui forbids adding fields to existing structs.
+    public struct BanKey has copy, drop, store {}
 
     // ── Capability ───────────────────────────────────────────────────────────
     /// Held by the casino operator (CradleOS treasury controller).
@@ -176,6 +185,44 @@ module cradleos_casino::house {
         });
     }
 
+    // ── Ban list admin (v24) ───────────────────────────────────────────────
+    public struct AddressBanned has copy, drop { house_id: ID, who: address, banned: bool }
+
+    /// Ban a wallet address from placing any wager against this House. Idempotent.
+    public fun set_banned<T>(house: &mut House<T>, cap: &HouseAdminCap, who: address, ctx: &mut TxContext) {
+        assert_admin(house, cap);
+        if (!df::exists_(&house.id, BanKey {})) {
+            df::add(&mut house.id, BanKey {}, vec_set::empty<address>());
+        };
+        let set: &mut VecSet<address> = df::borrow_mut(&mut house.id, BanKey {});
+        if (!vec_set::contains(set, &who)) { vec_set::insert(set, who); };
+        let _ = ctx;
+        event::emit(AddressBanned { house_id: object::id(house), who, banned: true });
+    }
+
+    /// Lift a ban on an address. Idempotent.
+    public fun unban<T>(house: &mut House<T>, cap: &HouseAdminCap, who: address, ctx: &mut TxContext) {
+        assert_admin(house, cap);
+        if (df::exists_(&house.id, BanKey {})) {
+            let set: &mut VecSet<address> = df::borrow_mut(&mut house.id, BanKey {});
+            if (vec_set::contains(set, &who)) { vec_set::remove(set, &who); };
+        };
+        let _ = ctx;
+        event::emit(AddressBanned { house_id: object::id(house), who, banned: false });
+    }
+
+    /// True if `who` is on this House's ban list.
+    public fun is_banned<T>(house: &House<T>, who: address): bool {
+        if (!df::exists_(&house.id, BanKey {})) { return false };
+        let set: &VecSet<address> = df::borrow(&house.id, BanKey {});
+        vec_set::contains(set, &who)
+    }
+
+    /// Abort if the tx sender is banned. Called by every take_wager* path.
+    fun assert_not_banned<T>(house: &House<T>, ctx: &TxContext) {
+        assert!(!is_banned(house, tx_context::sender(ctx)), EBanned);
+    }
+
     // ── Package-private betting primitives (called by game modules) ───────────
     //
     // A game module resolves an entire bet inside ONE `entry` function that also
@@ -194,8 +241,10 @@ module cradleos_casino::house {
     public(package) fun take_wager<T>(
         house: &mut House<T>,
         wager: Coin<T>,
+        ctx: &TxContext,
     ): u64 {
         assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
         let amount = coin::value(&wager);
         assert!(amount >= house.min_bet, EBetBelowMin);
         assert!(amount <= house.max_bet, EBetTooLarge);
@@ -208,8 +257,9 @@ module cradleos_casino::house {
     /// Used by commit-reveal games (blackjack_live) that escrow the stake inside
     /// a per-hand object and only deposit it into the bank at settlement.
     /// Returns the validated wager amount. Aborts on paused / out-of-range.
-    public(package) fun take_wager_amount<T>(house: &House<T>, wager: &Coin<T>): u64 {
+    public(package) fun take_wager_amount<T>(house: &House<T>, wager: &Coin<T>, ctx: &TxContext): u64 {
         assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
         let amount = coin::value(wager);
         assert!(amount >= house.min_bet, EBetBelowMin);
         assert!(amount <= house.max_bet, EBetTooLarge);
@@ -218,8 +268,9 @@ module cradleos_casino::house {
 
     /// Multi-bet variant: validates PER-BET amount (amount/count) against limits.
     /// Use for games like plinko play_multi where a single coin covers N independent bets.
-    public(package) fun take_wager_amount_multi<T>(house: &House<T>, wager: &Coin<T>, count: u64): u64 {
+    public(package) fun take_wager_amount_multi<T>(house: &House<T>, wager: &Coin<T>, count: u64, ctx: &TxContext): u64 {
         assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
         assert!(count >= 1, EZeroAmount);
         let amount = coin::value(wager);
         let per_bet = amount / count;
@@ -277,6 +328,65 @@ module cradleos_casino::house {
     #[test_only]
     use sui::sui::SUI;
 
+    /// v24: a banned sender is rejected by take_wager; unban restores access;
+    /// is_banned reflects state. Uses the SAME sender for admin+player for
+    /// simplicity (ban check is on tx sender at wager time).
+    #[test]
+    #[expected_failure(abort_code = EBanned)]
+    fun test_banned_sender_rejected() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let cap = test_scenario::take_from_sender<HouseAdminCap>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            set_banned(&mut house, &cap, admin, ctx);
+            assert!(is_banned(&house, admin), 0);
+            // banned sender tries to wager -> aborts EBanned
+            let bet = coin::mint_for_testing<SUI>(10, ctx);
+            let _ = take_wager(&mut house, bet, ctx);
+            test_scenario::return_shared(house);
+            test_scenario::return_to_sender(&sc, cap);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test]
+    fun test_unban_restores_access() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let cap = test_scenario::take_from_sender<HouseAdminCap>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            set_banned(&mut house, &cap, admin, ctx);
+            assert!(is_banned(&house, admin), 0);
+            unban(&mut house, &cap, admin, ctx);
+            assert!(!is_banned(&house, admin), 1);
+            // now wager succeeds (not banned, within cap)
+            let bet = coin::mint_for_testing<SUI>(10, ctx);
+            let amt = take_wager(&mut house, bet, ctx);
+            assert!(amt == 10, 2);
+            test_scenario::return_shared(house);
+            test_scenario::return_to_sender(&sc, cap);
+        };
+        test_scenario::end(sc);
+    }
+
     #[test]
     fun test_create_and_deposit_withdraw() {
         let admin = @0xAD;
@@ -320,7 +430,7 @@ module cradleos_casino::house {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let oversized = coin::mint_for_testing<SUI>(200, ctx); // > max_bet 100
-            let _ = take_wager(&mut house, oversized);
+            let _ = take_wager(&mut house, oversized, ctx);
             test_scenario::return_shared(house);
         };
         test_scenario::end(sc);

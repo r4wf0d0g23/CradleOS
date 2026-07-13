@@ -356,7 +356,7 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0x2bb78383a30a5ffb2644c8201e54f74969b44c3c05eb5646a4a00981e50e6f6b"; // v23, upgraded 2026-07-12 (mines::start + video_poker::deal disabled on-chain — same solution-leak class; abort EGameDisabled). Prev v22 0x03791dc6 (dragon_tower disabled), v21 0x9e058f72.
+export const CASINO_PKG_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025"; // v25, upgraded 2026-07-13 (ban-aware house: EBanned, set_banned, unban, is_banned via dynamic-field VecSet). New House 0xecbd158e (bank migrated from 0xeec606d9, old house drained+paused). Prev v24 0x4d42234d.
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -419,6 +419,12 @@ export const CASINO_V22 = _serverEnv === "stillness" ? CASINO_V22_STILLNESS : ""
 // CASINO_V23: mines::start + video_poker::deal disabled on-chain (same solution-leak class). reveal/cashout/draw stay open so in-flight games settle. blackjack_live left LIVE pending commit-reveal redesign.
 export const CASINO_V23_STILLNESS = "0x2bb78383a30a5ffb2644c8201e54f74969b44c3c05eb5646a4a00981e50e6f6b";
 export const CASINO_V23 = _serverEnv === "stillness" ? CASINO_V23_STILLNESS : "";
+// CASINO_V24: red_dog added. Tx AaYjUgVzfKAAFrbf45W6CqnZDW4J4vsFmTJR8MYaWF2i
+export const CASINO_V24_STILLNESS = "0x4d42234d94bea391d26170f06f0bfd57fcf42e3bbc61c8d9cda6c03502691a64";
+export const CASINO_V24 = _serverEnv === "stillness" ? CASINO_V24_STILLNESS : "";
+// CASINO_V25: ban-aware house (set_banned/unban/is_banned via dynamic-field VecSet<address>). New House 0xecbd158e, old House 0xeec606d9 drained+retired.
+export const CASINO_V25_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025";
+export const CASINO_V25 = _serverEnv === "stillness" ? CASINO_V25_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).
@@ -426,7 +432,7 @@ export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STIL
 // max_bet 500 EVE, min_bet 1 EVE. Admin cap held by the cradle wallet
 // (server-controlled) for operator top-up / risk-param / pause:
 //   HouseAdminCap = 0x476c10fc52b73f52322957368780d370c8705c2ccc1876b0cbfcf13e2cec7391
-export const CASINO_HOUSE_STILLNESS = "0xeec606d9b3dfd5063c26a1b23b9ad0ed112f7de81dce64862a0d78edbb9b2c96";
+export const CASINO_HOUSE_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // v25 new house (ban-aware). Old: 0xeec606d9 (drained+paused).
 export const CASINO_HOUSE = _serverEnv === "stillness" ? CASINO_HOUSE_STILLNESS : "";
 export const CASINO_AVAILABLE = CASINO_PKG !== "";
 

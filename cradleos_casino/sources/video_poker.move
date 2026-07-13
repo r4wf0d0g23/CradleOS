@@ -110,7 +110,7 @@ module cradleos_casino::video_poker {
         // still draw to settle.
         assert!(false, EGameDisabled);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         // Exposure guard: royal flush = 250x gross payout.
         assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
 
