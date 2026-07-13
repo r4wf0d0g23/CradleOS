@@ -429,9 +429,10 @@ export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).
 // Seeded 2026-07-05 from the cradle wallet (0xc80fe7d6...) with 90,000 $EVE.
-// max_bet 500 EVE, min_bet 1 EVE. Admin cap held by the cradle wallet
-// (server-controlled) for operator top-up / risk-param / pause:
-//   HouseAdminCap = 0x476c10fc52b73f52322957368780d370c8705c2ccc1876b0cbfcf13e2cec7391
+// max_bet 500 EVE, min_bet 1 EVE. Admin cap held by the deploy wallet
+// 0xc80fe7d6... (DGX sui CLI, active addr) for top-up / risk-param / pause / ban:
+//   HouseAdminCap = 0x91e02f7120f1ad08838961db5b198ab6d041faf913145eae2f4b1be6ab562173  (bound to v25 house 0xecbd158e)
+//   NOTE (2026-07-13): 0x476c10fc... is the OLD cap bound to the RETIRED house 0xeec606d9 — do NOT use it; set_banned/set_paused will abort ENotAdmin against the live house.
 export const CASINO_HOUSE_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // v25 new house (ban-aware). Old: 0xeec606d9 (drained+paused).
 export const CASINO_HOUSE = _serverEnv === "stillness" ? CASINO_HOUSE_STILLNESS : "";
 export const CASINO_AVAILABLE = CASINO_PKG !== "";

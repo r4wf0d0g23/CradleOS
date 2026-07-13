@@ -439,7 +439,7 @@ export function buildHitTx(handId: string): Transaction {
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::hit`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(handId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId)],
   });
   return tx;
 }
@@ -449,7 +449,7 @@ export function buildStandTx(handId: string): Transaction {
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::stand`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(handId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId)],
   });
   return tx;
 }
@@ -463,7 +463,7 @@ export function buildDoubleTx(handId: string, eveCoinIds: string[], wagerRaw: bi
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::double`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(handId), extra],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId), extra],
   });
   return tx;
 }
@@ -477,7 +477,7 @@ export function buildSplitTx(handId: string, eveCoinIds: string[], wagerRaw: big
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::split`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(handId), extra],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId), extra],
   });
   return tx;
 }
@@ -487,7 +487,7 @@ export function buildSplitHitTx(splitId: string): Transaction {
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::split_hit`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(splitId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(splitId)],
   });
   return tx;
 }
@@ -497,7 +497,7 @@ export function buildSplitStandTx(splitId: string): Transaction {
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::split_stand`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(splitId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(splitId)],
   });
   return tx;
 }
