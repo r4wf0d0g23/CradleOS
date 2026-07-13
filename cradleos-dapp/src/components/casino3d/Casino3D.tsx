@@ -198,7 +198,7 @@ export default function Casino3D({ onExit, onOpenGame }: Props) {
 
     // ── Build world ──────────────────────────────────────────────────────────
     const floorCtrl = buildFloor(scene);
-    const { stations, zones } = buildStations(scene, CASINO_CATALOG);
+    const { stations, zones } = buildStations(scene, CASINO_CATALOG.filter((g) => !g.disabled));
 
     // ── Hologram pool (8 slots, allocated once) ──────────────────────────────
     const holoSlots = buildHologramPool(scene, 8);

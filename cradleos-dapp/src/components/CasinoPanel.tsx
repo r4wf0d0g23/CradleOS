@@ -373,7 +373,11 @@ export function CasinoPanel() {
   }, [splitHand, addr, dAppKit]);
 
   // ── Navigation helpers ────────────────────────────────────────────────────
-  const openGame = (key: string) => setCasinoView({ mode: "game", gameKey: key });
+  const openGame = (key: string) => {
+    // Block opening any game that's been pulled offline.
+    if (CASINO_CATALOG.find((g) => g.key === key)?.disabled) return;
+    setCasinoView({ mode: "game", gameKey: key });
+  };
   const backToLobby = () => setCasinoView((prev) => ({ mode: "lobby", gameKey: prev.gameKey }));
 
   if (!CASINO_AVAILABLE) return <div style={{ color: "#888", padding: 24 }}>Casino is only available on Stillness.</div>;
@@ -396,12 +400,15 @@ export function CasinoPanel() {
   // ── Lobby derived ─────────────────────────────────────────────────────────
   const query = lobbySearch.trim().toLowerCase();
   const filteredGames = CASINO_CATALOG.filter((g) => {
+    if (g.disabled) return false; // pulled offline (e.g. dragon_tower exploit)
     const matchSearch = !query || g.name.toLowerCase().includes(query);
     const matchCategory = lobbyCategory === "all" || g.category === lobbyCategory;
     return matchSearch && matchCategory;
   });
   const activeCategories = activeCategoriesFromCatalog();
   const gameEntry = CASINO_CATALOG.find((g) => g.key === casinoView.gameKey);
+  // Guard: never open a disabled game even via direct link/stale nav state.
+  const gameDisabled = !!gameEntry?.disabled;
 
   return (
     <div style={{ maxWidth: 1080, margin: "0 auto" }}>
@@ -507,6 +514,12 @@ export function CasinoPanel() {
           {/* Game panels — unchanged, lazy-mounted only in game mode */}
           {game === "mines" ? (
             <MinesPanel />
+          ) : gameDisabled ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#9a9a8a" }}>
+              <div style={{ color: ACCENT, fontSize: 18, fontWeight: 800, letterSpacing: "0.1em" }}>GAME OFFLINE</div>
+              <div style={{ fontSize: 12, marginTop: 8 }}>This game is temporarily unavailable for maintenance.</div>
+              <button onClick={backToLobby} style={{ marginTop: 16, background: `${ACCENT}22`, border: `1px solid ${ACCENT}`, color: ACCENT, padding: "8px 18px", cursor: "pointer" }}>← BACK TO LOBBY</button>
+            </div>
           ) : game === "dragon_tower" ? (
             <DragonTowerPanel />
           ) : game === "video_poker" ? (

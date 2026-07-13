@@ -45,8 +45,17 @@ export interface GameEntry {
   glyph: string;
   /** One-line pitch shown on the lobby card. */
   hook: string;
-  status: "live";
+  status: "live" | "disabled";
+  /** When true, the game is hidden from the lobby + 3D floor and cannot be opened.
+   *  Used to pull a game offline without a redeploy of the Move package. */
+  disabled?: boolean;
 }
+
+/** Games hidden from the lobby/floor and blocked from opening.
+ *  dragon_tower: disabled 2026-07-12 — solution-leak exploit (pre-drawn dragon
+ *  positions readable from the player-owned game object). Re-enable only after
+ *  the v22 commit-reveal fix ships. */
+export const CASINO_DISABLED_KEYS = new Set<string>(["dragon_tower"]);
 
 export const CASINO_CATALOG: GameEntry[] = [
   {
@@ -237,7 +246,8 @@ export const CASINO_CATALOG: GameEntry[] = [
     buildClass: "S",
     glyph: "\u25AD",   // ▭  WHITE RECTANGLE
     hook: "Climb the tower one safe tile at a time — higher floors, bigger rewards",
-    status: "live",
+    status: "disabled",
+    disabled: true,
   },
   {
     key: "video_poker",
