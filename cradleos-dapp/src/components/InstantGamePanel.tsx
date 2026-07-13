@@ -366,7 +366,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
         {/* Result stage */}
         <div style={{ background: "radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", minHeight: 150, boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)", position: "relative", isolation: "isolate", overflow: "hidden" }}>
-          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 15%, rgba(20,53,31,0.55) 0%, rgba(12,28,18,0.68) 55%, rgba(6,10,8,0.85) 100%)" />
+          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 15%, rgba(20,53,31,0.32) 0%, rgba(12,28,18,0.48) 55%, rgba(6,10,8,0.70) 100%)" />
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>{GAME_TITLE[game]}</div>
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 4 }}>{GAME_BLURB[game]}</div>
 

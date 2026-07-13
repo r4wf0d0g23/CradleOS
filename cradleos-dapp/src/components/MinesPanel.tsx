@@ -385,7 +385,7 @@ export function MinesPanel() {
       <div style={{ flex: "1 1 440px", minWidth: 340 }}>
         {/* Header */}
         <div style={{ background: "radial-gradient(ellipse at 50% 10%, #1a0a20 0%, #0c0c14 55%, #060608 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "18px 20px", boxShadow: "inset 0 0 60px rgba(0,0,0,0.7)", position: "relative", isolation: "isolate", overflow: "hidden" }}>
-          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 10%, rgba(26,10,32,0.55) 0%, rgba(12,12,20,0.68) 55%, rgba(6,6,8,0.85) 100%)" />
+          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 10%, rgba(26,10,32,0.32) 0%, rgba(12,12,20,0.48) 55%, rgba(6,6,8,0.70) 100%)" />
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>
             ⛨ MINES
           </div>

@@ -21,7 +21,13 @@ const PREFERS_REDUCED_MOTION =
   !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 // Ambient reel pool — add new self-hosted clips here and they enter rotation.
-const REELS = ["media/table-bg.mp4", "media/table-bg-signal.webm"];
+// Per-reel visual calibration: the Free Trial nebula reel is very dark footage
+// (mean luma ~0.08) and needs a strong brightness lift to read through the
+// tint; the signal animation is brighter and only needs mild treatment.
+const REELS: { src: string; filter: string; opacity: number }[] = [
+  { src: "media/table-bg.mp4", filter: "brightness(2.3) contrast(1.15) saturate(1.15)", opacity: 0.7 },
+  { src: "media/table-bg-signal.webm", filter: "brightness(1.2) saturate(0.95)", opacity: 0.65 },
+];
 
 export function TableVideoBackdrop({ tint }: { tint: string }) {
   const [failed, setFailed] = React.useState(false);
@@ -38,13 +44,13 @@ export function TableVideoBackdrop({ tint }: { tint: string }) {
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: -1, pointerEvents: "none", borderRadius: "inherit", overflow: "hidden" }}>
       <video
-        key={REELS[reelIdx]}
+        key={REELS[reelIdx].src}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        src={`${import.meta.env.BASE_URL}${REELS[reelIdx]}`}
+        src={`${import.meta.env.BASE_URL}${REELS[reelIdx].src}`}
         onError={onError}
         style={{
           position: "absolute",
@@ -52,8 +58,8 @@ export function TableVideoBackdrop({ tint }: { tint: string }) {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          opacity: 0.5,
-          filter: "saturate(0.9) brightness(0.8)",
+          opacity: REELS[reelIdx].opacity,
+          filter: REELS[reelIdx].filter,
         }}
       />
       <div style={{ position: "absolute", inset: 0, background: tint }} />

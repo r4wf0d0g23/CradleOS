@@ -295,7 +295,7 @@ export function DragonTowerPanel() {
       <div style={{ flex: "1 1 440px", minWidth: 340 }}>
         {/* Header */}
         <div style={{ background: "radial-gradient(ellipse at 50% 10%, #1a0a02 0%, #0c0c0c 55%, #060606 100%)", border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "18px 20px", boxShadow: "inset 0 0 60px rgba(0,0,0,0.7)", position: "relative", isolation: "isolate", overflow: "hidden" }}>
-          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 10%, rgba(26,10,2,0.55) 0%, rgba(12,12,12,0.68) 55%, rgba(6,6,6,0.85) 100%)" />
+          <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 10%, rgba(26,10,2,0.32) 0%, rgba(12,12,12,0.48) 55%, rgba(6,6,6,0.70) 100%)" />
           <div style={{ color: ACCENT, fontSize: 16, fontWeight: 800, letterSpacing: "0.1em" }}>◆ DRAGON TOWER</div>
           <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>
             Climb 9 rows avoiding the dragon. Each row you clear multiplies your bet. Cash out anytime.
