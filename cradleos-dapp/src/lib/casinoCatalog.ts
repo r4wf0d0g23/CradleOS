@@ -299,6 +299,16 @@ export const CASINO_CATALOG: GameEntry[] = [
     hook: "54-segment Big Six-style wheel. The 18x jackpot segment glows on every spin. Edge 3.33%.",
     status: "live",
   },
+  {
+    key: "andar_bahar",
+    name: "ANDAR BAHAR",
+    category: "cards",
+    variance: "M",
+    buildClass: "I",
+    glyph: "\u25C6",   // ◆  BLACK DIAMOND
+    hook: "Joker revealed, then cards deal alternately to Andar / Bahar until the rank matches. Pick the side. Andar 2.24% · Bahar 4.00% edge.",
+    status: "live",
+  },
 ];
 
 /** Display labels for the category rail buttons. */

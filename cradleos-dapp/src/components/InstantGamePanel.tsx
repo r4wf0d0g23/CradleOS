@@ -18,7 +18,7 @@ import {
   buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
   buildDragonTigerTx, buildUnderOver7Tx, buildOreRefineTx,
-  buildRiskWheelTx, buildMoneyWheelTx,
+  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx,
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
@@ -31,7 +31,7 @@ import {
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
   BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
   DragonTigerStage, UnderOver7Stage, OreRefineStage,
-  RiskWheelStage, MoneyWheelStage,
+  RiskWheelStage, MoneyWheelStage, AndarBaharStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -123,6 +123,7 @@ const GAME_TITLE: Record<InstantGameKey, string> = {
   baccarat: "◈ BACCARAT", three_card_poker: "◇ THREE CARD",
   dragon_tiger: "◎ DRAGON TIGER", under_over_7: "▣ UNDER/OVER 7", ore_refine: "⊞ ORE REFINE",
   risk_wheel: "◉ RISK WHEEL", money_wheel: "✦ MONEY WHEEL",
+  andar_bahar: "◆ ANDAR BAHAR",
 };
 const GAME_BLURB: Record<InstantGameKey, string> = {
   coinflip: "Call it. Win pays 1.96x.",
@@ -146,6 +147,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   ore_refine: "Risk your stake through 5 refine intensities. BASIC (2x) → CRITICAL (20x). All tiers: 3% house edge.",
   risk_wheel: "Spin with your chosen volatility. LOW: frequent 1.4x/3x wins, 3% edge. MED: balanced 10x top, 4%. HIGH: rare 13.5x jackpot, 4%.",
   money_wheel: "54-segment wheel. The rare 18x jackpot glows on every spin. Edge 3.33% across all tiers.",
+  andar_bahar: "Indian classic. Joker card revealed first, then cards deal alternately to Andar / Bahar until rank matches. Bet which side gets the match. Andar 2.24% edge · Bahar 4.00% edge.",
 };
 
 export function InstantGamePanel({ game }: { game: InstantGameKey }) {
@@ -197,6 +199,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [underOver7Kind, setUnderOver7Kind] = useState<0|1|2>(0); // 0=UNDER 1=EXACTLY7 2=OVER
   const [oreTier, setOreTier] = useState<1|2|3|4|5>(1);           // 1=BASIC..5=CRITICAL
   const [riskWheelMode, setRiskWheelMode] = useState<0|1|2>(0);    // 0=LOW 1=MED 2=HIGH
+  const [andarBaharSide, setAndarBaharSide] = useState<0|1>(0);     // 0=Andar 1=Bahar
 
   // Log-scale limbo slider helpers (slider 0..10000 → 1.01x..1000x)
   const LIMBO_LOG_BASE = Math.log(10_000_000 / 101);
@@ -254,6 +257,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "ore_refine"         ? buildOreRefineTx(ids, raw, oreTier) :
           game === "risk_wheel"         ? buildRiskWheelTx(ids, raw, riskWheelMode) :
           game === "money_wheel"        ? buildMoneyWheelTx(ids, raw) :
+          game === "andar_bahar"        ? buildAndarBaharTx(ids, raw, andarBaharSide) :
           buildWheelTx(ids, raw);
         return withGas(t, addr);
       };
@@ -284,7 +288,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
@@ -293,7 +297,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
       limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind,
-      dragonTigerBet, underOver7Kind, oreTier, riskWheelMode, dAppKit]);
+      dragonTigerBet, underOver7Kind, oreTier, riskWheelMode, andarBaharSide, dAppKit]);
 
   // Settle a live hi-lo hand: player has seen the base, calls a direction.
   const settleHiLo = useCallback(async (higher: boolean) => {
@@ -347,6 +351,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "ore_refine"     ? [2, 4, 6, 15, 20][oreTier - 1] ?? 2
     : game === "risk_wheel"     ? [3, 10, 14][riskWheelMode] ?? 3
     : game === "money_wheel"    ? 18
+    : game === "andar_bahar"    ? (andarBaharSide === 0 ? 1.88 : 2)
     : 2;
   const exposureBudget    = bank * EXPOSURE_PCT;
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
@@ -391,6 +396,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "ore_refine"      && <OreRefineStage   key={pending.txDigest} tier={Number(pending.fields.tier)} outcome={Number(pending.fields.outcome)} onDone={() => reveal(pending)} />}
                 {game === "risk_wheel"      && <RiskWheelStage   key={pending.txDigest} mode={Number(pending.fields.mode)} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
                 {game === "money_wheel"     && <MoneyWheelStage  key={pending.txDigest} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
+                {game === "andar_bahar"     && <AndarBaharStage   key={pending.txDigest} jokerRank={Number(pending.fields.joker_rank)} winnerSide={Number(pending.fields.winner_side)} dealLog={Array.isArray(pending.fields.deal_log) ? (pending.fields.deal_log as number[]) : []} betSide={Number(pending.fields.bet_side)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
                 {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}
@@ -658,6 +664,24 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                       </div>
                       <div style={{ color: outcomeColor, fontSize: 24, fontWeight: 900, letterSpacing: "0.06em" }}>
                         {outcomeLabel}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {result && game === "andar_bahar" && (() => {
+                  const jokerRank = Number(result.fields.joker_rank);
+                  const winner = Number(result.fields.winner_side) === 0 ? "ANDAR" : "BAHAR";
+                  const dealt = Number(result.fields.cards_dealt);
+                  const won = result.payout > 0;
+                  return (
+                    <div style={{ padding: "14px 0 4px", textAlign: "center" }}>
+                      <div style={{ color: "#666", fontSize: 10, marginBottom: 4 }}>
+                        JOKER: <span style={{ color: GOLD, fontWeight: 900 }}>{(WAR_RANKS_13 as string[])[jokerRank] ?? "?"}</span>
+                        &nbsp;&middot;&nbsp;{dealt} cards dealt
+                      </div>
+                      <div style={{ color: won ? GREEN : ACCENT, fontSize: 22, fontWeight: 900, letterSpacing: "0.08em" }}>
+                        {winner} WINS {won ? "✓" : "✗"}
                       </div>
                     </div>
                   );
@@ -1048,6 +1072,28 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   }}>
                     <div>{label}</div>
                     <div style={{ fontSize: 13, fontWeight: 900 }}>{maxMult}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Andar Bahar side selector */}
+          {game === "andar_bahar" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em" }}>BET SIDE</div>
+              <div style={{ display: "flex", gap: 4 }}>
+                {(["ANDAR", "BAHAR"] as const).map((label, v) => (
+                  <button key={v} onClick={() => setAndarBaharSide(v as 0|1)} style={{
+                    flex: "1 1 80px", padding: "8px 4px",
+                    background: andarBaharSide === v ? "#FF470022" : "#1a1a1a",
+                    border: `1px solid ${andarBaharSide === v ? "#FF4700" : "#333"}`,
+                    color: andarBaharSide === v ? "#FF4700" : "#888", borderRadius: 4, cursor: "pointer",
+                    fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", lineHeight: 1.4,
+                    textAlign: "center",
+                  }}>
+                    <div>{label}</div>
+                    <div style={{ fontSize: 11, fontWeight: 900, opacity: 0.7 }}>{v === 0 ? "2.24% edge" : "4.00% edge"}</div>
                   </button>
                 ))}
               </div>

@@ -22,6 +22,7 @@ import {
   CASINO_ORIGINAL,
   CASINO_V16,
   CASINO_V18,
+  CASINO_V19,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -29,7 +30,7 @@ import {
 } from "../constants";
 import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -256,6 +257,17 @@ const GAMES: Record<InstantGameKey, GameDef> = {
   money_wheel: {
     module: "money_wheel", event: "MoneyWheelSpun",
     describe: (f) => `seg ${f.segment} · ${(Number(f.multiplier_bps) / 10000).toFixed(2)}x`,
+  },
+  // ── v19 games ──────────────────────────────────────────────────────────────
+  andar_bahar: {
+    module: "andar_bahar", event: "AndarBaharPlayed",
+    describe: (f) => {
+      const side = Number(f.bet_side) === 0 ? "ANDAR" : "BAHAR";
+      const winner = Number(f.winner_side) === 0 ? "ANDAR" : "BAHAR";
+      const jokerRank = WAR_RANKS_13[Number(f.joker_rank)] ?? "?";
+      const dealt = Number(f.cards_dealt);
+      return `${side} bet · Joker ${jokerRank} · ${dealt} cards · ${winner} wins · ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
+    },
   },
 };
 
@@ -614,6 +626,15 @@ export function buildRiskWheelTx(coins: string[], wagerRaw: bigint, mode: 0 | 1 
   return tx;
 }
 
+export function buildAndarBaharTx(coins: string[], wagerRaw: bigint, betSide: 0 | 1): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::andar_bahar::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(betSide)],
+  });
+  return tx;
+}
+
 export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
@@ -667,6 +688,8 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   dragon_tiger: CASINO_V16, under_over_7: CASINO_V16, ore_refine: CASINO_V16,
   // v18 new games: RiskWheelSpun, MoneyWheelSpun introduced in v18.
   risk_wheel: CASINO_V18, money_wheel: CASINO_V18,
+  // v19 new games: AndarBaharPlayed introduced in v19.
+  andar_bahar: CASINO_V19,
 };
 
 // Stateful games' settle events — merged into the all-games feed. Each event

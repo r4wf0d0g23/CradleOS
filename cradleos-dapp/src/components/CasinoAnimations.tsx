@@ -1501,3 +1501,152 @@ export function MoneyWheelStage({ segment, onDone }: { segment: number; onDone: 
     </div>
   );
 }
+
+// ── ANDAR BAHAR: joker card reveal + alternating card deal cascade ────────────
+const AB_RANKS = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+
+function AbCard({ rank, delayMs, isWinner, isFaded }: {
+  rank: number; delayMs: number; isWinner: boolean; isFaded: boolean;
+}) {
+  useCasinoKeyframes();
+  const rankLabel = AB_RANKS[rank] ?? "?";
+  const bg = isWinner ? `linear-gradient(135deg, ${GREEN}22, #0a1a10)`
+    : isFaded ? "#111" : "linear-gradient(135deg, #1a1410, #0d0a07)";
+  const border = isWinner ? `2px solid ${GREEN}` : isFaded ? `1px solid #222` : `1px solid ${ACCENT}33`;
+  return (
+    <div style={{
+      width: 32, height: 44, borderRadius: 4, background: bg, border,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 14, fontWeight: 900,
+      color: isWinner ? GREEN : isFaded ? "#333" : "#aaa",
+      animation: `cas-slide-down 0.3s ease ${delayMs}ms both`,
+      boxShadow: isWinner ? `0 0 12px ${GREEN}66` : "none",
+      transition: "box-shadow 0.3s",
+    }}>
+      {rankLabel}
+    </div>
+  );
+}
+
+export function AndarBaharStage({
+  jokerRank, winnerSide, dealLog, betSide, onDone,
+}: { jokerRank: number; winnerSide: number; dealLog: number[]; betSide: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  const totalCards = dealLog.length;
+  // Show up to 12 cards (6 per side) to keep the layout compact; for long deals
+  // show the first 5 + the final match card
+  const displayLog = totalCards <= 12 ? dealLog : [...dealLog.slice(0, 5), dealLog[totalCards - 1]];
+  const animDurationMs = Math.min(200 + displayLog.length * 320, 3200);
+
+  useEffect(() => {
+    const t = setTimeout(onDone, animDurationMs + 800);
+    return () => clearTimeout(t);
+  }, []);
+
+  const andarWins = winnerSide === 0;
+  const baharWins = winnerSide === 1;
+  const betAndar  = betSide === 0;
+  const playerWon = betSide === winnerSide;
+
+  // Split deal log into alternating sides (0-indexed: even=Andar, odd=Bahar)
+  const andarCards: { rank: number; pos: number }[] = [];
+  const baharCards: { rank: number; pos: number }[] = [];
+  displayLog.forEach((rank, i) => {
+    const isLast = i === displayLog.length - 1;
+    const isActualLast = (totalCards > 12 && i === 5) || (totalCards <= 12 && isLast);
+    // For truncated display: positions 0..4 are real positions; position 5 is the last (winner)
+    const realPos = (totalCards > 12 && i === 5) ? totalCards - 1 : i;
+    // isActualLast marks the winning card (used for isMatchCard per-card below)
+    void isActualLast;
+    if (realPos % 2 === 0) andarCards.push({ rank, pos: realPos });
+    else                   baharCards.push({ rank, pos: realPos });
+  });
+
+  const outcomeLabel = playerWon
+    ? (betAndar ? "ANDAR WINS" : "BAHAR WINS")
+    : (andarWins ? "ANDAR WINS" : "BAHAR WINS");
+  const outcomeColor = playerWon ? GREEN : ACCENT;
+
+  return (
+    <div style={{ textAlign: "center", padding: "10px 0" }}>
+      {/* Joker card — shown first */}
+      <div style={{ marginBottom: 8, animation: "cas-pop 0.4s ease both" }}>
+        <div style={{ color: "#666", fontSize: 9, letterSpacing: "0.12em", marginBottom: 4 }}>JOKER</div>
+        <div style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: 44, height: 60, borderRadius: 6,
+          background: `linear-gradient(135deg, ${GOLD}22, #1a1400)`,
+          border: `2px solid ${GOLD}`,
+          fontSize: 20, fontWeight: 900, color: GOLD,
+          boxShadow: `0 0 16px ${GOLD}44`,
+        }}>
+          {AB_RANKS[jokerRank] ?? "?"}
+        </div>
+      </div>
+
+      {/* Two-column deal: Andar | Bahar */}
+      <div style={{ display: "flex", gap: 24, justifyContent: "center", alignItems: "flex-start" }}>
+        {/* Andar side */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 56 }}>
+          <div style={{
+            fontSize: 8, letterSpacing: "0.12em", fontWeight: 700, marginBottom: 4,
+            color: andarWins ? GREEN : "#555",
+          }}>ANDAR{andarWins ? " ✓" : ""}</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center", maxWidth: 72 }}>
+            {andarCards.map(({ rank, pos }, i) => {
+              const isMatchCard = pos === totalCards - 1 && andarWins;
+              return (
+                <AbCard
+                  key={i}
+                  rank={rank}
+                  delayMs={Math.min(pos, 5) * 320}
+                  isWinner={isMatchCard}
+                  isFaded={!andarWins && pos === totalCards - 1}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ color: "#333", fontSize: 14, fontWeight: 900, marginTop: 28 }}>|</div>
+
+        {/* Bahar side */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 56 }}>
+          <div style={{
+            fontSize: 8, letterSpacing: "0.12em", fontWeight: 700, marginBottom: 4,
+            color: baharWins ? GREEN : "#555",
+          }}>BAHAR{baharWins ? " ✓" : ""}</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center", maxWidth: 72 }}>
+            {baharCards.map(({ rank, pos }, i) => {
+              const isMatchCard = pos === totalCards - 1 && baharWins;
+              return (
+                <AbCard
+                  key={i}
+                  rank={rank}
+                  delayMs={Math.min(pos, 5) * 320}
+                  isWinner={isMatchCard}
+                  isFaded={!baharWins && pos === totalCards - 1}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Outcome */}
+      <div style={{
+        marginTop: 10, fontSize: 12, fontWeight: 900, letterSpacing: "0.1em",
+        color: outcomeColor,
+        animation: `cas-slide-down 0.4s ease ${animDurationMs}ms both`,
+      }}>
+        {outcomeLabel} · {totalCards} CARDS DEALT
+      </div>
+      {totalCards > 12 && (
+        <div style={{ fontSize: 8, color: "#444", marginTop: 2 }}>
+          (showing first 5 + match)
+        </div>
+      )}
+    </div>
+  );
+}

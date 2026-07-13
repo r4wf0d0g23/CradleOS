@@ -48,6 +48,7 @@ These retroactively define the catalog baseline; several predate the protocol an
 | 23 | Ore Refine Gamble | I | H | EVE-native, 5 tiers, 3.0% edge, 20× max |
 | 24 | Risk Wheel | I | L-VH | 3-mode volatility selector, 20 seg, 3-4% edge, 13.5x max |
 | 25 | Money Wheel | I | M | 54-seg Big Six, 18x jackpot, 3.33% edge |
+| 26 | Andar Bahar | I | M | Indian classic, joker+alternating deal, 2.24%/4.00% edge |
 
 ---
 
@@ -202,7 +203,7 @@ Games themed to EVE Frontier lore/mechanics — nobody else can build these. Str
 ---
 
 ## Totals
-- **Live now:** 25 (updated 2026-07-12 run 2: +risk_wheel + money_wheel)
+- **Live now:** 26 (updated 2026-07-12 run 3: +andar_bahar)
 - **Planned:** 105 distinct games across 10 categories (A–J), IDs 20–124 above (de-duplicated 2026-07-11: Dragon Tiger consolidated at #103; #84 placeholder replaced with Slide).
 - **Grand total (live + planned): 124 distinct games** — 24 games of margin above the 100 floor for Gate-0 cuts.
 - **Grand target:** 100+ concurrently live. Runway sits well above the floor so we can cut weak candidates at Gate 0 and still clear 100.
@@ -227,6 +228,23 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 ## Progress Log
 
+### 2026-07-12 — Run 3 (casino-roadmap-builder cron, 19:00 CT)
+
+**Games advanced to LIVE:**
+- **Andar Bahar (#104)** — [I], Var M — v19 pkg `0xfb2895ff`, smoke TX `38Wgb4nSGgoV6rMHRnGa424dNGbAZLj2ZqqkB4ZXM1Eg`. Joker Q(10), 4 cards dealt, Bahar wins at position 3 (odd), Andar bet = LOSS ✓
+
+**Tests:** andar_bahar 11/11 ✅ · TSC clean · IOC clean.
+
+**Package:** v19 = `0xfb2895ff3879c3b6d4dbc6a2e813a12e6efee53c66cf93d481f07fe4759ea05b` · Tx `Ed9D1BvTn2dctGsjdws7gBgCD1pr19H8e2yg1EinKWyM`.
+
+**CF bundle:** `index-BsOasIOI.js` ✔ · **gh-pages:** `index-Cpd8X7rA.js` ✔
+
+**Catalog:** 26 live games. Andar Bahar has joker-card reveal + alternating deal cascade animation (up to 12 visible cards + match glow).
+
+**NEXT RUN SHOULD PICK:** Scratch Cards (#74) — 3x3 reveal grid, match-3, instant [I], Var-M.
+
+---
+
 ### 2026-07-12 — Run 2 (casino-roadmap-builder cron, 18:00 CT)
 
 **Games advanced to LIVE:**
@@ -241,7 +259,7 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 **Catalog:** 25 live games. Risk Wheel + Money Wheel both have real spinning-wheel animation stages (RiskWheelStage 3s, MoneyWheelStage 4s premium).
 
-**NEXT RUN SHOULD PICK:** Andar Bahar (#104) — card deal engine, Gate-1 spec done.
+**NEXT RUN SHOULD PICK:** Scratch Cards (#74) — 3x3 reveal grid, match-3, Gate-1 spec in BATCH_01_DESIGNS.md. Instant [I], Var-M, new tile-flip UI on Mines engine.
 
 ---
 
