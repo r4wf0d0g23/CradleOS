@@ -356,7 +356,7 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0x9e058f72917d2ce7be4551a5190e59c83db39d45977708a6291a8efd0b6efc1a"; // v21, upgraded 2026-07-12 (chuck_a_luck + crash/limbo min-target 1.01x floor). Tx 5pWvwFpW5e6s7Ezg38NrTGujT7rbE2mqsPxedkCGudmV
+export const CASINO_PKG_STILLNESS = "0x03791dc6001ddf4f996df15804535e3ce71bc199e362c5d3e76dead5f1cd454b"; // v22, upgraded 2026-07-12 (dragon_tower::start disabled on-chain — solution-leak exploit; aborts EGameDisabled=6). Prev v21 0x9e058f72 (chuck_a_luck + crash/limbo floor).
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -413,6 +413,9 @@ export const CASINO_V20 = _serverEnv === "stillness" ? CASINO_V20_STILLNESS : ""
 // Tx 5pWvwFpW5e6s7Ezg38NrTGujT7rbE2mqsPxedkCGudmV
 export const CASINO_V21_STILLNESS = "0x9e058f72917d2ce7be4551a5190e59c83db39d45977708a6291a8efd0b6efc1a";
 export const CASINO_V21 = _serverEnv === "stillness" ? CASINO_V21_STILLNESS : "";
+// CASINO_V22: dragon_tower::start disabled on-chain (solution-leak exploit; aborts EGameDisabled=6). pick/cashout stay open so in-flight games settle.
+export const CASINO_V22_STILLNESS = "0x03791dc6001ddf4f996df15804535e3ce71bc199e362c5d3e76dead5f1cd454b";
+export const CASINO_V22 = _serverEnv === "stillness" ? CASINO_V22_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

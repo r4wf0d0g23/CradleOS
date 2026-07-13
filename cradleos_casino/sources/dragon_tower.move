@@ -30,6 +30,12 @@ module cradleos_casino::dragon_tower {
     const ENoRows:       u64 = 3;
     const EWrongHouse:   u64 = 4;
     const EMaxExposure:  u64 = 5;
+    /// Game disabled on-chain (v22, 2026-07-12): the pre-drawn dragon layout was
+    /// stored in the player-owned TowerGame object, making it readable via
+    /// sui_getObject BEFORE picking — a solution leak (RTP observed ~239%). New
+    /// games are blocked until a commit-reveal / per-pick-draw redesign ships.
+    /// pick/cashout remain open so any in-flight game can still be settled.
+    const EGameDisabled: u64 = 6;
 
     const ROWS: u8 = 9;
     const EDGE_BPS: u128 = 9700;
@@ -97,6 +103,10 @@ module cradleos_casino::dragon_tower {
         difficulty: u8,
         ctx: &mut TxContext,
     ) {
+        // v22: dragon_tower start is disabled on-chain (solution-leak exploit).
+        // Abort before any state change so no new game can be created and no
+        // wager is escrowed. Existing games can still pick/cashout to settle.
+        assert!(false, EGameDisabled);
         assert!(difficulty <= DIFF_HARD, EBadParams);
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager);
@@ -230,8 +240,11 @@ module cradleos_casino::dragon_tower {
         assert!(t == 4 && d == 1, 5);
     }
 
+    /// v22: start is disabled on-chain (solution-leak exploit). Confirm it aborts
+    /// with EGameDisabled before escrowing any wager.
     #[test]
-    fun test_start_pick_flow() {
+    #[expected_failure(abort_code = EGameDisabled)]
+    fun test_start_disabled() {
         let admin = @0xAD;
         let player = @0xBE;
         let mut sc = test_scenario::begin(@0x0);
@@ -249,19 +262,9 @@ module cradleos_casino::dragon_tower {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, DIFF_EASY, ctx);
+            start<SUI>(&mut house, &r, bet, DIFF_EASY, ctx); // aborts EGameDisabled
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
-        };
-        test_scenario::next_tx(&mut sc, player);
-        {
-            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
-            let game = test_scenario::take_from_sender<TowerGame<SUI>>(&sc);
-            assert!(game_difficulty(&game) == DIFF_EASY, 0);
-            assert!(game_rows_climbed(&game) == 0, 1);
-            let ctx = test_scenario::ctx(&mut sc);
-            pick<SUI>(&mut house, game, 0, ctx);
-            test_scenario::return_shared(house);
         };
         test_scenario::end(sc);
     }
