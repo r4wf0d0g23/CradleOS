@@ -356,7 +356,7 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c"; // v20, upgraded 2026-07-12 (scratch_cards)
+export const CASINO_PKG_STILLNESS = "0x9e058f72917d2ce7be4551a5190e59c83db39d45977708a6291a8efd0b6efc1a"; // v21, upgraded 2026-07-12 (chuck_a_luck + crash/limbo min-target 1.01x floor). Tx 5pWvwFpW5e6s7Ezg38NrTGujT7rbE2mqsPxedkCGudmV
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -409,8 +409,9 @@ export const CASINO_V19 = _serverEnv === "stillness" ? CASINO_V19_STILLNESS : ""
 // CASINO_V20: scratch_cards added. Tx DMvFAvarDteXjGnydVzkUgTYMFMuPn88R43r4z6Di3NV
 export const CASINO_V20_STILLNESS = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c";
 export const CASINO_V20 = _serverEnv === "stillness" ? CASINO_V20_STILLNESS : "";
-// CASINO_V21: chuck_a_luck added. (pkg id filled in after upgrade)
-export const CASINO_V21_STILLNESS = ""; // TODO: fill after upgrade
+// CASINO_V21: chuck_a_luck added; crash/limbo MIN_TARGET_BPS 101→10_100 (sub-1x trap closed).
+// Tx 5pWvwFpW5e6s7Ezg38NrTGujT7rbE2mqsPxedkCGudmV
+export const CASINO_V21_STILLNESS = "0x9e058f72917d2ce7be4551a5190e59c83db39d45977708a6291a8efd0b6efc1a";
 export const CASINO_V21 = _serverEnv === "stillness" ? CASINO_V21_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
