@@ -319,6 +319,16 @@ export const CASINO_CATALOG: GameEntry[] = [
     hook: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win. From 1.5\xd7 Veldspar to 100\xd7 Zydrine jackpot. 3% house edge.",
     status: "live",
   },
+  {
+    key: "chuck_a_luck",
+    name: "CHUCK-A-LUCK",
+    category: "dice",
+    variance: "M",
+    buildClass: "I",
+    glyph: "\u25A6",   // ▦  SQUARE WITH ORTHOGONAL CROSSHATCH FILL (birdcage)
+    hook: "Pick a number 1\u20136 and roll three dice. Match 1 = 1.9\xd7, Match 2 = 3.7\xd7, Triple = 12\xd7. Classic birdcage. 2.78% edge.",
+    status: "live",
+  },
 ];
 
 /** Display labels for the category rail buttons. */

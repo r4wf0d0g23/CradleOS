@@ -134,6 +134,17 @@ export const PAYTABLES: Partial<Record<string, Paytable>> = {
     rtp: "varies by bet", edge: "Small/Big 2.78% · Single 7.87% · Triples 16.7%",
     note: "Three dice. SMALL/BIG lose on any triple. Higher-edge triples pay big.",
   },
+
+  chuck_a_luck: {
+    rows: [
+      { label: "TRIPLE — all three dice match your number", mult: "12.0x", prob: "1/216 (0.5%)",   top: true },
+      { label: "DOUBLE — two dice match your number",   mult: "3.7x",  prob: "15/216 (6.9%)" },
+      { label: "SINGLE — one die matches your number",  mult: "1.9x",  prob: "75/216 (34.7%)" },
+      { label: "NO MATCH — none of the dice match",     mult: "0x",    prob: "125/216 (57.9%)" },
+    ],
+    rtp: "97.22%", edge: "2.78%",
+    note: "Classic birdcage: pick 1\u20136, roll three d6, count matches. Edge = \u22126/216.",
+  },
 };
 
 // ── Variable-odds games (player picks their own multiplier / risk) ────────────

@@ -14,7 +14,7 @@
 ///   Payout on a win = wager * m_bps / 10000 (your chosen target multiplier).
 ///
 /// Target range: 1.01x (10_100 bps; 10000 bps = 1.00x) … 1000x (10_000_000 bps).
-/// Max payout 1000x. (v19 fix: MIN was 101 = 0.0101x — sub-1x player trap.)
+/// Max payout 1000x. (v21 fix: MIN was 101 = 0.0101x — sub-1x player trap.)
 module cradleos_casino::limbo {
     use sui::random::{Self, Random};
     use sui::coin::{Self, Coin};

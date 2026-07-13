@@ -409,6 +409,9 @@ export const CASINO_V19 = _serverEnv === "stillness" ? CASINO_V19_STILLNESS : ""
 // CASINO_V20: scratch_cards added. Tx DMvFAvarDteXjGnydVzkUgTYMFMuPn88R43r4z6Di3NV
 export const CASINO_V20_STILLNESS = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c";
 export const CASINO_V20 = _serverEnv === "stillness" ? CASINO_V20_STILLNESS : "";
+// CASINO_V21: chuck_a_luck added. (pkg id filled in after upgrade)
+export const CASINO_V21_STILLNESS = ""; // TODO: fill after upgrade
+export const CASINO_V21 = _serverEnv === "stillness" ? CASINO_V21_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

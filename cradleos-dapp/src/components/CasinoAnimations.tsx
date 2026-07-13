@@ -1170,6 +1170,108 @@ export function SicBoStage({ d1, d2, d3, kind: _kind, target: _target, onDone }:
   );
 }
 
+// ── CHUCK-A-LUCK: birdcage tumble, matching dice glow green after settle ────────
+/**
+ * ChuckCageDie — single die for Chuck-a-Luck birdcage.
+ * Tumbles like SingleDie then on `revealed=true` highlights match/no-match.
+ */
+function ChuckCageDie({
+  finalVal, delayMs, isMatch, revealed, onSettled,
+}: { finalVal: number; delayMs: number; isMatch: boolean; revealed: boolean; onSettled: () => void }) {
+  useCasinoKeyframes();
+  const [face, setFace] = useState(0);
+  const [settled, setSettled] = useState(false);
+  const tRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    let delay = 50;
+    let totalTime = 0;
+    const SETTLE_AT = 1100 + delayMs;
+    const tick = () => {
+      totalTime += delay;
+      delay = Math.min(delay * 1.12, 240);
+      if (totalTime >= SETTLE_AT) {
+        setFace(finalVal - 1);
+        setSettled(true);
+        onSettled();
+      } else {
+        setFace(Math.floor(Math.random() * 6));
+        tRef.current = setTimeout(tick, delay);
+      }
+    };
+    tRef.current = setTimeout(tick, delayMs);
+    return () => clearTimeout(tRef.current);
+  }, []);
+
+  const matchColor = settled && revealed ? (isMatch ? GREEN : "#2a2a2a") : GOLD;
+  const matchGlow = settled && revealed && isMatch ? `0 0 14px ${GREEN}88` : settled ? `0 0 14px ${GOLD}66` : "none";
+  const matchAnim = settled && revealed && isMatch ? "cas-glow-green 1.1s ease infinite, cas-pop 0.35s ease" :
+    settled ? "cas-pop 0.35s ease" : undefined;
+
+  return (
+    <div style={{
+      width: 64, height: 64,
+      background: "linear-gradient(135deg, #1e1e2e, #0e0e1a)",
+      border: `2px solid ${matchColor}`,
+      borderRadius: 12,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 38,
+      color: settled && revealed ? (isMatch ? GREEN : "#444") : settled ? GOLD : "#888",
+      boxShadow: matchGlow,
+      animation: matchAnim,
+      transition: "border-color 0.35s, box-shadow 0.35s, color 0.35s",
+    }}>
+      {PIP_FACES[face]}
+    </div>
+  );
+}
+
+/**
+ * ChuckALuckStage — three dice tumble (birdcage feel), then
+ * 400ms later matching dice illuminate green, unmatched dim out.
+ */
+export function ChuckALuckStage({
+  d1, d2, d3, target, onDone,
+}: { d1: number; d2: number; d3: number; target: number; onDone: () => void }) {
+  useCasinoKeyframes();
+  const [settledCount, setSettledCount] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const allSettled = settledCount >= 3;
+  const matches = [d1, d2, d3].filter((d) => d === target).length;
+
+  useEffect(() => {
+    if (!allSettled) return;
+    const t1 = setTimeout(() => setRevealed(true), 400);
+    const t2 = setTimeout(onDone, 2800);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [allSettled]);
+
+  return (
+    <div style={{ textAlign: "center", padding: "12px 0" }}>
+      <div style={{ color: "#555", fontSize: 10, letterSpacing: "0.12em", marginBottom: 8 }}>
+        TARGET: <span style={{ color: GOLD, fontWeight: 900 }}>{target}</span>
+      </div>
+      <div style={{ display: "flex", gap: 10, justifyContent: "center", alignItems: "center" }}>
+        <ChuckCageDie finalVal={d1} delayMs={0}   isMatch={d1 === target} revealed={revealed} onSettled={() => setSettledCount((p) => p + 1)} />
+        <ChuckCageDie finalVal={d2} delayMs={280} isMatch={d2 === target} revealed={revealed} onSettled={() => setSettledCount((p) => p + 1)} />
+        <ChuckCageDie finalVal={d3} delayMs={560} isMatch={d3 === target} revealed={revealed} onSettled={() => setSettledCount((p) => p + 1)} />
+      </div>
+      {allSettled && revealed && (
+        <div style={{ marginTop: 10, animation: "cas-pop 0.4s ease" }}>
+          <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.1em" }}>MATCHES</div>
+          <div style={{
+            color: matches === 3 ? GOLD : matches > 0 ? GREEN : ACCENT,
+            fontSize: 36, fontWeight: 900,
+          }}>{matches}</div>
+          {matches === 3 && (
+            <div style={{ color: GOLD, fontSize: 11, letterSpacing: "0.12em", animation: "cas-glow-gold 1s ease infinite" }}>TRIPLE!</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── DRAGON TIGER: two cards flip, Dragon vs Tiger ────────────────────────────
 const DT_RANKS = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
 

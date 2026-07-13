@@ -24,6 +24,7 @@ import {
   CASINO_V18,
   CASINO_V19,
   CASINO_V20,
+  CASINO_V21,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -31,7 +32,7 @@ import {
 } from "../constants";
 import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar" | "scratch_cards";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar" | "scratch_cards" | "chuck_a_luck";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -285,6 +286,15 @@ const GAMES: Record<InstantGameKey, GameDef> = {
       const symLabel  = winSym < 6 ? SCRATCH_CARD_SYMBOLS[winSym] : "-";
       if (tier === 0) return "SCRATCHED \u00b7 No match \u00b7 LOSS";
       return `${symLabel} \u00d73 \u2192 ${tierLabel} \u00b7 ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
+    },
+  },
+  // ── v21: chuck_a_luck ───────────────────────────────────────────────────────────────────────────
+  chuck_a_luck: {
+    module: "chuck_a_luck", event: "ChuckALuckRolled",
+    describe: (f) => {
+      const m = Number(f.matches);
+      const mult = m === 0 ? 0 : m === 1 ? 1.9 : m === 2 ? 3.7 : 12;
+      return `target ${f.target} \u00b7 ${f.d1}/${f.d2}/${f.d3} \u00b7 ${m} match${m !== 1 ? "es" : ""} \u00b7 ${m > 0 ? mult + "x" : "LOSS"}`;
     },
   },
 };
@@ -662,6 +672,15 @@ export function buildScratchCardsTx(coins: string[], wagerRaw: bigint): Transact
   return tx;
 }
 
+export function buildChuckALuckTx(coins: string[], wagerRaw: bigint, target: number): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::chuck_a_luck::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(target)],
+  });
+  return tx;
+}
+
 export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
@@ -719,6 +738,8 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   andar_bahar: CASINO_V19,
   // v20 new games: ScratchCardPlayed introduced in v20.
   scratch_cards: CASINO_V20,
+  // v21 new games: ChuckALuckRolled introduced in v21.
+  chuck_a_luck: CASINO_V21,
 };
 
 // Stateful games' settle events — merged into the all-games feed. Each event

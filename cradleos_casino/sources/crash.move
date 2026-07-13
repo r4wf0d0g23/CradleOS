@@ -10,7 +10,7 @@
 /// FAIR ODDS (2% edge): draw u in [1, 1_000_000]; crash_bps = 9_800_000_000 / u
 /// (capped). P(crash_bps >= target_bps) = 9800 / target_bps = 0.98 / m. ✓
 /// Target range 1.01x (10_100 bps; 10000 bps = 1.00x) … 1000x (10_000_000 bps).
-/// Max payout 1000x. (v19 fix: MIN was 101 = 0.0101x — sub-1x targets were
+/// Max payout 1000x. (v21 fix: MIN was 101 = 0.0101x — sub-1x targets were
 /// guaranteed "wins" paying back less than the stake. Never player-exploitable
 /// — EV ≤ 0.98 at every target — but a player trap. Now blocked on-chain.)
 module cradleos_casino::crash {
