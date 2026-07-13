@@ -107,7 +107,7 @@ export const CRADLEOS_ORIGINAL = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066
 // requires the source gate to be bound to the policy passed. Without this, any
 // tribe's OPEN policy could mint permits for any enforced gate.
 // Tx digest: 7skiif5oYopW8ruUkk2qTFHfLvVzqGQjXvveoiKSji5x
-export const CRADLEOS_PKG      = "0xaf2b9fca870b3e14f64f4f5935b972a39ccbc405b9d2339ccbb8ff0953fc0995";
+export const CRADLEOS_PKG      = "0xc3c2381f0bcff21dee32945203b8c3daa7614d53da016e0449f10fd6c62634b9"; // v15 (2026-07-13): ssu_access asset lockdown — banned wallets (0x4a49f68a, 0xc3aad684) barred from SSU deposit/withdraw/recover via EBanned in assert_caller_is_character. Prev v14 0xaf2b9fca.
 // Defining packages for structs introduced in specific upgrades — DF name
 // types and event struct types are typed under the package that FIRST defined
 // them, regardless of the current published-at:

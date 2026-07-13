@@ -68,6 +68,22 @@ const ELengthMismatch:     u64 = 2;
 const ENotAuthorized:      u64 = 3;
 const EPolicySsuMismatch:  u64 = 4;
 const EPolicyAlreadyExists: u64 = 5;
+/// Caller's wallet is on the CradleOS ban list — barred from moving ANY assets
+/// through CradleOS SSU inventory (deposit / withdraw / recover). Added
+/// 2026-07-13 to lock down a confirmed casino exploiter who laundered stolen
+/// EVE to a second character. Enforced inside assert_caller_is_character, which
+/// every item-moving path already calls — so no public-fun signature changes
+/// (upgrade-compatible). Hardcoded because ssu_access has no shared config obj
+/// threaded through these calls and public signatures are frozen across
+/// upgrades. To amend the list: edit constants + republish upgrade.
+const EBanned:             u64 = 6;
+
+// ── Banned wallets (2026-07-13) ───────────────────────────────────────────────
+// 0x4a49f68a… = casino dragon_tower exploiter; 0xc3aad684… = his main
+// character that received the laundered EVE. Both barred from CradleOS asset
+// movement.
+const BANNED_1: address = @0x4a49f68aea43d382e9d7349ebcc48c1457ba5af07ff1258ead09212c4c52173e;
+const BANNED_2: address = @0xc3aad684e1af553573dca40b080694aec918c76f613e0ab2e9214bea50678de7;
 
 // ── Policy structs ────────────────────────────────────────────────────────────
 
@@ -487,8 +503,12 @@ fun assert_owner_for_policy(policy: &SsuPolicy, cap: &OwnerCap<StorageUnit>) {
 }
 
 fun assert_caller_is_character(character: &Character, ctx: &TxContext) {
+    let sender = tx_context::sender(ctx);
+    // CradleOS asset lockdown: banned wallets cannot move items through any SSU
+    // access path (all of them call this helper).
+    assert!(sender != BANNED_1 && sender != BANNED_2, EBanned);
     assert!(
-        character::character_address(character) == tx_context::sender(ctx),
+        character::character_address(character) == sender,
         ESenderMismatch,
     );
 }
