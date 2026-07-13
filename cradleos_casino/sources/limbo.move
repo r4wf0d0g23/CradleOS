@@ -13,7 +13,8 @@
 ///                              = 9800 / m_bps   → exactly 0.98/m. 2% edge. ✓
 ///   Payout on a win = wager * m_bps / 10000 (your chosen target multiplier).
 ///
-/// Target range: 1.01x (101 bps) … 1000x (10_000_000 bps). Max payout 1000x.
+/// Target range: 1.01x (10_100 bps; 10000 bps = 1.00x) … 1000x (10_000_000 bps).
+/// Max payout 1000x. (v19 fix: MIN was 101 = 0.0101x — sub-1x player trap.)
 module cradleos_casino::limbo {
     use sui::random::{Self, Random};
     use sui::coin::{Self, Coin};
@@ -23,8 +24,8 @@ module cradleos_casino::limbo {
     const EBadParams:   u64 = 0;
     const EMaxExposure: u64 = 1;
 
-    /// Minimum target multiplier in bps (1.01x).
-    const MIN_TARGET_BPS: u64 = 101;
+    /// Minimum target multiplier in bps (1.01x; 10000 bps = 1.00x).
+    const MIN_TARGET_BPS: u64 = 10_100;
     /// Maximum target multiplier in bps (1000x).
     const MAX_TARGET_BPS: u64 = 10_000_000;
     /// Edge-adjusted numerator: 0.98 * 10000(bps) * 1_000_000(roll range).

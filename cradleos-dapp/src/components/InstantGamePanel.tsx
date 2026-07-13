@@ -18,7 +18,7 @@ import {
   buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
   buildDragonTigerTx, buildUnderOver7Tx, buildOreRefineTx,
-  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx, buildScratchCardsTx,
+  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx, buildScratchCardsTx, buildChuckALuckTx,
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
@@ -32,7 +32,7 @@ import {
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
   BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
   DragonTigerStage, UnderOver7Stage, OreRefineStage,
-  RiskWheelStage, MoneyWheelStage, AndarBaharStage, ScratchCardsStage,
+  RiskWheelStage, MoneyWheelStage, AndarBaharStage, ScratchCardsStage, ChuckALuckStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -126,6 +126,7 @@ const GAME_TITLE: Record<InstantGameKey, string> = {
   risk_wheel: "◉ RISK WHEEL", money_wheel: "✦ MONEY WHEEL",
   andar_bahar: "◆ ANDAR BAHAR",
   scratch_cards: "◈ SCRATCH PLEX",
+  chuck_a_luck: "▦ CHUCK-A-LUCK",
 };
 const GAME_BLURB: Record<InstantGameKey, string> = {
   coinflip: "Call it. Win pays 1.96x.",
@@ -136,7 +137,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   limbo: "Set your target multiplier. The crash point is drawn on-chain — fly above it to win.",
   hilo: "A base card is dealt. Bet whether the next draw is higher or lower. Push on equal rank.",
   plinko: "Drop the disc. It bounces through 12 rows into one of 13 buckets — top bucket pays 130x.",
-  keno: "Pick 1–6 numbers from 1–40. Six are drawn. More matches = bigger multiplier.",
+  keno: "Pick 1–6 numbers from 1–40. Ten are drawn. More matches = bigger multiplier.",
   sicbo: "Three dice rolled on-chain. Bet Small (4–10), Big (11–17), Single face, Specific Triple, or Any Triple.",
   crash: "Set your target multiplier. If the on-chain crash point flies at or above your target — you win. 1.01x–1000x.",
   diamonds: "Five gems drawn on-chain from 7 types. Three-of-a-kind 2.55x · Four 30x · Five 500x.",
@@ -151,6 +152,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   money_wheel: "54-segment wheel. The rare 18x jackpot glows on every spin. Edge 3.33% across all tiers.",
   andar_bahar: "Indian classic. Joker card revealed first, then cards deal alternately to Andar / Bahar until rank matches. Bet which side gets the match. Andar 2.24% edge · Bahar 4.00% edge.",
   scratch_cards: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win — from 1.5x Veldspar to 100x Zydrine jackpot. 30% win rate, 3% edge.",
+  chuck_a_luck: "Pick a number 1–6, roll three dice. Match 1 = 1.9×, Match 2 = 3.7×, Triple = 12×. Classic birdcage with near-miss magic. 2.78% house edge.",
 };
 
 export function InstantGamePanel({ game }: { game: InstantGameKey }) {
@@ -203,11 +205,14 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [oreTier, setOreTier] = useState<1|2|3|4|5>(1);           // 1=BASIC..5=CRITICAL
   const [riskWheelMode, setRiskWheelMode] = useState<0|1|2>(0);    // 0=LOW 1=MED 2=HIGH
   const [andarBaharSide, setAndarBaharSide] = useState<0|1>(0);     // 0=Andar 1=Bahar
+  const [chuckTarget, setChuckTarget] = useState(1);                 // 1..6 chosen face
 
-  // Log-scale limbo slider helpers (slider 0..10000 → 1.01x..1000x)
-  const LIMBO_LOG_BASE = Math.log(10_000_000 / 101);
-  const limboSliderToMult = (s: number) => Math.round(101 * Math.exp((s / 10000) * LIMBO_LOG_BASE));
-  const limboMultToSlider = (bps: number) => Math.round(10000 * Math.log(Math.max(101, bps) / 101) / LIMBO_LOG_BASE);
+  // Log-scale limbo slider helpers (slider 0..10000 → 1.01x..1000x).
+  // NOTE: 10000 bps = 1.00x, so 1.01x = 10100 bps (NOT 101 — sub-1x targets are
+  // guaranteed "wins" that pay back less than the stake; never offer them).
+  const LIMBO_LOG_BASE = Math.log(10_000_000 / 10_100);
+  const limboSliderToMult = (s: number) => Math.round(10_100 * Math.exp((s / 10000) * LIMBO_LOG_BASE));
+  const limboMultToSlider = (bps: number) => Math.round(10000 * Math.log(Math.max(10_100, bps) / 10_100) / LIMBO_LOG_BASE);
 
   useCasinoKeyframes(); // base-card flip animation on the hi-lo start step
 
@@ -262,6 +267,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "money_wheel"        ? buildMoneyWheelTx(ids, raw) :
           game === "andar_bahar"        ? buildAndarBaharTx(ids, raw, andarBaharSide) :
           game === "scratch_cards"       ? buildScratchCardsTx(ids, raw) :
+          game === "chuck_a_luck"        ? buildChuckALuckTx(ids, raw, chuckTarget) :
           buildWheelTx(ids, raw);
         return withGas(t, addr);
       };
@@ -292,7 +298,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar|scratch_cards)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar|scratch_cards|chuck_a_luck)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
@@ -301,7 +307,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
       limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind,
-      dragonTigerBet, underOver7Kind, oreTier, riskWheelMode, andarBaharSide, dAppKit]);
+      dragonTigerBet, underOver7Kind, oreTier, riskWheelMode, andarBaharSide, chuckTarget, dAppKit]);
 
   // Settle a live hi-lo hand: player has seen the base, calls a direction.
   const settleHiLo = useCallback(async (higher: boolean) => {
@@ -357,6 +363,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "money_wheel"    ? 18
     : game === "andar_bahar"    ? (andarBaharSide === 0 ? 1.88 : 2)
     : game === "scratch_cards"  ? 100
+    : game === "chuck_a_luck"   ? 12
     : 2;
   const exposureBudget    = bank * EXPOSURE_PCT;
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
@@ -403,6 +410,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "money_wheel"     && <MoneyWheelStage  key={pending.txDigest} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
                 {game === "andar_bahar"     && <AndarBaharStage   key={pending.txDigest} jokerRank={Number(pending.fields.joker_rank)} winnerSide={Number(pending.fields.winner_side)} dealLog={Array.isArray(pending.fields.deal_log) ? (pending.fields.deal_log as number[]) : []} betSide={Number(pending.fields.bet_side)} onDone={() => reveal(pending)} />}
                 {game === "scratch_cards"   && <ScratchCardsStage key={pending.txDigest} grid={(() => { const raw = pending.fields.grid; if (Array.isArray(raw)) return raw as number[]; if (typeof raw === 'string') { try { return Array.from(atob(raw), (c) => c.charCodeAt(0)); } catch { return []; } } return []; })()} outcomeT={Number(pending.fields.outcome_tier)} winSym={Number(pending.fields.winning_symbol)} onDone={() => reveal(pending)} />}
+                {game === "chuck_a_luck"    && <ChuckALuckStage   key={pending.txDigest} d1={Number(pending.fields.d1)} d2={Number(pending.fields.d2)} d3={Number(pending.fields.d3)} target={Number(pending.fields.target)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
                 {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}
@@ -450,6 +458,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   <div style={{ textAlign: "center", padding: "14px 0 4px" }}>
                     <div style={{ color: "#666", fontSize: 11, letterSpacing: "0.08em" }}>
                       {String(result.fields.matches)} / {Array.isArray(result.fields.picks) ? (result.fields.picks as number[]).length : kenoPicks.size} MATCHES
+                    </div>
+                    <div style={{ color: ACCENT, fontSize: 11, marginTop: 2, fontWeight: 700 }}>
+                      your picks: {Array.isArray(result.fields.picks) ? (result.fields.picks as number[]).join(" · ") : "—"}
                     </div>
                     <div style={{ color: result.payout > 0 ? GREEN : "#888", fontSize: 32, fontWeight: 900 }}>
                       {(Number(result.fields.multiplier_bps) / 10000).toFixed(2)}x
@@ -713,6 +724,23 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                   );
                 })()}
 
+                {result && game === "chuck_a_luck" && (() => {
+                  const m = Number(result.fields.matches);
+                  const multLabel = m === 3 ? "12.0x" : m === 2 ? "3.7x" : m === 1 ? "1.9x" : "0x";
+                  return (
+                    <div style={{ padding: "14px 0 4px", textAlign: "center" }}>
+                      <div style={{ color: "#666", fontSize: 10, letterSpacing: "0.1em" }}>DICE · TARGET {String(result.fields.target)}</div>
+                      <div style={{ color: GOLD, fontSize: 30, fontWeight: 900, letterSpacing: "0.2em" }}>
+                        {String(result.fields.d1)} · {String(result.fields.d2)} · {String(result.fields.d3)}
+                      </div>
+                      <div style={{ color: m > 0 ? GREEN : ACCENT, fontSize: 18, fontWeight: 900, marginTop: 4 }}>
+                        {m} MATCH{m !== 1 ? "ES" : ""} → {multLabel}
+                        {m === 3 ? " ▦ TRIPLE!" : ""}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {result && <ResultFlash key={`flash-${result.txDigest}`} win={result.payout > 0} />}
                 {result ? (
                   <div style={{ textAlign: "center", padding: "4px 0 6px" }}>
@@ -796,7 +824,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 min={0}
                 max={10000}
                 value={limboMultToSlider(limboBps)}
-                onChange={(e) => setLimboBps(Math.max(101, Math.min(10_000_000, limboSliderToMult(Number(e.target.value)))))}
+                onChange={(e) => setLimboBps(Math.max(10_100, Math.min(10_000_000, limboSliderToMult(Number(e.target.value)))))}
                 style={{ width: "100%", accentColor: ACCENT }}
               />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
@@ -939,9 +967,10 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
 
           {/* Crash */}
           {game === "crash" && (() => {
-            const CRASH_LOG_BASE = Math.log(10_000_000 / 101);
-            const crashSliderToMult = (s: number) => Math.round(101 * Math.exp((s / 10000) * CRASH_LOG_BASE));
-            const crashMultToSlider = (bps: number) => Math.round(10000 * Math.log(Math.max(101, bps) / 101) / CRASH_LOG_BASE);
+            // 10000 bps = 1.00x → min target 1.01x = 10100 bps (sub-1x targets are player traps).
+            const CRASH_LOG_BASE = Math.log(10_000_000 / 10_100);
+            const crashSliderToMult = (s: number) => Math.round(10_100 * Math.exp((s / 10000) * CRASH_LOG_BASE));
+            const crashMultToSlider = (bps: number) => Math.round(10000 * Math.log(Math.max(10_100, bps) / 10_100) / CRASH_LOG_BASE);
             const cMult = crashBps / 10000;
             const winChance = (100 / cMult).toFixed(1);
             return (
@@ -950,7 +979,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 <input
                   type="range" min={0} max={10000}
                   value={crashMultToSlider(crashBps)}
-                  onChange={(e) => setCrashBps(Math.max(101, Math.min(10_000_000, crashSliderToMult(Number(e.target.value)))))}
+                  onChange={(e) => setCrashBps(Math.max(10_100, Math.min(10_000_000, crashSliderToMult(Number(e.target.value)))))}
                   style={{ width: "100%", accentColor: ACCENT }}
                 />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
@@ -1122,6 +1151,28 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                     <div style={{ fontSize: 11, fontWeight: 900, opacity: 0.7 }}>{v === 0 ? "2.24% edge" : "4.00% edge"}</div>
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Chuck-a-Luck target number selector */}
+          {game === "chuck_a_luck" && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em", marginBottom: 6 }}>PICK YOUR NUMBER (1–6)</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <button key={n} onClick={() => setChuckTarget(n)} style={{
+                    flex: "1 1 32px", padding: "8px 0",
+                    background: chuckTarget === n ? "#FF470022" : "#1a1a1a",
+                    border: `1px solid ${chuckTarget === n ? "#FF4700" : "#333"}`,
+                    color: chuckTarget === n ? "#FF4700" : "#888",
+                    borderRadius: 4, cursor: "pointer",
+                    fontSize: 16, fontWeight: 900,
+                  }}>{n}</button>
+                ))}
+              </div>
+              <div style={{ color: "#555", fontSize: 10, marginTop: 5 }}>
+                1 match = 1.9× · 2 matches = 3.7× · Triple = 12×
               </div>
             </div>
           )}
