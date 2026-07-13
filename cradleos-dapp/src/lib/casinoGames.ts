@@ -23,6 +23,7 @@ import {
   CASINO_V16,
   CASINO_V18,
   CASINO_V19,
+  CASINO_V20,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -30,7 +31,7 @@ import {
 } from "../constants";
 import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar" | "scratch_cards";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -144,6 +145,11 @@ export const ORE_REFINE_OUTCOME_LABELS = ["SLAG","PARTIAL","YIELD","BONUS"];
 
 // Card rank labels for war/baccarat/three_card_poker (0-12 = 0=Ace..12=K for standard; 
 // war uses 0=Two..12=Ace which maps to WAR_RANKS above)
+
+// Scratch Plex symbol labels (0-5 = EVE ores)
+export const SCRATCH_CARD_SYMBOLS = ["VELDSPAR", "SCORDITE", "PYROXERES", "ARKONOR", "BISTOT", "ZYDRINE"];
+export const SCRATCH_CARD_GLYPHS  = ["\u25C7", "\u25A3", "\u25C8", "\u2B22", "\u25C6", "\u2699"]; // ◇▣◈⬢◆⚙
+export const SCRATCH_TIER_LABELS  = ["LOSS", "1.5\xd7", "3\xd7", "8\xd7", "20\xd7", "100\xd7"];
 
 const GAMES: Record<InstantGameKey, GameDef> = {
   limbo: {
@@ -266,7 +272,19 @@ const GAMES: Record<InstantGameKey, GameDef> = {
       const winner = Number(f.winner_side) === 0 ? "ANDAR" : "BAHAR";
       const jokerRank = WAR_RANKS_13[Number(f.joker_rank)] ?? "?";
       const dealt = Number(f.cards_dealt);
-      return `${side} bet · Joker ${jokerRank} · ${dealt} cards · ${winner} wins · ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
+      return `${side} bet \u00b7 Joker ${jokerRank} \u00b7 ${dealt} cards \u00b7 ${winner} wins \u00b7 ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
+    },
+  },
+  // ── v20 games ──────────────────────────────────────────────────────────────
+  scratch_cards: {
+    module: "scratch_cards", event: "ScratchCardPlayed",
+    describe: (f) => {
+      const tier = Number(f.outcome_tier);
+      const winSym = Number(f.winning_symbol);
+      const tierLabel = SCRATCH_TIER_LABELS[tier] ?? "LOSS";
+      const symLabel  = winSym < 6 ? SCRATCH_CARD_SYMBOLS[winSym] : "-";
+      if (tier === 0) return "SCRATCHED \u00b7 No match \u00b7 LOSS";
+      return `${symLabel} \u00d73 \u2192 ${tierLabel} \u00b7 ${Number(f.payout) > 0 ? "WIN" : "LOSS"}`;
     },
   },
 };
@@ -635,6 +653,15 @@ export function buildAndarBaharTx(coins: string[], wagerRaw: bigint, betSide: 0 
   return tx;
 }
 
+export function buildScratchCardsTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::scratch_cards::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
 export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
@@ -690,6 +717,8 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   risk_wheel: CASINO_V18, money_wheel: CASINO_V18,
   // v19 new games: AndarBaharPlayed introduced in v19.
   andar_bahar: CASINO_V19,
+  // v20 new games: ScratchCardPlayed introduced in v20.
+  scratch_cards: CASINO_V20,
 };
 
 // Stateful games' settle events — merged into the all-games feed. Each event

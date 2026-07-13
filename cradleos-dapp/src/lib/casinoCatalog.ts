@@ -226,7 +226,7 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "H",
     buildClass: "I",
     glyph: "\u25C7",   // ◇  WHITE DIAMOND
-    hook: "Three-card hand vs the dealer — pair plus pays on any pair",
+    hook: "Three-card showdown vs the dealer. Straights 3x, trips 5x, straight flush 6x when the dealer qualifies.",
     status: "live",
   },
   {
@@ -306,7 +306,17 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "M",
     buildClass: "I",
     glyph: "\u25C6",   // ◆  BLACK DIAMOND
-    hook: "Joker revealed, then cards deal alternately to Andar / Bahar until the rank matches. Pick the side. Andar 2.24% · Bahar 4.00% edge.",
+    hook: "Joker revealed, then cards deal alternately to Andar / Bahar until the rank matches. Pick the side. Andar 2.24% \u00b7 Bahar 4.00% edge.",
+    status: "live",
+  },
+  {
+    key: "scratch_cards",
+    name: "SCRATCH PLEX",
+    category: "grid",
+    variance: "M",
+    buildClass: "I",
+    glyph: "\u25C8",   // ◈  WHITE DIAMOND WITH CENTRED DOT
+    hook: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win. From 1.5\xd7 Veldspar to 100\xd7 Zydrine jackpot. 3% house edge.",
     status: "live",
   },
 ];

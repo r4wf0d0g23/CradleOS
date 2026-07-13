@@ -356,7 +356,7 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0xfb2895ff3879c3b6d4dbc6a2e813a12e6efee53c66cf93d481f07fe4759ea05b"; // v19, upgraded 2026-07-12 (andar_bahar)
+export const CASINO_PKG_STILLNESS = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c"; // v20, upgraded 2026-07-12 (scratch_cards)
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -406,6 +406,9 @@ export const CASINO_V18 = _serverEnv === "stillness" ? CASINO_V18_STILLNESS : ""
 // CASINO_V19: andar_bahar added. Tx Ed9D1BvTn2dctGsjdws7gBgCD1pr19H8e2yg1EinKWyM
 export const CASINO_V19_STILLNESS = "0xfb2895ff3879c3b6d4dbc6a2e813a12e6efee53c66cf93d481f07fe4759ea05b";
 export const CASINO_V19 = _serverEnv === "stillness" ? CASINO_V19_STILLNESS : "";
+// CASINO_V20: scratch_cards added. Tx DMvFAvarDteXjGnydVzkUgTYMFMuPn88R43r4z6Di3NV
+export const CASINO_V20_STILLNESS = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c";
+export const CASINO_V20 = _serverEnv === "stillness" ? CASINO_V20_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

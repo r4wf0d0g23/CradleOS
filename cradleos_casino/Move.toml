@@ -2,8 +2,7 @@
 name = "cradleos_casino"
 edition = "2024"
 
-# published-at is filled in after the first publish (mirrors cradleos convention).
-# published-at = "0x..."
+published-at = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c"
 
 [dependencies]
 # Sui framework is provided implicitly by the toolchain (system dependency).

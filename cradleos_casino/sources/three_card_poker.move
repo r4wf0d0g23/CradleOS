@@ -19,12 +19,21 @@
 /// SETTLEMENT (ante only):
 ///   player loses (dealer strictly higher) → 0
 ///   tie                                   → ante returned (1x)
-///   player wins, dealer doesn't qualify   → 2x (even money)
+///   player wins, dealer doesn't qualify   → 1.75x (3:4 on the win)
 ///   player wins, dealer qualifies:
 ///     HIGH_CARD or PAIR or FLUSH          → 2x
 ///     STRAIGHT                            → 3x
 ///     THREE_KIND                          → 5x
 ///     STRAIGHT_FLUSH                      → 6x
+///
+/// EDGE (v20 correction, 2026-07-12): the original settlement paid 2x on
+/// dealer-no-qualify wins, which made the whole game PLAYER-positive at
+/// -3.18% house edge (5M-hand Monte Carlo; exploited live for +24k EVE).
+/// A single-bet always-showdown comparison is symmetric (zero EV), so the
+/// rank bonuses were a pure player subsidy — the real game's edge comes
+/// from the fold tax + play-bet mechanics this variant intentionally lacks.
+/// Reducing the no-qualify win to 1.75x (which happens on ~30.4% of hands)
+/// puts the game at +3.13% house edge — inside the 2-5% mandate.
 ///
 /// RESULT codes: 0=LOSE, 1=PUSH, 2=WIN.
 /// MAX_MULT_X = 6 for exposure guard.
@@ -221,8 +230,9 @@ module cradleos_casino::three_card_poker {
         if (result == RESULT_PUSH) { return amount }; // tie → return ante
         // Player wins.
         if (!dealer_qualified) {
-            // Dealer doesn't qualify → even money (2x).
-            return amount * 2
+            // Dealer doesn't qualify → 1.75x (3:4 on the win). See EDGE note in
+            // the module header: 2x here made the whole game player-positive.
+            return amount * 7 / 4
         };
         // Dealer qualifies + player wins → even money + ante bonus by rank.
         if (player_rank == RANK_STRAIGHT_FLUSH) { amount * 6 }
@@ -315,9 +325,12 @@ module cradleos_casino::three_card_poker {
         assert!(payout_for(100, RANK_STRAIGHT_FLUSH, RESULT_LOSE, false) == 0, 1);
         // Push → return ante
         assert!(payout_for(100, RANK_PAIR, RESULT_PUSH, true) == 100, 2);
-        // Win, dealer doesn't qualify → 2x regardless of player rank
-        assert!(payout_for(100, RANK_STRAIGHT_FLUSH, RESULT_WIN, false) == 200, 3);
-        assert!(payout_for(100, RANK_HIGH_CARD, RESULT_WIN, false) == 200, 4);
+        // Win, dealer doesn't qualify → 1.75x regardless of player rank
+        // (v20 edge correction: 2x here made the game player-positive)
+        assert!(payout_for(100, RANK_STRAIGHT_FLUSH, RESULT_WIN, false) == 175, 3);
+        assert!(payout_for(100, RANK_HIGH_CARD, RESULT_WIN, false) == 175, 4);
+        // Truncation on non-divisible amounts: 101*7/4 = 176 (floor)
+        assert!(payout_for(101, RANK_HIGH_CARD, RESULT_WIN, false) == 176, 40);
         // Win, dealer qualifies, by rank:
         assert!(payout_for(100, RANK_HIGH_CARD, RESULT_WIN, true) == 200, 5);      // 2x
         assert!(payout_for(100, RANK_PAIR, RESULT_WIN, true) == 200, 6);           // 2x

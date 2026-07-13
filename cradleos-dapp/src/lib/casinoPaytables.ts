@@ -182,11 +182,11 @@ export const VARIABLE_PAYTABLES: Partial<Record<string, Paytable>> = {
       { label: "win w/ THREE OF A KIND", mult: "5x", prob: "0.24%" },
       { label: "win w/ STRAIGHT", mult: "3x", prob: "3.3%" },
       { label: "win w/ high card / pair / flush", mult: "2x", prob: "—" },
-      { label: "dealer doesn't qualify (Q-high)", mult: "2x", prob: "—" },
+      { label: "win, dealer doesn't qualify (< Q-high)", mult: "1.75x", prob: "≈30%" },
       { label: "tie", mult: "1x (ante back)", prob: "—" },
     ],
-    rtp: "≈96.6%", edge: "≈3.4%",
-    note: "Ante only. Beat the dealer; dealer qualifies with Queen-high. Note: in 3-card poker a STRAIGHT beats a FLUSH.",
+    rtp: "≈96.9%", edge: "≈3.1%",
+    note: "Ante only. Beat the dealer; dealer qualifies with Queen-high — unqualified-dealer wins pay 1.75x. In 3-card poker a STRAIGHT beats a FLUSH.",
   },
   risk_wheel: {
     rows: [

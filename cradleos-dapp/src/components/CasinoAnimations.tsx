@@ -8,7 +8,7 @@
  * CSS-only (no new deps). Webview-safe glyphs only.
  */
 import { useEffect, useRef, useState } from "react";
-import { SLOT_SYMBOLS, DIAMOND_GEMS, WAR_RANKS, HILO_RANKS } from "../lib/casinoGames";
+import { SLOT_SYMBOLS, DIAMOND_GEMS, WAR_RANKS, HILO_RANKS, SCRATCH_CARD_GLYPHS, SCRATCH_CARD_SYMBOLS, SCRATCH_TIER_LABELS } from "../lib/casinoGames";
 
 const ACCENT = "#FF4700";
 const GOLD = "#E8B84B";
@@ -1647,6 +1647,118 @@ export function AndarBaharStage({
           (showing first 5 + match)
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Scratch Plex stage ────────────────────────────────────────────────────────
+// 9-tile 3×3 grid reveal. Tiles flip face-up with a 220ms stagger.
+// Matching tiles (winning_symbol) glow on a WIN; all tiles dim on LOSS.
+
+function ScratchTile({ sym, revealMs, isMatch, isLoss }: {
+  sym: number; revealMs: number; isMatch: boolean; isLoss: boolean;
+}) {
+  const [flipped, setFlipped] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setFlipped(true), revealMs);
+    return () => clearTimeout(t);
+  }, [revealMs]);
+
+  const glyph = SCRATCH_CARD_GLYPHS[sym] ?? "?";
+  const name  = SCRATCH_CARD_SYMBOLS[sym] ?? "?";
+  const matchColor  = "#3FCF6A";
+  const neutralColor = "#8888aa";
+  const lossColor    = "#333348";
+
+  const bg = !flipped ? "linear-gradient(135deg, #1a1a2e, #0d0d1a)" :
+    isMatch  ? `linear-gradient(135deg, ${matchColor}22, #001500)` :
+    isLoss   ? `linear-gradient(135deg, ${lossColor}, #0d0d18)` :
+               "linear-gradient(135deg, #1e1e30, #12121f)";
+
+  const borderColor = !flipped ? "#333" :
+    isMatch  ? matchColor :
+    isLoss   ? "#2a2a40" :
+               "#444466";
+
+  const glyphColor = !flipped ? "#222" :
+    isMatch  ? matchColor :
+    isLoss   ? "#3a3a58" :
+               neutralColor;
+
+  return (
+    <div style={{
+      width: 54, height: 54, borderRadius: 7,
+      background: bg,
+      border: `2px solid ${borderColor}`,
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      fontSize: 22, color: glyphColor,
+      boxShadow: isMatch && flipped ? `0 0 14px ${matchColor}66` : "none",
+      transition: "all 0.35s ease",
+      cursor: "default",
+    }}>
+      {flipped ? (
+        <>
+          <span>{glyph}</span>
+          <span style={{ fontSize: 6, letterSpacing: "0.06em", marginTop: 2, opacity: 0.7 }}>
+            {name.slice(0, 4)}
+          </span>
+        </>
+      ) : (
+        <span style={{ fontSize: 14, color: "#333" }}>◈</span>
+      )}
+    </div>
+  );
+}
+
+export function ScratchCardsStage({
+  grid, outcomeT, winSym, onDone,
+}: {
+  grid: number[];       // 9-element symbol indices
+  outcomeT: number;     // 0-5 tier
+  winSym: number;       // winning symbol index (255 = loss)
+  onDone: () => void;
+}) {
+  useCasinoKeyframes();
+  const isLoss     = outcomeT === 0;
+  const tierLabel  = SCRATCH_TIER_LABELS[outcomeT] ?? "LOSS";
+  const totalRevMs = 9 * 220;  // all tiles flipped
+
+  useEffect(() => {
+    const t = setTimeout(onDone, totalRevMs + 1200);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div style={{ textAlign: "center", padding: "8px 0" }}>
+      {/* Grid */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 54px)",
+        gap: 5,
+        justifyContent: "center",
+        margin: "0 auto",
+      }}>
+        {grid.slice(0, 9).map((sym, i) => (
+          <ScratchTile
+            key={i}
+            sym={sym}
+            revealMs={i * 220}
+            isMatch={!isLoss && sym === winSym}
+            isLoss={isLoss}
+          />
+        ))}
+      </div>
+
+      {/* Outcome label */}
+      <div style={{
+        marginTop: 10,
+        fontSize: 13, fontWeight: 900, letterSpacing: "0.12em",
+        color: isLoss ? "#555" : GREEN,
+        animation: `cas-slide-down 0.4s ease ${totalRevMs + 200}ms both`,
+      }}>
+        {isLoss ? "NO MATCH \u00b7 LOSS" : `${SCRATCH_CARD_SYMBOLS[winSym] ?? "WIN"} \u00d73 \u2192 ${tierLabel}`}
+      </div>
     </div>
   );
 }

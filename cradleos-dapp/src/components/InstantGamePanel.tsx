@@ -18,12 +18,13 @@ import {
   buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
   buildDragonTigerTx, buildUnderOver7Tx, buildOreRefineTx,
-  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx,
+  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx, buildScratchCardsTx,
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
   DIAMOND_GEMS, WAR_RANKS, DOUBLE_DICE_KINDS, doubleDiceExactMult, BACCARAT_KINDS, THREE_CARD_RANKS, SLOT_SYMBOLS,
   DRAGON_TIGER_BET_LABELS, ORE_REFINE_TIER_LABELS, ORE_REFINE_OUTCOME_LABELS, WAR_RANKS_13,
+  SCRATCH_CARD_SYMBOLS, SCRATCH_CARD_GLYPHS, SCRATCH_TIER_LABELS,
   type InstantGameKey, type InstantResult, type HiLoLiveGame,
 } from "../lib/casinoGames";
 import {
@@ -31,7 +32,7 @@ import {
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
   BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
   DragonTigerStage, UnderOver7Stage, OreRefineStage,
-  RiskWheelStage, MoneyWheelStage, AndarBaharStage,
+  RiskWheelStage, MoneyWheelStage, AndarBaharStage, ScratchCardsStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -124,6 +125,7 @@ const GAME_TITLE: Record<InstantGameKey, string> = {
   dragon_tiger: "◎ DRAGON TIGER", under_over_7: "▣ UNDER/OVER 7", ore_refine: "⊞ ORE REFINE",
   risk_wheel: "◉ RISK WHEEL", money_wheel: "✦ MONEY WHEEL",
   andar_bahar: "◆ ANDAR BAHAR",
+  scratch_cards: "◈ SCRATCH PLEX",
 };
 const GAME_BLURB: Record<InstantGameKey, string> = {
   coinflip: "Call it. Win pays 1.96x.",
@@ -148,6 +150,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   risk_wheel: "Spin with your chosen volatility. LOW: frequent 1.4x/3x wins, 3% edge. MED: balanced 10x top, 4%. HIGH: rare 13.5x jackpot, 4%.",
   money_wheel: "54-segment wheel. The rare 18x jackpot glows on every spin. Edge 3.33% across all tiers.",
   andar_bahar: "Indian classic. Joker card revealed first, then cards deal alternately to Andar / Bahar until rank matches. Bet which side gets the match. Andar 2.24% edge · Bahar 4.00% edge.",
+  scratch_cards: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win — from 1.5x Veldspar to 100x Zydrine jackpot. 30% win rate, 3% edge.",
 };
 
 export function InstantGamePanel({ game }: { game: InstantGameKey }) {
@@ -258,6 +261,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "risk_wheel"         ? buildRiskWheelTx(ids, raw, riskWheelMode) :
           game === "money_wheel"        ? buildMoneyWheelTx(ids, raw) :
           game === "andar_bahar"        ? buildAndarBaharTx(ids, raw, andarBaharSide) :
+          game === "scratch_cards"       ? buildScratchCardsTx(ids, raw) :
           buildWheelTx(ids, raw);
         return withGas(t, addr);
       };
@@ -288,7 +292,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar|scratch_cards)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
@@ -352,6 +356,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "risk_wheel"     ? [3, 10, 14][riskWheelMode] ?? 3
     : game === "money_wheel"    ? 18
     : game === "andar_bahar"    ? (andarBaharSide === 0 ? 1.88 : 2)
+    : game === "scratch_cards"  ? 100
     : 2;
   const exposureBudget    = bank * EXPOSURE_PCT;
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
@@ -397,6 +402,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "risk_wheel"      && <RiskWheelStage   key={pending.txDigest} mode={Number(pending.fields.mode)} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
                 {game === "money_wheel"     && <MoneyWheelStage  key={pending.txDigest} segment={Number(pending.fields.segment)} onDone={() => reveal(pending)} />}
                 {game === "andar_bahar"     && <AndarBaharStage   key={pending.txDigest} jokerRank={Number(pending.fields.joker_rank)} winnerSide={Number(pending.fields.winner_side)} dealLog={Array.isArray(pending.fields.deal_log) ? (pending.fields.deal_log as number[]) : []} betSide={Number(pending.fields.bet_side)} onDone={() => reveal(pending)} />}
+                {game === "scratch_cards"   && <ScratchCardsStage key={pending.txDigest} grid={(() => { const raw = pending.fields.grid; if (Array.isArray(raw)) return raw as number[]; if (typeof raw === 'string') { try { return Array.from(atob(raw), (c) => c.charCodeAt(0)); } catch { return []; } } return []; })()} outcomeT={Number(pending.fields.outcome_tier)} winSym={Number(pending.fields.winning_symbol)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
                 {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}
@@ -683,6 +689,26 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                       <div style={{ color: won ? GREEN : ACCENT, fontSize: 22, fontWeight: 900, letterSpacing: "0.08em" }}>
                         {winner} WINS {won ? "✓" : "✗"}
                       </div>
+                    </div>
+                  );
+                })()}
+
+                {result && game === "scratch_cards" && (() => {
+                  const tier = Number(result.fields.outcome_tier);
+                  const winSym = Number(result.fields.winning_symbol);
+                  const tierLabel = SCRATCH_TIER_LABELS[tier] ?? "LOSS";
+                  const symLabel = winSym < 6 ? SCRATCH_CARD_SYMBOLS[winSym] : "";
+                  const symGlyph = winSym < 6 ? SCRATCH_CARD_GLYPHS[winSym] : "";
+                  const won = tier > 0;
+                  return (
+                    <div style={{ padding: "14px 0 4px", textAlign: "center" }}>
+                      {won ? (
+                        <div style={{ color: GREEN, fontSize: 18, fontWeight: 900, letterSpacing: "0.08em" }}>
+                          {symGlyph} {symLabel} \u00d73 \u2192 {tierLabel}
+                        </div>
+                      ) : (
+                        <div style={{ color: ACCENT, fontSize: 16, fontWeight: 900 }}>NO MATCH \u00b7 LOSS</div>
+                      )}
                     </div>
                   );
                 })()}

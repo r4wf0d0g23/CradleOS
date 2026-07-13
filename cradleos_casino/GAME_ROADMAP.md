@@ -49,6 +49,7 @@ These retroactively define the catalog baseline; several predate the protocol an
 | 24 | Risk Wheel | I | L-VH | 3-mode volatility selector, 20 seg, 3-4% edge, 13.5x max |
 | 25 | Money Wheel | I | M | 54-seg Big Six, 18x jackpot, 3.33% edge |
 | 26 | Andar Bahar | I | M | Indian classic, joker+alternating deal, 2.24%/4.00% edge |
+| 27 | Scratch Plex | I | M | 9-tile 3×3 EVE ore scratch card, 100x Zydrine jackpot, 3% edge |
 
 ---
 
@@ -203,7 +204,7 @@ Games themed to EVE Frontier lore/mechanics — nobody else can build these. Str
 ---
 
 ## Totals
-- **Live now:** 26 (updated 2026-07-12 run 3: +andar_bahar)
+- **Live now:** 27 (updated 2026-07-12 run 4: +scratch_cards)
 - **Planned:** 105 distinct games across 10 categories (A–J), IDs 20–124 above (de-duplicated 2026-07-11: Dragon Tiger consolidated at #103; #84 placeholder replaced with Slide).
 - **Grand total (live + planned): 124 distinct games** — 24 games of margin above the 100 floor for Gate-0 cuts.
 - **Grand target:** 100+ concurrently live. Runway sits well above the floor so we can cut weak candidates at Gate 0 and still clear 100.
@@ -227,6 +228,25 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 ---
 
 ## Progress Log
+
+### 2026-07-12 — Run 4 (casino-roadmap-builder cron, 20:00 CT)
+
+**Games advanced to LIVE:**
+- **Scratch Plex (#74)** — [I], Var M — v20 pkg `0x2d3d0525`, smoke TX `8LvXE68ENBYQvaPYXzvfCjQcivgQffLcoRm8xVvA2ohf`. outcome_tier=0 (LOSS), winning_symbol=255 (NO_SYMBOL), payout=0, grid decoded=[2,2,5,3,0,1,0,1,4] (max count 2 = valid loss) ✓
+
+**Tests:** scratch_cards 17/17 ✅ · TSC clean · IOC clean.
+
+**Package:** v20 = `0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c` · Tx `DMvFAvarDteXjGnydVzkUgTYMFMuPn88R43r4z6Di3NV`.
+
+**CF bundle:** `index-C4f1zc3i.js` ✔ (catalog hook + V20 id verified in live bundle) · **gh-pages:** `index-BQufimkW.js` ✔
+
+**Catalog:** 27 live games. Scratch Plex has staggered tile-flip animation (220ms/tile × 9 = 1.98s reveal), 6 EVE ore symbols (VELDSPAR→ZYDRINE), grid base64 decoded in panel.
+
+**Durable lesson (upgrade workflow):** When `sui move build` is run on a directory after rsync wipes the Move.lock `[env]` block, the block is lost. Fix: (a) restore the `[env]` block manually after build, (b) set `cradleos_casino` address in `[addresses]` to the actual published address (not `0x0`) — both conditions were required for the upgrade to succeed.
+
+**NEXT RUN SHOULD PICK:** Chuck-a-Luck (#20) — 3-dice birdcage, Var M, pure dice engine reuse, fast build.
+
+---
 
 ### 2026-07-12 — Run 3 (casino-roadmap-builder cron, 19:00 CT)
 

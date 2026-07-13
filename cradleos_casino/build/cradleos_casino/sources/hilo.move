@@ -2,9 +2,12 @@
 /// shown, then a second card is drawn. Bet whether the second card's rank is
 /// HIGHER or LOWER than the base. Exact-rank tie = push (stake returned).
 ///
-/// The base card is drawn on-chain in the SAME tx (single-tx settle) — the
-/// player picks a direction, not a specific base. This keeps it unexploitable
-/// (no test-and-abort) while still paying odds that reflect the base card.
+/// TWO MODES:
+///  • `play` (legacy single-tx): base + second card drawn in one tx — the
+///    player picks a direction blind. Kept for compat.
+///  • `start`/`settle` (live, v8+): the base card is dealt VISIBLY first,
+///    then the player chooses higher/lower knowing the base — classic hi-lo.
+///    Safe because odds are conditionally fair per base (2% edge everywhere).
 ///
 /// FAIR ODDS (2% edge): for a base rank b, out of the other 12 ranks:
 ///   higher_count(b) = 12 - b     (ranks b+1 .. 12)
@@ -24,10 +27,13 @@
 module cradleos_casino::hilo {
     use sui::random::{Self, Random};
     use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
 
     const EMaxExposure: u64 = 1;
+    const ENotOwner:    u64 = 2;
+    const EWrongHouse:  u64 = 3;
 
     /// Max theoretical multiplier for the exposure guard: choosing the side with
     /// only 1 winning rank pays 9800*13/1 = 127400 bps = 12.74x.
@@ -91,6 +97,90 @@ module cradleos_casino::hilo {
         event::emit(HiLoDrawn { player, wager: amount, base, drawn, higher, push: is_push, payout });
     }
 
+    // Live (two-step) Hi-Lo — classic flow: the base card is dealt VISIBLY
+    // first (start), then the player chooses higher/lower with full knowledge
+    // of the base (settle). Because payout odds are conditionally fair per
+    // base (9800*13/chosen bps — exactly 2% edge for EVERY base and
+    // direction), seeing the base grants no exploitable advantage: every
+    // continuation has identical -2% EV. The wager escrows in the game object
+    // at start (mines/blackjack_live pattern).
+
+    public struct HiLoGame<phantom T> has key {
+        id: UID,
+        house_id: ID,
+        player: address,
+        stake: Balance<T>,
+        wager: u64,
+        base: u8,   // dealt at start, visible via HiLoStarted event
+    }
+
+    public struct HiLoStarted has copy, drop {
+        game_id: ID,
+        house_id: ID,
+        player: address,
+        wager: u64,
+        base: u8,
+    }
+
+    /// Deal the base card and escrow the wager. The base is emitted so the UI
+    /// shows it BEFORE the player commits to a direction.
+    entry fun start<T>(
+        house: &mut House<T>,
+        r: &Random,
+        wager: Coin<T>,
+        ctx: &mut TxContext,
+    ) {
+        let player = tx_context::sender(ctx);
+        let amount = house::take_wager_amount(house, &wager);
+        // Worst-case settle payout is the 1-winner side (12.74x) — guard now so
+        // settle can never brick on exposure.
+        assert!(max_payout(amount) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+
+        let mut g = random::new_generator(r, ctx);
+        let base = random::generate_u8_in_range(&mut g, 0, 12);
+
+        let game = HiLoGame<T> {
+            id: object::new(ctx),
+            house_id: object::id(house),
+            player,
+            stake: coin::into_balance(wager),
+            wager: amount,
+            base,
+        };
+        event::emit(HiLoStarted {
+            game_id: object::id(&game),
+            house_id: object::id(house),
+            player,
+            wager: amount,
+            base,
+        });
+        transfer::transfer(game, player);
+    }
+
+    /// Draw the second card and settle. Emits the same HiLoDrawn event as the
+    /// single-tx flow, so the provably-fair feed is unchanged.
+    entry fun settle<T>(
+        house: &mut House<T>,
+        r: &Random,
+        game: HiLoGame<T>,
+        higher: bool,
+        ctx: &mut TxContext,
+    ) {
+        assert!(game.player == tx_context::sender(ctx), ENotOwner);
+        assert!(object::id(house) == game.house_id, EWrongHouse);
+        let HiLoGame { id, house_id: _, player, stake, wager, base } = game;
+        object::delete(id);
+
+        house::deposit_stake(house, stake);
+        let mut g = random::new_generator(r, ctx);
+        let drawn = random::generate_u8_in_range(&mut g, 0, 12);
+        let is_push = drawn == base;
+        let payout = payout_for(wager, base, drawn, higher);
+        house::pay_winnings(house, payout, player, ctx);
+
+        event::emit(HiLoDrawn { player, wager, base, drawn, higher, push: is_push, payout });
+    }
+
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
@@ -136,6 +226,50 @@ module cradleos_casino::hilo {
             let bet = coin::mint_for_testing<SUI>(100, ctx);
             play<SUI>(&mut house, &r, bet, true, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        test_scenario::end(sc);
+    }
+
+    #[test]
+    fun test_live_start_then_settle() {
+        let admin = @0xAD;
+        let player = @0xBE;
+        let mut sc = test_scenario::begin(@0x0);
+        { random::create_for_testing(test_scenario::ctx(&mut sc)); };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000_000, ctx);
+            let cap = house::create<SUI>(seed, 10_000, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        // start: base dealt + wager escrowed in the game object
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(100, ctx);
+            start<SUI>(&mut house, &r, bet, ctx);
+            // no settlement yet
+            assert!(house::bets_settled(&house) == 0, 0);
+            test_scenario::return_shared(house);
+            test_scenario::return_shared(r);
+        };
+        // settle: player sees the base (from event/object), calls a direction
+        test_scenario::next_tx(&mut sc, player);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let r = test_scenario::take_shared<Random>(&sc);
+            let game = test_scenario::take_from_sender<HiLoGame<SUI>>(&sc);
+            let base = game.base;
+            // pick the side with more winners (never the impossible side)
+            let call_higher = higher_count(base) >= lower_count(base);
+            let ctx = test_scenario::ctx(&mut sc);
+            settle<SUI>(&mut house, &r, game, call_higher, ctx);
+            assert!(house::bets_settled(&house) == 1, 1);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
