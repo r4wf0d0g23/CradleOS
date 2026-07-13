@@ -55,7 +55,7 @@ export interface GameEntry {
  *  dragon_tower: disabled 2026-07-12 — solution-leak exploit (pre-drawn dragon
  *  positions readable from the player-owned game object). Re-enable only after
  *  the v22 commit-reveal fix ships. */
-export const CASINO_DISABLED_KEYS = new Set<string>(["dragon_tower"]);
+export const CASINO_DISABLED_KEYS = new Set<string>(["dragon_tower", "mines", "video_poker"]);
 
 export const CASINO_CATALOG: GameEntry[] = [
   {
@@ -176,7 +176,8 @@ export const CASINO_CATALOG: GameEntry[] = [
     buildClass: "S",
     glyph: "\u229E",   // ⊞  SQUARED PLUS
     hook: "Reveal tiles and watch the multiplier climb — cash out before you hit a mine",
-    status: "live",
+    status: "disabled",
+    disabled: true,
   },
   {
     key: "crash",
@@ -257,7 +258,8 @@ export const CASINO_CATALOG: GameEntry[] = [
     buildClass: "S",
     glyph: "\u2263",   // ≣  STRICTLY EQUIVALENT TO (four-line bar)
     hook: "Jacks or Better — hold your best cards and draw to win",
-    status: "live",
+    status: "disabled",
+    disabled: true,
   },
   {
     key: "dragon_tiger",

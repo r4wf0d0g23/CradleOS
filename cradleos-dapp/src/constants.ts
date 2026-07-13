@@ -356,7 +356,7 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0x03791dc6001ddf4f996df15804535e3ce71bc199e362c5d3e76dead5f1cd454b"; // v22, upgraded 2026-07-12 (dragon_tower::start disabled on-chain — solution-leak exploit; aborts EGameDisabled=6). Prev v21 0x9e058f72 (chuck_a_luck + crash/limbo floor).
+export const CASINO_PKG_STILLNESS = "0x2bb78383a30a5ffb2644c8201e54f74969b44c3c05eb5646a4a00981e50e6f6b"; // v23, upgraded 2026-07-12 (mines::start + video_poker::deal disabled on-chain — same solution-leak class; abort EGameDisabled). Prev v22 0x03791dc6 (dragon_tower disabled), v21 0x9e058f72.
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
@@ -416,6 +416,9 @@ export const CASINO_V21 = _serverEnv === "stillness" ? CASINO_V21_STILLNESS : ""
 // CASINO_V22: dragon_tower::start disabled on-chain (solution-leak exploit; aborts EGameDisabled=6). pick/cashout stay open so in-flight games settle.
 export const CASINO_V22_STILLNESS = "0x03791dc6001ddf4f996df15804535e3ce71bc199e362c5d3e76dead5f1cd454b";
 export const CASINO_V22 = _serverEnv === "stillness" ? CASINO_V22_STILLNESS : "";
+// CASINO_V23: mines::start + video_poker::deal disabled on-chain (same solution-leak class). reveal/cashout/draw stay open so in-flight games settle. blackjack_live left LIVE pending commit-reveal redesign.
+export const CASINO_V23_STILLNESS = "0x2bb78383a30a5ffb2644c8201e54f74969b44c3c05eb5646a4a00981e50e6f6b";
+export const CASINO_V23 = _serverEnv === "stillness" ? CASINO_V23_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
 // House shared object + admin cap (on v2 package).

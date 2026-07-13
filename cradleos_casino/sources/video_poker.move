@@ -37,6 +37,13 @@ module cradleos_casino::video_poker {
     const ENotHandOwner: u64 = 0;
     const EMaxExposure:  u64 = 1;
     const EWrongHouse:   u64 = 2;
+    /// Game disabled on-chain (v23, 2026-07-12): the full 52-card deck committed
+    /// at deal time lives in the player-owned VideoPokerHand object, readable via
+    /// sui_getObject BEFORE the draw — the player can see which cards will replace
+    /// non-held cards and hold optimally every time (near-100% RTP). New deals
+    /// blocked until a commit-reveal redesign ships. draw stays open so an
+    /// in-flight hand can still settle.
+    const EGameDisabled: u64 = 3;
 
     // ── Tuning ────────────────────────────────────────────────────────────────
     /// Max gross multiplier (x) for exposure guard: royal flush = 250x.
@@ -98,6 +105,10 @@ module cradleos_casino::video_poker {
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        // v23: video_poker deal is disabled on-chain (solution-leak exploit).
+        // Abort before escrowing so no new hand is created. In-flight hands can
+        // still draw to settle.
+        assert!(false, EGameDisabled);
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager);
         // Exposure guard: royal flush = 250x gross payout.
@@ -461,7 +472,10 @@ module cradleos_casino::video_poker {
         assert!(multiplier_for(9) == 2500000, 2);
     }
 
+    // v23: deal is disabled on-chain (solution-leak). Confirms deal aborts
+    // EGameDisabled before escrowing. Card-eval tests above (pure) still run.
     #[test]
+    #[expected_failure(abort_code = EGameDisabled)]
     fun test_deal_draw_settle() {
         let admin = @0xAD;
         let player = @0xBE;
@@ -474,7 +488,7 @@ module cradleos_casino::video_poker {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
-        // Deal
+        // Deal (aborts EGameDisabled)
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
