@@ -23,6 +23,7 @@ module cradleos_casino::mines {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const ENotOwner:        u64 = 0;
@@ -131,6 +132,7 @@ module cradleos_casino::mines {
     entry fun start<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         mines: u8,
         ctx: &mut TxContext,
@@ -138,6 +140,7 @@ module cradleos_casino::mines {
         // v23: mines start is disabled on-chain (solution-leak exploit). Abort
         // before any state change so no new game is created and no wager is
         // escrowed. Existing games can still reveal/cashout to settle.
+        house::assert_character(house, character, ctx);
         assert!(false, EGameDisabled);
         // 1..24 mines (need at least one safe tile and at least one mine).
         assert!(mines >= 1 && mines <= 24, EBadParams);

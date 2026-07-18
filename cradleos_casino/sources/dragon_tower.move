@@ -23,6 +23,7 @@ module cradleos_casino::dragon_tower {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const ENotOwner:     u64 = 0;
     const EGameFinished: u64 = 1;
@@ -99,6 +100,7 @@ module cradleos_casino::dragon_tower {
     entry fun start<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         difficulty: u8,
         ctx: &mut TxContext,
@@ -106,10 +108,11 @@ module cradleos_casino::dragon_tower {
         // v22: dragon_tower start is disabled on-chain (solution-leak exploit).
         // Abort before any state change so no new game can be created and no
         // wager is escrowed. Existing games can still pick/cashout to settle.
+        house::assert_character(house, character, ctx);
         assert!(false, EGameDisabled);
         assert!(difficulty <= DIFF_HARD, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         let top = top_multiplier(difficulty);
         let max_pay = (((amount as u128) * (top as u128) / 10000) as u64);
         assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);

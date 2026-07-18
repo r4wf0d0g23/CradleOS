@@ -32,6 +32,7 @@ module cradleos_casino::video_poker {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ────────────────────────────────────────────────────────────────
     const ENotHandOwner: u64 = 0;
@@ -102,12 +103,14 @@ module cradleos_casino::video_poker {
     entry fun deal<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
         // v23: video_poker deal is disabled on-chain (solution-leak exploit).
         // Abort before escrowing so no new hand is created. In-flight hands can
         // still draw to settle.
+        house::assert_character(house, character, ctx);
         assert!(false, EGameDisabled);
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager, ctx);

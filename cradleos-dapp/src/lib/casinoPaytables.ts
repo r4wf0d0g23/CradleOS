@@ -225,9 +225,26 @@ export const VARIABLE_PAYTABLES: Partial<Record<string, Paytable>> = {
     rtp: "96.67%", edge: "3.33%",
     note: "54-segment wheel. One jackpot segment glows every spin. Long deceleration for premium anticipation.",
   },
+  red_dog: {
+    rows: [
+      { label: "Pair match (3rd ranks = anchor)",  mult: "12x",  prob: "0.59%",  top: true },
+      { label: "Pair no-match (push)",             mult: "1x",   prob: "7.10%" },
+      { label: "Consecutive (push)",               mult: "1x",   prob: "14.20%" },
+      { label: "Spread 1 — win (5:1)",             mult: "6x",   prob: "1.26%" },
+      { label: "Spread 2 — win (4:1)",             mult: "5x",   prob: "2.30%" },
+      { label: "Spread 3 — win (3:1)",             mult: "4x",   prob: "3.14%" },
+      { label: "Spread 4 — win (2:1)",             mult: "3x",   prob: "3.73%" },
+      { label: "Spread 5+ — win (1:1)",            mult: "2x",   prob: "35.07%" },
+      { label: "Spread bet loss",                  mult: "0x",   prob: "32.61%" },
+    ],
+    rtp: "97.77%", edge: "2.23%",
+    note: "Infinite-deck model. Three cards drawn from Sui randomness. Two anchor cards face up reveal the spread; third falls to win or lose. Near-miss on spread 1 is the hook.",
+  },
 };
 
 /** Lookup a paytable for any game (fixed or variable). */
 export function getPaytable(game: string): Paytable | undefined {
   return PAYTABLES[game] ?? VARIABLE_PAYTABLES[game];
 }
+
+// red_dog is added by direct append — see PAYTABLES object structure above

@@ -6,6 +6,7 @@ module cradleos_casino::coinflip {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
     const EMaxExposure: u64 = 1;
@@ -31,13 +32,15 @@ module cradleos_casino::coinflip {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         choice: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(choice <= 1, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         // 3%-bankroll exposure rule: max possible payout must fit the budget.
         let max_payout = (((amount as u128) * (WIN_BPS as u128) / 10000) as u64);
         assert!(max_payout <= house::bank_balance(house) * 3 / 100, EMaxExposure);

@@ -18,6 +18,7 @@ module cradleos_casino::baccarat {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
     const EMaxExposure: u64 = 1;
@@ -82,13 +83,15 @@ module cradleos_casino::baccarat {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         kind: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(kind <= KIND_TIE, EBadParams);
         let player_addr = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 

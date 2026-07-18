@@ -44,6 +44,7 @@ module cradleos_casino::three_card_poker {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ────────────────────────────────────────────────────────────────
     const EMaxExposure: u64 = 1;
@@ -82,11 +83,13 @@ module cradleos_casino::three_card_poker {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         ante: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &ante);
+        let amount = house::take_wager_amount(house, &ante, ctx);
         // Exposure guard: max 6x gross payout.
         assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         // Absorb ante into the bank.

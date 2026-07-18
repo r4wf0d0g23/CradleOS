@@ -24,6 +24,7 @@ module cradleos_casino::house {
     use sui::event;
     use sui::dynamic_field as df;
     use sui::vec_set::{Self, VecSet};
+    use world::character::{Self, Character};
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const ENotAdmin:          u64 = 0;
@@ -34,6 +35,8 @@ module cradleos_casino::house {
     const EGamePaused:        u64 = 5;
     /// Sender is on the House ban list — barred from placing any wager (v24).
     const EBanned:            u64 = 6;
+    /// The supplied Character is not owned by the tx sender (v26 identity gate).
+    const ENotCharacterOwner: u64 = 7;
 
     /// Dynamic-field key for the lazily-created VecSet<address> ban list (v24).
     /// Stored as a dynamic field (NOT a struct field) so this is upgrade-safe —
@@ -277,6 +280,22 @@ module cradleos_casino::house {
         assert!(per_bet >= house.min_bet, EBetBelowMin);
         assert!(per_bet <= house.max_bet, EBetTooLarge);
         amount
+    }
+
+    /// PROOF-OF-CHARACTER GATE (v26). Every game entry that takes a wager MUST
+    /// call this first with an `&Character` the player passes in. It asserts the
+    /// tx sender actually owns that Character (sender == character_address). This
+    /// closes the identity bypass where any raw Sui wallet holding EVE could bet
+    /// directly against the contract, and it means every wager is tied to a live
+    /// in-game identity that can face consequences — throwaway/alt wallets whose
+    /// Character has been destroyed can no longer play. Also re-checks the ban
+    /// list so a single call covers both gates.
+    public(package) fun assert_character<T>(house: &House<T>, character: &Character, ctx: &TxContext) {
+        assert_not_banned(house, ctx);
+        assert!(
+            character::character_address(character) == tx_context::sender(ctx),
+            ENotCharacterOwner,
+        );
     }
 
     /// Deposit an escrowed stake Balance into the bank (called at settlement by

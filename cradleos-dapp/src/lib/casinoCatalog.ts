@@ -341,6 +341,16 @@ export const CASINO_CATALOG: GameEntry[] = [
     hook: "Pick a number 1\u20136 and roll three dice. Match 1 = 1.9\xd7, Match 2 = 3.7\xd7, Triple = 12\xd7. Classic birdcage. 2.78% edge.",
     status: "live",
   },
+  {
+    key: "red_dog",
+    name: "RED DOG",
+    category: "cards",
+    variance: "M",
+    buildClass: "I",
+    glyph: "\u25C6",   // ◆  BLACK DIAMOND (card suit feel)
+    hook: "Two anchor cards deal face up — bet on whether the third falls between them. Spread 1 pays 5:1, spread 5+ pays 1:1, pair match pays 11:1. 2.23% edge.",
+    status: "live",
+  },
 ];
 
 /** Display labels for the category rail buttons. */

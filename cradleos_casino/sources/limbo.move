@@ -20,6 +20,7 @@ module cradleos_casino::limbo {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
     const EMaxExposure: u64 = 1;
@@ -63,13 +64,15 @@ module cradleos_casino::limbo {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         target_bps: u64,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(target_bps >= MIN_TARGET_BPS && target_bps <= MAX_TARGET_BPS, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         assert!(max_payout(amount, target_bps) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 

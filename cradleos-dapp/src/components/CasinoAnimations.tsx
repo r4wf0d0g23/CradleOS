@@ -1864,3 +1864,128 @@ export function ScratchCardsStage({
     </div>
   );
 }
+
+// ── Red Dog Stage ──────────────────────────────────────────────────────────────────────────────
+
+/** Rank label for display (1=A, 11=J, 12=Q, 13=K) */
+function rdRank(r: number): string {
+  return r === 1 ? "A" : r === 11 ? "J" : r === 12 ? "Q" : r === 13 ? "K" : String(r);
+}
+
+/** One card in the Red Dog animation — slides in then flips face-up. */
+function RedDogCard({
+  rank, delayMs, color, label, onFlipped,
+}: { rank: number; delayMs: number; color: string; label?: string; onFlipped?: () => void }) {
+  const [flipped, setFlipped] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => { setFlipped(true); onFlipped?.(); }, delayMs + 600);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div style={{ textAlign: "center" }}>
+      {label && (
+        <div style={{ color: "#555", fontSize: 9, letterSpacing: "0.08em", marginBottom: 4 }}>{label}</div>
+      )}
+      <div style={{
+        width: 52, height: 72, borderRadius: 6, position: "relative",
+        background: flipped ? "#1a1414" : "#1a1a2a",
+        border: `2px solid ${flipped ? color : "#333"}`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 24, fontWeight: 900, color: flipped ? color : "transparent",
+        boxShadow: flipped ? `0 0 12px ${color}66` : "none",
+        transition: "background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.3s",
+        animation: `cas-pop ${0.3}s ease ${delayMs + 580}ms both`,
+      }}>
+        {flipped ? rdRank(rank) : "?"}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * RedDogStage — deal two anchor cards (staggered 450ms apart), show spread
+ * label, then reveal the third "post" card 800ms later.
+ * Pair → golden highlight; consecutive → grey push; spread win → green glow.
+ */
+export function RedDogStage({
+  card1, card2, card3, spread, result, onDone,
+}: {
+  card1: number; card2: number; card3: number;
+  spread: number; result: number; onDone: () => void;
+}) {
+  useCasinoKeyframes();
+  const [phase, setPhase] = useState<"deal" | "spread" | "post" | "done">("deal");
+
+  // result codes match Move contract: 0=PAIR_MATCH, 1=PAIR_PUSH, 2=CONSECUTIVE, 3=WIN, 4=LOSS
+  const isPairMatch   = result === 0;
+  const isPush        = result === 1 || result === 2;
+  const isWin         = result === 0 || result === 3;
+  // result === 4 is LOSS (no isLoss alias needed — postColor uses !isWin && !isPush via ACCENT fallback)
+
+  const card1Color = isPairMatch ? GOLD : "#aaa";
+  const card2Color = isPairMatch ? GOLD : "#aaa";
+  const postColor  = isWin ? GREEN : isPush ? "#666" : ACCENT;
+
+  const spreadLabel =
+    result === 0 ? "PAIR!" :
+    result === 2 ? "CONSECUTIVE" :
+    spread > 0   ? `SPREAD ${spread}` : "";
+
+  const spreadColor =
+    isPairMatch ? GOLD : result === 2 ? "#555" : spread > 0 ? "#888" : "#555";
+
+  useEffect(() => {
+    // anchor cards dealt by 900ms + 600ms flip = ~1500ms; then spread label
+    const t1 = setTimeout(() => setPhase("spread"), 1600);
+    // post card deals 700ms after spread label
+    const t2 = setTimeout(() => setPhase("post"), 2300);
+    // done 1.2s after post reveal
+    const t3 = setTimeout(() => { setPhase("done"); onDone(); }, 3600);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
+  return (
+    <div style={{ textAlign: "center", padding: "14px 0" }}>
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "flex-end", marginBottom: 10 }}>
+        <RedDogCard rank={card1} delayMs={0}   color={card1Color} label="CARD 1" />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: 8 }}>
+          {/* Spread label between anchor cards */}
+          <div style={{
+            fontSize: 11, fontWeight: 900, letterSpacing: "0.1em",
+            color: phase === "spread" || phase === "post" || phase === "done" ? spreadColor : "transparent",
+            transition: "color 0.4s ease",
+            minHeight: 18,
+          }}>
+            {spreadLabel}
+          </div>
+          <div style={{ color: "#333", fontSize: 22, lineHeight: 1 }}>\u2194</div>
+        </div>
+        <RedDogCard rank={card2} delayMs={450} color={card2Color} label="CARD 2" />
+
+        {/* Vertical divider */}
+        <div style={{ width: 1, height: 60, background: "#2a2a2a", margin: "0 4px" }} />
+
+        {/* Post card */}
+        {phase !== "deal" && (
+          <RedDogCard rank={card3} delayMs={phase === "post" || phase === "done" ? 0 : 99999} color={postColor} label="POST" />
+        )}
+        {phase === "deal" && (
+          <div style={{ width: 52, height: 72, border: "2px dashed #222", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "#333", fontSize: 11 }}>?</span>
+          </div>
+        )}
+      </div>
+
+      {/* Outcome glow */}
+      {(phase === "done") && (
+        <div style={{
+          fontSize: 13, fontWeight: 900, letterSpacing: "0.12em",
+          color: isWin ? GREEN : isPush ? "#666" : ACCENT,
+          animation: "cas-pop 0.4s ease",
+        }}>
+          {isPairMatch ? "PAIR MATCH \u25c6 11:1" : isPush ? "PUSH" : isWin ? `SPREAD ${spread} WIN` : "LOSS"}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -32,6 +32,7 @@ module cradleos_casino::blackjack {
     use sui::coin::Coin;
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const EBadThreshold: u64 = 0;
@@ -71,15 +72,17 @@ module cradleos_casino::blackjack {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         stand_on: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(stand_on >= MIN_THRESHOLD && stand_on <= MAX_THRESHOLD, EBadThreshold);
 
         let player = tx_context::sender(ctx);
         // Absorb + validate stake (checks pause, min/max). Returns amount.
-        let amount = house::take_wager(house, wager);
+        let amount = house::take_wager(house, wager, ctx);
 
         // Build a 52-card shoe [0..51] and shuffle with on-chain randomness.
         let mut generator = random::new_generator(r, ctx);

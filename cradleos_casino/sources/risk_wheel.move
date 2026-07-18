@@ -18,6 +18,7 @@ module cradleos_casino::risk_wheel {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
@@ -87,13 +88,15 @@ module cradleos_casino::risk_wheel {
     entry fun play<T>(
         house:  &mut House<T>,
         r:      &Random,
+        character: &Character,
         wager:  Coin<T>,
         mode:   u8,
         ctx:    &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(mode <= RISK_HIGH, EBadMode);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         let max_mult = if      (mode == RISK_LOW) MAX_MULT_LOW
                        else if (mode == RISK_MED) MAX_MULT_MED
                        else                       MAX_MULT_HIGH;

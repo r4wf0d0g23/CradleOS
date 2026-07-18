@@ -19,6 +19,7 @@ module cradleos_casino::plinko {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
@@ -66,11 +67,13 @@ module cradleos_casino::plinko {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 
@@ -149,13 +152,15 @@ module cradleos_casino::plinko {
     entry fun play_mode<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         mode: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(mode <= MODE_HIGH, EBadMode);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         // Per-mode exposure guard: LOW allows far larger bets than HIGH.
         assert!(amount * mode_max_mult_x(mode) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
@@ -199,16 +204,18 @@ module cradleos_casino::plinko {
     entry fun play_multi<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         mode: u8,
         count: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(mode <= 3, EBadMode);
         assert!(count >= 2 && count <= 10, EBadCount);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount_multi(house, &wager, (count as u64));
+        let amount = house::take_wager_amount_multi(house, &wager, (count as u64), ctx);
 
         let per_drop = amount / (count as u64);
         // per_drop must be at least 1 mist (dust check)

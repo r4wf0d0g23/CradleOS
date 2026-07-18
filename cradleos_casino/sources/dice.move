@@ -6,6 +6,7 @@ module cradleos_casino::dice {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
     const EMaxExposure: u64 = 1;
@@ -42,15 +43,17 @@ module cradleos_casino::dice {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         target: u8,
         over: bool,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let chance = win_chance(target, over);
         assert!(chance >= 2 && chance <= 96, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount(house, &wager, ctx);
         assert!(max_payout(amount, target, over) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
         house::deposit_stake(house, coin::into_balance(wager));
 

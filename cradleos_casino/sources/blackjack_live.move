@@ -42,6 +42,7 @@ module cradleos_casino::blackjack_live {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const ENotHandOwner:   u64 = 0;
@@ -158,9 +159,11 @@ module cradleos_casino::blackjack_live {
     entry fun deal<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
         let amount = house::take_wager_amount(house, &wager, ctx);
         let stake = coin::into_balance(wager);

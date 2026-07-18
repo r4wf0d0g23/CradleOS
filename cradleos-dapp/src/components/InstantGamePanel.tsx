@@ -18,7 +18,7 @@ import {
   buildLimboTx, buildHiLoStartTx, buildHiLoSettleTx, buildPlinkoTx, buildPlinkoModeTx, PLINKO_MODES, buildKenoTx, buildSicBoTx,
   buildCrashTx, buildDiamondsTx, buildDoubleDiceTx, buildWarTx, buildBaccaratTx, buildThreeCardTx,
   buildDragonTigerTx, buildUnderOver7Tx, buildOreRefineTx,
-  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx, buildScratchCardsTx, buildChuckALuckTx,
+  buildRiskWheelTx, buildMoneyWheelTx, buildAndarBaharTx, buildScratchCardsTx, buildChuckALuckTx, buildRedDogTx,
   resolveInstantByDigest, resolveHiLoStartByDigest, fetchOpenHiLoGame, hiloCallMultiplier,
   fetchRecentInstantPlays, rouletteColor,
   ROULETTE_KINDS, HILO_RANKS, SICBO_KINDS, KENO_MAX_MULT,
@@ -32,7 +32,7 @@ import {
   CrashStage, LimboStage, DiamondsStage, DoubleDiceStage, WarStage,
   BaccaratStage, ThreeCardStage, HiLoStage, PlinkoStage, KenoStage, SicBoStage,
   DragonTigerStage, UnderOver7Stage, OreRefineStage,
-  RiskWheelStage, MoneyWheelStage, AndarBaharStage, ScratchCardsStage, ChuckALuckStage,
+  RiskWheelStage, MoneyWheelStage, AndarBaharStage, ScratchCardsStage, ChuckALuckStage, RedDogStage,
   useCasinoKeyframes,
 } from "./CasinoAnimations";
 
@@ -127,6 +127,7 @@ const GAME_TITLE: Record<InstantGameKey, string> = {
   andar_bahar: "◆ ANDAR BAHAR",
   scratch_cards: "◈ SCRATCH PLEX",
   chuck_a_luck: "▦ CHUCK-A-LUCK",
+  red_dog: "◆ RED DOG",
 };
 const GAME_BLURB: Record<InstantGameKey, string> = {
   coinflip: "Call it. Win pays 1.96x.",
@@ -153,6 +154,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   andar_bahar: "Indian classic. Joker card revealed first, then cards deal alternately to Andar / Bahar until rank matches. Bet which side gets the match. Andar 2.24% edge · Bahar 4.00% edge.",
   scratch_cards: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win — from 1.5x Veldspar to 100x Zydrine jackpot. 30% win rate, 3% edge.",
   chuck_a_luck: "Pick a number 1–6, roll three dice. Match 1 = 1.9×, Match 2 = 3.7×, Triple = 12×. Classic birdcage with near-miss magic. 2.78% house edge.",
+  red_dog: "Two anchor cards dealt face-up. Bet on whether a third falls strictly between them. Spread 1 = 5:1 · Spread 5+ = 1:1 · Pair match = 11:1. 2.23% house edge.",
 };
 
 export function InstantGamePanel({ game }: { game: InstantGameKey }) {
@@ -268,6 +270,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
           game === "andar_bahar"        ? buildAndarBaharTx(ids, raw, andarBaharSide) :
           game === "scratch_cards"       ? buildScratchCardsTx(ids, raw) :
           game === "chuck_a_luck"        ? buildChuckALuckTx(ids, raw, chuckTarget) :
+          game === "red_dog"             ? buildRedDogTx(ids, raw) :
           buildWheelTx(ids, raw);
         return withGas(t, addr);
       };
@@ -298,7 +301,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       feedQ.refetch(); balQ.refetch();
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
-      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar|scratch_cards|chuck_a_luck)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
+      if (/MoveAbort/.test(msg) && /(coinflip|dice|roulette|slots|wheel|limbo|hilo|plinko|keno|sicbo|crash|diamonds|double_dice|war|baccarat|three_card_poker|dragon_tiger|under_over_7|ore_refine|risk_wheel|money_wheel|andar_bahar|scratch_cards|chuck_a_luck|red_dog)::play/.test(msg) && /code:?\s*1\b/.test(msg)) {
         setErr(`BET BLOCKED — payout risk cap. Your ${fmtEve(betNum)} EVE bet could win up to ${fmtEve(betNum * grossMult)} EVE (${grossMult.toFixed(2)}x), but the house only risks ${fmtEve(exposureBudget)} EVE (3% of its ${fmtEve(bank)} EVE bank) on any single play. Bet ${fmtEve(Math.floor(maxBetForExposure))} EVE or less on this game, or pick shorter odds.`);
       } else {
         setErr(translateTxError(e));
@@ -364,6 +367,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
     : game === "andar_bahar"    ? (andarBaharSide === 0 ? 1.88 : 2)
     : game === "scratch_cards"  ? 100
     : game === "chuck_a_luck"   ? 12
+    : game === "red_dog"       ? 12
     : 2;
   const exposureBudget    = bank * EXPOSURE_PCT;
   const maxBetForExposure = bank > 0 ? exposureBudget / grossMult : Infinity;
@@ -411,6 +415,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
                 {game === "andar_bahar"     && <AndarBaharStage   key={pending.txDigest} jokerRank={Number(pending.fields.joker_rank)} winnerSide={Number(pending.fields.winner_side)} dealLog={Array.isArray(pending.fields.deal_log) ? (pending.fields.deal_log as number[]) : []} betSide={Number(pending.fields.bet_side)} onDone={() => reveal(pending)} />}
                 {game === "scratch_cards"   && <ScratchCardsStage key={pending.txDigest} grid={(() => { const raw = pending.fields.grid; if (Array.isArray(raw)) return raw as number[]; if (typeof raw === 'string') { try { return Array.from(atob(raw), (c) => c.charCodeAt(0)); } catch { return []; } } return []; })()} outcomeT={Number(pending.fields.outcome_tier)} winSym={Number(pending.fields.winning_symbol)} onDone={() => reveal(pending)} />}
                 {game === "chuck_a_luck"    && <ChuckALuckStage   key={pending.txDigest} d1={Number(pending.fields.d1)} d2={Number(pending.fields.d2)} d3={Number(pending.fields.d3)} target={Number(pending.fields.target)} onDone={() => reveal(pending)} />}
+                {game === "red_dog"          && <RedDogStage       key={pending.txDigest} card1={Number(pending.fields.card1)} card2={Number(pending.fields.card2)} card3={Number(pending.fields.card3)} spread={Number(pending.fields.spread)} result={Number(pending.fields.result)} onDone={() => reveal(pending)} />}
                 {game === "hilo"             && <HiLoStage       key={pending.txDigest} base={Number(pending.fields.base)} drawn={Number(pending.fields.drawn)} higher={Boolean(pending.fields.higher)} onDone={() => reveal(pending)} />}
                 {game === "plinko"           && <PlinkoStage     key={pending.txDigest} path={Number(pending.fields.path)} bucket={Number(pending.fields.bucket)} mults={(PLINKO_MODES.find((m) => m.mode === (pending.fields.mode !== undefined ? Number(pending.fields.mode) : -1))?.mults ?? undefined) as number[] | undefined} onDone={() => reveal(pending)} />}
                 {game === "keno"             && <KenoStage       key={pending.txDigest} picks={Array.isArray(pending.fields.picks) ? (pending.fields.picks as number[]) : []} drawn={Array.isArray(pending.fields.drawn) ? (pending.fields.drawn as number[]) : []} matches={Number(pending.fields.matches)} onDone={() => reveal(pending)} />}

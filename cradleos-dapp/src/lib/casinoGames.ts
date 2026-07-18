@@ -25,6 +25,7 @@ import {
   CASINO_V19,
   CASINO_V20,
   CASINO_V21,
+  CASINO_V24,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -32,7 +33,7 @@ import {
 } from "../constants";
 import { POKER_HAND_RANKS } from "./casinoVideoPoker";
 
-export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar" | "scratch_cards" | "chuck_a_luck";
+export type InstantGameKey = "coinflip" | "dice" | "roulette" | "slots" | "wheel" | "limbo" | "hilo" | "plinko" | "keno" | "sicbo" | "crash" | "diamonds" | "double_dice" | "war" | "baccarat" | "three_card_poker" | "dragon_tiger" | "under_over_7" | "ore_refine" | "risk_wheel" | "money_wheel" | "andar_bahar" | "scratch_cards" | "chuck_a_luck" | "red_dog";
 
 export interface InstantResult {
   game: InstantGameKey;
@@ -295,6 +296,18 @@ const GAMES: Record<InstantGameKey, GameDef> = {
       const m = Number(f.matches);
       const mult = m === 0 ? 0 : m === 1 ? 1.9 : m === 2 ? 3.7 : 12;
       return `target ${f.target} \u00b7 ${f.d1}/${f.d2}/${f.d3} \u00b7 ${m} match${m !== 1 ? "es" : ""} \u00b7 ${m > 0 ? mult + "x" : "LOSS"}`;
+    },
+  },
+  // ── v24: red_dog ─────────────────────────────────────────────────────────────────────────────────
+  red_dog: {
+    module: "red_dog", event: "RedDogPlayed",
+    describe: (f) => {
+      const result = Number(f.result);
+      const s = Number(f.spread);
+      const c1 = Number(f.card1), c2 = Number(f.card2), c3 = Number(f.card3);
+      const rank = (r: number) => r === 1 ? "A" : r === 11 ? "J" : r === 12 ? "Q" : r === 13 ? "K" : String(r);
+      const outcomeStr = result === 0 ? "PAIR MATCH 11:1" : result === 1 ? "PAIR PUSH" : result === 2 ? "CONSECUTIVE PUSH" : result === 3 ? `WIN (spread ${s})` : "LOSS";
+      return `${rank(c1)}/${rank(c2)} · post: ${rank(c3)} · spread ${s} · ${outcomeStr}`;
     },
   },
 };
@@ -681,6 +694,15 @@ export function buildChuckALuckTx(coins: string[], wagerRaw: bigint, target: num
   return tx;
 }
 
+export function buildRedDogTx(coins: string[], wagerRaw: bigint): Transaction {
+  const { tx, wager } = baseTx(coins, wagerRaw);
+  tx.moveCall({
+    target: `${CASINO_PKG}::red_dog::play`, typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+  });
+  return tx;
+}
+
 export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
@@ -740,6 +762,8 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   scratch_cards: CASINO_V20,
   // v21 new games: ChuckALuckRolled introduced in v21.
   chuck_a_luck: CASINO_V21,
+  // v24 new games: RedDogPlayed introduced in v24.
+  red_dog: CASINO_V24,
 };
 
 // Stateful games' settle events — merged into the all-games feed. Each event

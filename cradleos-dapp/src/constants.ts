@@ -356,7 +356,22 @@ export const RANDOM_OBJECT = "0x8";
 // Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
 // v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
 // moveCall target.
-export const CASINO_PKG_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025"; // v25, upgraded 2026-07-13 (ban-aware house: EBanned, set_banned, unban, is_banned via dynamic-field VecSet). New House 0xecbd158e (bank migrated from 0xeec606d9, old house drained+paused). Prev v24 0x4d42234d.
+// v26 (2026-07-13): FRESH PUBLISH — NOT an upgrade. Two changes required a new
+// lineage (both upgrade-incompatible): (1) blackjack_live deck-commit exploit
+// fix (struct + fn-sig changes), (2) proof-of-character bet gate (every game
+// entry now takes an &Character owned by the sender; added world dep).
+// published-at == original-id == 0x286350ca. tx 2yEPYAAuQL4tHgySTsjASmjmy69GrFVCm8SN6VZEFNdE,
+// UpgradeCap 0xe3ff3934e816f5ca007f99cf55fa545f74aa655495cf11663b7b2924fa546a7a.
+// ⚠ LINEAGE RESET: new on-chain events tag under 0x286350ca, NOT the old
+//   CASINO_ORIGINAL/V2/V3/V5... ids. Event fetchers must add 0x286350ca.
+// ⚠ EVERY game entry fn now requires a `character: &Character` arg (after the
+//   Random arg / after house). Frontend tx builders must pass the caller's live
+//   Character object id. Bets from wallets with no live Character will abort.
+// ⚠ HOUSE NOT YET CREATED — needs house::create_and_share with an EVE seed
+//   (deploy wallet has 0 EVE; Raw funds). CASINO_HOUSE below is STALE (old pkg).
+export const CASINO_PKG_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26 fresh publish (blackjack fix + character gate). Superseded gate-less 0x99d3b32f. Prev v25: 0x0b57018f (drained).
+export const CASINO_PKG_V26_GATELESS_STILLNESS = "0x99d3b32f853b7e820d6774c1eb6a889b3484c4b46587eede65a2119f41a1731e"; // intermediate v26 (blackjack fix, NO char gate). Superseded, never funded.
+export const CASINO_PKG_V25_RETIRED_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025"; // v25 (ban-aware house). RETIRED. House 0xecbd158e drained.
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
 // SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
 export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";

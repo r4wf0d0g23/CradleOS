@@ -1,6 +1,6 @@
-# CradleOS Casino — Game Roadmap (Directive)
+# CradleOS Casino - Game Roadmap (Directive)
 
-**Status:** ACTIVE DIRECTIVE (v1, 2026-07-11) — per Raw
+**Status:** ACTIVE DIRECTIVE (v1, 2026-07-11) - per Raw
 **Mandate:** Build out **no fewer than 100 games**, each shipped through the 5-stage `GAME_DEV_PROTOCOL.md` (Discovery → Design → Build → Polish → Launch). Long-horizon development. Navigation must scale to hold the full catalog.
 **Doctrine:** Quality > MVP. Versatility = product. First-choice EVE Frontier casino platform. No game skips a protocol gate; every game ships with cutting-edge animated UI.
 
@@ -9,9 +9,9 @@
 ---
 
 ## Status legend
-- ✅ LIVE — through Gate 4, playable on cradleos.io
-- 🔨 BUILD — in Stages 1-3
-- 📋 PLANNED — awaiting Stage 0 greenlight
+- ✅ LIVE - through Gate 4, playable on cradleos.io
+- 🔨 BUILD - in Stages 1-3
+- 📋 PLANNED - awaiting Stage 0 greenlight
 - Build class: **[I]** instant single-tx · **[S]** stateful commit-reveal · **[M]** multiplayer/shared-round (future infra)
 - Variance: L(low) / M(med) / H(high) / VH(very high)
 
@@ -50,7 +50,9 @@ These retroactively define the catalog baseline; several predate the protocol an
 | 25 | Money Wheel | I | M | 54-seg Big Six, 18x jackpot, 3.33% edge |
 | 26 | Andar Bahar | I | M | Indian classic, joker+alternating deal, 2.24%/4.00% edge |
 | 27 | Scratch Plex | I | M | 9-tile 3×3 EVE ore scratch card, 100x Zydrine jackpot, 3% edge |
-
+| 28 | Chuck-a-Luck | I | M | 3-dice birdcage, single-number 1-6, 2.78% edge, 12× triple match |
+| 29 | Red Dog | I | M | spread-bet card game, 3 cards, spread 1=5:1 → 5+=1:1, pair 11:1, 2.23% edge |
+ 
 ---
 
 ## PLANNED CATALOG (targets to reach 100+)
@@ -88,7 +90,7 @@ These retroactively define the catalog baseline; several predate the protocol an
 | 43 | Color Wheel | I | L | RGB simple bet |
 | 44 | Zodiac Wheel | I | H | 12-sign themed |
 
-### C. CARDS — house-banked (target ~18)
+### C. CARDS - house-banked (target ~18)
 | # | Game | Class | Var | Mechanic hook |
 |---|------|-------|-----|---------------|
 | 45 | Baccarat (side bets) | I | H | pairs/perfect-pair |
@@ -125,7 +127,7 @@ These retroactively define the catalog baseline; several predate the protocol an
 ### E. GRID / REVEAL / PICK (target ~12)
 | # | Game | Class | Var | Mechanic hook |
 |---|------|-------|-----|---------------|
-| 71 | Mines (variable grid 3x3–7x7) | S | L-VH | selectable size |
+| 71 | Mines (variable grid 3x3-7x7) | S | L-VH | selectable size |
 | 72 | Towers (Dragon Tower variants) | S | H | more difficulty tiers |
 | 73 | Keno (pick up to 10/40) | I | VH | extended picks |
 | 74 | Scratch Cards | I | M | reveal-to-match |
@@ -188,8 +190,8 @@ These retroactively define the catalog baseline; several predate the protocol an
 | 115 | Golden Ticket | I | VH | rare instant-win |
 | 116 | Lucky Draw (daily) | M | VH | scheduled shared draw |
 
-### J. EVE-FRONTIER NATIVE / NOVELTY (target ~8) — our differentiator
-Games themed to EVE Frontier lore/mechanics — nobody else can build these. Strong catalog moat.
+### J. EVE-FRONTIER NATIVE / NOVELTY (target ~8) - our differentiator
+Games themed to EVE Frontier lore/mechanics - nobody else can build these. Strong catalog moat.
 | # | Game | Class | Var | Mechanic hook |
 |---|------|-------|-----|---------------|
 | 117 | Ore Refine Gamble | I | H | risk raw ore → refined multiplier |
@@ -204,20 +206,20 @@ Games themed to EVE Frontier lore/mechanics — nobody else can build these. Str
 ---
 
 ## Totals
-- **Live now:** 27 (updated 2026-07-12 run 4: +scratch_cards)
-- **Planned:** 105 distinct games across 10 categories (A–J), IDs 20–124 above (de-duplicated 2026-07-11: Dragon Tiger consolidated at #103; #84 placeholder replaced with Slide).
-- **Grand total (live + planned): 124 distinct games** — 24 games of margin above the 100 floor for Gate-0 cuts.
+- **Live now:** 29 (updated 2026-07-13 run 5: +chuck_a_luck +red_dog; 3 disabled: mines/video_poker/dragon_tower)
+- **Planned:** 105 distinct games across 10 categories (A-J), IDs 20-124 above (de-duplicated 2026-07-11: Dragon Tiger consolidated at #103; #84 placeholder replaced with Slide).
+- **Grand total (live + planned): 124 distinct games** - 24 games of margin above the 100 floor for Gate-0 cuts.
 - **Grand target:** 100+ concurrently live. Runway sits well above the floor so we can cut weak candidates at Gate 0 and still clear 100.
 
 ## Prioritization heuristic (which to build next)
-1. **Variance-gap fill** — build into under-served volatility niches first (protocol Stage 0 catalog-fit).
-2. **Reuse leverage** — games that reuse an existing engine (roulette/slots/plinko/crash/mines variants) are cheap; batch them.
-3. **EVE-native moat** — category J games are the differentiator; interleave them to keep the catalog unique.
-4. **Instant before stateful** — [I] games are ~1/3 the build cost; front-load them for catalog-count velocity, reserve [S] builds for high-engagement mechanics.
-5. **Foundations before flood** — the NAV_PLAN lobby (Phase 1) and Stage-3 polish passes on the pre-protocol live games ship before the catalog crosses ~25; retention on the first 19 beats raw count.
-6. **Bank-aware sequencing** — don't stack multiple new VH-variance launches in the same window; model combined risk-of-ruin against the current house bank before each batch.
+1. **Variance-gap fill** - build into under-served volatility niches first (protocol Stage 0 catalog-fit).
+2. **Reuse leverage** - games that reuse an existing engine (roulette/slots/plinko/crash/mines variants) are cheap; batch them.
+3. **EVE-native moat** - category J games are the differentiator; interleave them to keep the catalog unique.
+4. **Instant before stateful** - [I] games are ~1/3 the build cost; front-load them for catalog-count velocity, reserve [S] builds for high-engagement mechanics.
+5. **Foundations before flood** - the NAV_PLAN lobby (Phase 1) and Stage-3 polish passes on the pre-protocol live games ship before the catalog crosses ~25; retention on the first 19 beats raw count.
+6. **Bank-aware sequencing** - don't stack multiple new VH-variance launches in the same window; model combined risk-of-ruin against the current house bank before each batch.
 
-## Navigation (must scale to 100+) — see NAV_PLAN below
+## Navigation (must scale to 100+) - see NAV_PLAN below
 Current flat tab bar (19 tabs) does NOT scale. Redesign required before catalog crosses ~25 games.
 
 ---
@@ -229,10 +231,10 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 ## Progress Log
 
-### 2026-07-12 — Run 4 (casino-roadmap-builder cron, 20:00 CT)
+### 2026-07-12 - Run 4 (casino-roadmap-builder cron, 20:00 CT)
 
 **Games advanced to LIVE:**
-- **Scratch Plex (#74)** — [I], Var M — v20 pkg `0x2d3d0525`, smoke TX `8LvXE68ENBYQvaPYXzvfCjQcivgQffLcoRm8xVvA2ohf`. outcome_tier=0 (LOSS), winning_symbol=255 (NO_SYMBOL), payout=0, grid decoded=[2,2,5,3,0,1,0,1,4] (max count 2 = valid loss) ✓
+- **Scratch Plex (#74)** - [I], Var M - v20 pkg `0x2d3d0525`, smoke TX `8LvXE68ENBYQvaPYXzvfCjQcivgQffLcoRm8xVvA2ohf`. outcome_tier=0 (LOSS), winning_symbol=255 (NO_SYMBOL), payout=0, grid decoded=[2,2,5,3,0,1,0,1,4] (max count 2 = valid loss) ✓
 
 **Tests:** scratch_cards 17/17 ✅ · TSC clean · IOC clean.
 
@@ -242,16 +244,16 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 **Catalog:** 27 live games. Scratch Plex has staggered tile-flip animation (220ms/tile × 9 = 1.98s reveal), 6 EVE ore symbols (VELDSPAR→ZYDRINE), grid base64 decoded in panel.
 
-**Durable lesson (upgrade workflow):** When `sui move build` is run on a directory after rsync wipes the Move.lock `[env]` block, the block is lost. Fix: (a) restore the `[env]` block manually after build, (b) set `cradleos_casino` address in `[addresses]` to the actual published address (not `0x0`) — both conditions were required for the upgrade to succeed.
+**Durable lesson (upgrade workflow):** When `sui move build` is run on a directory after rsync wipes the Move.lock `[env]` block, the block is lost. Fix: (a) restore the `[env]` block manually after build, (b) set `cradleos_casino` address in `[addresses]` to the actual published address (not `0x0`) - both conditions were required for the upgrade to succeed.
 
-**NEXT RUN SHOULD PICK:** Chuck-a-Luck (#20) — 3-dice birdcage, Var M, pure dice engine reuse, fast build.
+**NEXT RUN SHOULD PICK:** American Roulette (#35) — 38-pocket wheel (add 00), roulette engine extension. OR Craps Field Bet (#23) — single-roll 2d6, 2.78% edge with bonus payouts on 2/12.
 
 ---
 
-### 2026-07-12 — Run 3 (casino-roadmap-builder cron, 19:00 CT)
+### 2026-07-12 - Run 3 (casino-roadmap-builder cron, 19:00 CT)
 
 **Games advanced to LIVE:**
-- **Andar Bahar (#104)** — [I], Var M — v19 pkg `0xfb2895ff`, smoke TX `38Wgb4nSGgoV6rMHRnGa424dNGbAZLj2ZqqkB4ZXM1Eg`. Joker Q(10), 4 cards dealt, Bahar wins at position 3 (odd), Andar bet = LOSS ✓
+- **Andar Bahar (#104)** - [I], Var M - v19 pkg `0xfb2895ff`, smoke TX `38Wgb4nSGgoV6rMHRnGa424dNGbAZLj2ZqqkB4ZXM1Eg`. Joker Q(10), 4 cards dealt, Bahar wins at position 3 (odd), Andar bet = LOSS ✓
 
 **Tests:** andar_bahar 11/11 ✅ · TSC clean · IOC clean.
 
@@ -261,15 +263,15 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 **Catalog:** 26 live games. Andar Bahar has joker-card reveal + alternating deal cascade animation (up to 12 visible cards + match glow).
 
-**NEXT RUN SHOULD PICK:** Scratch Cards (#74) — 3x3 reveal grid, match-3, instant [I], Var-M.
+**NEXT RUN SHOULD PICK:** Scratch Cards (#74) - 3x3 reveal grid, match-3, instant [I], Var-M.
 
 ---
 
-### 2026-07-12 — Run 2 (casino-roadmap-builder cron, 18:00 CT)
+### 2026-07-12 - Run 2 (casino-roadmap-builder cron, 18:00 CT)
 
 **Games advanced to LIVE:**
-- **Risk Wheel (#38)** — [I], Var L-VH — v18 pkg `0xc3d6686e`, smoke TX `4sXN2qxsjGw6kHv8er7otcdhvPYte4TX2KveavFaPt4z`. LOW mode, seg=0, bust (0 bps) = 0 payout ✔
-- **Money Wheel (#37)** — [I], Var M — v18 pkg, smoke TX `FgRbERQLvsDFLZtSJAoQfNmE1L8SNMck9JsMFZWKfddt`. seg=3, bust (0 bps) = 0 payout ✔
+- **Risk Wheel (#38)** - [I], Var L-VH - v18 pkg `0xc3d6686e`, smoke TX `4sXN2qxsjGw6kHv8er7otcdhvPYte4TX2KveavFaPt4z`. LOW mode, seg=0, bust (0 bps) = 0 payout ✔
+- **Money Wheel (#37)** - [I], Var M - v18 pkg, smoke TX `FgRbERQLvsDFLZtSJAoQfNmE1L8SNMck9JsMFZWKfddt`. seg=3, bust (0 bps) = 0 payout ✔
 
 **Tests:** risk_wheel 5/5 ✅ · money_wheel 3/3 ✅. TSC clean. IOC clean.
 
@@ -279,16 +281,16 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 
 **Catalog:** 25 live games. Risk Wheel + Money Wheel both have real spinning-wheel animation stages (RiskWheelStage 3s, MoneyWheelStage 4s premium).
 
-**NEXT RUN SHOULD PICK:** Scratch Cards (#74) — 3x3 reveal grid, match-3, Gate-1 spec in BATCH_01_DESIGNS.md. Instant [I], Var-M, new tile-flip UI on Mines engine.
+**NEXT RUN SHOULD PICK:** Scratch Cards (#74) - 3x3 reveal grid, match-3, Gate-1 spec in BATCH_01_DESIGNS.md. Instant [I], Var-M, new tile-flip UI on Mines engine.
 
 ---
 
-### 2026-07-12 — Batch run (casino-roadmap-builder cron)
+### 2026-07-12 - Batch run (casino-roadmap-builder cron)
 
 **Games advanced to LIVE:**
-- **Dragon Tiger (#103)** — [I], Var L — v16 pkg `0x771ecec5`, smoke Digest `GaCfLgNipsoH5vKwuQvRPVct68HtcA8Mt8m2zsaTEi2M`. Dragon 9 > Tiger 3, payout 2x ✓
-- **Under/Over 7 (#21)** — [I], Var L — v16 pkg, smoke Digest `8ojVZdfpM2L2wfycJAcU6VQkFmLc1wcZm3m312zvDeYG`. d1+d2=7, bet UNDER → LOSS ✓
-- **Ore Refine Gamble (#117)** — [I], Var H, Category J — v16 pkg, smoke Digest `7CttzfKfDy92qvmX5kGzAdUA4tnSNEXiR27TtR59svFR`. Tier 3 PARTIAL, payout match exact ✓
+- **Dragon Tiger (#103)** - [I], Var L - v16 pkg `0x771ecec5`, smoke Digest `GaCfLgNipsoH5vKwuQvRPVct68HtcA8Mt8m2zsaTEi2M`. Dragon 9 > Tiger 3, payout 2x ✓
+- **Under/Over 7 (#21)** - [I], Var L - v16 pkg, smoke Digest `8ojVZdfpM2L2wfycJAcU6VQkFmLc1wcZm3m312zvDeYG`. d1+d2=7, bet UNDER → LOSS ✓
+- **Ore Refine Gamble (#117)** - [I], Var H, Category J - v16 pkg, smoke Digest `7CttzfKfDy92qvmX5kGzAdUA4tnSNEXiR27TtR59svFR`. Tier 3 PARTIAL, payout match exact ✓
 
 **On-chain:** v16 = `0x771ecec58588d78ac75da040ae58cde42bbedab433d698970098eb2525e53b92` (type-introducing) / v17 = `0x24500dde39bf459e88341ee68427dea72a883bad6149c8a86096ba506f91702c` (CASINO_PKG, double-publish)
 
@@ -301,7 +303,7 @@ Every game clears `GAME_DEV_PROTOCOL.md`. Post-launch retros feed both the proto
 **Catalog:** 23 live games. Total (live + planned): 124.
 
 **NEXT RUN SHOULD PICK:**
-1. Andar Bahar (#104) — card deal engine, variable-length reveal, Gate-1 spec done in BATCH_01_DESIGNS.md
-2. Scratch Cards (#74) — instant, 9-tile reveal, EVE-themed symbols, Gate-1 spec in BATCH_01_DESIGNS.md
-3. Plinko Risk Modes (#63) — plinko.move extension, LOW/MED/HIGH board tables, Gate-1 spec ready
+1. Andar Bahar (#104) - card deal engine, variable-length reveal, Gate-1 spec done in BATCH_01_DESIGNS.md
+2. Scratch Cards (#74) - instant, 9-tile reveal, EVE-themed symbols, Gate-1 spec in BATCH_01_DESIGNS.md
+3. Plinko Risk Modes (#63) - plinko.move extension, LOW/MED/HIGH board tables, Gate-1 spec ready
 All three are instant [I], all have Gate-1 designs. Andar Bahar is highest priority (unique mechanics, long anticipation window).
