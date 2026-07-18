@@ -2610,7 +2610,7 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
 // 0x7541ac23...) replaced with a fresh registry created via PTB tx
 // CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi alongside BountyBoard,
 // TrustlessBountyBoard, and KeeperShrine.
-export const CHARACTER_REGISTRY_ID = "0x36338164833e15ddf354d1b6f4d05fb57efb64020ce960107b46fc07d58f4813";
+export const CHARACTER_REGISTRY_ID = "0x73b0675f1b30c74c28d6c2448775ae0db5f1214a4765b36b6ebc2048775f7423"; // v16 re-init'd under wallet-we-control 0x177583b2 (2026-07-18 cutover). Prev 0x36338164 (orphaned).
 
 export type TribeClaim = {
   claimer: string;

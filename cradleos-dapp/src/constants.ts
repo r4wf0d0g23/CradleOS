@@ -79,7 +79,8 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000
 //   v1 original: 0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3
 //   v4 upgrade-origin (collateral_vault etc): 0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d
 //   last pre-wipe published-at (v14): 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93
-export const CRADLEOS_ORIGINAL = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
+export const CRADLEOS_ORIGINAL = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 fresh lineage (== pkg). Pre-cutover: 0xd4f46821 (orphaned).
+export const CRADLEOS_ORIGINAL_PREV = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
 // CRADLEOS_PKG v14 (2026-05-04 PM): closes the gate-access bug class.
 // Adds GateFriendlyCharacterKey + GateHostileCharacterKey + character-keyed
 // entry functions on TribeGatePolicy mirroring the v13 turret-friendly fix.
@@ -107,7 +108,12 @@ export const CRADLEOS_ORIGINAL = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066
 // requires the source gate to be bound to the policy passed. Without this, any
 // tribe's OPEN policy could mint permits for any enforced gate.
 // Tx digest: 7skiif5oYopW8ruUkk2qTFHfLvVzqGQjXvveoiKSji5x
-export const CRADLEOS_PKG      = "0xc3c2381f0bcff21dee32945203b8c3daa7614d53da016e0449f10fd6c62634b9"; // v15 (2026-07-13): ssu_access asset lockdown — banned wallets (0x4a49f68a, 0xc3aad684) barred from SSU deposit/withdraw/recover via EBanned in assert_caller_is_character. Prev v14 0xaf2b9fca.
+// v16 (2026-07-18): FRESH REPUBLISH under wallet-we-control 0x177583b2 after DGX1
+// reformat destroyed deploy-wallet 0xc80fe7d6 key. Byte-identical to v15 0xc3c2381f
+// (upgrade-frozen). New lineage: pkg == original. Full cutover — old shared state
+// (tribes/gates/treasuries under 0xc3c2381f) orphaned; users re-init. UpgradeCap
+// 0xcaca3557727d5df7afe32e34a62375105ec5415fcc48bb0dbddad0f06ad5f328 owned by us.
+export const CRADLEOS_PKG      = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 republish (wallet-we-control). Prev v15 0xc3c2381f (deploy key lost).
 // Defining packages for structs introduced in specific upgrades — DF name
 // types and event struct types are typed under the package that FIRST defined
 // them, regardless of the current published-at:
@@ -154,16 +160,16 @@ export const CRADLEOS_V3_PKG = "0xaf2b9fca870b3e14f64f4f5935b972a39ccbc405b9d233
 // Tx digest: Gj8pXc84s4k9smw7hZFBvRrYw24ZJPMA9NJbUZFxYPkh
 // UpgradeCap: 0x21d0cfbbf509ccfd3f86d3fa9fcb2344d2b34ba3b2a7fb5f81548d3f45a691b4
 // Pre-wipe pkg (now orphaned): 0x6ea83a3e990892331b799f8ff516835bc8362793c635403db19a87ca9b81aeb8
-export const SSU_ACCESS_PKG_STILLNESS    = "0x61f4dab56be12cfa74c268d900cfc7490a50c5969810433476b78d495e572232";
+export const SSU_ACCESS_PKG_STILLNESS    = "0xeb814b97c4789a0acdac143618d811b7fc3477259f4f1599ddaa9e07808919e1"; // v5 republish (wallet-we-control 0x177583b2). Prev 0x61f4dab5 (key lost).
 // Original-id (publish v1) — use for event queries and shared-object type tags.
 // Fresh v1 publish post-wipe — ORIGINAL == PKG. Pre-wipe original (orphaned):
 // 0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e
-export const SSU_ACCESS_ORIGINAL_STILLNESS = "0x61f4dab56be12cfa74c268d900cfc7490a50c5969810433476b78d495e572232";
+export const SSU_ACCESS_ORIGINAL_STILLNESS = "0xeb814b97c4789a0acdac143618d811b7fc3477259f4f1599ddaa9e07808919e1"; // v5 fresh lineage (== pkg).
 // Registry — shared object id is unchanged across upgrades.
 // 2026-06-25 wipe-day: new policy registry on the republished extension. The
 // pre-wipe registry (0x59bbda88...) still exists but maps pre-wipe SSU ids and
 // is unreachable via the new pkg — leave it orphaned.
-export const SSU_POLICY_REGISTRY_STILLNESS = "0x6fff6e36947a9cad9c8fb09578494f0c50a33440b708142af0b33ba4d56c1daa";
+export const SSU_POLICY_REGISTRY_STILLNESS = "0x7fc660607659ffb6dde527383cc27cbda282864103cbe3b8dd975c9b53f48797"; // auto-created at v5 publish. Prev 0x6fff6e36 (orphaned).
 //
 // Archived ssu_access packages (do NOT use):
 //   v1   (2026-04-26 single-tribe):    pkg=0x7d85b7c5524ffa0b0b029bdf77bb4f68d263f1b995f772272b04697520304a33
@@ -193,7 +199,7 @@ export const SSU_ACCESS_AVAILABLE: boolean = SSU_ACCESS_PKG !== "";
 // NOT the package's original-id. These modules were introduced in upgrade v2.
 // 2026-06-25 wipe-day: collapsed back into single-pkg lineage. CRADLEOS_UPGRADE_ORIGIN
 // equals CRADLEOS_ORIGINAL post-wipe because the fresh publish carries every module.
-export const CRADLEOS_UPGRADE_ORIGIN = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
+export const CRADLEOS_UPGRADE_ORIGIN = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 fresh lineage. Pre-cutover: 0xd4f46821.
 // Affected modules: collateral_vault, keeper_shrine, trustless_bounty
 // Use CRADLEOS_UPGRADE_ORIGIN (not CRADLEOS_ORIGINAL) for event queries on these.
 
@@ -247,9 +253,9 @@ export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
 // (Sui validator caps structs at 32 fields). Both rejected at publish time
 // with VMVerificationOrDeserializationError; neither caught by `sui move build`.
 export const CRADLEOS_VOTING_PKG: string =
-  "0x7756113607b23efc989f0ce9976c1b93dae87f8824e1c0ba4988273565565a7a";
+  "0xfd7faea42bd7378013a3a07ae23019b55d112bcbf7fe440891d298bec4470cab"; // republish (wallet-we-control). Prev 0x7756113607 (key lost).
 export const CRADLEOS_VOTING_REGISTRY: string =
-  "0x85c113874576b407fcebf077de1d2f9993b6edfce4e71fcc382785abd72df183";
+  "0xb0424681fa0f43ea2ca888fad3ff4bda75341affbcd24f78fcefd58d4311e2c2"; // ExtensionRegistry re-init'd. Prev 0x85c11387 (orphaned).
 // Append every upgrade-publish for fetchVotingEventAcrossPackages.
 export const CRADLEOS_VOTING_EVENT_PKGS: readonly string[] = [
   CRADLEOS_VOTING_PKG,
@@ -602,15 +608,15 @@ export const TRIBE_DEX_TYPE   = `${CRADLEOS_ORIGINAL}::tribe_dex::TribeDex`;
 // 2026-06-25 wipe-day: pre-wipe BountyBoard (typed under orphaned pkg
 // 0x7541ac23...) replaced with a fresh board created via PTB tx
 // CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi.
-export const BOUNTY_BOARD = "0xdd3c2af5485f5f4e8d13b00ae3ad8407e9ca127207a2138269d0039de2b3c388";
+export const BOUNTY_BOARD = "0x6283f223f493e53b3f740126d2e242581c6715fa3427e7a48df01a4e90ac7ab2"; // re-init'd under v16. Prev 0xdd3c2af5 (orphaned).
 // Trustless bounty board — set after deploying trustless_bounty module
 // 2026-06-25 wipe-day: pre-wipe TrustlessBountyBoard (typed under orphaned
 // pkg 0xa676b736...) replaced with a fresh board from same PTB.
-export const TRUSTLESS_BOUNTY_BOARD = "0x1969d8e82db7c26c362d6bf1b5e39fec22fa4872e494e95225d102f1975adfa4";
+export const TRUSTLESS_BOUNTY_BOARD = "0x4bc0bdae8da9fbbdbb2a4a408cfb84bd29c9eff76f427da92658e506bf9443d5"; // re-init'd under v16. Prev 0x1969d8e8 (orphaned).
 // 2026-06-25 wipe-day: pre-wipe KeeperShrine<EVE> (typed under orphaned
 // pkg 0x2e51c867... and pre-wipe EVE coin 0x2a66a89b...) replaced with a
 // fresh KeeperShrine<EVE> typed correctly against new pkg + new EVE coin.
-export const KEEPER_SHRINE = "0x65daea1b74ea88e7f21d26f71735d2fdddc8c40756bd975a92684eb763c39f9d";
+export const KEEPER_SHRINE = "0xad6fd54ad1c036e30ab8cd08b799bea5ea440eb819b0354f60540a657f7ec5aa"; // re-init'd under v16 (EVE-typed). Prev 0x65daea1b (orphaned).
 // Wiki board not yet created on-chain — LoreWikiPanel shows placeholder when empty
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";
