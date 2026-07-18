@@ -13,7 +13,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
-  CASINO_V5,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -77,7 +76,7 @@ export type TileRevealOutcome =
  * Build the Mines start PTB. Caller must wrap with withGas() and sign.
  * Splits the wager from the player's EVE coins and passes to mines::start.
  */
-export function buildMinesStartTx(coins: string[], wagerRaw: bigint, mines: number): Transaction {
+export function buildMinesStartTx(coins: string[], wagerRaw: bigint, characterId: string, mines: number): Transaction {
   const tx = new Transaction();
   const primary = tx.object(coins[0]);
   if (coins.length > 1) tx.mergeCoins(primary, coins.slice(1).map((id) => tx.object(id)));
@@ -85,7 +84,7 @@ export function buildMinesStartTx(coins: string[], wagerRaw: bigint, mines: numb
   tx.moveCall({
     target: `${CASINO_PKG}::mines::start`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(mines)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(mines)],
   });
   return tx;
 }
@@ -215,10 +214,7 @@ export async function fetchActiveMinesGame(addr: string): Promise<MinesGameState
     const result = await rpc("suix_getOwnedObjects", [
       addr,
       {
-        // Struct types tag under the package version that INTRODUCED them.
-        // The `mines` module was introduced in v5 (CASINO_V5), so MinesGame
-        // objects are typed under that id — NOT the latest published-at.
-        filter: { StructType: `${CASINO_V5}::mines::MinesGame<${EVE_COIN_TYPE}>` },
+        filter: { StructType: `${CASINO_PKG}::mines::MinesGame<${EVE_COIN_TYPE}>` },
         options: { showContent: true, showType: true },
       },
       null,

@@ -14,7 +14,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
-  CASINO_V7,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -111,7 +110,7 @@ export interface VideoPokerHandState {
 
 // ── Tx builders ───────────────────────────────────────────────────────────────
 
-export function buildVideoPokerDealTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildVideoPokerDealTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const tx = new Transaction();
   const primary = tx.object(coins[0]);
   if (coins.length > 1) tx.mergeCoins(primary, coins.slice(1).map((id) => tx.object(id)));
@@ -119,7 +118,7 @@ export function buildVideoPokerDealTx(coins: string[], wagerRaw: bigint): Transa
   tx.moveCall({
     target: `${CASINO_PKG}::video_poker::deal`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
@@ -189,7 +188,7 @@ export async function fetchActiveVideoPokerHand(addr: string): Promise<VideoPoke
     const result = await rpcDirect("suix_getOwnedObjects", [
       addr,
       {
-        filter: { StructType: `${CASINO_V7}::video_poker::VideoPokerHand<${EVE_COIN_TYPE}>` },
+        filter: { StructType: `${CASINO_PKG}::video_poker::VideoPokerHand<${EVE_COIN_TYPE}>` },
         options: { showContent: true, showType: true },
       },
       null,

@@ -367,9 +367,18 @@ export const RANDOM_OBJECT = "0x8";
 // ⚠ EVERY game entry fn now requires a `character: &Character` arg (after the
 //   Random arg / after house). Frontend tx builders must pass the caller's live
 //   Character object id. Bets from wallets with no live Character will abort.
-// ⚠ HOUSE NOT YET CREATED — needs house::create_and_share with an EVE seed
-//   (deploy wallet has 0 EVE; Raw funds). CASINO_HOUSE below is STALE (old pkg).
-export const CASINO_PKG_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26 fresh publish (blackjack fix + character gate). Superseded gate-less 0x99d3b32f. Prev v25: 0x0b57018f (drained).
+// v27 (2026-07-18): FRESH PUBLISH under wallet-we-control 0x177583b2 after
+//   DGX1 reformat destroyed the deploy-wallet 0xc80fe7d6 private key (all its
+//   UpgradeCaps + HouseAdminCaps unrecoverable; old ~10k EVE house 0xecbd158e
+//   written off). Same char-gated + blackjack-fixed source as v26 0x286350ca
+//   (on-chain module sigs verified identical). New pkg == original-id (fresh v1).
+//   UpgradeCap 0x8102d1219cdd51f2f3fdbbf17c8a80675f040832ebf5a51ec703b93fc6fd6355
+//   + HouseAdminCap 0xa1f80727f68bf5a2debb4f6d268454a775864dbf00e58c40f2343e4a348568b5
+//   both owned by 0x177583b2. tx AT6FLahDPLunaqAZYFXh3qVpmtjq97c7d9oLge1Kc2Sr.
+// ⚠ EVERY game entry fn requires a `character: &Character` arg. New events tag
+//   under 0x874f10e0, NOT any older CASINO_ORIGINAL/V* id.
+export const CASINO_PKG_STILLNESS = "0x874f10e051f7dff3ff8dfdf9e4e8a63ddb0dd446ea625889f09fb511daed6ac9"; // v27 fresh publish (wallet-we-control). Prev v26 0x286350ca (deploy key lost). v25 0x0b57018f (exploitable, drained).
+export const CASINO_PKG_V26_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26 (deploy key 0xc80fe7d6 LOST in reformat — upgrade-frozen).
 export const CASINO_PKG_V26_GATELESS_STILLNESS = "0x99d3b32f853b7e820d6774c1eb6a889b3484c4b46587eede65a2119f41a1731e"; // intermediate v26 (blackjack fix, NO char gate). Superseded, never funded.
 export const CASINO_PKG_V25_RETIRED_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025"; // v25 (ban-aware house). RETIRED. House 0xecbd158e drained.
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
@@ -379,6 +388,9 @@ export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1bad
 export const CASINO_V2_STILLNESS = "0x8c342cdca493fdcd374419bc452095ec08c9a9c723dddeaa30af416d6c6c7c8a";
 // original-id: v1 event/type queries (HandDealt/HandSettled/HandPlayed, Hand<T>).
 export const CASINO_ORIGINAL_STILLNESS = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164";
+// v27 fresh-lineage original-id (== pkg): new-game events after 2026-07-18 tag here.
+export const CASINO_V27_STILLNESS = "0x874f10e051f7dff3ff8dfdf9e4e8a63ddb0dd446ea625889f09fb511daed6ac9";
+export const CASINO_V27 = _serverEnv === "stillness" ? CASINO_V27_STILLNESS : "";
 export const CASINO_PKG = _serverEnv === "stillness" ? CASINO_PKG_STILLNESS : "";
 export const CASINO_V3 = _serverEnv === "stillness" ? CASINO_V3_STILLNESS : "";
 // v5 pkg id: new instant-game + mines event types (LimboRolled, HiLoDrawn, PlinkoDropped, KenoDrawn,
@@ -448,7 +460,12 @@ export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STIL
 // 0xc80fe7d6... (DGX sui CLI, active addr) for top-up / risk-param / pause / ban:
 //   HouseAdminCap = 0x91e02f7120f1ad08838961db5b198ab6d041faf913145eae2f4b1be6ab562173  (bound to v25 house 0xecbd158e)
 //   NOTE (2026-07-13): 0x476c10fc... is the OLD cap bound to the RETIRED house 0xeec606d9 — do NOT use it; set_banned/set_paused will abort ENotAdmin against the live house.
-export const CASINO_HOUSE_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // v25 new house (ban-aware). Old: 0xeec606d9 (drained+paused).
+// v27 house (2026-07-18): seeded 500 EVE (0xac361aa5::EVE::EVE) from Raw's wallet.
+//   max_bet 25 EVE, min_bet 0.1 EVE. HouseAdminCap 0xa1f80727f68bf5a2debb4f6d268454a775864dbf00e58c40f2343e4a348568b5
+//   owned by wallet-we-control 0x177583b2 (top-up via house::deposit, risk-params/pause/ban via cap).
+//   Prev v25 house 0xecbd158e (~10k EVE) UNRECOVERABLE — admin key lost in DGX1 reformat.
+export const CASINO_HOUSE_V25_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // RETIRED — key lost.
+export const CASINO_HOUSE_STILLNESS = "0x30807c9be2bd9fb2c1ce568164121db9a693b2fa85ed695d4b4f8a73c472ae62"; // v27 live house (500 EVE seed).
 export const CASINO_HOUSE = _serverEnv === "stillness" ? CASINO_HOUSE_STILLNESS : "";
 export const CASINO_AVAILABLE = CASINO_PKG !== "";
 

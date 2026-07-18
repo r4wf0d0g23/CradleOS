@@ -16,7 +16,6 @@ import {
   CASINO_V3,
   CASINO_V5,
   CASINO_V7,
-  CASINO_V8,
   CASINO_V10,
   CASINO_PLINKO_MULTI,
   CASINO_ORIGINAL,
@@ -321,65 +320,65 @@ function baseTx(eveCoinIds: string[], wagerRaw: bigint): { tx: Transaction; wage
   return { tx, wager };
 }
 
-export function buildCoinflipTx(coins: string[], wagerRaw: bigint, choice: 0 | 1): Transaction {
+export function buildCoinflipTx(coins: string[], wagerRaw: bigint, characterId: string, choice: 0 | 1): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::coinflip::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(choice)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(choice)],
   });
   return tx;
 }
 
-export function buildDiceTx(coins: string[], wagerRaw: bigint, target: number, over: boolean): Transaction {
+export function buildDiceTx(coins: string[], wagerRaw: bigint, characterId: string, target: number, over: boolean): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::dice::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(target), tx.pure.bool(over)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(target), tx.pure.bool(over)],
   });
   return tx;
 }
 
-export function buildRouletteTx(coins: string[], wagerRaw: bigint, kind: number, target: number): Transaction {
+export function buildRouletteTx(coins: string[], wagerRaw: bigint, characterId: string, kind: number, target: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::roulette::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind), tx.pure.u8(target)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(kind), tx.pure.u8(target)],
   });
   return tx;
 }
 
-export function buildSlotsTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildSlotsTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::slots::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildWheelTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildWheelTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::wheel::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildLimboTx(coins: string[], wagerRaw: bigint, targetBps: bigint): Transaction {
+export function buildLimboTx(coins: string[], wagerRaw: bigint, characterId: string, targetBps: bigint): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::limbo::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u64(targetBps)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u64(targetBps)],
   });
   return tx;
 }
 
-export function buildHiLoTx(coins: string[], wagerRaw: bigint, higher: boolean): Transaction {
+export function buildHiLoTx(coins: string[], wagerRaw: bigint, characterId: string, higher: boolean): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::hilo::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.bool(higher)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.bool(higher)],
   });
   return tx;
 }
@@ -396,11 +395,11 @@ export interface HiLoLiveGame {
   wager: number;    // EVE
 }
 
-export function buildHiLoStartTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildHiLoStartTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::hilo::start`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
@@ -439,10 +438,10 @@ export async function resolveHiLoStartByDigest(digest: string): Promise<HiLoLive
 
 /** Find an abandoned live hi-lo game (escrowed stake) owned by `owner`, if any. */
 export async function fetchOpenHiLoGame(owner: string): Promise<HiLoLiveGame | null> {
-  if (!CASINO_V8) return null;
+  if (!CASINO_PKG) return null;
   try {
     const res = await rpc("suix_getOwnedObjects", [owner, {
-      filter: { StructType: `${CASINO_V8}::hilo::HiLoGame<${EVE_COIN_TYPE}>` },
+      filter: { StructType: `${CASINO_PKG}::hilo::HiLoGame<${EVE_COIN_TYPE}>` },
       options: { showContent: true },
     }, null, 5]);
     const d = res?.data?.[0]?.data;
@@ -463,21 +462,21 @@ export function hiloCallMultiplier(base: number, higher: boolean): number {
   return (9800 * 13) / count / 10000;
 }
 
-export function buildPlinkoTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildPlinkoTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::plinko::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
 /** Plinko risk-mode play (v10): mode 0=LOW 1=MED 2=HIGH. */
-export function buildPlinkoModeTx(coins: string[], wagerRaw: bigint, mode: number): Transaction {
+export function buildPlinkoModeTx(coins: string[], wagerRaw: bigint, characterId: string, mode: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::plinko::play_mode`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(mode)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(mode)],
   });
   return tx;
 }
@@ -486,13 +485,13 @@ export function buildPlinkoModeTx(coins: string[], wagerRaw: bigint, mode: numbe
  * Plinko multi-drop (v12): N balls (2..=10) in one tx, one signature.
  * mode: 0=LOW 1=MED 2=HIGH 3=CLASSIC. wagerRaw = TOTAL across all drops.
  */
-export function buildPlinkoMultiTx(coins: string[], wagerRaw: bigint, mode: number, count: number): Transaction {
+export function buildPlinkoMultiTx(coins: string[], wagerRaw: bigint, characterId: string, mode: number, count: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   // map UI mode: -1=CLASSIC → contract mode 3
   const contractMode = mode < 0 ? 3 : mode;
   tx.moveCall({
     target: `${CASINO_PKG}::plinko::play_multi`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(contractMode), tx.pure.u8(count)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(contractMode), tx.pure.u8(count)],
   });
   return tx;
 }
@@ -555,159 +554,159 @@ export async function resolvePlinkoMultiByDigest(digest: string): Promise<Plinko
   return null;
 }
 
-export function buildKenoTx(coins: string[], wagerRaw: bigint, picks: number[]): Transaction {
+export function buildKenoTx(coins: string[], wagerRaw: bigint, characterId: string, picks: number[]): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::keno::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.vector("u8", picks)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.vector("u8", picks)],
   });
   return tx;
 }
 
-export function buildSicBoTx(coins: string[], wagerRaw: bigint, kind: number, target: number): Transaction {
+export function buildSicBoTx(coins: string[], wagerRaw: bigint, characterId: string, kind: number, target: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::sicbo::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind), tx.pure.u8(target)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(kind), tx.pure.u8(target)],
   });
   return tx;
 }
 
 // ── v7 instant game builders ───────────────────────────────────────────────────
 
-export function buildCrashTx(coins: string[], wagerRaw: bigint, targetBps: bigint): Transaction {
+export function buildCrashTx(coins: string[], wagerRaw: bigint, characterId: string, targetBps: bigint): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::crash::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u64(targetBps)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u64(targetBps)],
   });
   return tx;
 }
 
-export function buildDiamondsTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildDiamondsTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::diamonds::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildDoubleDiceTx(coins: string[], wagerRaw: bigint, kind: number, target: number): Transaction {
+export function buildDoubleDiceTx(coins: string[], wagerRaw: bigint, characterId: string, kind: number, target: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::double_dice::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind), tx.pure.u8(target)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(kind), tx.pure.u8(target)],
   });
   return tx;
 }
 
-export function buildWarTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildWarTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::war::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildBaccaratTx(coins: string[], wagerRaw: bigint, kind: number): Transaction {
+export function buildBaccaratTx(coins: string[], wagerRaw: bigint, characterId: string, kind: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::baccarat::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(kind)],
   });
   return tx;
 }
 
-export function buildThreeCardTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildThreeCardTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::three_card_poker::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildDragonTigerTx(coins: string[], wagerRaw: bigint, betType: 0 | 1 | 2): Transaction {
+export function buildDragonTigerTx(coins: string[], wagerRaw: bigint, characterId: string, betType: 0 | 1 | 2): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::dragon_tiger::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(betType)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(betType)],
   });
   return tx;
 }
 
-export function buildUnderOver7Tx(coins: string[], wagerRaw: bigint, kind: 0 | 1 | 2): Transaction {
+export function buildUnderOver7Tx(coins: string[], wagerRaw: bigint, characterId: string, kind: 0 | 1 | 2): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::under_over_7::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(kind)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(kind)],
   });
   return tx;
 }
 
-export function buildOreRefineTx(coins: string[], wagerRaw: bigint, tier: 1 | 2 | 3 | 4 | 5): Transaction {
+export function buildOreRefineTx(coins: string[], wagerRaw: bigint, characterId: string, tier: 1 | 2 | 3 | 4 | 5): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::ore_refine::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(tier)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(tier)],
   });
   return tx;
 }
 
 // ── v18 tx builders ──────────────────────────────────────────────────────────────
 
-export function buildRiskWheelTx(coins: string[], wagerRaw: bigint, mode: 0 | 1 | 2): Transaction {
+export function buildRiskWheelTx(coins: string[], wagerRaw: bigint, characterId: string, mode: 0 | 1 | 2): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::risk_wheel::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(mode)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(mode)],
   });
   return tx;
 }
 
-export function buildAndarBaharTx(coins: string[], wagerRaw: bigint, betSide: 0 | 1): Transaction {
+export function buildAndarBaharTx(coins: string[], wagerRaw: bigint, characterId: string, betSide: 0 | 1): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::andar_bahar::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(betSide)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(betSide)],
   });
   return tx;
 }
 
-export function buildScratchCardsTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildScratchCardsTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::scratch_cards::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildChuckALuckTx(coins: string[], wagerRaw: bigint, target: number): Transaction {
+export function buildChuckALuckTx(coins: string[], wagerRaw: bigint, characterId: string, target: number): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::chuck_a_luck::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(target)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(target)],
   });
   return tx;
 }
 
-export function buildRedDogTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildRedDogTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::red_dog::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
 
-export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint): Transaction {
+export function buildMoneyWheelTx(coins: string[], wagerRaw: bigint, characterId: string): Transaction {
   const { tx, wager } = baseTx(coins, wagerRaw);
   tx.moveCall({
     target: `${CASINO_PKG}::money_wheel::play`, typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
@@ -765,6 +764,10 @@ const EVENT_PKG: Record<InstantGameKey, string> = {
   // v24 new games: RedDogPlayed introduced in v24.
   red_dog: CASINO_V24,
 };
+
+function eventPackages(historicalPkg: string): string[] {
+  return Array.from(new Set([historicalPkg, CASINO_PKG].filter(Boolean)));
+}
 
 // Stateful games' settle events — merged into the all-games feed. Each event
 // carries wager/payout/player like the instant events; pkg = version that
@@ -826,20 +829,26 @@ const STATEFUL_FEED: { label: string; pkg: string; module: string; event: string
 
 export async function fetchRecentInstantPlays(limit = 20): Promise<InstantFeedRow[]> {
   if (!CASINO_PKG) return [];
-  // Skip games whose event package isn't populated yet (CASINO_V5 = "" before v5 publish).
+  // Query historical event packages plus the current fresh-publish package.
+  // v27 is a fresh lineage, so new events tag under CASINO_PKG instead of the
+  // older introduction packages used for pre-v27 feed history.
   const keys = (Object.keys(GAMES) as InstantGameKey[]).filter((k) => EVENT_PKG[k]);
-  const instantQ = keys.map((k) =>
-    rpc("suix_queryEvents", [
-      { MoveEventType: `${EVENT_PKG[k]}::${GAMES[k].module}::${GAMES[k].event}` },
-      null, limit, true,
-    ]).then((r) => ({ k, data: r.data ?? [] })).catch(() => ({ k, data: [] }))
+  const instantQ = keys.flatMap((k) =>
+    eventPackages(EVENT_PKG[k]).map((pkg) =>
+      rpc("suix_queryEvents", [
+        { MoveEventType: `${pkg}::${GAMES[k].module}::${GAMES[k].event}` },
+        null, limit, true,
+      ]).then((r) => ({ k, data: r.data ?? [] })).catch(() => ({ k, data: [] }))
+    )
   );
   const statefulQ = STATEFUL_FEED.filter((d) => d.pkg).map((d) =>
-    rpc("suix_queryEvents", [
-      { MoveEventType: `${d.pkg}::${d.module}::${d.event}` },
-      null, limit, true,
-    ]).then((r) => ({ d, data: r.data ?? [] })).catch(() => ({ d, data: [] }))
-  );
+    eventPackages(d.pkg).map((pkg) =>
+      rpc("suix_queryEvents", [
+        { MoveEventType: `${pkg}::${d.module}::${d.event}` },
+        null, limit, true,
+      ]).then((r) => ({ d, data: r.data ?? [] })).catch(() => ({ d, data: [] }))
+    )
+  ).flat();
   const [instantRes, statefulRes] = await Promise.all([Promise.all(instantQ), Promise.all(statefulQ)]);
   const rows: InstantFeedRow[] = [];
   for (const { k, data } of instantRes) {

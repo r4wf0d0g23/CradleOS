@@ -325,6 +325,7 @@ export function buildPlayBlackjackTx(
   houseId: string,
   eveCoinIds: string[],
   wagerRaw: bigint,
+  characterId: string,
   standOn: number,
 ): Transaction {
   const tx = new Transaction();
@@ -339,6 +340,7 @@ export function buildPlayBlackjackTx(
     arguments: [
       tx.object(houseId),
       tx.object(RANDOM_OBJECT),
+      tx.object(characterId),
       wager,
       tx.pure.u8(standOn),
     ],
@@ -421,7 +423,7 @@ export function handTotal(cards: number[]): number {
 }
 
 /** Tx1: deal a live hand. Consumes randomness once; escrows stake in a Hand. */
-export function buildDealTx(eveCoinIds: string[], wagerRaw: bigint): Transaction {
+export function buildDealTx(eveCoinIds: string[], wagerRaw: bigint, characterId: string): Transaction {
   const tx = new Transaction();
   const primary = tx.object(eveCoinIds[0]);
   if (eveCoinIds.length > 1) tx.mergeCoins(primary, eveCoinIds.slice(1).map((id) => tx.object(id)));
@@ -429,7 +431,7 @@ export function buildDealTx(eveCoinIds: string[], wagerRaw: bigint): Transaction
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::deal`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager],
   });
   return tx;
 }
@@ -724,46 +726,57 @@ export async function resolveSplitSettleByDigest(digest: string): Promise<SplitS
 /** Find the settlement for a given hand id (poll after a settling action). */
 export async function fetchSettlement(handId: string): Promise<LiveSettlement | null> {
   if (!CASINO_PKG) return null;
-  const result = await rpc("suix_queryEvents", [
-    { MoveEventType: `${CASINO_ORIGINAL}::blackjack_live::HandSettled` },
-    null, 30, true,
-  ]);
-  for (const e of result.data ?? []) {
-    const pj = e.parsedJson ?? {};
-    if (pj.hand_id !== handId) continue;
-    return {
-      handId,
-      wager: Number(pj.wager ?? 0) / 1e9,
-      deck: (pj.deck ?? []).map((x: any) => Number(x)),
-      playerCards: (pj.player_cards ?? []).map((x: any) => Number(x)),
-      dealerCards: (pj.dealer_cards ?? []).map((x: any) => Number(x)),
-      playerTotal: Number(pj.player_total ?? 0),
-      dealerTotal: Number(pj.dealer_total ?? 0),
-      doubled: Boolean(pj.doubled),
-      outcome: Number(pj.outcome ?? 0),
-      payout: Number(pj.payout ?? 0) / 1e9,
-      txDigest: e.id?.txDigest ?? "",
-    };
+  const pkgs = Array.from(new Set([CASINO_ORIGINAL, CASINO_PKG].filter(Boolean)));
+  const results = await Promise.all(pkgs.map((pkg) =>
+    rpc("suix_queryEvents", [
+      { MoveEventType: `${pkg}::blackjack_live::HandSettled` },
+      null, 30, true,
+    ]).catch(() => ({ data: [] }))
+  ));
+  for (const result of results) {
+    for (const e of result.data ?? []) {
+      const pj = e.parsedJson ?? {};
+      if (pj.hand_id !== handId) continue;
+      return {
+        handId,
+        wager: Number(pj.wager ?? 0) / 1e9,
+        deck: (pj.deck ?? []).map((x: any) => Number(x)),
+        playerCards: (pj.player_cards ?? []).map((x: any) => Number(x)),
+        dealerCards: (pj.dealer_cards ?? []).map((x: any) => Number(x)),
+        playerTotal: Number(pj.player_total ?? 0),
+        dealerTotal: Number(pj.dealer_total ?? 0),
+        doubled: Boolean(pj.doubled),
+        outcome: Number(pj.outcome ?? 0),
+        payout: Number(pj.payout ?? 0) / 1e9,
+        txDigest: e.id?.txDigest ?? "",
+      };
+    }
   }
   return null;
 }
 
 /** Recent live-blackjack settlements for the feed, newest first.
- *  Merges classic HandSettled (v1 types → CASINO_ORIGINAL) with split
- *  settlements (v2 types → CASINO_PKG), one feed row per split hand. */
+ *  Merges classic HandSettled with split settlements. Queries historical
+ *  event packages plus CASINO_PKG because v27 is a fresh event lineage. */
 export async function fetchRecentLiveHands(limit = 25): Promise<LiveSettlement[]> {
   if (!CASINO_PKG) return [];
-  const [classic, splits] = await Promise.all([
-    rpc("suix_queryEvents", [
-      { MoveEventType: `${CASINO_ORIGINAL}::blackjack_live::HandSettled` },
-      null, limit, true,
-    ]).catch(() => ({ data: [] })),
-    rpc("suix_queryEvents", [
-      // SplitSettled was introduced in v2 — its event type tags under the v2 pkg id.
-      { MoveEventType: `${CASINO_V2}::blackjack_live::SplitSettled` },
-      null, limit, true,
-    ]).catch(() => ({ data: [] })),
+  const eventPkgs = (historicalPkg: string) => Array.from(new Set([historicalPkg, CASINO_PKG].filter(Boolean)));
+  const [classicResults, splitResults] = await Promise.all([
+    Promise.all(eventPkgs(CASINO_ORIGINAL).map((pkg) =>
+      rpc("suix_queryEvents", [
+        { MoveEventType: `${pkg}::blackjack_live::HandSettled` },
+        null, limit, true,
+      ]).catch(() => ({ data: [] }))
+    )),
+    Promise.all(eventPkgs(CASINO_V2).map((pkg) =>
+      rpc("suix_queryEvents", [
+        { MoveEventType: `${pkg}::blackjack_live::SplitSettled` },
+        null, limit, true,
+      ]).catch(() => ({ data: [] }))
+    )),
   ]);
+  const classic = { data: classicResults.flatMap((r) => r.data ?? []) };
+  const splits = { data: splitResults.flatMap((r) => r.data ?? []) };
   const splitRows: (LiveSettlement & { player: string; split?: boolean })[] = [];
   for (const e of splits.data ?? []) {
     const pj = e.parsedJson ?? {};

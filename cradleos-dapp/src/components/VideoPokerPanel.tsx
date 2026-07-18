@@ -16,6 +16,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
+import { findLatestCharacterForWallet } from "../lib";
 import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casino";
 import { CASINO_HOUSE } from "../constants";
 import {
@@ -229,9 +230,11 @@ export function VideoPokerPanel() {
     try {
       const raw = BigInt(Math.floor(wagerNum * 1e9));
       const buildTx = async () => {
+        const charInfo = await findLatestCharacterForWallet(addr);
+        if (!charInfo?.characterId) throw new Error("No live Character found for this wallet. Create or select a Character in EVE Frontier, then try again.");
         const { ids } = await fetchEveCoins(addr);
         if (!ids.length) throw new Error("No $EVE in wallet.");
-        return withGas(buildVideoPokerDealTx(ids, raw), addr);
+        return withGas(buildVideoPokerDealTx(ids, raw, charInfo.characterId), addr);
       };
       let res: any;
       try {

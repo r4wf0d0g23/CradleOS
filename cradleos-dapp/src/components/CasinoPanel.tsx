@@ -22,6 +22,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
+import { findLatestCharacterForWallet } from "../lib";
 import { CASINO_AVAILABLE } from "../constants";
 import {
   fetchEveCoins, fetchHouseState, withGas, betPresets,
@@ -181,9 +182,11 @@ export function CasinoPanel() {
     setBusy(true); setErr(null); setSettlement(null); setHand(null); setPhase("dealing");
     try {
       const buildTx = async () => {
+        const charInfo = await findLatestCharacterForWallet(addr);
+        if (!charInfo?.characterId) throw new Error("No live Character found for this wallet. Create or select a Character in EVE Frontier, then try again.");
         const { ids } = await fetchEveCoins(addr);
         if (!ids.length) throw new Error("No $EVE in wallet.");
-        return withGas(buildDealTx(ids, BigInt(Math.floor(wager * 1e9))), addr);
+        return withGas(buildDealTx(ids, BigInt(Math.floor(wager * 1e9)), charInfo.characterId), addr);
       };
       dealSfx.current?.play().catch(() => {});
       let result: any;

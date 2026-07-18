@@ -10,6 +10,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
+import { findLatestCharacterForWallet } from "../lib";
 import { fetchEveCoins, fetchHouseState, withGas, betPresets } from "../lib/casino";
 import { getPaytable } from "../lib/casinoPaytables";
 import { CASINO_HOUSE } from "../constants";
@@ -244,34 +245,37 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
       const raw = BigInt(Math.floor(wager * 1e9));
       const picksArr = Array.from(kenoPicks).sort((a, b) => a - b);
       const buildTx = async () => {
+        const charInfo = await findLatestCharacterForWallet(addr);
+        if (!charInfo?.characterId) throw new Error("No live Character found for this wallet. Create or select a Character in EVE Frontier, then try again.");
+        const characterId = charInfo.characterId;
         const { ids } = await fetchEveCoins(addr);
         if (!ids.length) throw new Error("No $EVE in wallet.");
         const t =
-          game === "coinflip"        ? buildCoinflipTx(ids, raw, choice) :
-          game === "dice"            ? buildDiceTx(ids, raw, diceTarget, diceOver) :
-          game === "roulette"        ? buildRouletteTx(ids, raw, rKind, rTarget) :
-          game === "slots"           ? buildSlotsTx(ids, raw) :
-          game === "limbo"           ? buildLimboTx(ids, raw, BigInt(limboBps)) :
-          game === "hilo"            ? buildHiLoStartTx(ids, raw) :
-          game === "plinko"          ? (plinkoMode < 0 ? buildPlinkoTx(ids, raw) : buildPlinkoModeTx(ids, raw, plinkoMode)) :
-          game === "keno"            ? buildKenoTx(ids, raw, picksArr) :
-          game === "sicbo"           ? buildSicBoTx(ids, raw, sicboKind, sicboTarget) :
-          game === "crash"           ? buildCrashTx(ids, raw, BigInt(crashBps)) :
-          game === "diamonds"        ? buildDiamondsTx(ids, raw) :
-          game === "double_dice"     ? buildDoubleDiceTx(ids, raw, doubleDiceKind, doubleDiceKind === 4 ? doubleDiceTarget : 0) :
-          game === "war"             ? buildWarTx(ids, raw) :
-          game === "baccarat"        ? buildBaccaratTx(ids, raw, baccaratKind) :
-          game === "three_card_poker" ? buildThreeCardTx(ids, raw) :
-          game === "dragon_tiger"       ? buildDragonTigerTx(ids, raw, dragonTigerBet) :
-          game === "under_over_7"       ? buildUnderOver7Tx(ids, raw, underOver7Kind) :
-          game === "ore_refine"         ? buildOreRefineTx(ids, raw, oreTier) :
-          game === "risk_wheel"         ? buildRiskWheelTx(ids, raw, riskWheelMode) :
-          game === "money_wheel"        ? buildMoneyWheelTx(ids, raw) :
-          game === "andar_bahar"        ? buildAndarBaharTx(ids, raw, andarBaharSide) :
-          game === "scratch_cards"       ? buildScratchCardsTx(ids, raw) :
-          game === "chuck_a_luck"        ? buildChuckALuckTx(ids, raw, chuckTarget) :
-          game === "red_dog"             ? buildRedDogTx(ids, raw) :
-          buildWheelTx(ids, raw);
+          game === "coinflip"        ? buildCoinflipTx(ids, raw, characterId, choice) :
+          game === "dice"            ? buildDiceTx(ids, raw, characterId, diceTarget, diceOver) :
+          game === "roulette"        ? buildRouletteTx(ids, raw, characterId, rKind, rTarget) :
+          game === "slots"           ? buildSlotsTx(ids, raw, characterId) :
+          game === "limbo"           ? buildLimboTx(ids, raw, characterId, BigInt(limboBps)) :
+          game === "hilo"            ? buildHiLoStartTx(ids, raw, characterId) :
+          game === "plinko"          ? (plinkoMode < 0 ? buildPlinkoTx(ids, raw, characterId) : buildPlinkoModeTx(ids, raw, characterId, plinkoMode)) :
+          game === "keno"            ? buildKenoTx(ids, raw, characterId, picksArr) :
+          game === "sicbo"           ? buildSicBoTx(ids, raw, characterId, sicboKind, sicboTarget) :
+          game === "crash"           ? buildCrashTx(ids, raw, characterId, BigInt(crashBps)) :
+          game === "diamonds"        ? buildDiamondsTx(ids, raw, characterId) :
+          game === "double_dice"     ? buildDoubleDiceTx(ids, raw, characterId, doubleDiceKind, doubleDiceKind === 4 ? doubleDiceTarget : 0) :
+          game === "war"             ? buildWarTx(ids, raw, characterId) :
+          game === "baccarat"        ? buildBaccaratTx(ids, raw, characterId, baccaratKind) :
+          game === "three_card_poker" ? buildThreeCardTx(ids, raw, characterId) :
+          game === "dragon_tiger"       ? buildDragonTigerTx(ids, raw, characterId, dragonTigerBet) :
+          game === "under_over_7"       ? buildUnderOver7Tx(ids, raw, characterId, underOver7Kind) :
+          game === "ore_refine"         ? buildOreRefineTx(ids, raw, characterId, oreTier) :
+          game === "risk_wheel"         ? buildRiskWheelTx(ids, raw, characterId, riskWheelMode) :
+          game === "money_wheel"        ? buildMoneyWheelTx(ids, raw, characterId) :
+          game === "andar_bahar"        ? buildAndarBaharTx(ids, raw, characterId, andarBaharSide) :
+          game === "scratch_cards"       ? buildScratchCardsTx(ids, raw, characterId) :
+          game === "chuck_a_luck"        ? buildChuckALuckTx(ids, raw, characterId, chuckTarget) :
+          game === "red_dog"             ? buildRedDogTx(ids, raw, characterId) :
+          buildWheelTx(ids, raw, characterId);
         return withGas(t, addr);
       };
       let res: any;

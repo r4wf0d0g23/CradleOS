@@ -15,7 +15,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
-  CASINO_V7,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -99,7 +98,7 @@ export type TowerPickOutcome =
 
 // ── Tx builders ───────────────────────────────────────────────────────────────
 
-export function buildTowerStartTx(coins: string[], wagerRaw: bigint, difficulty: number): Transaction {
+export function buildTowerStartTx(coins: string[], wagerRaw: bigint, characterId: string, difficulty: number): Transaction {
   const tx = new Transaction();
   const primary = tx.object(coins[0]);
   if (coins.length > 1) tx.mergeCoins(primary, coins.slice(1).map((id) => tx.object(id)));
@@ -107,7 +106,7 @@ export function buildTowerStartTx(coins: string[], wagerRaw: bigint, difficulty:
   tx.moveCall({
     target: `${CASINO_PKG}::dragon_tower::start`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), wager, tx.pure.u8(difficulty)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(characterId), wager, tx.pure.u8(difficulty)],
   });
   return tx;
 }
@@ -209,7 +208,7 @@ export async function fetchActiveTowerGame(addr: string): Promise<TowerGameState
     const result = await rpc("suix_getOwnedObjects", [
       addr,
       {
-        filter: { StructType: `${CASINO_V7}::dragon_tower::TowerGame<${EVE_COIN_TYPE}>` },
+        filter: { StructType: `${CASINO_PKG}::dragon_tower::TowerGame<${EVE_COIN_TYPE}>` },
         options: { showContent: true, showType: true },
       },
       null,
