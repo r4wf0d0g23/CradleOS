@@ -786,7 +786,7 @@ async function _findCharacterViaGraphQL(walletAddress: string): Promise<Characte
  * Used by findLatestCharacterForWallet (single newest pick) and as a building
  * block for diagnostic UI that wants to enumerate all of them.
  */
-export async function findAllCharactersForWallet(walletAddress: string): Promise<CharacterInfo[]> {
+export async function findAllCharactersForWallet(walletAddress: string): Promise<Array<CharacterInfo & { version: number }>> {
   const seen = new Map<string, CharacterInfo & { version: number }>();
   // 2026-07-08: Utopia/old-lineage leg disabled per Raw (orphaned post-wipe).
   for (const pkg of [WORLD_PKG]) {
@@ -953,7 +953,17 @@ async function findStructureOwnerCharacterForWallet(walletAddress: string): Prom
   // choose a sibling character that owns no structures, causing the index lookup
   // to return zero and the UI to fall back into flaky public RPC. Prefer the
   // structure-owning candidate when the owned index can prove one.
-  const picked = withCaps[0] ?? scored[0];
+  if (withCaps.length) return { characterId: withCaps[0].characterId, tribeId: withCaps[0].tribeId };
+
+  // 2026-07-19 (fable review H-3): index couldn't prove a structure owner
+  // (index down/empty for every candidate). Fall back to version ordering, but
+  // NEVER let a candidate whose on-chain deref FAILED (version === 0) win over
+  // one that actually resolved — an unresolved live char must not lose to a
+  // resolved destroyed char under correlated index+RPC failure. Prefer
+  // resolved candidates (version > 0), highest version first; only if ALL are
+  // unresolved do we fall back to enumeration order.
+  const resolved = scored.filter((c) => (c.version ?? 0) > 0).sort((a, b) => (b.version ?? 0) - (a.version ?? 0));
+  const picked = resolved[0] ?? scored[0];
   return { characterId: picked.characterId, tribeId: picked.tribeId };
 }
 
@@ -1229,21 +1239,45 @@ async function _fetchStructuresFromIndex(characterId: string): Promise<Array<{
   if (!res.ok) return null;
   const json = await res.json() as {
     structures?: Array<{ capId: string; structureId: string; typeFull: string; typeStruct: string; fields: Record<string, unknown> | null }>;
+    stale?: boolean;
   };
-  if (!Array.isArray(json.structures) || json.structures.length === 0) return null;
-  // Map typeStruct -> our StructureKind; skip any row whose structure content
-  // didn't resolve (fields null) so we don't render a half-populated structure.
+  // 2026-07-19 (fable review C-2c): if the index hasn't had a fully-successful
+  // backfill recently (a type's enumeration is persistently failing, or the
+  // upstream node is down), it flags `stale`. Don't trust a possibly-incomplete
+  // index — return null so the caller falls back to the RPC discovery path.
+  if (json.stale === true) return null;
+  if (!Array.isArray(json.structures)) return null;
+  // Note: length 0 returns [] (not null) below — a genuinely structure-less
+  // character shouldn't trigger the full RPC fan-out every load.
   const kindMap: Record<string, StructureKind> = {
     NetworkNode: "NetworkNode", Gate: "Gate", Assembly: "Assembly",
     Turret: "Turret", StorageUnit: "StorageUnit",
   };
   const out: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; fields: Record<string, unknown> }> = [];
+  const seen = new Set<string>(); // H-5: dedup by structureId
+  const needRefetch: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string }> = [];
   for (const s of json.structures) {
     const kind = kindMap[s.typeStruct];
-    if (!kind || !s.structureId || !s.fields) continue;
-    out.push({ capId: s.capId, structureId: s.structureId, kind, typeFull: s.typeFull, fields: s.fields });
+    if (!kind || !s.structureId || seen.has(s.structureId)) continue;
+    seen.add(s.structureId);
+    if (s.fields) {
+      out.push({ capId: s.capId, structureId: s.structureId, kind, typeFull: s.typeFull, fields: s.fields });
+    } else {
+      // H-6: structure content didn't resolve in the index (rare) — don't
+      // silently hide it; re-fetch just these ids via one batched RPC.
+      needRefetch.push({ capId: s.capId, structureId: s.structureId, kind, typeFull: s.typeFull });
+    }
   }
-  return out.length ? out : null;
+  if (needRefetch.length) {
+    try {
+      const fetched = await rpcMultiGetObjects(needRefetch.map((r) => r.structureId));
+      for (const r of needRefetch) {
+        const f = fetched.get(r.structureId);
+        if (f && !f._deleted) out.push({ capId: r.capId, structureId: r.structureId, kind: r.kind, typeFull: r.typeFull, fields: f });
+      }
+    } catch { /* leave the unresolved ones out; better than a wrong render */ }
+  }
+  return out; // may be [] for a structure-less character — caller treats [] as "index healthy, none"
 }
 
 export async function fetchPlayerStructures(walletAddress: string): Promise<LocationGroup[]> {
