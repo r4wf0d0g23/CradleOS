@@ -503,13 +503,31 @@ export const CASINO_AVAILABLE = CASINO_PKG !== "";
  * straight to the public fullnode regardless. SDK-routing fix is a
  * separate piece of work.
  */
-// Same-origin owned-objects INDEX endpoint (Cloudflare Pages Function on
-// cradleos.io -> proxies to our private-node index). Same origin as the dApp
-// => no CORS / Private-Network-Access issues. Complete + deterministic +
-// ~4ms; the cure for the "hit-or-miss structure discovery" class of bugs. The
-// dApp tries this first in rpcGetOwnedObjects and falls back to public RPC on
-// any failure, so it's a pure enhancement. Empty string disables it.
-export const OWNED_INDEX_BASE = "/api/owned-objects";
+// Owned-objects INDEX endpoint. Complete + deterministic + ~4ms; the cure for
+// the "hit-or-miss structure discovery" class of bugs. The dApp tries this
+// first in rpcGetOwnedObjects and falls back to public RPC on ANY failure, so
+// it's a pure enhancement with no hard dependency.
+//
+// Origin-aware resolution (robust across all deploy targets):
+//  - On cradleos.io (+ its pages.dev / www): use the SAME-ORIGIN Pages Function
+//    at /api/owned-objects -> zero CORS / Private-Network-Access friction.
+//  - Anywhere else (gh-pages mirror, in-game webview loading the github.io
+//    origin, localhost): use the absolute index URL. It sets permissive CORS +
+//    Access-Control-Allow-Private-Network on the index responses.
+// Both ultimately hit the same HA index (DGX1+DGX2). Empty string disables it.
+const _ownedIndexBase = (): string => {
+  try {
+    if (typeof location !== "undefined") {
+      const h = location.hostname;
+      if (h === "cradleos.io" || h === "www.cradleos.io" || h.endsWith(".pages.dev")) {
+        return "/api/owned-objects"; // same-origin Pages Function
+      }
+    }
+  } catch { /* SSR / no location */ }
+  // Absolute fallback for github.io mirror + in-game webview + local dev.
+  return "https://keeper.reapers.shop/index/owned-objects";
+};
+export const OWNED_INDEX_BASE = _ownedIndexBase();
 
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
 // 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body) on
