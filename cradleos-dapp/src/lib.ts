@@ -703,27 +703,52 @@ export async function findAllCharactersForWallet(walletAddress: string): Promise
         }
       };
       const profiles = ppJson.result?.data ?? [];
-      await Promise.all(profiles.map(async (pp) => {
-        const charId = pp?.data?.content?.fields?.character_id;
-        if (!charId || seen.has(charId)) return;
-        const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
+      // 2026-07-19 CRITICAL FIX: previously each character was dereferenced with
+      // an independent sui_getObject, and on any failure the char was silently
+      // dropped (`if (!data?.content?.fields) return`). Under RPC load a
+      // transient failure on the LIVE char's deref (while the destroyed char's
+      // succeeded) made the version-sort pick the DESTROYED character — or find
+      // nothing at all ("CHARACTER NOT FOUND"). This was the hit-or-miss the
+      // dashboard showed every refresh.
+      //
+      // Fix: batch ALL of this page's character ids into ONE sui_multiGetObjects
+      // call. It's atomic at the response level — either we get the whole batch
+      // (all versions present) or the retry helper retries the whole thing. A
+      // char is only treated as deleted when the batch SUCCEEDS but that entry
+      // is explicitly absent/deleted, never because of a transient failure.
+      const charIds = profiles
+        .map((pp) => pp?.data?.content?.fields?.character_id)
+        .filter((id): id is string => !!id && !seen.has(id));
+      if (charIds.length === 0) { /* nothing new this page */ }
+      else {
+        const mgRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             jsonrpc: "2.0", id: 1,
-            method: "sui_getObject",
-            params: [charId, { showContent: true, showOwner: true }],
+            method: "sui_multiGetObjects",
+            params: [charIds, { showContent: true, showOwner: true }],
           }),
         });
-        const json = await res.json() as {
-          result?: { data?: { version?: string; content?: { fields?: Record<string, unknown> } | null } | null }
+        const mgJson = await mgRes.json() as {
+          result?: Array<{ data?: { objectId?: string; version?: string; content?: { fields?: Record<string, unknown> } | null } | null; error?: unknown } | null>
         };
-        const data = json.result?.data;
-        if (!data?.content?.fields) return; // deleted/missing
-        const tribeId = numish(data.content.fields["tribe_id"]) ?? 0;
-        const version = Number(data.version ?? 0);
-        seen.set(charId, { characterId: charId, tribeId, version });
-      }));
+        const entries = mgJson.result ?? [];
+        // Guard: if the batch itself came back malformed/empty despite retries,
+        // do NOT commit a partial result that could strand the live char.
+        // Leave `seen` untouched so the caller sees the pre-existing state; an
+        // empty final result is safer than a wrong (destroyed) pick.
+        if (entries.length === charIds.length) {
+          for (let i = 0; i < entries.length; i++) {
+            const data = entries[i]?.data;
+            const charId = charIds[i];
+            if (!data?.content?.fields) continue; // genuinely deleted/missing in a successful batch
+            const tribeId = numish(data.content.fields["tribe_id"]) ?? 0;
+            const version = Number(data.version ?? 0);
+            seen.set(charId, { characterId: charId, tribeId, version });
+          }
+        }
+      }
       cursor = ppJson.result?.hasNextPage ? (ppJson.result.nextCursor ?? null) : null;
       pages++;
     } while (cursor && pages < 25);
