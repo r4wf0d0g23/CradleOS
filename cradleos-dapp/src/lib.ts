@@ -1206,6 +1206,46 @@ export async function fetchSolarSystem(systemId: number): Promise<{
   };
 }
 
+// Robust structure discovery via the owned-objects index: ONE call returns the
+// character's OwnerCaps joined to the full content of each controlled
+// structure (caps are char-owned; structures are SHARED objects, so they can't
+// be found by owner=char — the index bridges this). Zero per-structure RPC
+// fan-out (the flaky step that dropped structures every refresh). Returns raw
+// {capId, structureId, kind, typeFull, fields} rows, or null if the index is
+// unavailable (caller falls back to the RPC path).
+async function _fetchStructuresFromIndex(characterId: string): Promise<Array<{
+  capId: string; structureId: string; kind: StructureKind; typeFull: string; fields: Record<string, unknown>;
+}> | null> {
+  if (!OWNED_INDEX_BASE) return null;
+  // OWNED_INDEX_BASE ends in /owned-objects; the combined endpoint is a sibling.
+  const base = OWNED_INDEX_BASE.replace(/\/owned-objects$/, "/owned-structures");
+  if (base === OWNED_INDEX_BASE) return null; // couldn't derive sibling path
+  const server = SERVER_ENV === "stillness" ? "stillness" : "utopia";
+  const u = `${base}?owner=${encodeURIComponent(characterId)}&server=${server}`;
+  let res: Response;
+  try {
+    res = await _ssuFetchWithRetry(u, { method: "GET", headers: { Accept: "application/json" } }, 2, 400, 7000);
+  } catch { return null; }
+  if (!res.ok) return null;
+  const json = await res.json() as {
+    structures?: Array<{ capId: string; structureId: string; typeFull: string; typeStruct: string; fields: Record<string, unknown> | null }>;
+  };
+  if (!Array.isArray(json.structures) || json.structures.length === 0) return null;
+  // Map typeStruct -> our StructureKind; skip any row whose structure content
+  // didn't resolve (fields null) so we don't render a half-populated structure.
+  const kindMap: Record<string, StructureKind> = {
+    NetworkNode: "NetworkNode", Gate: "Gate", Assembly: "Assembly",
+    Turret: "Turret", StorageUnit: "StorageUnit",
+  };
+  const out: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; fields: Record<string, unknown> }> = [];
+  for (const s of json.structures) {
+    const kind = kindMap[s.typeStruct];
+    if (!kind || !s.structureId || !s.fields) continue;
+    out.push({ capId: s.capId, structureId: s.structureId, kind, typeFull: s.typeFull, fields: s.fields });
+  }
+  return out.length ? out : null;
+}
+
 export async function fetchPlayerStructures(walletAddress: string): Promise<LocationGroup[]> {
   // 2026-06-25: always use the NEWEST Character. If a wallet has multiple
   // Characters, the older ones represent destroyed identities (player rerolled
@@ -1216,41 +1256,60 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
   const characterId = charInfo?.characterId ?? null;
   if (!characterId) return [];
 
-  // Discover all OwnerCaps
+  // Discover all OwnerCaps + their structure content.
+  // 2026-07-19 ROBUST PATH: try the owned-objects INDEX first — ONE call returns
+  // every cap joined to its structure's full content (energy_source_id, status,
+  // metadata, fuel, type_id, ...). This eliminates the per-structure RPC
+  // fan-out entirely, which was THE root cause of "loads inconsistently /
+  // misses some / different every refresh": the public RPC rate-limited the
+  // parallel/batched structure reads and dropped a random subset each pass.
+  // The index is complete + deterministic + served from our own node. On ANY
+  // failure (index down, empty, unreachable) we fall through to the legacy
+  // cap-discovery + RPC read path below — no hard dependency.
   const capEntries: Array<{ capId: string; structureId: string; kind: StructureKind; typeFull: string; label: string }> = [];
-  // 2026-07-08: Utopia/old-lineage leg disabled per Raw — orphaned post-wipe.
-  // Restore [WORLD_PKG, WORLD_PKG_UTOPIA_V1] if Utopia ever returns.
-  const worldPkgsToCheck = [WORLD_PKG];
-  await Promise.all(
-    STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
-      worldPkgsToCheck.map(async (wpkg) => {
-        // Build the struct type using the current pkg prefix but override the world pkg
-        const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
-        const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
-        // No explicit limit — default 1000 with pagination handles characters
-        // with large structure counts. Bug 2026-05-07: hard-coded 50 here
-        // silently dropped Assemblies past index 50 (e.g. Jack Sparrow had 64).
-        const caps = await rpcGetOwnedObjects(characterId, ownerCapType);
-        for (const { objectId: capId, fields } of caps) {
-          const structureId = fields["authorized_object_id"] as string;
-          if (structureId && !capEntries.some(e => e.structureId === structureId)) {
-            capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
+  const structureFieldsById = new Map<string, Record<string, unknown>>();
+  const kindLabel: Record<StructureKind, string> = {
+    NetworkNode: "Network Node", Gate: "Gate", Assembly: "Assembly",
+    Turret: "Turret", StorageUnit: "Storage Unit",
+  };
+
+  const indexed = await _fetchStructuresFromIndex(characterId);
+  if (indexed) {
+    for (const s of indexed) {
+      // typeFull from the index is the STRUCTURE's full type; the RPC path
+      // stores the same (structTypePkgSwapped). Use it directly.
+      capEntries.push({ capId: s.capId, structureId: s.structureId, kind: s.kind, typeFull: s.typeFull, label: kindLabel[s.kind] ?? s.kind });
+      structureFieldsById.set(s.structureId, { ...s.fields, _type: s.typeFull });
+    }
+  } else {
+    // Legacy fallback: discover caps per-type via RPC, then read structures.
+    // 2026-07-08: Utopia/old-lineage leg disabled per Raw — orphaned post-wipe.
+    const worldPkgsToCheck = [WORLD_PKG];
+    await Promise.all(
+      STRUCTURE_TYPES.flatMap(({ type: structType, kind, label }) =>
+        worldPkgsToCheck.map(async (wpkg) => {
+          const structTypePkgSwapped = structType.replace(WORLD_PKG, wpkg);
+          const ownerCapType = `${wpkg}::access::OwnerCap<${structTypePkgSwapped}>`;
+          const caps = await rpcGetOwnedObjects(characterId, ownerCapType);
+          for (const { objectId: capId, fields } of caps) {
+            const structureId = fields["authorized_object_id"] as string;
+            if (structureId && !capEntries.some(e => e.structureId === structureId)) {
+              capEntries.push({ capId, structureId, kind, typeFull: structTypePkgSwapped, label });
+            }
           }
-        }
-      })
-    )
-  );
+        })
+      )
+    );
+    if (capEntries.length) {
+      const fetched = await rpcMultiGetObjects(capEntries.map((e) => e.structureId));
+      for (const [k, v] of fetched) structureFieldsById.set(k, v);
+    }
+  }
   if (!capEntries.length) return [];
 
-  // Fetch location events + structure objects. 2026-07-19: structures are read
-  // via ONE batched sui_multiGetObjects (retried as a whole) instead of N
-  // parallel rpcGetObject calls — the parallel fan-out was rate-limited per-IP
-  // and dropped a random subset every pass ("loads inconsistently / misses
-  // some"). Batch reads are atomic per response, so the full set lands or the
-  // whole batch retries.
-  const [locationMap, structureFieldsById] = await Promise.all([
+  // Fetch location events (structure content already resolved above).
+  const [locationMap] = await Promise.all([
     buildLocationEventMap(),
-    rpcMultiGetObjects(capEntries.map((e) => e.structureId)),
   ]);
   const structureObjects = await Promise.all(
     capEntries.map(async ({ capId, structureId, kind, typeFull, label }) => {
