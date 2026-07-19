@@ -719,34 +719,73 @@ export async function findAllCharactersForWallet(walletAddress: string): Promise
       const charIds = profiles
         .map((pp) => pp?.data?.content?.fields?.character_id)
         .filter((id): id is string => !!id && !seen.has(id));
-      if (charIds.length === 0) { /* nothing new this page */ }
-      else {
-        const mgRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0", id: 1,
-            method: "sui_multiGetObjects",
-            params: [charIds, { showContent: true, showOwner: true }],
-          }),
-        });
-        const mgJson = await mgRes.json() as {
-          result?: Array<{ data?: { objectId?: string; version?: string; content?: { fields?: Record<string, unknown> } | null } | null; error?: unknown } | null>
-        };
-        const entries = mgJson.result ?? [];
-        // Guard: if the batch itself came back malformed/empty despite retries,
-        // do NOT commit a partial result that could strand the live char.
-        // Leave `seen` untouched so the caller sees the pre-existing state; an
-        // empty final result is safer than a wrong (destroyed) pick.
-        if (entries.length === charIds.length) {
-          for (let i = 0; i < entries.length; i++) {
-            const data = entries[i]?.data;
-            const charId = charIds[i];
-            if (!data?.content?.fields) continue; // genuinely deleted/missing in a successful batch
-            const tribeId = numish(data.content.fields["tribe_id"]) ?? 0;
-            const version = Number(data.version ?? 0);
-            seen.set(charId, { characterId: charId, tribeId, version });
+      if (charIds.length > 0) {
+        // Try ONE batched multiGetObjects first (fast path). If the batch comes
+        // back short/empty (the proxy intermittently returns [] for
+        // multiGetObjects under load), fall back to per-char getObject WITH
+        // retry so we still resolve every id. Only ids that fail BOTH the batch
+        // and their individual retried fetch are skipped — and a
+        // PlayerProfile's existence means the char is real, so we still record
+        // it (version 0) rather than let a deref failure erase it. This
+        // guarantees the live char is never dropped in favor of a destroyed one.
+        const versionById = new Map<string, { tribeId: number; version: number }>();
+        try {
+          const mgRes = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0", id: 1,
+              method: "sui_multiGetObjects",
+              params: [charIds, { showContent: true, showOwner: true }],
+            }),
+          });
+          const mgJson = await mgRes.json() as {
+            result?: Array<{ data?: { objectId?: string; version?: string; content?: { fields?: Record<string, unknown> } | null } | null } | null>
+          };
+          for (const entry of (mgJson.result ?? [])) {
+            const data = entry?.data;
+            if (!data?.objectId || !data?.content?.fields) continue;
+            versionById.set(data.objectId, {
+              tribeId: numish(data.content.fields["tribe_id"]) ?? 0,
+              version: Number(data.version ?? 0),
+            });
           }
+        } catch { /* fall through to per-char */ }
+        // Per-char fallback for any id the batch didn't resolve.
+        await Promise.all(charIds.map(async (charId) => {
+          if (versionById.has(charId)) return;
+          try {
+            const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                jsonrpc: "2.0", id: 1,
+                method: "sui_getObject",
+                params: [charId, { showContent: true, showOwner: true }],
+              }),
+            });
+            const json = await res.json() as {
+              result?: { data?: { version?: string; content?: { fields?: Record<string, unknown> } | null } | null }
+            };
+            const data = json.result?.data;
+            if (data?.content?.fields) {
+              versionById.set(charId, {
+                tribeId: numish(data.content.fields["tribe_id"]) ?? 0,
+                version: Number(data.version ?? 0),
+              });
+            }
+          } catch { /* leave unresolved */ }
+        }));
+        for (const charId of charIds) {
+          const v = versionById.get(charId);
+          // A PlayerProfile pointing at this char means it exists on-chain. If
+          // even the retried deref failed, still record it (version 0) so it
+          // remains a candidate — never silently drop a real character.
+          seen.set(charId, {
+            characterId: charId,
+            tribeId: v?.tribeId ?? 0,
+            version: v?.version ?? 0,
+          });
         }
       }
       cursor = ppJson.result?.hasNextPage ? (ppJson.result.nextCursor ?? null) : null;
@@ -777,8 +816,14 @@ export async function findCharacterForWallet(walletAddress: string): Promise<Cha
   // for Raw's wallet at gates-open).
   const latest = await findLatestCharacterForWallet(walletAddress);
   if (latest) return latest;
-  // No characters — fall through to historical paths (handles edge cases like
-  // GraphQL-returns-empty-but-event-scan-finds-something).
+  // 2026-07-19: only fall through to the legacy dapp-kit/GraphQL path when the
+  // PlayerProfile scan found NOTHING at all. Previously any null from
+  // findLatestCharacterForWallet (including a transient RPC failure) triggered
+  // the legacy path, which returns whichever Character dapp-kit lists first —
+  // that was Raw's DESTROYED char 0x3bd788b5. The robust resolver above now
+  // records a char as a candidate whenever its PlayerProfile exists, so a null
+  // here genuinely means "no profiles found" and the legacy event-scan is the
+  // correct last resort (handles pre-profile edge cases).
   return _findCharacterForWalletLegacy(walletAddress);
 }
 
