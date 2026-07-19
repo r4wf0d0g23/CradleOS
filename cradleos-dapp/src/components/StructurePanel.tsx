@@ -7,7 +7,7 @@ import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { Transaction } from "@mysten/sui/transactions";
-import { WORLD_PKG, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
+import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
 
 // ── Preset dApp URLs per structure type ──────────────────────────────────────
 const DAPP_BASE = SERVER_ENV === "stillness"
@@ -860,21 +860,13 @@ export function StructurePanel({ onTxSuccess }: Props) {
     queryFn: async () => {
       if (!account?.address) return [];
       const groups = await fetchPlayerStructures(account.address);
-      // Extract character ID from the first structure's ownerCap chain (via lib internals),
-      // but since fetchPlayerStructures resolves it internally, query CharacterCreatedEvent here too.
-      // Resolve character ID via owned PlayerProfile object (exact, no pagination issues)
-      const profileRes = await fetch(SUI_TESTNET_RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0", id: 1,
-          method: "suix_getOwnedObjects",
-          params: [account.address, { filter: { StructType: `${WORLD_PKG}::character::PlayerProfile` }, options: { showContent: true } }, null, 5],
-        }),
-      });
-      const pj = await profileRes.json() as { result?: { data?: Array<{ data?: { content?: { fields?: { character_id?: string } } } }> } };
-      const charId = pj.result?.data?.[0]?.data?.content?.fields?.character_id ?? null;
-      setCharacterId(charId);
+      // Resolve character ID via the canonical version-sorting resolver so a
+      // destroyed-and-rerolled wallet surfaces the LIVE character, not whichever
+      // PlayerProfile the RPC happens to list first. (2026-07-19: this path
+      // previously took data[0] with no version sort and showed Raw's destroyed
+      // Char 0x3bd788b5 instead of live 0xf1e61824.)
+      const live = await (await import("../lib")).findLatestCharacterForWallet(account.address);
+      setCharacterId(live?.characterId ?? null);
       return groups;
     },
     enabled: !!account?.address,
