@@ -25,6 +25,7 @@ import {
   RAW_NETWORK_NODE_ID,
   RAW_NODE_OWNER_CAP,
   SERVER_ENV,
+  OWNED_INDEX_BASE,
   SUI_TESTNET_RPC,
   SUI_TESTNET_RPC_DIRECT,
   WORLD_API,
@@ -114,7 +115,70 @@ export async function rpcGetObject(objectId: string): Promise<Record<string, unk
 // type would previously have its overflow silently dropped. Observed in the
 // wild: Stillness players with 60+ Assemblies losing structures past index 50
 // from the CradleOS dashboard. Fixed 2026-05-07 by adding the pagination loop.
+// Same-origin owned-objects index client. Returns rows in the same shape as the
+// RPC path ({ objectId, fields }), or null to signal "index unavailable — use
+// RPC". typeFilter is a full Sui type string like
+// `0x..::access::OwnerCap<0x..::network_node::NetworkNode>` or
+// `0x..::character::PlayerProfile`; we extract the (module, struct) the index
+// keys on. For OwnerCap<T> the index stores type_struct='OwnerCap', so we match
+// on the OUTER type. The dApp then reads each object's fields via the normal
+// per-object path when it needs them (the index row carries object_id +
+// authorized_object_id which is what the OwnerCap fields path needs).
+async function _fetchOwnedFromIndex(
+  owner: string,
+  typeFilter: string,
+): Promise<Array<{ objectId: string; fields: Record<string, unknown> }> | null> {
+  if (!OWNED_INDEX_BASE) return null;
+  // Parse outer module::Struct from the type filter.
+  const head = typeFilter.split("<")[0]; // pkg::mod::Struct
+  const parts = head.split("::");
+  const mod = parts[1];
+  const struct = parts[2];
+  if (!mod || !struct) return null;
+  // Only serve from the index for types the index actually backfills
+  // (structures + their OwnerCaps + character/profile). For any other owned
+  // type (e.g. MemberCap with corp_id/role fields, CorpRegistry) return null so
+  // the caller falls through to full-fields RPC — the index only stores
+  // object_id + authorized_object_id, which is all the structure-discovery
+  // paths need but NOT what those other callers read.
+  const INDEXED = new Set([
+    "character:Character", "character:PlayerProfile",
+    "network_node:NetworkNode", "gate:Gate", "assembly:Assembly",
+    "turret:Turret", "storage_unit:StorageUnit",
+    "access:OwnerCap",
+  ]);
+  if (!INDEXED.has(`${mod}:${struct}`)) return null;
+  const server = SERVER_ENV === "stillness" ? "stillness" : "utopia";
+  const u = `${OWNED_INDEX_BASE}?owner=${encodeURIComponent(owner)}&server=${server}&module=${encodeURIComponent(mod)}&struct=${encodeURIComponent(struct)}`;
+  const res = await _ssuFetchWithRetry(u, { method: "GET", headers: { Accept: "application/json" } }, 1, 400, 6000);
+  if (!res.ok) return null;
+  const json = await res.json() as {
+    objects?: Array<{ object_id: string; authorized_object_id?: string | null; version?: number }>;
+  };
+  if (!Array.isArray(json.objects)) return null;
+  // The index guarantees completeness; map to { objectId, fields }. For
+  // OwnerCap rows we surface authorized_object_id in fields (the caller reads
+  // `fields.authorized_object_id` to get the controlled structure).
+  return json.objects.map((o) => ({
+    objectId: o.object_id,
+    fields: o.authorized_object_id ? { authorized_object_id: o.authorized_object_id } : {},
+  }));
+}
+
 async function rpcGetOwnedObjects(owner: string, typeFilter: string, maxTotal = 1000): Promise<Array<{ objectId: string; fields: Record<string, unknown> }>> {
+  // 2026-07-19: try the same-origin owned-objects INDEX first. It's served from
+  // our own caught-up fullnode (DGX1/DGX2) via a Cloudflare Pages Function at
+  // cradleos.io/api/owned-objects — complete (the snapshot-restored fullnode's
+  // native suix_getOwnedObjects index is incomplete for pre-snapshot objects),
+  // deterministic, ~4ms, no public-RPC rate limiting. This is the real cure for
+  // the "not grabbing all my structures / hit-or-miss" class of bugs. On ANY
+  // failure we transparently fall through to the paginated public-RPC path
+  // below so the dApp never hard-depends on the index.
+  try {
+    const idxRows = await _fetchOwnedFromIndex(owner, typeFilter);
+    if (idxRows) return idxRows.slice(0, maxTotal);
+  } catch { /* fall through to RPC */ }
+
   const out: Array<{ objectId: string; fields: Record<string, unknown> }> = [];
   let cursor: string | null = null;
   // Hard page cap to bound RPC fanout even if the fullnode returns a

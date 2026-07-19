@@ -503,6 +503,14 @@ export const CASINO_AVAILABLE = CASINO_PKG !== "";
  * straight to the public fullnode regardless. SDK-routing fix is a
  * separate piece of work.
  */
+// Same-origin owned-objects INDEX endpoint (Cloudflare Pages Function on
+// cradleos.io -> proxies to our private-node index). Same origin as the dApp
+// => no CORS / Private-Network-Access issues. Complete + deterministic +
+// ~4ms; the cure for the "hit-or-miss structure discovery" class of bugs. The
+// dApp tries this first in rpcGetOwnedObjects and falls back to public RPC on
+// any failure, so it's a pure enhancement. Empty string disables it.
+export const OWNED_INDEX_BASE = "/api/owned-objects";
+
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
 // 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body) on
 // all requests — every direct/fallback read against it failed with
