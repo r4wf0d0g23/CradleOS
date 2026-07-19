@@ -87,7 +87,12 @@ export async function rpcGetObjectDirect(objectId: string): Promise<Record<strin
 }
 
 export async function rpcGetObject(objectId: string): Promise<Record<string, unknown>> {
-  const res = await fetch(SUI_TESTNET_RPC, {
+  // 2026-07-19: was a bare fetch with no retry. On a 429/5xx/timeout the
+  // per-structure read silently returned {_deleted:true}, so structures (and
+  // parent NetworkNodes) intermittently vanished from the dashboard
+  // ("3 unlinked structures, parent not visible"). Route through the retry
+  // helper — same fetchWithRetry discipline as the SSU/pagination paths.
+  const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -116,7 +121,11 @@ async function rpcGetOwnedObjects(owner: string, typeFilter: string, maxTotal = 
   // pathological response. 25 pages * 50 per page = 1250 caps, well above any
   // realistic structure count for a single character.
   for (let page = 0; page < 25; page++) {
-    const res = await fetch(SUI_TESTNET_RPC, {
+    // 2026-07-19: was a bare fetch. A 429/5xx mid-pagination silently dropped
+    // that page's OwnerCaps, so a character with many structures would lose a
+    // random subset every discovery pass ("not grabbing all my structures").
+    // Retry helper makes each page resilient to transient RPC failures.
+    const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
