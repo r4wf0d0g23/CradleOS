@@ -6,7 +6,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
-  CASINO_V2,
   CASINO_ORIGINAL,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
@@ -760,15 +759,21 @@ export async function fetchSettlement(handId: string): Promise<LiveSettlement | 
  *  event packages plus CASINO_PKG because v27 is a fresh event lineage. */
 export async function fetchRecentLiveHands(limit = 25): Promise<LiveSettlement[]> {
   if (!CASINO_PKG) return [];
-  const eventPkgs = (historicalPkg: string) => Array.from(new Set([historicalPkg, CASINO_PKG].filter(Boolean)));
+  // 2026-07-19: scope the live feed to ONLY the current package (v28 0x750dcaa9).
+  // Older lineages (CASINO_ORIGINAL 0x461d1296, CASINO_V2) carry HandSettled
+  // events from last night's EVE-recovery grind bot against the RETIRED houses —
+  // surfacing them made the feed show ~17 phantom plays when the live v28 house
+  // had only 1. `blackjack_live` events tag under the pkg version that
+  // introduced the module, so querying CASINO_PKG alone captures all real v28
+  // play (and correctly shows an empty/short feed until players actually play).
   const [classicResults, splitResults] = await Promise.all([
-    Promise.all(eventPkgs(CASINO_ORIGINAL).map((pkg) =>
+    Promise.all([CASINO_PKG].map((pkg) =>
       rpc("suix_queryEvents", [
         { MoveEventType: `${pkg}::blackjack_live::HandSettled` },
         null, limit, true,
       ]).catch(() => ({ data: [] }))
     )),
-    Promise.all(eventPkgs(CASINO_V2).map((pkg) =>
+    Promise.all([CASINO_PKG].map((pkg) =>
       rpc("suix_queryEvents", [
         { MoveEventType: `${pkg}::blackjack_live::SplitSettled` },
         null, limit, true,
