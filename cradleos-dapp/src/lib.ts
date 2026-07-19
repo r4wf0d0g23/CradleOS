@@ -149,7 +149,19 @@ async function _fetchOwnedFromIndex(
   ]);
   if (!INDEXED.has(`${mod}:${struct}`)) return null;
   const server = SERVER_ENV === "stillness" ? "stillness" : "utopia";
-  const u = `${OWNED_INDEX_BASE}?owner=${encodeURIComponent(owner)}&server=${server}&module=${encodeURIComponent(mod)}&struct=${encodeURIComponent(struct)}`;
+  // For OwnerCap<T>, pass the inner struct name (e.g. 'NetworkNode') as typeLike
+  // so the index returns ONLY caps of that kind. Without this every OwnerCap<T>
+  // query returns ALL caps, and the dApp mis-tags every structure as the first
+  // kind it queries — flattening the mother/daughter hierarchy. The inner type
+  // is the LAST '::' segment inside the generic angle brackets.
+  let typeLike = "";
+  if (struct === "OwnerCap") {
+    const inner = typeFilter.includes("<")
+      ? typeFilter.split("<")[1].replace(/>+$/, "").split("::").pop() ?? ""
+      : "";
+    if (inner) typeLike = inner;
+  }
+  const u = `${OWNED_INDEX_BASE}?owner=${encodeURIComponent(owner)}&server=${server}&module=${encodeURIComponent(mod)}&struct=${encodeURIComponent(struct)}${typeLike ? `&typeLike=${encodeURIComponent(typeLike)}` : ""}`;
   const res = await _ssuFetchWithRetry(u, { method: "GET", headers: { Accept: "application/json" } }, 1, 400, 6000);
   if (!res.ok) return null;
   const json = await res.json() as {
