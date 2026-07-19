@@ -186,6 +186,9 @@ async function resolveTribesByIds(tribeIds: number[]): Promise<Map<number, { nam
   }
   if (missing.length === 0) return out;
 
+  // Concurrency 2 (was 3): the World API rate-limits/connection-resets under
+  // heavier parallelism, and fetchTribeInfo now retries with backoff on transient
+  // failures. Lower fanout + retry = far fewer tribes dropping to raw `T<id>`.
   await rpcPMap(missing, async (tribeId) => {
     const info = await fetchTribeInfo(tribeId);
     if (info) {
@@ -193,7 +196,7 @@ async function resolveTribesByIds(tribeIds: number[]): Promise<Map<number, { nam
       tribeInfoCache.set(tribeId, entry);
       out.set(tribeId, entry);
     }
-  }, 3);
+  }, 2);
   return out;
 }
 

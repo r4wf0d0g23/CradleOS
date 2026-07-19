@@ -871,16 +871,28 @@ async function resolveSystemName(solarSystemId: number): Promise<string> {
 export async function fetchTribeInfo(tribeId: number): Promise<{
   name: string; nameShort: string; description: string; taxRate: number; tribeUrl: string;
 } | null> {
-  try {
-    const res = await fetch(`${WORLD_API}/v2/tribes/${tribeId}`);
-    if (res.ok) {
-      const j = await res.json() as {
-        id: number; name: string; nameShort: string;
-        description: string; taxRate: number; tribeUrl: string;
-      };
-      return { name: j.name, nameShort: j.nameShort, description: j.description, taxRate: j.taxRate, tribeUrl: j.tribeUrl };
-    }
-  } catch { /* fallback */ }
+  // Retry with backoff: the World API rate-limits/resets connections under the
+  // kill-feed's parallel tribe fanout, returning transient network errors or 5xx.
+  // A naked single-shot fetch here silently dropped ~1-in-7 tribes → they rendered
+  // as raw `T<id>` badges instead of tickers (Raw report 2026-07-18). Same bug
+  // class as the fetchWithRetry / suix_* pagination lessons. 404 = genuinely
+  // nonexistent tribe → don't retry, return null immediately.
+  const attempts = [0, 400, 900]; // ms backoff before each attempt
+  for (let i = 0; i < attempts.length; i++) {
+    if (attempts[i] > 0) await new Promise((r) => setTimeout(r, attempts[i]));
+    try {
+      const res = await fetch(`${WORLD_API}/v2/tribes/${tribeId}`);
+      if (res.ok) {
+        const j = await res.json() as {
+          id: number; name: string; nameShort: string;
+          description: string; taxRate: number; tribeUrl: string;
+        };
+        return { name: j.name, nameShort: j.nameShort, description: j.description, taxRate: j.taxRate, tribeUrl: j.tribeUrl };
+      }
+      if (res.status === 404) return null; // genuine miss — no retry
+      // other non-ok (429/5xx) → fall through to retry
+    } catch { /* network error/reset → retry */ }
+  }
   return null;
 }
 
