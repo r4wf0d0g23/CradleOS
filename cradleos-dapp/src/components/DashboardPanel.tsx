@@ -4,7 +4,6 @@ import { playPowerOn, playPowerOff } from "../lib/sound";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
-import { WalletSwapNotice } from "./WalletSwapNotice";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
 import { SERVER_ENV, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC } from "../constants";
 import { Transaction } from "@mysten/sui/transactions";
@@ -1639,7 +1638,6 @@ export function DashboardPanel() {
 
   return (
     <div style={{ fontFamily: "inherit" }}>
-      <WalletSwapNotice />
       {/* Tab bar */}
       <div style={{ display: "flex", borderBottom: "2px solid rgba(255,71,0,0.2)", marginBottom: 12 }}>
         {([["structures", "⬡ STRUCTURES"], ["links", "🔗 LINKS"], ["transfer", "⇄ TRANSFER OWNERSHIP"]] as const).map(([tab, label]) => (

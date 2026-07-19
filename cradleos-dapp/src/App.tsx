@@ -218,7 +218,22 @@ function ChainHealth() {
 //
 // Polls `/sui-status` on the Cloudflare-fronted sui-proxy every 30s.
 
+interface HaNode {
+  name: string;               // "DGX1" | "DGX2"
+  host?: string;              // "spark-27c6" | "spark-2def"
+  enabled: boolean;           // node reachable + answering RPC
+  checkpoint: number | null;
+  latencyMs: number | null;
+  gap: number | null;         // behind public tip
+  caughtUp: boolean | null;
+  syncing: boolean | null;
+}
+
 interface PrivateNodeStatusValue {
+  // HA two-node view (present on new proxy). Old single-node fields kept for
+  // backward compatibility with any cached proxy response.
+  nodes?: HaNode[];
+  ha?: { anyCaughtUp: boolean; allCaughtUp: boolean; enabledCount: number };
   privateNode: { enabled: boolean; checkpoint: number | null; latencyMs: number | null; url?: string };
   publicNode: { checkpoint: number | null };
   gap: number | null;
@@ -278,9 +293,17 @@ function PrivateNodeStatus() {
   // it; Raw recognizes the color instantly.
   if (!maintainer) {
     if (unreachable || !status || !status.privateNode.enabled) return null;
+    // Public tier: single tiny dot encoding HA health — green if ANY node is
+    // caught up (service is healthy), yellow if a node is close-syncing, blue
+    // if only far-syncing. Hidden entirely if the whole HA set is down.
+    const anyCaughtUp = status.ha?.anyCaughtUp ?? (status.caughtUp === true);
+    const nodesArr = haNodes(status);
+    const anyClose = nodesArr.some(n => n.syncing === true && n.gap !== null && n.gap < 1000);
+    const anyEnabled = nodesArr.some(n => n.enabled) || status.privateNode.enabled;
+    if (!anyEnabled) return null;
     let publicColor: string;
-    if (status.caughtUp === true) publicColor = "#00ff96";
-    else if (status.syncing === true && status.gap !== null && status.gap < 1000) publicColor = "#ffcc00";
+    if (anyCaughtUp) publicColor = "#00ff96";
+    else if (anyClose) publicColor = "#ffcc00";
     else publicColor = "#5599ff";
     return (
       <span
@@ -295,16 +318,16 @@ function PrivateNodeStatus() {
   }
 
   // ── MAINTAINER TIER ──────────────────────────────────────────────────────
-  // Full badge with hover tooltip showing checkpoint numbers, gap, latency.
-  // Renders even on failure states (unreachable / OFFLINE) so Raw can see at a
-  // glance when infra is degraded without checking SSH.
+  // HA two-node badge: shows DGX1 + DGX2 independently, each with its own
+  // caught-up / syncing / offline dot. Renders failure states so Raw sees
+  // degraded infra at a glance without checking SSH.
   if (unreachable) {
     return (
       <span
         title={"Sui status endpoint unreachable\n\n/sui-status returned an error or timed out.\nDGX1 sui-proxy may be down."}
         style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
       >
-        <span style={{ color: "rgba(180,160,140,0.45)" }}>PRIVATE NODE</span>
+        <span style={{ color: "rgba(180,160,140,0.45)" }}>HA NODES</span>
         <span
           style={{
             display: "inline-block", width: 5, height: 5, borderRadius: "50%",
@@ -319,60 +342,76 @@ function PrivateNodeStatus() {
   }
   if (!status) return null;
 
-  const gap = status.gap;
-  const caughtUp = status.caughtUp === true;
-  const syncing = status.syncing === true;
-  const enabled = status.privateNode.enabled;
+  const nodes = haNodes(status);
+  const pubCp = status.publicNode.checkpoint;
 
-  let color: string;
-  let label: string;
-  if (!enabled) {
-    color = "#ff4040";
-    label = "OFFLINE";
-  } else if (caughtUp) {
-    color = "#00ff96";
-    label = "CAUGHT UP";
-  } else if (syncing && gap !== null && gap < 1000) {
-    color = "#ffcc00";
-    label = `syncing (${gap.toLocaleString()})`;
-  } else if (syncing && gap !== null) {
-    color = "#5599ff";
-    label = `syncing (gap ${gap.toLocaleString()})`;
-  } else {
-    color = "#5599ff";
-    label = "syncing";
-  }
-
-  const lat = status.privateNode.latencyMs;
-  const tooltipLines = [
-    `Private node: ${enabled ? (caughtUp ? "caught up" : "syncing") : "OFFLINE"}`,
-    gap !== null ? `Gap behind public testnet: ${gap.toLocaleString()} checkpoints` : null,
-    status.privateNode.checkpoint !== null ? `Local checkpoint: ${status.privateNode.checkpoint.toLocaleString()}` : null,
-    status.publicNode.checkpoint !== null ? `Public checkpoint: ${status.publicNode.checkpoint.toLocaleString()}` : null,
-    lat !== null ? `Probe latency: ${lat}ms` : null,
-    "",
-    "DGX2 fullnode operated by Reality Anchor (CradleOS)",
-    "",
-    "[maintainer-only badge]",
-  ].filter(Boolean).join("\n");
+  const nodeView = (n: HaNode) => {
+    let color: string;
+    let label: string;
+    if (!n.enabled) {
+      color = "#ff4040";
+      label = "not caught up";
+    } else if (n.caughtUp) {
+      color = "#00ff96";
+      label = "caught up";
+    } else if (n.syncing && n.gap !== null && n.gap < 1000) {
+      color = "#ffcc00";
+      label = `syncing (${n.gap.toLocaleString()})`;
+    } else if (n.syncing && n.gap !== null) {
+      color = "#5599ff";
+      label = `syncing (gap ${n.gap.toLocaleString()})`;
+    } else {
+      color = "#5599ff";
+      label = "syncing";
+    }
+    const tip = [
+      `${n.name}${n.host ? ` (${n.host})` : ""}: ${n.enabled ? (n.caughtUp ? "caught up" : "syncing") : "not caught up / offline"}`,
+      n.gap !== null ? `Gap behind public testnet: ${n.gap.toLocaleString()} checkpoints` : null,
+      n.checkpoint !== null ? `Local checkpoint: ${n.checkpoint.toLocaleString()}` : null,
+      pubCp !== null ? `Public checkpoint: ${pubCp.toLocaleString()}` : null,
+      n.latencyMs !== null ? `Probe latency: ${n.latencyMs}ms` : null,
+    ].filter(Boolean).join("\n");
+    return (
+      <span key={n.name} title={tip} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+        <span style={{ color: "rgba(180,160,140,0.55)" }}>{n.name}</span>
+        <span
+          style={{
+            display: "inline-block", width: 5, height: 5, borderRadius: "50%",
+            background: color,
+            boxShadow: `0 0 4px ${color}`,
+            verticalAlign: "middle",
+          }}
+        />
+        <span style={{ color }}>{label}</span>
+      </span>
+    );
+  };
 
   return (
     <span
-      title={tooltipLines}
-      style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
+      title={"Redundant HA Sui fullnodes operated by Reality Anchor (CradleOS)\n[maintainer-only badge]"}
+      style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
     >
-      <span style={{ color: "rgba(180,160,140,0.45)" }}>PRIVATE NODE</span>
-      <span
-        style={{
-          display: "inline-block", width: 5, height: 5, borderRadius: "50%",
-          background: color,
-          boxShadow: `0 0 4px ${color}`,
-          verticalAlign: "middle",
-        }}
-      />
-      <span style={{ color }}>{label}</span>
+      <span style={{ color: "rgba(180,160,140,0.4)" }}>HA NODES</span>
+      {nodes.map(nodeView)}
     </span>
   );
+}
+
+// Normalize proxy response to a two-node array. New proxy returns `nodes[]`;
+// old single-node responses are lifted into a one-element array so the badge
+// still renders during rollout.
+function haNodes(status: PrivateNodeStatusValue): HaNode[] {
+  if (Array.isArray(status.nodes) && status.nodes.length > 0) return status.nodes;
+  return [{
+    name: status.privateNode.url ?? "NODE",
+    enabled: status.privateNode.enabled,
+    checkpoint: status.privateNode.checkpoint,
+    latencyMs: status.privateNode.latencyMs,
+    gap: status.gap,
+    caughtUp: status.caughtUp,
+    syncing: status.syncing,
+  }];
 }
 
 type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino";
