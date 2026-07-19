@@ -109,6 +109,42 @@ export async function rpcGetObject(objectId: string): Promise<Record<string, unk
   return { ...json.result.data.content.fields, _type: objType, _owner: json.result.data.owner };
 }
 
+// 2026-07-19: batched object reads. The structure-discovery step previously
+// fired N parallel rpcGetObject() calls (Promise.all over every cap). Under
+// that concurrent fan-out the public RPC rate-limits per-IP and drops a random
+// subset EACH pass — the true root cause of "loads inconsistently / misses
+// some / different every refresh" (even with the index feeding correct ids).
+// Batching all reads into sui_multiGetObjects (≤50 ids/call, retried as a whole)
+// collapses N racing calls into 1-2 atomic ones, so nothing is dropped.
+// Returns a Map keyed by objectId; missing/deleted ids map to { _deleted:true }.
+export async function rpcMultiGetObjects(objectIds: string[]): Promise<Map<string, Record<string, unknown>>> {
+  const out = new Map<string, Record<string, unknown>>();
+  for (let i = 0; i < objectIds.length; i += 50) {
+    const batch = objectIds.slice(i, i + 50);
+    const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1,
+        method: "sui_multiGetObjects",
+        params: [batch, { showContent: true, showType: true, showOwner: true }],
+      }),
+    });
+    const json = await res.json() as {
+      result?: Array<{ data?: { objectId?: string; content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } | null>
+    };
+    const entries = json.result ?? [];
+    for (let k = 0; k < batch.length; k++) {
+      const d = entries[k]?.data;
+      const id = batch[k];
+      if (!d || !d.content?.fields) { out.set(id, { _deleted: true }); continue; }
+      const objType = d.type ?? d.content?.type ?? "";
+      out.set(id, { ...d.content.fields, _type: objType, _owner: d.owner });
+    }
+  }
+  return out;
+}
+
 // Paginates through suix_getOwnedObjects until exhausted (or `maxTotal` is hit
 // as a runaway safety net). The Sui fullnode caps page size at 50 regardless
 // of what the caller asks for, so a wallet/character with >50 caps of one
@@ -1170,12 +1206,19 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
   );
   if (!capEntries.length) return [];
 
-  // Fetch location events + structure objects in parallel
-  const [locationMap, structureObjects] = await Promise.all([
+  // Fetch location events + structure objects. 2026-07-19: structures are read
+  // via ONE batched sui_multiGetObjects (retried as a whole) instead of N
+  // parallel rpcGetObject calls — the parallel fan-out was rate-limited per-IP
+  // and dropped a random subset every pass ("loads inconsistently / misses
+  // some"). Batch reads are atomic per response, so the full set lands or the
+  // whole batch retries.
+  const [locationMap, structureFieldsById] = await Promise.all([
     buildLocationEventMap(),
-    Promise.all(
-      capEntries.map(async ({ capId, structureId, kind, typeFull, label }) => {
-        const fields = await rpcGetObject(structureId);
+    rpcMultiGetObjects(capEntries.map((e) => e.structureId)),
+  ]);
+  const structureObjects = await Promise.all(
+    capEntries.map(async ({ capId, structureId, kind, typeFull, label }) => {
+        const fields = structureFieldsById.get(structureId) ?? { _deleted: true };
         // Skip objects deleted on-chain (dismantled structures)
         if (fields._deleted) return null;
 
@@ -1223,9 +1266,8 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
 
         const metaUrl = stringish(readPath(fields, "metadata", "fields", "url"))?.trim() ?? "";
         return { objectId: structureId, ownerCapId: capId, kind, typeFull, label, displayName, hasCustomName, isOnline, locationHash, energySourceId, fuelLevelPct, runtimeHoursRemaining, typeId, gameItemId, linkedGateId, metadataUrl: metaUrl || undefined } as PlayerStructure;
-      })
-    ),
-  ]);
+    })
+  );
 
   // Filter out deleted objects (dismantled), then resolve type names + energy costs
   const validStructures = structureObjects.filter((s): s is PlayerStructure => s !== null);
