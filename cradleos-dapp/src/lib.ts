@@ -921,6 +921,42 @@ export async function findLatestCharacterForWallet(walletAddress: string): Promi
   return all.length ? { characterId: all[0].characterId, tribeId: all[0].tribeId } : null;
 }
 
+async function countIndexedStructureCaps(characterId: string): Promise<number | null> {
+  let total = 0;
+  let sawIndex = false;
+  for (const { type: structType } of STRUCTURE_TYPES) {
+    const ownerCapType = `${WORLD_PKG}::access::OwnerCap<${structType}>`;
+    const rows = await _fetchOwnedFromIndex(characterId, ownerCapType);
+    if (rows === null) continue;
+    sawIndex = true;
+    total += rows.length;
+  }
+  return sawIndex ? total : null;
+}
+
+async function findStructureOwnerCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
+  const candidates = await findAllCharactersForWallet(walletAddress);
+  if (!candidates.length) return null;
+
+  const scored = await Promise.all(candidates.map(async (c, order) => ({
+    ...c,
+    order,
+    structureCaps: await countIndexedStructureCaps(c.characterId),
+  })));
+  const withCaps = scored
+    .filter((c) => (c.structureCaps ?? 0) > 0)
+    .sort((a, b) => (b.structureCaps ?? 0) - (a.structureCaps ?? 0) || a.order - b.order);
+
+  // The Structures dashboard must use the character that actually owns
+  // current-world structure OwnerCaps. Raw's wallet currently has multiple
+  // live-looking PlayerProfiles with the same prefix; version-only selection can
+  // choose a sibling character that owns no structures, causing the index lookup
+  // to return zero and the UI to fall back into flaky public RPC. Prefer the
+  // structure-owning candidate when the owned index can prove one.
+  const picked = withCaps[0] ?? scored[0];
+  return { characterId: picked.characterId, tribeId: picked.tribeId };
+}
+
 export async function findCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
   // 2026-06-25: always defer to findLatestCharacterForWallet so the destroyed-and-
   // rerolled-character case picks the live identity, not whichever one dapp-kit
@@ -1176,7 +1212,7 @@ export async function fetchPlayerStructures(walletAddress: string): Promise<Loca
   // in-game) and their owned structures are unreachable from the game client —
   // surfacing them would mislead the player into thinking they could still
   // interact with that infrastructure.
-  const charInfo = await findLatestCharacterForWallet(walletAddress);
+  const charInfo = await findStructureOwnerCharacterForWallet(walletAddress);
   const characterId = charInfo?.characterId ?? null;
   if (!characterId) return [];
 
