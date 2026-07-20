@@ -222,11 +222,11 @@ export function CasinoPanel() {
     setBusy(true); setErr(null);
     try {
       let tx;
-      if (kind === "hit") tx = buildHitTx(hand.handId);
-      else if (kind === "stand") tx = buildStandTx(hand.handId);
+      if (kind === "hit") tx = await buildHitTx(hand.handId);
+      else if (kind === "stand") tx = await buildStandTx(hand.handId);
       else {
         const { ids } = await fetchEveCoins(addr);
-        tx = buildDoubleTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9)));
+        tx = await buildDoubleTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9)));
       }
       tx = await withGas(tx, addr);
       const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
@@ -309,7 +309,7 @@ export function CasinoPanel() {
     try {
       const { ids } = await fetchEveCoins(addr);
       if (!ids.length) throw new Error("No $EVE for the split stake.");
-      const tx = await withGas(buildSplitTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9))), addr);
+      const tx = await withGas(await buildSplitTx(hand.handId, ids, BigInt(Math.floor(hand.wager * 1e9))), addr);
       const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(result);
       setPhase("resolving");
@@ -338,7 +338,7 @@ export function CasinoPanel() {
     if (!splitHand) return;
     setBusy(true); setErr(null);
     try {
-      const tx = await withGas(kind === "hit" ? buildSplitHitTx(splitHand.splitId) : buildSplitStandTx(splitHand.splitId), addr);
+      const tx = await withGas(kind === "hit" ? await buildSplitHitTx(splitHand.splitId) : await buildSplitStandTx(splitHand.splitId), addr);
       const result: any = await signer().signAndExecuteTransaction({ transaction: tx });
       const digest = txDigestOf(result);
       const prevActive = splitHand.active;

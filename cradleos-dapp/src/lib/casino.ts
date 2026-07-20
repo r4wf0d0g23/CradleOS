@@ -435,70 +435,103 @@ export function buildDealTx(eveCoinIds: string[], wagerRaw: bigint, characterId:
   return tx;
 }
 
-export function buildHitTx(handId: string): Transaction {
+// 2026-07-19: pin the Hand's CURRENT objectRef (id/version/digest) fetched
+// fresh from the direct fullnode right before building the tx. The Hand is a
+// player-OWNED object created by `deal` and mutated by prior actions; the SDK's
+// object cache holds the version it saw at deal time, so `tx.object(handId)`
+// was sending a STALE version -> "provided version doesn't match, provided:
+// Some(<old>) actual: <new>" and the hit/stand/double could not be signed.
+// Pinning the fresh ref removes the SDK's version guess entirely.
+async function freshHandRef(tx: Transaction, handId: string) {
+  const res = await rpcDirect("sui_getObject", [handId, { showOwner: false }]);
+  const d = res?.data;
+  if (!d?.objectId || d.version == null || !d.digest) {
+    throw new Error("Hand object not found or already settled — refresh and start a new hand.");
+  }
+  return tx.objectRef({ objectId: d.objectId, version: d.version, digest: d.digest });
+}
+
+export async function buildHitTx(handId: string): Promise<Transaction> {
   const tx = new Transaction();
+  const hand = await freshHandRef(tx, handId);
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::hit`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), hand],
   });
   return tx;
 }
 
-export function buildStandTx(handId: string): Transaction {
+export async function buildStandTx(handId: string): Promise<Transaction> {
   const tx = new Transaction();
+  const hand = await freshHandRef(tx, handId);
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::stand`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), hand],
   });
   return tx;
 }
 
 /** Double down: add an equal stake, draw one card, auto-stand + settle. */
-export function buildDoubleTx(handId: string, eveCoinIds: string[], wagerRaw: bigint): Transaction {
+export async function buildDoubleTx(handId: string, eveCoinIds: string[], wagerRaw: bigint): Promise<Transaction> {
   const tx = new Transaction();
   const primary = tx.object(eveCoinIds[0]);
   if (eveCoinIds.length > 1) tx.mergeCoins(primary, eveCoinIds.slice(1).map((id) => tx.object(id)));
   const [extra] = tx.splitCoins(primary, [tx.pure.u64(wagerRaw)]);
+  const hand = await freshHandRef(tx, handId);
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::double`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId), extra],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), hand, extra],
   });
   return tx;
 }
 
 /** Split a same-rank pair: post an equal extra stake, play two hands. */
-export function buildSplitTx(handId: string, eveCoinIds: string[], wagerRaw: bigint): Transaction {
+// Fresh objectRef for any owned casino play object (Hand or SplitHand). Same
+// stale-version fix as freshHandRef (2026-07-19).
+async function freshPlayRef(tx: Transaction, objectId: string) {
+  const res = await rpcDirect("sui_getObject", [objectId, { showOwner: false }]);
+  const d = res?.data;
+  if (!d?.objectId || d.version == null || !d.digest) {
+    throw new Error("Play object not found or already settled — refresh and start a new hand.");
+  }
+  return tx.objectRef({ objectId: d.objectId, version: d.version, digest: d.digest });
+}
+
+export async function buildSplitTx(handId: string, eveCoinIds: string[], wagerRaw: bigint): Promise<Transaction> {
   const tx = new Transaction();
   const primary = tx.object(eveCoinIds[0]);
   if (eveCoinIds.length > 1) tx.mergeCoins(primary, eveCoinIds.slice(1).map((id) => tx.object(id)));
   const [extra] = tx.splitCoins(primary, [tx.pure.u64(wagerRaw)]);
+  const hand = await freshPlayRef(tx, handId);
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::split`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(handId), extra],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), hand, extra],
   });
   return tx;
 }
 
-export function buildSplitHitTx(splitId: string): Transaction {
+export async function buildSplitHitTx(splitId: string): Promise<Transaction> {
   const tx = new Transaction();
+  const split = await freshPlayRef(tx, splitId);
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::split_hit`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(splitId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), split],
   });
   return tx;
 }
 
-export function buildSplitStandTx(splitId: string): Transaction {
+export async function buildSplitStandTx(splitId: string): Promise<Transaction> {
   const tx = new Transaction();
+  const split = await freshPlayRef(tx, splitId);
   tx.moveCall({
     target: `${CASINO_PKG}::blackjack_live::split_stand`,
     typeArguments: [EVE_COIN_TYPE],
-    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), tx.object(splitId)],
+    arguments: [tx.object(CASINO_HOUSE), tx.object(RANDOM_OBJECT), split],
   });
   return tx;
 }
