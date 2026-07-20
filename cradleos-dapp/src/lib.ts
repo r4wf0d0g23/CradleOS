@@ -959,6 +959,19 @@ async function countIndexedStructureCaps(characterId: string): Promise<number | 
 }
 
 async function findStructureOwnerCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
+  // 2026-07-19 (FIX: char displayed but "No structures found"): the INDEX
+  // resolver (/resolve-character) is the authoritative, un-rate-limited source
+  // of the live character — it's what the dashboard char DISPLAY uses
+  // (findLatestCharacterForWallet), and it correctly returns the live
+  // structure-owning char. The old candidate-scoring path below started from
+  // findAllCharactersForWallet, which uses the FLAKY public-RPC PlayerProfile
+  // scan; when that returned NULL_RESULT (degraded RPC) the candidate list was
+  // empty/wrong → zero structures, even though the index had them. So: try the
+  // index resolver FIRST (same as the display path), and only fall through to
+  // the RPC candidate-scoring when the index can't answer.
+  const fromIndex = await _resolveCharacterFromIndex(walletAddress);
+  if (fromIndex) return fromIndex;
+
   const candidates = await findAllCharactersForWallet(walletAddress);
   if (!candidates.length) return null;
 
