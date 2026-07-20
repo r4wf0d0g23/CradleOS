@@ -4,7 +4,6 @@ import { abbreviateAddress, useConnection } from "@evefrontier/dapp-kit";
 import { useCurrentAccount, useWallets, useDAppKit } from "@mysten/dapp-kit-react";
 import { VerifiedAccountProvider, useVerifiedAccountContext } from "./contexts/VerifiedAccountContext";
 import { DevModeProvider, DevRoleToggle } from "./contexts/DevModeContext";
-import { ServerMismatchBanner } from "./components/ServerMismatchBanner";
 import { WipeCountdownBanner } from "./components/WipeCountdownBanner";
 import { GameDataPanel } from "./components/GameDataPanel";
 import MAUFooterPill from "./components/MAUFooterPill";
@@ -49,7 +48,6 @@ const SERVERS = [
   // 2026-07-08: Utopia disabled per Raw — not in use for the foreseeable future.
   // Its UAT world-api DNS is also dead (ERR_NAME_NOT_RESOLVED), so the ping only
   // produced console noise. Re-add when Utopia returns:
-  // { label: "UTOPIA",    url: "https://world-api-utopia.uat.pub.evefrontier.com/v2/tribes?limit=1"    },
 ];
 type ServerStatus = "checking" | "online" | "offline";
 
@@ -1218,7 +1216,7 @@ function AppInner() {
                   border: "1px solid rgba(255,71,0,0.3)",
                 }}
               >
-                {(["stillness", "utopia"] as ServerEnv[]).map(env => (
+                {(["stillness"] as ServerEnv[]).map(env => (
                   <button
                     key={env}
                     onClick={() => {
@@ -1413,7 +1411,6 @@ function AppInner() {
         })}
       </div>}
 
-      <ServerMismatchBanner />
 
       {/* Wallet gate — show connect prompt for protected tabs without wallet */}
       {!account && !PUBLIC_TABS.has(activeTab) && (

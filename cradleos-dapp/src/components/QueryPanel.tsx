@@ -4,7 +4,8 @@
  */
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SUI_GRAPHQL, WORLD_API, WORLD_PKG, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL, SERVER_ENV } from "../constants";
+import { SUI_GRAPHQL, WORLD_PKG, CRADLEOS_ORIGINAL, SUI_TESTNET_RPC, SERVER_LABEL, SERVER_ENV } from "../constants";
+import { getTribes } from "../lib/dataClient";
 import { numish, isTribeOnActiveServer } from "../lib";
 import { PlayerCardModal } from "./PlayerCardModal";
 
@@ -223,9 +224,7 @@ async function fetchAllTribes(): Promise<TribeResult[]> {
   // Stillness has ~412 tribes (Apr 2026); limit=1000 covers full set with headroom.
   // Previous limit=200 truncated player tribes (id >= 98M) — players past the
   // first 200 entries (sorted by some default order) silently disappeared.
-  const res = await fetch(`${WORLD_API}/v2/tribes?limit=1000`);
-  const json = await res.json() as { data?: Array<{ id: number; name: string; nameShort: string; description: string; taxRate: number; tribeUrl: string }> };
-  const tribes = (json.data ?? []).map(t => ({ id: t.id, name: t.name, ticker: t.nameShort, description: t.description, taxRate: t.taxRate, url: t.tribeUrl }));
+  const tribes = (await getTribes(1000)).map(t => ({ id: t.id, name: t.name, ticker: t.nameShort, description: t.description ?? "", taxRate: t.taxRate ?? 0, url: t.tribeUrl ?? "" }));
   lsCacheSet("tribes", tribes);
   return tribes;
 }

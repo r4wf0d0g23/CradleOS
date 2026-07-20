@@ -24,8 +24,8 @@ import {
 } from "../lib";
 import {
   SUI_TESTNET_RPC,
-  WORLD_API,
 } from "../constants";
+import { getTribes, getType } from "./dataClient";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -560,15 +560,14 @@ async function resolveWorld(
   try {
     // limit=1000 to capture full tribe set (Stillness has ~412 as of Apr 2026).
     // Previous limit=200 caused tribeCount to be wrong and truncated tribeNames.
-    const res = await fetch(`${WORLD_API}/v2/tribes?limit=1000`);
-    if (!res.ok) throw new Error(`world api ${res.status}`);
-    const j = (await res.json()) as { data?: Array<{ name?: string }>; total?: number; metadata?: { total?: number } };
-    const tribeNames = (j.data ?? []).map((t) => t.name ?? "").filter(Boolean);
+    const tribes = await getTribes(1000);
+    if (!tribes.length) throw new Error("tribe roster unavailable");
+    const tribeNames = tribes.map((t) => t.name ?? "").filter(Boolean);
     return {
       status: "loaded",
       value: {
         serverName,
-        tribeCount: j.metadata?.total ?? j.total ?? tribeNames.length,
+        tribeCount: tribes.length,
         tribeNames: tribeNames.slice(0, 50),
       },
       resolvedAt: Date.now(),
@@ -707,11 +706,8 @@ async function fetchSsuInventory(ssu: PlayerStructure): Promise<SsuInventory | n
     for (const [typeId, quantity] of map) {
       let name = `Type#${typeId}`;
       try {
-        const r = await fetch(`${WORLD_API}/v2/types/${typeId}`);
-        if (r.ok) {
-          const d = (await r.json()) as { name?: string };
-          name = d.name ?? name;
-        }
+        const d = await getType(typeId);
+        name = d?.name ?? name;
       } catch {
         /* keep numeric name */
       }

@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useMemo, Fragment } from "react";
 import { PortalSelect } from "./PortalSelect";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolvePartitionOwnerNames, resolveSsuOperator, fetchCharacterDisplayName } from "../lib";
-import { SUI_TESTNET_RPC, WORLD_API, WORLD_PKG, SSU_ACCESS_AVAILABLE, SERVER_ENV } from "../constants";
+import { SUI_TESTNET_RPC, WORLD_PKG, SSU_ACCESS_AVAILABLE, SERVER_ENV } from "../constants";
+import { getType } from "../lib/dataClient";
 import { getTypeName as getStaticTypeName, type WorldKey } from "../data/typeCatalog";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
@@ -390,7 +391,6 @@ async function fetchSSUInventory(ssuId: string): Promise<SSUInventoryResult> {
  */
 async function resolveItemName(
   typeId: number,
-  worldApi: string,
   cache: Map<number, string>
 ): Promise<string> {
   if (cache.has(typeId)) return cache.get(typeId)!;
@@ -401,9 +401,8 @@ async function resolveItemName(
     return fromCatalog;
   }
   try {
-    const res = await fetch(`${worldApi}/v2/types/${typeId}`);
-    const json = await res.json();
-    const name = json.name ?? `type_id ${typeId}`;
+    const json = await getType(typeId);
+    const name = json?.name ?? `type_id ${typeId}`;
     cache.set(typeId, name);
     return name;
   } catch {
@@ -447,7 +446,6 @@ async function fetchOwnerCaps(characterId: string): Promise<Map<string, string>>
 
 async function fetchWalletItems(
   walletAddress: string,
-  worldApi: string,
   nameCache: Map<number, string>,
   characterId?: string,
 ): Promise<WalletItem[]> {
@@ -489,7 +487,7 @@ async function fetchWalletItems(
     const typeId = Number(fields.type_id ?? 0);
     const quantity = Number(fields.quantity ?? 1);
     const parentId = fields.parent_id as string | undefined;
-    const name = await resolveItemName(typeId, worldApi, nameCache);
+    const name = await resolveItemName(typeId, nameCache);
     items.push({ objectId, typeId, quantity, name, parentId });
   }
   return items;
@@ -2514,7 +2512,7 @@ function WalletItemsSection({
   useEffect(() => {
     if (!walletAddress) return;
     setLoading(true);
-    fetchWalletItems(walletAddress, WORLD_API, nameCache, characterId ?? undefined)
+    fetchWalletItems(walletAddress, nameCache, characterId ?? undefined)
       .then(setWalletItems)
       .catch(() => setWalletItems([]))
       .finally(() => setLoading(false));
@@ -2618,7 +2616,7 @@ function WalletItemsSection({
       onRefresh(target.ssuId);
       // Refresh wallet items list
       if (walletAddress) {
-        fetchWalletItems(walletAddress, WORLD_API, nameCache, characterId ?? undefined).then(setWalletItems).catch(() => {});
+        fetchWalletItems(walletAddress, nameCache, characterId ?? undefined).then(setWalletItems).catch(() => {});
       }
     } catch (err: any) {
       const msg = err?.message ?? String(err);
@@ -2931,7 +2929,7 @@ export function InventoryPanel() {
       const resolvedNames = new Map<number, string>();
       await Promise.all(
         items.map(async item => {
-          const name = await resolveItemName(item.typeId, WORLD_API, nameCache.current);
+          const name = await resolveItemName(item.typeId, nameCache.current);
           resolvedNames.set(item.typeId, name);
         })
       );

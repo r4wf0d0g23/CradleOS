@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { MODULE_STATS } from "../moduleStats";
 import { MODULE_ATTRIBUTES } from "../moduleAttributes";
 import { MUNITION_STATS } from "../munitionStats";
-import { WORLD_API } from "../constants";
+import { getTypeCatalog } from "../lib/dataClient";
 
 // ─── Ship Data ───────────────────────────────────────────────────────────────
 
@@ -557,7 +557,7 @@ export function ShipFittingPanel() {
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null);
   const fetchAttempt = useRef(0);
 
-  const MODULES_CACHE_KEY = `ef_modules_cache_v2_${WORLD_API.includes("stillness") ? "stillness" : "utopia"}`;
+  const MODULES_CACHE_KEY = "ef_modules_cache_v2_stillness";
   const MODULES_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
   const parseModules = useCallback((raw: any[]): EFModule[] =>
@@ -591,14 +591,10 @@ export function ShipFittingPanel() {
     setError(null);
     fetchAttempt.current += 1;
     const attempt = fetchAttempt.current;
-    fetch(`${WORLD_API}/v2/types?limit=500`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((d) => {
+    getTypeCatalog()
+      .then((raw) => {
         if (attempt !== fetchAttempt.current) return;
-        const raw: any[] = Array.isArray(d.data) ? d.data : [];
+        if (!raw.length) throw new Error("empty type catalog");
         // Cache the raw response
         try { localStorage.setItem(MODULES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: raw })); } catch { /* ignore */ }
         setModules(parseModules(raw));

@@ -61,7 +61,7 @@ type StillnessType = {
 const CATEGORIES = ["Lore", "Mechanics", "Locations", "Factions", "Ships", "Assets", "History"] as const;
 type Category = typeof CATEGORIES[number];
 
-const STILLNESS_API = "https://world-api-stillness.live.pub.evefrontier.com";
+import { getTypeCatalog } from "../lib/dataClient";
 
 const HIGH_GROUPS = new Set([
   "Energy Lance",
@@ -932,9 +932,7 @@ function LoreWikiPanelInner({ boardId }: { boardId: string }) {
 
     const loadBuiltinArticles = async () => {
       try {
-        const res = await fetch(`${STILLNESS_API}/v2/types?limit=500`);
-        const data = await res.json() as { data?: StillnessType[] } | StillnessType[];
-        const types = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
+        const types = await getTypeCatalog() as StillnessType[];
         const moduleArticles = buildModuleGroupArticles(types);
         if (!cancelled) {
           setBuiltinArticles([...SHIP_ARTICLES, ...MECHANICS_ARTICLES, ...STRUCTURE_ARTICLES, ...DEFENSE_ARTICLES, ...GATE_ARTICLES, ...TRIBE_ARTICLES, ...ASSET_ARTICLES, ...moduleArticles]);

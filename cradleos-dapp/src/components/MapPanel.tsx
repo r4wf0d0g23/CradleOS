@@ -25,6 +25,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { WORLD_API } from "../constants";
+import { getSolarSystemDetail } from "../lib/dataClient";
 import { fetchPlayerStructures } from "../lib";
 import { loadSolarSystemCatalog } from "../lib/solarSystems";
 import { getEveVaultAuthHeaders } from "../eveVaultAuth";
@@ -203,9 +204,7 @@ async function fetchLastJumpSystem(): Promise<{ id: number; name: string } | nul
 
 async function fetchSystemDetail(id: number): Promise<SystemDetail | null> {
   try {
-    const r = await fetch(`${WORLD_API}/v2/solarsystems/${id}`);
-    if (!r.ok) return null;
-    const d = await r.json() as {
+    const d = await getSolarSystemDetail(id) as null | {
       id?: number; name?: string;
       gateLinks?: number[];
       securityClass?: string;
@@ -213,6 +212,7 @@ async function fetchSystemDetail(id: number): Promise<SystemDetail | null> {
       region?: { name?: string };
       constellationId?: number;
     };
+    if (!d) return null;
     // Planet data from static index (World API doesn't include planets)
     const pidx = await loadPlanetIndex();
     const rawPlanets = pidx[String(id)] ?? [];

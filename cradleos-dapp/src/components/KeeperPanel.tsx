@@ -44,6 +44,7 @@ import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, EVE_COIN_TYPE,
 import { buildStructureOnlineTransaction, buildStructureOfflineTransaction, buildBatchOnlineTransaction, buildBatchOfflineTransaction } from "../lib";
 import { getEveVaultAuthHeaders } from "../eveVaultAuth";
 import { WORLD_API, SERVER_LABEL } from "../constants";
+import { getTribes, getType } from "../lib/dataClient";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -312,7 +313,7 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
     const [charInfo, eveResult, tribeResult, jumpResult] = await Promise.allSettled([
       findCharacterForWallet(walletAddress),
       fetchEveBalance(walletAddress),
-      fetch(`${WORLD_API}/v2/tribes?limit=100`).then(r => r.json()) as Promise<{ data: Array<{ id: number; name: string; nameShort: string }>; metadata: { total: number } }>,
+      getTribes(1000).then(data => ({ data, metadata: { total: data.length } })) as Promise<{ data: Array<{ id: number; name: string; nameShort: string }>; metadata: { total: number } }>,
       fetchJumpHistory(WORLD_API),
     ]);
 
@@ -410,11 +411,8 @@ async function loadKeeperContext(walletAddress: string): Promise<KeeperContext> 
           for (const [typeId, quantity] of map) {
             let name = `Type#${typeId}`;
             try {
-              const r = await fetch(`${WORLD_API}/v2/types/${typeId}`);
-              if (r.ok) {
-                const d = await r.json() as { name?: string };
-                name = d.name ?? name;
-              }
+              const d = await getType(typeId);
+              name = d?.name ?? name;
             } catch { /* keep numeric name */ }
             items.push({ typeId, name, quantity });
           }

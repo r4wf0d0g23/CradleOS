@@ -15,8 +15,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-const STILLNESS_TYPES_URL =
-  "https://world-api-stillness.live.pub.evefrontier.com/v2/types?limit=1000";
+import { getTypeCatalog } from "../lib/dataClient";
 
 interface EFType {
   id: number;
@@ -27,9 +26,12 @@ interface EFType {
 }
 
 async function fetchAllTypes(): Promise<EFType[]> {
-  const res = await fetch(STILLNESS_TYPES_URL);
-  const json = await res.json() as { data: EFType[] };
-  return json.data ?? [];
+  const rows = await getTypeCatalog();
+  return rows.map(t => ({
+    id: t.id, name: t.name,
+    groupName: t.groupName ?? "", categoryName: t.categoryName ?? "",
+    volume: t.volume ?? 0,
+  }));
 }
 
 // Category colours for badges

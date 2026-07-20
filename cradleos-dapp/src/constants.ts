@@ -1,38 +1,19 @@
 // ── Server environment ─────────────────────────────────────────────────────────
-// VITE_SERVER_ENV: "utopia" (hackathon) | "stillness" (live CradleOS)
-// Set at build time via env var. Defaults to stillness (live CradleOS build).
-// Hackathon build sets VITE_SERVER_ENV=utopia explicitly.
-// In dev mode, can be toggled at runtime via setServerEnv().
+// 2026-07-19 data-path refactor: Utopia/UAT is DEAD (hackathon world retired).
+// The dApp is Stillness-only. ServerEnv survives as a single-literal type so
+// existing `SERVER_ENV` imports keep compiling; the runtime switch machinery
+// is gone (there is nothing to switch to).
 
-export type ServerEnv = "utopia" | "stillness";
+export type ServerEnv = "stillness";
 
-// Runtime-switchable env — check localStorage override in ALL builds (not just dev)
-const _buildEnv = (import.meta.env.VITE_SERVER_ENV ?? "stillness") as ServerEnv;
-// For Stillness (CradleOS) builds: never allow localStorage to override to utopia.
-// Utopia localStorage state from the hackathon dApp must not bleed into Stillness.
-const _storedEnv = (localStorage.getItem("cradleos_server_env") as ServerEnv | null);
-let _serverEnv: ServerEnv = (_buildEnv === "stillness") ? "stillness" : (_storedEnv ?? _buildEnv);
-const _listeners = new Set<() => void>();
+const _serverEnv: ServerEnv = "stillness";
 
 export function getServerEnv(): ServerEnv { return _serverEnv; }
-export function setServerEnv(env: ServerEnv) {
-  if (env === _serverEnv) return;
-  _serverEnv = env;
-  localStorage.setItem("cradleos_server_env", env);
-  _listeners.forEach(fn => fn());
-}
-/** Switch server and reload the page so all derived constants reinitialize. */
-export function switchServerAndReload(env: ServerEnv) {
-  localStorage.setItem("cradleos_server_env", env);
-  window.location.reload();
-}
-export function onServerEnvChange(fn: () => void) { _listeners.add(fn); return () => { _listeners.delete(fn); }; }
+/** No-op env-change subscription retained for App.tsx API compat. */
+export function onServerEnvChange(_fn: () => void) { return () => {}; }
 
-// Static alias for non-reactive imports (still reads current value)
-export const SERVER_ENV = _serverEnv;
-
-// Derived values — use getters for reactive access
-export const SERVER_LABEL = _serverEnv === "stillness" ? "STILLNESS (Live)" : "UTOPIA (Hackathon)";
+export const SERVER_ENV: ServerEnv = _serverEnv;
+export const SERVER_LABEL = "STILLNESS (Live)";
 
 // ── World package IDs ─────────────────────────────────────────────────────────
 // Source of truth: src/lib/tenantConfig.ts (vendored from @evefrontier/wallet-core,
@@ -42,26 +23,16 @@ export const SERVER_LABEL = _serverEnv === "stillness" ? "STILLNESS (Live)" : "U
 // queries on objects that pre-date the v2 upgrade.
 import { TENANT_CONFIG, TenantId } from "./lib/tenantConfig";
 
-// v2 (post-upgrade) Utopia world package — used as moveCall target on Utopia.
-// Original v1 retained for event queries on pre-upgrade objects.
-export const WORLD_PKG_UTOPIA    = "0x07e6b810c2dff6df56ea7fbad9ff32f4d84cbee53e496267515887b712924bd1";
-export const WORLD_PKG_UTOPIA_V1 = TENANT_CONFIG[TenantId.UTOPIA].packageId;
 // Stillness world package — read live from canonical TENANT_CONFIG so wipe-day
-// updates are a single-file change.
+// updates are a single-file change. (Utopia lineage purged 2026-07-19.)
 export const WORLD_PKG_STILLNESS = TENANT_CONFIG[TenantId.STILLNESS].packageId;
-export const WORLD_PKG = _serverEnv === "stillness" ? WORLD_PKG_STILLNESS : WORLD_PKG_UTOPIA;
+export const WORLD_PKG = WORLD_PKG_STILLNESS;
 
 // Globally-shared ObjectRegistry — derived child-object root for in_game_id
 // resolution. One per world pkg; changes whenever world is republished.
 // 2026-06-25 wipe-day: Stillness republished, new registry below.
 export const OBJECT_REGISTRY_STILLNESS = "0xf6aed9361acc0d7021672b653ebe9dae45d88e11fecef01cc5434c8f60ae764f";
-// 2026-06-25 audit: Utopia ObjectRegistry id is not currently known on-chain.
-// Previous value (0x454a9aa3...) was the PRE-WIPE Stillness registry being
-// borrowed as a placeholder — wrong on both counts. The only consumer is
-// IntelDashboardPanel, which is Stillness-only in practice. Zero it out so a
-// stray Utopia code path can't silently derive against the wrong registry.
-export const OBJECT_REGISTRY_UTOPIA    = "0x0000000000000000000000000000000000000000000000000000000000000000";
-export const OBJECT_REGISTRY = _serverEnv === "stillness" ? OBJECT_REGISTRY_STILLNESS : OBJECT_REGISTRY_UTOPIA;
+export const OBJECT_REGISTRY = OBJECT_REGISTRY_STILLNESS;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 // ── CradleOS package IDs ──────────────────────────────────────────────────────
@@ -181,11 +152,11 @@ export const SSU_POLICY_REGISTRY_STILLNESS = "0x7fc660607659ffb6dde527383cc27cbd
 //                                      (superseded by v3 wallet-recovery upgrade 2026-04-27)
 
 /** Active ssu_access package (LATEST upgrade target) for moveCall targets and SsuAuth type-arg. */
-export const SSU_ACCESS_PKG: string = _serverEnv === "stillness" ? SSU_ACCESS_PKG_STILLNESS : "";
+export const SSU_ACCESS_PKG: string = SSU_ACCESS_PKG_STILLNESS;
 /** Original-id of ssu_access for event queries and type tags. */
-export const SSU_ACCESS_ORIGINAL: string = _serverEnv === "stillness" ? SSU_ACCESS_ORIGINAL_STILLNESS : "";
+export const SSU_ACCESS_ORIGINAL: string = SSU_ACCESS_ORIGINAL_STILLNESS;
 /** Active SsuPolicyRegistry, or empty string when feature is unavailable. */
-export const SSU_POLICY_REGISTRY: string = _serverEnv === "stillness" ? SSU_POLICY_REGISTRY_STILLNESS : "";
+export const SSU_POLICY_REGISTRY: string = SSU_POLICY_REGISTRY_STILLNESS;
 /** Convenience: is the SSU shared-access feature available on the active server? */
 export const SSU_ACCESS_AVAILABLE: boolean = SSU_ACCESS_PKG !== "";
 //
@@ -300,8 +271,7 @@ export function eventType(module: string, event: string): string {
 // 2026-06-25 wipe-day: Stillness EVE coin package republished by CCP (PR #189).
 // New pkg: 0xac361aa5... (was 0x2a66a89b...)
 export const EVE_COIN_TYPE_STILLNESS = "0xac361aa5ceb726bd974f885c9dea9e55dc9bc98fa1f5731c5965a810707bf0b8::EVE::EVE";
-export const EVE_COIN_TYPE_UTOPIA = "0xf0446b93345c1118f21239d7ac58fb82d005219b2016e100f074e4d17162a465::EVE::EVE";
-export const EVE_COIN_TYPE = _serverEnv === "stillness" ? EVE_COIN_TYPE_STILLNESS : EVE_COIN_TYPE_UTOPIA;
+export const EVE_COIN_TYPE = EVE_COIN_TYPE_STILLNESS;
 
 // Backward compat alias — deprecated, use EVE_COIN_TYPE
 export const CRDL_COIN_TYPE = EVE_COIN_TYPE;
@@ -316,18 +286,13 @@ export const RAW_NODE_OWNER_CAP = "";
 // FuelConfig per server — used in network_node::offline tx
 // 2026-06-25 wipe-day: new FuelConfig on republished Stillness world
 export const FUEL_CONFIG_STILLNESS = "0x190645fbcf66b9322dbc8f3ee5f883e46e1e6ab562daa978ffd78cb88404f7cf";
-export const FUEL_CONFIG_UTOPIA    = "0x0f354c803af170ac0d1ac9068625c6321996b3013dc67bdaf14d06f93fa1671f";
-export const FUEL_CONFIG = _serverEnv === "stillness" ? FUEL_CONFIG_STILLNESS : FUEL_CONFIG_UTOPIA;
+export const FUEL_CONFIG = FUEL_CONFIG_STILLNESS;
 // EnergyConfig for Stillness world package (0x28b497...)
 // 2026-06-25 wipe-day: new EnergyConfig on republished Stillness world
 export const ENERGY_CONFIG_STILLNESS = "0x885d13b06bd9199d037aa358ba37e6692aca92d7bf6c1b5a5210da7d83501b09";
 export const ENERGY_CONFIG_STILLNESS_ISV = 868826232;
-// EnergyConfig for Utopia world package (0xd12a70c7...)
-export const ENERGY_CONFIG_UTOPIA = "0x9285364e8104c04380d9cc4a001bbdfc81a554aad441c2909c2d3bd52a0c9c62";
-export const ENERGY_CONFIG_UTOPIA_ISV = 791126162;
-// Active EnergyConfig — selected by server env
-export const ENERGY_CONFIG = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS : ENERGY_CONFIG_UTOPIA;
-export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = _serverEnv === "stillness" ? ENERGY_CONFIG_STILLNESS_ISV : ENERGY_CONFIG_UTOPIA_ISV;
+export const ENERGY_CONFIG = ENERGY_CONFIG_STILLNESS;
+export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = ENERGY_CONFIG_STILLNESS_ISV;
 export const CLOCK = "0x6";
 // Sui system Random object (on-chain randomness beacon) — reserved address.
 export const RANDOM_OBJECT = "0x8";
@@ -598,7 +563,6 @@ export const SUI_TESTNET_RPC_DIRECT = "https://keeper.reapers.shop/sui?nocache=1
  * Fallback constant kept for direct probing during proxy outages.
  */
 export const SUI_GRAPHQL = "https://keeper.reapers.shop/graphql";
-export const SUI_GRAPHQL_DIRECT = "https://graphql.testnet.sui.io/graphql";
 
 // Well-known tribes that don't have CradleOS vaults but still need policy coverage
 export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; label: string }> = [
@@ -622,12 +586,7 @@ export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; lab
  *
  * Direct constants kept for fallback / direct probing.
  */
-export const WORLD_API = SERVER_ENV === "stillness"
-  ? "https://keeper.reapers.shop/world"
-  : "https://world-api-utopia.uat.pub.evefrontier.com";
-export const WORLD_API_DIRECT = SERVER_ENV === "stillness"
-  ? "https://world-api-stillness.live.pub.evefrontier.com"
-  : "https://world-api-utopia.uat.pub.evefrontier.com";
+export const WORLD_API = "https://keeper.reapers.shop/world";
 
 export const NETWORK_NODE_TYPE = `${WORLD_PKG}::network_node::NetworkNode`;
 export const GATE_TYPE = `${WORLD_PKG}::gate::Gate`;

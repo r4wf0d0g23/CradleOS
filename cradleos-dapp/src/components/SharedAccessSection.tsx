@@ -42,7 +42,7 @@ import {
 } from "../lib/ssuAccess";
 
 import { fetchTribeInfo } from "../lib";
-import { WORLD_API } from "../constants";
+import { getTribes } from "../lib/dataClient";
 
 // ──────────────────────────────────────────────────────────────────────────
 // World-API tribe directory (cache: localStorage TTL + module-global)
@@ -76,8 +76,8 @@ const TRIBE_DIR_TTL_MS = 30 * 60 * 1000; // 30 min
 
 const TRIBE_DIR_CACHE_VERSION = 1;
 function tribeDirStorageKey(): string {
-  // Bind cache key to WORLD_API host so server switches invalidate.
-  return `cradleos.tribeDir.v${TRIBE_DIR_CACHE_VERSION}.${WORLD_API}`;
+  // Stillness-only post-Utopia purge (2026-07-19); static key.
+  return `cradleos.tribeDir.v${TRIBE_DIR_CACHE_VERSION}.stillness`;
 }
 
 type CachedDir = { ts: number; entries: TribeDirEntry[] };
@@ -106,11 +106,7 @@ let __tribeDirInflight: Promise<TribeDirEntry[]> | null = null;
 
 async function fetchAndStoreTribeDirectory(): Promise<TribeDirEntry[]> {
   try {
-    const res = await fetch(`${WORLD_API}/v2/tribes?limit=1000`);
-    const json = await res.json() as {
-      data?: Array<{ id: number; name: string; nameShort: string }>;
-    };
-    const list: TribeDirEntry[] = (json.data ?? [])
+    const list: TribeDirEntry[] = (await getTribes(1000))
       .filter(t => t.id >= PLAYER_TRIBE_ID_FLOOR)
       .map(t => ({ id: t.id, name: t.name, ticker: t.nameShort }));
     __tribeDirCache = list;

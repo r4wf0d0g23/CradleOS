@@ -19,7 +19,8 @@
  *
  * Refresh the bundled snapshot via: `node scripts/refresh-solar-systems.mjs`
  */
-import { SERVER_ENV, WORLD_API } from "../constants";
+import { SERVER_ENV } from "../constants";
+import { getSolarSystem } from "./dataClient";
 
 export interface SolarSystemRecord {
   id: number;
@@ -153,15 +154,14 @@ export async function resolveSolarSystem(
   // Snapshot miss — live fallback (shouldn't happen for static universe
   // data, but defends against drift between snapshot refreshes).
   try {
-    const res = await fetch(`${WORLD_API}/v2/solarsystems/${systemId}`);
-    if (!res.ok) return null;
-    const d = (await res.json()) as {
+    const d = await getSolarSystem(systemId) as null | {
       id?: number;
       name?: string;
       constellationId?: number;
       regionId?: number;
       location?: { x?: number; y?: number; z?: number };
     };
+    if (!d) return null;
     const rec: SolarSystemRecord = {
       id: d.id ?? systemId,
       name: d.name ?? `System ${systemId}`,

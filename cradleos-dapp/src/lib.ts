@@ -28,15 +28,14 @@ import {
   OWNED_INDEX_BASE,
   SUI_TESTNET_RPC,
   SUI_TESTNET_RPC_DIRECT,
-  WORLD_API,
   WORLD_PKG,
-  WORLD_PKG_UTOPIA_V1,
   STRUCTURE_TYPES,
   type StructureKind,
 } from "./constants";
 import { STILLNESS_TYPES, UTOPIA_TYPES, type WorldKey } from "./data/typeCatalog";
 import { getEnergyCostMap as getStaticEnergyCostMap, getEnergyCostSnapshotSize } from "./data/energyCosts";
 import { resolveSolarSystem as resolveStaticSolarSystem } from "./lib/solarSystems";
+import { getTypeCatalog, getTribe } from "./lib/dataClient";
 
 export type NodeDashboardData = {
   objectId: string;
@@ -427,11 +426,9 @@ export function buildBringOnlineTransaction() {
 }
 
 const GATE_TYPE_FULL = `${WORLD_PKG}::gate::Gate`;
-const GATE_TYPE_FULL_V1 = `${WORLD_PKG_UTOPIA_V1}::gate::Gate`;
 const ASSEMBLY_TYPE_FULL = `${WORLD_PKG}::assembly::Assembly`;
-const ASSEMBLY_TYPE_FULL_V1 = `${WORLD_PKG_UTOPIA_V1}::assembly::Assembly`;
-const isGateType = (t: string) => t === GATE_TYPE_FULL || t === GATE_TYPE_FULL_V1;
-const isAssemblyType = (t: string) => t === ASSEMBLY_TYPE_FULL || t === ASSEMBLY_TYPE_FULL_V1;
+const isGateType = (t: string) => t === GATE_TYPE_FULL;
+const isAssemblyType = (t: string) => t === ASSEMBLY_TYPE_FULL;
 
 export async function buildBringOfflineTransaction(): Promise<Transaction> {
   // Fetch live connected assembly IDs and their types
@@ -549,12 +546,9 @@ export async function fetchTypeNames(): Promise<Map<number, string>> {
     _typeNameCache = m;
     return m;
   }
-  // Fallback: catalog snapshot missing for this world — hit world-api once.
+  // Fallback: catalog snapshot missing for this world — hit the index once.
   try {
-    const url = `${WORLD_API}/v2/types?limit=1000`;
-    const res = await fetch(url);
-    const data = await res.json() as { data: Array<{ id: number; name: string; categoryName: string }> };
-    for (const t of data.data ?? []) {
+    for (const t of await getTypeCatalog()) {
       if (t.categoryName === "Deployable" || t.categoryName === "Structure") {
         m.set(t.id, t.name);
       }
@@ -1028,16 +1022,13 @@ async function _findCharacterForWalletLegacy(walletAddress: string): Promise<Cha
   // Characters created before the v0.0.21 upgrade have PlayerProfiles from the v1 package.
   const current = await findPlayerProfileForPkg(walletAddress, WORLD_PKG);
   if (current) return current;
-
-  // Fallback to v1 Utopia package (characters created before world-contracts v0.0.21 upgrade)
-  const v1 = await findPlayerProfileForPkg(walletAddress, WORLD_PKG_UTOPIA_V1);
-  if (v1) return v1;
+  // (Utopia v1 fallback removed 2026-07-19 — Utopia/UAT lineage is dead.)
 
   // Last resort: scan CharacterCreatedEvent for both packages.
   // CRITICAL BOOT PATH — use direct fullnode URL (bypass DGX proxy) plus
   // retry so a transient network blip doesn't fail the entire dashboard
   // with "Failed to fetch".
-  for (const pkg of [WORLD_PKG, WORLD_PKG_UTOPIA_V1]) {
+  for (const pkg of [WORLD_PKG]) {
     let cursor: string | null = null;
     do {
       const res = await _ssuFetchWithRetry(SUI_TESTNET_RPC_DIRECT, {
@@ -1144,20 +1135,15 @@ export async function fetchTribeInfo(tribeId: number): Promise<{
   // as raw `T<id>` badges instead of tickers (Raw report 2026-07-18). Same bug
   // class as the fetchWithRetry / suix_* pagination lessons. 404 = genuinely
   // nonexistent tribe → don't retry, return null immediately.
+  // Index-first via dataClient (getTribe already does index → live-proxy
+  // fallback internally); one light retry layer kept for transient blips.
   const attempts = [0, 400, 900]; // ms backoff before each attempt
   for (let i = 0; i < attempts.length; i++) {
     if (attempts[i] > 0) await new Promise((r) => setTimeout(r, attempts[i]));
     try {
-      const res = await fetch(`${WORLD_API}/v2/tribes/${tribeId}`);
-      if (res.ok) {
-        const j = await res.json() as {
-          id: number; name: string; nameShort: string;
-          description: string; taxRate: number; tribeUrl: string;
-        };
-        return { name: j.name, nameShort: j.nameShort, description: j.description, taxRate: j.taxRate, tribeUrl: j.tribeUrl };
-      }
-      if (res.status === 404) return null; // genuine miss — no retry
-      // other non-ok (429/5xx) → fall through to retry
+      const j = await getTribe(tribeId);
+      if (j) return { name: j.name, nameShort: j.nameShort, description: j.description ?? "", taxRate: j.taxRate ?? 0, tribeUrl: j.tribeUrl ?? "" };
+      return null; // genuine miss on both sources — no retry
     } catch { /* network error/reset → retry */ }
   }
   return null;
@@ -2432,7 +2418,7 @@ export async function fetchOwnerCapsForWallet(walletAddress: string): Promise<{ 
   const charInfo = await findCharacterForWallet(walletAddress);
   if (!charInfo) return [];
   // Check both world pkg versions for OwnerCaps
-  const worldPkgs = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
+  const worldPkgs = [WORLD_PKG];
   const allCaps: { capId: string; turretId: string; characterId: string }[] = [];
   for (const wpkg of worldPkgs) {
     const ownerCapType = `${wpkg}::access::OwnerCap<${wpkg}::turret::Turret>`;
@@ -4364,7 +4350,7 @@ export async function fetchCradleOSAuthorizedGates(): Promise<CradleOSGate[]> {
   // Query ExtensionAuthorizedEvent under both world package versions — same
   // multi-pkg pattern we use for CradleOS events. world's ExtensionAuthorizedEvent
   // was defined at the original world publish (so type tag is anchored to that).
-  const worldPkgs = Array.from(new Set([WORLD_PKG, WORLD_PKG_UTOPIA_V1]));
+  const worldPkgs = [WORLD_PKG];
   const eventQueries = worldPkgs.map(pkg =>
     fetch(SUI_TESTNET_RPC, {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -5806,12 +5792,8 @@ async function _resolveSinglePartitionKey(partitionKey: string): Promise<string 
           resolved = await _fetchCharacterName(walletAddr);
         }
         if (!resolved && walletAddr) {
-          let charObjectId =
+          const charObjectId =
             await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
-          if (!charObjectId) {
-            charObjectId =
-              await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG_UTOPIA_V1);
-          }
           if (charObjectId) {
             resolved = await _fetchCharacterName(charObjectId);
           }
@@ -5840,12 +5822,8 @@ async function _resolveSinglePartitionKey(partitionKey: string): Promise<string 
         resolved = await _fetchCharacterName(walletAddr);
         // C.2
         if (!resolved) {
-          let charObjectId =
+          const charObjectId =
             await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG);
-          if (!charObjectId) {
-            charObjectId =
-              await _findCharacterObjectIdForPkg(walletAddr, WORLD_PKG_UTOPIA_V1);
-          }
           if (charObjectId) {
             resolved = await _fetchCharacterName(charObjectId);
           }
