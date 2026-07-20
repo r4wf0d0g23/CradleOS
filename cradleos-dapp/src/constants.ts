@@ -530,12 +530,16 @@ const _ownedIndexBase = (): string => {
 export const OWNED_INDEX_BASE = _ownedIndexBase();
 
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
-// 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body) on
-// all requests — every direct/fallback read against it failed with
-// "Unexpected end of JSON input" and cascaded into "Character Not Found" /
-// "No tribe vault found" for live users. Fallback + direct now point at
-// BlockVision's public testnet endpoint (CORS: *, verified 2026-07-08).
-export const SUI_TESTNET_RPC_FALLBACK = "https://sui-testnet-endpoint.blockvision.org";
+// 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body).
+// 2026-07-19: moved off BlastAPI/BlockVision entirely (per Raw). The dApp
+// bundle is PUBLIC, so we must NOT embed the Alchemy key in the frontend.
+// Alchemy now lives server-side as an UPSTREAM of the DGX proxy (SUI_ALCHEMY_RPC
+// in ~/sui-proxy/.env). The circuit-breaker fallback therefore routes through
+// the proxy's cache-bypass path — same origin as SUI_TESTNET_RPC, but bypasses
+// the proxy's local-node cache so a breaker trip still gets fresh upstream
+// (local nodes -> Alchemy) reads. No public JSON-RPC endpoint is referenced
+// from the client any more.
+export const SUI_TESTNET_RPC_FALLBACK = "https://keeper.reapers.shop/sui?nocache=1";
 
 /**
  * DIRECT public-fullnode endpoint for CRITICAL-PATH reads only.

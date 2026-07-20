@@ -40,9 +40,18 @@
  */
 
 const PROXY_URL = "https://keeper.reapers.shop/sui";
-// 2026-07-08: fullnode.testnet.sui.io 404s on everything; BlockVision public
-// endpoint verified live with CORS *.
-const FALLBACK_URL = "https://sui-testnet-endpoint.blockvision.org";
+// 2026-07-08: fullnode.testnet.sui.io 404s on everything.
+// 2026-07-19: moved off BlastAPI/BlockVision entirely (per Raw). The dApp
+// bundle is PUBLIC so the Alchemy key can't be embedded here — Alchemy lives
+// server-side as an UPSTREAM of the DGX proxy. There is no longer a keyless
+// public JSON-RPC endpoint to fail over TO. So when the proxy's default
+// (cached) path trips, we fail over to the proxy's CACHE-BYPASS path
+// (?nocache=1): same proxy process, but forces a fresh upstream read (local
+// nodes -> Alchemy). This recovers from stale-cache / coalescing storms
+// (the common trip cause) without exposing the key or hitting a dead public
+// endpoint. If the proxy PROCESS itself is down, both paths fail — that's a
+// DGX-host outage, surfaced honestly rather than papered over with a dead URL.
+const FALLBACK_URL = "https://keeper.reapers.shop/sui?nocache=1";
 
 const FAIL_THRESHOLD = 3;
 const COOLDOWN_MS = 45_000;
