@@ -916,7 +916,37 @@ export async function findAllCharactersForWallet(walletAddress: string): Promise
  * (StructurePanel, InventoryPanel, GatePolicyPanel, etc). The legacy
  * findCharacterForWallet wraps this for backwards-compat.
  */
+// 2026-07-19: resolve wallet -> live Character from the owned-objects INDEX,
+// bypassing the flaky public RPC PlayerProfile query (which was returning
+// NULL_RESULT and making the casino/panels show "No live Character found").
+// The index joins the by-wallet characters table with per-object versions and
+// returns the highest-version (live) character. Returns null on ANY failure or
+// when the index flags itself stale -> caller falls back to the RPC path.
+async function _resolveCharacterFromIndex(walletAddress: string): Promise<CharacterInfo | null> {
+  if (!OWNED_INDEX_BASE) return null;
+  const base = OWNED_INDEX_BASE.replace(/\/owned-objects$/, "/resolve-character");
+  if (base === OWNED_INDEX_BASE) return null;
+  const server = SERVER_ENV === "stillness" ? "stillness" : "utopia";
+  const u = `${base}?wallet=${encodeURIComponent(walletAddress)}&server=${server}`;
+  let res: Response;
+  try {
+    res = await _ssuFetchWithRetry(u, { method: "GET", headers: { Accept: "application/json" } }, 2, 400, 6000);
+  } catch { return null; }
+  if (!res.ok) return null;
+  const json = await res.json() as {
+    character?: { characterId: string; tribeId: number } | null;
+    stale?: boolean;
+  };
+  if (json.stale === true) return null;         // don't trust a stale index
+  if (!json.character?.characterId) return null; // no char in index -> let RPC try
+  return { characterId: json.character.characterId, tribeId: json.character.tribeId ?? 0 };
+}
+
 export async function findLatestCharacterForWallet(walletAddress: string): Promise<CharacterInfo | null> {
+  // INDEX-FIRST (robust): resolve from our own node, no flaky public RPC.
+  const fromIndex = await _resolveCharacterFromIndex(walletAddress);
+  if (fromIndex) return fromIndex;
+  // Fallback: RPC-based PlayerProfile scan + version sort (index down/stale).
   const all = await findAllCharactersForWallet(walletAddress);
   return all.length ? { characterId: all[0].characterId, tribeId: all[0].tribeId } : null;
 }
