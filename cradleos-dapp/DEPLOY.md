@@ -1,6 +1,22 @@
 # CradleOS dApp — Deployment Standard Operating Procedure
 
-**Last updated:** 2026-03-27
+> # ⚠️ SUPERSEDED (2026-07-27)
+> **For Move package publishes and world-rotation flows this document is SUPERSEDED
+> by [`FRESH_DEPLOY_PROTOCOL.md`](./FRESH_DEPLOY_PROTOCOL.md) (v0.2).**
+> **The canonical dApp deploy is `./deploy-both.sh`** (CF Pages primary +
+> gh-pages mirror, IOC gate, hard bundle verification) — NOT the `npx gh-pages`
+> steps below.
+>
+> Several steps below are **DEAD** and marked as such inline:
+> - Smoke tests against `fullnode.testnet.sui.io` (JSON-RPC dead / 404 since 2026-07-08)
+> - Pushes to the hackathon repo (ENTOMBED, archived read-only 2026-04-25)
+> - Utopia builds/deploys (Utopia purged 2026-07-19)
+> - `npx gh-pages` deploys (superseded by `./deploy-both.sh`)
+>
+> The dual-ID discipline (original-id vs published-at), rebase safety, and
+> Lessons Learned sections remain valid reference material.
+
+**Last updated:** 2026-07-27 (supersession banner; content frozen at 2026-03-27)
 **Maintainer:** Reality Anchor
 
 ---
@@ -86,11 +102,15 @@ Currently affected modules (added in v4 upgrade): `collateral_vault`, `keeper_sh
 If a future upgrade adds NEW modules, you must add another origin constant for that
 upgrade's published-at and use it for those modules' event queries.
 
-### 3. Verify On-Chain Events Resolve
+### 3. Verify On-Chain Events Resolve — ❌ DEAD ENDPOINT, DO NOT USE
+
+> **DEAD (2026-07-08):** `fullnode.testnet.sui.io` JSON-RPC permanently 404s.
+> Use the local fullnode (`http://127.0.0.1:9000` on DGX2) or
+> `https://rpc-testnet.suiscan.xyz:443` instead. See FRESH_DEPLOY_PROTOCOL.md B1.
 
 ```bash
 # Quick smoke test — CoinLaunched events should return data
-curl -s https://fullnode.testnet.sui.io:443 \
+curl -s https://fullnode.testnet.sui.io:443 \   # ❌ DEAD — endpoint 404s since 2026-07-08
   -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"suix_queryEvents",
        "params":[{"MoveEventType":"<CRADLEOS_ORIGINAL>::tribe_vault::CoinLaunched"},null,1,true]}' \
@@ -167,30 +187,33 @@ git add -A
 git commit -m "feat/fix: <description>"
 ```
 
-### Step 2: Push source to both repos
+### Step 2: Push source to both repos — ⚠️ PARTIALLY DEAD
 ```bash
-git push cradleos main:master   # CradleOS repo — master branch (source)
-git push hackathon main:main    # Hackathon repo — main branch
+git push cradleos main:master   # CradleOS repo — master branch (source) — still valid
+git push hackathon main:main    # ❌ DEAD — hackathon repo ENTOMBED (archived read-only 2026-04-25)
 ```
 
-### Step 3: Build for CradleOS (Stillness)
+### Steps 3–4: Build + deploy CradleOS gh-pages — ⚠️ SUPERSEDED by `./deploy-both.sh`
+
+> Use `./deploy-both.sh` instead. It builds for BOTH origins (CF Pages base `/`
+> and gh-pages base `/CradleOS/`), runs the IOC gate, and hard-verifies the
+> served bundle. The steps below are kept for historical reference only.
+
 ```bash
+# SUPERSEDED — use ./deploy-both.sh
 VITE_BASE="/CradleOS/" npx vite build --outDir dist-ghpages
-```
-
-### Step 4: Deploy CradleOS gh-pages
-```bash
 rm -rf node_modules/.cache/gh-pages
 npx gh-pages -d dist-ghpages -r git@github.com:r4wf0d0g23/CradleOS.git -b gh-pages
 ```
 
-### Step 5: Build for Hackathon (Utopia)
-```bash
-VITE_BASE="/Reality_Anchor_Eve_Frontier_Hackathon_2026/" npx vite build --outDir dist-hackathon
-```
+### Steps 5–6: Build + deploy Hackathon (Utopia) — ❌ DEAD
 
-### Step 6: Deploy Hackathon gh-pages
+> **DEAD:** Utopia was purged 2026-07-19 and the hackathon repo is ENTOMBED
+> (archived read-only 2026-04-25). There is no Utopia build target anymore.
+
 ```bash
+# ❌ DEAD — do not run
+VITE_BASE="/Reality_Anchor_Eve_Frontier_Hackathon_2026/" npx vite build --outDir dist-hackathon
 rm -rf node_modules/.cache/gh-pages
 npx gh-pages -d dist-hackathon -r git@github.com:r4wf0d0g23/Reality_Anchor_Eve_Frontier_Hackathon_2026.git -b gh-pages
 ```
@@ -202,7 +225,7 @@ npx gh-pages -d dist-hackathon -r git@github.com:r4wf0d0g23/Reality_Anchor_Eve_F
 
 ---
 
-## Repository Map
+## Repository Map — ⚠️ hackathon rows DEAD (repo entombed 2026-04-25); gh-pages deploys via ./deploy-both.sh
 
 | Repo | Branch | Purpose | Push command |
 |---|---|---|---|
@@ -240,6 +263,11 @@ npx gh-pages -d dist-hackathon -r git@github.com:r4wf0d0g23/Reality_Anchor_Eve_F
 ---
 
 ## Package ID History (Archive)
+
+> **⚠️ ARCHIVED / STALE (as of 2026-07-27):** the "current"/"ACTIVE" labels below
+> are frozen at 2026-03-27 and are **four+ lineages out of date**. Current package
+> ids live in `src/constants.ts` + `src/lib/tenantConfig.ts` ONLY. This table is
+> retained as historical record — do not wire anything from it.
 
 | Version | ID | Status | Notes |
 |---|---|---|---|

@@ -69,6 +69,20 @@ build(){ # $1 = VITE_BASE
 
 live_bundle(){ curl -s --max-time 12 "$1" | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1; }
 
+# E3 HARD GATE (audit H-4, 2026-07-27): poll an origin until it serves the just-built
+# bundle; die on final mismatch. A drift like 2026-07-07 / 2026-07-18 must FAIL the
+# script, not log a warning.
+verify_live(){ # $1 = live URL, $2 = expected bundle, $3 = label
+  local got="" i
+  for i in $(seq 1 18); do   # 18 × 10s ≈ 3 min
+    got=$(live_bundle "$1")
+    if [ "$got" = "$2" ]; then log "  ✓ $3 serving $got (matches build)"; return 0; fi
+    log "  … $3 serving ${got:-<nothing>}, want $2 (attempt $i/18, retrying in 10s)"
+    sleep 10
+  done
+  die "E3 verification FAILED: $3 still serving ${got:-<nothing>} after ~3 min; built $2"
+}
+
 # ── 2. Cloudflare Pages (PRIMARY) ─────────────────────────────────────────────
 if [ "$DO_CF" = 1 ]; then
   CF_BUNDLE=$(build "$CF_BASE")
@@ -81,12 +95,7 @@ if [ "$DO_CF" = 1 ]; then
     >/tmp/deploy-both-cf.log 2>&1 || { tail -25 /tmp/deploy-both-cf.log; die "wrangler deploy failed"; }
   grep -E 'Success|Deployment complete|pages.dev' /tmp/deploy-both-cf.log | tail -3
   sleep 6
-  CF_LIVE_BUNDLE=$(live_bundle "$CF_LIVE")
-  if [ "$CF_LIVE_BUNDLE" = "$CF_BUNDLE" ]; then
-    log "  ✓ cradleos.io serving $CF_LIVE_BUNDLE (matches build)"
-  else
-    log "  ⚠ cradleos.io serving $CF_LIVE_BUNDLE, built $CF_BUNDLE (CF edge cache may lag ~30s)"
-  fi
+  verify_live "$CF_LIVE" "$CF_BUNDLE" "cradleos.io"
 fi
 
 # ── 3. GitHub Pages (mirror) ──────────────────────────────────────────────────
@@ -130,6 +139,8 @@ if [ "$DO_GH" = 1 ]; then
     REMOTE_HEAD=$(git -C "$GH_CLONE" ls-remote origin "$GH_BRANCH" | cut -f1)
     [ "$PUSHED_HEAD" = "$REMOTE_HEAD" ] && log "  ✓ gh-pages push confirmed on remote" || die "gh-pages push did NOT land (local $PUSHED_HEAD != remote $REMOTE_HEAD)"
   fi
+  # E3 hard gate: the git push landing is NOT deploy success — verify the SERVED bundle
+  verify_live "$GH_LIVE" "$GH_BUNDLE" "gh-pages"
 fi
 
 log "DONE. CF(primary)=${CF_BUNDLE:-skipped}  gh-pages(mirror)=${GH_BUNDLE:-skipped}"
