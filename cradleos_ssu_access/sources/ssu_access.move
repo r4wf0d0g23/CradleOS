@@ -434,6 +434,63 @@ public fun shared_withdraw_to_owned(
     );
 }
 
+/// Promote items from the caller's per-character partition into the SSU's
+/// shared open inventory. Inverse of `shared_withdraw_to_owned`.
+///
+/// Use case: a non-owner character withdrew items via `shared_withdraw_to_owned`
+/// (routing them to their per-character partition for in-game visibility), and
+/// now wants to return them to the shared communal pool.
+///
+/// Requires the caller's `OwnerCap<Character>` — this authorises
+/// `withdraw_by_owner<Character>` to pull from the per-character partition
+/// (the dynamic field keyed by `character.owner_cap_id()`).
+/// Access policy is checked on the deposit side: the caller must still have
+/// permission to deposit into this SSU.
+public fun promote_ephemeral_to_shared(
+    ssu: &mut StorageUnit,
+    policy: &SsuPolicy,
+    character: &Character,
+    character_cap: &OwnerCap<Character>,
+    type_id: u64,
+    quantity: u32,
+    clock: &Clock,
+    ctx: &mut TxContext,
+) {
+    assert!(policy.ssu_id == object::id(ssu), EPolicySsuMismatch);
+    assert_caller_is_character(character, ctx);
+    let now = sui::clock::timestamp_ms(clock);
+    assert!(check_access(policy, character, now, false), EAccessDenied);
+
+    // Pull from caller's per-character partition.
+    // withdraw_by_owner<Character> uses object::id(character_cap) as the DF key,
+    // which equals character.owner_cap_id() — the same key deposit_to_owned used
+    // when shared_withdraw_to_owned routed the item to this character.
+    let item = su::withdraw_by_owner<Character>(
+        ssu,
+        character,
+        character_cap,
+        type_id,
+        quantity,
+        ctx,
+    );
+    let actual_qty = wi::quantity(&item);
+
+    su::deposit_to_open_inventory<SsuAuth>(
+        ssu,
+        character,
+        item,
+        SsuAuth {},
+        ctx,
+    );
+
+    event::emit(SharedDepositEvent {
+        ssu_id: object::id(ssu),
+        character_id: character::id(character),
+        type_id,
+        quantity: actual_qty,
+    });
+}
+
 /// Recover a wallet-held Item back into the caller's per-character partition
 /// on the SSU it came from. No policy check (this is a self-recovery path
 /// for items the caller already possesses; if the SSU owner revoked our
