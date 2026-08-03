@@ -85,8 +85,12 @@ The game client does not render shared-inventory items; the dApp is the only
 retrieval UI. Republish ⇒ items unreachable. Check inventory occupancy first.
 
 **I7 — UpgradeCap custody is recorded before the tx is considered done.**
-Three lineages have been orphaned by lost keys (`0x61f4dab5`, `0xc3c2381f`,
-`0x177583b2`). `0x177583b2` also held the casino house bankroll — unrecoverable.
+Three lineages were *believed* orphaned by lost keys (`0x61f4dab5`, `0xc3c2381f`,
+`0x177583b2`). **CORRECTION (2026-08-02): no key was ever lost.** The deploy
+wallet `0xc80fe7d6` lived on DGX2 — the actual deploy host — so the DGX1 reformat
+never touched it, and the house bankroll was recovered. The real defect was a
+negative search on the wrong host being promoted to durable fact; custody
+verification must therefore establish *which host performed the deploy* first.
 Custody is a **testable procedure**, not a written intention — see §8.
 
 ---
@@ -561,11 +565,14 @@ broken or undiscoverable — both are failures worth waking up for.
 
 ## 8. UpgradeCap + publish-wallet custody (testable procedure)
 
-Three lineages already orphaned (`0x61f4dab5`, `0xc3c2381f`, `0x177583b2` — the
-last also holding the ssu_access v5 cap, the casino v28 cap, and the live casino
-house bankroll; key exhaustively confirmed unrecoverable, no multisig path).
-A custody *plan* you cannot test is the plan that produced three orphans. This
-section is acceptance-tested, not aspirational.
+Three lineages were *believed* orphaned (`0x61f4dab5`, `0xc3c2381f`, `0x177583b2`
+— the last also holding the ssu_access v5 cap, the casino v28 cap, and the live
+casino house bankroll). **CORRECTION (2026-08-02): the key was never lost.** The
+"exhaustive confirmation" of unrecoverability searched DGX1 while the deploy had
+actually been made from DGX2. A custody *plan* you cannot test is still the right
+demand — but note the failure mode that actually occurred was a false-negative key
+search, so §8.1's signing proof must be attempted on every candidate host before
+any key is declared lost. This section is acceptance-tested, not aspirational.
 
 ### 8.1 Pre-publish (blocks Phase B) — **REQUIRES OPERATOR (Raw)** for key handling
 

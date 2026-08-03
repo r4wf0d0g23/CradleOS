@@ -101,11 +101,13 @@ step.
 
 #### C-4. UpgradeCap custody (I7/A6) has no verifiable procedure — and the imminent publish is about to mint orphan #4 unless gated
 
-Three lineages already orphaned (`0x61f4dab5`, `0xc3c2381f`, `0x177583b2` — the
-last also holding the ssu_access v5 cap, the casino v28 cap, and the live casino
-house bankroll, with the key exhaustively confirmed unrecoverable and no
-multisig path). A6 says "custody plan written" but defines no acceptance test.
-A plan you cannot test is the plan that produced three orphans.
+Three lineages were *believed* orphaned (`0x61f4dab5`, `0xc3c2381f`, `0x177583b2`
+— the last also holding the ssu_access v5 cap, the casino v28 cap, and the live
+casino house bankroll). **CORRECTION (2026-08-02): the key was never lost.** The
+"exhaustive confirmation" of unrecoverability searched DGX1, but the deploy had
+been made from DGX2, where the key still lives. A6 still needs an acceptance test
+— but the failure mode that actually occurred was a false-negative key search, so
+the test must attempt signing on every candidate host before declaring loss.
 
 **Fix (blocking for the imminent publish):**
 1. **Pre-publish signing proof:** the publish wallet must sign a 0-value
