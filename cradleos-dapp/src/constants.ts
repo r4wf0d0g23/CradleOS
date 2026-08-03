@@ -79,12 +79,14 @@ export const CRADLEOS_ORIGINAL_PREV = "0xd4f46821b371c776887922a5ac8e2e405b86b30
 // requires the source gate to be bound to the policy passed. Without this, any
 // tribe's OPEN policy could mint permits for any enforced gate.
 // Tx digest: 7skiif5oYopW8ruUkk2qTFHfLvVzqGQjXvveoiKSji5x
-// v16 (2026-07-18): FRESH REPUBLISH under wallet-we-control 0x177583b2 after DGX1
-// reformat destroyed deploy-wallet 0xc80fe7d6 key. Byte-identical to v15 0xc3c2381f
-// (upgrade-frozen). New lineage: pkg == original. Full cutover — old shared state
+// v16 (2026-07-18): FRESH REPUBLISH under wallet-we-control 0x177583b2, done under
+// the mistaken belief that the DGX1 reformat had destroyed deploy-wallet 0xc80fe7d6.
+// CORRECTION (2026-08-02): that key was NEVER lost — it was deployed from DGX2, not
+// DGX1, so the reformat never touched it. v15 0xc3c2381f is NOT upgrade-frozen.
+// Byte-identical to v15. New lineage: pkg == original. Full cutover — old shared state
 // (tribes/gates/treasuries under 0xc3c2381f) orphaned; users re-init. UpgradeCap
 // 0xcaca3557727d5df7afe32e34a62375105ec5415fcc48bb0dbddad0f06ad5f328 owned by us.
-export const CRADLEOS_PKG      = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 republish (wallet-we-control). Prev v15 0xc3c2381f (deploy key lost).
+export const CRADLEOS_PKG      = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 republish. Prev v15 0xc3c2381f (key recovered on DGX2 — NOT lost; republish was unnecessary).
 // Defining packages for structs introduced in specific upgrades — DF name
 // types and event struct types are typed under the package that FIRST defined
 // them, regardless of the current published-at:
@@ -131,16 +133,28 @@ export const CRADLEOS_V3_PKG = "0xaf2b9fca870b3e14f64f4f5935b972a39ccbc405b9d233
 // Tx digest: Gj8pXc84s4k9smw7hZFBvRrYw24ZJPMA9NJbUZFxYPkh
 // UpgradeCap: 0x21d0cfbbf509ccfd3f86d3fa9fcb2344d2b34ba3b2a7fb5f81548d3f45a691b4
 // Pre-wipe pkg (now orphaned): 0x6ea83a3e990892331b799f8ff516835bc8362793c635403db19a87ca9b81aeb8
-export const SSU_ACCESS_PKG_STILLNESS    = "0xeb814b97c4789a0acdac143618d811b7fc3477259f4f1599ddaa9e07808919e1"; // v5 republish (wallet-we-control 0x177583b2). Prev 0x61f4dab5 (key lost).
+// v6 (2026-07-27): FRESH PUBLISH against LIVE world 0x8b8a46ed. v5 0xeb814b97 was
+//   built against STALE world 0x920e577e -> init_policy demanded a dead-world
+//   &StorageUnit, so EVERY policy-gated SSU call (enable shared access,
+//   allowlist, tribe alliance, promote_ephemeral_to_shared) aborted with
+//   CommandArgumentError arg_idx 1 TypeMismatch. Feature was 100% unreachable
+//   from 2026-07-18 to 2026-07-27. Same root cause as casino v27 (arg_idx 2);
+//   the casino got its v28 republish on 07-19, ssu_access was missed.
+//   S-3 bytecode gate verified pre-publish: live 0x8b8a46ed present (1 hit),
+//   dead 0x920e577e + 0x28b49755 absent (0 hits). Post-publish devInspect
+//   confirms init_policy arg1/arg2 now typed @ 0x8b8a46ed.
+//   tx checkpoint 365104065, signer 0x177583b2 (key on DGX2, never moved).
+export const SSU_ACCESS_PKG_STILLNESS    = "0xad54b2f76b1d8cb9fc684b681f4e330e5386c82330616bcfe61deadf0d1eafc2"; // v6 fresh publish vs LIVE world. Prev v5 0xeb814b97 (stale world, unusable).
 // Original-id (publish v1) — use for event queries and shared-object type tags.
-// Fresh v1 publish post-wipe — ORIGINAL == PKG. Pre-wipe original (orphaned):
-// 0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e
-export const SSU_ACCESS_ORIGINAL_STILLNESS = "0xeb814b97c4789a0acdac143618d811b7fc3477259f4f1599ddaa9e07808919e1"; // v5 fresh lineage (== pkg).
+// v6 is a FRESH v1 publish -> ORIGINAL == PKG. Prior lineages (orphaned):
+//   v5 0xeb814b97... (stale-world, never functional)
+//   pre-wipe 0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e
+export const SSU_ACCESS_ORIGINAL_STILLNESS = "0xad54b2f76b1d8cb9fc684b681f4e330e5386c82330616bcfe61deadf0d1eafc2"; // v6 fresh lineage (== pkg).
 // Registry — shared object id is unchanged across upgrades.
 // 2026-06-25 wipe-day: new policy registry on the republished extension. The
 // pre-wipe registry (0x59bbda88...) still exists but maps pre-wipe SSU ids and
 // is unreachable via the new pkg — leave it orphaned.
-export const SSU_POLICY_REGISTRY_STILLNESS = "0x7fc660607659ffb6dde527383cc27cbda282864103cbe3b8dd975c9b53f48797"; // auto-created at v5 publish. Prev 0x6fff6e36 (orphaned).
+export const SSU_POLICY_REGISTRY_STILLNESS = "0xf962be4a6b578898ebb1c48ac02f748187eadc73b6c56088653af4c12ee0d57a"; // auto-created at v6 publish. Prev v5 0x7fc66060 (orphaned, stale-world pkg).
 //
 // Archived ssu_access packages (do NOT use):
 //   v1   (2026-04-26 single-tribe):    pkg=0x7d85b7c5524ffa0b0b029bdf77bb4f68d263f1b995f772272b04697520304a33
@@ -224,7 +238,7 @@ export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
 // (Sui validator caps structs at 32 fields). Both rejected at publish time
 // with VMVerificationOrDeserializationError; neither caught by `sui move build`.
 export const CRADLEOS_VOTING_PKG: string =
-  "0xfd7faea42bd7378013a3a07ae23019b55d112bcbf7fe440891d298bec4470cab"; // republish (wallet-we-control). Prev 0x7756113607 (key lost).
+  "0xfd7faea42bd7378013a3a07ae23019b55d112bcbf7fe440891d298bec4470cab"; // republish. Prev 0x7756113607 (key recovered on DGX2 — NOT lost; republish was unnecessary).
 export const CRADLEOS_VOTING_REGISTRY: string =
   "0xb0424681fa0f43ea2ca888fad3ff4bda75341affbcd24f78fcefd58d4311e2c2"; // ExtensionRegistry re-init'd. Prev 0x85c11387 (orphaned).
 // Append every upgrade-publish for fetchVotingEventAcrossPackages.
@@ -338,10 +352,13 @@ export const RANDOM_OBJECT = "0x8";
 // ⚠ EVERY game entry fn now requires a `character: &Character` arg (after the
 //   Random arg / after house). Frontend tx builders must pass the caller's live
 //   Character object id. Bets from wallets with no live Character will abort.
-// v27 (2026-07-18): FRESH PUBLISH under wallet-we-control 0x177583b2 after
-//   DGX1 reformat destroyed the deploy-wallet 0xc80fe7d6 private key (all its
-//   UpgradeCaps + HouseAdminCaps unrecoverable; old ~10k EVE house 0xecbd158e
-//   written off). Same char-gated + blackjack-fixed source as v26 0x286350ca
+// v27 (2026-07-18): FRESH PUBLISH under wallet-we-control 0x177583b2, done under
+//   the mistaken belief that the DGX1 reformat had destroyed deploy-wallet
+//   0xc80fe7d6's private key. CORRECTION (2026-08-02): that key was NEVER lost —
+//   the casino was deployed from DGX2, not DGX1, so the reformat never touched it.
+//   Its UpgradeCaps/HouseAdminCaps were never unrecoverable, and the ~10k EVE in
+//   house 0xecbd158e was not written off (recovered 2026-07-19, now in v28 house).
+//   Same char-gated + blackjack-fixed source as v26 0x286350ca
 //   (on-chain module sigs verified identical). New pkg == original-id (fresh v1).
 //   UpgradeCap 0x8102d1219cdd51f2f3fdbbf17c8a80675f040832ebf5a51ec703b93fc6fd6355
 //   + HouseAdminCap 0xa1f80727f68bf5a2debb4f6d268454a775864dbf00e58c40f2343e4a348568b5
@@ -355,7 +372,7 @@ export const RANDOM_OBJECT = "0x8";
 //   0x750dcaa9, NOT any older CASINO_ORIGINAL/V* id.
 export const CASINO_PKG_STILLNESS = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12"; // v28 fresh publish vs LIVE world 0x8b8a46ed. Prev v27 0x874f10e0 (wrong world 0x920e577e, unplayable).
 export const CASINO_PKG_V27_STILLNESS_RETIRED = "0x874f10e051f7dff3ff8dfdf9e4e8a63ddb0dd446ea625889f09fb511daed6ac9"; // v27 RETIRED — built vs stale world, unplayable. House drained to v28.
-export const CASINO_PKG_V26_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26 (deploy key 0xc80fe7d6 LOST in reformat — upgrade-frozen).
+export const CASINO_PKG_V26_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26. (Was mislabeled 'deploy key 0xc80fe7d6 lost / upgrade-frozen' — key was on DGX2 all along, never lost.)
 export const CASINO_PKG_V26_GATELESS_STILLNESS = "0x99d3b32f853b7e820d6774c1eb6a889b3484c4b46587eede65a2119f41a1731e"; // intermediate v26 (blackjack fix, NO char gate). Superseded, never funded.
 export const CASINO_PKG_V25_RETIRED_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025"; // v25 (ban-aware house). RETIRED. House 0xecbd158e drained.
 // v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
@@ -443,8 +460,10 @@ export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STIL
 // v27 house (2026-07-18): seeded 500 EVE (0xac361aa5::EVE::EVE) from Raw's wallet.
 //   max_bet 25 EVE, min_bet 0.1 EVE. HouseAdminCap 0xa1f80727f68bf5a2debb4f6d268454a775864dbf00e58c40f2343e4a348568b5
 //   owned by wallet-we-control 0x177583b2 (top-up via house::deposit, risk-params/pause/ban via cap).
-//   Prev v25 house 0xecbd158e (~10k EVE) UNRECOVERABLE — admin key lost in DGX1 reformat.
-export const CASINO_HOUSE_V25_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // RETIRED — key lost.
+//   Prev v25 house 0xecbd158e — was believed UNRECOVERABLE (admin key lost in DGX1 reformat).
+//   CORRECTION (2026-08-02): key was never lost (lived on DGX2). Bankroll was recovered via
+//   the bj_recover.mjs grind on 2026-07-19 and now sits in the v28 house.
+export const CASINO_HOUSE_V25_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // RETIRED (drained, superseded).
 export const CASINO_HOUSE_V27_STILLNESS_RETIRED = "0x30807c9be2bd9fb2c1ce568164121db9a693b2fa85ed695d4b4f8a73c472ae62"; // v27 house RETIRED (drained to v28).
 export const CASINO_HOUSE_STILLNESS = "0xffec6683120f55e155d389e6bf5d79621da27402353acdd421e1f98d55b0af0d"; // v28 live house (10,145 EVE seed, migrated from v27).
 export const CASINO_HOUSE = _serverEnv === "stillness" ? CASINO_HOUSE_STILLNESS : "";

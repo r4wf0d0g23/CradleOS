@@ -2,11 +2,20 @@
 # This file contains metadata about published versions of this package in different environments
 # This file SHOULD be committed to source control
 
+[published.testnet]
+chain-id = "4c78adac"
+published-at = "0xeb814b97c4789a0acdac143618d811b7fc3477259f4f1599ddaa9e07808919e1"
+original-id = "0xeb814b97c4789a0acdac143618d811b7fc3477259f4f1599ddaa9e07808919e1"
+version = 1
+toolchain-version = "1.75.2"
+build-config = { flavor = "sui", edition = "2024" }
+upgrade-capability = "0xb0a8cf01d171a2a03f4c9e55821db95a4aed66b384732fd8d25e2182b5bafcf8"
+
 [published.testnet_stillness]
 chain-id = "4c78adac"
-published-at = "0xed5bd21e1e351713bbb69db23de82c6c0a5551a04cfb24eb10df13296b12bef4"
-original-id = "0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e"
-version = 3
-toolchain-version = "1.70.2"
+published-at = "0xad54b2f76b1d8cb9fc684b681f4e330e5386c82330616bcfe61deadf0d1eafc2"
+original-id = "0xad54b2f76b1d8cb9fc684b681f4e330e5386c82330616bcfe61deadf0d1eafc2"
+version = 1
+toolchain-version = "1.76.0"
 build-config = { flavor = "sui", edition = "2024" }
-upgrade-capability = "0x4a2ee8d3c671bd3ecde115e5c4c0bbf3cec12cae77f4737c2f1aaedd98423c83"
+upgrade-capability = "0x44e3a4f45eab4705d1dc9879f6d26ae9fd52bd871da97124803a244c45a27ae9"

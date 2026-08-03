@@ -5,13 +5,13 @@
 version = 4
 
 [pinned.testnet.MoveStdlib]
-source = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "718ae563a42fb4ba0d055588f81c704dcef58c25" }
+source = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "b9149cbf0b2cb9ae5ed830407a9b48c7ae3fd36c" }
 use_environment = "testnet"
 manifest_digest = "C4FE4C91DE74CBF223B2E380AE40F592177D21870DC2D7EB6227D2D694E05363"
 deps = {}
 
 [pinned.testnet.Sui]
-source = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "718ae563a42fb4ba0d055588f81c704dcef58c25" }
+source = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "b9149cbf0b2cb9ae5ed830407a9b48c7ae3fd36c" }
 use_environment = "testnet"
 manifest_digest = "7AFB66695545775FBFBB2D3078ADFD084244D5002392E837FDE21D9EA1C6D01C"
 deps = { MoveStdlib = "MoveStdlib" }
@@ -19,13 +19,35 @@ deps = { MoveStdlib = "MoveStdlib" }
 [pinned.testnet.cradleos_casino]
 source = { root = true }
 use_environment = "testnet"
+manifest_digest = "83505CAE71BC9ABEF9B2D8F5472CAB101EB41B2DF90FE8CB78CD05632A6D6789"
+deps = { std = "MoveStdlib", sui = "Sui", world = "world" }
+
+[pinned.testnet.world]
+source = { local = "../world-contracts/contracts/world" }
+use_environment = "testnet"
 manifest_digest = "5745706258F61D6CE210904B3E6AE87A73CE9D31A6F93BE4718C442529332A87"
 deps = { std = "MoveStdlib", sui = "Sui" }
 
-[env]
+[pinned.testnet_stillness.MoveStdlib]
+source = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "b9149cbf0b2cb9ae5ed830407a9b48c7ae3fd36c" }
+use_environment = "testnet_stillness"
+manifest_digest = "C4FE4C91DE74CBF223B2E380AE40F592177D21870DC2D7EB6227D2D694E05363"
+deps = {}
 
-[env.testnet_stillness]
-chain-id = "4c78adac"
-original-published-id = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164"
-latest-published-id = "0x2bb78383a30a5ffb2644c8201e54f74969b44c3c05eb5646a4a00981e50e6f6b"
-published-version = "23"
+[pinned.testnet_stillness.Sui]
+source = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "b9149cbf0b2cb9ae5ed830407a9b48c7ae3fd36c" }
+use_environment = "testnet_stillness"
+manifest_digest = "38D8855849DF7CA0FAD3B9510DD9EC3755149F5B283E45CA6547194ADFF90D73"
+deps = { MoveStdlib = "MoveStdlib" }
+
+[pinned.testnet_stillness.cradleos_casino]
+source = { root = true }
+use_environment = "testnet_stillness"
+manifest_digest = "CF0A2F9354062BBF9E2E876CBC5ACA5D4903BD235C60C5064415BF1B841D7333"
+deps = { std = "MoveStdlib", sui = "Sui", world = "world" }
+
+[pinned.testnet_stillness.world]
+source = { local = "../world-contracts/contracts/world" }
+use_environment = "testnet_stillness"
+manifest_digest = "16363423CD37589C5B9A56E3F9E984FED988276E0134635135B45CB4480A9484"
+deps = { std = "MoveStdlib", sui = "Sui" }
