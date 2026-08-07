@@ -137,8 +137,21 @@ module cradleos_casino::keno {
         assert!(valid_picks(&picks), EBadParams);
         let num_picks = vector::length(&picks);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
-        house::assert_exposure(house, amount * MAX_MULT_X);
+        // Exposure is bounded by the top multiplier for THIS pick count, not by
+        // the global 6-pick worst case (MAX_MULT_X = 970x).
+        //
+        // Keno's top multiplier varies enormously by pick count:
+        //   1 pick 3.85x | 2 13x | 3 25x | 4 47x | 5 295x | 6 970x
+        //
+        // Using 970x for every bet is SAFE (it over-reserves, never under-
+        // reserves) but wildly over-restrictive at low pick counts: at a
+        // 9,851 EVE bank it caps a 1-pick bet at 0.20 EVE instead of 51.17 EVE
+        // -- 252x too tight, consuming 0.0079% of the exposure budget. The
+        // original code guarded per-pick-count for exactly this reason; the
+        // payout-ceiling API preserves that precision.
+        let max_payout_gross = (((coin::value(&wager) as u128)
+            * (top_multiplier_bps(num_picks) as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
