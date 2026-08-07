@@ -431,6 +431,36 @@ export function CasinoPanel() {
             <div style={{ color: ACCENT, fontSize: 22, fontWeight: 800, letterSpacing: "0.12em" }}>◈ CRADLE CASINO</div>
             <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>INTERACTIVE BLACKJACK · PROVABLY FAIR · SETTLED IN $EVE</div>
           </div>
+
+          {/* DONATE — centered in the header's dead space between the title block
+              and the stats row. `flex:1` + centered content claims the gap that
+              space-between was leaving empty, and it collapses gracefully when
+              the header wraps on narrow/kiosk widths.
+              Hidden while already on the bankroll view (nothing to navigate to). */}
+          {casinoView.mode !== "bankroll" && (
+            <div style={{ flex: "1 1 auto", display: "flex", justifyContent: "center", minWidth: 140 }}>
+              <button
+                type="button"
+                onClick={openBankroll}
+                title="Donate $EVE to the house bank — raises max bets for everyone"
+                style={{
+                  background: `linear-gradient(180deg, ${GOLD}22, ${GOLD}11)`,
+                  border: `1px solid ${GOLD}66`,
+                  color: GOLD,
+                  fontSize: 13,
+                  fontWeight: 800,
+                  letterSpacing: "0.14em",
+                  padding: "10px 22px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  font: "inherit",
+                }}
+              >
+                ◈ DONATE
+              </button>
+            </div>
+          )}
+
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             {/* HOUSE BANK doubles as the entry point to the bankroll panel: a
                 player thinking about the house bank is looking at this number,
