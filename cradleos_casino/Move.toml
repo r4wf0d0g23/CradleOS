@@ -2,7 +2,7 @@
 name = "cradleos_casino"
 edition = "2024"
 
-published-at = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c"
+published-at = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12"
 
 [dependencies]
 # Sui framework is provided implicitly by the toolchain (system dependency).
