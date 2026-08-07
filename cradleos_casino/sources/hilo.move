@@ -84,8 +84,11 @@ module cradleos_casino::hilo {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
-        house::assert_exposure(house, amount * MAX_MULT_X);
+        // Use the EXACT worst case (12.74x, the 1-winner side) rather than the
+        // rounded MAX_MULT_X (13x). The original code guarded on both; keeping
+        // only the rounded form would silently loosen the reservation by ~2%.
+        let max_payout_gross = max_payout(coin::value(&wager));
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -134,10 +137,10 @@ module cradleos_casino::hilo {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
         // Worst-case settle payout is the 1-winner side (12.74x) — guard now so
-        // settle can never brick on exposure.
-        house::assert_exposure(house, amount * MAX_MULT_X);
+        // settle can never brick on exposure. Exact, not the rounded 13x.
+        let max_payout_gross = max_payout(coin::value(&wager));
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
 
         let mut g = random::new_generator(r, ctx);
         let base = random::generate_u8_in_range(&mut g, 0, 12);
