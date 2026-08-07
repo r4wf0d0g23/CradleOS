@@ -188,6 +188,81 @@ module cradleos_casino::house {
         });
     }
 
+    // ── Public donations (v29) ─────────────────────────────────────────────
+    //
+    // PERMISSIONLESS bankroll gifting. Anyone can strengthen the House bank
+    // without holding a HouseAdminCap. Deliberate design notes:
+    //
+    //   * NO admin cap        — that's the whole point; this is public.
+    //   * NO ban-list gate    — a banned *bettor* is barred from wagering, but
+    //                           barring them from GIFTING the bank protects
+    //                           nobody and creates a pointless griefing surface.
+    //   * NO Character gate   — unlike every wager path (v26 identity gate),
+    //                           donations carry zero adverse-selection risk, so
+    //                           any raw wallet may donate. Requiring a live
+    //                           in-game Character would only block goodwill.
+    //   * NOT counted in total_wagered — a donation is not a bet. Mixing it in
+    //                           would corrupt the house-edge / RTP analytics.
+    //   * Separate `Donation` event — the donor leaderboard indexer must never
+    //                           confuse a public gift with an admin top-up
+    //                           (`BankrollChanged`). Distinct struct = clean feed.
+    //
+    // Donations are IRREVERSIBLE: funds join the bank and can thereafter only
+    // leave via winner payouts or admin withdraw. The UI states this plainly.
+
+    /// Emitted on every public donation. Indexed to build the donor leaderboard.
+    public struct Donation has copy, drop {
+        house_id: ID,
+        donor: address,
+        amount: u64,
+        /// Free-form donor label (in-game handle, tribe ticker, message).
+        /// Empty vector when the donor chose to stay anonymous. Capped at
+        /// MAX_LABEL_BYTES to keep event payloads bounded.
+        label: vector<u8>,
+        /// Bank balance AFTER this donation landed.
+        new_balance: u64,
+    }
+
+    /// Max bytes accepted for a donor label. Keeps the event payload bounded and
+    /// prevents storage-griefing via absurd strings.
+    const MAX_LABEL_BYTES: u64 = 64;
+    /// Supplied donor label exceeded MAX_LABEL_BYTES.
+    const ELabelTooLong: u64 = 8;
+
+    /// Donate `funds` to the House bankroll. Permissionless — no cap needed.
+    ///
+    /// `label` is an optional UTF-8 donor tag surfaced on the leaderboard; pass
+    /// an empty vector to donate anonymously. Aborts on a zero-value coin (so a
+    /// no-op tx can't spam the donation feed) or an over-long label.
+    ///
+    /// `entry` + non-`public`: this touches no randomness, but keeping it
+    /// non-composable means no external contract can wrap donations into a
+    /// larger PTB, which keeps the leaderboard feed honest (one tx = one
+    /// attributable gift from a real sender).
+    entry fun donate<T>(
+        house: &mut House<T>,
+        funds: Coin<T>,
+        label: vector<u8>,
+        ctx: &TxContext,
+    ) {
+        let amount = coin::value(&funds);
+        assert!(amount > 0, EZeroAmount);
+        assert!(vector::length(&label) <= MAX_LABEL_BYTES, ELabelTooLong);
+        balance::join(&mut house.bank, coin::into_balance(funds));
+        event::emit(Donation {
+            house_id: object::id(house),
+            donor: tx_context::sender(ctx),
+            amount,
+            label,
+            new_balance: balance::value(&house.bank),
+        });
+    }
+
+    /// Anonymous convenience wrapper — donate with no label.
+    entry fun donate_anon<T>(house: &mut House<T>, funds: Coin<T>, ctx: &TxContext) {
+        donate(house, funds, vector[], ctx);
+    }
+
     // ── Ban list admin (v24) ───────────────────────────────────────────────
     public struct AddressBanned has copy, drop { house_id: ID, who: address, banned: bool }
 
@@ -402,6 +477,136 @@ module cradleos_casino::house {
             assert!(amt == 10, 2);
             test_scenario::return_shared(house);
             test_scenario::return_to_sender(&sc, cap);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: a non-admin wallet can donate; bank grows; total_wagered is NOT
+    /// touched (a gift is not a bet) and bets_settled stays put.
+    #[test]
+    fun test_public_donation_grows_bank_without_polluting_wager_stats() {
+        let admin = @0xAD;
+        let donor = @0xD0;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        // A wallet that holds NO admin cap donates.
+        test_scenario::next_tx(&mut sc, donor);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let gift = coin::mint_for_testing<SUI>(750, ctx);
+            donate(&mut house, gift, b"REAPERS", ctx);
+            assert!(bank_balance(&house) == 1_750, 0);
+            // A donation must NOT be counted as a wager — RTP analytics stay clean.
+            assert!(total_wagered(&house) == 0, 1);
+            assert!(total_paid_out(&house) == 0, 2);
+            assert!(bets_settled(&house) == 0, 3);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: anonymous wrapper works and also credits the bank.
+    #[test]
+    fun test_anonymous_donation() {
+        let admin = @0xAD;
+        let donor = @0xD0;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(500, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, donor);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let gift = coin::mint_for_testing<SUI>(250, ctx);
+            donate_anon(&mut house, gift, ctx);
+            assert!(bank_balance(&house) == 750, 0);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: a BANNED wallet may still donate. Banning bars wagering, not gifting.
+    #[test]
+    fun test_banned_wallet_may_still_donate() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let cap = test_scenario::take_from_sender<HouseAdminCap>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            set_banned(&mut house, &cap, admin, ctx);
+            assert!(is_banned(&house, admin), 0);
+            // Banned sender donates anyway -> must succeed.
+            let gift = coin::mint_for_testing<SUI>(400, ctx);
+            donate(&mut house, gift, b"sorry", ctx);
+            assert!(bank_balance(&house) == 1_400, 1);
+            test_scenario::return_shared(house);
+            test_scenario::return_to_sender(&sc, cap);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: zero-value donation aborts — keeps the donation feed free of no-op spam.
+    #[test]
+    #[expected_failure(abort_code = EZeroAmount)]
+    fun test_zero_donation_rejected() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let empty = coin::mint_for_testing<SUI>(0, ctx);
+            donate(&mut house, empty, b"", ctx);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: an over-long donor label aborts (bounded event payloads).
+    #[test]
+    #[expected_failure(abort_code = ELabelTooLong)]
+    fun test_overlong_label_rejected() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(1_000, ctx);
+            let cap = create<SUI>(seed, 100, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let gift = coin::mint_for_testing<SUI>(10, ctx);
+            // 65 bytes > MAX_LABEL_BYTES (64)
+            let long = b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            donate(&mut house, gift, long, ctx);
+            test_scenario::return_shared(house);
         };
         test_scenario::end(sc);
     }
