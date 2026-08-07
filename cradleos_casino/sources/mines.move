@@ -292,6 +292,7 @@ module cradleos_casino::mines {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_multiplier_math() {
@@ -333,13 +334,14 @@ module cradleos_casino::mines {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, 24, ctx);
+            start<SUI>(&mut house, &r, &character, bet, 24, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -352,6 +354,7 @@ module cradleos_casino::mines {
             assert!(game.mine_map < (1u32 << 25), 2);
             test_scenario::return_to_sender(&sc, game);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -369,13 +372,14 @@ module cradleos_casino::mines {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, 1, ctx);
+            start<SUI>(&mut house, &r, &character, bet, 1, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -387,6 +391,7 @@ module cradleos_casino::mines {
             assert!(game.mine_map < (1u32 << 25), 2);
             test_scenario::return_to_sender(&sc, game);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -404,6 +409,7 @@ module cradleos_casino::mines {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         // start (aborts EGameDisabled)
         test_scenario::next_tx(&mut sc, player);
         {
@@ -411,7 +417,7 @@ module cradleos_casino::mines {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, 3, ctx);
+            start<SUI>(&mut house, &r, &character, bet, 3, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -431,6 +437,7 @@ module cradleos_casino::mines {
             reveal<SUI>(&mut house, game, 0, ctx);
             test_scenario::return_shared(house);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }
