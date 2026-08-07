@@ -47,7 +47,6 @@ module cradleos_casino::ore_refine {
 
     // ── Error codes ──────────────────────────────────────────────────────────
     const EInvalidTier: u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // ── Outcome constants ────────────────────────────────────────────────────
     const OUTCOME_SLAG:    u8 = 0;
@@ -134,8 +133,8 @@ module cradleos_casino::ore_refine {
         assert!(tier >= 1 && tier <= 5, EInvalidTier);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -332,7 +331,7 @@ module cradleos_casino::ore_refine {
         test_scenario::end(sc);
     }
 
-    #[test, expected_failure(abort_code = EMaxExposure)]
+    #[test, expected_failure(abort_code = 2, location = cradleos_casino::house)]
     fun test_exposure_guard_tier5_rejects_oversized() {
         let admin  = @0xAD;
         let player = @0xBE;

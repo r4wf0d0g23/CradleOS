@@ -17,7 +17,6 @@ module cradleos_casino::double_dice {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     const KIND_UNDER7:  u8 = 0;
     const KIND_OVER7:   u8 = 1;
@@ -86,8 +85,8 @@ module cradleos_casino::double_dice {
         assert!(kind <= KIND_EXACT, EBadParams);
         if (kind == KIND_EXACT) { assert!(target >= 2 && target <= 12, EBadParams); };
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

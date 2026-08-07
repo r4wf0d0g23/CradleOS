@@ -21,7 +21,6 @@ module cradleos_casino::plinko {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
     const EBadCount:    u64 = 3;
 
@@ -73,8 +72,8 @@ module cradleos_casino::plinko {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -160,9 +159,9 @@ module cradleos_casino::plinko {
         house::assert_character(house, character, ctx);
         assert!(mode <= MODE_HIGH, EBadMode);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
+        let amount = house::take_wager_amount_tiered(house, &wager, mode_max_mult_x(mode), ctx);
         // Per-mode exposure guard: LOW allows far larger bets than HIGH.
-        assert!(amount * mode_max_mult_x(mode) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * mode_max_mult_x(mode));
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -215,20 +214,21 @@ module cradleos_casino::plinko {
         assert!(count >= 2 && count <= 10, EBadCount);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount_multi(house, &wager, (count as u64), ctx);
+        // Compute mult_x before the tiered wager call so it can be passed in.
+        let mult_x = if (mode <= 2) { mode_max_mult_x(mode) } else { MAX_MULT_X };
+        let amount = house::take_wager_amount_multi_tiered(house, &wager, (count as u64), mult_x, ctx);
 
         let per_drop = amount / (count as u64);
         // per_drop must be at least 1 mist (dust check)
         assert!(per_drop >= 1, EBadCount);
 
-        // Exposure guard: per-ball worst-case payout ≤ 3% of bank.
+        // Exposure guard: per-ball worst-case payout ≤ tier-derived budget.
         // Operator ruling (2026-07-11): risk limits evaluate per ball, not total
-        // bet. N single drops each pass the 3%-of-bank guard individually, so
+        // bet. N single drops each pass the tier budget individually, so
         // batching N balls in one tx must not be stricter. The theoretical
         // all-balls-hit-max case (~(1/2048)^N for HIGH edges) is accepted as
         // tolerable tail risk. Any dust (amount - per_drop * count) is house's.
-        let mult_x = if (mode <= 2) { mode_max_mult_x(mode) } else { MAX_MULT_X };
-        assert!(per_drop * mult_x <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, per_drop * mult_x);
 
         house::deposit_stake(house, coin::into_balance(wager));
 

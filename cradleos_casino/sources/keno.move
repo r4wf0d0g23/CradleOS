@@ -21,7 +21,6 @@ module cradleos_casino::keno {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     const POOL: u8 = 40;       // numbers 1..40
     const DRAW: u8 = 10;       // house draws 10
@@ -138,12 +137,8 @@ module cradleos_casino::keno {
         assert!(valid_picks(&picks), EBadParams);
         let num_picks = vector::length(&picks);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        // Guard against the top multiplier for this pick count.
-        let top_bps = top_multiplier_bps(num_picks);
-        let max_pay = (((amount as u128) * (top_bps as u128) / 10000) as u64);
-        assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100 || max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

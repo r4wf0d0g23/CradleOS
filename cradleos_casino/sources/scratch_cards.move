@@ -43,9 +43,6 @@ module cradleos_casino::scratch_cards {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    // ── Error codes ──────────────────────────────────────────────────────────
-    const EMaxExposure: u64 = 0;
-
     // ── Payout tier bps (10 000 = 1.00× gross) ───────────────────────────────
     const TIER_LOSS:  u64 = 0;
     const TIER_1_5X:  u64 = 15_000;     // 1.5× gross
@@ -161,11 +158,8 @@ module cradleos_casino::scratch_cards {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(
-            amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100,
-            EMaxExposure
-        );
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -362,7 +356,7 @@ module cradleos_casino::scratch_cards {
         test_scenario::end(sc);
     }
 
-    #[test, expected_failure(abort_code = EMaxExposure)]
+    #[test, expected_failure(abort_code = 2, location = cradleos_casino::house)]
     fun test_exposure_guard_fires() {
         let admin  = @0xAD;
         let player = @0xBE;

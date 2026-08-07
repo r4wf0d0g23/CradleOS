@@ -26,8 +26,6 @@ module cradleos_casino::money_wheel {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
-
     /// 54-segment wheel. Tiers:
     ///   [0..23]  = 0 bps  (24 bust segments)
     ///   [24..41] = 11000 bps (18 segments, 1.1x)
@@ -78,8 +76,8 @@ module cradleos_casino::money_wheel {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

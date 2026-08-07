@@ -36,7 +36,6 @@ module cradleos_casino::video_poker {
 
     // ── Errors ────────────────────────────────────────────────────────────────
     const ENotHandOwner: u64 = 0;
-    const EMaxExposure:  u64 = 1;
     const EWrongHouse:   u64 = 2;
     /// Game disabled on-chain (v23, 2026-07-12): the full 52-card deck committed
     /// at deal time lives in the player-owned VideoPokerHand object, readable via
@@ -113,9 +112,9 @@ module cradleos_casino::video_poker {
         house::assert_character(house, character, ctx);
         assert!(false, EGameDisabled);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
         // Exposure guard: royal flush = 250x gross payout.
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * MAX_MULT_X);
 
         // Escrow wager inside the hand object (NOT yet in the bank).
         let stake = coin::into_balance(wager);

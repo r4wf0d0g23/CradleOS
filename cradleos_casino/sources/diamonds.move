@@ -18,8 +18,6 @@ module cradleos_casino::diamonds {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
-
     const GEM_TYPES: u8 = 7;
     const DRAWS: u8 = 5;
     /// Gross multipliers (bps) for 3 / 4 / 5 of a kind.
@@ -82,8 +80,8 @@ module cradleos_casino::diamonds {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

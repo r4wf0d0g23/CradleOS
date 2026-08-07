@@ -16,8 +16,6 @@ module cradleos_casino::slots {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
-
     /// Gross multiplier (bps) for triple of symbol s.
     const TRIPLE_BPS: vector<u64> = vector[36000, 50000, 60000, 120000, 180000, 360000, 600000];
     /// Gross multiplier (bps) for exactly two matching symbols.
@@ -56,8 +54,8 @@ module cradleos_casino::slots {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let reel = strip();
