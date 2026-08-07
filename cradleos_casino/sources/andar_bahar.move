@@ -40,7 +40,6 @@ module cradleos_casino::andar_bahar {
 
     // ── Error codes ──────────────────────────────────────────────────────────
     const EInvalidSide:  u64 = 0;
-    const EMaxExposure:  u64 = 1;
 
     // ── Bet sides ────────────────────────────────────────────────────────────
     const ANDAR: u8 = 0;
@@ -100,8 +99,8 @@ module cradleos_casino::andar_bahar {
         assert!(bet_side == ANDAR || bet_side == BAHAR, EInvalidSide);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

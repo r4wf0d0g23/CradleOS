@@ -35,7 +35,6 @@ module cradleos_casino::dragon_tiger {
 
     // ── Error codes ──────────────────────────────────────────────────────────
     const EInvalidBet:  u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // ── Constants ────────────────────────────────────────────────────────────
     const BET_DRAGON: u8 = 0;
@@ -106,8 +105,8 @@ module cradleos_casino::dragon_tiger {
         assert!(bet_type <= BET_TIE, EInvalidBet);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         // Draw two distinct cards from a 52-card deck (without replacement).

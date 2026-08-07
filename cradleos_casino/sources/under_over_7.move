@@ -30,7 +30,6 @@ module cradleos_casino::under_over_7 {
 
     // ── Error codes ──────────────────────────────────────────────────────────
     const EInvalidKind: u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // ── Constants ────────────────────────────────────────────────────────────
     const KIND_UNDER:    u8 = 0;
@@ -92,8 +91,8 @@ module cradleos_casino::under_over_7 {
         assert!(kind <= KIND_OVER, EInvalidKind);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g  = random::new_generator(r, ctx);
@@ -235,7 +234,8 @@ module cradleos_casino::under_over_7 {
         test_scenario::end(sc);
     }
 
-    #[test, expected_failure(abort_code = EMaxExposure)]
+    #[test]
+    #[expected_failure(abort_code = cradleos_casino::house::EBetTooLarge)]
     fun test_exposure_guard_rejects_oversized_bet() {
         let admin  = @0xAD;
         let player = @0xBE;

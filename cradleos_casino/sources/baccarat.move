@@ -21,7 +21,6 @@ module cradleos_casino::baccarat {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     const KIND_PLAYER: u8 = 0;
     const KIND_BANKER: u8 = 1;
@@ -91,8 +90,8 @@ module cradleos_casino::baccarat {
         house::assert_character(house, character, ctx);
         assert!(kind <= KIND_TIE, EBadParams);
         let player_addr = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         // Build + shuffle a 52-card deck (rank = index % 13).

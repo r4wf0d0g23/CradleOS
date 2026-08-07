@@ -32,7 +32,6 @@ module cradleos_casino::hilo {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
     const ENotOwner:    u64 = 2;
     const EWrongHouse:  u64 = 3;
 
@@ -85,9 +84,8 @@ module cradleos_casino::hilo {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(max_payout(amount) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -136,10 +134,10 @@ module cradleos_casino::hilo {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
         // Worst-case settle payout is the 1-winner side (12.74x) — guard now so
         // settle can never brick on exposure.
-        assert!(max_payout(amount) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * MAX_MULT_X);
 
         let mut g = random::new_generator(r, ctx);
         let base = random::generate_u8_in_range(&mut g, 0, 12);

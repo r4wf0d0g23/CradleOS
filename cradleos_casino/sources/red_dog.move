@@ -62,7 +62,6 @@ module cradleos_casino::red_dog {
     use world::character::Character;
 
     // ── Error codes ──────────────────────────────────────────────────────────
-    const EMaxExposure: u64 = 1;
 
     // ── Payout constants (gross bps; 10 000 = 1.00× stake returned) ─────────
     const BPS_PAIR_MATCH:  u64 = 120_000;  // 12× gross = 11:1 net
@@ -169,9 +168,9 @@ module cradleos_casino::red_dog {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
         // Exposure guard: max gross is 12× (pair match)
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
