@@ -39,7 +39,6 @@ import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
 import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
 import { CasinoPanel } from "./components/CasinoPanel";
-import { HouseDonatePanel } from "./components/HouseDonatePanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
 
@@ -427,7 +426,7 @@ function haNodes(status: PrivateNodeStatusValue): HaNode[] {
   }];
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "bankroll";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -858,16 +857,7 @@ function AppInner() {
         "Shuffle, deal, and settlement all resolve together — no re-rolling a loss, no house cheating",
         "Blackjack pays 3:2; wins pay even money; ties push",
         "The provably-fair feed shows every recent hand — verifiable on-chain",
-      ],
-    },
-    bankroll: {
-      title: "Bankroll the House — public $EVE donations that raise max bets for everyone",
-      steps: [
-        "The House is a shared Move object, NOT a wallet — never send $EVE directly to its object id, a naked transfer to a shared object is unrecoverable",
-        "Donations go through house::donate, which anyone can call — no admin capability required",
-        "A deeper bank raises the single-bet exposure budget, which raises max bets across every game automatically",
-        "Max bet is derived per game as (bank x tier%) / payout multiplier — high-multiplier games like Keno cap lower because one win costs the bank more",
-        "Donations are IRREVERSIBLE and pay no return — this is not an investment; funds only leave as player winnings or operator withdrawal",
+        "Bankroll the House (via the HOUSE BANK stat or the lobby button): donate $EVE to raise max bets for everyone — the House is a shared Move object, never send $EVE to its object id directly",
       ],
     },
   };
@@ -884,7 +874,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino", bankroll: "bankroll",
+      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
       voting: "voting",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
@@ -1020,7 +1010,7 @@ function AppInner() {
               // is regenerated with full type-name coverage. Panel + data file
               // intentionally kept on disk for fast revival.
               const ORDER: Tab[] = [
-                "casino", "bankroll",
+                "casino",
                 "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
                 "query", "gamedata", "dapps",
@@ -1058,7 +1048,6 @@ function AppInner() {
                 : tab === "cipher"     ? "CIPHER"
                 : tab === "voting"     ? "VOTE"
                 : tab === "casino"     ? "CASINO"
-                : tab === "bankroll"   ? "BANKROLL"
                 : tab.toUpperCase();
               return (
                 <button
@@ -1338,7 +1327,7 @@ function AppInner() {
             "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
             static data; public, no wallet required. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "bankroll", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
           const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata"]);
           return account || PUBLIC_TABS.has(tab);
@@ -1401,7 +1390,6 @@ function AppInner() {
                   : tab === "cipher"    ? "⊕ Cipher"
                   : tab === "voting"    ? "Vote"
                   : tab === "casino"    ? "◆ BJ"
-                  : tab === "bankroll"  ? "◈ BANK"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
@@ -1431,7 +1419,6 @@ function AppInner() {
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
                   : tab === "voting"        ? "◣ Elections"
                   : tab === "casino"        ? "◆ Casino"
-                  : tab === "bankroll"      ? "◈ Bankroll"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
@@ -1492,8 +1479,9 @@ function AppInner() {
           {activeTab === "gamedata"      && <div style={{ background: "transparent" }} className="content-panel"><GameDataPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
+          {/* Bankroll lives INSIDE CasinoPanel (casinoView.mode === "bankroll"),
+              not as a top-level tab: it is casino infrastructure, not a domain. */}
           {activeTab === "casino"        && <div style={{ background: "transparent" }} className="content-panel"><CasinoPanel /></div>}
-          {activeTab === "bankroll"      && <div style={{ background: "transparent" }} className="content-panel"><HouseDonatePanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}

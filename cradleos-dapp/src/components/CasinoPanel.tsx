@@ -39,6 +39,7 @@ import { InstantGamePanel } from "./InstantGamePanel";
 import { MinesPanel } from "./MinesPanel";
 import { DragonTowerPanel } from "./DragonTowerPanel";
 import { VideoPokerPanel } from "./VideoPokerPanel";
+import { HouseDonatePanel } from "./HouseDonatePanel";
 import type { InstantGameKey } from "../lib/casinoGames";
 import {
   CASINO_CATALOG,
@@ -139,7 +140,14 @@ export function CasinoPanel() {
   const addr = account?.address ?? "";
 
   // ── Router state (Phase 1 nav) ────────────────────────────────────────────
-  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game"; gameKey: string }>({
+  //
+  // "bankroll" is a third mode rather than a CASINO_CATALOG entry: the catalog is
+  // a registry of GAMES (variance, buildClass, category rail, search index, 3D
+  // floor). Bankroll is house infrastructure, not something you play, so adding
+  // it there would pollute all of those surfaces. It was briefly a TOP-LEVEL app
+  // tab (2026-08-07) — wrong: it is meaningless outside casino context, and
+  // top-level slots are scarce (see NAV_PLAN.md, flat bar dies ~25 games).
+  const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game" | "bankroll"; gameKey: string }>({
     mode: "lobby",
     gameKey: "blackjack",
   });
@@ -382,6 +390,7 @@ export function CasinoPanel() {
     setCasinoView({ mode: "game", gameKey: key });
   };
   const backToLobby = () => setCasinoView((prev) => ({ mode: "lobby", gameKey: prev.gameKey }));
+  const openBankroll = () => setCasinoView((prev) => ({ mode: "bankroll", gameKey: prev.gameKey }));
 
   if (!CASINO_AVAILABLE) return <div style={{ color: "#888", padding: 24 }}>Casino is only available on Stillness.</div>;
 
@@ -423,15 +432,34 @@ export function CasinoPanel() {
             <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>INTERACTIVE BLACKJACK · PROVABLY FAIR · SETTLED IN $EVE</div>
           </div>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            <Stat label="HOUSE BANK" value={house ? `${fmtEve(house.bankBalance)} EVE` : "—"} />
+            {/* HOUSE BANK doubles as the entry point to the bankroll panel: a
+                player thinking about the house bank is looking at this number,
+                so it is the natural place to click through from. */}
+            <Stat
+              label="HOUSE BANK"
+              value={house ? `${fmtEve(house.bankBalance)} EVE` : "—"}
+              onClick={openBankroll}
+              title="Bankroll the house — donate $EVE, raise max bets"
+            />
             <Stat label="HANDS" value={house ? String(house.betsSettled) : "—"} />
             <Stat label="YOUR $EVE" value={addr ? fmtEve(myEve) : "connect"} color={GOLD} />
           </div>
         </div>
       </div>
 
-      {/* ── Lobby / Game Router ── */}
-      {casinoView.mode === "lobby" ? (
+      {/* ── Lobby / Bankroll / Game Router ── */}
+      {casinoView.mode === "bankroll" ? (
+
+        /* ── BANKROLL (house infrastructure, not a game) ── */
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+            <button type="button" onClick={backToLobby} style={chip}>← LOBBY</button>
+            <span style={{ color: "#9a9a8a", fontSize: 11, letterSpacing: "0.08em" }}>CASINO / BANKROLL</span>
+          </div>
+          <HouseDonatePanel />
+        </div>
+
+      ) : casinoView.mode === "lobby" ? (
 
         /* ── LOBBY ── */
         <div>
@@ -480,6 +508,27 @@ export function CasinoPanel() {
               ))}
             </div>
           )}
+
+          {/* Bankroll the House — house infrastructure, surfaced after the game
+              grid so it reads as "support the casino", not as another game. */}
+          <button
+            type="button"
+            onClick={openBankroll}
+            style={{
+              width: "100%", marginTop: 16, padding: "14px 16px",
+              background: "rgba(232,184,75,0.06)", border: `1px solid ${GOLD}44`,
+              color: "#eee", cursor: "pointer", textAlign: "left", font: "inherit",
+            }}
+          >
+            <div style={{ color: GOLD, fontSize: 13, fontWeight: 800, letterSpacing: "0.1em" }}>
+              ◈ BANKROLL THE HOUSE
+            </div>
+            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 3 }}>
+              {house
+                ? `Bank ${fmtEve(house.bankBalance)} EVE · donate $EVE to raise max bets for everyone`
+                : "Donate $EVE to raise max bets for everyone"}
+            </div>
+          </button>
         </div>
 
       ) : (
@@ -637,8 +686,32 @@ async function fetchHouseStateLive() {
 
 // ── Shared display helpers ────────────────────────────────────────────────────
 
-function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
-  return (<div><div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em" }}>{label}</div><div style={{ color: color ?? ACCENT, fontSize: 18, fontWeight: 800 }}>{value}</div></div>);
+function Stat({ label, value, color, onClick, title }: { label: string; value: string; color?: string; onClick?: () => void; title?: string }) {
+  const body = (
+    <>
+      <div style={{ color: "#888", fontSize: 10, letterSpacing: "0.06em" }}>
+        {label}{onClick ? <span style={{ color: GOLD, marginLeft: 4 }}>▸</span> : null}
+      </div>
+      <div style={{ color: color ?? ACCENT, fontSize: 18, fontWeight: 800 }}>{value}</div>
+    </>
+  );
+  if (!onClick) return <div>{body}</div>;
+  // Clickable stat: real <button> so it is keyboard-reachable, styled flat so it
+  // reads as a stat rather than a form control.
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      style={{
+        background: "none", border: "none", padding: 0, margin: 0,
+        textAlign: "left", cursor: "pointer", font: "inherit",
+        borderBottom: `1px dashed ${GOLD}55`,
+      }}
+    >
+      {body}
+    </button>
+  );
 }
 function Center({ text, color }: { text: string; color: string }) {
   return <div style={{ color, fontSize: 13, textAlign: "center", padding: 10 }}>{text}</div>;
