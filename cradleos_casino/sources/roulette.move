@@ -9,7 +9,6 @@ module cradleos_casino::roulette {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // Bet kinds
     const KIND_STRAIGHT: u8 = 0; // target 0-36, pays 36x
@@ -84,8 +83,8 @@ module cradleos_casino::roulette {
         house::assert_character(house, character, ctx);
         assert!(valid_bet(bet_kind, bet_target), EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * max_multiplier(bet_kind) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = coin::value(&wager) * max_multiplier(bet_kind);
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

@@ -23,7 +23,6 @@ module cradleos_casino::limbo {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     /// Minimum target multiplier in bps (1.01x; 10000 bps = 1.00x).
     const MIN_TARGET_BPS: u64 = 10_100;
@@ -72,8 +71,8 @@ module cradleos_casino::limbo {
         house::assert_character(house, character, ctx);
         assert!(target_bps >= MIN_TARGET_BPS && target_bps <= MAX_TARGET_BPS, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(max_payout(amount, target_bps) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = max_payout(coin::value(&wager), target_bps);
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

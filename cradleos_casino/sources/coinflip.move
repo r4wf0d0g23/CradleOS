@@ -9,7 +9,6 @@ module cradleos_casino::coinflip {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     /// Gross win multiplier in basis points (10000 = 1x). 19600 = 1.96x → 2% edge.
     const WIN_BPS: u64 = 19600;
@@ -40,10 +39,8 @@ module cradleos_casino::coinflip {
         house::assert_character(house, character, ctx);
         assert!(choice <= 1, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        // 3%-bankroll exposure rule: max possible payout must fit the budget.
-        let max_payout = (((amount as u128) * (WIN_BPS as u128) / 10000) as u64);
-        assert!(max_payout <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let max_payout = (((coin::value(&wager) as u128) * (WIN_BPS as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

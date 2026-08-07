@@ -165,7 +165,13 @@ module cradleos_casino::blackjack_live {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
+        // Tier-derived exposure check. Worst-case gross payout at deal time:
+        // player may double (stake → 2W) and win (payout → 4W), or split both
+        // hands and win both (also 4W). Natural blackjack without doubling is
+        // only 2.5W, so the 4W ceiling is the binding worst case.
+        let wager_value = coin::value(&wager);
+        let max_payout_gross = wager_value * 4;
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
         let stake = coin::into_balance(wager);
 
         let mut generator = random::new_generator(r, ctx);

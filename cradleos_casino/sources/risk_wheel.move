@@ -20,7 +20,6 @@ module cradleos_casino::risk_wheel {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
 
     const RISK_LOW:  u8 = 0;
@@ -96,11 +95,11 @@ module cradleos_casino::risk_wheel {
         house::assert_character(house, character, ctx);
         assert!(mode <= RISK_HIGH, EBadMode);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
         let max_mult = if      (mode == RISK_LOW) MAX_MULT_LOW
                        else if (mode == RISK_MED) MAX_MULT_MED
                        else                       MAX_MULT_HIGH;
-        assert!(amount * max_mult <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = coin::value(&wager) * max_mult;
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

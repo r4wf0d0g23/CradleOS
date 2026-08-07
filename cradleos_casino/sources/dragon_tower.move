@@ -30,7 +30,6 @@ module cradleos_casino::dragon_tower {
     const EBadParams:    u64 = 2;
     const ENoRows:       u64 = 3;
     const EWrongHouse:   u64 = 4;
-    const EMaxExposure:  u64 = 5;
     /// Game disabled on-chain (v22, 2026-07-12): the pre-drawn dragon layout was
     /// stored in the player-owned TowerGame object, making it readable via
     /// sui_getObject BEFORE picking — a solution leak (RTP observed ~239%). New
@@ -112,10 +111,11 @@ module cradleos_casino::dragon_tower {
         assert!(false, EGameDisabled);
         assert!(difficulty <= DIFF_HARD, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
+        // Exposure: the house must be able to pay the full 9-row climb.
+        // Ceiling = wager × top_multiplier(difficulty), checked against tier budget.
         let top = top_multiplier(difficulty);
-        let max_pay = (((amount as u128) * (top as u128) / 10000) as u64);
-        assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let max_pay = (((coin::value(&wager) as u128) * (top as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_pay, ctx);
 
         let (tiles, _dragons) = params(difficulty);
         let mut g = random::new_generator(r, ctx);

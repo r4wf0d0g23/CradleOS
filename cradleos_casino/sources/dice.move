@@ -9,7 +9,6 @@ module cradleos_casino::dice {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     public struct DiceRolled has copy, drop {
         player: address,
@@ -53,8 +52,8 @@ module cradleos_casino::dice {
         let chance = win_chance(target, over);
         assert!(chance >= 2 && chance <= 96, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(max_payout(amount, target, over) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = max_payout(coin::value(&wager), target, over);
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
