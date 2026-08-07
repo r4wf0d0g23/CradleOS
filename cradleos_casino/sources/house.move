@@ -37,6 +37,10 @@ module cradleos_casino::house {
     const EBanned:            u64 = 6;
     /// The supplied Character is not owned by the tx sender (v26 identity gate).
     const ENotCharacterOwner: u64 = 7;
+    /// Worst-case payout on this bet exceeds the current tier's exposure budget
+    /// (v29). Mirrors each game's legacy local `EMaxExposure`, but centralised so
+    /// the budget is tier-derived rather than a hardcoded 3% per module.
+    const EMaxExposureExceeded: u64 = 9;
 
     /// Dynamic-field key for the lazily-created VecSet<address> ban list (v24).
     /// Stored as a dynamic field (NOT a struct field) so this is upgrade-safe —
@@ -328,6 +332,75 @@ module cradleos_casino::house {
         let per_bet = amount / count;
         assert!(per_bet >= house.min_bet, EBetBelowMin);
         assert!(per_bet <= effective_max_bet(house, max_mult_x), EBetTooLarge);
+        amount
+    }
+
+    // ── Payout-ceiling API (v29) ───────────────────────────────────────────
+    //
+    // WHY A SECOND SHAPE EXISTS
+    // ────────────────────────────────────────────────────────────────────────
+    // `*_tiered` above assumes ONE fixed worst-case multiplier per game
+    // (`MAX_MULT_X`). That holds for 19 of 30 casino modules. The other 11 have a
+    // payout ceiling that depends on the player's chosen parameters, not a
+    // constant:
+    //
+    //   crash / limbo  -> f(target_bps)      dice -> f(target, over)
+    //   coinflip       -> amount * WIN_BPS   mines / dragon_tower / blackjack_live
+    //                                        -> depends on progression
+    //
+    // Those modules already compute an exact `max_payout` before betting. Forcing
+    // them through a multiplier would mean inventing a synthetic worst case and
+    // rounding it — losing precision on exactly the games where the ceiling is
+    // most dynamic. So this variant accepts the COMPUTED CEILING directly.
+    //
+    // This is the general form: `take_wager_tiered(h, w, m, ctx)` is equivalent to
+    // `take_wager_exposure(h, w, amount * m, ctx)`. Both are kept because passing
+    // a constant multiplier is clearer at the ~19 fixed-multiplier call sites.
+
+    /// Wager is rejected when its worst-case gross payout exceeds the tier's
+    /// single-bet exposure budget. `max_payout_gross` is the largest amount the
+    /// house could owe on this bet (stake included), computed by the game.
+    ///
+    /// This supersedes the per-game `amount * MULT <= bank * 3 / 100` guard: the
+    /// share is now tier-derived rather than a hardcoded 3%.
+    public(package) fun assert_exposure<T>(house: &House<T>, max_payout_gross: u64) {
+        assert!(max_payout_gross <= max_exposure(house), EMaxExposureExceeded);
+    }
+
+    /// Tier-aware validation against a COMPUTED payout ceiling, absorbing the
+    /// stake into the bank. Use for variable-payout games.
+    public(package) fun take_wager_exposure<T>(
+        house: &mut House<T>,
+        wager: Coin<T>,
+        max_payout_gross: u64,
+        ctx: &TxContext,
+    ): u64 {
+        assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
+        let amount = coin::value(&wager);
+        assert!(amount >= house.min_bet, EBetBelowMin);
+        // Absolute admin ceiling still applies.
+        assert!(amount <= house.max_bet, EBetTooLarge);
+        assert!(max_payout_gross <= max_exposure(house), EMaxExposureExceeded);
+        balance::join(&mut house.bank, coin::into_balance(wager));
+        house.total_wagered = house.total_wagered + amount;
+        amount
+    }
+
+    /// Non-absorbing variant of `take_wager_exposure` (commit-reveal / escrow
+    /// games that bank the stake only at settlement).
+    public(package) fun take_wager_amount_exposure<T>(
+        house: &House<T>,
+        wager: &Coin<T>,
+        max_payout_gross: u64,
+        ctx: &TxContext,
+    ): u64 {
+        assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
+        let amount = coin::value(wager);
+        assert!(amount >= house.min_bet, EBetBelowMin);
+        assert!(amount <= house.max_bet, EBetTooLarge);
+        assert!(max_payout_gross <= max_exposure(house), EMaxExposureExceeded);
         amount
     }
 
@@ -824,6 +897,142 @@ module cradleos_casino::house {
                 i = i + 1;
             };
             test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: the payout-ceiling API is the GENERAL form of the multiplier API.
+    /// take_wager_tiered(h,w,m) must be equivalent to
+    /// take_wager_exposure(h,w,amount*m) for the same bet.
+    #[test]
+    fun test_exposure_api_equivalent_to_multiplier_api() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            let exposure = max_exposure(&house);
+            // The multiplier cap for 970x, expressed as a payout ceiling, is the
+            // largest stake whose stake*970 still fits the exposure budget.
+            let cap_mult = effective_max_bet(&house, 970);
+            assert!(cap_mult * 970 <= exposure, 0);
+            // One unit more must breach it (proves the cap is tight, not loose).
+            assert!((cap_mult + 1) * 970 > exposure, 1);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: a variable-payout bet whose computed ceiling fits the budget is
+    /// accepted, and the stake lands in the bank.
+    #[test]
+    fun test_take_wager_exposure_accepts_within_budget() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let budget = max_exposure(&house);
+            let bank_before = bank_balance(&house);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(10 * EVE, ctx);
+            // Worst case exactly AT the budget -> allowed (inclusive bound).
+            let amt = take_wager_exposure(&mut house, bet, budget, ctx);
+            assert!(amt == 10 * EVE, 0);
+            assert!(bank_balance(&house) == bank_before + 10 * EVE, 1);
+            assert!(total_wagered(&house) == 10 * EVE, 2);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: a ceiling one unit over the budget aborts. This is the guard that
+    /// replaces each game's hardcoded `bank * 3 / 100` check.
+    #[test]
+    #[expected_failure(abort_code = EMaxExposureExceeded)]
+    fun test_take_wager_exposure_rejects_over_budget() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let budget = max_exposure(&house);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(1 * EVE, ctx);
+            let _ = take_wager_exposure(&mut house, bet, budget + 1, ctx);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: the non-absorbing variant validates without banking the stake —
+    /// escrow games must not see their bank grow at bet time.
+    #[test]
+    fun test_take_wager_amount_exposure_does_not_bank_stake() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            let budget = max_exposure(&house);
+            let bank_before = bank_balance(&house);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(5 * EVE, ctx);
+            let amt = take_wager_amount_exposure(&house, &bet, budget, ctx);
+            assert!(amt == 5 * EVE, 0);
+            assert!(bank_balance(&house) == bank_before, 1); // untouched
+            assert!(total_wagered(&house) == 0, 2);          // not yet a wager
+            coin::burn_for_testing(bet);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: the admin's flat max_bet still clamps the exposure path, even when
+    /// the payout ceiling would otherwise fit the budget.
+    #[test]
+    #[expected_failure(abort_code = EBetTooLarge)]
+    fun test_exposure_path_still_respects_admin_max_bet() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(9_851 * EVE, ctx);
+            let cap = create<SUI>(seed, 5 * EVE, 1, ctx); // hard 5 EVE ceiling
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(6 * EVE, ctx); // > 5 EVE
+            let _ = take_wager_exposure(&mut house, bet, 1, ctx);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// v29: paused house rejects the exposure path too (kill switch is global).
+    #[test]
+    #[expected_failure(abort_code = EGamePaused)]
+    fun test_exposure_path_respects_pause() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let cap = test_scenario::take_from_sender<HouseAdminCap>(&sc);
+            set_risk_params(&mut house, &cap, 1_000_000 * EVE, 1, true); // paused
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(1 * EVE, ctx);
+            let _ = take_wager_exposure(&mut house, bet, 1, ctx);
+            test_scenario::return_shared(house);
+            test_scenario::return_to_sender(&sc, cap);
         };
         test_scenario::end(sc);
     }
