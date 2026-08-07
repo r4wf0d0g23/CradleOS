@@ -7,6 +7,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
   CASINO_ORIGINAL,
+  CASINO_V28,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -416,10 +417,33 @@ export interface DonationRecord {
 /** Recent public donations, newest first. Feeds the donor leaderboard. */
 export async function fetchRecentDonations(houseId: string, limit = 50): Promise<DonationRecord[]> {
   if (!CASINO_PKG) return [];
-  const result = await rpc("suix_queryEvents", [
-    { MoveEventType: `${CASINO_ORIGINAL}::house::Donation` },
-    null, limit, true, // descending = newest first
-  ]);
+  // PACKAGE-ID CARE: `Donation` was introduced by the v29 upgrade, so it tags
+  // under the CURRENT package id -- NOT CASINO_ORIGINAL (the v1 lineage
+  // 0x461d1296), which never declared this struct. Querying the original id
+  // would silently return zero rows forever: the documented wrong-package-id
+  // failure mode. Query current + prior lineage ids and de-dupe, so the feed
+  // keeps working across the next upgrade without another edit.
+  const pkgs = Array.from(new Set([CASINO_PKG, CASINO_V28].filter(Boolean)));
+  const settled = await Promise.all(
+    pkgs.map((pkg) =>
+      rpc("suix_queryEvents", [
+        { MoveEventType: `${pkg}::house::Donation` },
+        null, limit, true, // descending = newest first
+      ]).catch(() => ({ data: [] })),
+    ),
+  );
+  const seen = new Set<string>();
+  const mergedEvents: any[] = [];
+  for (const res of settled) {
+    for (const e of res?.data ?? []) {
+      const key = `${e.id?.txDigest}:${e.id?.eventSeq}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      mergedEvents.push(e);
+    }
+  }
+  mergedEvents.sort((a, b) => Number(b.timestampMs ?? 0) - Number(a.timestampMs ?? 0));
+  const result = { data: mergedEvents.slice(0, limit) };
   const dec = new TextDecoder();
   const out: DonationRecord[] = [];
   for (const e of result.data ?? []) {

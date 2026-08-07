@@ -370,7 +370,13 @@ export const RANDOM_OBJECT = "0x8";
 //   0x8b8a46ed. Bankroll (10,145 EVE) migrated v27 house -> v28 house via
 //   withdraw+create_and_share (we hold both admin caps). New events tag under
 //   0x750dcaa9, NOT any older CASINO_ORIGINAL/V* id.
-export const CASINO_PKG_STILLNESS = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12"; // v28 fresh publish vs LIVE world 0x8b8a46ed. Prev v27 0x874f10e0 (wrong world 0x920e577e, unplayable).
+// v29 UPGRADE (2026-08-07, tx EXQfJWqtSLyjxuZjM6pCAvprinmkKCaqxYP7cMtbmhB7).
+// Adds public house::donate/donate_anon + tier-derived exposure budget.
+// This is the moveCall TARGET (published-at). The v28 id 0x750dcaa9 remains the
+// original-id / event-type origin -- see CASINO_V28 below. Upgrade (not fresh
+// publish), so the live House 0xffec6683 and its bank carry over untouched.
+export const CASINO_PKG_STILLNESS = "0x5008cde6a70013b68e7290b6780e5a07302818fa7eaea5f3bfe4c52637e507e6"; // v29 upgrade of the v28 lineage (0x750dcaa9).
+export const CASINO_PKG_V28_STILLNESS_PREV = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12"; // v28 fresh publish vs LIVE world 0x8b8a46ed. Superseded by the v29 upgrade above; still the event-type origin.
 export const CASINO_PKG_V27_STILLNESS_RETIRED = "0x874f10e051f7dff3ff8dfdf9e4e8a63ddb0dd446ea625889f09fb511daed6ac9"; // v27 RETIRED — built vs stale world, unplayable. House drained to v28.
 export const CASINO_PKG_V26_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26. (Was mislabeled 'deploy key 0xc80fe7d6 lost / upgrade-frozen' — key was on DGX2 all along, never lost.)
 export const CASINO_PKG_V26_GATELESS_STILLNESS = "0x99d3b32f853b7e820d6774c1eb6a889b3484c4b46587eede65a2119f41a1731e"; // intermediate v26 (blackjack fix, NO char gate). Superseded, never funded.
