@@ -43,10 +43,10 @@ module cradleos_casino::ore_refine {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Error codes ──────────────────────────────────────────────────────────
     const EInvalidTier: u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // ── Outcome constants ────────────────────────────────────────────────────
     const OUTCOME_SLAG:    u8 = 0;
@@ -124,15 +124,17 @@ module cradleos_casino::ore_refine {
     entry fun play<T>(
         house: &mut House<T>,
         r:     &Random,
+        character: &Character,
         wager: Coin<T>,
         tier:  u8,
         ctx:   &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(tier >= 1 && tier <= 5, EInvalidTier);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -148,6 +150,7 @@ module cradleos_casino::ore_refine {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_resolve_outcome() {
@@ -227,17 +230,19 @@ module cradleos_casino::ore_refine {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(10, ctx);
-            play<SUI>(&mut house, &r, bet, 1, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 1, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -254,17 +259,19 @@ module cradleos_casino::ore_refine {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(10, ctx);
-            play<SUI>(&mut house, &r, bet, 5, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 5, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -281,16 +288,18 @@ module cradleos_casino::ore_refine {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(10, ctx);
-            play<SUI>(&mut house, &r, bet, 0, ctx); // tier 0 invalid
+            play<SUI>(&mut house, &r, &character, bet, 0, ctx); // tier 0 invalid
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -307,20 +316,22 @@ module cradleos_casino::ore_refine {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(10, ctx);
-            play<SUI>(&mut house, &r, bet, 6, ctx); // tier 6 invalid
+            play<SUI>(&mut house, &r, &character, bet, 6, ctx); // tier 6 invalid
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
-    #[test, expected_failure(abort_code = EMaxExposure)]
+    #[test, expected_failure(abort_code = 2, location = cradleos_casino::house)]
     fun test_exposure_guard_tier5_rejects_oversized() {
         let admin  = @0xAD;
         let player = @0xBE;
@@ -335,16 +346,18 @@ module cradleos_casino::ore_refine {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(16, ctx); // over limit for Tier 5
-            play<SUI>(&mut house, &r, bet, 5, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 5, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

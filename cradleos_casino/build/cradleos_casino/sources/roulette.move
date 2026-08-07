@@ -6,9 +6,9 @@ module cradleos_casino::roulette {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // Bet kinds
     const KIND_STRAIGHT: u8 = 0; // target 0-36, pays 36x
@@ -74,15 +74,17 @@ module cradleos_casino::roulette {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         bet_kind: u8,
         bet_target: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(valid_bet(bet_kind, bet_target), EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
-        assert!(amount * max_multiplier(bet_kind) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = coin::value(&wager) * max_multiplier(bet_kind);
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -96,6 +98,7 @@ module cradleos_casino::roulette {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_payout_all_kinds() {
@@ -147,17 +150,19 @@ module cradleos_casino::roulette {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, KIND_COLOR, 0, ctx);
+            play<SUI>(&mut house, &r, &character, bet, KIND_COLOR, 0, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

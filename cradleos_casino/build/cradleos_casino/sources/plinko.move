@@ -19,8 +19,8 @@ module cradleos_casino::plinko {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
     const EBadCount:    u64 = 3;
 
@@ -66,12 +66,14 @@ module cradleos_casino::plinko {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -149,15 +151,17 @@ module cradleos_casino::plinko {
     entry fun play_mode<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         mode: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(mode <= MODE_HIGH, EBadMode);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount_tiered(house, &wager, mode_max_mult_x(mode), ctx);
         // Per-mode exposure guard: LOW allows far larger bets than HIGH.
-        assert!(amount * mode_max_mult_x(mode) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * mode_max_mult_x(mode));
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -199,29 +203,32 @@ module cradleos_casino::plinko {
     entry fun play_multi<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         mode: u8,
         count: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(mode <= 3, EBadMode);
         assert!(count >= 2 && count <= 10, EBadCount);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount_multi(house, &wager, (count as u64));
+        // Compute mult_x before the tiered wager call so it can be passed in.
+        let mult_x = if (mode <= 2) { mode_max_mult_x(mode) } else { MAX_MULT_X };
+        let amount = house::take_wager_amount_multi_tiered(house, &wager, (count as u64), mult_x, ctx);
 
         let per_drop = amount / (count as u64);
         // per_drop must be at least 1 mist (dust check)
         assert!(per_drop >= 1, EBadCount);
 
-        // Exposure guard: per-ball worst-case payout ≤ 3% of bank.
+        // Exposure guard: per-ball worst-case payout ≤ tier-derived budget.
         // Operator ruling (2026-07-11): risk limits evaluate per ball, not total
-        // bet. N single drops each pass the 3%-of-bank guard individually, so
+        // bet. N single drops each pass the tier budget individually, so
         // batching N balls in one tx must not be stricter. The theoretical
         // all-balls-hit-max case (~(1/2048)^N for HIGH edges) is accepted as
         // tolerable tail risk. Any dust (amount - per_drop * count) is house's.
-        let mult_x = if (mode <= 2) { mode_max_mult_x(mode) } else { MAX_MULT_X };
-        assert!(per_drop * mult_x <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, per_drop * mult_x);
 
         house::deposit_stake(house, coin::into_balance(wager));
 
@@ -273,6 +280,7 @@ module cradleos_casino::plinko {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_payout_math() {
@@ -335,17 +343,19 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play_mode<SUI>(&mut house, &r, bet, 0, ctx); // LOW
+            play_mode<SUI>(&mut house, &r, &character, bet, 0, ctx); // LOW
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -362,16 +372,18 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play_mode<SUI>(&mut house, &r, bet, 3, ctx); // invalid mode
+            play_mode<SUI>(&mut house, &r, &character, bet, 3, ctx); // invalid mode
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -388,17 +400,19 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(500, ctx); // 5 drops × 100
-            play_multi<SUI>(&mut house, &r, bet, 0, 5, ctx); // LOW, 5 balls
+            play_multi<SUI>(&mut house, &r, &character, bet, 0, 5, ctx); // LOW, 5 balls
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -415,16 +429,18 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play_multi<SUI>(&mut house, &r, bet, 0, 1, ctx); // count=1 invalid
+            play_multi<SUI>(&mut house, &r, &character, bet, 0, 1, ctx); // count=1 invalid
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -441,16 +457,18 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play_multi<SUI>(&mut house, &r, bet, 0, 11, ctx); // count=11 invalid
+            play_multi<SUI>(&mut house, &r, &character, bet, 0, 11, ctx); // count=11 invalid
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -500,6 +518,7 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, max_bet, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
@@ -507,11 +526,12 @@ module cradleos_casino::plinko {
             let ctx = test_scenario::ctx(&mut sc);
             // total = 500 × 10 = 5000 (whole-coin > max_bet, but per-ball = max_bet → ok)
             let bet = coin::mint_for_testing<SUI>((max_bet * (count as u64)), ctx);
-            play_multi<SUI>(&mut house, &r, bet, 0, count, ctx); // LOW mode
+            play_multi<SUI>(&mut house, &r, &character, bet, 0, count, ctx); // LOW mode
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -529,6 +549,7 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 500, 1, ctx); // max_bet = 500
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
@@ -536,11 +557,12 @@ module cradleos_casino::plinko {
             let ctx = test_scenario::ctx(&mut sc);
             // per-ball = 400 ≤ 500; total = 800 > 500 → must pass
             let bet = coin::mint_for_testing<SUI>(800, ctx); // 2 balls × 400
-            play_multi<SUI>(&mut house, &r, bet, 0, 2, ctx); // LOW mode
+            play_multi<SUI>(&mut house, &r, &character, bet, 0, 2, ctx); // LOW mode
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -558,6 +580,7 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 500, 1, ctx); // max_bet = 500
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
@@ -565,10 +588,11 @@ module cradleos_casino::plinko {
             let ctx = test_scenario::ctx(&mut sc);
             // per-ball = 600 > 500 → must abort EBetTooLarge (code 2)
             let bet = coin::mint_for_testing<SUI>(1200, ctx); // 2 balls × 600
-            play_multi<SUI>(&mut house, &r, bet, 0, 2, ctx);
+            play_multi<SUI>(&mut house, &r, &character, bet, 0, 2, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -585,17 +609,19 @@ module cradleos_casino::plinko {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, ctx);
+            play<SUI>(&mut house, &r, &character, bet, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

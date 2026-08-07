@@ -32,11 +32,18 @@ module cradleos_casino::video_poker {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ────────────────────────────────────────────────────────────────
     const ENotHandOwner: u64 = 0;
-    const EMaxExposure:  u64 = 1;
     const EWrongHouse:   u64 = 2;
+    /// Game disabled on-chain (v23, 2026-07-12): the full 52-card deck committed
+    /// at deal time lives in the player-owned VideoPokerHand object, readable via
+    /// sui_getObject BEFORE the draw — the player can see which cards will replace
+    /// non-held cards and hold optimally every time (near-100% RTP). New deals
+    /// blocked until a commit-reveal redesign ships. draw stays open so an
+    /// in-flight hand can still settle.
+    const EGameDisabled: u64 = 3;
 
     // ── Tuning ────────────────────────────────────────────────────────────────
     /// Max gross multiplier (x) for exposure guard: royal flush = 250x.
@@ -95,13 +102,19 @@ module cradleos_casino::video_poker {
     entry fun deal<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        // v23: video_poker deal is disabled on-chain (solution-leak exploit).
+        // Abort before escrowing so no new hand is created. In-flight hands can
+        // still draw to settle.
+        house::assert_character(house, character, ctx);
+        assert!(false, EGameDisabled);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
         // Exposure guard: royal flush = 250x gross payout.
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * MAX_MULT_X);
 
         // Escrow wager inside the hand object (NOT yet in the bank).
         let stake = coin::into_balance(wager);
@@ -325,6 +338,9 @@ module cradleos_casino::video_poker {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    // v26 proof-of-character gate: `deal` requires an &Character owned by the
+    // tx sender. See test_fixture.move for why this fixture is needed.
+    #[test_only] use cradleos_casino::test_fixture;
 
     // Helper: build a 5-card hand from raw card indices.
     #[test_only]
@@ -461,7 +477,10 @@ module cradleos_casino::video_poker {
         assert!(multiplier_for(9) == 2500000, 2);
     }
 
+    // v23: deal is disabled on-chain (solution-leak). Confirms deal aborts
+    // EGameDisabled before escrowing. Card-eval tests above (pure) still run.
     #[test]
+    #[expected_failure(abort_code = EGameDisabled)]
     fun test_deal_draw_settle() {
         let admin = @0xAD;
         let player = @0xBE;
@@ -474,14 +493,15 @@ module cradleos_casino::video_poker {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
-        // Deal
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
+        // Deal (aborts EGameDisabled)
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            deal<SUI>(&mut house, &r, bet, ctx);
+            deal<SUI>(&mut house, &r, &character, bet, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -496,6 +516,7 @@ module cradleos_casino::video_poker {
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

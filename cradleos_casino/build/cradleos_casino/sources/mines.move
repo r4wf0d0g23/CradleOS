@@ -23,6 +23,7 @@ module cradleos_casino::mines {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const ENotOwner:        u64 = 0;
@@ -31,7 +32,12 @@ module cradleos_casino::mines {
     const ETileTaken:       u64 = 3;
     const ENoReveals:       u64 = 4;   // can't cash out before revealing a tile
     const EWrongHouse:      u64 = 5;
-    const EMaxExposure:     u64 = 6;
+    /// Game disabled on-chain (v23, 2026-07-12): the committed mine_map lives in
+    /// the player-owned MinesGame object, so it is readable via sui_getObject
+    /// BEFORE revealing tiles — a solution leak (RTP observed >11,000%). New games
+    /// blocked until a commit-reveal redesign ships. reveal/cashout stay open so
+    /// in-flight games can still settle.
+    const EGameDisabled:    u64 = 7;
 
     const TILES: u8 = 25;              // 5x5 grid
     const EDGE_BPS: u128 = 9700;       // 0.97 → 3% edge, in /10000
@@ -125,18 +131,24 @@ module cradleos_casino::mines {
     entry fun start<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         mines: u8,
         ctx: &mut TxContext,
     ) {
+        // v23: mines start is disabled on-chain (solution-leak exploit). Abort
+        // before any state change so no new game is created and no wager is
+        // escrowed. Existing games can still reveal/cashout to settle.
+        house::assert_character(house, character, ctx);
+        assert!(false, EGameDisabled);
         // 1..24 mines (need at least one safe tile and at least one mine).
         assert!(mines >= 1 && mines <= 24, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
         // Exposure: the house must be able to pay a full clear at max multiplier.
+        // Ceiling = wager × clear_all_multiplier(mines), checked against tier budget.
         let top = clear_all_multiplier(mines);
-        let max_pay = (((amount as u128) * (top as u128) / 10000) as u64);
-        assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let max_pay = (((coin::value(&wager) as u128) * (top as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_pay, ctx);
 
         // Place `mines` distinct mines via partial Fisher-Yates over tile indices.
         let mut g = random::new_generator(r, ctx);
@@ -279,6 +291,7 @@ module cradleos_casino::mines {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_multiplier_math() {
@@ -302,10 +315,13 @@ module cradleos_casino::mines {
     }
 
     // ── v14 edge-case tests: Fisher-Yates fix ────────────────────────────────
+    // v23: start is disabled on-chain (solution-leak). These formerly verified
+    // mine placement; they now confirm start aborts EGameDisabled before any
+    // state change. Placement RNG will be re-verified when the commit-reveal
+    // redesign re-enables the game.
     #[test]
+    #[expected_failure(abort_code = EGameDisabled)]
     fun test_mines_24_places_exactly_24() {
-        // mines=24 aborted every time before v14 fix (EInvalidRange at placed=13).
-        // After fix: mine_map must have exactly 24 bits set, all within bits 0..24.
         let admin = @0xAD;
         let player = @0xBE;
         let mut sc = test_scenario::begin(@0x0);
@@ -317,13 +333,14 @@ module cradleos_casino::mines {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, 24, ctx);
+            start<SUI>(&mut house, &r, &character, bet, 24, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -336,12 +353,13 @@ module cradleos_casino::mines {
             assert!(game.mine_map < (1u32 << 25), 2);
             test_scenario::return_to_sender(&sc, game);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
     #[test]
+    #[expected_failure(abort_code = EGameDisabled)]
     fun test_mines_1_places_exactly_1() {
-        // mines=1: exactly one mine placed; mine_map has exactly 1 bit set.
         let admin = @0xAD;
         let player = @0xBE;
         let mut sc = test_scenario::begin(@0x0);
@@ -353,13 +371,14 @@ module cradleos_casino::mines {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, 1, ctx);
+            start<SUI>(&mut house, &r, &character, bet, 1, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -371,10 +390,12 @@ module cradleos_casino::mines {
             assert!(game.mine_map < (1u32 << 25), 2);
             test_scenario::return_to_sender(&sc, game);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
     #[test]
+    #[expected_failure(abort_code = EGameDisabled)]
     fun test_start_and_reveal_flow() {
         let admin = @0xAD;
         let player = @0xBE;
@@ -387,14 +408,15 @@ module cradleos_casino::mines {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
-        // start
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
+        // start (aborts EGameDisabled)
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, 3, ctx);
+            start<SUI>(&mut house, &r, &character, bet, 3, ctx);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
@@ -414,6 +436,7 @@ module cradleos_casino::mines {
             reveal<SUI>(&mut house, game, 0, ctx);
             test_scenario::return_shared(house);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

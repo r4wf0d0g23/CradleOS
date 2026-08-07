@@ -9,17 +9,20 @@
 ///
 /// FAIR ODDS (2% edge): draw u in [1, 1_000_000]; crash_bps = 9_800_000_000 / u
 /// (capped). P(crash_bps >= target_bps) = 9800 / target_bps = 0.98 / m. ✓
-/// Target range 1.01x (101 bps) … 1000x (10_000_000 bps). Max payout 1000x.
+/// Target range 1.01x (10_100 bps; 10000 bps = 1.00x) … 1000x (10_000_000 bps).
+/// Max payout 1000x. (v21 fix: MIN was 101 = 0.0101x — sub-1x targets were
+/// guaranteed "wins" paying back less than the stake. Never player-exploitable
+/// — EV ≤ 0.98 at every target — but a player trap. Now blocked on-chain.)
 module cradleos_casino::crash {
     use sui::random::{Self, Random};
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
-    const MIN_TARGET_BPS: u64 = 101;
+    const MIN_TARGET_BPS: u64 = 10_100;
     const MAX_TARGET_BPS: u64 = 10_000_000;
     const EDGE_NUM: u128 = 9_800_000_000;
     const ROLL_MAX: u64 = 1_000_000;
@@ -52,14 +55,16 @@ module cradleos_casino::crash {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         target_bps: u64,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(target_bps >= MIN_TARGET_BPS && target_bps <= MAX_TARGET_BPS, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
-        assert!(max_payout(amount, target_bps) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = max_payout(coin::value(&wager), target_bps);
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -74,6 +79,7 @@ module cradleos_casino::crash {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_payout_math() {
@@ -97,17 +103,19 @@ module cradleos_casino::crash {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 20000, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 20000, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

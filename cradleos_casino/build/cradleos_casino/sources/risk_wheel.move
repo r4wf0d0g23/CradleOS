@@ -18,8 +18,8 @@ module cradleos_casino::risk_wheel {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
     const EBadMode:     u64 = 2;
 
     const RISK_LOW:  u8 = 0;
@@ -87,17 +87,19 @@ module cradleos_casino::risk_wheel {
     entry fun play<T>(
         house:  &mut House<T>,
         r:      &Random,
+        character: &Character,
         wager:  Coin<T>,
         mode:   u8,
         ctx:    &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(mode <= RISK_HIGH, EBadMode);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
         let max_mult = if      (mode == RISK_LOW) MAX_MULT_LOW
                        else if (mode == RISK_MED) MAX_MULT_MED
                        else                       MAX_MULT_HIGH;
-        assert!(amount * max_mult <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = coin::value(&wager) * max_mult;
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -112,6 +114,7 @@ module cradleos_casino::risk_wheel {
     // ── Tests ─────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_low_edge() {
@@ -181,6 +184,7 @@ module cradleos_casino::risk_wheel {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         // LOW mode play
         test_scenario::next_tx(&mut sc, player);
         {
@@ -188,7 +192,7 @@ module cradleos_casino::risk_wheel {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 0, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 0, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
@@ -200,7 +204,7 @@ module cradleos_casino::risk_wheel {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 1, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 1, ctx);
             assert!(house::bets_settled(&house) == 2, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
@@ -212,11 +216,12 @@ module cradleos_casino::risk_wheel {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 2, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 2, ctx);
             assert!(house::bets_settled(&house) == 3, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

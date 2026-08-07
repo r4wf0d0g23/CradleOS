@@ -18,9 +18,9 @@ module cradleos_casino::keno {
     use sui::coin::{Self, Coin};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     const POOL: u8 = 40;       // numbers 1..40
     const DRAW: u8 = 10;       // house draws 10
@@ -128,19 +128,30 @@ module cradleos_casino::keno {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         picks: vector<u8>,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(valid_picks(&picks), EBadParams);
         let num_picks = vector::length(&picks);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
-        // Guard against the top multiplier for this pick count.
-        let top_bps = top_multiplier_bps(num_picks);
-        let max_pay = (((amount as u128) * (top_bps as u128) / 10000) as u64);
-        assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100 || max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        // Exposure is bounded by the top multiplier for THIS pick count, not by
+        // the global 6-pick worst case (MAX_MULT_X = 970x).
+        //
+        // Keno's top multiplier varies enormously by pick count:
+        //   1 pick 3.85x | 2 13x | 3 25x | 4 47x | 5 295x | 6 970x
+        //
+        // Using 970x for every bet is SAFE (it over-reserves, never under-
+        // reserves) but wildly over-restrictive at low pick counts: at a
+        // 9,851 EVE bank it caps a 1-pick bet at 0.20 EVE instead of 51.17 EVE
+        // -- 252x too tight, consuming 0.0079% of the exposure budget. The
+        // original code guarded per-pick-count for exactly this reason; the
+        // payout-ceiling API preserves that precision.
+        let max_payout_gross = (((coin::value(&wager) as u128)
+            * (top_multiplier_bps(num_picks) as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -159,6 +170,7 @@ module cradleos_casino::keno {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_paytable() {
@@ -233,17 +245,19 @@ module cradleos_casino::keno {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, vector[3u8, 17, 40], ctx);
+            play<SUI>(&mut house, &r, &character, bet, vector[3u8, 17, 40], ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

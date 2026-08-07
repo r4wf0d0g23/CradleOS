@@ -30,8 +30,8 @@ module cradleos_casino::hilo {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
     const ENotOwner:    u64 = 2;
     const EWrongHouse:  u64 = 3;
 
@@ -77,14 +77,18 @@ module cradleos_casino::hilo {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         higher: bool,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
-        assert!(max_payout(amount) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        // Use the EXACT worst case (12.74x, the 1-winner side) rather than the
+        // rounded MAX_MULT_X (13x). The original code guarded on both; keeping
+        // only the rounded form would silently loosen the reservation by ~2%.
+        let max_payout_gross = max_payout(coin::value(&wager));
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
@@ -127,14 +131,16 @@ module cradleos_casino::hilo {
     entry fun start<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
         // Worst-case settle payout is the 1-winner side (12.74x) — guard now so
-        // settle can never brick on exposure.
-        assert!(max_payout(amount) <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        // settle can never brick on exposure. Exact, not the rounded 13x.
+        let max_payout_gross = max_payout(coin::value(&wager));
+        let amount = house::take_wager_amount_exposure(house, &wager, max_payout_gross, ctx);
 
         let mut g = random::new_generator(r, ctx);
         let base = random::generate_u8_in_range(&mut g, 0, 12);
@@ -184,6 +190,7 @@ module cradleos_casino::hilo {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_payout_math() {
@@ -218,17 +225,19 @@ module cradleos_casino::hilo {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, true, ctx);
+            play<SUI>(&mut house, &r, &character, bet, true, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -245,6 +254,7 @@ module cradleos_casino::hilo {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         // start: base dealt + wager escrowed in the game object
         test_scenario::next_tx(&mut sc, player);
         {
@@ -252,13 +262,14 @@ module cradleos_casino::hilo {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, ctx);
+            start<SUI>(&mut house, &r, &character, bet, ctx);
             // no settlement yet
             assert!(house::bets_settled(&house) == 0, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
         // settle: player sees the base (from event/object), calls a direction
+        // settle does NOT take &Character
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
@@ -273,6 +284,7 @@ module cradleos_casino::hilo {
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

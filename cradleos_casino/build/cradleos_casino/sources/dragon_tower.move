@@ -23,13 +23,19 @@ module cradleos_casino::dragon_tower {
     use sui::balance::{Self, Balance};
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     const ENotOwner:     u64 = 0;
     const EGameFinished: u64 = 1;
     const EBadParams:    u64 = 2;
     const ENoRows:       u64 = 3;
     const EWrongHouse:   u64 = 4;
-    const EMaxExposure:  u64 = 5;
+    /// Game disabled on-chain (v22, 2026-07-12): the pre-drawn dragon layout was
+    /// stored in the player-owned TowerGame object, making it readable via
+    /// sui_getObject BEFORE picking — a solution leak (RTP observed ~239%). New
+    /// games are blocked until a commit-reveal / per-pick-draw redesign ships.
+    /// pick/cashout remain open so any in-flight game can still be settled.
+    const EGameDisabled: u64 = 6;
 
     const ROWS: u8 = 9;
     const EDGE_BPS: u128 = 9700;
@@ -93,16 +99,23 @@ module cradleos_casino::dragon_tower {
     entry fun start<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         difficulty: u8,
         ctx: &mut TxContext,
     ) {
+        // v22: dragon_tower start is disabled on-chain (solution-leak exploit).
+        // Abort before any state change so no new game can be created and no
+        // wager is escrowed. Existing games can still pick/cashout to settle.
+        house::assert_character(house, character, ctx);
+        assert!(false, EGameDisabled);
         assert!(difficulty <= DIFF_HARD, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager);
+        // Exposure: the house must be able to pay the full 9-row climb.
+        // Ceiling = wager × top_multiplier(difficulty), checked against tier budget.
         let top = top_multiplier(difficulty);
-        let max_pay = (((amount as u128) * (top as u128) / 10000) as u64);
-        assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let max_pay = (((coin::value(&wager) as u128) * (top as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_pay, ctx);
 
         let (tiles, _dragons) = params(difficulty);
         let mut g = random::new_generator(r, ctx);
@@ -213,6 +226,7 @@ module cradleos_casino::dragon_tower {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_multiplier_math() {
@@ -230,8 +244,11 @@ module cradleos_casino::dragon_tower {
         assert!(t == 4 && d == 1, 5);
     }
 
+    /// v22: start is disabled on-chain (solution-leak exploit). Confirm it aborts
+    /// with EGameDisabled before escrowing any wager.
     #[test]
-    fun test_start_pick_flow() {
+    #[expected_failure(abort_code = EGameDisabled)]
+    fun test_start_disabled() {
         let admin = @0xAD;
         let player = @0xBE;
         let mut sc = test_scenario::begin(@0x0);
@@ -243,26 +260,18 @@ module cradleos_casino::dragon_tower {
             let cap = house::create<SUI>(seed, 100_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            start<SUI>(&mut house, &r, bet, DIFF_EASY, ctx);
+            start<SUI>(&mut house, &r, &character, bet, DIFF_EASY, ctx); // aborts EGameDisabled
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
-        test_scenario::next_tx(&mut sc, player);
-        {
-            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
-            let game = test_scenario::take_from_sender<TowerGame<SUI>>(&sc);
-            assert!(game_difficulty(&game) == DIFF_EASY, 0);
-            assert!(game_rows_climbed(&game) == 0, 1);
-            let ctx = test_scenario::ctx(&mut sc);
-            pick<SUI>(&mut house, game, 0, ctx);
-            test_scenario::return_shared(house);
-        };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

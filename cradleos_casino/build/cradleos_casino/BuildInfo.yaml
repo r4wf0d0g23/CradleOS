@@ -2,13 +2,13 @@
 compiled_package_info:
   package_name: cradleos_casino
   build_flags:
-    test_mode: true
+    test_mode: false
     generate_docs: false
     save_disassembly: false
     install_dir: ~
     force_recompilation: false
     allow_dirty: false
-    default_flavor: sui
+    default_flavor: ~
     default_edition: ~
     silence_warnings: false
     warnings_are_errors: false
@@ -19,10 +19,11 @@ compiled_package_info:
       lint: false
     modes: []
     force_lock_file: false
-    root_as_zero: false
-    environment: testnet
+    root_as_zero: true
+    environment: ~
     set_unpublished_deps_to_zero: false
     pubfile_path: ~
 dependencies:
   - MoveStdlib
   - Sui
+  - world

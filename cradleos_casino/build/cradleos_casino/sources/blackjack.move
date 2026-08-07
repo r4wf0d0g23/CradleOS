@@ -32,6 +32,7 @@ module cradleos_casino::blackjack {
     use sui::coin::Coin;
     use sui::event;
     use cradleos_casino::house::{Self, House};
+    use world::character::Character;
 
     // ── Errors ─────────────────────────────────────────────────────────────
     const EBadThreshold: u64 = 0;
@@ -71,15 +72,20 @@ module cradleos_casino::blackjack {
     entry fun play<T>(
         house: &mut House<T>,
         r: &Random,
+        character: &Character,
         wager: Coin<T>,
         stand_on: u8,
         ctx: &mut TxContext,
     ) {
+        house::assert_character(house, character, ctx);
         assert!(stand_on >= MIN_THRESHOLD && stand_on <= MAX_THRESHOLD, EBadThreshold);
 
         let player = tx_context::sender(ctx);
-        // Absorb + validate stake (checks pause, min/max). Returns amount.
-        let amount = house::take_wager(house, wager);
+        // Absorb + validate stake with tier-derived exposure ceiling.
+        // Worst-case gross payout: natural blackjack = 2.5x (amount + amount*3/2).
+        let amount_pre = wager.value();
+        let max_payout_gross = amount_pre + (amount_pre * 3) / 2;
+        let amount = house::take_wager_exposure(house, wager, max_payout_gross, ctx);
 
         // Build a 52-card shoe [0..51] and shuffle with on-chain randomness.
         let mut generator = random::new_generator(r, ctx);
@@ -211,6 +217,7 @@ module cradleos_casino::blackjack {
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
     #[test_only] use sui::coin;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_hand_total_ace_logic() {
@@ -263,6 +270,7 @@ module cradleos_casino::blackjack {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         // Player plays a hand.
         test_scenario::next_tx(&mut sc, player);
         {
@@ -270,13 +278,14 @@ module cradleos_casino::blackjack {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 17, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 17, ctx);
             // House total wagered advanced by the bet.
             assert!(house::total_wagered(&house) == 100, 0);
             assert!(house::bets_settled(&house) == 1, 1);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }
