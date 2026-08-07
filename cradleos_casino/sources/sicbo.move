@@ -18,7 +18,6 @@ module cradleos_casino::sicbo {
     use world::character::Character;
 
     const EBadParams:   u64 = 0;
-    const EMaxExposure: u64 = 1;
 
     // Bet kinds
     const KIND_SMALL:     u8 = 0;
@@ -85,9 +84,9 @@ module cradleos_casino::sicbo {
             assert!(target >= 1 && target <= 6, EBadParams);
         };
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
         let mm = kind_max_mult(kind);
-        assert!(amount * mm <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let computed_max = coin::value(&wager) * mm;
+        let amount = house::take_wager_amount_exposure(house, &wager, computed_max, ctx);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

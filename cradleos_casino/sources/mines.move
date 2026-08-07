@@ -32,7 +32,6 @@ module cradleos_casino::mines {
     const ETileTaken:       u64 = 3;
     const ENoReveals:       u64 = 4;   // can't cash out before revealing a tile
     const EWrongHouse:      u64 = 5;
-    const EMaxExposure:     u64 = 6;
     /// Game disabled on-chain (v23, 2026-07-12): the committed mine_map lives in
     /// the player-owned MinesGame object, so it is readable via sui_getObject
     /// BEFORE revealing tiles — a solution leak (RTP observed >11,000%). New games
@@ -145,11 +144,11 @@ module cradleos_casino::mines {
         // 1..24 mines (need at least one safe tile and at least one mine).
         assert!(mines >= 1 && mines <= 24, EBadParams);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
         // Exposure: the house must be able to pay a full clear at max multiplier.
+        // Ceiling = wager × clear_all_multiplier(mines), checked against tier budget.
         let top = clear_all_multiplier(mines);
-        let max_pay = (((amount as u128) * (top as u128) / 10000) as u64);
-        assert!(max_pay <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let max_pay = (((coin::value(&wager) as u128) * (top as u128) / 10000) as u64);
+        let amount = house::take_wager_amount_exposure(house, &wager, max_pay, ctx);
 
         // Place `mines` distinct mines via partial Fisher-Yates over tile indices.
         let mut g = random::new_generator(r, ctx);

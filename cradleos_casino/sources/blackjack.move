@@ -81,8 +81,11 @@ module cradleos_casino::blackjack {
         assert!(stand_on >= MIN_THRESHOLD && stand_on <= MAX_THRESHOLD, EBadThreshold);
 
         let player = tx_context::sender(ctx);
-        // Absorb + validate stake (checks pause, min/max). Returns amount.
-        let amount = house::take_wager(house, wager, ctx);
+        // Absorb + validate stake with tier-derived exposure ceiling.
+        // Worst-case gross payout: natural blackjack = 2.5x (amount + amount*3/2).
+        let amount_pre = wager.value();
+        let max_payout_gross = amount_pre + (amount_pre * 3) / 2;
+        let amount = house::take_wager_exposure(house, wager, max_payout_gross, ctx);
 
         // Build a 52-card shoe [0..51] and shuffle with on-chain randomness.
         let mut generator = random::new_generator(r, ctx);
