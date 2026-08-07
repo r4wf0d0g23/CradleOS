@@ -191,6 +191,9 @@ module cradleos_casino::red_dog {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    // v26 proof-of-character gate: `play` requires an &Character owned by the
+    // tx sender. See test_fixture.move for why this fixture is needed.
+    #[test_only] use cradleos_casino::test_fixture;
 
     // Pair match: card1==card2, card3==card1 → 12×
     #[test]
@@ -313,17 +316,19 @@ module cradleos_casino::red_dog {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, ctx);
+            play<SUI>(&mut house, &r, &character, bet, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }
