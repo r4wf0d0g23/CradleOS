@@ -11,8 +11,6 @@ module cradleos_casino::wheel {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
-
     /// Segment multipliers in bps (10000 = 1x). 20 segments.
     const SEGMENTS: vector<u64> = vector[
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -50,8 +48,8 @@ module cradleos_casino::wheel {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);

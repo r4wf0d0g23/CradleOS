@@ -35,7 +35,6 @@ module cradleos_casino::chuck_a_luck {
 
     // ── Error codes ──────────────────────────────────────────────────────────
     const EBadTarget:   u64 = 0;   // target must be 1..6
-    const EMaxExposure: u64 = 1;   // wager too large for current bank
 
     // ── Payout constants (gross bps; 10 000 = 1.00× stake returned) ─────────
     const BPS_1MATCH: u64 = 19_000;    // 1.9× gross → net +0.9×
@@ -99,8 +98,8 @@ module cradleos_casino::chuck_a_luck {
         assert!(target >= 1 && target <= 6, EBadTarget);
 
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g   = random::new_generator(r, ctx);

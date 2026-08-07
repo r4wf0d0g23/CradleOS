@@ -47,8 +47,6 @@ module cradleos_casino::three_card_poker {
     use world::character::Character;
 
     // ── Errors ────────────────────────────────────────────────────────────────
-    const EMaxExposure: u64 = 1;
-
     // ── Tuning ────────────────────────────────────────────────────────────────
     /// Max gross multiplier (x) for exposure guard: straight flush = 6x.
     const MAX_MULT_X: u64 = 6;
@@ -89,9 +87,9 @@ module cradleos_casino::three_card_poker {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &ante, ctx);
+        let amount = house::take_wager_amount_tiered(house, &ante, MAX_MULT_X, ctx);
         // Exposure guard: max 6x gross payout.
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         // Absorb ante into the bank.
         house::deposit_stake(house, coin::into_balance(ante));
 

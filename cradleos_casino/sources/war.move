@@ -15,8 +15,6 @@ module cradleos_casino::war {
     use cradleos_casino::house::{Self, House};
     use world::character::Character;
 
-    const EMaxExposure: u64 = 1;
-
     /// Max multiplier (x) for the exposure guard: win = 2x.
     const MAX_MULT_X: u64 = 2;
 
@@ -45,8 +43,8 @@ module cradleos_casino::war {
     ) {
         house::assert_character(house, character, ctx);
         let player = tx_context::sender(ctx);
-        let amount = house::take_wager_amount(house, &wager, ctx);
-        assert!(amount * MAX_MULT_X <= house::bank_balance(house) * 3 / 100, EMaxExposure);
+        let amount = house::take_wager_amount_tiered(house, &wager, MAX_MULT_X, ctx);
+        house::assert_exposure(house, amount * MAX_MULT_X);
         house::deposit_stake(house, coin::into_balance(wager));
 
         let mut g = random::new_generator(r, ctx);
