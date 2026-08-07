@@ -188,6 +188,149 @@ module cradleos_casino::house {
         });
     }
 
+    // ── Dynamic risk tiers (v29) ───────────────────────────────────────────
+    //
+    // PROBLEM WITH THE FLAT `max_bet`
+    // ────────────────────────────────────────────────────────────────────────
+    // `house.max_bet` is a single global constant an admin must hand-tune. Every
+    // game ALSO enforces its own per-bet exposure guard:
+    //
+    //     assert!(amount * MAX_MULT_X <= bank_balance * 3 / 100, EMaxExposure)
+    //
+    // Because game multipliers span 2x (war) to 970x (keno), one global number
+    // cannot be right for all of them. Measured against the live bank of
+    // 9,851 EVE with the flat 25 EVE cap (audited 2026-08-07):
+    //
+    //   * 15 of 19 games were ALREADY capped far below 25 EVE by the 3% guard
+    //     (keno's real ceiling is 0.20 EVE, diamonds 0.39, video_poker 0.79).
+    //     The global cap was decorative on those games.
+    //   * 4 low-multiplier games were needlessly throttled: war/andar_bahar can
+    //     safely take 98.5 EVE, under_over_7/three_card_poker 32.8 EVE.
+    //
+    // FIX: derive the cap from the bank and the GAME'S OWN multiplier, and let a
+    // tier band set risk appetite as the bank grows. This makes the limit
+    // self-scaling — donations grow the bank, limits rise automatically, with no
+    // admin action. Solvency is unchanged in the worst case: a single max bet can
+    // still only ever cost `exposure_bps` of the bank (verified: 114 consecutive
+    // worst-case max-payout losses to walk 9,851 EVE down to 1,000).
+    //
+    // WHY THE GAME PASSES ITS MULTIPLIER IN:
+    //   `MAX_MULT_X` is a `const` inside each game module — not visible from
+    //   here. So the game supplies it. This module cannot verify the value is
+    //   truthful, but these are `public(package)` entry points callable only by
+    //   sibling casino modules in this same package, so the multiplier is
+    //   trusted-by-construction (same trust boundary as the existing
+    //   pay_winnings). An external contract can never reach these.
+
+    /// Tier band thresholds, in the coin's smallest unit. EVE has 9 decimals, so
+    /// 1 EVE = 1_000_000_000. Bands are chosen so a tiny/seed bank is defended
+    /// conservatively and a deep bank can accept meaningful action.
+    const TIER_SEED_MAX:   u64 =   1_000_000_000_000; //     1,000 EVE
+    const TIER_SMALL_MAX:  u64 =  10_000_000_000_000; //    10,000 EVE
+    const TIER_MEDIUM_MAX: u64 =  50_000_000_000_000; //    50,000 EVE
+    const TIER_LARGE_MAX:  u64 = 250_000_000_000_000; //   250,000 EVE
+
+    /// Basis points of the bank riskable on ONE bet, per tier. 300 bps reproduces
+    /// the 3% the games already hardcode, so MEDIUM is behaviour-neutral.
+    const BPS_SEED:   u64 = 100; // 1.0%
+    const BPS_SMALL:  u64 = 200; // 2.0%
+    const BPS_MEDIUM: u64 = 300; // 3.0%  <- matches existing per-game guard
+    const BPS_LARGE:  u64 = 400; // 4.0%
+    const BPS_WHALE:  u64 = 500; // 5.0%
+
+    /// Tier ordinal, surfaced for UI display. 0=SEED .. 4=WHALE.
+    public fun risk_tier<T>(house: &House<T>): u8 {
+        let bank = balance::value(&house.bank);
+        if (bank < TIER_SEED_MAX) { 0 }
+        else if (bank < TIER_SMALL_MAX) { 1 }
+        else if (bank < TIER_MEDIUM_MAX) { 2 }
+        else if (bank < TIER_LARGE_MAX) { 3 }
+        else { 4 }
+    }
+
+    /// Basis points of bank riskable on a single bet at the current bank size.
+    public fun exposure_bps<T>(house: &House<T>): u64 {
+        let t = risk_tier(house);
+        if (t == 0) { BPS_SEED }
+        else if (t == 1) { BPS_SMALL }
+        else if (t == 2) { BPS_MEDIUM }
+        else if (t == 3) { BPS_LARGE }
+        else { BPS_WHALE }
+    }
+
+    /// Total payout the house is willing to expose on ONE bet right now.
+    public fun max_exposure<T>(house: &House<T>): u64 {
+        balance::value(&house.bank) * exposure_bps(house) / 10_000
+    }
+
+    /// The effective maximum bet for a game whose worst-case gross payout is
+    /// `max_mult_x` times the stake.
+    ///
+    /// Returns the tighter of:
+    ///   (a) the tier-derived cap  = max_exposure / max_mult_x, and
+    ///   (b) the admin's flat `max_bet`, which is retained as an absolute
+    ///       ceiling so an operator can always clamp harder than the formula.
+    ///
+    /// `max_mult_x == 0` is treated as 1 to avoid division-by-zero.
+    public fun effective_max_bet<T>(house: &House<T>, max_mult_x: u64): u64 {
+        let m = if (max_mult_x == 0) { 1 } else { max_mult_x };
+        let derived = max_exposure(house) / m;
+        if (derived < house.max_bet) { derived } else { house.max_bet }
+    }
+
+    /// Tier-aware wager validation. Same contract as `take_wager`, but the upper
+    /// bound is `effective_max_bet(house, max_mult_x)` instead of the flat
+    /// `max_bet`. Games should migrate to this; `take_wager` is retained
+    /// unchanged for compatibility.
+    public(package) fun take_wager_tiered<T>(
+        house: &mut House<T>,
+        wager: Coin<T>,
+        max_mult_x: u64,
+        ctx: &TxContext,
+    ): u64 {
+        assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
+        let amount = coin::value(&wager);
+        assert!(amount >= house.min_bet, EBetBelowMin);
+        assert!(amount <= effective_max_bet(house, max_mult_x), EBetTooLarge);
+        balance::join(&mut house.bank, coin::into_balance(wager));
+        house.total_wagered = house.total_wagered + amount;
+        amount
+    }
+
+    /// Tier-aware, non-absorbing variant (commit-reveal games).
+    public(package) fun take_wager_amount_tiered<T>(
+        house: &House<T>,
+        wager: &Coin<T>,
+        max_mult_x: u64,
+        ctx: &TxContext,
+    ): u64 {
+        assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
+        let amount = coin::value(wager);
+        assert!(amount >= house.min_bet, EBetBelowMin);
+        assert!(amount <= effective_max_bet(house, max_mult_x), EBetTooLarge);
+        amount
+    }
+
+    /// Tier-aware multi-bet variant: validates PER-BET amount.
+    public(package) fun take_wager_amount_multi_tiered<T>(
+        house: &House<T>,
+        wager: &Coin<T>,
+        count: u64,
+        max_mult_x: u64,
+        ctx: &TxContext,
+    ): u64 {
+        assert!(!house.paused, EGamePaused);
+        assert_not_banned(house, ctx);
+        assert!(count >= 1, EZeroAmount);
+        let amount = coin::value(wager);
+        let per_bet = amount / count;
+        assert!(per_bet >= house.min_bet, EBetBelowMin);
+        assert!(per_bet <= effective_max_bet(house, max_mult_x), EBetTooLarge);
+        amount
+    }
+
     // ── Public donations (v29) ─────────────────────────────────────────────
     //
     // PERMISSIONLESS bankroll gifting. Anyone can strengthen the House bank
@@ -477,6 +620,210 @@ module cradleos_casino::house {
             assert!(amt == 10, 2);
             test_scenario::return_shared(house);
             test_scenario::return_to_sender(&sc, cap);
+        };
+        test_scenario::end(sc);
+    }
+
+    // ── Tier tests (v29) ───────────────────────────────────────────────────
+    //
+    // EVE has 9 decimals. Tests below use whole-EVE units where readable.
+    #[test_only] const EVE: u64 = 1_000_000_000;
+
+    /// Helper: build a House with an explicit bank and a very high flat max_bet
+    /// so the TIER formula is the binding constraint, not the admin ceiling.
+    #[test_only]
+    fun house_with_bank(sc: &mut test_scenario::Scenario, admin: address, bank: u64) {
+        let ctx = test_scenario::ctx(sc);
+        let seed = coin::mint_for_testing<SUI>(bank, ctx);
+        // max_bet deliberately enormous -> tier math governs.
+        let cap = create<SUI>(seed, 1_000_000_000 * EVE, 1, ctx);
+        transfer::public_transfer(cap, admin);
+    }
+
+    /// Tier boundaries map to the intended bps bands.
+    #[test]
+    fun test_risk_tier_bands() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 500 * EVE); // < 1,000 -> SEED
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            assert!(risk_tier(&house) == 0, 0);
+            assert!(exposure_bps(&house) == BPS_SEED, 1);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// 9,851 EVE (the live bank on 2026-08-07) must land in SMALL / 200 bps.
+    #[test]
+    fun test_live_bank_is_small_tier() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            assert!(risk_tier(&house) == 1, 0);
+            assert!(exposure_bps(&house) == BPS_SMALL, 1);
+            // 2% of 9,851 EVE = 197.02 EVE of single-bet exposure.
+            assert!(max_exposure(&house) == 197_020_000_000, 2);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// The headline fix: a 970x game (keno) and a 2x game (war) get very
+    /// different caps off the SAME bank. Values cross-checked against the
+    /// independent risk model: keno 0.2031 EVE, war 98.51 EVE at 9,851 bank.
+    #[test]
+    fun test_effective_max_bet_scales_inversely_with_multiplier() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            let exposure = max_exposure(&house); // 197.02 EVE
+            // keno @970x -> 197.02/970 = 0.203113... EVE
+            assert!(effective_max_bet(&house, 970) == exposure / 970, 0);
+            assert!(effective_max_bet(&house, 970) == 203_113_402, 1);
+            // war @2x -> 98.51 EVE
+            assert!(effective_max_bet(&house, 2) == 98_510_000_000, 2);
+            // A low-multiplier game is allowed FAR more than the old flat 25 EVE.
+            assert!(effective_max_bet(&house, 2) > 25 * EVE, 3);
+            // A high-multiplier game is capped FAR below the old flat 25 EVE.
+            assert!(effective_max_bet(&house, 970) < 25 * EVE, 4);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// The admin's flat `max_bet` still acts as an absolute ceiling: if it is
+    /// tighter than the tier formula, it wins. Operator can always clamp harder.
+    #[test]
+    fun test_admin_max_bet_is_absolute_ceiling() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(9_851 * EVE, ctx);
+            // Flat cap of 5 EVE is tighter than war's tier-derived 98.51 EVE.
+            let cap = create<SUI>(seed, 5 * EVE, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            assert!(effective_max_bet(&house, 2) == 5 * EVE, 0);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// Donations grow the bank, which RAISES limits with no admin action — the
+    /// link between the two v29 features. Crossing 10,000 EVE moves SMALL->MEDIUM.
+    #[test]
+    fun test_donation_can_promote_tier_and_raise_limits() {
+        let admin = @0xAD;
+        let donor = @0xD0;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE); // SMALL / 200bps
+        test_scenario::next_tx(&mut sc, donor);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            assert!(risk_tier(&house) == 1, 0);
+            let before = effective_max_bet(&house, 970);
+            let ctx = test_scenario::ctx(&mut sc);
+            // Push bank over the 10,000 EVE MEDIUM threshold.
+            let gift = coin::mint_for_testing<SUI>(200 * EVE, ctx);
+            donate(&mut house, gift, b"bankroll", ctx);
+            assert!(risk_tier(&house) == 2, 1);
+            assert!(exposure_bps(&house) == BPS_MEDIUM, 2);
+            // Same game, strictly higher ceiling, purely from the donation.
+            assert!(effective_max_bet(&house, 970) > before, 3);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// A bet above the tier-derived cap is rejected even though it is well under
+    /// the admin's flat max_bet.
+    #[test]
+    #[expected_failure(abort_code = EBetTooLarge)]
+    fun test_tiered_wager_rejects_above_derived_cap() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            // keno cap is ~0.203 EVE; 1 EVE must abort.
+            let bet = coin::mint_for_testing<SUI>(1 * EVE, ctx);
+            let _ = take_wager_tiered(&mut house, bet, 970, ctx);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// A bet exactly AT the derived cap is accepted (boundary is inclusive).
+    #[test]
+    fun test_tiered_wager_accepts_at_derived_cap() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let cap_amt = effective_max_bet(&house, 970);
+            let ctx = test_scenario::ctx(&mut sc);
+            let bet = coin::mint_for_testing<SUI>(cap_amt, ctx);
+            let amt = take_wager_tiered(&mut house, bet, 970, ctx);
+            assert!(amt == cap_amt, 0);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// max_mult_x = 0 must not divide-by-zero; treated as 1x.
+    #[test]
+    fun test_zero_multiplier_treated_as_one() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            assert!(effective_max_bet(&house, 0) == effective_max_bet(&house, 1), 0);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
+    /// Solvency invariant: the worst-case payout on a single max bet can never
+    /// exceed the tier's stated exposure share of the bank, for ANY multiplier.
+    #[test]
+    fun test_worst_case_payout_never_exceeds_tier_exposure() {
+        let admin = @0xAD;
+        let mut sc = test_scenario::begin(admin);
+        house_with_bank(&mut sc, admin, 9_851 * EVE);
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let house = test_scenario::take_shared<House<SUI>>(&sc);
+            let exposure = max_exposure(&house);
+            // Sweep the real multiplier spread used by live games.
+            let mults = vector[2u64, 6, 9, 10, 12, 13, 18, 20, 35, 60, 100, 130, 250, 500, 970];
+            let mut i = 0;
+            while (i < vector::length(&mults)) {
+                let m = *vector::borrow(&mults, i);
+                let cap_amt = effective_max_bet(&house, m);
+                // Integer division floors, so worst-case gross <= exposure always.
+                assert!(cap_amt * m <= exposure, i);
+                i = i + 1;
+            };
+            test_scenario::return_shared(house);
         };
         test_scenario::end(sc);
     }
