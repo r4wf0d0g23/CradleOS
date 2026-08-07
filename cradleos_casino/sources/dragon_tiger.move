@@ -132,6 +132,7 @@ module cradleos_casino::dragon_tiger {
     // ── Tests ────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_payout_math() {
@@ -209,17 +210,19 @@ module cradleos_casino::dragon_tiger {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, BET_DRAGON, ctx);
+            play<SUI>(&mut house, &r, &character, bet, BET_DRAGON, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -236,17 +239,19 @@ module cradleos_casino::dragon_tiger {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, BET_TIGER, ctx);
+            play<SUI>(&mut house, &r, &character, bet, BET_TIGER, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 
@@ -263,16 +268,18 @@ module cradleos_casino::dragon_tiger {
             let cap  = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         test_scenario::next_tx(&mut sc, player);
         {
             let mut house = test_scenario::take_shared<House<SUI>>(&sc);
             let r   = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 5, ctx); // invalid bet type
+            play<SUI>(&mut house, &r, &character, bet, 5, ctx); // invalid bet type
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }

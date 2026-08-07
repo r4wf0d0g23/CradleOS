@@ -115,6 +115,7 @@ module cradleos_casino::risk_wheel {
     // ── Tests ─────────────────────────────────────────────────────────────────
     #[test_only] use sui::test_scenario;
     #[test_only] use sui::sui::SUI;
+    #[test_only] use cradleos_casino::test_fixture;
 
     #[test]
     fun test_low_edge() {
@@ -184,6 +185,7 @@ module cradleos_casino::risk_wheel {
             let cap = house::create<SUI>(seed, 10_000, 1, ctx);
             transfer::public_transfer(cap, admin);
         };
+        let character = test_fixture::bootstrap_with_character(&mut sc, admin, player);
         // LOW mode play
         test_scenario::next_tx(&mut sc, player);
         {
@@ -191,7 +193,7 @@ module cradleos_casino::risk_wheel {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 0, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 0, ctx);
             assert!(house::bets_settled(&house) == 1, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
@@ -203,7 +205,7 @@ module cradleos_casino::risk_wheel {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 1, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 1, ctx);
             assert!(house::bets_settled(&house) == 2, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
@@ -215,11 +217,12 @@ module cradleos_casino::risk_wheel {
             let r = test_scenario::take_shared<Random>(&sc);
             let ctx = test_scenario::ctx(&mut sc);
             let bet = coin::mint_for_testing<SUI>(100, ctx);
-            play<SUI>(&mut house, &r, bet, 2, ctx);
+            play<SUI>(&mut house, &r, &character, bet, 2, ctx);
             assert!(house::bets_settled(&house) == 3, 0);
             test_scenario::return_shared(house);
             test_scenario::return_shared(r);
         };
+        test_fixture::destroy_character(&mut sc, admin, character);
         test_scenario::end(sc);
     }
 }
