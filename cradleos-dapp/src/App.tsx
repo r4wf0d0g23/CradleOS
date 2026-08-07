@@ -39,6 +39,7 @@ import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
 import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
 import { CasinoPanel } from "./components/CasinoPanel";
+import { HouseDonatePanel } from "./components/HouseDonatePanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
 
@@ -316,13 +317,14 @@ function PrivateNodeStatus() {
   }
 
   // ── MAINTAINER TIER ──────────────────────────────────────────────────────
-  // HA two-node badge: shows DGX1 + DGX2 independently, each with its own
-  // caught-up / syncing / offline dot. Renders failure states so Raw sees
-  // degraded infra at a glance without checking SSH.
+  // HA node badge: shows each in-service private fullnode independently, with
+  // its own caught-up / syncing / offline dot. Renders failure states so Raw
+  // sees degraded infra at a glance without checking SSH. Retired nodes are
+  // filtered out in haNodes() (see note there).
   if (unreachable) {
     return (
       <span
-        title={"Sui status endpoint unreachable\n\n/sui-status returned an error or timed out.\nDGX1 sui-proxy may be down."}
+        title={"Sui status endpoint unreachable\n\n/sui-status returned an error or timed out.\nThe sui-proxy may be down."}
         style={{ display: "inline-flex", alignItems: "center", gap: 5 }}
       >
         <span style={{ color: "rgba(180,160,140,0.45)" }}>HA NODES</span>
@@ -396,11 +398,24 @@ function PrivateNodeStatus() {
   );
 }
 
-// Normalize proxy response to a two-node array. New proxy returns `nodes[]`;
+// Normalize proxy response to a node array. New proxy returns `nodes[]`;
 // old single-node responses are lifted into a one-element array so the badge
 // still renders during rollout.
+//
+// 2026-07-27: DGX1's Sui fullnode was shut down (stuck ~1.45M checkpoints behind,
+// frozen at epoch 1170; service+auto-update timer stopped and disabled). The proxy
+// reports a retired node as `enabled:false, checkpoint:null`. Filter those out so
+// the badge advertises only nodes that actually exist -- a permanently-dead dot is
+// noise, not telemetry. This is name-agnostic on purpose: no hardcoded host list,
+// so bringing a node back (or retiring another) needs no dApp change.
+// NOTE: DGX1's character-index (/index/*) is UNAFFECTED and still in service.
 function haNodes(status: PrivateNodeStatusValue): HaNode[] {
-  if (Array.isArray(status.nodes) && status.nodes.length > 0) return status.nodes;
+  if (Array.isArray(status.nodes) && status.nodes.length > 0) {
+    const liveOrSyncing = status.nodes.filter(
+      (n) => n.enabled || n.checkpoint !== null,
+    );
+    return liveOrSyncing.length > 0 ? liveOrSyncing : status.nodes;
+  }
   return [{
     name: status.privateNode.url ?? "NODE",
     enabled: status.privateNode.enabled,
@@ -412,7 +427,7 @@ function haNodes(status: PrivateNodeStatusValue): HaNode[] {
   }];
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "bankroll";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -845,6 +860,16 @@ function AppInner() {
         "The provably-fair feed shows every recent hand — verifiable on-chain",
       ],
     },
+    bankroll: {
+      title: "Bankroll the House — public $EVE donations that raise max bets for everyone",
+      steps: [
+        "The House is a shared Move object, NOT a wallet — never send $EVE directly to its object id, a naked transfer to a shared object is unrecoverable",
+        "Donations go through house::donate, which anyone can call — no admin capability required",
+        "A deeper bank raises the single-bet exposure budget, which raises max bets across every game automatically",
+        "Max bet is derived per game as (bank x tier%) / payout multiplier — high-multiplier games like Keno cap lower because one win costs the bank more",
+        "Donations are IRREVERSIBLE and pay no return — this is not an investment; funds only leave as player winnings or operator withdrawal",
+      ],
+    },
   };
 
   const brief = TAB_BRIEF[activeTab];
@@ -859,7 +884,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
+      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino", bankroll: "bankroll",
       voting: "voting",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
@@ -995,7 +1020,7 @@ function AppInner() {
               // is regenerated with full type-name coverage. Panel + data file
               // intentionally kept on disk for fast revival.
               const ORDER: Tab[] = [
-                "casino",
+                "casino", "bankroll",
                 "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
                 "query", "gamedata", "dapps",
@@ -1033,6 +1058,7 @@ function AppInner() {
                 : tab === "cipher"     ? "CIPHER"
                 : tab === "voting"     ? "VOTE"
                 : tab === "casino"     ? "CASINO"
+                : tab === "bankroll"   ? "BANKROLL"
                 : tab.toUpperCase();
               return (
                 <button
@@ -1312,7 +1338,7 @@ function AppInner() {
             "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
             static data; public, no wallet required. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "bankroll", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
           const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata"]);
           return account || PUBLIC_TABS.has(tab);
@@ -1375,6 +1401,7 @@ function AppInner() {
                   : tab === "cipher"    ? "⊕ Cipher"
                   : tab === "voting"    ? "Vote"
                   : tab === "casino"    ? "◆ BJ"
+                  : tab === "bankroll"  ? "◈ BANK"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
@@ -1404,6 +1431,7 @@ function AppInner() {
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
                   : tab === "voting"        ? "◣ Elections"
                   : tab === "casino"        ? "◆ Casino"
+                  : tab === "bankroll"      ? "◈ Bankroll"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
@@ -1465,6 +1493,7 @@ function AppInner() {
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
           {activeTab === "casino"        && <div style={{ background: "transparent" }} className="content-panel"><CasinoPanel /></div>}
+          {activeTab === "bankroll"      && <div style={{ background: "transparent" }} className="content-panel"><HouseDonatePanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}

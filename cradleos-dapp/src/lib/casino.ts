@@ -86,6 +86,52 @@ export interface HouseState {
   totalWagered: number;
   totalPaidOut: number;
   betsSettled: number;
+  /** Risk tier ordinal 0..4 (SEED/SMALL/MEDIUM/LARGE/WHALE), derived from bank. */
+  riskTier: number;
+  /** Basis points of bank riskable on a single bet at the current tier. */
+  exposureBps: number;
+}
+
+// ── Risk tiers (v29) ──────────────────────────────────────────────────────
+//
+// MUST stay in lockstep with the constants in `house.move`. If the Move tier
+// bands or bps change, change them here too — the UI would otherwise display a
+// cap the chain will reject (or hide headroom the chain would allow).
+
+/** Tier upper bounds in EVE display units (exclusive). */
+export const TIER_BOUNDS_EVE = [1_000, 10_000, 50_000, 250_000] as const;
+/** Basis points of bank riskable on one bet, indexed by tier ordinal. */
+export const TIER_BPS = [100, 200, 300, 400, 500] as const;
+export const TIER_NAMES = ["SEED", "SMALL", "MEDIUM", "LARGE", "WHALE"] as const;
+
+/** Tier ordinal for a bank size in EVE. Mirrors `house::risk_tier`. */
+export function riskTierForBank(bankEve: number): number {
+  for (let i = 0; i < TIER_BOUNDS_EVE.length; i++) {
+    if (bankEve < TIER_BOUNDS_EVE[i]) return i;
+  }
+  return TIER_BPS.length - 1;
+}
+
+/** Single-bet exposure budget in EVE. Mirrors `house::max_exposure`. */
+export function maxExposureEve(bankEve: number): number {
+  return (bankEve * TIER_BPS[riskTierForBank(bankEve)]) / 10_000;
+}
+
+/**
+ * Effective max bet for a game whose worst-case gross payout is `grossMult`x.
+ * Mirrors `house::effective_max_bet`: min(tier-derived cap, admin max_bet).
+ */
+export function effectiveMaxBetEve(bankEve: number, grossMult: number, maxBetEve: number): number {
+  const m = grossMult > 0 ? grossMult : 1;
+  const derived = maxExposureEve(bankEve) / m;
+  return maxBetEve > 0 ? Math.min(derived, maxBetEve) : derived;
+}
+
+/** EVE needed to reach the next tier, or null if already at the top. */
+export function eveToNextTier(bankEve: number): { needed: number; nextTier: number } | null {
+  const t = riskTierForBank(bankEve);
+  if (t >= TIER_BOUNDS_EVE.length) return null;
+  return { needed: Math.max(0, TIER_BOUNDS_EVE[t] - bankEve), nextTier: t + 1 };
 }
 
 // ── RPC ──────────────────────────────────────────────────────────────────────
@@ -191,14 +237,18 @@ export async function fetchHouseState(houseId: string): Promise<HouseState | nul
   const fields = res?.data?.content?.fields;
   if (!fields) return null;
   const n = (v: unknown) => Number(v ?? 0);
+  const bankBalance = n(fields.bank) / 1e9;
+  const riskTier = riskTierForBank(bankBalance);
   return {
-    bankBalance: n(fields.bank) / 1e9,
+    bankBalance,
     maxBet: n(fields.max_bet) / 1e9,
     minBet: n(fields.min_bet) / 1e9,
     paused: Boolean(fields.paused),
     totalWagered: n(fields.total_wagered) / 1e9,
     totalPaidOut: n(fields.total_paid_out) / 1e9,
     betsSettled: n(fields.bets_settled),
+    riskTier,
+    exposureBps: TIER_BPS[riskTier],
   };
 }
 
@@ -232,7 +282,10 @@ export function betPresets(opts: {
 }): number[] {
   const { bank = 0, grossMult = 0, maxBet = 0, minBet = 0, walletEve = 0 } = opts;
   let cap = Infinity;
-  if (bank > 0 && grossMult > 0) cap = Math.min(cap, (bank * 0.03) / grossMult);
+  // v29: exposure share is now tier-derived (was a flat 3%), matching
+  // `house::effective_max_bet`. Keeps the preset ladder in step with what the
+  // chain will actually accept as the bank grows via donations.
+  if (bank > 0 && grossMult > 0) cap = Math.min(cap, maxExposureEve(bank) / grossMult);
   if (maxBet > 0) cap = Math.min(cap, maxBet);
   if (walletEve > 0) cap = Math.min(cap, walletEve);
   if (!Number.isFinite(cap) || cap <= 0) return [5, 10, 25, 100];
@@ -317,6 +370,102 @@ export function buildFundHouseTx(
     arguments: [tx.object(houseId), tx.object(adminCapId), funds],
   });
   return tx;
+}
+
+/**
+ * PUBLIC donation to the House bankroll (v29) — no admin cap required.
+ *
+ * Distinct from `buildFundHouseTx` (admin `house::deposit`): this hits
+ * `house::donate`, which anyone may call. `label` is an optional donor tag
+ * shown on the leaderboard; pass an empty string to donate anonymously.
+ * Contract caps the label at 64 bytes, so it is truncated here to match.
+ */
+export function buildDonateTx(
+  houseId: string,
+  eveCoinIds: string[],
+  amountRaw: bigint,
+  label = "",
+): Transaction {
+  const tx = new Transaction();
+  const primary = tx.object(eveCoinIds[0]);
+  if (eveCoinIds.length > 1) {
+    tx.mergeCoins(primary, eveCoinIds.slice(1).map((id) => tx.object(id)));
+  }
+  const [funds] = tx.splitCoins(primary, [tx.pure.u64(amountRaw)]);
+  // Enforce the on-chain 64-BYTE limit (not 64 chars — multibyte labels count
+  // per byte, so slicing by character could still abort ELabelTooLong).
+  const bytes = new TextEncoder().encode(label);
+  const labelBytes = bytes.length > 64 ? Array.from(bytes.slice(0, 64)) : Array.from(bytes);
+  tx.moveCall({
+    target: `${CASINO_PKG}::house::donate`,
+    typeArguments: [EVE_COIN_TYPE],
+    arguments: [tx.object(houseId), funds, tx.pure.vector("u8", labelBytes)],
+  });
+  return tx;
+}
+
+export interface DonationRecord {
+  txDigest: string;
+  donor: string;
+  amount: number;      // EVE
+  label: string;
+  newBalance: number;  // EVE, bank AFTER the donation
+  timestampMs: number | null;
+}
+
+/** Recent public donations, newest first. Feeds the donor leaderboard. */
+export async function fetchRecentDonations(houseId: string, limit = 50): Promise<DonationRecord[]> {
+  if (!CASINO_PKG) return [];
+  const result = await rpc("suix_queryEvents", [
+    { MoveEventType: `${CASINO_ORIGINAL}::house::Donation` },
+    null, limit, true, // descending = newest first
+  ]);
+  const dec = new TextDecoder();
+  const out: DonationRecord[] = [];
+  for (const e of result.data ?? []) {
+    const pj = e.parsedJson ?? {};
+    if (houseId && pj.house_id !== houseId) continue;
+    // `label` arrives as a byte array (vector<u8>) or, depending on RPC
+    // normalisation, already as a string. Handle both.
+    let label = "";
+    const raw = pj.label;
+    if (typeof raw === "string") label = raw;
+    else if (Array.isArray(raw)) label = dec.decode(new Uint8Array(raw.map((x: any) => Number(x))));
+    out.push({
+      txDigest: e.id?.txDigest ?? "",
+      donor: pj.donor ?? "",
+      amount: Number(pj.amount ?? 0) / 1e9,
+      label,
+      newBalance: Number(pj.new_balance ?? 0) / 1e9,
+      timestampMs: e.timestampMs ? Number(e.timestampMs) : null,
+    });
+  }
+  return out;
+}
+
+export interface DonorTotal {
+  donor: string;
+  label: string;   // most recent non-empty label this donor used
+  total: number;   // EVE
+  count: number;
+}
+
+/** Aggregate donations by donor address, descending by total contributed. */
+export function aggregateDonors(records: DonationRecord[]): DonorTotal[] {
+  const byDonor = new Map<string, DonorTotal>();
+  // Records arrive newest-first, so the FIRST label seen for a donor is their
+  // most recent one.
+  for (const r of records) {
+    const cur = byDonor.get(r.donor);
+    if (cur) {
+      cur.total += r.amount;
+      cur.count += 1;
+      if (!cur.label && r.label) cur.label = r.label;
+    } else {
+      byDonor.set(r.donor, { donor: r.donor, label: r.label, total: r.amount, count: 1 });
+    }
+  }
+  return Array.from(byDonor.values()).sort((a, b) => b.total - a.total);
 }
 
 /** Play a blackjack hand. wagerRaw is raw EVE units; standOn in [12,21]. */
