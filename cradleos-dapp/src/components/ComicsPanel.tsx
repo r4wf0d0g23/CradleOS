@@ -38,7 +38,21 @@ const asset = (p: string) => `${BASE}${p.replace(/^\/+/, "")}`;
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type ScriptBlock = { heading?: string | null; body: string };
+type ScriptBlock = {
+  heading?: string | null;
+  body: string;
+  /** Key into `Series.themes` — art is keyed by RECURRING MOTIF, not by chapter. */
+  theme?: string;
+};
+
+/**
+ * A theme plate: one piece of art authored once and referenced from any block
+ * in any chapter. Raw 2026-08-19: "we can art for theme not just for chapter
+ * titles". The Rift appears in ch1 and the Cradle in both ch2 and ch3 — keying
+ * art to the motif means those look consistent every time they recur, and a
+ * single re-render updates every appearance.
+ */
+type Theme = { title?: string; image: string; alt?: string };
 
 type Chapter = {
   n: number;
@@ -58,6 +72,8 @@ type Series = {
   status?: "ongoing" | "complete" | "hiatus";
   synopsis?: string;
   cover?: string | null;
+  /** Reusable art registry, keyed by motif. Referenced via `ScriptBlock.theme`. */
+  themes?: Record<string, Theme>;
   chapters: Chapter[];
 };
 
@@ -694,6 +710,47 @@ function ScriptBody({ text }: { text: string }) {
 
 // ── Reader: script (text-only chapters) ────────────────────────────────────
 
+/**
+ * Theme plate rendered inline above the block it belongs to.
+ * Fails soft: a missing registry entry or a broken file renders nothing rather
+ * than an alt-text box — the chapter must stay readable as prose regardless.
+ */
+function ThemePlate({ theme }: { theme?: Theme }) {
+  const [ok, setOk] = useState(true);
+  if (!theme?.image || !ok) return null;
+  return (
+    <figure style={{ margin: "0 0 4px" }}>
+      <img
+        src={asset(theme.image)}
+        alt={theme.alt ?? theme.title ?? ""}
+        loading="lazy"
+        onError={() => setOk(false)}
+        style={{
+          display: "block",
+          width: "100%",
+          height: "auto",
+          border: "1px solid rgba(255,71,0,0.18)",
+          filter: "saturate(0.96)",
+        }}
+      />
+      {theme.title && (
+        <figcaption
+          style={{
+            marginTop: 5,
+            fontFamily: "monospace",
+            fontSize: 9,
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color: MUTED,
+          }}
+        >
+          {theme.title}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
 function ScriptReader({
   series,
   chapter,
@@ -738,6 +795,7 @@ function ScriptReader({
       >
         {blocks.map((b, i) => (
           <div key={i} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {b.theme && <ThemePlate theme={series.themes?.[b.theme]} />}
             {b.heading && (
               <div
                 style={{
