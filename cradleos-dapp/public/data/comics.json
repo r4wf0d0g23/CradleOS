@@ -3,38 +3,55 @@
   "generatedAt": "2026-08-19T17:50:00Z",
   "series": [
     {
-      "id": "frontier-tales",
-      "title": "UNTITLED SERIES",
-      "tagline": "Placeholder title — rename in public/data/comics.json (series[0].title).",
+      "id": "echoes-of-stillness",
+      "title": "Echoes of Stillness",
+      "tagline": "A pilot chases Crude Matter into a rift that was never meant to be entered — and something answers.",
       "author": "Raw",
       "status": "ongoing",
-      "synopsis": "A comic series set in the EVE Frontier universe. Synopsis pending — replace this text in public/data/comics.json.",
+      "synopsis": "Crude Matter is the lifeblood of expansion — but the rifts that birth it do not all welcome intruders. When Raw pushes into a young, unstable Crude Rift, the Stillness effect runs stronger than any record allows, and a voice that is not his own begins forming in the noise. A serialized descent into the wounds of the universe and the things that guard them.",
       "cover": null,
       "chapters": [
         {
           "n": 1,
-          "title": "Chapter 1",
+          "title": "The Young Rift",
           "subtitle": null,
-          "publishedAt": null,
-          "layout": "page",
+          "publishedAt": "2026-08-19",
+          "layout": "scroll",
           "pages": [],
-          "script": []
+          "script": [
+            {
+              "heading": null,
+              "body": "The ship's hull trembled as it slipped into the event horizon of the young Crude Rift. The pilot, Raw, had seen many of these before — but none quite so… unsettled. The swirling mass of spacetime distortion stretched outward in eerie, convulsing waves, its surface fractured by jagged scars of energy displacement. He'd been to mature sites before — where Crude Matter stabilized into lattices, harvested and refined into the fuel that powered entire fleets. But this?\n\nThis was raw. Undisciplined. Dangerous.\n\nHe had read the reports — how young Crude Rifts, still forming, still pulling themselves together, had torn entire mining vessels apart, scattering them across unknown dimensions. The hulls would reappear weeks, months, sometimes years later, twisted and broken, their crews long lost to the void.\n\nYet, Crude Matter was the lifeblood of expansion. No wars were fought without it. No Fabricators operated in its absence. Civilizations rose and fell on the yield of these celestial wounds.\n\nAnd so, despite every alarm screaming caution, he pressed forward."
+            },
+            {
+              "heading": "The Rift Hungered",
+              "body": "Raw checked his instruments — gravitational distortions were erratic, the Stillness effect stronger than recorded at this stage of a Rift's life cycle. A sign of its potency? Or something else entirely?\n\nHe activated the scanning array, watching as its pulse rippled across the event horizon. The data feed returned chaotic patterns, unreadable at first. Then, a phrase began forming in the noise, distorted yet deliberate:\n\n\"It is not yet born. You do not belong here.\"\n\nHe froze. The transmission was not from his ship.\n\nHis hands instinctively gripped the throttle, debating whether to disengage. But the Rift pulsed, dragging the ship deeper into its gravity well. The young Crude Matter was not stable enough to extract — attempting to mine it would likely result in catastrophic failure. But now he was committed.\n\nSomething stirred in the distortion ahead.\n\nNot metal.\nNot rock.\nNot a ship.\n\nSomething else."
+            },
+            {
+              "heading": "The Warning of H-SN21 I",
+              "body": "Raw's mind flashed back to the ghost signal recovered from H-SN21 I, the one that still haunted pilots foolish enough to listen.\n\n\"The sin we commit here is too grave to be forgiven.\"\n\n\"There is a thing here that suffers no intelligent creature to pass.\"\n\nHe swallowed hard. The similarities were undeniable. A force that devours cognition. A warning that should have kept him away. Yet here he was, at the birth of a new wound in the universe, witnessing something beyond human comprehension.\n\nThe Rift flared, and his ship's comms erupted with overlapping voices — his own voice, layered a thousand times over, each iteration distorted and broken.\n\nHe killed the engines. If the Rift wanted him, it would have to take him.\n\nThe event horizon convulsed.\n\nAnd Raw disappeared."
+            },
+            {
+              "heading": "Final Log Transmission",
+              "body": "Weeks later, a long-range probe detected a ship, identical to his, drifting near the Eschaton system. It bore no signs of damage, no crew aboard.\n\nBut the logs — uncorrupted and perfectly intact — ended with a single message.\n\n\"It is not yet born. You do not belong here.\"\n\nThe ship remains classified as a derelict. No recovery team has been sent.\n\nNo one wants to know what came back."
+            }
+          ]
         },
         {
           "n": 2,
           "title": "Chapter 2",
-          "subtitle": null,
+          "subtitle": "to follow",
           "publishedAt": null,
-          "layout": "page",
+          "layout": "scroll",
           "pages": [],
           "script": []
         },
         {
           "n": 3,
           "title": "Chapter 3",
-          "subtitle": null,
+          "subtitle": "to follow",
           "publishedAt": null,
-          "layout": "page",
+          "layout": "scroll",
           "pages": [],
           "script": []
         }
