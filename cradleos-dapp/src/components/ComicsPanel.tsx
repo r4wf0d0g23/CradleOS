@@ -612,6 +612,86 @@ function PageReader({
   );
 }
 
+// ── Script prose renderer ──────────────────────────────────────────────────
+// 2026-08-19 readability fix (Raw: "the double spacing is not easy to read").
+//
+// The prose is written with a blank line between nearly every beat:
+//
+//     It did not come through a relay.\n\nIt did not propagate...
+//
+// Rendering that with `whiteSpace: "pre-wrap"` turns every \n\n into a FULL
+// empty line, so a page of short staccato beats becomes a ladder of gaps and
+// the eye loses the thread. Fixed at the renderer (the layer that owns the
+// problem) rather than by rewriting Raw's text — the beat structure IS the
+// voice, only the spacing was wrong.
+//
+// Rules:
+//   - split on blank lines into real paragraphs, drop the literal gaps
+//   - consecutive SHORT beats tighten up so they read as rhythm, not as
+//     separate paragraphs; full paragraphs keep normal separation
+//   - ALL-CAPS lines (DEPTH: NULL, THEY FOUND US., QUERY: CREATOR
+//     IDENTIFICATION) render as terminal readouts — monospace amber. They are
+//     machine speech in the fiction, so they should not look like prose.
+
+const TERMINAL_RE = /^["'A-Z0-9 :.,!?()\u2014\u2013'-]+$/;
+
+function isTerminalLine(p: string): boolean {
+  if (p.includes("\n")) return false;
+  if (p.length > 72) return false;
+  if (/[a-z]/.test(p)) return false;              // any lowercase => prose
+  if ((p.match(/[A-Z]/g) ?? []).length < 2) return false;
+  return TERMINAL_RE.test(p);
+}
+
+/** A short single-line beat — tightened against its neighbours. */
+function isBeat(p: string): boolean {
+  return !p.includes("\n") && p.length <= 78;
+}
+
+function ScriptBody({ text }: { text: string }) {
+  const paras = useMemo(
+    () => text.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean),
+    [text],
+  );
+
+  return (
+    <div style={{ fontSize: 15, lineHeight: 1.62, color: "rgba(232,232,214,0.92)" }}>
+      {paras.map((p, i) => {
+        const terminal = isTerminalLine(p);
+        const tightPrev = i > 0 && isBeat(paras[i - 1]) && isBeat(p);
+        const marginTop = i === 0 ? 0 : tightPrev ? "0.34em" : "0.78em";
+
+        if (terminal) {
+          return (
+            <div
+              key={i}
+              style={{
+                marginTop: i === 0 ? 0 : "0.9em",
+                marginBottom: "0.2em",
+                fontFamily: "monospace",
+                fontSize: 13,
+                letterSpacing: "0.14em",
+                color: ACCENT_AMBER,
+                borderLeft: `2px solid ${ACCENT_AMBER}55`,
+                paddingLeft: 10,
+                lineHeight: 1.5,
+              }}
+            >
+              {p}
+            </div>
+          );
+        }
+
+        return (
+          <p key={i} style={{ margin: 0, marginTop, whiteSpace: "pre-wrap" }}>
+            {p}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Reader: script (text-only chapters) ────────────────────────────────────
 
 function ScriptReader({
@@ -647,34 +727,33 @@ function ScriptReader({
 
       <div
         style={{
-          maxWidth: 760,
+          maxWidth: 720,          // ~70 characters at 15px — comfortable measure
           display: "flex",
           flexDirection: "column",
-          gap: 18,
-          padding: "16px 18px",
+          gap: 30,                // section separation now carries the rhythm
+          padding: "22px 26px 26px",
           background: "rgba(255,255,255,0.02)",
           border: "1px solid rgba(255,255,255,0.07)",
         }}
       >
         {blocks.map((b, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {b.heading && (
               <div
                 style={{
                   fontFamily: "monospace",
-                  fontSize: 10,
-                  letterSpacing: "0.16em",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.18em",
                   color: ACCENT,
                   borderBottom: `1px solid ${ACCENT}33`,
-                  paddingBottom: 4,
+                  paddingBottom: 6,
                 }}
               >
                 {b.heading.toUpperCase()}
               </div>
             )}
-            <div style={{ fontSize: 13, lineHeight: 1.75, color: "rgba(226,226,208,0.9)", whiteSpace: "pre-wrap" }}>
-              {b.body}
-            </div>
+            <ScriptBody text={b.body} />
           </div>
         ))}
       </div>
