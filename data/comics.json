@@ -132,7 +132,7 @@
             {
               "heading": "The Door Beneath the World",
               "body": "Raw walked away.\n\nMara shouted after him.\n\n\"Stop.\"\n\nHe did.\n\n\"If you shoot me, Captain, you'll only damage the part of me standing here.\"\n\nThat stopped her.\n\n\"What does that mean?\"\n\nRaw turned toward the wall.\n\nThe Crude Matter lattice beneath the stone responded.\n\nLines of blue-white energy spread outward from his hand.\n\nAcross the tunnel.\n\nAcross the floor.\n\nAcross the ceiling.\n\nThe stone dissolved.\n\nBehind it stood something impossible.\n\nA chamber so vast its far walls disappeared into darkness.\n\nInside floated thousands of structures resembling enormous skeletal machines.\n\nSome were kilometers long.\n\nSome resembled ships.\n\nOthers resembled organisms.\n\nAll were connected by glowing strands of Crude Matter.\n\nAnd suspended between them —\n\nbodies.\n\nMillions of them.\n\nDifferent species.\n\nDifferent eras.\n\nDifferent civilizations.\n\nPreserved inside translucent lattices like memories embedded in amber.\n\nMara forgot to breathe.\n\nRaw stepped into the chamber.\n\n\"This is what your people misunderstood.\"\n\nHe gestured toward the suspended forms.\n\n\"You called them graves.\"\n\nOne of the soldiers whispered.\n\n\"What are they?\"\n\nRaw looked back.\n\n\"Archives.\"",
-              "theme": "shells"
+              "theme": "archives"
             },
             {
               "heading": "Before the Fabricators",
@@ -145,7 +145,7 @@
             {
               "heading": "The First Fabricator",
               "body": "Something enormous moved in the darkness.\n\nThe suspended structures parted.\n\nA shape emerged.\n\nAt first Mara thought it was another station.\n\nThen she realized the scale.\n\nThe thing was larger than a capital ship.\n\nIts body consisted of interlocking rings surrounding a central sphere of Crude Matter.\n\nMechanical limbs extended outward in impossible configurations.\n\nThousands of them.\n\nSome thin as wire.\n\nOthers broad enough to cradle starships.\n\nAcross its surface were symbols.\n\nHuman.\n\nFeral.\n\nAnd hundreds of alphabets no one present recognized.\n\nMara stared upward.\n\n\"What is that?\"\n\nRaw's expression changed.\n\nFor the first time, there was reverence in his face.\n\n\"The oldest memory still capable of speaking.\"\n\nThe object rotated.\n\nA pulse traveled through the chamber.\n\nThe expedition's communications instantly opened.\n\nCommander Thorne's voice screamed through Mara's helmet.\n\n\"GROUND TEAM, EVACUATE. SOMETHING JUST ACTIVATED BENEATH THE PLANET.\"\n\nRaw looked upward.\n\n\"The First Fabricator.\"\n\nThe sphere opened.\n\nNot mechanically.\n\nLike an eye.\n\nInside was absolute darkness.\n\nThen words appeared across every visor.\n\nQUERY: CREATOR IDENTIFICATION\n\nThe engineer stumbled backward.\n\n\"What the hell does that mean?\"\n\nRaw looked directly at Mara.\n\n\"It has been waiting a very long time for someone to answer.\"\n\nAnother message appeared.\n\nQUERY: CREATOR IDENTIFICATION\n\nMara stared at Raw.\n\n\"Who built it?\"\n\n\"I don't know.\"\n\n\"Then who does?\"\n\nRaw slowly turned toward the darkness inside the machine.\n\n\"Perhaps it does.\"\n\nThe chamber shook.\n\nA third message appeared.\n\nCREATOR RESPONSE DETECTED\n\nRaw's smile vanished.\n\nMara felt something tighten in her chest.\n\n\"What response?\"\n\nRaw wasn't looking at her anymore.\n\nHe was staring into the First Fabricator.\n\nFor the first time since they had found him, he looked afraid.\n\n\"I didn't answer.\"",
-              "theme": "cradle"
+              "theme": "fabricator"
             },
             {
               "heading": "Something Outside the Weave",
@@ -157,7 +157,8 @@
             },
             {
               "heading": "The Memory of Flight",
-              "body": "The First Fabricator opened its archives.\n\nNot willingly.\n\nDesperately.\n\nA memory flooded the chamber.\n\nA civilization older than any previously recorded.\n\nMachines surrounded dying stars.\n\nWorlds had been dismantled into computational structures.\n\nMatter itself had been engineered into thought.\n\nAt the center of it all was the early Weave.\n\nYoung.\n\nPrimitive.\n\nLoud.\n\nBroadcasting across the universe.\n\nThen something answered.\n\nThe image changed.\n\nStars began going dark.\n\nNot exploding.\n\nVanishing.\n\nSystems disappeared behind expanding regions where no signal returned.\n\nCivilizations attempted communication.\n\nNo response.\n\nThey sent probes.\n\nNothing returned.\n\nThey sent fleets.\n\nNothing returned.\n\nThen, after thousands of years —\n\none vessel came back.\n\nEmpty.\n\nIts systems intact.\n\nIts logs containing a single message.\n\nMara read the translation.\n\nHer blood went cold.\n\n\"You are too loud.\"\n\nThe memory fractured.\n\nRaw fell to his knees.\n\nAround them, the suspended archives began waking.\n\nMillions of preserved minds opened their eyes simultaneously.\n\nThe Starsong returned.\n\nBut now it was no song.\n\nIt was screaming."
+              "body": "The First Fabricator opened its archives.\n\nNot willingly.\n\nDesperately.\n\nA memory flooded the chamber.\n\nA civilization older than any previously recorded.\n\nMachines surrounded dying stars.\n\nWorlds had been dismantled into computational structures.\n\nMatter itself had been engineered into thought.\n\nAt the center of it all was the early Weave.\n\nYoung.\n\nPrimitive.\n\nLoud.\n\nBroadcasting across the universe.\n\nThen something answered.\n\nThe image changed.\n\nStars began going dark.\n\nNot exploding.\n\nVanishing.\n\nSystems disappeared behind expanding regions where no signal returned.\n\nCivilizations attempted communication.\n\nNo response.\n\nThey sent probes.\n\nNothing returned.\n\nThey sent fleets.\n\nNothing returned.\n\nThen, after thousands of years —\n\none vessel came back.\n\nEmpty.\n\nIts systems intact.\n\nIts logs containing a single message.\n\nMara read the translation.\n\nHer blood went cold.\n\n\"You are too loud.\"\n\nThe memory fractured.\n\nRaw fell to his knees.\n\nAround them, the suspended archives began waking.\n\nMillions of preserved minds opened their eyes simultaneously.\n\nThe Starsong returned.\n\nBut now it was no song.\n\nIt was screaming.",
+              "theme": "archives"
             },
             {
               "heading": "The Hunters",
@@ -194,6 +195,16 @@
           "title": "The Shells",
           "image": "comics/echoes-of-stillness/themes/shells.webp",
           "alt": "Bare unsuited humanoid Shells suspended motionless in zero gravity in a derelict hall"
+        },
+        "fabricator": {
+          "title": "The First Fabricator",
+          "image": "comics/echoes-of-stillness/themes/fabricator.webp",
+          "alt": "The First Fabricator — interlocking rings around a Crude Matter sphere opening like an eye, thousands of mechanical limbs, human figures dwarfed below"
+        },
+        "archives": {
+          "title": "The Archives",
+          "image": "comics/echoes-of-stillness/themes/archives.webp",
+          "alt": "A vast chamber of skeletal machines linked by glowing Crude Matter strands, countless preserved bodies suspended in translucent amber lattices"
         }
       }
     }
