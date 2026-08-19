@@ -21,11 +21,13 @@
           "script": [
             {
               "heading": null,
-              "body": "The ship's hull trembled as it slipped into the event horizon of the young Crude Rift. The pilot, Raw, had seen many of these before — but none quite so… unsettled. The swirling mass of spacetime distortion stretched outward in eerie, convulsing waves, its surface fractured by jagged scars of energy displacement. He'd been to mature sites before — where Crude Matter stabilized into lattices, harvested and refined into the fuel that powered entire fleets. But this?\n\nThis was raw. Undisciplined. Dangerous.\n\nHe had read the reports — how young Crude Rifts, still forming, still pulling themselves together, had torn entire mining vessels apart, scattering them across unknown dimensions. The hulls would reappear weeks, months, sometimes years later, twisted and broken, their crews long lost to the void.\n\nYet, Crude Matter was the lifeblood of expansion. No wars were fought without it. No Fabricators operated in its absence. Civilizations rose and fell on the yield of these celestial wounds.\n\nAnd so, despite every alarm screaming caution, he pressed forward."
+              "body": "The ship's hull trembled as it slipped into the event horizon of the young Crude Rift. The pilot, Raw, had seen many of these before — but none quite so… unsettled. The swirling mass of spacetime distortion stretched outward in eerie, convulsing waves, its surface fractured by jagged scars of energy displacement. He'd been to mature sites before — where Crude Matter stabilized into lattices, harvested and refined into the fuel that powered entire fleets. But this?\n\nThis was raw. Undisciplined. Dangerous.\n\nHe had read the reports — how young Crude Rifts, still forming, still pulling themselves together, had torn entire mining vessels apart, scattering them across unknown dimensions. The hulls would reappear weeks, months, sometimes years later, twisted and broken, their crews long lost to the void.\n\nYet, Crude Matter was the lifeblood of expansion. No wars were fought without it. No Fabricators operated in its absence. Civilizations rose and fell on the yield of these celestial wounds.\n\nAnd so, despite every alarm screaming caution, he pressed forward.",
+              "theme": "rift"
             },
             {
               "heading": "The Rift Hungered",
-              "body": "Raw checked his instruments — gravitational distortions were erratic, the Stillness effect stronger than recorded at this stage of a Rift's life cycle. A sign of its potency? Or something else entirely?\n\nHe activated the scanning array, watching as its pulse rippled across the event horizon. The data feed returned chaotic patterns, unreadable at first. Then, a phrase began forming in the noise, distorted yet deliberate:\n\n\"It is not yet born. You do not belong here.\"\n\nHe froze. The transmission was not from his ship.\n\nHis hands instinctively gripped the throttle, debating whether to disengage. But the Rift pulsed, dragging the ship deeper into its gravity well. The young Crude Matter was not stable enough to extract — attempting to mine it would likely result in catastrophic failure. But now he was committed.\n\nSomething stirred in the distortion ahead.\n\nNot metal.\nNot rock.\nNot a ship.\n\nSomething else."
+              "body": "Raw checked his instruments — gravitational distortions were erratic, the Stillness effect stronger than recorded at this stage of a Rift's life cycle. A sign of its potency? Or something else entirely?\n\nHe activated the scanning array, watching as its pulse rippled across the event horizon. The data feed returned chaotic patterns, unreadable at first. Then, a phrase began forming in the noise, distorted yet deliberate:\n\n\"It is not yet born. You do not belong here.\"\n\nHe froze. The transmission was not from his ship.\n\nHis hands instinctively gripped the throttle, debating whether to disengage. But the Rift pulsed, dragging the ship deeper into its gravity well. The young Crude Matter was not stable enough to extract — attempting to mine it would likely result in catastrophic failure. But now he was committed.\n\nSomething stirred in the distortion ahead.\n\nNot metal.\nNot rock.\nNot a ship.\n\nSomething else.",
+              "theme": "rift"
             },
             {
               "heading": "The Warning of H-SN21 I",
@@ -47,7 +49,8 @@
           "script": [
             {
               "heading": null,
-              "body": "The derelict vessel floated listlessly near the outer orbit of the Eschaton system. Its hull, a familiar silhouette against the backdrop of a cold, distant star, bore the unmistakable registry of Raw's ship — the Solstice Whisper.\n\nYet, there were no distress signals. No signs of battle. No heat signatures of life.\n\nJust the ship.\n\nWaiting."
+              "body": "The derelict vessel floated listlessly near the outer orbit of the Eschaton system. Its hull, a familiar silhouette against the backdrop of a cold, distant star, bore the unmistakable registry of Raw's ship — the Solstice Whisper.\n\nYet, there were no distress signals. No signs of battle. No heat signatures of life.\n\nJust the ship.\n\nWaiting.",
+              "theme": "approach"
             },
             {
               "heading": "The Recovery",
@@ -67,15 +70,18 @@
             },
             {
               "heading": "The Rift's Cradle",
-              "body": "The coordinates led the Argent Seeker to the outer reaches of an unnamed, uncharted system.\n\nAs the ship approached, sensors registered a massive gravitational anomaly. No celestial bodies, no standard rift formations — just an irregular tear in spacetime, pulsing like a heartbeat.\n\n\"That's no ordinary Rift,\" Vance whispered.\n\nThe anomaly was vast — larger than any Rift in recorded history. And within its swirling mass floated a colossal structure:\n\nA station of impossible design, formed from Crude Matter latticework. Its surface pulsed with iridescent blue veins that crackled along fractal corridors. The architecture was non-Euclidean, shifting subtly whenever viewed too long."
+              "body": "The coordinates led the Argent Seeker to the outer reaches of an unnamed, uncharted system.\n\nAs the ship approached, sensors registered a massive gravitational anomaly. No celestial bodies, no standard rift formations — just an irregular tear in spacetime, pulsing like a heartbeat.\n\n\"That's no ordinary Rift,\" Vance whispered.\n\nThe anomaly was vast — larger than any Rift in recorded history. And within its swirling mass floated a colossal structure:\n\nA station of impossible design, formed from Crude Matter latticework. Its surface pulsed with iridescent blue veins that crackled along fractal corridors. The architecture was non-Euclidean, shifting subtly whenever viewed too long.",
+              "theme": "cradle"
             },
             {
               "heading": "Designation",
-              "body": "\"Get me a visual on the station's designation,\" Vance ordered.\n\nA moment later, the ship's AI responded:\n\n\"Designated: 'The Cradle.' Authority: Fabricators' Keep Archive 0x416C6F7264206F66205374696C6C6E657373.\""
+              "body": "\"Get me a visual on the station's designation,\" Vance ordered.\n\nA moment later, the ship's AI responded:\n\n\"Designated: 'The Cradle.' Authority: Fabricators' Keep Archive 0x416C6F7264206F66205374696C6C6E657373.\"",
+              "theme": "cradle"
             },
             {
               "heading": "The Cradle of Stillness",
-              "body": "The crew prepared a probe and launched it toward the station.\n\nThe probe's visual feed revealed:\n\nHalls lined with motionless figures suspended in zero-gravity — like the clones found near Armature.\n\nMetallic drones hovered along the corridors, their limbs resembling the spider-limbed feral described by Raw.\n\nAt the station's core: A massive, pulsating sphere of Crude Matter, suspended above a pedestal of intricate, shifting runes.\n\nThe probe sent back faint audio:\n\nA low, droning hum.\n\nThen, a voice:\n\n\"The Cradle sings. The Weave tightens. The cycle repeats.\""
+              "body": "The crew prepared a probe and launched it toward the station.\n\nThe probe's visual feed revealed:\n\nHalls lined with motionless figures suspended in zero-gravity — like the clones found near Armature.\n\nMetallic drones hovered along the corridors, their limbs resembling the spider-limbed feral described by Raw.\n\nAt the station's core: A massive, pulsating sphere of Crude Matter, suspended above a pedestal of intricate, shifting runes.\n\nThe probe sent back faint audio:\n\nA low, droning hum.\n\nThen, a voice:\n\n\"The Cradle sings. The Weave tightens. The cycle repeats.\"",
+              "theme": "shells"
             },
             {
               "heading": "The Revelation",
@@ -125,7 +131,8 @@
             },
             {
               "heading": "The Door Beneath the World",
-              "body": "Raw walked away.\n\nMara shouted after him.\n\n\"Stop.\"\n\nHe did.\n\n\"If you shoot me, Captain, you'll only damage the part of me standing here.\"\n\nThat stopped her.\n\n\"What does that mean?\"\n\nRaw turned toward the wall.\n\nThe Crude Matter lattice beneath the stone responded.\n\nLines of blue-white energy spread outward from his hand.\n\nAcross the tunnel.\n\nAcross the floor.\n\nAcross the ceiling.\n\nThe stone dissolved.\n\nBehind it stood something impossible.\n\nA chamber so vast its far walls disappeared into darkness.\n\nInside floated thousands of structures resembling enormous skeletal machines.\n\nSome were kilometers long.\n\nSome resembled ships.\n\nOthers resembled organisms.\n\nAll were connected by glowing strands of Crude Matter.\n\nAnd suspended between them —\n\nbodies.\n\nMillions of them.\n\nDifferent species.\n\nDifferent eras.\n\nDifferent civilizations.\n\nPreserved inside translucent lattices like memories embedded in amber.\n\nMara forgot to breathe.\n\nRaw stepped into the chamber.\n\n\"This is what your people misunderstood.\"\n\nHe gestured toward the suspended forms.\n\n\"You called them graves.\"\n\nOne of the soldiers whispered.\n\n\"What are they?\"\n\nRaw looked back.\n\n\"Archives.\""
+              "body": "Raw walked away.\n\nMara shouted after him.\n\n\"Stop.\"\n\nHe did.\n\n\"If you shoot me, Captain, you'll only damage the part of me standing here.\"\n\nThat stopped her.\n\n\"What does that mean?\"\n\nRaw turned toward the wall.\n\nThe Crude Matter lattice beneath the stone responded.\n\nLines of blue-white energy spread outward from his hand.\n\nAcross the tunnel.\n\nAcross the floor.\n\nAcross the ceiling.\n\nThe stone dissolved.\n\nBehind it stood something impossible.\n\nA chamber so vast its far walls disappeared into darkness.\n\nInside floated thousands of structures resembling enormous skeletal machines.\n\nSome were kilometers long.\n\nSome resembled ships.\n\nOthers resembled organisms.\n\nAll were connected by glowing strands of Crude Matter.\n\nAnd suspended between them —\n\nbodies.\n\nMillions of them.\n\nDifferent species.\n\nDifferent eras.\n\nDifferent civilizations.\n\nPreserved inside translucent lattices like memories embedded in amber.\n\nMara forgot to breathe.\n\nRaw stepped into the chamber.\n\n\"This is what your people misunderstood.\"\n\nHe gestured toward the suspended forms.\n\n\"You called them graves.\"\n\nOne of the soldiers whispered.\n\n\"What are they?\"\n\nRaw looked back.\n\n\"Archives.\"",
+              "theme": "shells"
             },
             {
               "heading": "Before the Fabricators",
@@ -137,7 +144,8 @@
             },
             {
               "heading": "The First Fabricator",
-              "body": "Something enormous moved in the darkness.\n\nThe suspended structures parted.\n\nA shape emerged.\n\nAt first Mara thought it was another station.\n\nThen she realized the scale.\n\nThe thing was larger than a capital ship.\n\nIts body consisted of interlocking rings surrounding a central sphere of Crude Matter.\n\nMechanical limbs extended outward in impossible configurations.\n\nThousands of them.\n\nSome thin as wire.\n\nOthers broad enough to cradle starships.\n\nAcross its surface were symbols.\n\nHuman.\n\nFeral.\n\nAnd hundreds of alphabets no one present recognized.\n\nMara stared upward.\n\n\"What is that?\"\n\nRaw's expression changed.\n\nFor the first time, there was reverence in his face.\n\n\"The oldest memory still capable of speaking.\"\n\nThe object rotated.\n\nA pulse traveled through the chamber.\n\nThe expedition's communications instantly opened.\n\nCommander Thorne's voice screamed through Mara's helmet.\n\n\"GROUND TEAM, EVACUATE. SOMETHING JUST ACTIVATED BENEATH THE PLANET.\"\n\nRaw looked upward.\n\n\"The First Fabricator.\"\n\nThe sphere opened.\n\nNot mechanically.\n\nLike an eye.\n\nInside was absolute darkness.\n\nThen words appeared across every visor.\n\nQUERY: CREATOR IDENTIFICATION\n\nThe engineer stumbled backward.\n\n\"What the hell does that mean?\"\n\nRaw looked directly at Mara.\n\n\"It has been waiting a very long time for someone to answer.\"\n\nAnother message appeared.\n\nQUERY: CREATOR IDENTIFICATION\n\nMara stared at Raw.\n\n\"Who built it?\"\n\n\"I don't know.\"\n\n\"Then who does?\"\n\nRaw slowly turned toward the darkness inside the machine.\n\n\"Perhaps it does.\"\n\nThe chamber shook.\n\nA third message appeared.\n\nCREATOR RESPONSE DETECTED\n\nRaw's smile vanished.\n\nMara felt something tighten in her chest.\n\n\"What response?\"\n\nRaw wasn't looking at her anymore.\n\nHe was staring into the First Fabricator.\n\nFor the first time since they had found him, he looked afraid.\n\n\"I didn't answer.\""
+              "body": "Something enormous moved in the darkness.\n\nThe suspended structures parted.\n\nA shape emerged.\n\nAt first Mara thought it was another station.\n\nThen she realized the scale.\n\nThe thing was larger than a capital ship.\n\nIts body consisted of interlocking rings surrounding a central sphere of Crude Matter.\n\nMechanical limbs extended outward in impossible configurations.\n\nThousands of them.\n\nSome thin as wire.\n\nOthers broad enough to cradle starships.\n\nAcross its surface were symbols.\n\nHuman.\n\nFeral.\n\nAnd hundreds of alphabets no one present recognized.\n\nMara stared upward.\n\n\"What is that?\"\n\nRaw's expression changed.\n\nFor the first time, there was reverence in his face.\n\n\"The oldest memory still capable of speaking.\"\n\nThe object rotated.\n\nA pulse traveled through the chamber.\n\nThe expedition's communications instantly opened.\n\nCommander Thorne's voice screamed through Mara's helmet.\n\n\"GROUND TEAM, EVACUATE. SOMETHING JUST ACTIVATED BENEATH THE PLANET.\"\n\nRaw looked upward.\n\n\"The First Fabricator.\"\n\nThe sphere opened.\n\nNot mechanically.\n\nLike an eye.\n\nInside was absolute darkness.\n\nThen words appeared across every visor.\n\nQUERY: CREATOR IDENTIFICATION\n\nThe engineer stumbled backward.\n\n\"What the hell does that mean?\"\n\nRaw looked directly at Mara.\n\n\"It has been waiting a very long time for someone to answer.\"\n\nAnother message appeared.\n\nQUERY: CREATOR IDENTIFICATION\n\nMara stared at Raw.\n\n\"Who built it?\"\n\n\"I don't know.\"\n\n\"Then who does?\"\n\nRaw slowly turned toward the darkness inside the machine.\n\n\"Perhaps it does.\"\n\nThe chamber shook.\n\nA third message appeared.\n\nCREATOR RESPONSE DETECTED\n\nRaw's smile vanished.\n\nMara felt something tighten in her chest.\n\n\"What response?\"\n\nRaw wasn't looking at her anymore.\n\nHe was staring into the First Fabricator.\n\nFor the first time since they had found him, he looked afraid.\n\n\"I didn't answer.\"",
+              "theme": "cradle"
             },
             {
               "heading": "Something Outside the Weave",
@@ -165,7 +173,29 @@
             }
           ]
         }
-      ]
+      ],
+      "themes": {
+        "rift": {
+          "title": "The Young Rift",
+          "image": "comics/echoes-of-stillness/themes/rift.webp",
+          "alt": "A young unstable tear in spacetime, self-emissive amber core bleeding into umber gas bands"
+        },
+        "approach": {
+          "title": "Approach",
+          "image": "comics/echoes-of-stillness/themes/approach.webp",
+          "alt": "A small ship silhouette dwarfed by a colossal brutalist megastructure in burnt-orange haze"
+        },
+        "cradle": {
+          "title": "The Cradle",
+          "image": "comics/echoes-of-stillness/themes/cradle.webp",
+          "alt": "The Cradle — a vast derelict station of Crude Matter latticework suspended inside a rift"
+        },
+        "shells": {
+          "title": "The Shells",
+          "image": "comics/echoes-of-stillness/themes/shells.webp",
+          "alt": "Bare unsuited humanoid Shells suspended motionless in zero gravity in a derelict hall"
+        }
+      }
     }
   ]
 }

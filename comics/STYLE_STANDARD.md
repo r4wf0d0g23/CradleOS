@@ -1,8 +1,8 @@
-# Echoes of Stillness — Visual Style Standard v1.1
+# Echoes of Stillness — Visual Style Standard v1.2
 
-**Status:** DRAFT — iterating with Raw. Nothing generated under this standard
-has been deployed. Raw approved the overall look 2026-08-19 with one hard
-correction (Rule 6: Shells are unsuited).
+**Status:** ACTIVE. Raw approved the look 2026-08-19 (one hard correction —
+Rule 6: Shells are unsuited), settled **flat over layered**, and greenlit theme
+art. First four theme plates are live in production.
 
 **The six rules:** 1 warm monochrome · 2 dusty hostile space · 3 monumental
 backlit silhouette · 4 brutalist modular · 5 epic scale + degraded texture ·
@@ -156,6 +156,80 @@ signature · **color-emoji glyphs anywhere in the reader UI** (webview renders
 them as empty boxes — TOOLS.md) · **spacesuits / helmets / visors / EVA rigs on
 Shells** (Rule 6 — they are grown, not crew) · gore or visible injury on Shells.
 
+## SETTLED: flat, not layered (Raw, 2026-08-19 — do not re-litigate)
+
+Tested rather than argued. Same scene generated two ways: one flat image vs
+three keyed plates composited (background haze / station / foreground), plus a
+haze-over-subject and unified-grain pass to give layering its best shot.
+
+**Flat won. Raw: "flat looks better", "it's a go for flat art".**
+
+Why layering failed on OUR look specifically:
+
+| | Flat | Layered |
+|---|---|---|
+| Atmosphere | dust penetrates the structure — **embedded** | **pasted on top** |
+| Edges | none | dark fringe, too-clean spire tips |
+| Lighting | rim bloom on edges facing the glow | **no rim light — physically wrong** |
+
+The decisive defect is rim light. Rule 3 requires hot backlight raking a
+near-black silhouette; a cut-out subject cannot receive edge bloom from a
+background it was never lit by. It reads wrong even to a non-expert.
+
+**Animation is not foreclosed — it is just a separate production.** If an
+animated series ever happens it gets built layered from scratch, NOT retrofitted
+from comic pages. Do not compromise page quality today to hedge that maybe.
+
+### Generation constraints discovered (2026-08-19)
+
+Two *independent* walls, both hit while testing:
+
+1. Requesting `background: transparent` silently re-routes to `gpt-image-1.5`,
+   which this project has **no access to** → HTTP 403.
+2. That model also only accepts `1024x1024 / 1024x1536 / 1536x1024`, so
+   `2048x1152` → HTTP 400.
+
+**Working method for any cutout asset:** generate on a pure-white matte with
+`gpt-image-2`, then key to alpha. Measured separation was clean (corners
+254,254,255 vs body 2,2,1). Diagnose these two failures separately — fixing
+only the model does not fix the size.
+
+## Theme plates — art is keyed to MOTIF, not to chapter
+
+Raw, 2026-08-19: *"we can art for theme not just for chapter titles"*. This is
+the better architecture, because motifs **recur**: the Rift opens Part I, the
+Cradle appears in both Part II and Part III, the Shells appear in II and III.
+
+Art therefore lives in a **theme registry** (`series.themes` in `comics.json`)
+and blocks reference it by key:
+
+```jsonc
+"themes": {
+  "cradle": { "title": "The Cradle",
+              "image": "comics/echoes-of-stillness/themes/cradle.webp",
+              "alt": "..." }
+},
+"script": [ { "heading": "The Rift's Cradle", "body": "...", "theme": "cradle" } ]
+```
+
+Consequences — all of them good:
+
+- **Consistency by construction.** The Cradle looks like the Cradle every time.
+- **Author once, reuse anywhere.** One plate serves any number of blocks.
+- **One re-render updates every appearance.** Replace `cradle.webp` and all
+  chapters update together.
+- **Fails soft.** A missing registry entry or broken file renders nothing; the
+  chapter stays readable as prose. Never an alt-text box.
+
+### Plate delivery spec
+
+- `.webp`, longest edge ~1600px, **target <200 KB** (current set: 32–129 KB).
+- Live under `public/comics/<seriesId>/themes/<key>.webp`.
+- Manifest paths are relative with no leading slash — `BASE_URL` is prefixed at
+  render time, so the same manifest works on `cradleos.io/` and `/CradleOS/`.
+- Theme plates are **independent of** the per-page `pages[]` image reader. A
+  chapter can carry theme art while still being a script chapter.
+
 ## Forward note — animation viability (Raw, 2026-08-19)
 
 Raw raised a possible animated series later. Recording it now because it
@@ -175,4 +249,5 @@ flagged so we don't paint ourselves into flat-only assets.
 | Date | Change |
 |---|---|
 | 2026-08-19 | v1.0 drafted from 5 canonical Fenris assets + official CCP tokens. Awaiting Raw approval. |
+| 2026-08-19 | **v1.2** — Raw: *"flat looks better"*, *"it's a go for flat art"*, *"we can art for theme not just for chapter titles"*. Recorded the flat-vs-layered A/B verdict as SETTLED (rim-light defect is the decisive reason) so it is not re-litigated. Documented the two independent image-gen walls (transparent→gpt-image-1.5 403; that model's size allowlist→400) and the white-matte keying workaround. Added the theme-plate architecture: art keyed to recurring MOTIF via `series.themes`, not to chapter. Status DRAFT→ACTIVE. |
 | 2026-08-19 | **v1.1** — Raw art-direction correction. Added **Rule 6: Shells are unsuited humanoid forms**, after the first hall sample rendered them in spacesuits. Verified `shells_and_nursery` (7 typeIDs incl. **Blank Shell**) + canon Nursery "assembled… eerie resemblance to growth" string — confirming **Shell is canon, not authored**. Added spacesuit/gore hard rejects. Recorded animated-series consideration + layered-asset implication. |
