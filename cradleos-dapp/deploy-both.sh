@@ -69,6 +69,26 @@ build(){ # $1 = VITE_BASE
 
 live_bundle(){ curl -s --max-time 12 "$1" | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1; }
 
+# E4 (2026-08-09): verify non-assets/ files actually serve. Guards the class of drift
+# where index.html + assets/ are current but the rest of the public tree is stale or
+# absent (casino card art was 404 on gh-pages for 2 days while E3 reported success).
+# Samples up to 12 files from dist/ outside assets/ and requires HTTP 200 on each.
+verify_assets(){ # $1 = live URL base, $2 = label
+  local base="${1%/}" label="$2" bad=0 n=0 code p
+  log "  verifying non-assets/ files actually serve on $label…"
+  while IFS= read -r p; do
+    n=$((n+1))
+    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 12 "$base/$p")
+    if [ "$code" != "200" ]; then
+      log "    ✗ $p → HTTP $code"
+      bad=$((bad+1))
+    fi
+  done < <(cd dist && find . -type f ! -path './assets/*' ! -name 'index.html' \
+             | sed 's|^\./||' | sort | awk 'NR%7==1' | head -12)
+  [ "$bad" -eq 0 ] || die "E4 verification FAILED: $bad/$n sampled files not served on $label (incomplete mirror)"
+  log "  ✓ $label serving all $n sampled non-assets/ files"
+}
+
 # E3 HARD GATE (audit H-4, 2026-07-27): poll an origin until it serves the just-built
 # bundle; die on final mismatch. A drift like 2026-07-07 / 2026-07-18 must FAIL the
 # script, not log a warning.
@@ -118,10 +138,17 @@ if [ "$DO_GH" = 1 ]; then
     git clone -q --branch "$GH_BRANCH" "$GH_REPO" "$GH_CLONE"
   fi
   log "copying dist → gh-pages clone…"
+  # BUGFIX 2026-08-09: this step used to copy ONLY index.html + assets/, so any NEW
+  # file elsewhere in dist/ (casino/cards/*.webp, models/, sounds/, _routes.json …)
+  # silently never landed on the mirror. The Aug 7 casino art batch was missing from
+  # gh-pages for 2 days and the E3 gate never caught it because that gate only compares
+  # the bundle hash inside index.html. Mirror the FULL dist/ tree instead.
   rm -f "$GH_CLONE"/assets/index-*.js "$GH_CLONE"/assets/index-*.css
-  cp dist/index.html "$GH_CLONE/index.html"
-  mkdir -p "$GH_CLONE/assets"
-  cp -r dist/assets/. "$GH_CLONE/assets/"
+  # rsync the whole tree; --delete keeps the mirror honest (removes files dropped from
+  # dist/) while protecting git metadata and Pages control files.
+  rsync -a --delete \
+    --exclude '.git/' --exclude '.nojekyll' --exclude 'CNAME' \
+    dist/ "$GH_CLONE/"
   # preserve CNAME / .nojekyll if present in dist or existing clone
   [ -f dist/CNAME ] && cp dist/CNAME "$GH_CLONE/CNAME" || true
   touch "$GH_CLONE/.nojekyll"
@@ -141,6 +168,10 @@ if [ "$DO_GH" = 1 ]; then
   fi
   # E3 hard gate: the git push landing is NOT deploy success — verify the SERVED bundle
   verify_live "$GH_LIVE" "$GH_BUNDLE" "gh-pages"
+  # E4 hard gate (added 2026-08-09): the bundle hash alone is NOT proof the mirror is
+  # complete — it lives in index.html and says nothing about the rest of the tree.
+  # Probe a sample of non-assets/ files end-to-end; 404 = incomplete mirror = FAIL.
+  verify_assets "$GH_LIVE" "gh-pages"
 fi
 
 log "DONE. CF(primary)=${CF_BUNDLE:-skipped}  gh-pages(mirror)=${GH_BUNDLE:-skipped}"
