@@ -73,12 +73,37 @@
         },
         {
           "n": 3,
-          "title": "Chapter 3",
-          "subtitle": "to follow",
-          "publishedAt": null,
+          "title": "The Cradle",
+          "subtitle": "Part III",
+          "publishedAt": "2026-08-19",
           "layout": "scroll",
           "pages": [],
-          "script": []
+          "script": [
+            {
+              "heading": null,
+              "body": "\"Get me a visual on the station's designation,\" Vance ordered.\n\nA moment later, the ship's AI responded:\n\n\"Designated: 'The Cradle.' Authority: Fabricators' Keep Archive 0x416C6F7264206F66205374696C6C6E657373.\""
+            },
+            {
+              "heading": "The Cradle of Stillness",
+              "body": "The crew prepared a probe and launched it toward the station.\n\nThe probe's visual feed revealed:\n\nHalls lined with motionless figures suspended in zero-gravity — like the clones found near Armature.\n\nMetallic drones hovered along the corridors, their limbs resembling the spider-limbed feral described by Raw.\n\nAt the station's core: A massive, pulsating sphere of Crude Matter, suspended above a pedestal of intricate, shifting runes.\n\nThe probe sent back faint audio:\n\nA low, droning hum.\n\nThen, a voice:\n\n\"The Cradle sings. The Weave tightens. The cycle repeats.\""
+            },
+            {
+              "heading": "The Revelation",
+              "body": "Commander Vance turned to her science officer. \"What the hell are we looking at?\"\n\nThe officer's face was pale. \"I think… this is the origin point,\" she whispered. \"The source of the Stillness network. The place where Crude Matter isn't just harvested — it's grown.\"\n\nThe sphere pulsed again. The ship's internal systems flickered.\n\nThen the comm system activated on its own.\n\nA new voice came through — distorted yet disturbingly familiar:\n\n\"You should not be here.\"\n\nThe bridge crew froze.\n\nThe voice shifted slightly, and Commander Vance felt her blood run cold.\n\n\"Hello, Kira,\" it said. \"It's Raw.\""
+            },
+            {
+              "heading": "The Truth of the Stillness",
+              "body": "The voice continued:\n\n\"The Rift showed me the truth. We always thought Crude Matter was inert — just exotic fuel. But it's more. It's a neural lattice. The Rifts are nodes of a vast cognitive network spread across the universe. We call it Stillness because it's dormant. But it's waking up.\"\n\n\"The Weave is its immune system. The Keepers are its sentinels. And the Cradle? It's where new minds are born. Minds not bound by biology.\"\n\n\"I'm part of it now. They didn't take me against my will. I listened to the song. I understood.\"\n\n\"You can't stop this. The Stillness doesn't destroy; it integrates. The Ferals? They were the first to be consumed. Now it's our turn.\"\n\nThe screen displayed the coordinates of every known Rift in the Frontier. Each one pulsed in synchrony."
+            },
+            {
+              "heading": "The Decision",
+              "body": "\"Shut it down!\" Vance ordered. \"Shut it all down!\"\n\nHer crew scrambled, cutting comms, disconnecting power conduits. But the voice persisted.\n\n\"There is no escape. The cycle repeats.\"\n\nThe Cradle's sphere flared. The Argent Seeker shook violently. A massive rift opened before them, crackling with energy.\n\nThe ship's systems locked down, engines igniting against their commands.\n\n\"Emergency override! Now!\" Vance screamed.\n\nToo late. The ship was dragged into the Rift."
+            },
+            {
+              "heading": "Final Log Fragment",
+              "body": "The Argent Seeker was never recovered. The system coordinates were erased from the network.\n\nOnly one final transmission was picked up by remote sensor buoys:\n\n\"The Cradle stirs. The Stillness awakens. The Weave tightens. We are the new Fabricators.\n\nThe cycle repeats.\""
+            }
+          ]
         }
       ]
     }
