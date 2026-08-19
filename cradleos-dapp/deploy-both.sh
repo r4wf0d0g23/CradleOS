@@ -56,6 +56,18 @@ else
   log "IOC gate SKIPPED (--skip-ioc)"
 fi
 
+# ── 1b. Comics canon guard (mandatory, added 2026-08-19) ──────────────────────
+# Protects DELIBERATE story elements from "helpful" corrections. The Part II
+# archive hex decodes to "Alord of Stillness" ('Alord', one word) and Raw ruled
+# it stays until he decides why. A prose note documents that intent but cannot
+# enforce it; this can. Also asserts series=ongoing, 1:1 Part<->chapter mapping,
+# and no chapter claiming publishedAt with no content.
+if [ -f scripts/check-comics-canon.mjs ]; then
+  log "comics canon guard (protected story invariants)…"
+  node scripts/check-comics-canon.mjs \
+    || die "comics canon guard FAILED — deploy blocked (see public/comics/CANON_NOTES.md)"
+fi
+
 # ── helper: build with a given base into dist/ ────────────────────────────────
 build(){ # $1 = VITE_BASE
   log "building (VITE_BASE=$1 VITE_SERVER_ENV=$SERVER_ENV)…"
