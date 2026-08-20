@@ -427,7 +427,7 @@ function haNodes(status: PrivateNodeStatusValue): HaNode[] {
   }];
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "comics";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "origins";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -452,9 +452,13 @@ const ROUTE_MAP: Record<string, Tab> = {
   "voting":        "voting",
   "vote":          "voting",
   "elections":     "voting",
-  "comics":        "comics",
-  "comic":         "comics",
-  "read":          "comics",
+  // Renamed comics -> origins (Raw, 2026-08-19). Legacy slugs kept so any
+  // link already shared in Discord/elsewhere keeps resolving.
+  "origins":       "origins",
+  "origin":        "origins",
+  "comics":        "origins",
+  "comic":         "origins",
+  "read":          "origins",
 };
 
 function getHashTab(): Tab | null {
@@ -556,8 +560,8 @@ function AppInner() {
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
   // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting/cipher from public set
   // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
-  // "comics" is public: reading requires no wallet and no chain state.
-  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "comics"]);
+  // "origins" is public: reading requires no wallet and no chain state.
+  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -865,8 +869,8 @@ function AppInner() {
         "Bankroll the House (via the HOUSE BANK stat or the lobby button): donate $EVE to raise max bets for everyone — the House is a shared Move object, never send $EVE to its object id directly",
       ],
     },
-    comics: {
-      title: "Comics — original serialized comics set in the EVE Frontier universe",
+    origins: {
+      title: "Origins — original serialized fiction set in the EVE Frontier universe",
       steps: [
         "Free to read — no wallet, no transaction, nothing on-chain",
         "Pick a series, then a chapter; chapters marked COMING SOON are not published yet",
@@ -890,7 +894,7 @@ function AppInner() {
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
       calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
-      voting: "voting", comics: "comics",
+      voting: "voting", origins: "origins",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     // Only push hash if we're in kiosk mode or if a hash is already present
@@ -1028,10 +1032,10 @@ function AppInner() {
                 "casino",
                 "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
-                "comics", "query", "gamedata", "dapps",
+                "origins", "query", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "dapps", "query", "intel", "gamedata", "comics",
+                "dapps", "query", "intel", "gamedata", "origins",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -1063,7 +1067,7 @@ function AppInner() {
                 : tab === "cipher"     ? "CIPHER"
                 : tab === "voting"     ? "VOTE"
                 : tab === "casino"     ? "CASINO"
-                : tab === "comics"     ? "COMICS"
+                : tab === "origins"    ? "ORIGINS"
                 : tab.toUpperCase();
               return (
                 <button
@@ -1343,9 +1347,9 @@ function AppInner() {
             "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
             static data; public, no wallet required. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "comics", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "origins", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata", "comics"]);
+          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata", "origins"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1406,7 +1410,7 @@ function AppInner() {
                   : tab === "cipher"    ? "⊕ Cipher"
                   : tab === "voting"    ? "Vote"
                   : tab === "casino"    ? "◆ BJ"
-                  : tab === "comics"    ? "◈ Comics"
+                  : tab === "origins"   ? "◈ Origins"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")
                 : (tab === "structures" ? "Structures"
@@ -1436,7 +1440,7 @@ function AppInner() {
                   : tab === "cipher"        ? "⊕ Keeper Cipher"
                   : tab === "voting"        ? "◣ Elections"
                   : tab === "casino"        ? "◆ Casino"
-                  : tab === "comics"        ? "◈ Comics"
+                  : tab === "origins"       ? "◈ Origins"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
                   :                          "Starmap")}
             </button>
@@ -1500,7 +1504,7 @@ function AppInner() {
           {/* Bankroll lives INSIDE CasinoPanel (casinoView.mode === "bankroll"),
               not as a top-level tab: it is casino infrastructure, not a domain. */}
           {activeTab === "casino"        && <div style={{ background: "transparent" }} className="content-panel"><CasinoPanel /></div>}
-          {activeTab === "comics"        && <div style={{ background: "transparent" }} className="content-panel"><ComicsPanel /></div>}
+          {activeTab === "origins"       && <div style={{ background: "transparent" }} className="content-panel"><ComicsPanel /></div>}
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}

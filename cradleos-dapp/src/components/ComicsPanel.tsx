@@ -1,5 +1,11 @@
 /**
- * ComicsPanel — reader surface for CradleOS comic series.
+ * ComicsPanel — reader surface for the CradleOS "Origins" tab.
+ *
+ * Tab renamed Comics -> Origins (Raw, 2026-08-19). The component/file name is
+ * deliberately UNCHANGED: renaming the file would churn imports and git history
+ * for zero user benefit, and the data contract (public/data/comics.json,
+ * public/comics/**) stays put so no asset URLs break. Only user-visible strings
+ * and the route slug moved.
  *
  * Fully data-driven: everything comes from `public/data/comics.json`
  * (schema `cradleos.comics.v1`). Publishing a chapter means editing that
@@ -913,7 +919,7 @@ export function ComicsPanel() {
       {view.kind === "library" && (
         <>
           <div style={{ fontSize: 12, color: "rgba(220,220,200,0.7)", maxWidth: 720, lineHeight: 1.6 }}>
-            Original comic series set in the EVE Frontier universe. Free to read, no wallet required.
+            Original serialized fiction set in the EVE Frontier universe. Free to read, no wallet required.
           </div>
           <div
             style={{
@@ -986,7 +992,7 @@ function Header() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
       <span style={{ color: ACCENT, fontWeight: 700, fontSize: 16, letterSpacing: "0.06em" }}>
-        ◈ COMICS
+        ◈ ORIGINS
       </span>
       <span
         style={{
