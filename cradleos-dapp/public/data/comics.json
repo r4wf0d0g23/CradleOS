@@ -111,7 +111,8 @@
           "script": [
             {
               "heading": "The Signal That Should Not Exist",
-              "body": "The transmission arrived eleven days after the Argent Seeker vanished.\n\nIt did not come through a relay.\n\nIt did not propagate across the network.\n\nIt appeared simultaneously inside every active communication system within six known constellations.\n\nMining barges heard it.\n\nMilitary command vessels heard it.\n\nAbandoned stations with no functioning transmitters recorded it in dead storage.\n\nEven sealed Fabricator arrays — systems physically disconnected from external communication — wrote the same seventeen seconds of data into their maintenance logs.\n\nAt 03:17 Frontier Standard Time, every speaker capable of producing sound emitted a low, resonant tone.\n\nThree notes.\n\nA pause.\n\nThen three more.\n\nPilots later called it the Starsong.\n\nThose who heard it described different things.\n\nSome heard machinery turning beneath the floor.\n\nSome heard voices of dead crewmen.\n\nSome heard their own breathing returned to them a fraction of a second before they inhaled.\n\nAnd beneath it all came a voice.\n\nNot Raw's.\n\nNot Kira Vance's.\n\nSomething deeper.\n\nOlder.\n\n\"THE THREAD HAS BEEN DRAWN.\"\n\nA burst of corrupted telemetry followed.\n\nCoordinates.\n\nThen silence.\n\nThe coordinates led to H-SN21 I.\n\nThe place where the warning had begun."
+              "body": "The transmission arrived eleven days after the Argent Seeker vanished.\n\nIt did not come through a relay.\n\nIt did not propagate across the network.\n\nIt appeared simultaneously inside every active communication system within six known constellations.\n\nMining barges heard it.\n\nMilitary command vessels heard it.\n\nAbandoned stations with no functioning transmitters recorded it in dead storage.\n\nEven sealed Fabricator arrays — systems physically disconnected from external communication — wrote the same seventeen seconds of data into their maintenance logs.\n\nAt 03:17 Frontier Standard Time, every speaker capable of producing sound emitted a low, resonant tone.\n\nThree notes.\n\nA pause.\n\nThen three more.\n\nPilots later called it the Starsong.\n\nThose who heard it described different things.\n\nSome heard machinery turning beneath the floor.\n\nSome heard voices of dead crewmen.\n\nSome heard their own breathing returned to them a fraction of a second before they inhaled.\n\nAnd beneath it all came a voice.\n\nNot Raw's.\n\nNot Kira Vance's.\n\nSomething deeper.\n\nOlder.\n\n\"THE THREAD HAS BEEN DRAWN.\"\n\nA burst of corrupted telemetry followed.\n\nCoordinates.\n\nThen silence.\n\nThe coordinates led to H-SN21 I.\n\nThe place where the warning had begun.",
+              "theme": "starsong"
             },
             {
               "heading": "Return to H-SN21 I",
@@ -166,7 +167,8 @@
             },
             {
               "heading": "Frontier",
-              "body": "Across known space, pilots watched their navigation systems fail.\n\nRift routes collapsed.\n\nFabricators ceased production.\n\nCrude Matter stores began resonating inside containment fields.\n\nAnd in every system where humanity had established itself, the same warning appeared:\n\nREDUCE EMISSIONS.\n\nTERMINATE WEAVE ACTIVITY.\n\nDO NOT TRANSMIT.\n\nThen:\n\nDO NOT THINK TOGETHER.\n\nFor seventeen seconds, the Frontier became silent.\n\nThen somewhere near the edge of explored space, a star disappeared.\n\nNot dimmed.\n\nNot destroyed.\n\nRemoved.\n\nEight minutes later, the light that should have arrived from it simply stopped.\n\nA dark hole appeared in the sky.\n\nThen another star vanished.\n\nThen another.\n\nA line was forming.\n\nMoving toward the inhabited systems."
+              "body": "Across known space, pilots watched their navigation systems fail.\n\nRift routes collapsed.\n\nFabricators ceased production.\n\nCrude Matter stores began resonating inside containment fields.\n\nAnd in every system where humanity had established itself, the same warning appeared:\n\nREDUCE EMISSIONS.\n\nTERMINATE WEAVE ACTIVITY.\n\nDO NOT TRANSMIT.\n\nThen:\n\nDO NOT THINK TOGETHER.\n\nFor seventeen seconds, the Frontier became silent.\n\nThen somewhere near the edge of explored space, a star disappeared.\n\nNot dimmed.\n\nNot destroyed.\n\nRemoved.\n\nEight minutes later, the light that should have arrived from it simply stopped.\n\nA dark hole appeared in the sky.\n\nThen another star vanished.\n\nThen another.\n\nA line was forming.\n\nMoving toward the inhabited systems.",
+              "theme": "culling"
             },
             {
               "heading": "Final Transmission — Pilot Raw",
@@ -205,6 +207,16 @@
           "title": "The Archives",
           "image": "comics/echoes-of-stillness/themes/archives.webp",
           "alt": "The Archives — countless preserved beings suspended in darkness, Crude Matter filaments threading into skull and spine, each body glowing from within as its stored memory is read"
+        },
+        "starsong": {
+          "title": "The Starsong",
+          "image": "comics/echoes-of-stillness/themes/starsong.webp",
+          "alt": "Concentric amber shockwave rings crossing interstellar space, passing through drifting ships and dead stations alike — a signal heard everywhere at once"
+        },
+        "culling": {
+          "title": "The Culling",
+          "image": "comics/echoes-of-stillness/themes/culling.webp",
+          "alt": "An advancing line of absence across a burnt-orange starfield — stars not dimmed or destroyed but removed, leaving featureless black, with a brutalist station dwarfed before the oncoming dark"
         }
       }
     }
