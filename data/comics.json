@@ -1,6 +1,38 @@
 {
   "schema": "cradleos.comics.v1",
-  "generatedAt": "2026-08-19T17:50:00Z",
+  "generatedAt": "2026-08-26T15:10:00Z",
+  "featuredFilm": {
+    "id": "echoes-of-stillness-chapter-1-film",
+    "eyebrow": "ORIGINS FILM · CHAPTER I",
+    "title": "Echoes of Stillness — Chapter 1: The Young Rift",
+    "tagline": "The warning began before the Frontier knew how to listen.",
+    "description": "Before the Stillness, a young Rift called to a lone pilot. What waited beyond it was not a destination, but an archive: fractured warnings, impossible memory, and the first evidence that the Frontier's cycle had begun long before anyone knew to fear it.",
+    "runtime": "4:00",
+    "mediaUrl": "https://cradleos.io/api/origins/chapter-1/video",
+    "mediaSha256": "18ea72e95c9b45f0a452cc9550ac9b0cac594fbca11d63c9a6600ef5c76e568d",
+    "poster": "comics/echoes-of-stillness/film/ch1/poster.jpg",
+    "posterSha256": "467c92d9c9b5d8d5dd597506d89ca49443bca74ad2ca8b9797d58ca339180d76",
+    "captionsVtt": "comics/echoes-of-stillness/film/ch1/captions.en.vtt",
+    "captionsVttSha256": "b337ceda7a2a2b40daf1daddefcd0eaac4cf8416d5e322b95870b3adc36e15ee",
+    "transcript": "comics/echoes-of-stillness/film/ch1/transcript.txt",
+    "transcriptSha256": "9c6e3fae44f71c7b8097c897346e0ef8da85ba0406fcfa87ab791f1464b2dc3f",
+    "credits": [
+      {
+        "name": "Raw",
+        "role": "Story and creative direction"
+      },
+      {
+        "name": "Reality Anchor / CradleOS Origins",
+        "role": "Production"
+      },
+      {
+        "name": "CradleOS Origins",
+        "role": "Original score and sound design"
+      }
+    ],
+    "disclosure": "Altered/synthetic-content disclosure: this is a fictional, AI-assisted science-fiction film. Realistic visuals were developed with OpenAI and xAI generative tools; voices were generated with ElevenLabs. Editing, compositing, grading, original procedural sound, captions, and technical verification were completed through the CradleOS Origins production pipeline. No scene depicts a real event.",
+    "fanWorkNotice": "Independent, non-commercial EVE Frontier fan production; not endorsed by CCP Games. © 2014 CCP hf. All rights reserved. EVE, EVE Online, EVE Frontier, CCP, and related logos and images are trademarks or registered trademarks of CCP hf."
+  },
   "series": [
     {
       "id": "echoes-of-stillness",
