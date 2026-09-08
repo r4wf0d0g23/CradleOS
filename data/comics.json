@@ -33,6 +33,68 @@
     "disclosure": "Altered/synthetic-content disclosure: this is a fictional, AI-assisted science-fiction film. Realistic visuals were developed with OpenAI and xAI generative tools; voices were generated with ElevenLabs. Editing, compositing, grading, original procedural sound, captions, and technical verification were completed through the CradleOS Origins production pipeline. No scene depicts a real event.",
     "fanWorkNotice": "Independent, non-commercial EVE Frontier fan production; not endorsed by CCP Games. © 2014 CCP hf. All rights reserved. EVE, EVE Online, EVE Frontier, CCP, and related logos and images are trademarks or registered trademarks of CCP hf."
   },
+  "featuredFilms": [
+    {
+      "id": "echoes-of-stillness-chapter-2-film",
+      "eyebrow": "ORIGINS FILM · CHAPTER II",
+      "title": "Echoes of Stillness — Chapter 2: The Returned Vessel",
+      "tagline": "The Solstice Whisper has returned.",
+      "description": "The derelict vessel floated listlessly near the outer orbit of the Eschaton system. Its hull, a familiar silhouette against the backdrop of a cold, distant star, bore the unmistakable registry of Raw's ship — the Solstice Whisper. Yet, there were no distress signals. No signs of battle. No heat signatures of life.",
+      "runtime": "8:30",
+      "mediaUrl": "https://cradleos.io/api/origins/chapter-2/video",
+      "mediaSha256": "4288982d54339a63b3eb404f828eec93dd91042e86816ae12bf7cc5d8b6f40a1",
+      "poster": "comics/echoes-of-stillness/film/ch2/poster.jpg",
+      "posterSha256": "da0d79e68b3284e574b558df4a7a83967a0a0b3a1b27916b450118a77c5b0c25",
+      "captionsVtt": "comics/echoes-of-stillness/film/ch2/captions.en.vtt",
+      "captionsVttSha256": "f7d68ac35217cba9c0aef3ad0812fa8fdb1f78e7addaeb264ccde7a3f2fae4b5",
+      "transcript": "comics/echoes-of-stillness/film/ch2/transcript.txt",
+      "transcriptSha256": "b0ceddcbcb525ebbcf588d72bf94739a49457606cf309d8843d5a63aa4ab62fe",
+      "credits": [
+        {
+          "role": "Story and creative direction",
+          "name": "Raw"
+        },
+        {
+          "role": "Production",
+          "name": "CradleOS Origins"
+        }
+      ],
+      "disclosure": "Altered/synthetic-content disclosure: this is a fictional, AI-assisted science-fiction film. Images and voices are synthetic. No scene depicts a real event.",
+      "fanWorkNotice": "Independent, non-commercial EVE Frontier fan production; not endorsed by CCP Games. © 2014 CCP hf. All rights reserved. EVE, EVE Online, EVE Frontier, CCP, and related logos and images are trademarks or registered trademarks of CCP hf."
+    },
+    {
+      "id": "echoes-of-stillness-chapter-1-film",
+      "eyebrow": "ORIGINS FILM · CHAPTER I",
+      "title": "Echoes of Stillness — Chapter 1: The Young Rift",
+      "tagline": "The warning began before the Frontier knew how to listen.",
+      "description": "Before the Stillness, a young Rift called to a lone pilot. What waited beyond it was not a destination, but an archive: fractured warnings, impossible memory, and the first evidence that the Frontier's cycle had begun long before anyone knew to fear it.",
+      "runtime": "4:00",
+      "mediaUrl": "https://cradleos.io/api/origins/chapter-1/video",
+      "mediaSha256": "18ea72e95c9b45f0a452cc9550ac9b0cac594fbca11d63c9a6600ef5c76e568d",
+      "poster": "comics/echoes-of-stillness/film/ch1/poster.jpg",
+      "posterSha256": "467c92d9c9b5d8d5dd597506d89ca49443bca74ad2ca8b9797d58ca339180d76",
+      "captionsVtt": "comics/echoes-of-stillness/film/ch1/captions.en.vtt",
+      "captionsVttSha256": "b337ceda7a2a2b40daf1daddefcd0eaac4cf8416d5e322b95870b3adc36e15ee",
+      "transcript": "comics/echoes-of-stillness/film/ch1/transcript.txt",
+      "transcriptSha256": "9c6e3fae44f71c7b8097c897346e0ef8da85ba0406fcfa87ab791f1464b2dc3f",
+      "credits": [
+        {
+          "name": "Raw",
+          "role": "Story and creative direction"
+        },
+        {
+          "name": "Reality Anchor / CradleOS Origins",
+          "role": "Production"
+        },
+        {
+          "name": "CradleOS Origins",
+          "role": "Original score and sound design"
+        }
+      ],
+      "disclosure": "Altered/synthetic-content disclosure: this is a fictional, AI-assisted science-fiction film. Realistic visuals were developed with OpenAI and xAI generative tools; voices were generated with ElevenLabs. Editing, compositing, grading, original procedural sound, captions, and technical verification were completed through the CradleOS Origins production pipeline. No scene depicts a real event.",
+      "fanWorkNotice": "Independent, non-commercial EVE Frontier fan production; not endorsed by CCP Games. © 2014 CCP hf. All rights reserved. EVE, EVE Online, EVE Frontier, CCP, and related logos and images are trademarks or registered trademarks of CCP hf."
+    }
+  ],
   "series": [
     {
       "id": "echoes-of-stillness",
