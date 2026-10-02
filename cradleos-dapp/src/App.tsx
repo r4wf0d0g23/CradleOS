@@ -1,3 +1,4 @@
+import { CycleStatus, HistoricalDataNotice } from "./components/CycleStatus";
 import { useState, useCallback, useEffect } from "react";
 import { PlaygroundHarness } from "./playground/PlaygroundHarness";
 import { abbreviateAddress, useConnection } from "@evefrontier/dapp-kit";
@@ -45,7 +46,7 @@ import { isMuted, toggleMuted } from "./lib/sound";
 
 // ── Server status dots ────────────────────────────────────────────────────────
 const SERVERS = [
-  { label: "STILLNESS", url: "https://world-api-stillness.live.pub.evefrontier.com/v2/tribes?limit=1" },
+  { label: "STILLNESS", url: "https://world-api-stillness.live.pub.evefrontier.com/health" },
   // 2026-07-08: Utopia disabled per Raw — not in use for the foreseeable future.
   // Its UAT world-api DNS is also dead (ERR_NAME_NOT_RESOLVED), so the ping only
   // produced console noise. Re-add when Utopia returns:
@@ -60,8 +61,8 @@ function ServerStatusDots({ compact }: { compact: boolean }) {
       const timer = setTimeout(() => controller.abort(), 6000);
       // mode: 'no-cors' returns an opaque response — we can't read status,
       // but the promise resolves if the server is reachable and rejects if not.
-      fetch(s.url, { method: "HEAD", mode: "no-cors", signal: controller.signal })
-        .then(() => setStatuses(prev => { const n = [...prev]; n[i] = "online"; return n; }))
+      fetch(s.url, { method: "GET", signal: controller.signal })
+        .then(r => setStatuses(prev => { const n = [...prev]; n[i] = r.ok ? "online" : "offline"; return n; }))
         .catch(() => setStatuses(prev => { const n = [...prev]; n[i] = "offline"; return n; }))
         .finally(() => clearTimeout(timer));
     });
@@ -436,6 +437,8 @@ type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map"
 // assets, wiki, fitting, map, efmap, keeper, cipher, flappy) intentionally
 // removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
+  // Cycle 7: keep legacy recovery and retired-map status deep-links reachable.
+  "casino": "casino", "map": "map", "efmap": "efmap", "fitting": "fitting",
   "defense":       "defense",
   "storage":       "inventory",
   "inventory":     "inventory",
@@ -463,7 +466,12 @@ const ROUTE_MAP: Record<string, Tab> = {
 
 function getHashTab(): Tab | null {
   const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase().trim();
-  return ROUTE_MAP[hash] ?? null;
+  if (hash) return ROUTE_MAP[hash] ?? null;
+  const base = (import.meta.env.BASE_URL || "/").replace(/^\/+|\/+$/g, "");
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  if (base && segments[0]?.toLowerCase() === base.toLowerCase()) segments.shift();
+  const path = segments.join("/").toLowerCase().replace(/\/+$/, "");
+  return ROUTE_MAP[path] ?? null;
 }
 
 // ── Faucet button ─────────────────────────────────────────────────────────────
@@ -561,7 +569,7 @@ function AppInner() {
   // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting/cipher from public set
   // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
   // "origins" is public: reading requires no wallet and no chain state.
-  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins"]);
+  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -577,23 +585,19 @@ function AppInner() {
 
   const TAB_BRIEF: Record<Tab, { title: string; steps: string[] }> = {
     map: {
-      title: "Interactive starmap — all 24 502 EVE Frontier solar systems",
+      title: "Cycle 7 exploration",
       steps: [
-        "Scroll to zoom in and out",
-        "Drag to pan across the galaxy",
-        "Hover over any dot to see the system name",
-        "Dots are colour-coded by region",
-        "Hit ⊡ Fit to reset the view",
+        "Public universe and character-jump APIs were retired in Vestiges.",
+        "Use your character’s in-game map for discovered systems and routes.",
+        "The previous-cycle complete starmap is no longer presented as current.",
       ],
     },
     efmap: {
-      title: "EF-Map — embedded community starmap with Smart Gate routing",
+      title: "Cycle 7 exploration",
       steps: [
-        "3D star map of 24 000+ solar systems, powered by ef-map.com",
-        "WASM Dijkstra route optimization across the galaxy",
-        "Smart Gate routing combines ship jumps + player-deployed gates",
-        "Canonical source for jump range, fuel quality, and temperature math",
-        "Click ↗ OPEN FULL for the full ef-map.com UI in a new tab",
+        "Public universe and character-jump APIs were retired in Vestiges.",
+        "Use your character’s in-game map for discovered systems and routes.",
+        "The previous-cycle complete starmap is no longer presented as current.",
       ],
     },
     dapps: {
@@ -897,6 +901,8 @@ function AppInner() {
       voting: "voting", origins: "origins",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
+    const directPathTab = !window.location.hash ? getHashTab() : null;
+    if (directPathTab === activeTab) return;
     // Only push hash if we're in kiosk mode or if a hash is already present
     if (kioskMode || window.location.hash) {
       window.location.hash = `/${slug}`;
@@ -935,6 +941,7 @@ function AppInner() {
 
   return (
     <main className="app-shell">
+      <CycleStatus />
       {/* ── Kiosk-mode navigation bar ──
           When the dApp is opened from an in-game structure URL (e.g.
           #/defense, #/gates, #/tribe), the full chrome (topbar, title,
@@ -1494,10 +1501,10 @@ function AppInner() {
           {activeTab === "assets"        && <div style={{ background: "transparent" }} className="content-panel"><AssetLedgerPanel /></div>}
           {activeTab === "calendar"      && <div style={{ background: "transparent" }} className="content-panel"><EventCalendarPanel /></div>}
           {activeTab === "wiki"          && <div style={{ background: "transparent", height: "calc(100vh - 260px)", minHeight: 500, display: "flex", flexDirection: "column" }}><LoreWikiPanel /></div>}
-          {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><ShipFittingPanel /></div>}
+          {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><HistoricalDataNotice /><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
           {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
-          {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
+          {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><HistoricalDataNotice /><IndustryPanel /></div>}
           {activeTab === "gamedata"      && <div style={{ background: "transparent" }} className="content-panel"><GameDataPanel /></div>}
           {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}

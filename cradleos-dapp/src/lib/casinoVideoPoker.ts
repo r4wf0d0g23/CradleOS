@@ -14,6 +14,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_V28,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -188,12 +189,13 @@ export async function fetchActiveVideoPokerHand(addr: string): Promise<VideoPoke
     const result = await rpcDirect("suix_getOwnedObjects", [
       addr,
       {
-        filter: { StructType: `${CASINO_PKG}::video_poker::VideoPokerHand<${EVE_COIN_TYPE}>` },
+        filter: { StructType: `${CASINO_V28}::video_poker::VideoPokerHand<${EVE_COIN_TYPE}>` },
         options: { showContent: true, showType: true },
       },
       null,
       1,
     ]);
+    if (!Array.isArray(result?.data)) throw new Error("Legacy game lookup incomplete. Retry; assets may still exist.");
     const obj = result?.data?.[0];
     if (!obj?.data) return null;
     const f = obj.data?.content?.fields ?? {};
@@ -213,7 +215,5 @@ export async function fetchActiveVideoPokerHand(addr: string): Promise<VideoPoke
 
     const cards = Array.isArray(f.cards) ? (f.cards as any[]).map(Number) : [];
     return { handId, wager: Number(wagerRaw) / 1e9, cards };
-  } catch {
-    return null;
-  }
+  } catch (error) { throw error; }
 }

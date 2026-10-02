@@ -1,3 +1,4 @@
+import { CURRENT_WORLD_INDEX_READY, LEGACY_EVE_COIN_TYPE } from "./lib/cycle";
 // ── Server environment ─────────────────────────────────────────────────────────
 // 2026-07-19 data-path refactor: Utopia/UAT is DEAD (hackathon world retired).
 // The dApp is Stillness-only. ServerEnv survives as a single-literal type so
@@ -31,7 +32,7 @@ export const WORLD_PKG = WORLD_PKG_STILLNESS;
 // Globally-shared ObjectRegistry — derived child-object root for in_game_id
 // resolution. One per world pkg; changes whenever world is republished.
 // 2026-06-25 wipe-day: Stillness republished, new registry below.
-export const OBJECT_REGISTRY_STILLNESS = "0xf6aed9361acc0d7021672b653ebe9dae45d88e11fecef01cc5434c8f60ae764f";
+export const OBJECT_REGISTRY_STILLNESS = "0x8fd47e6e5cf8cb9b789cef26fbb674be819d8abd6afccaf50e95451212f0813a";
 export const OBJECT_REGISTRY = OBJECT_REGISTRY_STILLNESS;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -284,7 +285,9 @@ export function eventType(module: string, event: string): string {
 // EVE Token coin types per server environment
 // 2026-06-25 wipe-day: Stillness EVE coin package republished by CCP (PR #189).
 // New pkg: 0xac361aa5... (was 0x2a66a89b...)
-export const EVE_COIN_TYPE_STILLNESS = "0xac361aa5ceb726bd974f885c9dea9e55dc9bc98fa1f5731c5965a810707bf0b8::EVE::EVE";
+// Legacy extension/casino denomination; never substitute the new token into old objects.
+export const EVE_COIN_TYPE_STILLNESS = LEGACY_EVE_COIN_TYPE;
+export { CURRENT_EVE_COIN_TYPE } from "./lib/cycle";
 export const EVE_COIN_TYPE = EVE_COIN_TYPE_STILLNESS;
 
 // Backward compat alias — deprecated, use EVE_COIN_TYPE
@@ -299,12 +302,12 @@ export const RAW_NETWORK_NODE_ID = "";
 export const RAW_NODE_OWNER_CAP = "";
 // FuelConfig per server — used in network_node::offline tx
 // 2026-06-25 wipe-day: new FuelConfig on republished Stillness world
-export const FUEL_CONFIG_STILLNESS = "0x190645fbcf66b9322dbc8f3ee5f883e46e1e6ab562daa978ffd78cb88404f7cf";
+export const FUEL_CONFIG_STILLNESS = "0xefe91f22b382d34721a386d8d5188d5244316bcfea47dee518210c01cf080b60";
 export const FUEL_CONFIG = FUEL_CONFIG_STILLNESS;
 // EnergyConfig for Stillness world package (0x28b497...)
 // 2026-06-25 wipe-day: new EnergyConfig on republished Stillness world
-export const ENERGY_CONFIG_STILLNESS = "0x885d13b06bd9199d037aa358ba37e6692aca92d7bf6c1b5a5210da7d83501b09";
-export const ENERGY_CONFIG_STILLNESS_ISV = 868826232;
+export const ENERGY_CONFIG_STILLNESS = "0xafde88ecb4f7722660a094582904c32bd837a1af8761a243d08e842a7905b6b3";
+export const ENERGY_CONFIG_STILLNESS_ISV = 1016612658;
 export const ENERGY_CONFIG = ENERGY_CONFIG_STILLNESS;
 export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = ENERGY_CONFIG_STILLNESS_ISV;
 export const CLOCK = "0x6";
@@ -517,7 +520,7 @@ const _ownedIndexBase = (): string => {
   // Absolute fallback for github.io mirror + in-game webview + local dev.
   return "https://keeper.reapers.shop/index/owned-objects";
 };
-export const OWNED_INDEX_BASE = _ownedIndexBase();
+export const OWNED_INDEX_BASE = CURRENT_WORLD_INDEX_READY ? _ownedIndexBase() : "";
 
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
 // 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body).
@@ -587,7 +590,8 @@ export const SUI_TESTNET_RPC_DIRECT = "https://keeper.reapers.shop/sui?nocache=1
  *
  * Fallback constant kept for direct probing during proxy outages.
  */
-export const SUI_GRAPHQL = "https://keeper.reapers.shop/graphql";
+// Official public GraphQL is independently verified; legacy RPC remains separately degraded.
+export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
 
 // Well-known tribes that don't have CradleOS vaults but still need policy coverage
 export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; label: string }> = [
@@ -611,7 +615,7 @@ export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; lab
  *
  * Direct constants kept for fallback / direct probing.
  */
-export const WORLD_API = "https://keeper.reapers.shop/world";
+export const WORLD_API = `https://${TENANT_CONFIG[TenantId.STILLNESS].datahubHost}`;
 
 export const NETWORK_NODE_TYPE = `${WORLD_PKG}::network_node::NetworkNode`;
 export const GATE_TYPE = `${WORLD_PKG}::gate::Gate`;

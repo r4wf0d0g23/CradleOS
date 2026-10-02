@@ -1,3 +1,4 @@
+import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
 /**
  * InstantGamePanel — config-driven UI for single-tx casino games:
  * coinflip, dice, roulette, slots, wheel, limbo, hilo, plinko, keno, sicbo.
@@ -7,7 +8,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { TableVideoBackdrop } from "./TableVideoBackdrop";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { findLatestCharacterForWallet } from "../lib";
@@ -223,7 +224,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   useEffect(() => {
     if (game !== "hilo" || !addr) { return; }
     let dead = false;
-    fetchOpenHiLoGame(addr).then((g) => { if (!dead && g) setHiloLive(g); });
+    fetchOpenHiLoGame(addr).then((g) => { if (!dead && g) setHiloLive(g); }).catch(error => { if (!dead) setErr(`Legacy recovery lookup failed: ${String(error)}`); });
     return () => { dead = true; };
   }, [game, addr]);
 
@@ -234,6 +235,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const bank  = houseQ.data?.bankBalance ?? 0;
 
   const play = useCallback(async () => {
+    if (!LEGACY_EXTENSIONS_READY) { setErr("New bets paused for Cycle 7 migration."); return; }
     if (!addr) { setErr("Connect a wallet."); return; }
     const wager = Number(betEve);
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
@@ -1213,7 +1215,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             )}
             <button
-              disabled={busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
+              disabled={!LEGACY_EXTENSIONS_READY || busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
               onClick={play}
               style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure || overHouseMaxBet ? 0.5 : 1 }}
             >

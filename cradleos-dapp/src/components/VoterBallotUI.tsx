@@ -24,7 +24,7 @@
  */
 import { useState, useEffect, useMemo } from "react";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { findCharacterForWallet, rpcGetObject } from "../lib";
 import {

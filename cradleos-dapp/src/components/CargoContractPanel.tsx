@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CLOCK,

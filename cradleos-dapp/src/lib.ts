@@ -1,3 +1,5 @@
+import { CURRENT_WORLD } from "./lib/cycle";
+import { findCurrentCharacters, listOwnedCurrentObjects } from "./lib/currentWorldRead";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   executeGraphQLQuery,
@@ -213,6 +215,11 @@ async function _fetchOwnedFromIndex(
 }
 
 async function rpcGetOwnedObjects(owner: string, typeFilter: string, maxTotal = 1000): Promise<Array<{ objectId: string; fields: Record<string, unknown> }>> {
+  if (typeFilter.includes(CURRENT_WORLD)) {
+    const rows = await listOwnedCurrentObjects(owner, typeFilter);
+    if (rows.length > maxTotal) throw new Error("Owned object display limit exceeded; list incomplete");
+    return rows.map(n => ({ objectId: n.address, fields: n.asMoveObject?.contents.json ?? {} }));
+  }
   // 2026-07-19: try the same-origin owned-objects INDEX first. It's served from
   // our own caught-up fullnode (DGX1/DGX2) via a Cloudflare Pages Function at
   // cradleos.io/api/owned-objects — complete (the snapshot-restored fullnode's
@@ -781,6 +788,7 @@ async function _findCharacterViaGraphQL(walletAddress: string): Promise<Characte
  * block for diagnostic UI that wants to enumerate all of them.
  */
 export async function findAllCharactersForWallet(walletAddress: string): Promise<Array<CharacterInfo & { version: number }>> {
+  if (WORLD_PKG === CURRENT_WORLD) return findCurrentCharacters(walletAddress);
   const seen = new Map<string, CharacterInfo & { version: number }>();
   // 2026-07-08: Utopia/old-lineage leg disabled per Raw (orphaned post-wipe).
   for (const pkg of [WORLD_PKG]) {

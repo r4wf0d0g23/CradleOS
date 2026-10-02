@@ -1,3 +1,4 @@
+import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
 /**
  * HouseDonatePanel — public bankroll donations + risk-tier display (v29)
  *
@@ -20,7 +21,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { CASINO_HOUSE } from "../constants";
@@ -251,7 +252,7 @@ export function HouseDonatePanel() {
 
         <button
           onClick={donate}
-          disabled={busy || !addr || !amountEve}
+          disabled={!LEGACY_EXTENSIONS_READY || busy || !addr || !amountEve}
           style={{
             width: "100%", padding: "12px 0",
             background: busy || !addr || !amountEve ? "#1a1a1a" : ACCENT,

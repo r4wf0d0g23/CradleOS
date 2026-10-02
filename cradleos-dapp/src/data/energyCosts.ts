@@ -9,7 +9,7 @@
  * list + one per entry). Unknown type ids still fall back to a live RPC
  * read inside `fetchEnergyCostMap`.
  *
- * Generated: 2026-06-23T16:59:00.723Z
+ * Stillness refreshed 2026-10-02 from Cycle 7 EnergyConfig: 22 entries verified on-chain.
  */
 
 export type WorldKey = "stillness" | "utopia";
@@ -29,11 +29,14 @@ export const STILLNESS_ENERGY_COSTS: Record<number, number> = {
   "88071": 300,
   "88082": 50,
   "88083": 100,
+  "88086": 105,
   "90184": 1,
   "91978": 100,
   "92279": 10,
   "92401": 20,
-  "92404": 40
+  "92404": 40,
+  "95627": 60,
+  "95677": 250
 };
 
 export const UTOPIA_ENERGY_COSTS: Record<number, number> = {

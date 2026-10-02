@@ -1,3 +1,4 @@
+import { PUBLIC_UNIVERSE_AVAILABLE } from "./cycle";
 /**
  * dataClient — single data-access layer for L2 static/world data.
  *
@@ -84,7 +85,7 @@ async function indexFirst<T>(indexUrl: string, fallbackUrl: string, notFoundNull
 /** Full item-type catalog (~420 rows). One index call; falls back to live API. */
 export async function getTypeCatalog(): Promise<EFTypeRow[]> {
   const j = await indexFirst<ListReply<EFTypeRow>>(
-    `${INDEX_BASE}/world-types?server=${SERVER}&limit=1000`,
+    `${WORLD_API}/v2/types?limit=1000`,
     `${WORLD_API}/v2/types?limit=1000`,
   );
   return j?.data ?? [];
@@ -93,7 +94,7 @@ export async function getTypeCatalog(): Promise<EFTypeRow[]> {
 /** Single item type by id, or null if it doesn't exist. */
 export async function getType(typeId: number): Promise<EFTypeRow | null> {
   return indexFirst<EFTypeRow>(
-    `${INDEX_BASE}/world-types?server=${SERVER}&id=${typeId}`,
+    `${WORLD_API}/v2/types/${typeId}`,
     `${WORLD_API}/v2/types/${typeId}`,
     true,
   );
@@ -101,6 +102,7 @@ export async function getType(typeId: number): Promise<EFTypeRow | null> {
 
 /** Single solar system by id, or null. */
 export async function getSolarSystem(systemId: number | string): Promise<EFSolarSystem | null> {
+  if (!PUBLIC_UNIVERSE_AVAILABLE) return null;
   return indexFirst<EFSolarSystem>(
     `${INDEX_BASE}/solarsystems?server=${SERVER}&id=${systemId}`,
     `${WORLD_API}/v2/solarsystems/${systemId}`,
@@ -115,6 +117,7 @@ export async function getSolarSystem(systemId: number | string): Promise<EFSolar
  * for the basic fields if the live API is down.
  */
 export async function getSolarSystemDetail(systemId: number | string): Promise<(EFSolarSystem & { gateLinks?: number[]; securityClass?: string; region?: { name?: string } }) | null> {
+  if (!PUBLIC_UNIVERSE_AVAILABLE) return null;
   return indexFirst(
     `${WORLD_API}/v2/solarsystems/${systemId}`,
     `${INDEX_BASE}/solarsystems?server=${SERVER}&id=${systemId}`,
@@ -125,7 +128,7 @@ export async function getSolarSystemDetail(systemId: number | string): Promise<(
 /** Full tribe roster. */
 export async function getTribes(limit = 1000): Promise<EFTribe[]> {
   const j = await indexFirst<ListReply<EFTribe>>(
-    `${INDEX_BASE}/tribes?server=${SERVER}&limit=${limit}`,
+    `${WORLD_API}/v2/tribes?limit=${limit}`,
     `${WORLD_API}/v2/tribes?limit=${limit}`,
   );
   return j?.data ?? [];
@@ -134,7 +137,7 @@ export async function getTribes(limit = 1000): Promise<EFTribe[]> {
 /** Single tribe by id, or null. */
 export async function getTribe(tribeId: number): Promise<EFTribe | null> {
   return indexFirst<EFTribe>(
-    `${INDEX_BASE}/tribes?server=${SERVER}&id=${tribeId}`,
+    `${WORLD_API}/v2/tribes/${tribeId}`,
     `${WORLD_API}/v2/tribes/${tribeId}`,
     true,
   );

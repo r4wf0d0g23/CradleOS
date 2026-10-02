@@ -1,3 +1,4 @@
+import { CURRENT_WORLD_INDEX_READY } from "./cycle";
 /**
  * characterDirectory — shared character search source for autocomplete UIs.
  *
@@ -41,7 +42,7 @@ export type CharacterDirectoryEntry = {
 };
 
 const LS_TTL_MS = 15 * 60_000;
-const LS_KEY = `cradleos:querycache:${SERVER_ENV}:characters`;
+const LS_KEY = `cradleos:querycache:${SERVER_ENV}:${WORLD_PKG}:characters`;
 
 function lsCacheGet(): CharacterDirectoryEntry[] | null {
   try {
@@ -78,14 +79,18 @@ async function fetchByPkg(charType: string): Promise<CharacterDirectoryEntry[]> 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),
+      signal: AbortSignal.timeout(15000),
     });
+    if (!res.ok) throw new Error(`Character directory unavailable (HTTP ${res.status})`);
     const json = await res.json() as {
+      errors?: Array<{ message: string }>;
       data?: { objects?: {
         nodes?: Array<{ address: string; asMoveObject?: { contents?: { json?: Record<string, unknown> } } }>;
         pageInfo?: { hasNextPage: boolean; endCursor: string };
       } }
     };
-    const nodes = json.data?.objects?.nodes ?? [];
+    if (json.errors?.length || !json.data?.objects?.nodes) throw new Error("Current character directory could not be read. Retry; this is not an empty result.");
+    const nodes = json.data.objects.nodes;
     for (const n of nodes) {
       const j = n.asMoveObject?.contents?.json ?? {};
       const meta = (j.metadata as Record<string, unknown>) ?? {};
@@ -175,7 +180,7 @@ export async function fetchAllCharacters(): Promise<CharacterDirectoryEntry[]> {
 
   // PRIMARY: character-index. Single source, paginated, already deduped
   // server-side (PRIMARY KEY is (server, object_id)).
-  const indexed = await fetchAllCharactersViaIndex();
+  const indexed = CURRENT_WORLD_INDEX_READY ? await fetchAllCharactersViaIndex() : [];
   if (indexed.length > 0) {
     lsCacheSet(indexed);
     return indexed;

@@ -1,0 +1,23 @@
+{
+  "name": "character-index",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "On-chain Character object indexer for CradleOS — Stillness + Utopia, served via local Sui fullnode on DGX2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "backfill": "node indexer.js --backfill",
+    "poll-once": "node indexer.js --poll-once",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@mysten/sui": "^2.26.2",
+    "@protobuf-ts/grpc-transport": "^2.11.1",
+    "better-sqlite3": "13.0.3",
+    "express": "^4.21.0"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true
+  }
+}

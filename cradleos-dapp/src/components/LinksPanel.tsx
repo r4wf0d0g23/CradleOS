@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useQuery } from "@tanstack/react-query";
 import { translateTxError } from "../lib/txError";
 import {

@@ -1,3 +1,4 @@
+import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
 /**
  * TribeVaultPanel — Tribe cryptocurrency management.
  *
@@ -11,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import {
   fetchCharacterTribeId,
   fetchTribeVault,
@@ -404,7 +405,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
 
 // ── Connect vault form ────────────────────────────────────────────────────────
 
-function ConnectVaultForm({ tribeId, onConnect }: { tribeId: number; onConnect: (id: string) => void }) {
+function ConnectVaultForm({ tribeId, onConnect }: { tribeId: number | null; onConnect: (id: string) => void }) {
   const [value, setValue] = useState("");
   return (
     <div className="card" style={{ maxWidth: "460px" }}>
@@ -426,7 +427,7 @@ function ConnectVaultForm({ tribeId, onConnect }: { tribeId: number; onConnect: 
       />
       <button
         className="accent-button"
-        onClick={() => { if (value.trim()) { setCachedVaultId(tribeId, value.trim()); onConnect(value.trim()); } }}
+        onClick={() => { if (value.trim()) { if (tribeId) setCachedVaultId(tribeId, value.trim()); onConnect(value.trim()); } }}
         disabled={!value.trim()}
         style={{ width: "100%", padding: "9px" }}
       >
@@ -1636,7 +1637,9 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
   const { data: vault, isLoading } = useQuery<TribeVaultState | null>({
     queryKey: ["tribeVault", tribeId, manualVaultId, account?.address],
     queryFn: async () => {
-      if (!tribeId || !account) return null;
+      if (!account) return null;
+      if (manualVaultId) return fetchTribeVault(manualVaultId);
+      if (!tribeId) return null;
       let vaultId = manualVaultId ?? getCachedVaultId(tribeId);
       // Auto-discover from chain if not cached
       if (!vaultId) {
@@ -1646,7 +1649,7 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
       if (!vaultId) return null;
       return fetchTribeVault(vaultId);
     },
-    enabled: !!tribeId && !!account,
+    enabled: (!!tribeId || !!manualVaultId) && !!account,
     staleTime: 15_000,
   });
 
@@ -1680,6 +1683,10 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
 
   // No vault found yet — show launch form
   if (!vault) {
+    if (!LEGACY_EXTENSIONS_READY) return <div>
+      <p>Previous-cycle vault recovery: enter your existing vault ID. Your current-cycle tribe does not need to match. New vault creation is paused; contract ownership and withdrawal checks still apply.</p>
+      <ConnectVaultForm tribeId={tribeId} onConnect={id => { setManualVaultId(id); handleRefresh(); }} />
+    </div>;
     if (tribeId && getCachedVaultId(tribeId) && !manualVaultId) {
       // Cached ID exists but fetch failed — show connect form to re-enter
       return (

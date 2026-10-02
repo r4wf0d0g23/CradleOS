@@ -13,7 +13,7 @@ import { useState, useCallback, useEffect } from "react";
 import { TableVideoBackdrop } from "./TableVideoBackdrop";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { findLatestCharacterForWallet } from "../lib";
@@ -130,7 +130,7 @@ export function DragonTowerPanel() {
       setMultiplierBps(g.multiplierBps);
       setPicks(g.picks);
       setPhase("playing");
-    }).finally(() => {
+    }).catch((error) => { if (!cancelled) setErr(`Legacy recovery lookup failed: ${String(error)}`); }).finally(() => {
       if (!cancelled) setResumeLoading(false);
     });
     return () => { cancelled = true; };

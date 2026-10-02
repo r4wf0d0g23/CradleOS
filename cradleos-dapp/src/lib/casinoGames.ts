@@ -12,6 +12,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_V28,
   CASINO_V2,
   CASINO_V3,
   CASINO_V5,
@@ -441,9 +442,10 @@ export async function fetchOpenHiLoGame(owner: string): Promise<HiLoLiveGame | n
   if (!CASINO_PKG) return null;
   try {
     const res = await rpc("suix_getOwnedObjects", [owner, {
-      filter: { StructType: `${CASINO_PKG}::hilo::HiLoGame<${EVE_COIN_TYPE}>` },
+      filter: { StructType: `${CASINO_V28}::hilo::HiLoGame<${EVE_COIN_TYPE}>` },
       options: { showContent: true },
     }, null, 5]);
+    if (!Array.isArray(res?.data)) throw new Error("Legacy game lookup incomplete. Retry; assets may still exist.");
     const d = res?.data?.[0]?.data;
     if (!d?.objectId) return null;
     const f = d.content?.fields ?? {};
@@ -452,7 +454,7 @@ export async function fetchOpenHiLoGame(owner: string): Promise<HiLoLiveGame | n
       base: Number(f.base ?? 0),
       wager: Number(f.wager ?? 0) / 1e9,
     };
-  } catch { return null; }
+  } catch (error) { throw error; }
 }
 
 /** Gross multiplier (x) for a hi-lo call given the visible base. 0 = impossible side. */

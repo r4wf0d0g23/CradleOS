@@ -1,3 +1,4 @@
+import { PUBLIC_UNIVERSE_AVAILABLE } from "../lib/cycle";
 /**
  * KeeperPanel — Keeper AI co-pilot for EVE Frontier / CradleOS
  *
@@ -20,7 +21,7 @@ import { buildKeeperSystemPrompt } from "../lib/keeperPrompt";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import type { KeeperViewportProps } from "./KeeperViewport";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   fetchEveBalance,
@@ -274,6 +275,7 @@ function sanitizeMessage(text: string): { sanitized: string; wasBlocked: boolean
 async function fetchJumpHistory(worldApiBase: string): Promise<{ jumps: JumpRecord[]; total: number } | null> {
   // Uses the shared eveVaultAuth helper so the postMessage envelope stays
   // aligned with every other dApp surface that needs EVE Vault auth.
+  if (!PUBLIC_UNIVERSE_AVAILABLE) return null;
   const headers = await getEveVaultAuthHeaders();
   if (!headers) return null;
   try {

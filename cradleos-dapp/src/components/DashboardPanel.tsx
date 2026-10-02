@@ -4,7 +4,7 @@ import { playPowerOn, playPowerOff } from "../lib/sound";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { SERVER_ENV, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC } from "../constants";
 import { Transaction } from "@mysten/sui/transactions";
 import { useSponsoredTransaction, SponsoredTransactionActions, Assemblies } from "@evefrontier/dapp-kit";

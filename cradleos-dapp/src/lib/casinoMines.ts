@@ -13,6 +13,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CASINO_PKG,
+  CASINO_V28,
   CASINO_HOUSE,
   EVE_COIN_TYPE,
   RANDOM_OBJECT,
@@ -214,12 +215,13 @@ export async function fetchActiveMinesGame(addr: string): Promise<MinesGameState
     const result = await rpc("suix_getOwnedObjects", [
       addr,
       {
-        filter: { StructType: `${CASINO_PKG}::mines::MinesGame<${EVE_COIN_TYPE}>` },
+        filter: { StructType: `${CASINO_V28}::mines::MinesGame<${EVE_COIN_TYPE}>` },
         options: { showContent: true, showType: true },
       },
       null,
       1,
     ]);
+    if (!Array.isArray(result?.data)) throw new Error("Legacy game lookup incomplete. Retry; assets may still exist.");
     const obj = result?.data?.[0];
     if (!obj?.data) return null;
     const f = obj.data?.content?.fields ?? {};
@@ -246,9 +248,7 @@ export async function fetchActiveMinesGame(addr: string): Promise<MinesGameState
       safeRevealed: Number(f.safe_revealed ?? 0),
       multiplierBps: Number(f.multiplier_bps ?? 10000),
     };
-  } catch {
-    return null;
-  }
+  } catch (error) { throw error; }
 }
 
 // ── Multiplier math (mirrors mines.move) ──────────────────────────────────────

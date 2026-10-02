@@ -12,7 +12,7 @@ import { useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
 import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, EVE_COIN_TYPE, SUI_TESTNET_RPC, CLOCK } from "../constants";
 import { SUI_GRAPHQL } from "../graphql";

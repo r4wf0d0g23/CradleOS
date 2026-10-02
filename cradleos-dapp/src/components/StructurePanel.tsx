@@ -5,7 +5,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useSponsoredTransaction, SponsoredTransactionActions } from "@evefrontier/dapp-kit";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { useDevOverrides } from "../contexts/DevModeContext";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
 import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } from "../constants";
 

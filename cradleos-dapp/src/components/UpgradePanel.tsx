@@ -4,7 +4,7 @@
  */
 import { useState } from "react";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction, UpgradePolicy } from "@mysten/sui/transactions";
 import { fromBase64 } from "@mysten/sui/utils";
 

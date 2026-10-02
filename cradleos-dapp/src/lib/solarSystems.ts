@@ -1,3 +1,4 @@
+import { PUBLIC_UNIVERSE_AVAILABLE } from "./cycle";
 /**
  * Solar-system catalog loader (runtime-fetched static snapshot).
  *
@@ -111,6 +112,7 @@ async function fetchSnapshot(world: WorldKey): Promise<Map<number, SolarSystemRe
  * coalesced — concurrent callers share a single load.
  */
 export async function loadSolarSystemCatalog(): Promise<Map<number, SolarSystemRecord>> {
+  if (!PUBLIC_UNIVERSE_AVAILABLE) return new Map();
   if (_cache) return _cache;
   if (_loadingPromise) return _loadingPromise;
   const world = (SERVER_ENV as WorldKey) ?? "stillness";

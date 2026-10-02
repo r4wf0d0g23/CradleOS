@@ -16,6 +16,7 @@
  *   node scripts/check-comics-canon.mjs
  */
 import { readFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
@@ -99,6 +100,37 @@ check("script-blocks-have-bodies", () => {
     });
   }
   return empty.length ? `empty script bodies: ${empty.join(", ")}` : null;
+});
+
+check("chapter-one-film-contract", () => {
+  const film = manifest.featuredFilm;
+  const expected = {
+    title: "Echoes of Stillness — Chapter 1: The Young Rift",
+    mediaSha256: "18ea72e95c9b45f0a452cc9550ac9b0cac594fbca11d63c9a6600ef5c76e568d",
+    mediaUrl: "https://cradleos.io/api/origins/chapter-1/video",
+    poster: "comics/echoes-of-stillness/film/ch1/poster.jpg",
+    posterSha256: "467c92d9c9b5d8d5dd597506d89ca49443bca74ad2ca8b9797d58ca339180d76",
+    captionsVtt: "comics/echoes-of-stillness/film/ch1/captions.en.vtt",
+    captionsVttSha256: "b337ceda7a2a2b40daf1daddefcd0eaac4cf8416d5e322b95870b3adc36e15ee",
+    transcript: "comics/echoes-of-stillness/film/ch1/transcript.txt",
+    transcriptSha256: "9c6e3fae44f71c7b8097c897346e0ef8da85ba0406fcfa87ab791f1464b2dc3f",
+  };
+  if (!film) return "the signed Chapter 1 featured film is missing";
+  for (const [field, value] of Object.entries(expected)) {
+    if (film[field] !== value) return `featuredFilm.${field} drifted from the signed publication package`;
+  }
+  if (!film.captionsVtt || !film.poster || !film.transcript || !film.disclosure || !film.fanWorkNotice) {
+    return "the Chapter 1 film lost captions, poster, transcript, disclosure, or fan-work notice";
+  }
+  for (const [field, hashField] of [["captionsVtt", "captionsVttSha256"], ["poster", "posterSha256"], ["transcript", "transcriptSha256"]]) {
+    const relative = String(film[field] || "");
+    const resolved = path.resolve(ROOT, "public", relative);
+    const publicRoot = path.resolve(ROOT, "public") + path.sep;
+    if (!resolved.startsWith(publicRoot) || !existsSync(resolved)) return `featuredFilm.${field} is missing or outside public/`;
+    const actual = createHash("sha256").update(readFileSync(resolved)).digest("hex");
+    if (actual !== film[hashField]) return `featuredFilm.${field} bytes drifted from ${hashField}`;
+  }
+  return null;
 });
 
 // ── Canon-ledger presence ────────────────────────────────────────────────────

@@ -19,7 +19,7 @@ import { useState, useCallback, useEffect } from "react";
 import { TableVideoBackdrop } from "./TableVideoBackdrop";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { findLatestCharacterForWallet } from "../lib";
@@ -144,7 +144,7 @@ export function MinesPanel() {
       for (let i = 0; i < 25; i++) { if ((g.revealedMap >> i) & 1) safe.add(i); }
       setRevealedSafe(safe);
       setPhase("playing");
-    }).finally(() => {
+    }).catch((error) => { if (!cancelled) setErr(`Legacy recovery lookup failed: ${String(error)}`); }).finally(() => {
       if (!cancelled) setResumeLoading(false);
     });
     return () => { cancelled = true; };

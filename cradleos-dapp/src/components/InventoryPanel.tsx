@@ -6,7 +6,7 @@ import { SUI_TESTNET_RPC, WORLD_PKG, SSU_ACCESS_AVAILABLE, SERVER_ENV } from "..
 import { getType } from "../lib/dataClient";
 import { getTypeName as getStaticTypeName, type WorldKey } from "../data/typeCatalog";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
 import { SharedAccessSection } from "./SharedAccessSection";
 import {

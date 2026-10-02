@@ -102,7 +102,7 @@ async function fetchCharactersByPkg(
 // stale enough to badly mislead. Cache key includes SERVER_ENV so a
 // stillness/utopia toggle doesn't poison the cache.
 const LS_TTL_MS = 15 * 60_000;
-const LS_KEY = (name: string) => `cradleos:querycache:${SERVER_ENV}:${name}`;
+const LS_KEY = (name: string) => `cradleos:querycache:${SERVER_ENV}:${WORLD_PKG}:${name}`;
 
 function lsCacheGet<T>(name: string): T | null {
   try {

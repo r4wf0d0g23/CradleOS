@@ -1,6 +1,9 @@
 # Origins Animated Series — Production Plan v0.1
 
-**Status:** staged for production planning.
+**Status:** production studio active. The executable controller, shot packages,
+agent directives, schemas, provenance registry, approval gates and QC reports
+live under `animation/`. All 11 shot briefs are scaffolded and the deterministic
+90-second slate animatic has passed frame-rate, dimensions and frame-count QC.
 
 **Source series:** *Echoes of Stillness* Parts I–III.
 
@@ -132,14 +135,15 @@ headphone/phone/TV translation pass.
 | RIFT-040 | 7 | Event horizon convulses and takes the ship | Rift deformation, silhouette loss, sound hit |
 | CRADLE-010 | 8 | Argent Seeker approaches the megastructure | Second ship design, Cradle exterior, scale pass |
 | CRADLE-020 | 9 | Interior corridor reveals suspended Shells | Shell library, zero-g poses, volumetric lighting |
-| CRADLE-030 | 8 | Crude Matter core opens like an eye | Core mechanism, emissive animation, Keeper shapes |
+| CRADLE-030 | 8 | Crude Matter core reveals impossible internal depth without opening like an eye | Core mechanism, emissive animation, Keeper shapes |
 | SIGNAL-010 | 8 | Starsong crosses ships and dead stations | Signal rings, three environment variants |
 | CULL-010 | 10 | First star is removed, not destroyed | Starfield continuity, absence effect, timing test |
 | CULL-020 | 9 | The line of absence advances | Wide-scale environment, protected center framing |
 | END-010 | 10 | Title and warning: THE CYCLE IS CULLED | Title system, final sound resolve |
 
-The remaining runtime is allocated to transitions, opening/closing holds and
-editorial breathing room.
+The shot durations total the complete 90-second runtime. Transitions, holds and
+editorial breathing room must be designed inside those durations; adding time
+requires an explicit timing revision and a regenerated manifest set.
 
 ## 6. First production sprint
 
@@ -186,3 +190,38 @@ These are creative-direction decisions, not implementation choices:
    TOGETHER** warning.
 4. Whether the first public release is branded *Origins: Echoes of Stillness* or
    simply *Echoes of Stillness*.
+
+## 9. DGX2 production toolchain
+
+Provisioned and smoke-tested on DGX2 (`spark-2def`, ARM64) on 2026-08-21:
+
+- Blender 4.0.2 — native ARM64 package; headless render verified with a real PNG output.
+- Kdenlive 23.08.5 — native ARM64 editor; offscreen CLI startup verified.
+- Ardour 8.4 and Audacity 3.4.2 — native ARM64 audio production tools.
+- FFmpeg/ffprobe 6.1.1 — encoding, conformance and automated delivery checks.
+- ImageMagick 6.9 — image-sequence inspection and batch transforms.
+- Git LFS 3.4.1 — initialized for versioned large production assets.
+- OpenAI `gpt-image-2` and Sora 2/Sora 2 Pro — configured through OpenClaw.
+- xAI Grok Imagine Image/Video — configured as a comparison generator.
+
+DaVinci Resolve is not part of the DGX2 toolchain because no supported Linux
+ARM64 installer was verified. Kdenlive, Blender's compositor and Ardour cover
+editorial, compositing and audio without an unsupported emulation layer.
+
+## 10. Executable studio
+
+The production controller is `animation/studio.py`. It enforces the shot state
+machine, current canon/style hashes, detached-signature human approvals tied to
+complete package fingerprints, native-animation-only inputs, artifact provenance
+and media QC. Gates fail closed until Raw's public approval key is provisioned;
+the private signing key never enters the studio or an agent runtime.
+`animation/bootstrap.py` idempotently creates the 11 canonical shot packages.
+
+Subordinate production roles are defined under `animation/agents/`. Agents may
+prepare, generate, validate, retry and recommend; they may never impersonate Raw
+or approve canon, visual identity, picture lock or publication. Comic theme
+plates are mechanically forbidden as animation render inputs.
+
+Current host constraint: Blender 4.0.2 exposes `BLENDER_EEVEE` only. Every shot
+manifest pins Eevee, 24 fps, 3840×2160 and image-sequence masters. A request for
+Cycles fails preflight rather than silently changing the render path.

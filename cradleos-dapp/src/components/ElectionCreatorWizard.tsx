@@ -24,7 +24,7 @@
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useDAppKit } from "@mysten/dapp-kit-react";
-import { CurrentAccountSigner } from "@mysten/dapp-kit-core";
+import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchCharacterTribeId, findCharacterForWallet } from "../lib";
 import { SUI_TESTNET_RPC } from "../constants";

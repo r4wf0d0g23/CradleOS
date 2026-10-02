@@ -23,7 +23,8 @@
  *   3. Bump LAST_SYNCED_FROM date
  *   4. Run full build to validate
  *
- * Last synced from wallet-core: 2026-06-22 (HEAD 1b4be23)
+ * Stillness resynced 2026-10-02: world-contracts d3c7016 + wallet-core MVR cache.
+ * Non-active test tenants remain historical, not selectable.
  *
  * 2026-06-25 wipe-day update: Stillness world republished (fresh v1) per
  * world-contracts PR #189. New ids verified on-chain; wallet-core had not
@@ -31,6 +32,8 @@
  */
 
 /** Tenant identifier — matches CCP's TenantId enum. */
+import { CURRENT_WORLD, CURRENT_EVE_PACKAGE } from "./cycle";
+
 export enum TenantId {
   STILLNESS = "stillness",
   UTOPIA = "utopia",
@@ -94,9 +97,9 @@ export const TENANT_CONFIG: Record<TenantId, TenantConfig> = {
   },
   [TenantId.STILLNESS]: {
     packageId:
-      "0x8b8a46ed766fa1358ce7c5c51f6a164b13d627a63e45343f69ed0ba0446c1aa1",
+      CURRENT_WORLD,
     evePackageId:
-      "0xac361aa5ceb726bd974f885c9dea9e55dc9bc98fa1f5731c5965a810707bf0b8",
+      CURRENT_EVE_PACKAGE,
     datahubHost: "world-api-stillness.live.pub.evefrontier.com",
   },
 };

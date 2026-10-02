@@ -8,7 +8,8 @@
  * and the route slug moved.
  *
  * Fully data-driven: everything comes from `public/data/comics.json`
- * (schema `cradleos.comics.v1`). Publishing a chapter means editing that
+ * (schema `cradleos.comics.v1`). Publishing prose, art, or a featured film
+ * means editing that
  * manifest + dropping art in `public/comics/<seriesId>/ch<N>/` — no code
  * change, no rebuild of this component. See `public/comics/README.md`.
  *
@@ -83,7 +84,33 @@ type Series = {
   chapters: Chapter[];
 };
 
-type Manifest = { schema?: string; generatedAt?: string; series: Series[] };
+type FeaturedFilm = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  tagline: string;
+  description: string;
+  runtime: string;
+  mediaUrl: string;
+  mediaSha256: string;
+  poster: string;
+  posterSha256: string;
+  captionsVtt: string;
+  captionsVttSha256: string;
+  transcript: string;
+  transcriptSha256: string;
+  credits: { role: string; name: string }[];
+  disclosure: string;
+  fanWorkNotice: string;
+};
+
+type Manifest = {
+  schema?: string;
+  generatedAt?: string;
+  featuredFilm?: FeaturedFilm;
+  featuredFilms?: FeaturedFilm[];
+  series: Series[];
+};
 
 type ChapterState = "art" | "script" | "pending";
 
@@ -169,6 +196,112 @@ function ErrorBox({ text }: { text: string }) {
     >
       {text}
     </div>
+  );
+}
+
+function FeaturedFilmCard({ film }: { film: FeaturedFilm }) {
+  const [mediaState, setMediaState] = useState<"loading" | "ready" | "error">("loading");
+  // Private release QC can point the dev-only player at the governed review
+  // service before the public CDN object exists. Production builds always use
+  // the hash-bound URL in comics.json.
+  const mediaUrl = import.meta.env.DEV && import.meta.env.VITE_ORIGINS_FILM_URL
+    ? import.meta.env.VITE_ORIGINS_FILM_URL
+    : film.mediaUrl;
+  const mediaType = import.meta.env.DEV && import.meta.env.VITE_ORIGINS_FILM_TYPE
+    ? import.meta.env.VITE_ORIGINS_FILM_TYPE
+    : "video/mp4";
+
+  return (
+    <article
+      aria-labelledby={`${film.id}-title`}
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
+        gap: 0,
+        border: "1px solid rgba(255,71,0,0.28)",
+        borderLeft: `3px solid ${ACCENT}`,
+        background: "rgba(4,3,2,0.9)",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ minWidth: 0, background: "#000", alignSelf: "start" }}>
+        <video
+          controls
+          playsInline
+          preload="metadata"
+          poster={asset(film.poster)}
+          onLoadedMetadata={() => setMediaState("ready")}
+          onError={() => setMediaState("error")}
+          style={{ display: "block", width: "100%", aspectRatio: "16 / 9", background: "#000" }}
+          aria-label={`${film.title} film player`}
+        >
+          <source src={mediaUrl} type={mediaType} />
+          <track kind="subtitles" src={asset(film.captionsVtt)} srcLang="en" label="English" default />
+          Your browser cannot play this film. Use the transcript link beside the player.
+        </video>
+        <div
+          aria-live="polite"
+          style={{
+            minHeight: 25,
+            padding: "5px 9px",
+            fontFamily: "monospace",
+            fontSize: 9,
+            letterSpacing: "0.1em",
+            color: mediaState === "error" ? "#ff9d7a" : mediaState === "ready" ? ACCENT_BLUE : MUTED,
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          {mediaState === "error"
+            ? "PLAYBACK UNAVAILABLE · TRANSCRIPT REMAINS ACCESSIBLE"
+            : mediaState === "ready"
+              ? `READY · ${film.runtime} · ENGLISH CAPTIONS`
+              : "LOADING FILM METADATA…"}
+        </div>
+      </div>
+
+      <div style={{ padding: "clamp(16px, 2.5vw, 28px)", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.18em", color: ACCENT }}>
+          {film.eyebrow}
+        </div>
+        <h2 id={`${film.id}-title`} style={{ margin: 0, color: TEXT, fontSize: "clamp(20px, 3vw, 32px)", lineHeight: 1.08 }}>
+          {film.title}
+        </h2>
+        <div style={{ color: ACCENT_AMBER, fontSize: 12, lineHeight: 1.5 }}>{film.tagline}</div>
+        <p style={{ margin: 0, color: "rgba(224,224,208,0.78)", fontSize: 12, lineHeight: 1.65 }}>
+          {film.description}
+        </p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Badge text="FILM" color={ACCENT} />
+          <Badge text={film.runtime} color={ACCENT_BLUE} />
+          <Badge text="CC EN" color={ACCENT_AMBER} />
+        </div>
+        <a
+          href={asset(film.transcript)}
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: ACCENT_BLUE, fontFamily: "monospace", fontSize: 10, letterSpacing: "0.08em" }}
+        >
+          READ TRANSCRIPT ↗
+        </a>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 10, display: "grid", gap: 4 }}>
+          {film.credits.map((credit) => (
+            <div key={`${credit.role}-${credit.name}`} style={{ fontSize: 10, color: MUTED, lineHeight: 1.45 }}>
+              <span style={{ color: "rgba(224,224,208,0.74)" }}>{credit.role}:</span> {credit.name}
+            </div>
+          ))}
+        </div>
+        <details style={{ fontSize: 10, color: MUTED, lineHeight: 1.55 }}>
+          <summary style={{ cursor: "pointer", color: "rgba(224,224,208,0.72)", fontFamily: "monospace", letterSpacing: "0.08em" }}>
+            PRODUCTION DISCLOSURE
+          </summary>
+          <p style={{ margin: "8px 0 0" }}>{film.disclosure}</p>
+          <p style={{ margin: "8px 0 0" }}>{film.fanWorkNotice}</p>
+          <div style={{ marginTop: 8, fontFamily: "monospace", fontSize: 8, overflowWrap: "anywhere" }}>
+            MEDIA SHA-256 · {film.mediaSha256}
+          </div>
+        </details>
+      </div>
+    </article>
   );
 }
 
@@ -921,6 +1054,7 @@ export function ComicsPanel() {
           <div style={{ fontSize: 12, color: "rgba(220,220,200,0.7)", maxWidth: 720, lineHeight: 1.6 }}>
             Original serialized fiction set in the EVE Frontier universe. Free to read, no wallet required.
           </div>
+          {(manifest?.featuredFilms ?? (manifest?.featuredFilm ? [manifest.featuredFilm] : [])).map(film => <FeaturedFilmCard key={film.id} film={film} />)}
           <div
             style={{
               display: "grid",
