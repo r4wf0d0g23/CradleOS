@@ -444,7 +444,7 @@ export function CasinoPanel() {
               <button
                 type="button"
                 onClick={openBankroll}
-                title="View previous-cycle bankroll (new deposits paused)"
+                title={CASINO_READY ? "View current-cycle bankroll" : "Current-cycle bankroll — funding setup pending"}
                 style={{
                   background: `linear-gradient(180deg, ${GOLD}22, ${GOLD}11)`,
                   border: `1px solid ${GOLD}66`,

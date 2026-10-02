@@ -96,7 +96,7 @@ function Header({ meta }: { meta: Meta | null }) {
       display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap",
     }}>
       <span style={{ color: ACCENT, fontWeight: 700, fontSize: 16, letterSpacing: "0.06em" }}>
-        ◇ GAME DATA VIEWPORT
+        ◇ GAME DATA ARCHIVE
       </span>
       {meta && (
         <span style={{
@@ -104,7 +104,7 @@ function Header({ meta }: { meta: Meta | null }) {
           background: "rgba(255,71,0,0.06)", border: "1px solid rgba(255,71,0,0.15)",
           padding: "2px 8px", letterSpacing: "0.1em",
         }}>
-          {meta.cycle.toUpperCase()} · {meta.version} · build {meta.build}
+          ARCHIVED {meta.cycle.toUpperCase()} · {meta.version} · build {meta.build}
         </span>
       )}
     </div>
@@ -115,7 +115,7 @@ function TabStrip({ active, onChange }: { active: SubTab; onChange: (t: SubTab) 
   const TABS: Array<[SubTab, string]> = [
     ["catalogue", "▣ CATALOGUE"],
     ["strings",   "≣ STRINGS"],
-    ["deltas",    "Δ CYCLE DELTAS"],
+    ["deltas",    "Δ CYCLE 5 → 6"],
     ["events",    "✦ EVENT TYPES"],
     ["viewport3d", "◯ 3D PREVIEW"],
   ];
@@ -145,7 +145,7 @@ const GROUP_META: Record<string, { label: string; accent: string; emoji: string 
   shells_and_nursery:       { label: "Shell System",      accent: ACCENT_GREEN, emoji: "◉" },
   refuge:                   { label: "Refuge",            accent: ACCENT_BLUE,  emoji: "✦" },
   ecosystem_dungeons:       { label: "Ecosystem",         accent: ACCENT_GREEN, emoji: "≣" },
-  sanctuary_new_structures: { label: "New This Cycle",    accent: ACCENT,       emoji: "★" },
+  sanctuary_new_structures: { label: "Added in Sanctuary (Cycle 6)",    accent: ACCENT,       emoji: "★" },
   kitbash_strings:          { label: "Kitbash (preview)", accent: ACCENT_AMBER, emoji: "⚙" },
 };
 
@@ -312,7 +312,7 @@ function DeltasView() {
 
   const sections: Array<[string, string[], string, string]> = [
     ["NEW IN SANCTUARY", data.added, ACCENT_GREEN, "+"],
-    ["CONTENT ROTATED", data.changed, ACCENT_AMBER, "Δ"],
+    ["CONTENT ROTATED IN SANCTUARY", data.changed, ACCENT_AMBER, "Δ"],
     ["REMOVED FROM CYCLE 5", data.removed, "#ff5070", "−"],
   ];
 
@@ -355,7 +355,7 @@ function EventTypesView() {
   return (
     <div style={{ display: "grid", gap: 2 }}>
       <div style={{ fontSize: 10, color: MUTED, marginBottom: 6 }}>
-        {rows.length} canonical event types (carries forward from Cycle 5).
+        {rows.length} archived client event types from the Cycle 5/6 dataset; not verified for Vestiges.
       </div>
       {rows.map(([id, e]) => (
         <div key={id} style={{
@@ -666,13 +666,11 @@ function Viewport3D() {
           load it.
         </p>
         <p style={{ margin: 0, color: MUTED, fontSize: 10 }}>
-          Future iteration: when CCP starts shipping <code style={{ color: ACCENT_AMBER }}>.cmf</code>{" "}
-          files in the client (currently the Sanctuary build ships{" "}
+          These are illustrative stand-ins, not extracted Cycle 7 models. The archived Sanctuary client used{" "}
           <code style={{ color: ACCENT_AMBER }}>.gr2</code> / <code style={{ color: ACCENT_AMBER }}>.black</code>{" "}
-          only), we'll wire up a real loader from{" "}
+          assets. The experimental mesh-loader reference is{" "}
           <a href="https://github.com/carbonengine/mesh" target="_blank" rel="noreferrer"
-             style={{ color: ACCENT_BLUE }}>carbonengine/mesh</a>{" "}
-          and stream the live extracted geometry instead.
+             style={{ color: ACCENT_BLUE }}>carbonengine/mesh</a>; current-cycle geometry integration is not available.
         </p>
       </div>
     </div>
@@ -705,6 +703,7 @@ export function GameDataPanel() {
   return (
     <div style={{ padding: 20, maxWidth: 1000, margin: "0 auto" }}>
       <Header meta={meta} />
+      <p role="note" className="cycle-status-body"><strong>Historical reference:</strong> these client extracts are from Cycle 6 (Sanctuary), with comparisons to Cycle 5. They have not been revalidated for Cycle 7 (Vestiges). Names, recipes, stats and event definitions may differ from the current game.</p>
       <TabStrip active={tab} onChange={setTab} />
       {tab === "catalogue"  && <CatalogueView />}
       {tab === "strings"    && <StringsView />}

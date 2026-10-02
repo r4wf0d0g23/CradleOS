@@ -20,7 +20,7 @@ import { PortalSelect } from "./PortalSelect";
 
 // ── Service definitions ───────────────────────────────────────────────────────
 
-const BASE = "https://r4wf0d0g23.github.io/CradleOS";
+const BASE = "https://cradleos.io";
 const KEEPER_URL = `${BASE}/#/keeper`;
 
 interface ServiceDef {

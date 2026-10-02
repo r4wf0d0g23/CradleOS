@@ -4,7 +4,7 @@ export function CycleStatus() {
   return <details className="cycle-status">
     <summary><strong>{CURRENT_CYCLE}</strong> · Fresh world · No previous-cycle assets carried forward</summary>
     <div className="cycle-status-body">
-      <p>Cycle 7 began on September 29 with a clean wipe. Previous-world funds, games, vaults, policies and obligations are retired; they are not restored or imported into this cycle. CradleOS services start with fresh deployments and empty state.</p>
+      <p>Cycle 7 began on September 29 with a clean wipe. Previous-world funds, games, vaults, policies and obligations are retired; they are not restored or imported into this cycle. Fresh CradleOS contracts are deployed for this cycle. The casino remains paused pending a new bankroll and operating limits.</p>
       <p><strong>Exploration:</strong> the public universe and jump-history APIs were removed. Use your character’s in-game discoveries; the old complete starmap is no longer a current routing source.</p>
       <p><strong>Skills:</strong> nine skills now grow through deepening Memories: Piloting, Gunnery, Tracking, Extraction, Scanning, Hull Repair, Capacitor Economy, Fuel Economy and Signature Control.</p>
       <p><strong>Industry:</strong> mining now cuts fragments; regoliths replace ores. Older fitting and recipe tables are historical until revalidated. The October 1 patch reduces Network Node component requirements from 10 to 8 each and changes Debris refining.</p>

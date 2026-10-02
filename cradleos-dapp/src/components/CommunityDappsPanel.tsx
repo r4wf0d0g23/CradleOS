@@ -29,7 +29,7 @@ const SEED_DAPPS: DAppCard[] = [
     title: "CradleOS",
     tagline:
       "Civilization management — territory, resources, defense, logistics. The dApp you're inside.",
-    url: "https://r4wf0d0g23.github.io/CradleOS/",
+    url: "https://cradleos.io/",
     image: "https://images.ctfassets.net/nl199sv2jlik/XIoWHJwNYPalwsEN5jYI3/4257e49c1190c0ade3065b0573f6fe14/CradleOS_1.png",
     tags: ["Governance", "Civilization", "Logistics", "Featured"],
     author: "Reality Anchor",

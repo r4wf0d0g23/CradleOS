@@ -66,7 +66,7 @@ export const WEIGHT_KIND = {
 export const PRIVACY_KIND = {
   PUBLIC:           0,
   COMMIT_REVEAL:    1,
-  ZK:               2,           // entry aborts in v1; UI gates it Coming Q4 2026
+  ZK:               2,           // unavailable; current deployment supports public ballots only
 } as const;
 
 export const STATE = {
@@ -102,7 +102,7 @@ export type PickerOption = {
   summary: string;
   /** Multi-line trade-off body shown when expanded. */
   tradeoff: string;
-  /** Optional disabled flag with reason (e.g. "Coming Q4 2026"). */
+  /** Optional disabled flag with a user-facing availability reason. */
   disabled?: { reason: string };
 };
 
@@ -211,7 +211,7 @@ export const METHOD_OPTIONS: PickerOption[] = [
   {
     value: METHOD_KIND.QUADRATIC,
     title: "Quadratic — positive or signed",
-    summary: "Voters allocate credits across options; cost = sqrt(votes per option).",
+    summary: "Voters allocate credits across options; cost = (votes per option)².",
     tradeoff:
       "Pros: intensity-aware; resists whale capture in conjunction with 1c1v weights. Cons: requires a credit budget; signed variant allows voting AGAINST options. Best for: budget allocation, gauge weights.",
   },
@@ -227,7 +227,7 @@ export const METHOD_OPTIONS: PickerOption[] = [
     title: "Conviction — time-weighted",
     summary: "Voters lock weight on options; weight grows over time and can be re-allocated.",
     tradeoff:
-      "Pros: continuous decision-making without discrete elections; rewards commitment. Cons: more complex UX; needs a 90-day cap (creator can extend per the 2026-05-27 lock). Best for: ongoing funding decisions, 1Hive-style.",
+      "Pros: continuous decision-making without discrete elections; rewards commitment. Cons: more complex UX; requires explicit duration limits. Best for: ongoing funding decisions, 1Hive-style.",
   },
 ];
 
@@ -251,8 +251,8 @@ export const PRIVACY_OPTIONS: PickerOption[] = [
     title: "Zero-Knowledge",
     summary: "Ballots stay private even after close.",
     tradeoff:
-      "Designed-for; not in v1. Coming Q4 2026 (per 2026-05-27 lock). The Move scaffold is in place — `privacy_kind = 2` aborts in `create_election` today.",
-    disabled: { reason: "Coming Q4 2026" },
+      "Not available in this release. Zero-knowledge ballots require a verified implementation; no release date is committed.",
+    disabled: { reason: "Not available in this release" },
   },
 ];
 

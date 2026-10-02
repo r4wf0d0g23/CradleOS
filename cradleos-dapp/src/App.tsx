@@ -1,3 +1,4 @@
+import { CURRENT_CYCLE } from "./lib/cycle";
 import { CORE_READY, CASINO_READY, VOTING_READY } from "./lib/cycleDeployment";
 import { CycleStatus, CycleContractSetup, HistoricalDataNotice } from "./components/CycleStatus";
 import { useState, useCallback, useEffect } from "react";
@@ -6,7 +7,6 @@ import { abbreviateAddress, useConnection } from "@evefrontier/dapp-kit";
 import { useCurrentAccount, useWallets, useDAppKit } from "@mysten/dapp-kit-react";
 import { VerifiedAccountProvider, useVerifiedAccountContext } from "./contexts/VerifiedAccountContext";
 import { DevModeProvider, DevRoleToggle } from "./contexts/DevModeContext";
-import { WipeCountdownBanner } from "./components/WipeCountdownBanner";
 import { GameDataPanel } from "./components/GameDataPanel";
 import MAUFooterPill from "./components/MAUFooterPill";
 import { StructurePanel } from "./components/StructurePanel";
@@ -438,7 +438,7 @@ type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map"
 // assets, wiki, fitting, map, efmap, keeper, cipher, flappy) intentionally
 // removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
-  // Cycle 7: keep legacy recovery and retired-map status deep-links reachable.
+  // Cycle 7: keep service and exploration-status deep-links reachable.
   "casino": "casino", "map": "map", "efmap": "efmap", "fitting": "fitting",
   "defense":       "defense",
   "storage":       "inventory",
@@ -570,7 +570,7 @@ function AppInner() {
   // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting/cipher from public set
   // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
   // "origins" is public: reading requires no wallet and no chain state.
-  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting"]);
+  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting", "gamedata"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -843,35 +843,36 @@ function AppInner() {
       ],
     },
     voting: {
-      title: "Elections — generic, plug-in, reproducible on-chain voting",
+      title: "Elections — current-cycle public voting",
       steps: [
         "Browse Active elections you might be eligible to vote in",
-        "Open the Create wizard — pick eligibility / weight / method / privacy / gas",
-        "All 5 eligibility sources, all 6 methods, all 5 weight modes, all privacy modes are exposed (versatility is the product)",
+        "Create a Single Choice or Approval election with public ballots",
+        "Open eligibility requires a verified current-world character; each voter has unit weight, with no recasts",
         "Cast a ballot — PTB chains eligibility-proof + weight-proof + cast in one tx",
         "After close: anyone can compute_tally; results page re-runs the tally locally to verify the chain",
-        "Sponsored gas is default — voters pay zero when creators sponsor (Enoki relayer)",
+        "Voters pay their own gas; sponsorship and additional voting modes are not enabled in this release",
       ],
     },
     gamedata: {
-      title: "Game Data — viewport of extracted Sanctuary client static data",
+      title: "Game Data — historical Sanctuary client archive",
       steps: [
-        "Catalogue: curated typeID groups (structures, turrets, shells, refuge, ecosystem dungeons) read straight from the Sanctuary build",
+        "Catalogue: archived Sanctuary typeID groups; not a verified Cycle 7 catalog",
         "Strings: searchable index of ~217k human-readable game strings (typeID + display name)",
-        "Cycle Deltas: every new and rotated staticdata file vs Cycle 5 / Stillness 0.5.1",
-        "Event Types: canonical event-type table the on-chain world emits",
-        "3D Preview: roadmap slot — carbonengine/mesh WASM port plus three.js will land ship/structure hulls here",
+        "Cycle Deltas: historical changes from Cycle 5 to Cycle 6 / Sanctuary",
+        "Event Types: historical client event definitions, not a current-world schema",
+        "3D Preview: illustrative GLB stand-ins, not official live ship geometry",
       ],
     },
     casino: {
-      title: "Cradle Casino — provably-fair Blackjack, settled in $EVE on-chain",
+      title: "Cradle Casino — fresh house; wagering paused",
       steps: [
-        "Every hand is one atomic transaction using Sui's on-chain randomness (0x8)",
+        "The Cycle 7 house is deployed with an empty bankroll and wagering paused",
+        "A new bankroll and operating limits are required before games open",
         "Set your bet in $EVE and your stand-on threshold; the house edge for each threshold is MEASURED, not invented",
         "Shuffle, deal, and settlement all resolve together — no re-rolling a loss, no house cheating",
         "Blackjack pays 3:2; wins pay even money; ties push",
         "The provably-fair feed shows every recent hand — verifiable on-chain",
-        "Bankroll the House (via the HOUSE BANK stat or the lobby button): donate $EVE to raise max bets for everyone — the House is a shared Move object, never send $EVE to its object id directly",
+        "Funding controls are unavailable while setup is pending; never send EVE directly to the House object ID",
       ],
     },
     origins: {
@@ -1121,7 +1122,7 @@ function AppInner() {
         {/* Era / Cycle */}
         <div style={{ display: "flex", gap: compact ? "8px" : "16px", alignItems: "center" }}>
           <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,71,0,0.8)" }}>ERA 6: AWAKENING</span>
-          <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(180,160,140,0.45)" }}>CYCLE 6: SANCTUARY</span>
+          <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(180,160,140,0.45)" }}>{CURRENT_CYCLE}</span>
           <ServerStatusDots compact={compact} />
           {import.meta.env.DEV && <span style={{ fontSize: "7px", fontFamily: "monospace", color: "#00ff96", border: "1px solid rgba(0,255,150,0.25)", padding: "0 4px" }}>DEV</span>}
         </div>
@@ -1286,10 +1287,6 @@ function AppInner() {
           )}
         </div>
       </header>}
-
-      {/* Cycle 6 / Sanctuary wipe countdown — visible above all tabs, including
-          before wallet connect. Auto-hides 24h after gates open. */}
-      {!kioskMode && <WipeCountdownBanner />}
 
       {/* Collapsible context brief */}
       {!kioskMode && <div style={{

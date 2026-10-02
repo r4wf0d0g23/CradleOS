@@ -8,7 +8,7 @@ import { characterGameId } from "../lib/characterIdentity";
  *   3. WEIGHT       — how vote power scales (1c1v / role / age / asset / composite)
  *   4. METHOD       — tally algorithm (single / approval / IRV / Schulze / Borda / STAR /
  *                    quadratic+ / quadratic±  / score sum / score avg / conviction)
- *   5. PRIVACY      — public / commit-reveal / ZK (ZK disabled, Coming Q4 2026)
+ *   5. PRIVACY      — public; commit-reveal and ZK unavailable in this release
  *   6. OPTIONS      — list of options (label + optional metadata URI)
  *   7. SCHEDULE     — open/close times, reveal deadline if commit-reveal
  *   8. GAS          — sponsored (default) vs voter-paid
@@ -660,7 +660,7 @@ export function ElectionCreatorWizard({
                   Signed quadratic (allow voting AGAINST options)
                 </label>
                 <div style={{ fontSize: 10, color: "rgba(180,160,140,0.55)", marginTop: 4 }}>
-                  Per the 2026-05-27 lock: positive-only by default, signed available now as a creator opt-in.
+                  Quadratic voting is not enabled in the current release.
                 </div>
               </div>
             )}
@@ -808,7 +808,7 @@ export function ElectionCreatorWizard({
           <div>
             <div style={{ fontSize: 11, color: "rgba(180,160,140,0.7)", marginBottom: 14, lineHeight: 1.6 }}>
               Review the configuration. Hitting Publish runs a multi-step transaction sequence:
-              create_election → add_option × N → set_schedule → set_sponsored? → publish.
+              Create the election, add its options, save the schedule, then publish.
             </div>
             <ReviewRow label="Title" value={title} />
             <ReviewRow label="Description" value={description || "(none)"} multi />

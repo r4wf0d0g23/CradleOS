@@ -45,7 +45,7 @@ const EVE_DAPP_BASE = SERVER_ENV === "stillness"
 // CradleOS dashboard kiosk URL — set as a Network Node's metadata.url
 // to attach the dashboard kiosk display to that node in-game. Mirrors
 // the BASE used in LinksPanel.tsx; kept in sync there.
-const CRADLEOS_BASE = "https://r4wf0d0g23.github.io/CradleOS";
+const CRADLEOS_BASE = "https://cradleos.io";
 const CRADLEOS_DASHBOARD_URL = `${CRADLEOS_BASE}/#/dashboard`;
 
 /* openInDApp removed — structure names now link to embedded iframe */

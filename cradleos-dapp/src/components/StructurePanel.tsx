@@ -11,11 +11,11 @@ import { CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC, SERVER_ENV } f
 
 // ── Preset dApp URLs per structure type ──────────────────────────────────────
 const DAPP_BASE = SERVER_ENV === "stillness"
-  ? "https://r4wf0d0g23.github.io/CradleOS"
+  ? "https://cradleos.io"
   : "https://r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026";
 const DAPP_OTHER_BASE = SERVER_ENV === "stillness"
   ? "https://r4wf0d0g23.github.io/Reality_Anchor_Eve_Frontier_Hackathon_2026"
-  : "https://r4wf0d0g23.github.io/CradleOS";
+  : "https://cradleos.io";
 /** True if the structure's metadata URL points to the wrong server's dApp. */
 const isWrongServerUrl = (url?: string) =>
   !!url && url.includes(DAPP_OTHER_BASE);

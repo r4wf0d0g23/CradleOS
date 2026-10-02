@@ -3,6 +3,7 @@
  * Ship navigates through Smart Gates. Local dev only.
  */
 import { useEffect, useRef, useState } from "react";
+import { CURRENT_CYCLE } from "../lib/cycle";
 
 const W = 480;
 const H = 520;
@@ -244,7 +245,7 @@ export function FlappyFrontierPanel() {
         ctx.fillText("CLICK or SPACE to warp", W / 2, H / 2 + 20);
         ctx.fillStyle = "rgba(255,71,0,0.4)";
         ctx.font = "11px monospace";
-        ctx.fillText("ERA 6: AWAKENING  ·  CYCLE 5: SHROUD OF FEAR", W / 2, H / 2 + 50);
+        ctx.fillText(`ERA 6: AWAKENING  ·  ${CURRENT_CYCLE.toUpperCase()}`, W / 2, H / 2 + 50);
       }
 
       if (s.phase === "dead" && s.deadTimer > 20) {
