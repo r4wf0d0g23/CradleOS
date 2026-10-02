@@ -44,9 +44,15 @@ Voting waits for registry/provider bootstrap. No fabricated zero old-world balan
   and the nested ElectionSchedule. Unsupported direct founder transfer is disabled, not invented.
 - Tracked old Move build caches and the stale browser upgrade payload are retired.
 
-## Publication gate still outstanding
+## Publication authorization — second-backup check deferred
 
-`cradleos-dapp/FRESH_DEPLOY_PROTOCOL.md` §8.1 requires:
+**Raw authorized at 13:01 CT: “Let's deploy and fix backups later.”** Proceed with the
+existing custody wallet and verified Jetson2 copy; the DGX1/second-offhost check is a
+recorded follow-up, NOT a blocker for this release. This is a release-specific operator
+exception, not a global weakening of the deployment protocol. Jetson2 restored-signature
+proof was refreshed immediately before this publication batch; digest in `custody.json`.
+
+The baseline `cradleos-dapp/FRESH_DEPLOY_PROTOCOL.md` §8.1 requires:
 
 1. An immediately-before-publish signature using **backup-restored material**, not just the live key.
 2. Raw's attestation of **two readable off-host backups**.

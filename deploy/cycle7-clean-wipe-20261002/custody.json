@@ -8,8 +8,8 @@
   "backupSigningProof": {
     "source": "Jetson2 stored backup restored to temporary keystore",
     "kind": "Sui PersonalMessage, not a transaction",
-    "digestHex": "235ab12e98e510a8476b1289a4f847d02af032c2d564dd2311d690699fcd377b",
-    "verifiedAt": "2026-10-02T17:11:58.780Z",
+    "digestHex": "2152149a465b239b3e1c154a79bd8cf773364c9979e43a1c849d058b78b6a0c2",
+    "verifiedAt": "2026-10-02T18:02:43.706Z",
     "refreshImmediatelyBeforePublish": true
   },
   "offHostBackupAttestations": [
@@ -32,5 +32,13 @@
     "host": "DGX1",
     "status": "offline; SSH timeout; matching backup not yet verified"
   },
-  "verifiedOffHostBackupCount": 1
+  "verifiedOffHostBackupCount": 1,
+  "releaseException": {
+    "authorizedBy": "Raw",
+    "authorizedAt": "2026-10-02T13:01:39-05:00",
+    "sourceMessageId": "1555640925848473681",
+    "instruction": "Let's deploy and fix backups later",
+    "scope": "Proceed with Cycle 7 fresh publication using verified Jetson2 backup; defer DGX1/second-offhost verification for this release only",
+    "secondBackupFollowupRequired": true
+  }
 }
