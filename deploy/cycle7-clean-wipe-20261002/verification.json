@@ -86,9 +86,16 @@
     "votingWrongOwner": "unsigned VM rejects ownership at eligibility mint",
     "verificationPoll": "signed zero-ballot open/close/tally/finalize successful; not governance",
     "publicIndexedReads": "events, dynamic-fields, named field lookup all pass official GraphQL bridge",
-    "browser": "9 local routes and mobile pass; old cache cleared; Origins preserved",
+    "browser": "9 production routes and mobile pass; old cache cleared; Origins and second-load current cache preserved; anonymous browser only",
     "browserWalletSigning": "not asserted",
-    "graphQLBallotEncoding": "explicit base64 decoder; ambiguous hex-looking base64 regression passes"
+    "graphQLBallotEncoding": "explicit base64 decoder; ambiguous hex-looking base64 regression passes",
+    "release": "bbf026a2; HTML matches build except Cloudflare beacon/whitespace; bundle exact match; 5 real static assets hash/mime verified"
   },
-  "backupFollowup": "Second off-host verification deferred by Raw; verified Jetson2 proof retained"
+  "backupFollowup": "Second off-host verification deferred by Raw; verified Jetson2 proof retained",
+  "production": {
+    "deployment": "bbf026a2",
+    "sourceCommit": "1320a2ffe6fa1c1672f7562e02783641221940ef",
+    "bundle": "/assets/index-DtLhTuyI.js",
+    "bundleSha256": "b3710f55afd60c1409376f3bd0a8b936e3ed078bcb0e93076d9cd9bade4ee324"
+  }
 }

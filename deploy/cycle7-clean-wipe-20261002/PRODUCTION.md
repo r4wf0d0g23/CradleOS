@@ -1,29 +1,59 @@
-# Website deployment receipt — 2026-10-02
+# Cycle 7 production activation receipt — 2026-10-02
 
 - Primary: https://cradleos.io
-- Pages deployment: https://92ecd800.cradleos-d75.pages.dev
-- Source: `858c09e1b099747a882bde50c7ed12f0f1eb2e83`, branch `cycle7-vestiges-20261002`.
-- Project `cradleos`, production branch `main`; `VITE_BASE=/`.
-- Live JS `index-D_7oxoZ1.js`; CSS `index-D_K0sBVG.css`.
-- 91 frontend tests + production TypeScript/Vite build pass. Existing large-bundle warning remains.
-- Independent pre-deploy review: no blockers for **empty-manifest website-only** state.
-- Local and live browser checks: dashboard, tribe, casino, voting, registry, map, Origins,
-  fitting, industry. No page exceptions or horizontal overflow; no retired API/package requests
-  observed; no old recovery controls. Mobile casino/setup page also fits.
-- Browser seeded with retired vault/game/delegation keys: removed. Origins reading progress
-  preserved. Newly written current-cycle cache survives second load.
-- Current-world read/index work from the earlier release retained. Origins/media assets unchanged.
-  Automated browser audiovisual playback remains unverified (codec unavailable); no new claim made.
+- Final Pages deployment: https://bbf026a2.cradleos-d75.pages.dev
+- Source commit: `1320a2f`, branch `cycle7-vestiges-20261002` (pushed).
+- Application implementation: `a03608d`; final commit corrects only social-preview metadata.
+- Pages project `cradleos`, production branch `main`, `VITE_BASE=/`.
+- JS: `index-DtLhTuyI.js`, 2,728,198 bytes, SHA256
+  `b3710f55afd60c1409376f3bd0a8b936e3ed078bcb0e93076d9cd9bade4ee324`.
+- CSS: `index-D_K0sBVG.css`.
 
-## Explicit non-completions
+## Verified release state
 
-- No transaction signing, publication, funds movement, or singleton bootstrap. An offline
-  PersonalMessage backup-proof signature was produced from the restored Jetson2 copy.
-- Contract services await actual deployment/initialization; simulations are not publication.
-- No connected-wallet financial end-to-end tests possible before fresh contracts exist.
-- Voting simulation must be repeated after actual fresh Core address is bound.
-- Repository §8.1: custody confirmed and Jetson2 restored-backup proof verified; second off-host copy (DGX1) remains unverified. See README.md.
+Five fresh current-world packages and singleton registries are published and initialized;
+see `onchain.json`. No previous-world balances, games, obligations, vaults, policies,
+elections or seals imported. Fresh caps remain in the previously confirmed custody wallet.
+The corrected Voting package is active; rejected initial publication remains archived only.
 
-The earlier recovery-oriented deployment `54e4e2fc` is **not** the rollback target for this
-user-approved clean-wipe semantics. If a web regression requires rollback, retain the clean-wipe
-manifest/signing fence and disabled services; never revive old-world recovery as a fallback.
+- Casino: current EVE, empty bankroll, paused, wagering disabled. Bootstrap 1-unit limits
+  are inert and not recommended operating limits. Website and social previews say awaiting funding.
+- Voting: verified current Character ownership; Open eligibility, unit weight; Public
+  SingleChoice/Approval only, no recasts. Unsupported modes and sponsorship disabled.
+- Valid-owner cast: successful unsigned VM simulation; wrong-owner rejected.
+- Live technical poll: signed create/open/close/tally/finalize completed, with **zero ballots**.
+  Not governance and no funds transferred. This does not verify a real user's browser-wallet cast.
+- Indexed reads: official GraphQL event/dynamic-field bridge verified through public proxy.
+  Existing loopback boundary preserved; no new transaction-write methods.
+
+## Checks
+
+- Frontend 102 tests; TypeScript/Vite production build passes. Existing bundle-size warning remains.
+- Voting 20 Move tests; prior unchanged Core25/Casino176 suites; backend28 tests.
+- External proof-forgery compilation rejected. No test modules or retired World links in production bytecode.
+- Anonymous production browser: nine routes and mobile pass; no page exceptions, horizontal overflow,
+  retired API/package requests or recovery UI. Old operational cache cleared; Origins reading
+  progress retained; new-cycle cache survives subsequent reload.
+- HTML-only metadata follow-up retains the byte-identical app bundle tested above.
+- Live bundle byte-for-byte matches build; all five active packages present; rejected Voting absent.
+- Live HTML matches build except normal Cloudflare analytics-beacon injection/whitespace.
+- Five actual static assets verified by MIME and byte hash (not merely SPA fallback HTTP200):
+  logo, comics catalog, Chapter2 poster/captions, Chapter1 transcript.
+- Independent final production review passed; focused Voting frontend suite 11/11 reconfirmed.
+- Receipts: `live-activation-bundle.json`, `production-browser-summary.json`, `verification.json`.
+
+## Explicit remaining items
+
+- Casino needs a deliberate new bankroll and operating-limit configuration before wagering.
+- Browser-wallet signing / funded financial end-to-end flows remain unverified.
+- One off-host wallet backup (Jetson2) restored-signature verified. Raw explicitly deferred
+  the second backup check for this release; DGX1 verification remains a follow-up, not a blocker.
+- Origins Chapter2 serving was hash/range verified; automated browser playback remains unverified
+  due to missing codecs. Approved Chapter1 film remains a pre-existing missing-media item.
+- Keep this worktree: live character-index.service uses its source directory.
+
+## Rollback
+
+Earlier empty-manifest clean-wipe deployment `92ecd800` is a possible web-only safe-mode
+reference; it cannot undo new on-chain publication. Never revert to the superseded
+recovery-oriented release or import retired-world funds/state. New package receipts remain authoritative.

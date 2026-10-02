@@ -139,7 +139,7 @@ All publishing must be **fresh publish**, never upgrade or old-cap reuse.
 
 ## Verification and website release
 
-- Move suites: Core 25, Casino 176, Voting 3; SSU/Seal have no unit tests in this source.
+- Move suites: Core 25, Casino 176, Voting 20; SSU/Seal have no unit tests in this source.
 - `verify-proof-boundary.py <sui>` compiles an external forgery attempt and requires visibility errors
   for BOTH proof factories. No signing or publication.
 - Production-bytecode scan: 25/31/1/22/1 modules; current World linked in the four world-bound
@@ -148,8 +148,8 @@ All publishing must be **fresh publish**, never upgrade or old-cap reuse.
 - UI: desktop/mobile; seed old cache values; reload twice; preserve Origins progress; ensure no
   old-package requests, recovery UI, or retired universe/jump requests. Never report read failure
   as a zero balance.
-- Pages deployment is independent of the Move publication gate. Until fresh contracts are ready,
-  the honest production state is **clean-wipe reads/content with contract services awaiting setup**.
+- Production activation is complete at https://cradleos.io (deployment `bbf026a2`).
+  The casino remains explicitly paused awaiting a fresh bankroll; unsupported Voting modes remain disabled.
 
 See `verification.json` for simulation/test receipts and `PRODUCTION.md` for the website receipt.
 

@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-02T18:36:38.234477+00:00",
+  "url": "https://cradleos.io",
+  "deployment": "bbf026a2",
+  "sourceCommit": "1320a2ffe6fa1c1672f7562e02783641221940ef",
+  "applicationCommit": "a03608d",
+  "asset": "/assets/index-DtLhTuyI.js",
+  "sha256": "b3710f55afd60c1409376f3bd0a8b936e3ed078bcb0e93076d9cd9bade4ee324",
+  "bytes": 2728198,
+  "htmlMatchesBuildExceptCloudflareBeaconAndWhitespace": true,
+  "metadataCasinoOpenClaimAbsent": true,
+  "allFiveCurrentPackages": true,
+  "rejectedVotingAbsent": true,
+  "staticChecks": [
+    {
+      "path": "/cradleos-logo.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 79288,
+      "sha256": "052a8f9e896da52b3e701757969f710fbff02610f527692e55a16d1622e7f6ff",
+      "matchesBuild": true
+    },
+    {
+      "path": "/data/comics.json",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 41697,
+      "sha256": "8f127f8f0bc03ca1a2f19397b3929fc0897d77acc1ca206a475a2b6801d52693",
+      "matchesBuild": true
+    },
+    {
+      "path": "/comics/echoes-of-stillness/film/ch2/poster.jpg",
+      "status": 200,
+      "contentType": "image/jpeg",
+      "bytes": 317175,
+      "sha256": "da0d79e68b3284e574b558df4a7a83967a0a0b3a1b27916b450118a77c5b0c25",
+      "matchesBuild": true
+    },
+    {
+      "path": "/comics/echoes-of-stillness/film/ch2/captions.en.vtt",
+      "status": 200,
+      "contentType": "text/vtt",
+      "bytes": 12616,
+      "sha256": "f7d68ac35217cba9c0aef3ad0812fa8fdb1f78e7addaeb264ccde7a3f2fae4b5",
+      "matchesBuild": true
+    },
+    {
+      "path": "/comics/echoes-of-stillness/film/ch1/transcript.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "bytes": 3168,
+      "sha256": "9c6e3fae44f71c7b8097c897346e0ef8da85ba0406fcfa87ab791f1464b2dc3f",
+      "matchesBuild": true
+    }
+  ]
+}

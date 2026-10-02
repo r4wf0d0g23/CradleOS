@@ -27,7 +27,7 @@
       "independentSdkSignatureVerification": true
     }
   ],
-  "publicationPerformed": false,
+  "publicationPerformed": true,
   "pendingBackup": {
     "host": "DGX1",
     "status": "offline; SSH timeout; matching backup not yet verified"
@@ -40,5 +40,6 @@
     "instruction": "Let's deploy and fix backups later",
     "scope": "Proceed with Cycle 7 fresh publication using verified Jetson2 backup; defer DGX1/second-offhost verification for this release only",
     "secondBackupFollowupRequired": true
-  }
+  },
+  "publicationLedger": "onchain.json"
 }

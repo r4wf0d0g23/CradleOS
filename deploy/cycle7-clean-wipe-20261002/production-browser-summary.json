@@ -1,0 +1,58 @@
+{
+  "url": "https://cradleos.io",
+  "applicationAsset": "/assets/index-DtLhTuyI.js",
+  "pages": [
+    {
+      "route": "dashboard",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "tribe",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "casino",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "voting",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "registry",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "map",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "origins",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "fitting",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    },
+    {
+      "route": "industry",
+      "overflow": false,
+      "oldRecoveryVisible": false
+    }
+  ],
+  "pageErrors": [],
+  "retiredRequests": [],
+  "mobileOverflow": false,
+  "originsPreserved": true,
+  "oldCacheRemoved": true,
+  "secondLoadCurrentPreserved": true,
+  "scope": "Anonymous browser; transaction panels wallet-gated. Wallet signing not verified. HTML-only metadata follow-up leaves app bundle byte-identical."
+}
