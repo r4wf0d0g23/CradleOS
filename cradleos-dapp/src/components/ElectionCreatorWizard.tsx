@@ -311,8 +311,8 @@ export function ElectionCreatorWizard({
   const [disputeWindowHours, setDisputeWindowHours] = useState("24");
 
   // Step 8 — gas
-  const [sponsored, setSponsored] = useState<boolean>(true);
-  const [allowRecast, setAllowRecast] = useState<boolean>(false);
+  const sponsored = false;
+  const allowRecast = false;
 
   // Submit state
   const [submitting, setSubmitting] = useState(false);
@@ -781,25 +781,22 @@ export function ElectionCreatorWizard({
           <>
             <div style={{ marginBottom: 14, padding: 12, background: "rgba(255,71,0,0.05)", border: "1px solid rgba(255,71,0,0.2)" }}>
               <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(250,250,229,0.9)", cursor: "pointer" }}>
-                <input type="checkbox" checked={sponsored} onChange={(e) => setSponsored(e.target.checked)} style={{ marginTop: 3 }} />
+                <input type="checkbox" checked={sponsored} disabled style={{ marginTop: 3 }} />
                 <div>
-                  <div style={{ fontWeight: 700 }}>Sponsored gas (default)</div>
+                  <div style={{ fontWeight: 700 }}>Sponsored gas — unavailable</div>
                   <div style={{ fontSize: 11, color: "rgba(200,190,170,0.7)", marginTop: 4, lineHeight: 1.5 }}>
-                    Voters pay zero gas. The election creator (you) sponsors up to 10 000 ballots
-                    via the Enoki relayer. Sponsored-tx wrapper is currently a stub — see
-                    constants for status. When unsponsored, voters pay their own gas.
+                    Voters pay their own gas in this release. Gas sponsorship is not available yet.
                   </div>
                 </div>
               </label>
             </div>
             <div style={{ marginBottom: 14, padding: 12, background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,71,0,0.15)" }}>
               <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(250,250,229,0.9)", cursor: "pointer" }}>
-                <input type="checkbox" checked={allowRecast} onChange={(e) => setAllowRecast(e.target.checked)} style={{ marginTop: 3 }} />
+                <input type="checkbox" checked={allowRecast} disabled style={{ marginTop: 3 }} />
                 <div>
                   <div style={{ fontWeight: 700 }}>Allow voters to recast their ballot</div>
                   <div style={{ fontSize: 11, color: "rgba(200,190,170,0.7)", marginTop: 4, lineHeight: 1.5 }}>
-                    Lets voters change their vote until the election closes. Disabled by default —
-                    first ballot is final.
+                    Not available in this release. Each character can cast one ballot; the first ballot is final.
                   </div>
                 </div>
               </label>

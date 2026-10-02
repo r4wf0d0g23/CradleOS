@@ -1,0 +1,10 @@
+--- a/server.js
++++ b/server.js
+@@ -28,6 +28,7 @@
+ const BIND = process.env.SUI_PROXY_BIND ?? "0.0.0.0";
+ const OWNERSHIP_INDEX_RPC = process.env.SUI_OWNERSHIP_INDEX_RPC ?? "";
+ const OWNERSHIP_INDEX_METHODS = new Set([
++  "suix_queryEvents", "suix_getDynamicFields", "suix_getDynamicFieldObject",
+   "suix_getOwnedObjects", "suix_getCoins", "suix_getAllCoins",
+   "suix_getBalance", "suix_getAllBalances",
+ ]);

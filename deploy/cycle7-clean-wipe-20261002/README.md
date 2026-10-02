@@ -20,18 +20,45 @@ Archive old deployment records for audit only. Origins/content/reading progress 
   Live key present; this is NOT a claim of backup verification.
 - Previous manifests/publication records preserved in `previous-manifests/`.
 
-## Current state
+## Current state — deployed on-chain October 2
 
-**No new Move package has been published.** `src/lib/cycleDeployment.ts` contains empty IDs
-and false readiness flags. Never substitute prior-cycle IDs or simulated IDs.
-All five packages compile against current sources. Core/Casino/SSU/Seal publish dry-runs succeed;
-Voting needs the ACTUAL freshly published Core address before a meaningful publication simulation.
-The existing Cycle 7 character/index backend already uses a fresh database and current-world filters.
+Five fresh service packages are published and initialized. `onchain.json` is the
+receipt ledger; each active package's `Published.toml` matches it. All UpgradeCaps
+and owned admin/mint caps remain with the confirmed 177583b2…99b91a custody wallet.
+The website manifest contains only these verified new package/object IDs.
 
-The web correction blocks retired packages/types before wallet signing, removes old recovery routes,
-resets previous operational caches and namespaces vault caches to world + Core origin. New service
-screens wait for package IDs AND initialized objects. Casino also waits for a funded fresh house;
-Voting waits for registry/provider bootstrap. No fabricated zero old-world balances are displayed.
+- Core: fresh CharacterRegistry, BountyBoard, TrustlessBountyBoard, KeeperShrine.
+- SSU: fresh standalone SsuPolicyRegistry.
+- Keeper Seal: fresh Registry and KeeperMintCap; no old seals imported.
+- Casino: fresh current-EVE House with bank=0, counters=0, paused=true.
+  Wagering stays disabled pending deliberate new bankroll and operating limits.
+- Voting: current fresh package `0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec`,
+  new registry with Open/One, SingleChoice/Approval, Public privacy, no recasts.
+  Unsupported modes reject on-chain and are disabled in the UI. Full voter inputs
+  are checked for completeness, order, uniqueness, stored values and unit weights.
+  Canonical tally binding, cast-time validation and close-time checks are enforced.
+- Current-world character/index backend uses the isolated Cycle 7 database.
+  Official GraphQL now supplies event/dynamic-field reads through the existing
+  loopback-only read adapter; local proxy change is recorded in
+  `sui-proxy-indexed-reads.patch`. No transaction/write methods were added.
+
+The first Voting publication failed the valid-owner smoke check: a literal
+self-package address stayed zero after publication. It was never activated;
+its metadata/caps/test election are archived in `rejected-voting-first/`, not
+used by the app. Corrected providers obtain the immutable runtime type origin.
+The replacement valid-owner cast simulation succeeds; wrong-owner mint rejects.
+Simulations did not sign for the sample character or store a ballot. Verification
+polls are clearly labelled technical checks, use zero funds and no stored votes,
+and are finalized after their short window. No old-world data is transferred.
+
+Activation checks: Core25 + Casino176 prior contract regressions; Voting20,
+frontend98, backend28 current tests; external forged-proof compilation rejected.
+Nine-route local desktop/mobile browser QA passes with no exceptions, retired
+requests, recovery screens or overflow. Origins reading progress survives and
+current-cycle caches survive repeated loads. Full wallet-driven browser signing
+has not been asserted by the automated browser tests.
+
+Website deployment receipt and live bundle proof are recorded below once complete.
 
 ## Changes to fresh contract source
 
@@ -63,14 +90,14 @@ and confirmed SSH authorization. At 12:11 CT, Captain created the selected-walle
 on Jetson2 (private 0700 directory, 0600 file), restored that stored copy and verified a harmless
 Sui PersonalMessage signature independently with the Sui SDK. See `custody.json` for its digest.
 This proves **ONE off-host backup**, not two. DGX1 remains offline/SSH-unreachable and its copy is
-unverified. The proof will be repeated immediately before an eventual publish. No new contracts
-have been published and no funds moved.
+unverified. The proof was refreshed immediately before publication. Signed deployment/bootstrap
+transactions consumed SUI gas only; no EVE bankroll or previous-world funds were transferred.
 
 Do not ask Raw to choose a custody wallet again. Do not claim any key is lost. Never copy key
 material into this repository, chat, logs, or evidence. This backup gate is independent of the
 obsolete asset-migration requirements, which Raw's clean-wipe instruction supersedes.
 
-## Concrete publication / bootstrap sequence after custody proof
+## Publication / bootstrap procedure (completed for this release)
 
 Use the isolated verified Sui binary and client config; assert chain `4c78adac` before each batch.
 Record a source commit/tag and retain exact command, bytecode digest, result and gas receipt.
@@ -81,8 +108,8 @@ All publishing must be **fresh publish**, never upgrade or old-cap reuse.
    Core dependency. Call these *fresh* entry points and record created shared object IDs:
    - `character_registry::create_registry()` → CharacterRegistry.
    - `bounty_contract::create_bounty_board_entry()` → BountyBoard.
-   - `trustless_bounty::create_board_entry()` → Board.
-   - `keeper_shrine::create_shrine<CURRENT_EVE>(b"CradleOS Cycle 7")` → Shrine.
+   - `trustless_bounty::create_board_entry()` → TrustlessBountyBoard.
+   - `keeper_shrine::create_shrine<CURRENT_EVE>(b"CradleOS Cycle 7")` → KeeperShrine.
    New tribes/vaults/policies are created by current owners later. Do not seed them from old state.
 2. **SSU** (`cradleos_ssu_access`): fresh publish. Capture auto-created SsuPolicyRegistry and cap.
    This is the standalone current-world binding, not Core's historical twin module.
@@ -125,3 +152,10 @@ All publishing must be **fresh publish**, never upgrade or old-cap reuse.
   the honest production state is **clean-wipe reads/content with contract services awaiting setup**.
 
 See `verification.json` for simulation/test receipts and `PRODUCTION.md` for the website receipt.
+
+## Deferred follow-ups (not release blockers)
+
+- Verify the second off-host backup on DGX1 when it is reachable; Jetson2 restore/signature proof already verified. Raw explicitly deferred this check for this release.
+- Fund/configure the fresh Casino only with a deliberate new bankroll and approved operating limits; do not import old funds.
+- Additional Voting methods, weights, eligibility providers, commit/reveal and sponsorship remain unavailable until their own verified implementation.
+- Preserve this worktree: the live character-index service runs from its services directory.

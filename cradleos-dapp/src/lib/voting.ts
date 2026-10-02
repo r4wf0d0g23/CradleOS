@@ -17,6 +17,7 @@
  * package set. Replicating the pattern (not the call) is intentional.
  */
 
+import { queryChain } from "./currentWorldRead";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   CRADLEOS_VOTING_PKG,
@@ -26,7 +27,6 @@ import {
   CRADLEOS_VOTING_PREVIEW,
   CRADLEOS_WIPE_DATE_ISO,
   CLOCK,
-  SUI_TESTNET_RPC,
 } from "../constants";
 
 // ── Re-exports for panel ergonomics ─────────────────────────────────────────
@@ -256,6 +256,10 @@ export const PRIVACY_OPTIONS: PickerOption[] = [
   },
 ];
 
+// Fresh deployment exposes only end-to-end verified election modes.
+for (const o of METHOD_OPTIONS) if (![METHOD_KIND.SINGLE_CHOICE, METHOD_KIND.APPROVAL].includes(o.value as 0 | 1)) o.disabled = { reason: "Not available in this cycle's initial deployment" };
+for (const o of PRIVACY_OPTIONS) if (o.value !== PRIVACY_KIND.PUBLIC) o.disabled = { reason: "Not available in this cycle's initial deployment" };
+
 // ── BCS-style encoders / decoders ───────────────────────────────────────────
 // All multi-byte values are little-endian, matching what the Move code emits.
 
@@ -331,7 +335,7 @@ export function encodeSingleChoiceVote(optionId: number): Uint8Array {
 
 /** approval: encoded_vote = LE u32 count, then count × LE u32 option_id. */
 export function encodeApprovalVote(optionIds: number[]): Uint8Array {
-  const dedup = Array.from(new Set(optionIds));
+  const dedup = Array.from(new Set(optionIds)).sort((a, b) => a - b);
   const parts: Uint8Array[] = [encodeU32LE(dedup.length)];
   for (const id of dedup) parts.push(encodeU32LE(id));
   return concat(...parts);
@@ -436,6 +440,9 @@ export interface CreateElectionParams {
 
 export function buildCreateElectionTx(p: CreateElectionParams): Transaction {
   ensurePublished();
+  if (p.eligibilityKind !== 0 || p.weightKind !== 0 || p.privacyKind !== 0 || p.allowRecast || ![0, 1].includes(p.methodKind)) {
+    throw new Error("This cycle supports public Single-Choice/Approval polls, verified characters, one vote each, and no recasts.");
+  }
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_VOTING_PKG}::voting::create_election`,
@@ -703,6 +710,10 @@ export function buildComputeTallyTx(
   weights: (number | bigint)[],
 ): Transaction {
   ensurePublished();
+  if (characterIds.length !== encodedVotes.length || characterIds.length !== weights.length) throw new Error("Incomplete ballot inputs");
+  const rows = characterIds.map((id, i) => ({ id, vote: encodedVotes[i], weight: weights[i] })).sort((a, b) => a.id - b.id);
+  if (rows.some((r, i) => BigInt(r.weight) !== 1n || (i > 0 && r.id === rows[i - 1].id))) throw new Error("Tally requires unique characters with one vote each");
+  characterIds = rows.map(r => r.id); encodedVotes = rows.map(r => r.vote); weights = rows.map(r => r.weight);
   const tx = new Transaction();
   tx.moveCall({
     target: `${CRADLEOS_VOTING_PKG}::tally::compute_tally`,
@@ -741,31 +752,33 @@ export async function fetchVotingEventAcrossPackages(
   limit = 500,
 ): Promise<RawEvent[]> {
   if (!CRADLEOS_VOTING_AVAILABLE) return [];
-  const uniquePkgs = Array.from(new Set(CRADLEOS_VOTING_EVENT_PKGS));
-  const queries = uniquePkgs.map((pkg) =>
-    fetch(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "suix_queryEvents",
-        params: [{ MoveEventType: `${pkg}::${module}::${event}` }, null, limit, true],
-      }),
-    })
-      .then((r) => r.json())
-      .catch(() => null)
-  );
-  const responses = await Promise.all(queries);
   const all: RawEvent[] = [];
   const seen = new Set<string>();
-  for (const j of responses) {
-    const data = (j as { result?: { data?: RawEvent[] } } | null)?.result?.data ?? [];
-    for (const e of data) {
-      const key = `${e.id?.txDigest ?? ""}#${e.id?.eventSeq ?? ""}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      all.push(e);
+  for (const pkg of new Set(CRADLEOS_VOTING_EVENT_PKGS)) {
+    let before: string | null = null;
+    const cursors = new Set<string>();
+    for (let page = 0; ; page++) {
+      if (page >= 2000) throw new Error("Voting history exceeds the read limit; refusing partial results");
+      type EventNode = { sequenceNumber: number; timestamp: string; transaction: { digest: string }; contents: { json: Record<string, unknown> } };
+      type EventPage = { nodes: EventNode[]; pageInfo: { hasPreviousPage: boolean; startCursor: string | null } };
+      const data: { events: EventPage } = await queryChain(`query($type: String!, $before: String, $count: Int!) {
+        events(filter: {type: $type}, last: $count, before: $before) {
+          nodes { sequenceNumber timestamp transaction { digest } contents { json } }
+          pageInfo { hasPreviousPage startCursor }
+        }
+      }`, { type: `${pkg}::${module}::${event}`, before, count: Math.min(50, Math.max(1, limit)) });
+      if (!data.events?.nodes || !data.events.pageInfo) throw new Error("Incomplete voting history");
+      for (const n of data.events.nodes) {
+        if (!n.transaction?.digest || n.sequenceNumber == null || !n.contents?.json || !n.timestamp) throw new Error("Unresolved voting event");
+        const key = `${n.transaction.digest}#${n.sequenceNumber}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        all.push({ id: { txDigest: n.transaction.digest, eventSeq: String(n.sequenceNumber) }, parsedJson: n.contents.json, timestampMs: String(Date.parse(n.timestamp)) });
+      }
+      if (!data.events.pageInfo.hasPreviousPage) break;
+      const next = data.events.pageInfo.startCursor;
+      if (!next || cursors.has(next)) throw new Error("Voting history pagination stalled");
+      cursors.add(next); before = next;
     }
   }
   all.sort((a, b) => Number(b.timestampMs ?? 0) - Number(a.timestampMs ?? 0));

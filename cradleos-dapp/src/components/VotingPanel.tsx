@@ -32,6 +32,7 @@ import {
   fetchAllElections,
   type ElectionSummary,
 } from "../lib/voting";
+import { ElectionLifecycle } from "./ElectionLifecycle";
 import { ElectionCreatorWizard } from "./ElectionCreatorWizard";
 import { VoterBallotUI } from "./VoterBallotUI";
 import { ElectionResultsPage } from "./ElectionResultsPage";
@@ -57,8 +58,10 @@ export function VotingPanel() {
   const { account } = useVerifiedAccountContext();
   const [tab, setTab] = useState<Tab>("active");
   const [detail, setDetail] = useState<Detail>(null);
+  const [detailRevision, setDetailRevision] = useState(0);
   const [elections, setElections] = useState<ElectionSummary[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [statesByElection, setStatesByElection] = useState<Map<string, number>>(new Map());
 
   // Fetch elections list (across all packages). Mandatory fetchEventAcrossPackages
@@ -66,6 +69,7 @@ export function VotingPanel() {
   const refresh = async () => {
     if (!CRADLEOS_VOTING_AVAILABLE) { setElections([]); return; }
     setLoading(true);
+    setLoadError(null);
     try {
       const all = await fetchAllElections();
       setElections(all);
@@ -83,7 +87,7 @@ export function VotingPanel() {
       setStatesByElection(stateMap);
     } catch (e) {
       console.warn("[VotingPanel] fetchAllElections failed", e);
-      setElections([]);
+      setLoadError(String((e as Error).message ?? e));
     } finally {
       setLoading(false);
     }
@@ -96,13 +100,15 @@ export function VotingPanel() {
     if (detail.mode === "vote") {
       return (
         <div>
-          <VoterBallotUI electionId={detail.electionId} onBack={() => setDetail(null)} onCast={refresh} />
+          <ElectionLifecycle electionId={detail.electionId} onChanged={() => { setDetailRevision(x => x + 1); void refresh(); }} />
+          <VoterBallotUI key={detailRevision} electionId={detail.electionId} onBack={() => setDetail(null)} onCast={refresh} />
         </div>
       );
     }
     return (
       <div>
-        <ElectionResultsPage electionId={detail.electionId} onBack={() => setDetail(null)} />
+        <ElectionLifecycle electionId={detail.electionId} onChanged={() => { setDetailRevision(x => x + 1); void refresh(); }} />
+        <ElectionResultsPage key={detailRevision} electionId={detail.electionId} onBack={() => setDetail(null)} />
       </div>
     );
   }
@@ -166,6 +172,7 @@ export function VotingPanel() {
         }}>{loading ? "Refreshing…" : "↻ Refresh"}</button>
       </div>
 
+      {loadError && <p role="alert">Election data unavailable: {loadError}</p>}
       {/* Content */}
       {tab === "create" && (
         <ElectionCreatorWizard

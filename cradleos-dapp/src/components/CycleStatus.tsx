@@ -28,7 +28,8 @@ export function HistoricalDataNotice() {
   return <p className="cycle-status-body" role="note"><strong>Historical reference:</strong> this calculator uses pre-Vestiges fitting or recipe data. Cycle 7 changed skills, mining and industry. Do not rely on these results for current production quantities or ship performance until revalidated.</p>;
 }
 
-export function CycleContractSetup() {
+export function CycleContractSetup({ service }: { service?: string }) {
+  if (service === "casino") return <section className="cycle-status-body" aria-label="Cycle 7 casino status"><h2>Casino deployed · awaiting a fresh bankroll</h2><p>The new-cycle Casino is initialized with an empty bankroll and wagering paused. It will open after new funding and operating limits are configured.</p><p>Previous-world funds and games are retired; no balances or obligations have been carried forward.</p></section>;
   return <section className="cycle-status-body" aria-label="Cycle 7 fresh deployment">
     <h2>Fresh start for Cycle 7</h2>
     <p>This service is awaiting its new-cycle deployment. Previous-world balances, games and contracts are retired—not recoverable or carried forward here.</p>

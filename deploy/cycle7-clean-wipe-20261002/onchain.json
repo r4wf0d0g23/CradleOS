@@ -91,6 +91,36 @@
       "modules": [
         "keeper_seal"
       ]
+    },
+    "voting": {
+      "packageId": "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec",
+      "upgradeCap": "0xa34a06eb14e4466a4114b4094ae39290db9a75ca6e17eb2bbfee6c35899e99a2",
+      "owner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+      "digest": "3nbY7LE2fKtufz9LqXhB62CUJosKBWYQGyxM6MNWJpys",
+      "modules": [
+        "approval",
+        "conviction",
+        "eligibility_allowlist",
+        "eligibility_composite",
+        "eligibility_open",
+        "eligibility_tribe_cradleos",
+        "eligibility_tribe_ingame",
+        "extension",
+        "privacy_commit_reveal",
+        "privacy_public",
+        "privacy_zk",
+        "quadratic",
+        "ranked_choice",
+        "score",
+        "single_choice",
+        "tally",
+        "voting",
+        "weight_asset",
+        "weight_char_age",
+        "weight_composite",
+        "weight_one",
+        "weight_role"
+      ]
     }
   },
   "objects": {
@@ -170,6 +200,40 @@
       "owner": {
         "AddressOwner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a"
       }
+    },
+    "votingRegistry": {
+      "objectId": "0x252bb2cd2d884ee31a8f1614f550d3ed4334017b9ba28864aa49de8add4e2bfd",
+      "objectType": "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec::extension::ExtensionRegistry",
+      "owner": {
+        "Shared": {
+          "initial_shared_version": 1038332288
+        }
+      }
+    },
+    "votingAdminCap": {
+      "objectId": "0x91837bbbebe9e1da1a6087ea39ee22692833d940202a06e7e84c5642ef0d834d",
+      "objectType": "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec::extension::AdminCap",
+      "owner": {
+        "AddressOwner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a"
+      }
+    },
+    "verificationElection": {
+      "objectId": "0x0284b5d13814286b57a07bdaa68301ec6d9311f90bf67c9fdf8d2802eed47332",
+      "objectType": "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec::voting::Election",
+      "owner": {
+        "Shared": {
+          "initial_shared_version": 1038333886
+        }
+      }
+    },
+    "verificationTally": {
+      "objectId": "0xc552f0943e92e175ffe2901394cbe2f8e3924f0885777edb0af0587c275370e9",
+      "objectType": "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec::voting::Tally",
+      "owner": {
+        "Shared": {
+          "initial_shared_version": 1038337140
+        }
+      }
     }
   },
   "transactions": [
@@ -228,6 +292,34 @@
     {
       "operation": "rejected-voting-first:voting-smoke-finalize",
       "digest": "87SaXCv8GWsByhC6b2LKQHoq3KcURaVhrdDYhriAeHvj"
+    },
+    {
+      "operation": "publish voting",
+      "digest": "3nbY7LE2fKtufz9LqXhB62CUJosKBWYQGyxM6MNWJpys"
+    },
+    {
+      "operation": "bootstrap-voting",
+      "digest": "GWFevixF9dFAbnn47sk2WAD56iduNAn7P2sHWf1HEB2v"
+    },
+    {
+      "operation": "register-voting-providers",
+      "digest": "C7Yh1kTCeSp5P1fGTXT5ktCnKWuiX6fCVRHJ52mQfzgm"
+    },
+    {
+      "operation": "voting-smoke-create",
+      "digest": "83GpaZXspLAQ92kdJq7FupFG8Ek3YW8vWyM9eeKhRF9g"
+    },
+    {
+      "operation": "voting-smoke-open",
+      "digest": "CpGvBqoj38BGH16GAKqTMWCntS4kKEeDFb5FuPWoFiZ1"
+    },
+    {
+      "operation": "voting-smoke-tally",
+      "digest": "FkdY3NDASx38Z6myassC7RwbtWbxqHuF85KeuTHBzb28"
+    },
+    {
+      "operation": "voting-smoke-finalize",
+      "digest": "9yXemX4eD5Q2KQMuQmfGhQ6sgSX7XHmzUUpBLGUY9cvy"
     }
   ]
 }

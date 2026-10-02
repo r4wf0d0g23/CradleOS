@@ -23,6 +23,8 @@ import {
   fetchAllElections,
   buildVerificationBundleJson,
   toBytes,
+  encodeU32LE,
+  encodeU64LE,
   decodeU32LE,
   decodeU64LE,
   CRADLEOS_VOTING_AVAILABLE,
@@ -42,6 +44,7 @@ interface TallyFields {
   inputHash: string;
   outputHash: string;
   disputed: boolean;
+  seed: Uint8Array;
 }
 
 function readTallyFields(raw: Record<string, unknown>): TallyFields | null {
@@ -57,6 +60,7 @@ function readTallyFields(raw: Record<string, unknown>): TallyFields | null {
     inputHash: "0x" + Array.from(toBytes(content.input_hash)).map((b) => b.toString(16).padStart(2, "0")).join(""),
     outputHash: "0x" + Array.from(toBytes(content.output_hash)).map((b) => b.toString(16).padStart(2, "0")).join(""),
     disputed: Boolean(content.disputed ?? false),
+    seed: toBytes(content.deterministic_seed),
   };
 }
 
@@ -66,6 +70,8 @@ interface ElectionMeta {
   options: Array<{ id: number; label: string }>;
   title: string;
   tallyId: string | null;
+  methodParams: Uint8Array;
+  revealedCount: number;
 }
 
 function readElectionMeta(raw: Record<string, unknown>): ElectionMeta | null {
@@ -86,6 +92,8 @@ function readElectionMeta(raw: Record<string, unknown>): ElectionMeta | null {
       return { id: Number(f.id ?? 0), label: String(f.label ?? "") };
     }),
     tallyId,
+    methodParams: toBytes(content.method_params),
+    revealedCount: Number(content.revealed_count ?? 0),
   };
 }
 
@@ -147,12 +155,15 @@ export function ElectionResultsPage({
     setError(null);
     try {
       const events = await fetchBallotsForElection(electionId);
+      if (events.length !== meta.revealedCount) throw new Error("Ballot history is not yet complete. Retry after indexing catches up.");
       setBallots(events);
       const optionIds = meta.options.map((o) => o.id);
       const result = localTally(
         meta.methodKind,
         optionIds,
         events.map((e) => ({ encodedVote: e.encodedVote, weight: e.weight })),
+        meta.methodParams,
+        tally?.seed,
       );
       setLocalResult(result);
     } catch (e) {
@@ -430,5 +441,7 @@ function matchesChain(local: LocalTallyResult | null, tally: TallyFields | null)
   const b = [...tally.winnerOptionIds].sort();
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
+  if (local.totalWeight !== tally.totalWeight || local.methodKind !== tally.methodKind) return false;
+  const expected = local.perOption.flatMap(row => [...encodeU32LE(row.optionId), ...encodeU64LE(row.total)]);
+  return expected.length === tally.resultPayload.length && expected.every((byte, i) => byte === tally.resultPayload[i]);
 }

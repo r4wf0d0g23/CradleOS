@@ -19,6 +19,7 @@ import { backfillServer, pollIncrement, backfillKills, pollKillsIncrement, backf
 import { OwnershipCache } from "./ownership-cache.js";
 import { OwnershipGrpc } from "./ownership-grpc.js";
 import { OwnershipRouter } from "./ownership-router.js";
+import { IndexedReads, INDEXED_METHODS } from "./indexed-reads.js";
 import { installOriginsMediaProxy } from "./origins-media-proxy.js";
 
 const PUBLIC_GRAPHQL = process.env.SUI_GRAPHQL_URL || "https://graphql.testnet.sui.io/graphql";
@@ -34,6 +35,12 @@ if (getState(db, "world:stillness") !== STILLNESS_WORLD) throw new Error("Index 
 const ownershipCache = new OwnershipCache(db);
 const ownershipGrpc = new OwnershipGrpc();
 const ownershipRouter = new OwnershipRouter(ownershipGrpc, ownershipCache);
+const indexedReads = new IndexedReads({ objectReader: async objectId => {
+  // Object content is ledger data (not an indexed listing). Preserve the RPC
+  // struct encoding existing clients expect, using the loopback-only proxy.
+  const r = await fetch("http://127.0.0.1:8002/", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({jsonrpc:"2.0",id:1,method:"sui_getObject",params:[objectId,{showContent:true,showType:true,showOwner:true}]}), signal:AbortSignal.timeout(20000) });
+  const j = await r.json(); if(!r.ok || j.error || !j.result) throw new Error(j.error?.message || "Object read unavailable"); return j.result;
+}});
 const app = express();
 app.use(express.json());
 
@@ -55,11 +62,11 @@ function requireLoopback(req, res, next) {
 app.post("/ownership-rpc", requireLoopback, async (req, res) => {
   const calls = Array.isArray(req.body) ? req.body : [req.body];
   const replies = await Promise.all(calls.map(async (call) => {
-    if (!call || !OWNERSHIP_METHODS.has(call.method)) {
+    if (!call || !OWNERSHIP_METHODS.has(call.method) && !INDEXED_METHODS.has(call.method)) {
       return { jsonrpc: "2.0", id: call?.id ?? null, error: { code: -32601, message: "ownership method not supported" } };
     }
     try {
-      return { jsonrpc: "2.0", id: call.id ?? null, result: await ownershipRouter.handle(call.method, call.params || []) };
+      return { jsonrpc: "2.0", id: call.id ?? null, result: await (INDEXED_METHODS.has(call.method) ? indexedReads : ownershipRouter).handle(call.method, call.params || []) };
     } catch (error) {
       return { jsonrpc: "2.0", id: call.id ?? null, error: { code: -32010, message: `ownership providers unavailable: ${error.message}` } };
     }

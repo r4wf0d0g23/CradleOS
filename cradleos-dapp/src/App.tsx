@@ -1460,7 +1460,7 @@ function AppInner() {
       </div>}
 
 
-      {waitingForDeployment && <CycleContractSetup />}
+      {waitingForDeployment && <CycleContractSetup service={activeTab} />}
       {/* Wallet gate — show connect prompt for protected tabs without wallet */}
       {!waitingForDeployment && !account && !PUBLIC_TABS.has(activeTab) && (
         <div style={{ textAlign: "center", padding: "60px 24px", color: "rgba(175,175,155,0.6)" }}>
