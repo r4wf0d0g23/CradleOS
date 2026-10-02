@@ -84,7 +84,7 @@ module cradleos_voting::eligibility_tribe_cradleos {
             voter,
             character_id,
             KIND_TRIBE_CRADLEOS,
-            @cradleos_voting,
+            voting::provider_package(),
             eligible,
             ctx,
         )
@@ -112,7 +112,7 @@ module cradleos_voting::eligibility_tribe_cradleos {
             voter,
             character_id,
             KIND_TRIBE_CRADLEOS,
-            @cradleos_voting,
+            voting::provider_package(),
             eligible,
             ctx,
         )

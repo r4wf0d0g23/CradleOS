@@ -18,7 +18,7 @@ module cradleos_voting::weight_one {
             voter,
             character_id,
             KIND_ONE,
-            @cradleos_voting,
+            voting::provider_package(),
             1,
             inputs_hash,
             ctx,

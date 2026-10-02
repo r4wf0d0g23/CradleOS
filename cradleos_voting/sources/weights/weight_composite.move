@@ -150,7 +150,7 @@ module cradleos_voting::weight_composite {
             voter,
             character_id,
             KIND_COMPOSITE,
-            @cradleos_voting,
+            voting::provider_package(),
             combined,
             inputs_hash,
             ctx,

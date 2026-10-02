@@ -105,7 +105,7 @@ module cradleos_voting::weight_asset {
             voter,
             character_id,
             KIND_ASSET,
-            @cradleos_voting,
+            voting::provider_package(),
             weight,
             inputs_hash,
             ctx,

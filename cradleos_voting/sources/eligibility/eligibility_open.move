@@ -28,7 +28,7 @@ module cradleos_voting::eligibility_open {
             voter,
             character_id,
             KIND_OPEN,
-            @cradleos_voting,
+            voting::provider_package(),
             true,
             ctx,
         )

@@ -1,0 +1,69 @@
+{
+  "reason": "Fresh publish address literal stayed zero; valid-owner smoke rejected provider binding. Never activated. Corrected to runtime type origin. Verification election finalized; no stored ballots or funds.",
+  "package": {
+    "packageId": "0x21ef3875fbb521fc10695d571d30781ff39703152eacea2b8eafb94e40adf064",
+    "upgradeCap": "0xe38cbbe499d875ac15cd52b07ded4f9f1d1def81d246ad23bcf8ef02ae410f66",
+    "owner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+    "digest": "7MgrhBedn99NXnoihJiTM8w6yKxvW7UCnTNUZGuLTv59",
+    "modules": [
+      "approval",
+      "conviction",
+      "eligibility_allowlist",
+      "eligibility_composite",
+      "eligibility_open",
+      "eligibility_tribe_cradleos",
+      "eligibility_tribe_ingame",
+      "extension",
+      "privacy_commit_reveal",
+      "privacy_public",
+      "privacy_zk",
+      "quadratic",
+      "ranked_choice",
+      "score",
+      "single_choice",
+      "tally",
+      "voting",
+      "weight_asset",
+      "weight_char_age",
+      "weight_composite",
+      "weight_one",
+      "weight_role"
+    ]
+  },
+  "objects": {
+    "votingRegistry": {
+      "objectId": "0xf0876afde42f3570385630e19d0fc01fa87bfce78d123414f9f0b9956c768411",
+      "objectType": "0x21ef3875fbb521fc10695d571d30781ff39703152eacea2b8eafb94e40adf064::extension::ExtensionRegistry",
+      "owner": {
+        "Shared": {
+          "initial_shared_version": 939311500
+        }
+      }
+    },
+    "votingAdminCap": {
+      "objectId": "0x04e7494ac12cf84404411908c592cfae238fbeccab469ed42c448ae29e182c5b",
+      "objectType": "0x21ef3875fbb521fc10695d571d30781ff39703152eacea2b8eafb94e40adf064::extension::AdminCap",
+      "owner": {
+        "AddressOwner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a"
+      }
+    },
+    "verificationElection": {
+      "objectId": "0xad4f9fe1b32bc4bc6636dfa999fcdde7117eddaa3bbd9cee0984f677fcf38f16",
+      "objectType": "0x21ef3875fbb521fc10695d571d30781ff39703152eacea2b8eafb94e40adf064::voting::Election",
+      "owner": {
+        "Shared": {
+          "initial_shared_version": 1038329422
+        }
+      }
+    },
+    "verificationTally": {
+      "objectId": "0x6d27ab2f957c88348d109d12b1b96c882e5d5b330c24e1e13d3de573ef2568ba",
+      "objectType": "0x21ef3875fbb521fc10695d571d30781ff39703152eacea2b8eafb94e40adf064::voting::Tally",
+      "owner": {
+        "Shared": {
+          "initial_shared_version": 1038332148
+        }
+      }
+    }
+  }
+}

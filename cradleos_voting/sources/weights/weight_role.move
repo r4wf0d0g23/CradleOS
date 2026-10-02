@@ -97,7 +97,7 @@ module cradleos_voting::weight_role {
             voter,
             character_id,
             KIND_ROLE,
-            @cradleos_voting,
+            voting::provider_package(),
             weight,
             inputs_hash,
             ctx,

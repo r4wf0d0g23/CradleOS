@@ -172,7 +172,7 @@ module cradleos_voting::eligibility_composite {
             voter,
             character_id,
             KIND_COMPOSITE,
-            @cradleos_voting,
+            voting::provider_package(),
             eligible,
             ctx,
         )

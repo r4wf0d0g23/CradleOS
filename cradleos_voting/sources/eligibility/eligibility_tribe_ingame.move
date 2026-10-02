@@ -317,7 +317,7 @@ module cradleos_voting::eligibility_tribe_ingame {
             voter,
             character_id,
             KIND_TRIBE_INGAME,
-            @cradleos_voting,
+            voting::provider_package(),
             eligible,
             ctx,
         )

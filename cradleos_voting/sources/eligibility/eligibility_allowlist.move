@@ -23,7 +23,7 @@ module cradleos_voting::eligibility_allowlist {
             voter,
             character_id,
             KIND_ALLOWLIST,
-            @cradleos_voting,
+            voting::provider_package(),
             eligible,
             ctx,
         )

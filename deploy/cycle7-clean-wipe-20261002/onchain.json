@@ -200,6 +200,34 @@
     {
       "operation": "pause-casino",
       "digest": "HRzwrt8hUMhwZrF44D6V76M9rh7S2EfEmjrjo9ERjiit"
+    },
+    {
+      "operation": "rejected-voting-first:publish voting",
+      "digest": "7MgrhBedn99NXnoihJiTM8w6yKxvW7UCnTNUZGuLTv59"
+    },
+    {
+      "operation": "rejected-voting-first:bootstrap-voting",
+      "digest": "CKUEAE2aAuwKiPt5yCjj297jes7RAteHmysNXNGCTivQ"
+    },
+    {
+      "operation": "rejected-voting-first:register-voting-providers",
+      "digest": "8TtbJC8FkQM87T31yQdtRcwGCRt6UbTWZ5YWXsypgSqD"
+    },
+    {
+      "operation": "rejected-voting-first:voting-smoke-create",
+      "digest": "GM7ATaRrQKg72HAfNrquujYbmvjpVLFBBwS1k6hgyJgJ"
+    },
+    {
+      "operation": "rejected-voting-first:voting-smoke-open",
+      "digest": "5KQuaXZKCMs85bm3zfBecJyEFBS32hSc8hwFkXn7rzKP"
+    },
+    {
+      "operation": "rejected-voting-first:voting-smoke-tally",
+      "digest": "8aioZ1fM7v4k4epGz8wa5BFdQgXejyFKKokwweEDvr5C"
+    },
+    {
+      "operation": "rejected-voting-first:voting-smoke-finalize",
+      "digest": "87SaXCv8GWsByhC6b2LKQHoq3KcURaVhrdDYhriAeHvj"
     }
   ]
 }

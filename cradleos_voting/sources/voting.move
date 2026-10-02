@@ -1063,6 +1063,9 @@ module cradleos_voting::voting {
 
     // ── Public reads ──────────────────────────────────────────────────────────
 
+    /// Runtime type origin; unpublished address literals remain zero after publish.
+    public fun provider_package(): address { std::type_name::original_id<Election>() }
+
     public fun id(e: &Election): ID                   { object::uid_to_inner(&e.id) }
     public fun creator(e: &Election): address         { e.creator }
     public fun state(e: &Election): u8                { e.state }
