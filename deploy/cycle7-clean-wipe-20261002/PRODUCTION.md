@@ -1,5 +1,7 @@
 # Cycle 7 production activation receipt — 2026-10-02
 
+> **Website text/link update:** deployment `f1d658ac`, source `2b94dff`, supersedes the web bundle below. See [copy audit](COPY-AUDIT.md) and [live receipt](copy-release.json). On-chain activation facts below remain unchanged.
+
 - Primary: https://cradleos.io
 - Final Pages deployment: https://bbf026a2.cradleos-d75.pages.dev
 - Source commit: `1320a2f`, branch `cycle7-vestiges-20261002` (pushed).

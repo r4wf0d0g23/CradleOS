@@ -97,5 +97,14 @@
     "sourceCommit": "1320a2ffe6fa1c1672f7562e02783641221940ef",
     "bundle": "/assets/index-DtLhTuyI.js",
     "bundleSha256": "b3710f55afd60c1409376f3bd0a8b936e3ed078bcb0e93076d9cd9bade4ee324"
+  },
+  "productionCopyUpdate": {
+    "deployment": "f1d658ac",
+    "sourceCommit": "2b94dffb45e3962d75222938962607c56b8e938f",
+    "asset": "/assets/index-Cb3klbp7.js",
+    "sha256": "570b5327e1053a25517f771e8745daf003458ec2261a278ca7325a3ca9eda429",
+    "liveBundleMatchesBuild": true,
+    "staleCurrentLabelsAbsent": true,
+    "noContractOrFinancialChanges": true
   }
 }

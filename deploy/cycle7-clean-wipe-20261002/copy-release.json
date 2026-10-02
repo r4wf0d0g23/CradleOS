@@ -1,0 +1,45 @@
+{
+  "deployment": "f1d658ac",
+  "url": "https://cradleos.io",
+  "deploymentUrl": "https://f1d658ac.cradleos-d75.pages.dev",
+  "sourceCommit": "2b94dffb45e3962d75222938962607c56b8e938f",
+  "checkedAt": "2026-10-02T20:16:57.571352+00:00",
+  "asset": "/assets/index-Cb3klbp7.js",
+  "sha256": "570b5327e1053a25517f771e8745daf003458ec2261a278ca7325a3ca9eda429",
+  "bytes": 2724462,
+  "liveBundleMatchesBuild": true,
+  "staleCurrentLabelsAbsent": true,
+  "frontendTests": 102,
+  "review": "Independent copy, archive-access and canonical-link review approved",
+  "noContractOrFinancialChanges": true,
+  "browser": {
+    "base": "https://cradleos.io",
+    "checks": [
+      {
+        "route": "/",
+        "width": 1440,
+        "title": "CradleOS \u2014 EVE Frontier \u00b7 Cycle 7: Vestiges",
+        "header": "CYCLE 7 \u00b7 VESTIGES",
+        "overflow": false
+      },
+      {
+        "route": "/",
+        "width": 390,
+        "title": "CradleOS \u2014 EVE Frontier \u00b7 Cycle 7: Vestiges",
+        "header": "CYCLE 7 \u00b7 VESTIGES",
+        "overflow": false
+      },
+      {
+        "route": "home \u2192 Game Data tab",
+        "archiveLabel": true,
+        "datedDeltas": true,
+        "archivedEvents": true
+      },
+      {
+        "route": "/#/casino",
+        "pausedStatus": true
+      }
+    ],
+    "errors": []
+  }
+}
