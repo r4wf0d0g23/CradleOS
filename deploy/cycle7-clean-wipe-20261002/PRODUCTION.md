@@ -17,11 +17,12 @@
 
 ## Explicit non-completions
 
-- NO fresh on-chain publication, signature, currency movement, or singleton bootstrap.
+- No transaction signing, publication, funds movement, or singleton bootstrap. An offline
+  PersonalMessage backup-proof signature was produced from the restored Jetson2 copy.
 - Contract services await actual deployment/initialization; simulations are not publication.
 - No connected-wallet financial end-to-end tests possible before fresh contracts exist.
 - Voting simulation must be repeated after actual fresh Core address is bound.
-- Repository §8.1 backup/custody evidence outstanding; see README.md.
+- Repository §8.1: custody confirmed and Jetson2 restored-backup proof verified; second off-host copy (DGX1) remains unverified. See README.md.
 
 The earlier recovery-oriented deployment `54e4e2fc` is **not** the rollback target for this
 user-approved clean-wipe semantics. If a web regression requires rollback, retain the clean-wipe

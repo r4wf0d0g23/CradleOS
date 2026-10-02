@@ -52,10 +52,17 @@ Voting waits for registry/provider bootstrap. No fabricated zero old-world balan
 2. Raw's attestation of **two readable off-host backups**.
 3. The cap custody destination recorded before signing.
 
-Custody destination is confirmed. No off-host backup attestation or backup-derived signature has
-been found. The wallet choice is settled; do not ask Raw to choose it again. Do not claim the key is lost and do not
-copy secret key material into this repository, chat, logs, or evidence. This gate is independent of
-the obsolete asset-migration requirements, which Raw's clean-wipe instruction supersedes.
+Custody destination is confirmed. Raw authorized Jetson2 for the second backup destination
+and confirmed SSH authorization. At 12:11 CT, Captain created the selected-wallet-only backup
+on Jetson2 (private 0700 directory, 0600 file), restored that stored copy and verified a harmless
+Sui PersonalMessage signature independently with the Sui SDK. See `custody.json` for its digest.
+This proves **ONE off-host backup**, not two. DGX1 remains offline/SSH-unreachable and its copy is
+unverified. The proof will be repeated immediately before an eventual publish. No new contracts
+have been published and no funds moved.
+
+Do not ask Raw to choose a custody wallet again. Do not claim any key is lost. Never copy key
+material into this repository, chat, logs, or evidence. This backup gate is independent of the
+obsolete asset-migration requirements, which Raw's clean-wipe instruction supersedes.
 
 ## Concrete publication / bootstrap sequence after custody proof
 

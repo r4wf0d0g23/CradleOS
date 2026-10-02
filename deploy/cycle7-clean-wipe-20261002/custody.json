@@ -5,7 +5,32 @@
   "confirmedAt": "2026-10-02T10:29:30-05:00",
   "sourceMessageId": "1555602636999368727",
   "instruction": "The same wallet you have the access and keys to",
-  "backupSigningProof": null,
-  "offHostBackupAttestations": [],
-  "publicationPerformed": false
+  "backupSigningProof": {
+    "source": "Jetson2 stored backup restored to temporary keystore",
+    "kind": "Sui PersonalMessage, not a transaction",
+    "digestHex": "235ab12e98e510a8476b1289a4f847d02af032c2d564dd2311d690699fcd377b",
+    "verifiedAt": "2026-10-02T17:11:58.780Z",
+    "refreshImmediatelyBeforePublish": true
+  },
+  "offHostBackupAttestations": [
+    {
+      "host": "Jetson2",
+      "destinationApprovedBy": "Raw",
+      "destinationApprovalMessageId": "1555623915492090007",
+      "sshAccessConfirmedMessageId": "1555627526276255876",
+      "createdAndVerifiedBy": "Captain",
+      "verifiedAt": "2026-10-02T17:11:57.784365+00:00",
+      "wallet": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+      "fileMode": "0600",
+      "directoryMode": "0700",
+      "restoredFromStoredBackup": true,
+      "independentSdkSignatureVerification": true
+    }
+  ],
+  "publicationPerformed": false,
+  "pendingBackup": {
+    "host": "DGX1",
+    "status": "offline; SSH timeout; matching backup not yet verified"
+  },
+  "verifiedOffHostBackupCount": 1
 }
