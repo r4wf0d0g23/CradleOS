@@ -1,5 +1,7 @@
 # Cycle 7 production activation receipt — 2026-10-02
 
+> **System names update:** deployment `a2635a4e`, source `213a54b`, supersedes the web bundles below. Names-only Cycle 7 client lookup; no map/topology or on-chain changes. See [extraction/scope](SYSTEM-NAMES.md) and [live receipt](system-names-release.json).
+
 > **Website text/link update:** deployment `f1d658ac`, source `2b94dff`, supersedes the web bundle below. See [copy audit](COPY-AUDIT.md) and [live receipt](copy-release.json). On-chain activation facts below remain unchanged.
 
 - Primary: https://cradleos.io

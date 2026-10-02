@@ -106,5 +106,73 @@
     "liveBundleMatchesBuild": true,
     "staleCurrentLabelsAbsent": true,
     "noContractOrFinancialChanges": true
+  },
+  "productionSystemNamesUpdate": {
+    "checkedAt": "2026-10-02T21:12:56.642178+00:00",
+    "site": "https://cradleos.io",
+    "deployment": "a2635a4e",
+    "sourceCommit": "213a54b86e4ae2f999936effd7bf50c9cf6b905f",
+    "files": [
+      {
+        "path": "/assets/index-DKNYRHJj.js",
+        "bytes": 2725639,
+        "sha256": "3d634904f2eb2330c4eddae9a892c8a3575565a2f7afe2f0bdd2d55cd9f21e5c",
+        "matchesBuild": true
+      },
+      {
+        "path": "/data/system-names-stillness-cycle7-3573151.json",
+        "bytes": 535534,
+        "sha256": "1ab219e3f64415e176a1b614d0a2c9144d3fea059a32261d2ac6f93a29204c9f",
+        "matchesBuild": true
+      }
+    ],
+    "browser": {
+      "base": "https://cradleos.io",
+      "checks": [
+        {
+          "width": 1440,
+          "visibleNames": [
+            "EVH-D7F",
+            "ORH-SSD",
+            "AT2-H6K",
+            "E73-32K",
+            "O6K-HCK",
+            "OLF-FDK",
+            "UB8-BBK",
+            "E2L-B4K",
+            "N.QZZ.YF1",
+            "EJ4-3MF"
+          ],
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "visibleNames": [
+            "EVH-D7F",
+            "ORH-SSD",
+            "AT2-H6K",
+            "E73-32K",
+            "O6K-HCK",
+            "OLF-FDK",
+            "UB8-BBK",
+            "E2L-B4K",
+            "N.QZZ.YF1",
+            "EJ4-3MF"
+          ],
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "nameRequests": [
+        "https://cradleos.io/data/system-names-stillness-cycle7-3573151.json"
+      ],
+      "retiredRequests": []
+    },
+    "frontendTests": 109,
+    "clientBuild": 3573151,
+    "namesCount": 25337,
+    "mapTopologyRestored": false,
+    "contractsChanged": false,
+    "fullClientUpdateComplete": false
   }
 }
