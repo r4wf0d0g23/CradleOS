@@ -1,620 +1,146 @@
-import { CURRENT_WORLD_INDEX_READY, LEGACY_EVE_COIN_TYPE } from "./lib/cycle";
-// ── Server environment ─────────────────────────────────────────────────────────
-// 2026-07-19 data-path refactor: Utopia/UAT is DEAD (hackathon world retired).
-// The dApp is Stillness-only. ServerEnv survives as a single-literal type so
-// existing `SERVER_ENV` imports keep compiling; the runtime switch machinery
-// is gone (there is nothing to switch to).
+/** Cycle 7 clean-wipe configuration. Historical version-named aliases below
+ * resolve only to the fresh lineage; retired house IDs are intentionally empty.
+ * Publication history is preserved in git and deploy/previous-manifests, not runtime fallbacks. */
+import { CYCLE_DEPLOYMENT, CASINO_READY, SSU_READY, VOTING_READY } from "./lib/cycleDeployment";
+import { CURRENT_WORLD_INDEX_READY, CURRENT_EVE_COIN_TYPE } from "./lib/cycle";
 
 export type ServerEnv = "stillness";
 
 const _serverEnv: ServerEnv = "stillness";
 
 export function getServerEnv(): ServerEnv { return _serverEnv; }
-/** No-op env-change subscription retained for App.tsx API compat. */
+
 export function onServerEnvChange(_fn: () => void) { return () => {}; }
 
 export const SERVER_ENV: ServerEnv = _serverEnv;
 export const SERVER_LABEL = "STILLNESS (Live)";
-
-// ── World package IDs ─────────────────────────────────────────────────────────
-// Source of truth: src/lib/tenantConfig.ts (vendored from @evefrontier/wallet-core,
-// MIT, last synced 2026-06-22 from HEAD 1b4be23). The vendored table mirrors
-// CCP's authoritative TENANT_CONFIG. Do not hand-edit these values here; update
-// tenantConfig.ts instead. The Utopia v1 id is preserved for historical event
-// queries on objects that pre-date the v2 upgrade.
 import { TENANT_CONFIG, TenantId } from "./lib/tenantConfig";
-
-// Stillness world package — read live from canonical TENANT_CONFIG so wipe-day
-// updates are a single-file change. (Utopia lineage purged 2026-07-19.)
 export const WORLD_PKG_STILLNESS = TENANT_CONFIG[TenantId.STILLNESS].packageId;
 export const WORLD_PKG = WORLD_PKG_STILLNESS;
-
-// Globally-shared ObjectRegistry — derived child-object root for in_game_id
-// resolution. One per world pkg; changes whenever world is republished.
-// 2026-06-25 wipe-day: Stillness republished, new registry below.
 export const OBJECT_REGISTRY_STILLNESS = "0x8fd47e6e5cf8cb9b789cef26fbb674be819d8abd6afccaf50e95451212f0813a";
 export const OBJECT_REGISTRY = OBJECT_REGISTRY_STILLNESS;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
+export const CRADLEOS_ORIGINAL = CYCLE_DEPLOYMENT.packages.core;
+export const CRADLEOS_ORIGINAL_PREV = "";
+export const CRADLEOS_PKG      = CYCLE_DEPLOYMENT.packages.core;
+export const CRADLEOS_V2_PKG = CYCLE_DEPLOYMENT.packages.core;
+export const CRADLEOS_V3_PKG = CYCLE_DEPLOYMENT.packages.core;
+export const SSU_ACCESS_PKG_STILLNESS    = CYCLE_DEPLOYMENT.packages.ssu;
+export const SSU_ACCESS_ORIGINAL_STILLNESS = CYCLE_DEPLOYMENT.packages.ssu;
+export const SSU_POLICY_REGISTRY_STILLNESS = CYCLE_DEPLOYMENT.objects.ssuRegistry;
 
-// ── CradleOS package IDs ──────────────────────────────────────────────────────
-// Sui uses TWO addresses:
-//   original-id  → event types, struct types, type filters (immutable, never changes)
-//   published-at → moveCall targets (changes on each `sui client upgrade`)
-//
-// v2 deployed 2026-03-25 (Reapers_v2)
-// 2026-06-25 WIPE-DAY: chain-side wipe orphaned the prior CradleOS lineage.
-// All shared objects (TribeVault, Treasury, Registry, defense_policy state,
-// voting elections, ssu_access policies) created under the old packages are
-// unreachable from the new world. The fresh v1 publish below is the new
-// canonical "original" for all type/event queries going forward.
-// Pre-wipe lineage (now archived, returns zero hits forever):
-//   v1 original: 0x70d0797bf1772c94f15af6549ace9117a6f6c43c4786355004d14e9a5c0f97b3
-//   v4 upgrade-origin (collateral_vault etc): 0xbf4249b176bf2c7594dbd46615f825b456da4bbba035fdb968c0e812e34dab8d
-//   last pre-wipe published-at (v14): 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93
-export const CRADLEOS_ORIGINAL = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 fresh lineage (== pkg). Pre-cutover: 0xd4f46821 (orphaned).
-export const CRADLEOS_ORIGINAL_PREV = "0xd4f46821b371c776887922a5ac8e2e405b86b30f9066b9e5f5563f30921fc41e";
-// CRADLEOS_PKG v14 (2026-05-04 PM): closes the gate-access bug class.
-// Adds GateFriendlyCharacterKey + GateHostileCharacterKey + character-keyed
-// entry functions on TribeGatePolicy mirroring the v13 turret-friendly fix.
-// New is_allowed(policy, character_id, character_tribe_id) accessor composes
-// access_level + tribe_overrides + friendly + hostile into a single boolean.
-// New request_jump_permit_entry(policy, src, dest, character, clock) lets a
-// pilot self-mint a JumpPermit when allowed; aborts E_ACCESS_DENIED otherwise.
-// CradleOSAuth witness from gate_control is reused so a single authorize_extension
-// call covers all CradleOS gate enforcement.
-// Tx digest: v14 AAzKpSzqnZtNWcm3oQCZrYpWqX8Ln58XvsDw97hJ7NCR
-// v13 (2026-05-04 AM): turret friendly-fire fix, tx HaZwqgiu...
-// v12 (2026-04-27): shared_withdraw_to_owned, tx 6aaYV3Yha...
-// v11 (2026-04-26): recover_to_owned + recover_to_shared, tx 8aevQ9uu...
-// 2026-06-25 WIPE-DAY fresh publish on Stillness against new world
-// `0x8b8a46ed...`. Original-id == published-at (v1). All prior CradleOS state
-// (TribeVaults, defense_policy, ssu_access policies, voting elections) is
-// orphaned by the chain-side wipe and unreachable from the new world.
-// Tx digest: FT5Wy4ZxFLHgvNXKeK93bZmEpdW8WGHoyfP2kbadj69H
-// UpgradeCap: 0x82935954658845b86584b035143a5614530b6bb8d30ad2a3b53ec70c7e2b61be
-// v2 (2026-07-08): configurable JumpPermit lifetime — gate_policy::set_permit_ttl
-// + permit_ttl_ms + PermitTtlKey DF + GatePermitTtlSet event.
-// Tx digest: 648Vzom7hjsGSYunE3D5i9AGDPAH32BLGGZaGVELLuSV
-// v3 (2026-07-08): SECURITY — gate↔policy binding. bind_gate/unbind_gate with
-// OwnerCap proof + GateBindingKey DF; request_jump_permit_entry now fail-closed
-// requires the source gate to be bound to the policy passed. Without this, any
-// tribe's OPEN policy could mint permits for any enforced gate.
-// Tx digest: 7skiif5oYopW8ruUkk2qTFHfLvVzqGQjXvveoiKSji5x
-// v16 (2026-07-18): FRESH REPUBLISH under wallet-we-control 0x177583b2, done under
-// the mistaken belief that the DGX1 reformat had destroyed deploy-wallet 0xc80fe7d6.
-// CORRECTION (2026-08-02): that key was NEVER lost — it was deployed from DGX2, not
-// DGX1, so the reformat never touched it. v15 0xc3c2381f is NOT upgrade-frozen.
-// Byte-identical to v15. New lineage: pkg == original. Full cutover — old shared state
-// (tribes/gates/treasuries under 0xc3c2381f) orphaned; users re-init. UpgradeCap
-// 0xcaca3557727d5df7afe32e34a62375105ec5415fcc48bb0dbddad0f06ad5f328 owned by us.
-export const CRADLEOS_PKG      = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 republish. Prev v15 0xc3c2381f (key recovered on DGX2 — NOT lost; republish was unnecessary).
-// Defining packages for structs introduced in specific upgrades — DF name
-// types and event struct types are typed under the package that FIRST defined
-// them, regardless of the current published-at:
-export const CRADLEOS_V2_PKG = "0xd98eea77615be152f02d70f50140734d7cdf18f2bfb8c02abbbb1421023841ed"; // PermitTtlKey, GatePermitTtlSet
-export const CRADLEOS_V3_PKG = "0xaf2b9fca870b3e14f64f4f5935b972a39ccbc405b9d2339ccbb8ff0953fc0995"; // GateBindingKey, GateBound, GateUnbound
-// Previous v1 (wipe-day fresh publish) = CRADLEOS_ORIGINAL below.
-// Previous v14: 0xb6be32f915bb8ffead4a721207d9e43d2bedc7a60acdb08af60af84e1915ba93 (last pre-wipe)
-// Previous v13: 0x443e4730c58b29096b5289ad700740e08e4925f5d0486ec07a0c645ef75617d6
-// Previous v12: 0xa9c899be21e47d30882cb5da021780ccc35421e9181518ae8161b09f7c92b11f
-// Previous v9:  0x955d7ffb4c0bf6abc4caea3041f982ae7e9b21eb4b9c1ea500bb404609faf0ce
-
-// ── SSU shared-access feature (cradleos::ssu_access) ─────────────────────────
-//
-// IMPORTANT: ssu_access takes `&StorageUnit` and `&OwnerCap<StorageUnit>` as
-// Move parameters, which means the module is hard-linked to a specific world
-// package lineage at publish time. It cannot accept world objects from a
-// different lineage. We publish ssu_access as a SEPARATE single-module package
-// per server so each lineage has its own correctly-linked binding.
-//
-//   Stillness (production):  pkg = 0x7d85b7c5... (linked to world 0x28b497559d)
-//   Utopia (legacy):         no publish — feature disabled on Utopia
-//
-// Active CradleOS state (TribeVaults, defense_policy, turret_delegation, etc.)
-// remains on the Utopia CradleOS package for current players. ssu_access is a
-// *new* feature shipping production-first on Stillness only.
-// v2   (2026-04-26 multi-tribe alliance) — fresh publish with vector<u32> tribe_ids
-// v2.1 (2026-04-26 PUBLIC mode upgrade) — added MODE_PUBLIC=4 + set_public()
-// v3   (2026-04-27 wallet recovery) — added shared_withdraw_to_owned (preferred
-//      tribemate-withdraw primitive: routes Item directly into caller's per-character
-//      partition on the same SSU instead of wallet limbo) and recover_to_owned /
-//      recover_to_shared (rescue items already stranded in wallet via legacy
-//      shared_withdraw_to_character). Tx digest: 81fNb5DK8peXPS6UADooPfoLPaWqjaM4YXauj5WYei8p
-//
-// IMPORTANT: Sui split-package convention
-//   moveCall targets and type-arg paths must use `published-at` (latest version)
-//   event/type queries (suix_queryEvents MoveEventType, etc.) must use `original-id`
-//   Mixing them up breaks upgraded packages silently. See MEMORY.md 2026-03-25.
-
-// Latest upgrade target — use for moveCall targets and SsuAuth type-arg.
-// v4 (2026-04-27 promote_ephemeral_to_shared): adds promote_ephemeral_to_shared which lets
-// a non-owner character move items from their per-character partition to the shared open pool.
-// Uses withdraw_by_owner<Character> with the character's own OwnerCap. Tx digest: 3SpS84N3i57jiPwx19JsdbUEfKYUWgP3XsxGfAWucc5t
-// 2026-06-25 wipe-day: republished against new Stillness world (fresh v1).
-// Tx digest: Gj8pXc84s4k9smw7hZFBvRrYw24ZJPMA9NJbUZFxYPkh
-// UpgradeCap: 0x21d0cfbbf509ccfd3f86d3fa9fcb2344d2b34ba3b2a7fb5f81548d3f45a691b4
-// Pre-wipe pkg (now orphaned): 0x6ea83a3e990892331b799f8ff516835bc8362793c635403db19a87ca9b81aeb8
-// v6 (2026-07-27): FRESH PUBLISH against LIVE world 0x8b8a46ed. v5 0xeb814b97 was
-//   built against STALE world 0x920e577e -> init_policy demanded a dead-world
-//   &StorageUnit, so EVERY policy-gated SSU call (enable shared access,
-//   allowlist, tribe alliance, promote_ephemeral_to_shared) aborted with
-//   CommandArgumentError arg_idx 1 TypeMismatch. Feature was 100% unreachable
-//   from 2026-07-18 to 2026-07-27. Same root cause as casino v27 (arg_idx 2);
-//   the casino got its v28 republish on 07-19, ssu_access was missed.
-//   S-3 bytecode gate verified pre-publish: live 0x8b8a46ed present (1 hit),
-//   dead 0x920e577e + 0x28b49755 absent (0 hits). Post-publish devInspect
-//   confirms init_policy arg1/arg2 now typed @ 0x8b8a46ed.
-//   tx checkpoint 365104065, signer 0x177583b2 (key on DGX2, never moved).
-export const SSU_ACCESS_PKG_STILLNESS    = "0xad54b2f76b1d8cb9fc684b681f4e330e5386c82330616bcfe61deadf0d1eafc2"; // v6 fresh publish vs LIVE world. Prev v5 0xeb814b97 (stale world, unusable).
-// Original-id (publish v1) — use for event queries and shared-object type tags.
-// v6 is a FRESH v1 publish -> ORIGINAL == PKG. Prior lineages (orphaned):
-//   v5 0xeb814b97... (stale-world, never functional)
-//   pre-wipe 0x56e545d8907628fd6a23bf1b84bd24256f0a3a497a29f1576501d2c837837b9e
-export const SSU_ACCESS_ORIGINAL_STILLNESS = "0xad54b2f76b1d8cb9fc684b681f4e330e5386c82330616bcfe61deadf0d1eafc2"; // v6 fresh lineage (== pkg).
-// Registry — shared object id is unchanged across upgrades.
-// 2026-06-25 wipe-day: new policy registry on the republished extension. The
-// pre-wipe registry (0x59bbda88...) still exists but maps pre-wipe SSU ids and
-// is unreachable via the new pkg — leave it orphaned.
-export const SSU_POLICY_REGISTRY_STILLNESS = "0xf962be4a6b578898ebb1c48ac02f748187eadc73b6c56088653af4c12ee0d57a"; // auto-created at v6 publish. Prev v5 0x7fc66060 (orphaned, stale-world pkg).
-//
-// Archived ssu_access packages (do NOT use):
-//   v1   (2026-04-26 single-tribe):    pkg=0x7d85b7c5524ffa0b0b029bdf77bb4f68d263f1b995f772272b04697520304a33
-//                                      registry=0x3a5c99ffebc11b092822df63ff088cf0689c8290c8c60d44607e8c6cea8478ff
-//                                      (replaced because struct field changes (tribe_id u32 → tribe_ids vector<u32>)
-//                                       are not backward-compatible under Sui upgrade rules; only state was Raw's empty
-//                                       policy 0x29dbc5d7... — regenerable)
-//   v2.1 (2026-04-26 multi-tribe + PUBLIC mode):  pkg=0x14cd86a1b95fedc2f40ee46691271d03e9c333412c74f825dd79812cd942c51e
-//                                      (superseded by v3 wallet-recovery upgrade 2026-04-27)
-
-/** Active ssu_access package (LATEST upgrade target) for moveCall targets and SsuAuth type-arg. */
 export const SSU_ACCESS_PKG: string = SSU_ACCESS_PKG_STILLNESS;
-/** Original-id of ssu_access for event queries and type tags. */
+
 export const SSU_ACCESS_ORIGINAL: string = SSU_ACCESS_ORIGINAL_STILLNESS;
-/** Active SsuPolicyRegistry, or empty string when feature is unavailable. */
+
 export const SSU_POLICY_REGISTRY: string = SSU_POLICY_REGISTRY_STILLNESS;
-/** Convenience: is the SSU shared-access feature available on the active server? */
-export const SSU_ACCESS_AVAILABLE: boolean = SSU_ACCESS_PKG !== "";
-//
-// ── ARCHIVED PACKAGE IDS (do NOT use) ─────────────────────────────────────────
-// v1 (2026-03-24 clean-slate):  0x97c4350fc23fbb18de9fad6ef9de6290c98c4f4e57958325ffa0a16a21b759b4
-// pre-v1 (legacy):              0x7541ac23fb681e4ea2cb54c0693a0c618c2ab24e69217cf4d0436adcc62ee715
-// ───────────────────────────────────────────────────────────────────────────────
 
-// Modules added AFTER the original publish have a different original-id on Sui.
-// Sui indexes events/types by the package version where the module first appeared,
-// NOT the package's original-id. These modules were introduced in upgrade v2.
-// 2026-06-25 wipe-day: collapsed back into single-pkg lineage. CRADLEOS_UPGRADE_ORIGIN
-// equals CRADLEOS_ORIGINAL post-wipe because the fresh publish carries every module.
-export const CRADLEOS_UPGRADE_ORIGIN = "0x66a5d88a3144ab98f3027df2d243ceeb2a3a21470d6bfa7c52c26bc9911449dc"; // v16 fresh lineage. Pre-cutover: 0xd4f46821.
-// Affected modules: collateral_vault, keeper_shrine, trustless_bounty
-// Use CRADLEOS_UPGRADE_ORIGIN (not CRADLEOS_ORIGINAL) for event queries on these.
-
-// All historical CradleOS package ids where event STRUCT types may be defined.
-// Sui types each event under the package id where its struct was *first defined*
-// in the upgrade history — not the latest published-at, not the original-id
-// in general. Multiple struct definitions across the lifetime of the package
-// produce multiple defining package ids, so any robust event fetcher must
-// query all of them and merge.
-//
-// Discovered defining packages (defense_policy struct → first-seen package):
-//   v1  0x70d0797b... — PolicyCreated, RelationChanged, EnforceToggled,
-//                       SecurityLevelSet, AggressionModeSet, PassageLogged,
-//                       PlayerRelationSet
-//   v5  0x38115c06... — HostileCharacterSet (added 2026-03-26)
-//   v13 0x443e4730... — FriendlyCharacterSet, PlayerRelationRemoved
-//                       (added 2026-05-04)
-//
-// CRADLEOS_UPGRADE_ORIGIN (v4 0xbf4249b1) covers an unrelated set of modules
-// (collateral_vault, keeper_shrine, trustless_bounty); included for those.
-//
-// When a future upgrade introduces a new event struct, append the new
-// package id here. fetchEventAcrossPackages in lib.ts uses this list.
-// 2026-06-25 wipe-day: post-wipe single-pkg lineage. The fresh v1 publish
-// carries every module, so there are no historical event pkgs to also query.
-// All prior CradleOS lineage pkgs are orphaned and return zero hits forever.
-// Append new pkgs here when future upgrades introduce new event structs.
-export const CRADLEOS_EVENT_PKGS: readonly string[] = [
-  CRADLEOS_ORIGINAL, // fresh v1, post-wipe — defines all v1 event structs
-  CRADLEOS_V2_PKG,   // v2 2026-07-08 — defines GatePermitTtlSet
-  CRADLEOS_V3_PKG,   // v3 2026-07-08 — defines GateBound/GateUnbound
-];
-
-// Backward-compat aliases — all point to published-at for moveCall targets
+export const SSU_ACCESS_AVAILABLE: boolean = SSU_READY;
+export const CRADLEOS_UPGRADE_ORIGIN = CYCLE_DEPLOYMENT.packages.core;
+export const CRADLEOS_EVENT_PKGS: readonly string[] = CRADLEOS_ORIGINAL ? [CRADLEOS_ORIGINAL] : [];
 export const RECRUITING_PKG       = CRADLEOS_PKG;
 export const TRIBE_ROLES_PKG      = CRADLEOS_PKG;
 export const GATE_POLICY_PKG      = CRADLEOS_PKG;
 export const CRADLEOS_EVENTS_PKG  = CRADLEOS_PKG;
-
-// ── CradleOS Voting ──────────────────────────────────────────────────────────
-// Separate sibling package. Published 2026-06-26 post-wipe on Stillness v1.
-//   Pkg:           0x7756113607b23efc989f0ce9976c1b93dae87f8824e1c0ba4988273565565a7a
-//   UpgradeCap:    0x2e279a2cfb1ce40e3a67bb43f486b7285d63cc553bfcce435142b1dea38436aa
-//   AdminCap:      0xef1828b1055b5240d82fa4e2acec03a74ddd64a860b66fc295f61781c75b8071
-//   Publish tx:    7aMUdvJWyG4Rr5w2423n5CSTbiVLBBd9GTzY4tUTTLLK
-//   Registry tx:   79RqEp2zfLaNNYdqoWGrXGQvVKLnUWMmxU1arTSnpqnz
-// Two blockers cleared today: (1) removed a stray `MethodKindMarker` OTW twin
-// in voting.move (Sui caps zero-sized has-drop structs to one per module —
-// OTW uniqueness), (2) refactored `Election` from 35 fields to exactly 32 by
-// packing the 4 scheduling timestamps into an `ElectionSchedule` sub-struct
-// (Sui validator caps structs at 32 fields). Both rejected at publish time
-// with VMVerificationOrDeserializationError; neither caught by `sui move build`.
-export const CRADLEOS_VOTING_PKG: string =
-  "0xfd7faea42bd7378013a3a07ae23019b55d112bcbf7fe440891d298bec4470cab"; // republish. Prev 0x7756113607 (key recovered on DGX2 — NOT lost; republish was unnecessary).
-export const CRADLEOS_VOTING_REGISTRY: string =
-  "0xb0424681fa0f43ea2ca888fad3ff4bda75341affbcd24f78fcefd58d4311e2c2"; // ExtensionRegistry re-init'd. Prev 0x85c11387 (orphaned).
-// Append every upgrade-publish for fetchVotingEventAcrossPackages.
+export const CRADLEOS_VOTING_PKG: string = CYCLE_DEPLOYMENT.packages.voting;
+export const CRADLEOS_VOTING_REGISTRY: string = CYCLE_DEPLOYMENT.objects.votingRegistry;
 export const CRADLEOS_VOTING_EVENT_PKGS: readonly string[] = [
   CRADLEOS_VOTING_PKG,
 ];
 export const CRADLEOS_VOTING_AVAILABLE: boolean =
-  CRADLEOS_VOTING_PKG !== "0x0000000000000000000000000000000000000000000000000000000000000000";
-
-// ── Stillness wipe-day preview flag ──────────────────────────────────────────
-// June 25, 2026 wipes the Stillness world package; every CradleOS object minted
-// before then becomes orphaned. The voting package shipped during the preview
-// window (pre-Jun 25) is intentionally a throwaway test deployment that lets us
-// validate Hot Potato / AdminCap / Display patterns on real chain and capture
-// real-world feedback before the clean republish. Set false in the post-wipe
-// publish to drop the banner.
-// 2026-06-25 PM: wipe-day passed. Preview window closed.
+  VOTING_READY;
 export const CRADLEOS_VOTING_PREVIEW: boolean = false;
-export const CRADLEOS_WIPE_DATE_ISO: string = "2026-06-25";
+export const CRADLEOS_WIPE_DATE_ISO: string = "2026-09-29";
 
-/**
- * Build a MoveEventType string for suix_queryEvents using CRADLEOS_ORIGINAL.
- *
- * ⚠ SAFE ONLY for events whose struct was first defined in v1
- * (the original publish). Sui types every event under the package id
- * where its struct was *first defined* in the upgrade history; structs
- * introduced in mid-life upgrades have a different defining package.
- *
- * For new event consumers, ALWAYS use `fetchEventAcrossPackages` from
- * `lib.ts` instead. It queries every package id in `CRADLEOS_EVENT_PKGS`
- * in parallel and merges — robust against future upgrades that introduce
- * new event structs.
- *
- * Audit script: `scripts/cradleos_event_audit.py` walks every event
- * type queried by the dApp and verifies its defining package is in
- * `CRADLEOS_EVENT_PKGS`. Run it after any new event-query callsite is
- * added or any upgrade is published.
- */
 export function eventType(module: string, event: string): string {
   return `${CRADLEOS_ORIGINAL}::${module}::${event}`;
 }
-
-// EVE Token coin types per server environment
-// 2026-06-25 wipe-day: Stillness EVE coin package republished by CCP (PR #189).
-// New pkg: 0xac361aa5... (was 0x2a66a89b...)
-// Legacy extension/casino denomination; never substitute the new token into old objects.
-export const EVE_COIN_TYPE_STILLNESS = LEGACY_EVE_COIN_TYPE;
+export const EVE_COIN_TYPE_STILLNESS = CURRENT_EVE_COIN_TYPE;
 export { CURRENT_EVE_COIN_TYPE } from "./lib/cycle";
 export const EVE_COIN_TYPE = EVE_COIN_TYPE_STILLNESS;
-
-// Backward compat alias — deprecated, use EVE_COIN_TYPE
 export const CRDL_COIN_TYPE = EVE_COIN_TYPE;
-
-// Developer testnet objects — real users connect their own wallet.
-// 2026-06-25 wipe-day: Raw's pre-wipe Character / NetworkNode / OwnerCap are
-// orphaned by the chain-side wipe. Empty for now; will be repopulated after
-// Raw creates a new Character on the republished Stillness world.
 export const RAW_CHARACTER_ID = "";
 export const RAW_NETWORK_NODE_ID = "";
 export const RAW_NODE_OWNER_CAP = "";
-// FuelConfig per server — used in network_node::offline tx
-// 2026-06-25 wipe-day: new FuelConfig on republished Stillness world
 export const FUEL_CONFIG_STILLNESS = "0xefe91f22b382d34721a386d8d5188d5244316bcfea47dee518210c01cf080b60";
 export const FUEL_CONFIG = FUEL_CONFIG_STILLNESS;
-// EnergyConfig for Stillness world package (0x28b497...)
-// 2026-06-25 wipe-day: new EnergyConfig on republished Stillness world
 export const ENERGY_CONFIG_STILLNESS = "0xafde88ecb4f7722660a094582904c32bd837a1af8761a243d08e842a7905b6b3";
 export const ENERGY_CONFIG_STILLNESS_ISV = 1016612658;
 export const ENERGY_CONFIG = ENERGY_CONFIG_STILLNESS;
 export const ENERGY_CONFIG_INITIAL_SHARED_VERSION = ENERGY_CONFIG_STILLNESS_ISV;
 export const CLOCK = "0x6";
-// Sui system Random object (on-chain randomness beacon) — reserved address.
 export const RANDOM_OBJECT = "0x8";
-
-// ── CradleOS Casino ───────────────────────────────────────────────────────────
-// Standalone Move package (modules: house, blackjack). Wired directly to $EVE.
-// Published 2026-07-05 on Stillness. Single-pkg lineage (original == published-at).
-//   tx: (publish) — pkg below; UpgradeCap 0x372bbe54784c4e59ddba7a111977163decfdec8aa56632d849c8cf1570975736
-// House edge is MEASURED (scripts/edge_sim.py), not invented: ~4.9% at best play
-// (stand_on=15), rising with looser thresholds. Profitable at every threshold.
-// v2 (2026-07-05 PM): fresh publish adding blackjack_live (commit-reveal
-// interactive hit/stand/double). Modules: house, blackjack, blackjack_live.
-// UpgradeCap 0x76124b462d729eedd46e7dda64df819837d850651595cc8c2865dbe541c5ed29
-// Prior v1 pkg (orphaned, House drained back to cradle wallet):
-//   0x02ce3fd64b4e19fc608d48efca66d37708bc356cca0d9dc3d35221d3f7a7afbb
-// v12 upgrade (plinko multi-drop: play_multi + PlinkoMultiDropped) — published-at:
-// moveCall targets. Tx J8rJyxpcWUENSWCn2QfSEn5yccD2xuSotxmWVmJynBZ2 (2026-07-11).
-// v11 upgrade (duplicate of v10 — double-publish, see CASINO_V10 note) — published-at:
-// moveCall targets. Tx C82ntkRRz7JezdGo6knqZvqcaugbJHsSDY1uGNkMpYmR (2026-07-11).
-// v10 tx 7xoUYUQ7SAUvBXfERg5Ut3QPiMfXSDAzhSjnxwW6oVQS (plinko risk modes).
-// v9 tx 4zE29FTkKv9HB6iU4sw4U47qSdRqFV4LbaPzHNf3ioQE (live two-step Hi-Lo).
-// v7 tx BW4utkwZQoz82wgFXRkAPDmnrgFwoKN9frPD4aEnRT4h (crash/diamonds/double_dice/war/baccarat/dragon_tower/video_poker/three_card_poker).
-// v6 tx 5m1rmB7EShihUmqJUdRWEnxn5goqi4jpw5vczEqjT64D (mines exposure fix).
-// v5 tx 8gxuNFsfvHByuMM9961K4jwitFTAaAJQR87dC5Hypsyi (limbo/hilo/plinko/keno/sicbo/mines added).
-// v13 upgrade (per-ball exposure guard — operator ruling 2026-07-11) —
-// moveCall targets. Tx AsGb2LZmQ83KXEaeTmBsNeDiKxqtrUVHvpGVnWwh4MhP.
-// v14 upgrade (Fisher-Yates fix: mines 14-24 aborted; uniformity restored — 2026-07-12) —
-// Tx Ge4962YZSTmE9d72qhEYytTsJgHMp2Yvzqq2sMCxTNWj.
-// v15 upgrade (plinko per-ball max_bet fix: take_wager_amount_multi — 2026-07-12) —
-// Tx 5eG3ogXQ46hvP3tQ2TAZmBj3EFbRLe43T5VoQRrB6GqB.
-// v16 upgrade (dragon_tiger + under_over_7 + ore_refine — 3 new games, 2026-07-12) —
-// Tx 4iCmCXwk6kZ5bpmPkua213cG4XaH2bgQqu45rKXprUAt. TYPE-INTRODUCING package.
-// v17 upgrade (byte-identical duplicate of v16 — double-publish; 2026-07-12) —
-// moveCall target.
-// v26 (2026-07-13): FRESH PUBLISH — NOT an upgrade. Two changes required a new
-// lineage (both upgrade-incompatible): (1) blackjack_live deck-commit exploit
-// fix (struct + fn-sig changes), (2) proof-of-character bet gate (every game
-// entry now takes an &Character owned by the sender; added world dep).
-// published-at == original-id == 0x286350ca. tx 2yEPYAAuQL4tHgySTsjASmjmy69GrFVCm8SN6VZEFNdE,
-// UpgradeCap 0xe3ff3934e816f5ca007f99cf55fa545f74aa655495cf11663b7b2924fa546a7a.
-// ⚠ LINEAGE RESET: new on-chain events tag under 0x286350ca, NOT the old
-//   CASINO_ORIGINAL/V2/V3/V5... ids. Event fetchers must add 0x286350ca.
-// ⚠ EVERY game entry fn now requires a `character: &Character` arg (after the
-//   Random arg / after house). Frontend tx builders must pass the caller's live
-//   Character object id. Bets from wallets with no live Character will abort.
-// v27 (2026-07-18): FRESH PUBLISH under wallet-we-control 0x177583b2, done under
-//   the mistaken belief that the DGX1 reformat had destroyed deploy-wallet
-//   0xc80fe7d6's private key. CORRECTION (2026-08-02): that key was NEVER lost —
-//   the casino was deployed from DGX2, not DGX1, so the reformat never touched it.
-//   Its UpgradeCaps/HouseAdminCaps were never unrecoverable, and the ~10k EVE in
-//   house 0xecbd158e was not written off (recovered 2026-07-19, now in v28 house).
-//   Same char-gated + blackjack-fixed source as v26 0x286350ca
-//   (on-chain module sigs verified identical). New pkg == original-id (fresh v1).
-//   UpgradeCap 0x8102d1219cdd51f2f3fdbbf17c8a80675f040832ebf5a51ec703b93fc6fd6355
-//   + HouseAdminCap 0xa1f80727f68bf5a2debb4f6d268454a775864dbf00e58c40f2343e4a348568b5
-//   both owned by 0x177583b2. tx AT6FLahDPLunaqAZYFXh3qVpmtjq97c7d9oLge1Kc2Sr.
-// ⚠ EVERY game entry fn requires a `character: &Character` arg.
-// v28 (2026-07-19): REPUBLISH against LIVE world 0x8b8a46ed. v27 0x874f10e0 was
-//   built against STALE world 0x920e577e -> every hand aborted arg_idx 2
-//   TypeMismatch (no live char could play). v28 bytecode verified to reference
-//   0x8b8a46ed. Bankroll (10,145 EVE) migrated v27 house -> v28 house via
-//   withdraw+create_and_share (we hold both admin caps). New events tag under
-//   0x750dcaa9, NOT any older CASINO_ORIGINAL/V* id.
-// v29 UPGRADE (2026-08-07, tx EXQfJWqtSLyjxuZjM6pCAvprinmkKCaqxYP7cMtbmhB7).
-// Adds public house::donate/donate_anon + tier-derived exposure budget.
-// This is the moveCall TARGET (published-at). The v28 id 0x750dcaa9 remains the
-// original-id / event-type origin -- see CASINO_V28 below. Upgrade (not fresh
-// publish), so the live House 0xffec6683 and its bank carry over untouched.
-export const CASINO_PKG_STILLNESS = "0x5008cde6a70013b68e7290b6780e5a07302818fa7eaea5f3bfe4c52637e507e6"; // v29 upgrade of the v28 lineage (0x750dcaa9).
-export const CASINO_PKG_V28_STILLNESS_PREV = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12"; // v28 fresh publish vs LIVE world 0x8b8a46ed. Superseded by the v29 upgrade above; still the event-type origin.
-export const CASINO_PKG_V27_STILLNESS_RETIRED = "0x874f10e051f7dff3ff8dfdf9e4e8a63ddb0dd446ea625889f09fb511daed6ac9"; // v27 RETIRED — built vs stale world, unplayable. House drained to v28.
-export const CASINO_PKG_V26_STILLNESS = "0x286350caa102b3a4a672e388f859442c2e65a687209999d5a6b7d709284c42e9"; // v26. (Was mislabeled 'deploy key 0xc80fe7d6 lost / upgrade-frozen' — key was on DGX2 all along, never lost.)
-export const CASINO_PKG_V26_GATELESS_STILLNESS = "0x99d3b32f853b7e820d6774c1eb6a889b3484c4b46587eede65a2119f41a1731e"; // intermediate v26 (blackjack fix, NO char gate). Superseded, never funded.
-export const CASINO_PKG_V25_RETIRED_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025"; // v25 (ban-aware house). RETIRED. House 0xecbd158e drained.
-// v3 pkg id: instant-game event types (FlipResult/DiceRolled/RouletteSpun/
-// SlotsSpun/WheelSpun were introduced in v3 — they tag under THIS id forever).
-export const CASINO_V3_STILLNESS = "0x726979357374f6a0618732fc95d0d5dc443c9a1badd2d8654034c7cbcfeae0fa";
-// v2 pkg id: HandSplit/SplitSettled event types (introduced in v2) tag here.
-export const CASINO_V2_STILLNESS = "0x8c342cdca493fdcd374419bc452095ec08c9a9c723dddeaa30af416d6c6c7c8a";
-// original-id: v1 event/type queries (HandDealt/HandSettled/HandPlayed, Hand<T>).
-export const CASINO_ORIGINAL_STILLNESS = "0x461d12965a74b59816572b104e72d47a16d64e2ade0c2b78f95ec0658753c164";
-// v27 fresh-lineage original-id (retired): kept for historical event queries.
-export const CASINO_V27_STILLNESS = "0x874f10e051f7dff3ff8dfdf9e4e8a63ddb0dd446ea625889f09fb511daed6ac9";
+export const CASINO_PKG_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_PKG_V28_STILLNESS_PREV = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_PKG_V27_STILLNESS_RETIRED = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_PKG_V26_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_PKG_V26_GATELESS_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_PKG_V25_RETIRED_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_V3_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_V2_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_ORIGINAL_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
+export const CASINO_V27_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V27 = _serverEnv === "stillness" ? CASINO_V27_STILLNESS : "";
-// v28 fresh-lineage original-id (== pkg): all live-play events tag here.
-export const CASINO_V28_STILLNESS = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12";
+export const CASINO_V28_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V28 = _serverEnv === "stillness" ? CASINO_V28_STILLNESS : "";
 export const CASINO_PKG = _serverEnv === "stillness" ? CASINO_PKG_STILLNESS : "";
 export const CASINO_V3 = _serverEnv === "stillness" ? CASINO_V3_STILLNESS : "";
-// v5 pkg id: new instant-game + mines event types (LimboRolled, HiLoDrawn, PlinkoDropped, KenoDrawn,
-// SicBoRolled, MinesStarted, TileRevealed, MinesSettled were first introduced in v5).
-// v5 introduced these event types; they tag under the v5 package id forever.
-export const CASINO_V5_STILLNESS = "0x929272e41188cc14ed6916ad211d8aff86be02cf8e6996aa2eea9b54ed1a9c25";
+export const CASINO_V5_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V5 = _serverEnv === "stillness" ? CASINO_V5_STILLNESS : "";
-// v7 introduced these event + object types: CrashRoundPlayed, DiamondsDrawn,
-// DoubleDiceRolled, WarPlayed, BaccaratPlayed, TowerStarted/RowClimbed/TowerSettled,
-// VideoPokerDealt/Settled, ThreeCardPlayed — tag under the v7 id forever.
-// TowerGame + VideoPokerHand object structs also introduced in v7.
-// ⚠ CORRECTED 2026-07-11: the introducing package is 0x82f80f21… (lineage v7).
-// 0xb66cb00e… was a same-day FOLLOW-UP upgrade (lineage v8, no new types) that
-// was mislabeled "v7" — types queried under it return ZERO rows (live-verified).
-export const CASINO_V7_STILLNESS = "0x82f80f21672cabe13076d1ea8e6ef0ce2a707d4b184146a4a7e5bd67527e5996";
+export const CASINO_V7_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V7 = _serverEnv === "stillness" ? CASINO_V7_STILLNESS : "";
-// Lineage v9 introduced: hilo::HiLoGame<T> object + HiLoStarted event (live two-step
-// hi-lo). HiLoDrawn stays tagged under V5. (Constant named V8 before the lineage
-// numbering was reconciled — keep the name, the id is what matters.)
-export const CASINO_V8_STILLNESS = "0x005222bea5f40139a0dad2fc4bc67fe0292a7cd82e232ff00c6a6d3e1a7132c5";
+export const CASINO_V8_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V8 = _serverEnv === "stillness" ? CASINO_V8_STILLNESS : "";
-// Lineage v10 introduced: plinko::PlinkoModeDropped (risk modes). ⚠ v10 was
-// accidentally published twice (a piped upgrade whose output parse failed had
-// actually succeeded); v11 = 0xfbca70d4… is byte-identical. Event types tag
-// under v10 = 0x35f5a8e2… (first introduction) — verified live via smoke event.
-export const CASINO_V10_STILLNESS = "0x35f5a8e20f4e9413ebf392e5c4380c2393bed221f8579d2d1f440579d372816d";
+export const CASINO_V10_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V10 = _serverEnv === "stillness" ? CASINO_V10_STILLNESS : "";
-// v12 introduced: plinko::PlinkoMultiDropped (multi-drop). Event types tag under v12 id.
-// This pins PlinkoMultiDropped event queries to the defining package id.
-export const CASINO_PLINKO_MULTI_STILLNESS = "0xe28fcf20b93ffc759bda93d73d033a66c24fe6a41a6d3a017f1cf1d684bb984a";
+export const CASINO_PLINKO_MULTI_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_PLINKO_MULTI = _serverEnv === "stillness" ? CASINO_PLINKO_MULTI_STILLNESS : "";
-// v16 introduced: dragon_tiger::DragonTigerPlayed, under_over_7::UnderOver7Rolled,
-// ore_refine::OreRefined event types. Tag under v16 id forever.
-export const CASINO_V16_STILLNESS = "0x771ecec58588d78ac75da040ae58cde42bbedab433d698970098eb2525e53b92";
+export const CASINO_V16_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V16 = _serverEnv === "stillness" ? CASINO_V16_STILLNESS : "";
-// v18 introduced: risk_wheel::RiskWheelSpun, money_wheel::MoneyWheelSpun event types.
-// CASINO_PKG = CASINO_V18 (single publish — no double-publish this time).
-export const CASINO_V18_STILLNESS = "0xc3d6686ecaab88df8a43288cd3545236100ed847177004c3a2f6fefbfed83623";
+export const CASINO_V18_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V18 = _serverEnv === "stillness" ? CASINO_V18_STILLNESS : "";
-// CASINO_V19: andar_bahar added. Tx Ed9D1BvTn2dctGsjdws7gBgCD1pr19H8e2yg1EinKWyM
-export const CASINO_V19_STILLNESS = "0xfb2895ff3879c3b6d4dbc6a2e813a12e6efee53c66cf93d481f07fe4759ea05b";
+export const CASINO_V19_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V19 = _serverEnv === "stillness" ? CASINO_V19_STILLNESS : "";
-// CASINO_V20: scratch_cards added. Tx DMvFAvarDteXjGnydVzkUgTYMFMuPn88R43r4z6Di3NV
-export const CASINO_V20_STILLNESS = "0x2d3d0525e80ffd9fedfcfb9e9fa83cd1c3a41c11f0ce614198cfd56d8b61628c";
+export const CASINO_V20_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V20 = _serverEnv === "stillness" ? CASINO_V20_STILLNESS : "";
-// CASINO_V21: chuck_a_luck added; crash/limbo MIN_TARGET_BPS 101→10_100 (sub-1x trap closed).
-// Tx 5pWvwFpW5e6s7Ezg38NrTGujT7rbE2mqsPxedkCGudmV
-export const CASINO_V21_STILLNESS = "0x9e058f72917d2ce7be4551a5190e59c83db39d45977708a6291a8efd0b6efc1a";
+export const CASINO_V21_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V21 = _serverEnv === "stillness" ? CASINO_V21_STILLNESS : "";
-// CASINO_V22: dragon_tower::start disabled on-chain (solution-leak exploit; aborts EGameDisabled=6). pick/cashout stay open so in-flight games settle.
-export const CASINO_V22_STILLNESS = "0x03791dc6001ddf4f996df15804535e3ce71bc199e362c5d3e76dead5f1cd454b";
+export const CASINO_V22_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V22 = _serverEnv === "stillness" ? CASINO_V22_STILLNESS : "";
-// CASINO_V23: mines::start + video_poker::deal disabled on-chain (same solution-leak class). reveal/cashout/draw stay open so in-flight games settle. blackjack_live left LIVE pending commit-reveal redesign.
-export const CASINO_V23_STILLNESS = "0x2bb78383a30a5ffb2644c8201e54f74969b44c3c05eb5646a4a00981e50e6f6b";
+export const CASINO_V23_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V23 = _serverEnv === "stillness" ? CASINO_V23_STILLNESS : "";
-// CASINO_V24: red_dog added. Tx AaYjUgVzfKAAFrbf45W6CqnZDW4J4vsFmTJR8MYaWF2i
-export const CASINO_V24_STILLNESS = "0x4d42234d94bea391d26170f06f0bfd57fcf42e3bbc61c8d9cda6c03502691a64";
+export const CASINO_V24_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V24 = _serverEnv === "stillness" ? CASINO_V24_STILLNESS : "";
-// CASINO_V25: ban-aware house (set_banned/unban/is_banned via dynamic-field VecSet<address>). New House 0xecbd158e, old House 0xeec606d9 drained+retired.
-export const CASINO_V25_STILLNESS = "0x0b57018fefceb3262e5994e8d8bddc63750828e18777ca780a9ecd81cc291025";
+export const CASINO_V25_STILLNESS = CYCLE_DEPLOYMENT.packages.casino;
 export const CASINO_V25 = _serverEnv === "stillness" ? CASINO_V25_STILLNESS : "";
 export const CASINO_V2 = _serverEnv === "stillness" ? CASINO_V2_STILLNESS : "";
 export const CASINO_ORIGINAL = _serverEnv === "stillness" ? CASINO_ORIGINAL_STILLNESS : "";
-// House shared object + admin cap (on v2 package).
-// Seeded 2026-07-05 from the cradle wallet (0xc80fe7d6...) with 90,000 $EVE.
-// max_bet 500 EVE, min_bet 1 EVE. Admin cap held by the deploy wallet
-// 0xc80fe7d6... (DGX sui CLI, active addr) for top-up / risk-param / pause / ban:
-//   HouseAdminCap = 0x91e02f7120f1ad08838961db5b198ab6d041faf913145eae2f4b1be6ab562173  (bound to v25 house 0xecbd158e)
-//   NOTE (2026-07-13): 0x476c10fc... is the OLD cap bound to the RETIRED house 0xeec606d9 — do NOT use it; set_banned/set_paused will abort ENotAdmin against the live house.
-// v27 house (2026-07-18): seeded 500 EVE (0xac361aa5::EVE::EVE) from Raw's wallet.
-//   max_bet 25 EVE, min_bet 0.1 EVE. HouseAdminCap 0xa1f80727f68bf5a2debb4f6d268454a775864dbf00e58c40f2343e4a348568b5
-//   owned by wallet-we-control 0x177583b2 (top-up via house::deposit, risk-params/pause/ban via cap).
-//   Prev v25 house 0xecbd158e — was believed UNRECOVERABLE (admin key lost in DGX1 reformat).
-//   CORRECTION (2026-08-02): key was never lost (lived on DGX2). Bankroll was recovered via
-//   the bj_recover.mjs grind on 2026-07-19 and now sits in the v28 house.
-export const CASINO_HOUSE_V25_STILLNESS = "0xecbd158ee2652ccd88b38ce5183b12a8b8ccea02c407a91c24d0c37d05b81874"; // RETIRED (drained, superseded).
-export const CASINO_HOUSE_V27_STILLNESS_RETIRED = "0x30807c9be2bd9fb2c1ce568164121db9a693b2fa85ed695d4b4f8a73c472ae62"; // v27 house RETIRED (drained to v28).
-export const CASINO_HOUSE_STILLNESS = "0xffec6683120f55e155d389e6bf5d79621da27402353acdd421e1f98d55b0af0d"; // v28 live house (10,145 EVE seed, migrated from v27).
+export const CASINO_HOUSE_V25_STILLNESS = "";
+export const CASINO_HOUSE_V27_STILLNESS_RETIRED = "";
+export const CASINO_HOUSE_STILLNESS = CYCLE_DEPLOYMENT.objects.casinoHouse;
 export const CASINO_HOUSE = _serverEnv === "stillness" ? CASINO_HOUSE_STILLNESS : "";
-export const CASINO_AVAILABLE = CASINO_PKG !== "";
-
-/**
- * Sui testnet RPC endpoint.
- *
- * Routes through our caching JSON-RPC proxy on DGX1 (`sui-proxy.service`)
- * which provides request coalescing + TTL caching + upstream rotation.
- * Drops Failed-to-fetch cascades by ~70% on heavy fanout panels.
- *
- * `lib/rpcCircuitBreaker.ts` (installed at boot in main.tsx) monitors
- * outgoing fetches to this URL. If the proxy returns >=3 consecutive 5xx
- * or network errors, the breaker trips and `window.fetch` transparently
- * rewrites subsequent requests to `SUI_TESTNET_RPC_FALLBACK`. After 45s
- * cooldown the breaker re-tries the proxy; one success resets state.
- *
- * NOTE: only affects bare `fetch()` calls in our code. The @evefrontier
- * dapp-kit SDK uses gRPC and bypasses this constant entirely — it goes
- * straight to the public fullnode regardless. SDK-routing fix is a
- * separate piece of work.
- */
-// Owned-objects INDEX endpoint. Complete + deterministic + ~4ms; the cure for
-// the "hit-or-miss structure discovery" class of bugs. The dApp tries this
-// first in rpcGetOwnedObjects and falls back to public RPC on ANY failure, so
-// it's a pure enhancement with no hard dependency.
-//
-// Origin-aware resolution (robust across all deploy targets):
-//  - On cradleos.io (+ its pages.dev / www): use the SAME-ORIGIN Pages Function
-//    at /api/owned-objects -> zero CORS / Private-Network-Access friction.
-//  - Anywhere else (gh-pages mirror, in-game webview loading the github.io
-//    origin, localhost): use the absolute index URL. It sets permissive CORS +
-//    Access-Control-Allow-Private-Network on the index responses.
-// Both ultimately hit the same HA index (DGX1+DGX2). Empty string disables it.
+export const CASINO_AVAILABLE = CASINO_READY;
 const _ownedIndexBase = (): string => {
   try {
     if (typeof location !== "undefined") {
       const h = location.hostname;
       if (h === "cradleos.io" || h === "www.cradleos.io" || h.endsWith(".pages.dev")) {
-        return "/api/owned-objects"; // same-origin Pages Function
+        return "/api/owned-objects";
       }
     }
-  } catch { /* SSR / no location */ }
-  // Absolute fallback for github.io mirror + in-game webview + local dev.
+  } catch {  }
   return "https://keeper.reapers.shop/index/owned-objects";
 };
 export const OWNED_INDEX_BASE = CURRENT_WORLD_INDEX_READY ? _ownedIndexBase() : "";
 
 export const SUI_TESTNET_RPC = "https://keeper.reapers.shop/sui";
-// 2026-07-08: fullnode.testnet.sui.io began returning HTTP 404 (empty body).
-// 2026-07-19: moved off BlastAPI/BlockVision entirely (per Raw). The dApp
-// bundle is PUBLIC, so we must NOT embed the Alchemy key in the frontend.
-// Alchemy now lives server-side as an UPSTREAM of the DGX proxy (SUI_ALCHEMY_RPC
-// in ~/sui-proxy/.env). The circuit-breaker fallback therefore routes through
-// the proxy's cache-bypass path — same origin as SUI_TESTNET_RPC, but bypasses
-// the proxy's local-node cache so a breaker trip still gets fresh upstream
-// (local nodes -> Alchemy) reads. No public JSON-RPC endpoint is referenced
-// from the client any more.
 export const SUI_TESTNET_RPC_FALLBACK = "https://keeper.reapers.shop/sui?nocache=1";
-
-/**
- * DIRECT public-fullnode endpoint for CRITICAL-PATH reads only.
- *
- * Why this exists separately from `SUI_TESTNET_RPC` and `_FALLBACK`:
- *   The DGX1 caching proxy is a huge win for high-volume fanout panels
- *   (inventory, intel, calendar, query, industry, wiki, lore) where 50-200
- *   parallel RPCs would otherwise rate-limit users. But the proxy is also
- *   a single point of failure — when DGX1 has a storm/network blip, the
- *   circuit breaker trips after 3 failures, and during that 3-fail window
- *   the user's TribeVault and Character lookups can fail with "not found"
- *   errors. Critical app-shell identity should never depend on DGX uptime.
- *
- * Routing rule:
- *   - Cache-friendly bulk reads → SUI_TESTNET_RPC (proxy, with breaker fallback)
- *   - App-shell identity reads → SUI_TESTNET_RPC_DIRECT (bypasses DGX entirely)
- *
- * Critical helpers (in lib.ts) that use this direct URL:
- *   - findCharacterForWallet
- *   - fetchCharacterTribeId
- *   - fetchTribeInfo
- *   - fetchTribeVault
- *   - discoverVaultIdForTribe
- *   - fetchAllRegisteredTribes
- *
- * The circuit breaker (lib/rpcCircuitBreaker.ts) only intercepts URLs that
- * start with the proxy URL, so direct URLs naturally bypass it. The user
- * pays slightly higher RPC latency on these calls in exchange for storm
- * resilience.
- */
-// 2026-07-08 (later): BlockVision free-tier 429s browser traffic aggressively —
-// worse than the old public fullnode ever was. The "bypass DGX" rationale for
-// this lane died with fullnode.testnet.sui.io: there is no longer a generous
-// public JSON-RPC endpoint to bypass TO. Route the critical-path reads through
-// the proxy as well — they gain caching/coalescing/upstream-rotation, and the
-// circuit breaker still gives them the BlockVision fallback if DGX1 is down.
-// `?nocache=1` = proxy cache bypass (added 2026-07-11): every read through this
-// URL hits the upstream fullnode fresh. Required for owned-object refs that
-// mutate between player actions (TowerGame/MinesGame/HiLoGame/VideoPokerHand,
-// blackjack Hand reads, wager-coin refs) — the proxy's 30s sui_getObject cache
-// was serving stale versions, causing "provided version doesn't match" aborts.
 export const SUI_TESTNET_RPC_DIRECT = "https://keeper.reapers.shop/sui?nocache=1";
-
-/**
- * Sui GraphQL endpoint.
- *
- * Routed through our caching proxy on DGX1 (cradleos-agent-proxy at
- * keeper.reapers.shop/graphql). Adds TTL caching + request coalescing for
- * the new Track 6 char-helper migration paths that hit GraphQL on every
- * wallet-connect (GET_WALLET_CHARACTERS, getObjectWithJson, etc.). The
- * proxy auto-detects query shape and applies appropriate TTLs:
- *   - character/PlayerProfile reads: 60s
- *   - object/normalized-move reads: 5min
- *   - default: 15s
- *
- * Fallback constant kept for direct probing during proxy outages.
- */
-// Official public GraphQL is independently verified; legacy RPC remains separately degraded.
 export const SUI_GRAPHQL = "https://graphql.testnet.sui.io/graphql";
-
-// Well-known tribes that don't have CradleOS vaults but still need policy coverage
 export const WELL_KNOWN_TRIBES: Array<{ tribeId: number; coinSymbol: string; label: string }> = [
   { tribeId: 1000167, coinSymbol: "—", label: "Default Spawn Tribe" },
 ];
-/**
- * EVE Frontier World API (datahub) endpoint.
- *
- * Stillness traffic is routed through our caching proxy on DGX1
- * (cradleos-agent-proxy at keeper.reapers.shop/world). Adds TTL caching
- * for the heavy reads:
- *   - /v2/types catalog: 1 hour TTL (~100KB+, changes only on patches)
- *   - /v2/solarsystems: 1 hour TTL (static)
- *   - /v2/tribes, /v2/characters: 60s TTL (slow churn)
- *   - default: 30s TTL
- *
- * Utopia traffic still goes direct (low volume, hackathon-era only).
- * The proxy DOES support Utopia via `?env=utopia` but path-concatenation
- * patterns in components make the query-string approach error-prone, so
- * we keep Utopia on the direct upstream until we move to a typed helper.
- *
- * Direct constants kept for fallback / direct probing.
- */
+
 export const WORLD_API = `https://${TENANT_CONFIG[TenantId.STILLNESS].datahubHost}`;
 
 export const NETWORK_NODE_TYPE = `${WORLD_PKG}::network_node::NetworkNode`;
@@ -623,7 +149,6 @@ export const ASSEMBLY_TYPE = `${WORLD_PKG}::assembly::Assembly`;
 export const TURRET_TYPE = `${WORLD_PKG}::turret::Turret`;
 export const STORAGE_UNIT_TYPE = `${WORLD_PKG}::storage_unit::StorageUnit`;
 export const CHARACTER_TYPE = `${WORLD_PKG}::character::Character`;
-// Struct types use ORIGINAL package ID (Sui indexes types by original, not published-at)
 export const CORP_REGISTRY_TYPE = `${CRADLEOS_ORIGINAL}::corp_registry::CorpRegistry`;
 export const CORP_TYPE       = `${CRADLEOS_ORIGINAL}::corp::Corp`;
 export const MEMBER_CAP_TYPE = `${CRADLEOS_ORIGINAL}::corp::MemberCap`;
@@ -631,21 +156,9 @@ export const TREASURY_TYPE   = `${CRADLEOS_ORIGINAL}::treasury::Treasury`;
 export const REGISTRY_TYPE   = `${CRADLEOS_ORIGINAL}::registry::Registry`;
 export const TRIBE_VAULT_TYPE = `${CRADLEOS_ORIGINAL}::tribe_vault::TribeVault`;
 export const TRIBE_DEX_TYPE   = `${CRADLEOS_ORIGINAL}::tribe_dex::TribeDex`;
-
-// Shared objects that must be re-created by founders on the new chain
-// 2026-06-25 wipe-day: pre-wipe BountyBoard (typed under orphaned pkg
-// 0x7541ac23...) replaced with a fresh board created via PTB tx
-// CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi.
-export const BOUNTY_BOARD = "0x6283f223f493e53b3f740126d2e242581c6715fa3427e7a48df01a4e90ac7ab2"; // re-init'd under v16. Prev 0xdd3c2af5 (orphaned).
-// Trustless bounty board — set after deploying trustless_bounty module
-// 2026-06-25 wipe-day: pre-wipe TrustlessBountyBoard (typed under orphaned
-// pkg 0xa676b736...) replaced with a fresh board from same PTB.
-export const TRUSTLESS_BOUNTY_BOARD = "0x4bc0bdae8da9fbbdbb2a4a408cfb84bd29c9eff76f427da92658e506bf9443d5"; // re-init'd under v16. Prev 0x1969d8e8 (orphaned).
-// 2026-06-25 wipe-day: pre-wipe KeeperShrine<EVE> (typed under orphaned
-// pkg 0x2e51c867... and pre-wipe EVE coin 0x2a66a89b...) replaced with a
-// fresh KeeperShrine<EVE> typed correctly against new pkg + new EVE coin.
-export const KEEPER_SHRINE = "0xad6fd54ad1c036e30ab8cd08b799bea5ea440eb819b0354f60540a657f7ec5aa"; // re-init'd under v16 (EVE-typed). Prev 0x65daea1b (orphaned).
-// Wiki board not yet created on-chain — LoreWikiPanel shows placeholder when empty
+export const BOUNTY_BOARD = CYCLE_DEPLOYMENT.objects.bountyBoard;
+export const TRUSTLESS_BOUNTY_BOARD = CYCLE_DEPLOYMENT.objects.trustlessBountyBoard;
+export const KEEPER_SHRINE = CYCLE_DEPLOYMENT.objects.keeperShrine;
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";
 

@@ -1,0 +1,74 @@
+{
+  "scope": "clean wipe; no old funds/state migration",
+  "onchainPublished": false,
+  "publishSimulations": {
+    "core": {
+      "status": {
+        "status": "success"
+      },
+      "netGasMist": 532847080
+    },
+    "casino": {
+      "status": {
+        "status": "success"
+      },
+      "netGasMist": 470946280
+    },
+    "ssu": {
+      "status": {
+        "status": "success"
+      },
+      "netGasMist": 44850680
+    },
+    "keeperSeal": {
+      "status": {
+        "status": "success"
+      },
+      "netGasMist": 20921880
+    },
+    "voting": {
+      "status": "pending actual fresh Core address; build/test only"
+    }
+  },
+  "tests": {
+    "frontend": 91,
+    "coreMove": 25,
+    "casinoMove": 176,
+    "votingMove": 3,
+    "SSUMove": 0,
+    "SealMove": 0
+  },
+  "proofForgeryCheck": "PASS: external package cannot construct eligibility or arbitrary-weight proofs",
+  "productionBytecode": {
+    "cradleos": {
+      "moduleCount": 25,
+      "currentWorldLinked": true,
+      "retiredWorldPrefixesFound": [],
+      "testModules": []
+    },
+    "cradleos_casino": {
+      "moduleCount": 31,
+      "currentWorldLinked": true,
+      "retiredWorldPrefixesFound": [],
+      "testModules": []
+    },
+    "cradleos_ssu_access": {
+      "moduleCount": 1,
+      "currentWorldLinked": true,
+      "retiredWorldPrefixesFound": [],
+      "testModules": []
+    },
+    "cradleos_voting": {
+      "moduleCount": 22,
+      "currentWorldLinked": true,
+      "retiredWorldPrefixesFound": [],
+      "testModules": []
+    },
+    "cradleos_keeper_seal": {
+      "moduleCount": 1,
+      "currentWorldLinked": false,
+      "retiredWorldPrefixesFound": [],
+      "testModules": []
+    }
+  }
+}

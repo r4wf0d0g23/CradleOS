@@ -1,0 +1,7 @@
+[package]
+name = "cradleos_voting"
+edition = "2024"
+
+[dependencies]
+cradleos = { local = "../cradleos" }
+world = { local = "../world-contracts/contracts/world" }

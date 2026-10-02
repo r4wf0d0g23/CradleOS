@@ -2,9 +2,9 @@ import { CURRENT_CYCLE, PATCH_NOTES_URL, LATEST_PATCH_URL, WORLD_RELEASE_URL } f
 
 export function CycleStatus() {
   return <details className="cycle-status">
-    <summary><strong>{CURRENT_CYCLE}</strong> · Current-world reads updated · Legacy extensions awaiting migration</summary>
+    <summary><strong>{CURRENT_CYCLE}</strong> · Fresh world · No previous-cycle assets carried forward</summary>
     <div className="cycle-status-body">
-      <p>Stillness restarted on September 29. Current character discovery uses the new world. Existing CradleOS contracts and casino balances belong to the previous cycle: new legacy-contract actions are paused; supported recovery paths retain their original token.</p>
+      <p>Cycle 7 began on September 29 with a clean wipe. Previous-world funds, games, vaults, policies and obligations are retired; they are not restored or imported into this cycle. CradleOS services start with fresh deployments and empty state.</p>
       <p><strong>Exploration:</strong> the public universe and jump-history APIs were removed. Use your character’s in-game discoveries; the old complete starmap is no longer a current routing source.</p>
       <p><strong>Skills:</strong> nine skills now grow through deepening Memories: Piloting, Gunnery, Tracking, Extraction, Scanning, Hull Repair, Capacitor Economy, Fuel Economy and Signature Control.</p>
       <p><strong>Industry:</strong> mining now cuts fragments; regoliths replace ores. Older fitting and recipe tables are historical until revalidated. The October 1 patch reduces Network Node component requirements from 10 to 8 each and changes Debris refining.</p>
@@ -26,4 +26,12 @@ export function ExplorationUnavailable() {
 
 export function HistoricalDataNotice() {
   return <p className="cycle-status-body" role="note"><strong>Historical reference:</strong> this calculator uses pre-Vestiges fitting or recipe data. Cycle 7 changed skills, mining and industry. Do not rely on these results for current production quantities or ship performance until revalidated.</p>;
+}
+
+export function CycleContractSetup() {
+  return <section className="cycle-status-body" aria-label="Cycle 7 fresh deployment">
+    <h2>Fresh start for Cycle 7</h2>
+    <p>This service is awaiting its new-cycle deployment. Previous-world balances, games and contracts are retired—not recoverable or carried forward here.</p>
+    <p>Current character discovery, inventory reads, intel and Origins remain available. New services will open against fresh contracts only.</p>
+  </section>;
 }

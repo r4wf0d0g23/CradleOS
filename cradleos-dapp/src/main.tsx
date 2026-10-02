@@ -1,3 +1,4 @@
+import "./lib/cycleStorage";
 import React from "react";
 import ReactDOM from "react-dom/client";
 // Install the RPC circuit breaker BEFORE any module that might fetch.

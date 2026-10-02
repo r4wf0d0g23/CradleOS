@@ -581,54 +581,7 @@ async function resolveWorld(
 // ── Helper: vault discovery ───────────────────────────────────────────────────
 
 async function discoverVaultIdForTribe(tribeId: number): Promise<string | null> {
-  // Cache key for stable discovery
-  const cacheKey = `cradleos:vault:tribe:${tribeId}`;
-  try {
-    const cached = typeof localStorage !== "undefined" ? localStorage.getItem(cacheKey) : null;
-    if (cached) return cached;
-  } catch {
-    /* */
-  }
-  // Walk CoinLaunched events to find the vault tied to this tribe.
-  // We rely on CRADLEOS_PKG / CRADLEOS_ORIGINAL constants. Use original-id for reads.
-  try {
-    const { CRADLEOS_ORIGINAL } = await import("../constants");
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "suix_queryEvents",
-        params: [
-          { MoveEventType: `${CRADLEOS_ORIGINAL}::tribe_vault::CoinLaunched` },
-          null,
-          50,
-          true, // descending
-        ],
-      }),
-    });
-    const j = (await res.json()) as {
-      result?: {
-        data?: Array<{
-          parsedJson?: { vault_id?: string; tribe_id?: string | number };
-        }>;
-      };
-    };
-    const events = j.result?.data ?? [];
-    const match = events.find((e) => Number(e.parsedJson?.tribe_id) === tribeId);
-    const vaultId = match?.parsedJson?.vault_id ?? null;
-    if (vaultId && typeof localStorage !== "undefined") {
-      try {
-        localStorage.setItem(cacheKey, vaultId);
-      } catch {
-        /* */
-      }
-    }
-    return vaultId;
-  } catch {
-    return null;
-  }
+  return (await import("../lib")).discoverVaultIdForTribe(tribeId);
 }
 
 // ── Helper: SSU inventory fetcher ────────────────────────────────────────────

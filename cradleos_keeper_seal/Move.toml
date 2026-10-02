@@ -6,5 +6,6 @@ edition = "2024"
 # content. Identity binding uses raw Sui addresses (character.character_address)
 # so we don't import world::character::Character. Avoids upgrade coupling.
 
+
 [environments]
 testnet_stillness = "4c78adac"

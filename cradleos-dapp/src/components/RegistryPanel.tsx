@@ -152,7 +152,7 @@ export function RegistryPanel() {
       // Step 1: create vault
       const vaultTx = new Transaction();
       vaultTx.moveCall({
-        target: `${CRADLEOS_PKG}::tribe_vault::create_vault_entry`,
+        target: `${CRADLEOS_PKG}::tribe_vault::create_vault`,
         arguments: [
           vaultTx.pure.u32(tribeId >>> 0),
           vaultTx.pure.vector("u8", Array.from(new TextEncoder().encode(launchName.trim()))),

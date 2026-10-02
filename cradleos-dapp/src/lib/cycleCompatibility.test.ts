@@ -2,53 +2,37 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Transaction } from "@mysten/sui/transactions";
 import { assertCycleCompatible } from "./transactionCompatibility";
 import { CurrentAccountSigner } from "./cycleSigner";
-import { CASINO_PKG, CRADLEOS_PKG, EVE_COIN_TYPE, WORLD_PKG } from "../constants";
-import { CURRENT_EVE_COIN_TYPE, CURRENT_WORLD, LEGACY_EVE_COIN_TYPE } from "./cycle";
+import { EVE_COIN_TYPE, WORLD_PKG } from "../constants";
+import { CURRENT_EVE_COIN_TYPE, CURRENT_WORLD } from "./cycle";
 import { findCurrentCharacters, listOwnedCurrentObjects } from "./currentWorldRead";
 import { loadSolarSystemCatalog } from "./solarSystems";
 import { getSolarSystem, getSolarSystemDetail } from "./dataClient";
 import { readFileSync, readdirSync } from "node:fs";
 
 afterEach(() => vi.unstubAllGlobals());
-function tx(target: string, types = [LEGACY_EVE_COIN_TYPE]) {
-  const t = new Transaction(); t.moveCall({ target, typeArguments: types }); return t;
-}
-describe("Cycle 7 transaction boundary", () => {
-  it("separates current character origin from the existing house's token", () => {
-    expect(WORLD_PKG).toBe(CURRENT_WORLD);
-    expect(EVE_COIN_TYPE).toBe(LEGACY_EVE_COIN_TYPE);
-    expect(EVE_COIN_TYPE).not.toBe(CURRENT_EVE_COIN_TYPE);
-  });
-  it.each(["blackjack_live::deal", "blackjack_live::double", "blackjack_live::split", "house::deposit", "coinflip::play"])("blocks new legacy action %s", name => {
-    expect(() => assertCycleCompatible(tx(`${CASINO_PKG}::${name}`))).toThrow(/migration pending/);
-  });
-  it.each(["blackjack_live::stand", "blackjack_live::hit", "blackjack_live::split_hit", "blackjack_live::split_stand", "hilo::settle", "mines::reveal", "mines::cashout", "dragon_tower::pick", "dragon_tower::cashout", "video_poker::draw", "house::withdraw"])("preserves existing recovery %s", name => {
-    expect(() => assertCycleCompatible(tx(`${CASINO_PKG}::${name}`))).not.toThrow();
-  });
-  it("rejects a new-currency recovery and a mixed permitted/prohibited PTB", () => {
-    expect(() => assertCycleCompatible(tx(`${CASINO_PKG}::blackjack_live::stand`, [CURRENT_EVE_COIN_TYPE]))).toThrow(/original asset/);
-    const t = tx(`${CASINO_PKG}::blackjack_live::stand`);
-    t.moveCall({ target: `${CRADLEOS_PKG}::tribe_vault::create_vault` });
-    expect(() => assertCycleCompatible(t)).toThrow(/migration pending/);
-  });
-  it("checks serialized transactions before invoking the wallet", async () => {
-    const send = vi.fn(); const sign = vi.fn();
-    const signer = new CurrentAccountSigner({ signAndExecuteTransaction: send, signTransaction: sign } as any);
-    const t = tx(`${CASINO_PKG}::coinflip::play`);
-    expect(() => assertCycleCompatible(t.serialize())).toThrow(/migration pending/);
-    await expect(signer.signAndExecuteTransaction({ transaction: t })).rejects.toThrow(/migration pending/);
-    t.setSender("0x1"); t.setGasPrice(1); t.setGasBudget(1000); t.setGasPayment([{ objectId: "0x2", version: "1", digest: "11111111111111111111111111111111" }]);
-    const bytes = await t.build();
-    await expect(signer.signTransaction(bytes)).rejects.toThrow(/migration pending/);
-    expect(send).not.toHaveBeenCalled(); expect(sign).not.toHaveBeenCalled();
-  });
-  it("routes all component signer imports through the guard", () => {
-    const root = new URL("../components/", import.meta.url);
-    for (const f of readdirSync(root, { recursive: true }) as string[]) {
-      if (!f.endsWith(".tsx")) continue;
-      expect(readFileSync(new URL(f, root), "utf8")).not.toMatch(/import\s*\{[^}]*CurrentAccountSigner[^}]*\}\s*from\s*["']@mysten\/dapp-kit-core/);
-    }
-  });
+const OLD_CASINO = "0x5008cde6a70013b68e7290b6780e5a07302818fa7eaea5f3bfe4c52637e507e6";
+function tx(target: string, types: string[] = []) { const t=new Transaction();t.moveCall({target,typeArguments:types});return t; }
+describe("Cycle 7 clean-wipe boundary", () => {
+ it("uses only current-world currency",()=>{expect(WORLD_PKG).toBe(CURRENT_WORLD);expect(EVE_COIN_TYPE).toBe(CURRENT_EVE_COIN_TYPE);});
+ it.each(["blackjack_live::deal","blackjack_live::stand","house::withdraw","mines::cashout"])("rejects retired action %s, including recovery", name=>{
+  expect(()=>assertCycleCompatible(tx(`${OLD_CASINO}::${name}`))).toThrow(/clean wipe/);
+ });
+ it("allows current world/framework calls only",()=>{
+  expect(()=>assertCycleCompatible(tx(`${CURRENT_WORLD}::gate::jump`))).not.toThrow();
+  expect(()=>assertCycleCompatible(tx('0x2::coin::zero',[CURRENT_EVE_COIN_TYPE]))).not.toThrow();
+  expect(()=>assertCycleCompatible(tx('0x2::coin::zero',[`${OLD_CASINO}::old::Coin`]))).toThrow(/retired/);
+ });
+ it("blocks serialized retired transactions before wallet access",async()=>{
+  const send=vi.fn();const sign=vi.fn();const signer=new CurrentAccountSigner({signAndExecuteTransaction:send,signTransaction:sign} as any);
+  const t=tx(`${OLD_CASINO}::house::withdraw`);
+  expect(()=>assertCycleCompatible(t.serialize())).toThrow(/clean wipe/);
+  await expect(signer.signAndExecuteTransaction({transaction:t})).rejects.toThrow(/clean wipe/);
+  t.setSender('0x1');t.setGasPrice(1);t.setGasBudget(1000);t.setGasPayment([{objectId:'0x2',version:'1',digest:'11111111111111111111111111111111'}]);
+  await expect(signer.signTransaction(await t.build())).rejects.toThrow(/clean wipe/);expect(send).not.toHaveBeenCalled();expect(sign).not.toHaveBeenCalled();
+ });
+ it("all component signers use the current-cycle guard",()=>{
+  const root=new URL('../components/',import.meta.url);for(const f of readdirSync(root,{recursive:true}) as string[]) if(f.endsWith('.tsx')) expect(readFileSync(new URL(f,root),'utf8')).not.toMatch(/import\s*\{[^}]*CurrentAccountSigner[^}]*\}\s*from\s*["']@mysten\/dapp-kit-core/);
+ });
 });
 describe("Current-world read integrity", () => {
   it("retires old map caches and APIs without fetching them", async () => {
@@ -75,18 +59,14 @@ describe("Current-world read integrity", () => {
   });
 });
 
-import { CASINO_V28 } from '../constants';
-import { fetchOpenHiLoGame } from './casinoGames';
-import { fetchActiveMinesGame } from './casinoMines';
-import { fetchActiveTowerGame } from './casinoDragonTower';
-import { fetchActiveVideoPokerHand } from './casinoVideoPoker';
-describe('Legacy game discovery uses the type origin, not latest published-at', () => {
-  it.each([fetchOpenHiLoGame, fetchActiveMinesGame, fetchActiveTowerGame, fetchActiveVideoPokerHand])('%s preserves discovery and exposes failed reads', async find => {
-    const calls: any[]=[];
-    vi.stubGlobal('fetch', vi.fn(async (_url, options) => {calls.push(JSON.parse(options.body)); return {ok:true,json:async()=>({result:{data:[]}})};}));
-    expect(await find('0x1')).toBeNull();
-    expect(calls[0].params[1].filter.StructType).toMatch(new RegExp(`^${CASINO_V28}::`));
-    vi.stubGlobal('fetch', vi.fn(async()=>({ok:true,json:async()=>({error:{message:'read unavailable'}})})));
-    await expect(find('0x1')).rejects.toThrow();
-  });
+import { resetRetiredCycleState } from './cycleStorage';
+import { CYCLE_DEPLOYMENT } from './cycleDeployment';
+it('clean wipe clears operational state without deleting Origins reading progress',()=>{
+ const map=new Map([['cradleos:vault:123','old-vault'],['casino:hand','old-hand'],['delegation-obj:x','old-policy'],['cradleos_tribe_vault_id','old-vault'],['cradleos.comics.progress.v1','keep'],['theme','keep']]);
+ const storage={get length(){return map.size},key:(i:number)=>[...map.keys()][i],getItem:(k:string)=>map.get(k)??null,setItem:(k:string,v:string)=>map.set(k,v),removeItem:(k:string)=>map.delete(k)} as unknown as Storage;
+ resetRetiredCycleState(storage);expect(map.has('cradleos:vault:123')).toBe(false);expect(map.has('casino:hand')).toBe(false);expect(map.has('delegation-obj:x')).toBe(false);expect(map.has('cradleos_tribe_vault_id')).toBe(false);expect(map.get('cradleos.comics.progress.v1')).toBe('keep');
+ storage.setItem('cradleos:vault:new','current');resetRetiredCycleState(storage);expect(map.get('cradleos:vault:new')).toBe('current');
+});
+it('pending fresh deployment never falls back to retired contract IDs',()=>{
+ expect(CYCLE_DEPLOYMENT.cycle).toBe(7);for(const id of Object.values(CYCLE_DEPLOYMENT.packages))expect(id).not.toBe(OLD_CASINO);
 });

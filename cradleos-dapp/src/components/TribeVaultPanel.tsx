@@ -1,4 +1,4 @@
-import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
+import { CYCLE_CONTRACTS_READY } from "../lib/cycle";
 /**
  * TribeVaultPanel — Tribe cryptocurrency management.
  *
@@ -1634,7 +1634,7 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
   });
   const tribeId = overrideTribeId(_rawTribeId ?? null);
 
-  const { data: vault, isLoading } = useQuery<TribeVaultState | null>({
+  const { data: vault, isLoading, error: vaultError } = useQuery<TribeVaultState | null>({
     queryKey: ["tribeVault", tribeId, manualVaultId, account?.address],
     queryFn: async () => {
       if (!account) return null;
@@ -1681,11 +1681,12 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
     );
   }
 
+  if (vaultError) return <div className="card" role="alert">Could not load the current-cycle vault: {String(vaultError)}</div>;
+
   // No vault found yet — show launch form
   if (!vault) {
-    if (!LEGACY_EXTENSIONS_READY) return <div>
-      <p>Previous-cycle vault recovery: enter your existing vault ID. Your current-cycle tribe does not need to match. New vault creation is paused; contract ownership and withdrawal checks still apply.</p>
-      <ConnectVaultForm tribeId={tribeId} onConnect={id => { setManualVaultId(id); handleRefresh(); }} />
+    if (!CYCLE_CONTRACTS_READY) return <div>
+      <p>Cycle 7 starts fresh. Tribe vault creation will open when the new contracts are deployed. Previous-cycle vaults are retired.</p>
     </div>;
     if (tribeId && getCachedVaultId(tribeId) && !manualVaultId) {
       // Cached ID exists but fetch failed — show connect form to re-enter

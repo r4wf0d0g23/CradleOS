@@ -45,7 +45,7 @@ interface TallyFields {
 }
 
 function readTallyFields(raw: Record<string, unknown>): TallyFields | null {
-  const content = (raw as { data?: { content?: { fields?: Record<string, unknown> } } })?.data?.content?.fields;
+  const content = raw;
   if (!content) return null;
   return {
     electionId: String(content.election_id ?? ""),
@@ -69,7 +69,7 @@ interface ElectionMeta {
 }
 
 function readElectionMeta(raw: Record<string, unknown>): ElectionMeta | null {
-  const content = (raw as { data?: { content?: { fields?: Record<string, unknown> } } })?.data?.content?.fields;
+  const content = raw;
   if (!content) return null;
   const opts = (content.options as Array<Record<string, unknown>> | undefined) ?? [];
   const tallyOpt = content.tally_id as { fields?: { vec?: unknown[] } } | undefined;

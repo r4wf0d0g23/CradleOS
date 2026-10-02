@@ -76,7 +76,7 @@ export function VotingPanel() {
       await Promise.all(ids.map(async (id) => {
         try {
           const raw = await rpcGetObject(id);
-          const content = (raw as { data?: { content?: { fields?: Record<string, unknown> } } })?.data?.content?.fields;
+          const content = raw;
           if (content) stateMap.set(id, Number(content.state ?? 0));
         } catch { /* ignore */ }
       }));

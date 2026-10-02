@@ -105,6 +105,7 @@ module cradleos_voting::voting {
     const E_NOT_TALLIED:           u64 = 22;
     const E_TALLY_EXISTS:          u64 = 23;
     const E_ZK_NOT_IMPLEMENTED:    u64 = 24;
+    const E_UNSUPPORTED_PROVIDER: u64 = 25;
 
     // ── Sub-structs ───────────────────────────────────────────────────────────
 
@@ -406,6 +407,8 @@ module cradleos_voting::voting {
         ctx: &mut TxContext,
     ) {
         assert!(privacy_kind != PRIVACY_ZK, E_ZK_NOT_IMPLEMENTED);
+        // Fresh-cycle launch: only Character-authenticated open / one-person weight.
+        assert!(eligibility_kind == ELIG_OPEN && weight_kind == WEIGHT_ONE, E_UNSUPPORTED_PROVIDER);
 
         let now_ms = clock::timestamp_ms(clock);
         let creator = ctx.sender();
@@ -951,13 +954,11 @@ module cradleos_voting::voting {
 
     // ── Proof minting helpers (called by extension modules) ───────────────────
     //
-    // Built-in eligibility/weight modules call these via friend access. Third
-    // parties create their own proof-mint entry functions that wrap these.
-    // Proof minting is purposely public — the *verification* checks the registry
-    // for provider_package matching, so a forged proof from a non-registered
-    // package fails verification.
+    // Only audited built-in providers may construct proofs. Comparing a caller-
+    // supplied provider address does not authenticate its calling package.
+    // Third-party providers require a capability/witness protocol before support.
 
-    public fun mint_eligibility_proof(
+    public(package) fun mint_eligibility_proof(
         election_id: ID,
         voter: address,
         character_id: u32,
@@ -977,7 +978,7 @@ module cradleos_voting::voting {
         }
     }
 
-    public fun mint_weight_proof(
+    public(package) fun mint_weight_proof(
         election_id: ID,
         voter: address,
         character_id: u32,

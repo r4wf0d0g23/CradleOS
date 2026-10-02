@@ -105,7 +105,7 @@ module cradleos_voting::weight_char_age {
     /// Compute ordinal age weight and mint WeightProof for ORDINAL_VIA_CHARACTER mode.
     /// game_char_id_u64: the raw u64 from in_game_id::item_id (game char ID).
     /// character_id: u32 cast of game_char_id_u64, used as the WeightProof binding.
-    public fun mint_ordinal(
+    fun mint_ordinal(
         election: &Election,
         character_id: u32,
         game_char_id_u64: u64,
@@ -154,7 +154,7 @@ module cradleos_voting::weight_char_age {
 
     /// Compute epoch age weight and mint WeightProof for EPOCH_VIA_REGISTRY mode.
     /// join_epoch: the claim_epoch from CharacterRegistry for the caller's tribe_id.
-    public fun mint_epoch(
+    fun mint_epoch(
         election: &Election,
         character_id: u32,
         join_epoch: u64,

@@ -1,4 +1,4 @@
-import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
+import { CASINO_READY } from "../lib/cycleDeployment";
 /**
  * InstantGamePanel — config-driven UI for single-tx casino games:
  * coinflip, dice, roulette, slots, wheel, limbo, hilo, plinko, keno, sicbo.
@@ -235,7 +235,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const bank  = houseQ.data?.bankBalance ?? 0;
 
   const play = useCallback(async () => {
-    if (!LEGACY_EXTENSIONS_READY) { setErr("New bets paused for Cycle 7 migration."); return; }
+    if (!CASINO_READY) { setErr("New bets paused for fresh Cycle 7 setup."); return; }
     if (!addr) { setErr("Connect a wallet."); return; }
     const wager = Number(betEve);
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
@@ -1215,7 +1215,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             )}
             <button
-              disabled={!LEGACY_EXTENSIONS_READY || busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
+              disabled={!CASINO_READY || busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
               onClick={play}
               style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure || overHouseMaxBet ? 0.5 : 1 }}
             >

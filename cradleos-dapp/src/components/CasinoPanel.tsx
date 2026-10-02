@@ -1,6 +1,4 @@
-import { listOwnedCurrentObjects } from "../lib/currentWorldRead";
-import { CASINO_V28, EVE_COIN_TYPE } from "../constants";
-import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
+import { CASINO_READY } from "../lib/cycleDeployment";
 /**
  * CasinoPanel — CradleOS Casino. Flagship: interactive on-chain Blackjack ($EVE).
  *
@@ -183,38 +181,11 @@ export function CasinoPanel() {
   const myEve = balQ.data ? Number(balQ.data.totalRaw) / 1e9 : 0;
   const signer = () => new CurrentAccountSigner(dAppKit);
 
-  const recoveryQ = useQuery({
-    queryKey: ["legacyBlackjackRecovery", addr, CASINO_V28], enabled: !!addr,
-    queryFn: async () => {
-      const groups = await Promise.all(["Hand", "SplitHand"].map(async kind => {
-        const rows = await listOwnedCurrentObjects(addr!, `${CASINO_V28}::blackjack_live::${kind}<${EVE_COIN_TYPE}>`);
-        return rows.map(n => ({ id: n.address, kind }));
-      }));
-      return groups.flat();
-    },
-  });
-  const resumeBlackjack = async (id: string, kind: string) => {
-    setBusy(true); setErr(null);
-    try {
-      setSettlement(null); setSplitSettlement(null);
-      if (kind === "SplitHand") {
-        const old = await fetchLiveSplitHand(id);
-        if (!old) throw new Error("Legacy split hand is unavailable; it may already be settled.");
-        setHand(null); setSplitHand(old);
-      } else {
-        const old = await fetchLiveHand(id);
-        if (!old) throw new Error("Legacy hand is unavailable; it may already be settled.");
-        setSplitHand(null); setHand(old);
-      }
-      setPhase("player"); setCasinoView({ mode: "game", gameKey: "blackjack" });
-    } catch (e) { setErr(translateTxError(e)); }
-    finally { setBusy(false); }
-  };
   const refreshAll = () => { houseState.refetch(); feedQ.refetch(); balQ.refetch(); };
 
   // ── Deal ──
   const deal = useCallback(async () => {
-    if (!LEGACY_EXTENSIONS_READY) { setErr("New bets paused for Cycle 7 migration. Existing hands use legacy EVE and can still be settled."); return; }
+    if (!CASINO_READY) { setErr("New bets paused for fresh Cycle 7 setup. The new-cycle house must be initialized and funded first."); return; }
     if (!addr) { setErr("Connect a wallet."); return; }
     const wager = Number(betEve);
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
@@ -417,7 +388,7 @@ export function CasinoPanel() {
   // ── Navigation helpers ────────────────────────────────────────────────────
   const openGame = (key: string) => {
     // Block opening any game that's been pulled offline.
-    if (LEGACY_EXTENSIONS_READY && CASINO_CATALOG.find((g) => g.key === key)?.disabled) return;
+    if (CASINO_READY && CASINO_CATALOG.find((g) => g.key === key)?.disabled) return;
     setCasinoView({ mode: "game", gameKey: key });
   };
   const backToLobby = () => setCasinoView((prev) => ({ mode: "lobby", gameKey: prev.gameKey }));
@@ -451,23 +422,16 @@ export function CasinoPanel() {
   const activeCategories = activeCategoriesFromCatalog();
   const gameEntry = CASINO_CATALOG.find((g) => g.key === casinoView.gameKey);
   // Guard: never open a disabled game even via direct link/stale nav state.
-  const gameDisabled = LEGACY_EXTENSIONS_READY && !!gameEntry?.disabled;
+  const gameDisabled = !!gameEntry?.disabled;
 
   return (
     <div style={{ maxWidth: 1080, margin: "0 auto" }}>
-      {!LEGACY_EXTENSIONS_READY && <section className="cycle-status-body" aria-label="Legacy casino recovery">
-        <strong>Previous-cycle casino · new bets and deposits paused</strong>
-        <p>Balances and outstanding games below use the original EVE token, not Cycle 7 EVE. Connect the wallet that owns an unfinished game to resume it.</p>
-        {recoveryQ.isError && <p role="alert">Could not read legacy hands. Retry; this does not mean there are none.</p>}
-        {recoveryQ.data?.map(h => <button key={h.id} disabled={busy} onClick={() => resumeBlackjack(h.id, h.kind)} style={{margin:4}}>Resume {h.kind === "Hand" ? "Blackjack" : "split hand"} {h.id.slice(0,10)}…</button>)}
-        {(["hilo", "mines", "dragon_tower", "video_poker"] as const).map(key => <button key={key} onClick={() => openGame(key)} style={{margin:4}}>{key.replace(/_/g, " ")} recovery</button>)}
-      </section> }
       {/* ── Header (always visible) ── */}
       <div style={{ background: `linear-gradient(180deg, rgba(20,8,4,0.92), rgba(10,10,10,0.96)), url(banner-battle.png)`, backgroundSize: "cover", backgroundPosition: "center", border: `1px solid ${ACCENT}33`, padding: "18px 22px", marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ color: ACCENT, fontSize: 22, fontWeight: 800, letterSpacing: "0.12em" }}>◈ CRADLE CASINO</div>
-            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>PREVIOUS-CYCLE EVE · LEGACY STATE & RECOVERY</div>
+            <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 2 }}>CYCLE 7 · FRESH HOUSE</div>
           </div>
 
           {/* DONATE — centered in the header's dead space between the title block
@@ -494,7 +458,7 @@ export function CasinoPanel() {
                   font: "inherit",
                 }}
               >
-                {LEGACY_EXTENSIONS_READY ? "◈ DONATE" : "◈ LEGACY BANKROLL"}
+                {CASINO_READY ? "◈ DONATE" : "◈ CYCLE 7 BANKROLL"}
               </button>
             </div>
           )}
@@ -507,7 +471,7 @@ export function CasinoPanel() {
               label="HOUSE BANK"
               value={house ? `${fmtEve(house.bankBalance)} EVE` : "—"}
               onClick={openBankroll}
-              title={LEGACY_EXTENSIONS_READY ? "Bankroll the house — donate $EVE, raise max bets" : "Legacy bankroll — new deposits paused"}
+              title={CASINO_READY ? "Bankroll the house — donate $EVE, raise max bets" : "Cycle 7 bankroll — new deposits paused"}
             />
             <Stat label="HANDS" value={house ? String(house.betsSettled) : "—"} />
             <Stat label="YOUR $EVE" value={addr ? fmtEve(myEve) : "connect"} color={GOLD} />
@@ -589,12 +553,12 @@ export function CasinoPanel() {
             }}
           >
             <div style={{ color: GOLD, fontSize: 13, fontWeight: 800, letterSpacing: "0.1em" }}>
-              {LEGACY_EXTENSIONS_READY ? "◈ BANKROLL THE HOUSE" : "◈ LEGACY BANKROLL"}
+              {CASINO_READY ? "◈ BANKROLL THE HOUSE" : "◈ CYCLE 7 BANKROLL"}
             </div>
             <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 3 }}>
               {house
-                ? `Bank ${fmtEve(house.bankBalance)} ${LEGACY_EXTENSIONS_READY ? "EVE · donate to raise max bets" : "legacy EVE · new deposits paused"}`
-                : "Legacy bankroll · new deposits paused"}
+                ? `Bank ${fmtEve(house.bankBalance)} ${CASINO_READY ? "EVE · donate to raise max bets" : "Cycle 7 EVE · house not yet ready"}`
+                : "Cycle 7 bankroll · new deposits paused"}
             </div>
           </button>
         </div>
@@ -694,8 +658,8 @@ export function CasinoPanel() {
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                       <button disabled={busy} onClick={() => act("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : "◆ HIT"}</button>
                       <button disabled={busy} onClick={() => act("stand")} style={actionBtn("#666")}>■ STAND</button>
-                      <button disabled={!LEGACY_EXTENSIONS_READY || busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
-                      {LEGACY_EXTENSIONS_READY && canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
+                      <button disabled={!CASINO_READY || busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
+                      {CASINO_READY && canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
                     </div>
                   ) : phase === "settled" ? (
                     <button onClick={newHand} style={dealBtn}>◈ NEW HAND</button>
@@ -710,7 +674,7 @@ export function CasinoPanel() {
                           </div>
                         </label>
                       </div>
-                      <button disabled={!LEGACY_EXTENSIONS_READY || busy || phase === "dealing" || !addr} onClick={deal} style={{ ...dealBtn, opacity: busy || !addr ? 0.5 : 1 }}>
+                      <button disabled={!CASINO_READY || busy || phase === "dealing" || !addr} onClick={deal} style={{ ...dealBtn, opacity: busy || !addr ? 0.5 : 1 }}>
                         {busy ? "SIGNING…" : "◈ DEAL"}
                       </button>
                     </>

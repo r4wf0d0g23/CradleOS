@@ -110,7 +110,7 @@ export const ELIGIBILITY_OPTIONS: PickerOption[] = [
   {
     value: ELIGIBILITY_KIND.OPEN,
     title: "Open — any verified character",
-    summary: "Anyone with a CradleOS-bound character can vote.",
+    summary: "Anyone who owns a current-world character can vote.",
     tradeoff:
       "Pros: maximum reach, simple UX, no setup. Cons: Sybil-vulnerable if multiple characters are owned by the same wallet; not suitable for governance with real stakes. Best for: community sentiment polls, gauge votes.",
   },
@@ -181,6 +181,10 @@ export const WEIGHT_OPTIONS: PickerOption[] = [
       "Pros: lets you blend (1c1v base + age multiplier + asset bonus). Cons: harder to explain; the wizard collects coefficients per child source. Best for: tuned long-term governance.",
   },
 ];
+
+// Other providers need authenticated Character binding before Cycle 7 activation.
+for (const o of ELIGIBILITY_OPTIONS) if (o.value !== ELIGIBILITY_KIND.OPEN) o.disabled = { reason: "Not available in this cycle's initial deployment" };
+for (const o of WEIGHT_OPTIONS) if (o.value !== WEIGHT_KIND.ONE) o.disabled = { reason: "Not available in this cycle's initial deployment" };
 
 export const METHOD_OPTIONS: PickerOption[] = [
   {
@@ -592,13 +596,14 @@ export function buildCastBallotOpenOneTx(
   electionId: string,
   voterAddress: string,
   characterId: number,
+  characterObjectId: string,
   encodedVote: Uint8Array,
 ): Transaction {
   ensurePublished();
   const tx = new Transaction();
   const eligibilityProof = tx.moveCall({
     target: `${CRADLEOS_VOTING_PKG}::eligibility_open::mint`,
-    arguments: [tx.object(electionId), tx.pure.u32(characterId)],
+    arguments: [tx.object(electionId), tx.object(characterObjectId)],
   });
   const weightProof = tx.moveCall({
     target: `${CRADLEOS_VOTING_PKG}::weight_one::mint`,
@@ -630,13 +635,14 @@ export function buildCommitBallotOpenOneTx(
   electionId: string,
   voterAddress: string,
   characterId: number,
+  characterObjectId: string,
   commitment: Uint8Array,
 ): Transaction {
   ensurePublished();
   const tx = new Transaction();
   const eligibilityProof = tx.moveCall({
     target: `${CRADLEOS_VOTING_PKG}::eligibility_open::mint`,
-    arguments: [tx.object(electionId), tx.pure.u32(characterId)],
+    arguments: [tx.object(electionId), tx.object(characterObjectId)],
   });
   const weightProof = tx.moveCall({
     target: `${CRADLEOS_VOTING_PKG}::weight_one::mint`,

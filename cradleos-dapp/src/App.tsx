@@ -1,4 +1,5 @@
-import { CycleStatus, HistoricalDataNotice } from "./components/CycleStatus";
+import { CORE_READY, CASINO_READY, VOTING_READY } from "./lib/cycleDeployment";
+import { CycleStatus, CycleContractSetup, HistoricalDataNotice } from "./components/CycleStatus";
 import { useState, useCallback, useEffect } from "react";
 import { PlaygroundHarness } from "./playground/PlaygroundHarness";
 import { abbreviateAddress, useConnection } from "@evefrontier/dapp-kit";
@@ -885,6 +886,9 @@ function AppInner() {
     },
   };
 
+  const needsFreshContract = new Set<Tab>(["tribe","defense","registry","bounties","srp","cargo","gates","succession","announcements","recruiting","hierarchy","assets","calendar","voting","casino"]).has(activeTab);
+  const currentServiceReady = activeTab === "casino" ? CASINO_READY : activeTab === "voting" ? VOTING_READY : CORE_READY;
+  const waitingForDeployment = needsFreshContract && !currentServiceReady;
   const brief = TAB_BRIEF[activeTab];
 
   // Sync tab → hash and handle browser back/forward
@@ -1456,8 +1460,9 @@ function AppInner() {
       </div>}
 
 
+      {waitingForDeployment && <CycleContractSetup />}
       {/* Wallet gate — show connect prompt for protected tabs without wallet */}
-      {!account && !PUBLIC_TABS.has(activeTab) && (
+      {!waitingForDeployment && !account && !PUBLIC_TABS.has(activeTab) && (
         <div style={{ textAlign: "center", padding: "60px 24px", color: "rgba(175,175,155,0.6)" }}>
           <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.4 }}>⚓</div>
           <div style={{ fontSize: 14, color: "rgba(200,190,170,0.7)", marginBottom: 8 }}>Wallet required</div>
@@ -1481,7 +1486,7 @@ function AppInner() {
       {(account || PUBLIC_TABS.has(activeTab)) && activeTab === "dapps" && (
         <div style={{ background: "transparent" }} className="content-panel"><CommunityDappsPanel /></div>
       )}
-      {(account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && activeTab !== "efmap" && activeTab !== "dapps" && (
+      {!waitingForDeployment && (account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && activeTab !== "efmap" && activeTab !== "dapps" && (
         <div style={{ background: "transparent", padding: "0" }}>
           {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel    onTxSuccess={setLastDigest} /></div>}
           {activeTab === "dashboard"  && <div style={{ background: "transparent" }} className="content-panel"><DashboardPanel /></div>}

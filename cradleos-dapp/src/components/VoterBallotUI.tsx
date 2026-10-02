@@ -1,3 +1,4 @@
+import { characterGameId } from "../lib/characterIdentity";
 /**
  * VoterBallotUI — cast a ballot in a specific election.
  *
@@ -63,8 +64,10 @@ interface ElectionFields {
 }
 
 function readElectionFields(raw: Record<string, unknown>): ElectionFields | null {
-  const content = (raw as { data?: { content?: { fields?: Record<string, unknown> } } })?.data?.content?.fields;
+  const content = raw;
   if (!content) return null;
+  const schedule = content.schedule as { fields?: Record<string, unknown> } | undefined;
+  const timing = schedule?.fields ?? schedule as Record<string, unknown> | undefined;
   const opts = (content.options as Array<Record<string, unknown>> | undefined) ?? [];
   return {
     state: Number(content.state ?? 0),
@@ -78,9 +81,9 @@ function readElectionFields(raw: Record<string, unknown>): ElectionFields | null
       const f = (o as { fields?: Record<string, unknown> }).fields ?? o;
       return { id: Number(f.id ?? 0), label: String(f.label ?? "") };
     }),
-    scheduledOpenMs: Number(content.scheduled_open_ms ?? 0),
-    scheduledCloseMs: Number(content.scheduled_close_ms ?? 0),
-    revealDeadlineMs: Number(content.reveal_deadline_ms ?? 0),
+    scheduledOpenMs: Number(timing?.opens_ms ?? 0),
+    scheduledCloseMs: Number(timing?.closes_ms ?? 0),
+    revealDeadlineMs: Number(timing?.reveal_deadline_ms ?? 0),
     creator: String(content.creator ?? ""),
     creatorCharacterId: Number(content.creator_character_id ?? 0),
     allowRecast: Boolean(content.allow_recast ?? false),
@@ -114,6 +117,7 @@ export function VoterBallotUI({
   const [election, setElection] = useState<ElectionFields | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [characterObjectId, setCharacterObjectId] = useState<string | null>(null);
   const [characterId, setCharacterId] = useState<number | null>(null);
 
   // Ballot state — per-method
@@ -143,11 +147,14 @@ export function VoterBallotUI({
   // Resolve character_id
   useEffect(() => {
     let cancelled = false;
-    if (!account?.address) { setCharacterId(null); return; }
-    findCharacterForWallet(account.address).then((c) => {
-      if (cancelled) return;
-      setCharacterId(c ? Number(c.characterId) : null);
-    }).catch(() => {});
+    setCharacterId(null); setCharacterObjectId(null);
+    if (!account?.address) return;
+    findCharacterForWallet(account.address).then(async c => {
+      if (!c) return;
+      const result = await rpcGetObject(c.characterId);
+      const id = characterGameId(result);
+      if (!cancelled) {setCharacterId(id);setCharacterObjectId(c.characterId);}
+    }).catch(error => { if (!cancelled) setError(translateTxError(error)); });
     return () => { cancelled = true; };
   }, [account?.address]);
 
@@ -203,7 +210,7 @@ export function VoterBallotUI({
   // ── Cast / commit handler ─────────────────────────────────────────────────
   const handleCast = async () => {
     if (!account?.address) { setError("Connect EVE Vault first"); return; }
-    if (!characterId) { setError("No CradleOS character bound to this wallet"); return; }
+    if (!characterId || !characterObjectId) { setError("No CradleOS character bound to this wallet"); return; }
     if (!CRADLEOS_VOTING_AVAILABLE) {
       setError("cradleos_voting not yet published");
       return;
@@ -243,14 +250,14 @@ export function VoterBallotUI({
         // Commit-reveal: hash and commit on-chain; surface salt+vote for reveal phase.
         const salt = randomSalt(32);
         const commitment = await commitVote(salt, encodedVote);
-        const tx = buildCommitBallotOpenOneTx(electionId, account.address, characterId, commitment);
+        const tx = buildCommitBallotOpenOneTx(electionId, account.address, characterId, characterObjectId, commitment);
         await signer.signAndExecuteTransaction({ transaction: tx });
         const hexSalt = "0x" + Array.from(salt).map((b) => b.toString(16).padStart(2, "0")).join("");
         const hexVote = "0x" + Array.from(encodedVote).map((b) => b.toString(16).padStart(2, "0")).join("");
         setRevealBundle({ salt: hexSalt, encodedVote: hexVote });
         setResult("✓ Ballot committed. Save the salt + encoded_vote below — you need both to reveal after voting closes.");
       } else {
-        const tx = buildCastBallotOpenOneTx(electionId, account.address, characterId, encodedVote);
+        const tx = buildCastBallotOpenOneTx(electionId, account.address, characterId, characterObjectId, encodedVote);
         await signer.signAndExecuteTransaction({ transaction: tx });
         setResult("✓ Ballot cast on-chain.");
       }

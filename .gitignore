@@ -36,3 +36,6 @@ wiki_attributes/
 # Misc
 .DS_Store
 public/SOUL.md
+
+# Rebuild Move artifacts against the selected cycle; never commit bytecode caches.
+**/build/

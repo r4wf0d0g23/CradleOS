@@ -4,7 +4,7 @@ import { useDAppKit } from "@mysten/dapp-kit-react";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
-import { CRADLEOS_PKG, SUI_TESTNET_RPC, eventType } from "../constants";
+import { SUI_TESTNET_RPC, eventType } from "../constants";
 import { fetchCharacterTribeId, fetchTribeVault, getCachedVaultId, discoverVaultIdForTribe, numish, fetchTribeInfo, type TribeVaultState,
   fetchTribeRoles, buildCreateRolesTx, buildGrantRoleTx, buildRevokeRoleTx, TRIBE_ROLE_NAMES, type TribeRolesState,
   fetchTribeMembersByTribeId, type CharacterMember, fetchTribeClaim,
@@ -63,13 +63,8 @@ function CopyButton({ value }: { value: string }) {
 
 // ─── tx builder ─────────────────────────────────────────────────────────────
 
-function buildTransferFounderTx(vaultId: string, newFounder: string): Transaction {
-  const tx = new Transaction();
-  tx.moveCall({
-    target: `${CRADLEOS_PKG}::tribe_vault::transfer_founder`,
-    arguments: [tx.object(vaultId), tx.pure.address(newFounder)],
-  });
-  return tx;
+function buildTransferFounderTx(_vaultId: string, _newFounder: string): Transaction {
+  throw new Error("Direct founder transfer is not supported by this contract. No transaction was sent.");
 }
 
 // ─── types ───────────────────────────────────────────────────────────────────
@@ -593,7 +588,7 @@ function FounderActionsCard({ vault }: { vault: VaultFull }) {
           />
           <button
             onClick={handleTransfer}
-            disabled={status === "pending" || !newFounder.trim()}
+            disabled={true} title="Direct founder transfer is not supported by the current contract"
             style={{
               background: status === "pending" ? "rgba(255,71,0,0.2)" : "#FF4700",
               border: "none", borderRadius: 4, color: "#fff", fontSize: "12px",

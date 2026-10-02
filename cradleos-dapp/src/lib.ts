@@ -1,3 +1,6 @@
+import { TRIBE_VAULT_TYPE } from "./constants";
+import { cycleCacheKey } from "./lib/cycleCache";
+import { CYCLE_DEPLOYMENT } from "./lib/cycleDeployment";
 import { CURRENT_WORLD } from "./lib/cycle";
 import { findCurrentCharacters, listOwnedCurrentObjects } from "./lib/currentWorldRead";
 import { Transaction } from "@mysten/sui/transactions";
@@ -85,7 +88,9 @@ export async function rpcGetObjectDirect(objectId: string): Promise<Record<strin
     }),
   });
   const json = await res.json() as { result: { data: { content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } };
-  return (json.result?.data?.content?.fields ?? {}) as Record<string, unknown>;
+  if (!res.ok || !json.result?.data?.content?.fields) throw new Error("Object read failed; this is not evidence of empty holdings");
+  const data = json.result.data;
+  return { ...data.content!.fields, _type: data.type ?? data.content?.type ?? "", _owner: data.owner };
 }
 
 export async function rpcGetObject(objectId: string): Promise<Record<string, unknown>> {
@@ -2348,6 +2353,7 @@ export async function fetchTribeVault(vaultId: string): Promise<TribeVaultState 
     // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy) so storms
     // at DGX1 don't make the user's TribeVault "not found".
     const fields = await rpcGetObjectDirect(vaultId);
+    if (!CRADLEOS_PKG || fields._type !== TRIBE_VAULT_TYPE) throw new Error("This vault is not part of the current Cycle 7 deployment");
     // Extract the balances Table's inner UID so we can query member balances as dynamic fields
     const balancesField = fields["balances"] as { fields?: { id?: { id?: string } } } | undefined;
     const balancesTableId = balancesField?.fields?.id?.id ?? "";
@@ -2365,7 +2371,7 @@ export async function fetchTribeVault(vaultId: string): Promise<TribeVaultState 
       balancesTableId,
       registeredInfraTableId,
     };
-  } catch { return null; }
+  } catch (error) { throw error; }
 }
 
 /** Fetch the set of structure IDs already registered to a vault.
@@ -2706,7 +2712,7 @@ export function buildBurnCoinTransaction(
 /** Cache vault ID by tribeId. */
 // ── Cache-buster: clear stale data when package or cache version changes ──────
 // Bump CACHE_VERSION any time cached data shape changes or needs forced invalidation.
-const CACHE_VERSION = 6;
+const CACHE_VERSION = 7;
 const CACHE_PKG_KEY = "cradleos:pkg";
 const CACHE_VER_KEY = "cradleos:cache-version";
 try {
@@ -2717,7 +2723,7 @@ try {
     const toRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && (k.startsWith("cradleos:") || k.startsWith("delegation:"))) toRemove.push(k);
+      if (k && k !== "cradleos:world-state" && (k.startsWith("cradleos:") || k.startsWith("delegation:"))) toRemove.push(k);
     }
     toRemove.forEach(k => localStorage.removeItem(k));
   }
@@ -2726,10 +2732,10 @@ try {
 } catch { /* */ }
 
 export function getCachedVaultId(tribeId: number): string | null {
-  try { return localStorage.getItem(`cradleos:vault:${tribeId}`); } catch { return null; }
+  try { return localStorage.getItem(cycleCacheKey(`vault:${tribeId}`)); } catch { return null; }
 }
 export function setCachedVaultId(tribeId: number, vaultId: string): void {
-  try { localStorage.setItem(`cradleos:vault:${tribeId}`, vaultId); } catch { /* */ }
+  try { localStorage.setItem(cycleCacheKey(`vault:${tribeId}`), vaultId); } catch { /* */ }
 }
 
 // ── TribeDex types ────────────────────────────────────────────────────────────
@@ -2985,7 +2991,7 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
 // 0x7541ac23...) replaced with a fresh registry created via PTB tx
 // CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi alongside BountyBoard,
 // TrustlessBountyBoard, and KeeperShrine.
-export const CHARACTER_REGISTRY_ID = "0x73b0675f1b30c74c28d6c2448775ae0db5f1214a4765b36b6ebc2048775f7423"; // v16 re-init'd under wallet-we-control 0x177583b2 (2026-07-18 cutover). Prev 0x36338164 (orphaned).
+export const CHARACTER_REGISTRY_ID = CYCLE_DEPLOYMENT.objects.characterRegistry; // v16 re-init'd under wallet-we-control 0x177583b2 (2026-07-18 cutover). Prev 0x36338164 (orphaned).
 
 export type TribeClaim = {
   claimer: string;
@@ -3259,6 +3265,7 @@ export async function buildSetAggressionModeTransaction(
  * the TribeClaim.vault_created flag (which is only set via create_vault_with_registry).
  */
 export async function discoverVaultIdForTribe(tribeId: number): Promise<string | null> {
+  if (!CRADLEOS_PKG) return null;
   // Check cache first — fast path. New cache writes only contain "real"
   // (named) vaults; legacy cache writes from before the bug fix may still
   // contain an empty/aborted-launch vault. Validate the cache by checking
@@ -3269,14 +3276,12 @@ export async function discoverVaultIdForTribe(tribeId: number): Promise<string |
       // CRITICAL BOOT PATH — direct fullnode (bypass DGX proxy)
       const fields = await rpcGetObjectDirect(cached);
       const coinName = String(fields["coin_name"] ?? "");
-      if (coinName.length > 0) return cached;
+      if (coinName.length > 0 && fields._type === TRIBE_VAULT_TYPE) return cached;
       // Cached vault has no coin_name — stale. Clear and fall through to
       // re-discover the canonical (named) vault for this tribe.
-      try { localStorage.removeItem(`cradleos:vault:${tribeId}`); } catch { /* */ }
-    } catch {
-      // If RPC fails on the cache lookup, fall back to the cached value
-      // rather than blocking the user entirely.
-      return cached;
+      try { localStorage.removeItem(cycleCacheKey(`vault:${tribeId}`)); } catch { /* */ }
+    } catch (error) {
+      throw new Error(`Could not verify current-cycle vault: ${String(error)}`);
     }
   }
   try {

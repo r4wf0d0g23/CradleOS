@@ -1,3 +1,4 @@
+import { characterGameId } from "../lib/characterIdentity";
 /**
  * ElectionCreatorWizard — multi-step wizard for creating an Election.
  *
@@ -26,7 +27,7 @@ import { createPortal } from "react-dom";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
-import { fetchCharacterTribeId, findCharacterForWallet } from "../lib";
+import { fetchCharacterTribeId, findCharacterForWallet, rpcGetObject } from "../lib";
 import { SUI_TESTNET_RPC } from "../constants";
 import {
   ELIGIBILITY_OPTIONS,
@@ -434,7 +435,7 @@ export function ElectionCreatorWizard({
       // Resolve creator_character_id from the connected wallet.
       const charInfo = await findCharacterForWallet(account.address);
       if (!charInfo) throw new Error("No CradleOS character bound to this wallet");
-      const creatorCharacterId = Number(charInfo.characterId);
+      const creatorCharacterId = characterGameId(await rpcGetObject(charInfo.characterId));
 
       const signer = new CurrentAccountSigner(dAppKit);
 

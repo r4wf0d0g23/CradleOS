@@ -1,3 +1,4 @@
+import { cycleCacheKey } from "../lib/cycleCache";
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { playPowerOn, playPowerOff } from "../lib/sound";
@@ -901,7 +902,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
   };
 
   // Discover tribe vault ID
-  const [tribeVaultId, setTribeVaultId] = useState<string>(() => localStorage.getItem("cradleos_tribe_vault_id") ?? "");
+  const [tribeVaultId, setTribeVaultId] = useState<string>(() => localStorage.getItem(cycleCacheKey("dashboard-vault")) ?? "");
   useEffect(() => {
     if (tribeVaultId || !characterId || !account?.address) return;
     let cancelled = false;
@@ -911,7 +912,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
     }).then(vid => {
       if (cancelled || !vid) return;
       setTribeVaultId(vid);
-      localStorage.setItem("cradleos_tribe_vault_id", vid);
+      localStorage.setItem(cycleCacheKey("dashboard-vault"), vid);
     }).catch(() => {});
     return () => { cancelled = true; };
   }, [characterId, account?.address, tribeVaultId]);

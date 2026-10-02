@@ -1,4 +1,4 @@
-import { LEGACY_EXTENSIONS_READY } from "../lib/cycle";
+import { CASINO_READY } from "../lib/cycleDeployment";
 /**
  * HouseDonatePanel — public bankroll donations + risk-tier display (v29)
  *
@@ -252,7 +252,7 @@ export function HouseDonatePanel() {
 
         <button
           onClick={donate}
-          disabled={!LEGACY_EXTENSIONS_READY || busy || !addr || !amountEve}
+          disabled={!CASINO_READY || busy || !addr || !amountEve}
           style={{
             width: "100%", padding: "12px 0",
             background: busy || !addr || !amountEve ? "#1a1a1a" : ACCENT,

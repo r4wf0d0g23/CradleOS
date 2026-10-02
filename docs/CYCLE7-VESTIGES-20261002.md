@@ -1,3 +1,5 @@
+> **Superseded 2026-10-02:** Raw confirmed Cycle 7 is a clean wipe with no old funds/state migration. The recovery-oriented behavior documented below was withdrawn. See [clean-wipe cutover](../deploy/cycle7-clean-wipe-20261002/README.md) for current status. This file records the earlier release, not the active design.
+
 # Cycle 7 / Vestiges compatibility — 2026-10-02
 
 ## Findings and primary sources

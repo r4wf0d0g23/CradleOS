@@ -1,0 +1,18 @@
+[package]
+name = "cradleos_casino"
+edition = "2024"
+
+published-at = "0x750dcaa9888dac1aafc154b7a5a542cb8e176c6f418d787d0a2e81ae9e52fd12"
+
+[dependencies]
+# Sui framework is provided implicitly by the toolchain (system dependency).
+# sui::random, sui::coin, sui::balance, sui::event all live in sui-framework.
+# world: needed for the proof-of-character bet gate (v26, 2026-07-13). Every
+# wager requires an &Character owned by the sender, so throwaway/alt wallets
+# with no live game identity cannot play. Path resolves both in workspace
+# (frontier/cradleos_casino -> ../world-contracts/...) and on the DGX build host
+# (~/cradleos_casino -> ~/world-contracts/...).
+world = { local = "../world-contracts/contracts/world" }
+
+[environments]
+testnet_stillness = "4c78adac"
