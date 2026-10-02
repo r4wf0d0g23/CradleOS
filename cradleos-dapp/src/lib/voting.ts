@@ -326,6 +326,16 @@ export function toBytes(input: unknown): Uint8Array {
   return new Uint8Array();
 }
 
+/** Official GraphQL MoveValue JSON encodes vector<u8> as base64, even when
+ * the text happens to look like hex. Never send it through the RPC hex helper. */
+export function decodeGraphqlBytes(input: unknown): Uint8Array {
+  if (typeof input !== "string" || input.length % 4 !== 0 ||
+      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(input)) {
+    throw new Error("Invalid GraphQL ballot bytes");
+  }
+  return Uint8Array.from(atob(input), char => char.charCodeAt(0));
+}
+
 // ── Vote encoders (mirror methods/*.move decoders) ──────────────────────────
 
 /** single_choice: encoded_vote = LE u32 option_id (4 bytes). */
@@ -849,7 +859,7 @@ export async function fetchBallotsForElection(electionId: string): Promise<Ballo
         electionId: String(p.election_id ?? ""),
         characterId: Number(p.character_id ?? 0),
         voterAddress: String(p.voter_address ?? ""),
-        encodedVote: toBytes(p.encoded_vote),
+        encodedVote: decodeGraphqlBytes(p.encoded_vote),
         weight: BigInt(String(p.weight ?? "0")),
         castMs: Number(e.timestampMs ?? 0),
         txDigest: String(e.id?.txDigest ?? ""),
@@ -868,7 +878,7 @@ export async function fetchRevealsForElection(electionId: string): Promise<Ballo
         electionId: String(p.election_id ?? ""),
         characterId: Number(p.character_id ?? 0),
         voterAddress: "", // reveal event doesn't re-emit voter address; resolve from BallotCommitted
-        encodedVote: toBytes(p.encoded_vote),
+        encodedVote: decodeGraphqlBytes(p.encoded_vote),
         weight: 0n, // resolved by joining with BallotCommitted by character_id
         castMs: Number(e.timestampMs ?? 0),
         txDigest: String(e.id?.txDigest ?? ""),

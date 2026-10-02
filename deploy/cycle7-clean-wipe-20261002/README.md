@@ -52,7 +52,7 @@ polls are clearly labelled technical checks, use zero funds and no stored votes,
 and are finalized after their short window. No old-world data is transferred.
 
 Activation checks: Core25 + Casino176 prior contract regressions; Voting20,
-frontend98, backend28 current tests; external forged-proof compilation rejected.
+frontend102, backend28 current tests; external forged-proof compilation rejected.
 Nine-route local desktop/mobile browser QA passes with no exceptions, retired
 requests, recovery screens or overflow. Origins reading progress survives and
 current-cycle caches survive repeated loads. Full wallet-driven browser signing
@@ -159,3 +159,7 @@ See `verification.json` for simulation/test receipts and `PRODUCTION.md` for the
 - Fund/configure the fresh Casino only with a deliberate new bankroll and approved operating limits; do not import old funds.
 - Additional Voting methods, weights, eligibility providers, commit/reveal and sponsorship remain unavailable until their own verified implementation.
 - Preserve this worktree: the live character-index service runs from its services directory.
+
+GraphQL ballot payloads are decoded explicitly as base64, separate from RPC arrays/hex.
+Malformed byte payloads fail closed; browser tally verification checks winners, total
+weight and the complete per-option payload with the actual chain seed and parameters.

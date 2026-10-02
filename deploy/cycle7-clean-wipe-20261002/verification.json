@@ -1,6 +1,6 @@
 {
   "scope": "clean wipe; no old funds/state migration",
-  "onchainPublished": false,
+  "onchainPublished": true,
   "publishSimulations": {
     "core": {
       "status": {
@@ -27,16 +27,17 @@
       "netGasMist": 20921880
     },
     "voting": {
-      "status": "pending actual fresh Core address; build/test only"
+      "status": "success; corrected fresh package published after runtime provider-origin fix"
     }
   },
   "tests": {
-    "frontend": 91,
+    "frontend": 102,
     "coreMove": 25,
     "casinoMove": 176,
-    "votingMove": 3,
+    "votingMove": 20,
     "SSUMove": 0,
-    "SealMove": 0
+    "SealMove": 0,
+    "backend": 28
   },
   "proofForgeryCheck": "PASS: external package cannot construct eligibility or arbitrary-weight proofs",
   "productionBytecode": {
@@ -70,5 +71,24 @@
       "retiredWorldPrefixesFound": [],
       "testModules": []
     }
-  }
+  },
+  "currentPackages": {
+    "core": "0x2581b5d820e604306efa2604970387055e20830f9e3b424b7fed3f78e68361a6",
+    "ssu": "0xd73c02463c1c679c94a5d7a133a944798870a2da302a6f4f52f626aa0010721e",
+    "casino": "0x9628fb3b5c589d627d2127581e0c3eb46c3af1f0c1171ce78d0992aebaedbec3",
+    "keeperSeal": "0x384be9488abe3db60996a7788adeb4c936f483b429bb4f7bd997bd248a568c3b",
+    "voting": "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec"
+  },
+  "liveChecks": {
+    "allConfiguredObjectsAndCaps": "verified type/owner on chain",
+    "casino": "current EVE, zero bank and counters, paused",
+    "votingValidOwner": "unsigned VM cast succeeds",
+    "votingWrongOwner": "unsigned VM rejects ownership at eligibility mint",
+    "verificationPoll": "signed zero-ballot open/close/tally/finalize successful; not governance",
+    "publicIndexedReads": "events, dynamic-fields, named field lookup all pass official GraphQL bridge",
+    "browser": "9 local routes and mobile pass; old cache cleared; Origins preserved",
+    "browserWalletSigning": "not asserted",
+    "graphQLBallotEncoding": "explicit base64 decoder; ambiguous hex-looking base64 regression passes"
+  },
+  "backupFollowup": "Second off-host verification deferred by Raw; verified Jetson2 proof retained"
 }
