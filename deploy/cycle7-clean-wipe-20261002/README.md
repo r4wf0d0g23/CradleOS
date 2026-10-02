@@ -16,7 +16,8 @@ Archive old deployment records for audit only. Origins/content/reading progress 
 - Toolchain: official Sui testnet 1.81.0 (`bf0c491c17b8`), aarch64 release archive SHA256
   `2ae9a4eb77a97f48bb085f0d583efdddcf78adf588c3c5f2bba2f73e9a879092`.
 - Prepared signer: `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
-  Live key present; this is NOT a claim of backup verification or approved cap custody.
+  Raw confirmed this SAME wallet for new cap custody at 10:29 CT October 2; see `custody.json`.
+  Live key present; this is NOT a claim of backup verification.
 - Previous manifests/publication records preserved in `previous-manifests/`.
 
 ## Current state
@@ -51,7 +52,8 @@ Voting waits for registry/provider bootstrap. No fabricated zero old-world balan
 2. Raw's attestation of **two readable off-host backups**.
 3. The cap custody destination recorded before signing.
 
-No attestation or backup-derived signature has been found. Do not claim the key is lost and do not
+Custody destination is confirmed. No off-host backup attestation or backup-derived signature has
+been found. The wallet choice is settled; do not ask Raw to choose it again. Do not claim the key is lost and do not
 copy secret key material into this repository, chat, logs, or evidence. This gate is independent of
 the obsolete asset-migration requirements, which Raw's clean-wipe instruction supersedes.
 
