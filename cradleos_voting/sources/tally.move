@@ -159,6 +159,7 @@ module cradleos_voting::tally {
         assert!(voting::state(election) == voting::state_tallied(), E_WRONG_STATE);
 
         let now_ms = clock::timestamp_ms(clock);
+        voting::assert_canonical_tally(election, old_tally);
         assert!(now_ms < voting::tally_dispute_closes_ms(old_tally), E_DISPUTE_CLOSED);
 
         let election_id = voting::id(election);
@@ -232,6 +233,7 @@ module cradleos_voting::tally {
     ) {
         assert!(voting::state(election) == voting::state_tallied(), E_WRONG_STATE);
         let now_ms = clock::timestamp_ms(clock);
+        voting::assert_canonical_tally(election, tally);
         assert!(now_ms >= voting::tally_dispute_closes_ms(tally), E_TOO_EARLY);
         voting::mark_finalized(election, now_ms);
         event::emit(ElectionFinalized {
@@ -319,16 +321,19 @@ module cradleos_voting::tally {
         let n = vector::length(character_ids);
         assert!(vector::length(encoded_votes) == n, E_NOT_TALLIED);
         assert!(vector::length(weights) == n, E_NOT_TALLIED);
+        assert!(n == voting::revealed_count(election), E_NOT_TALLIED);
+        // This release supports One weight only. Sorted unique IDs plus exact
+        // cardinality prevent omission, duplication, and order-dependent hashes.
+        assert!(voting::weight_kind(election) == 0, E_NOT_TALLIED);
         let mut i = 0;
         while (i < n) {
             let cid = *vector::borrow(character_ids, i);
+            assert!(i == 0 || cid > *vector::borrow(character_ids, i - 1), E_NOT_TALLIED);
+            assert!(*vector::borrow(weights, i) == 1, E_NOT_TALLIED);
             assert!(voting::has_vote(election, cid), E_NOT_TALLIED);
             let stored = voting::get_vote(election, cid);
             let passed = vector::borrow(encoded_votes, i);
             assert!(stored == passed, E_NOT_TALLIED);
-            // weight verification deferred to off-chain (weights are emitted in
-            // BallotCast events and can be re-derived from those).
-            let _ = vector::borrow(weights, i);
             i = i + 1;
         };
     }

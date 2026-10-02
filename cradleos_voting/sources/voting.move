@@ -106,6 +106,7 @@ module cradleos_voting::voting {
     const E_TALLY_EXISTS:          u64 = 23;
     const E_ZK_NOT_IMPLEMENTED:    u64 = 24;
     const E_UNSUPPORTED_PROVIDER: u64 = 25;
+    const E_UNSUPPORTED_MODE: u64 = 26;
 
     // ── Sub-structs ───────────────────────────────────────────────────────────
 
@@ -409,6 +410,13 @@ module cradleos_voting::voting {
         assert!(privacy_kind != PRIVACY_ZK, E_ZK_NOT_IMPLEMENTED);
         // Fresh-cycle launch: only Character-authenticated open / one-person weight.
         assert!(eligibility_kind == ELIG_OPEN && weight_kind == WEIGHT_ONE, E_UNSUPPORTED_PROVIDER);
+        assert!((method_kind == METHOD_SINGLE_CHOICE || method_kind == METHOD_APPROVAL)
+            && privacy_kind == PRIVACY_PUBLIC && !allow_recast, E_UNSUPPORTED_MODE);
+        assert!(vector::is_empty(&eligibility_params) && vector::is_empty(&weight_params)
+            && vector::is_empty(&privacy_params), E_UNSUPPORTED_PROVIDER);
+        assert!(if (method_kind == METHOD_SINGLE_CHOICE) vector::is_empty(&method_params)
+            else vector::is_empty(&method_params) || vector::length(&method_params) == 4,
+            E_BAD_VOTE_ENCODING);
 
         let now_ms = clock::timestamp_ms(clock);
         let creator = ctx.sender();
@@ -676,6 +684,9 @@ module cradleos_voting::voting {
         assert!(election.privacy_kind == PRIVACY_PUBLIC, E_WRONG_STATE);
 
         let now_ms = clock::timestamp_ms(clock);
+        assert!(now_ms >= election.schedule.opens_ms && now_ms < election.schedule.closes_ms, E_BAD_SCHEDULE);
+        assert!(ctx.sender() == voter_address, E_PROOF_MISMATCH);
+        validate_public_vote(election, &encoded_vote);
         let election_id = object::uid_to_inner(&election.id);
 
         // Verify and consume eligibility proof
@@ -1081,6 +1092,54 @@ module cradleos_voting::voting {
     }
     public fun has_commit(e: &Election, character_id: u32): bool {
         df::exists_(&e.id, CommitKey { character_id })
+    }
+
+    public(package) fun assert_canonical_tally(e: &Election, t: &Tally) {
+        assert!(t.election_id == object::id(e), E_NOT_TALLIED);
+        assert!(option::is_some(&e.tally_id), E_NOT_TALLIED);
+        assert!(*option::borrow(&e.tally_id) == object::id(t) && !t.disputed, E_NOT_TALLIED);
+    }
+
+    // Validate at cast time: a malformed stored vote must never block tallying.
+    fun validate_public_vote(e: &Election, bytes: &vector<u8>) {
+        let size = vector::length(bytes);
+        if (e.method_kind == METHOD_SINGLE_CHOICE) {
+            assert!(size == 4, E_BAD_VOTE_ENCODING);
+            assert_valid_option(e, read_vote_u32(bytes, 0));
+        } else {
+            assert!(e.method_kind == METHOD_APPROVAL && size >= 4, E_BAD_VOTE_ENCODING);
+            let count = read_vote_u32(bytes, 0) as u64;
+            assert!(size == 4 + count * 4, E_BAD_VOTE_ENCODING);
+            if (vector::length(&e.method_params) == 4) {
+                let maximum = read_vote_u32(&e.method_params, 0) as u64;
+                assert!(maximum == 0 || count <= maximum, E_BAD_VOTE_ENCODING);
+            };
+            let mut i = 0;
+            let mut previous = 0;
+            while (i < count) {
+                let oid = read_vote_u32(bytes, 4 + i * 4);
+                assert!(i == 0 || oid > previous, E_BAD_VOTE_ENCODING);
+                assert_valid_option(e, oid);
+                previous = oid;
+                i = i + 1;
+            };
+        };
+    }
+
+    fun read_vote_u32(v: &vector<u8>, offset: u64): u32 {
+        (*vector::borrow(v, offset) as u32)
+            | ((*vector::borrow(v, offset + 1) as u32) << 8)
+            | ((*vector::borrow(v, offset + 2) as u32) << 16)
+            | ((*vector::borrow(v, offset + 3) as u32) << 24)
+    }
+
+    fun assert_valid_option(e: &Election, oid: u32) {
+        let mut i = 0;
+        while (i < vector::length(&e.options)) {
+            if (vector::borrow(&e.options, i).id == oid) return;
+            i = i + 1;
+        };
+        abort E_BAD_VOTE_ENCODING
     }
 
     // ── EligibilityProof consumer (used by eligibility_composite) ────────────
