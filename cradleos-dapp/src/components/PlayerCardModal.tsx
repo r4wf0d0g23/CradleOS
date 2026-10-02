@@ -334,15 +334,22 @@ export function PlayerCardModal({
     if (ids.size === 0) return;
     let cancelled = false;
     (async () => {
-      const next = new Map(lazySysMap);
-      // Static catalog — batch-resolve in one pass, no per-id RPC.
+      // Names-only lookup — batch-resolve in one pass, no per-id RPC.
       const { resolveSolarSystemsBatch } = await import("../lib/solarSystems");
       const numericIds = [...ids]
         .map((id) => Number(id))
         .filter((id) => Number.isFinite(id));
       const resolved = await resolveSolarSystemsBatch(numericIds);
-      for (const [id, rec] of resolved) next.set(String(id), rec.name);
-      if (!cancelled) setLazySysMap(next);
+      if (!cancelled && resolved.size > 0) setLazySysMap(previous => {
+        let next: Map<string, string> | null = null;
+        for (const [id, rec] of resolved) {
+          if (previous.get(String(id)) === rec.name) continue;
+          next ??= new Map(previous);
+          next.set(String(id), rec.name);
+        }
+        // Preserve identity on an unknown/missing name; do not retrigger this effect.
+        return next ?? previous;
+      });
     })();
     return () => { cancelled = true; };
   }, [effectiveKills, needsLazyKills, sysMap, lazySysMap]);

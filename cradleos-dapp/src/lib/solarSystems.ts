@@ -1,6 +1,8 @@
 import { PUBLIC_UNIVERSE_AVAILABLE } from "./cycle";
 /**
- * Solar-system catalog loader (runtime-fetched static snapshot).
+ * Shared system-name resolver and historical full-catalog compatibility loader.
+ * Cycle 7 uses currentSystemNames for display labels only; the full universe
+ * catalog and World API fallback below remain disabled by PUBLIC_UNIVERSE_AVAILABLE.
  *
  * The full EVE Frontier universe (~24,500 systems × {id, name,
  * constellationId, regionId, location}) is fixed map data — it changes
@@ -22,6 +24,7 @@ import { PUBLIC_UNIVERSE_AVAILABLE } from "./cycle";
  */
 import { SERVER_ENV } from "../constants";
 import { getSolarSystem } from "./dataClient";
+import { resolveCurrentSystemName } from "./currentSystemNames";
 
 export interface SolarSystemRecord {
   id: number;
@@ -40,7 +43,7 @@ const CACHE_KEY_PREFIX = "cradleos:solarsystem-catalog:";
 // sessionStorage caches get invalidated automatically.
 //   v1 — initial release (world-api names, mostly numeric placeholders)
 //   v2 — added systems.static overlay (Sanctuary build 3409470, 2026-06-25)
-//        => names like 'O3S-11J' / 'I8V-PCH'. THIS IS CORRECT.
+//        => historical Sanctuary names only; not a current-cycle source.
 //
 // Critically: when v1 caches existed in user browsers across the v1→v2 switch
 // (2026-06-25 wipe day), the loader silently kept serving the old v1 names from
@@ -149,7 +152,12 @@ export async function loadSolarSystemCatalog(): Promise<Map<number, SolarSystemR
 export async function resolveSolarSystem(
   systemId: number
 ): Promise<SolarSystemRecord | null> {
-  if (!Number.isFinite(systemId)) return null;
+  if (!Number.isSafeInteger(systemId) || systemId <= 0) return null;
+  if (!PUBLIC_UNIVERSE_AVAILABLE) {
+    const name = await resolveCurrentSystemName(systemId);
+    return name ? { id: systemId, name, constellationId: null, regionId: null,
+      x: null, y: null, z: null } : null;
+  }
   const catalog = await loadSolarSystemCatalog();
   const hit = catalog.get(systemId);
   if (hit) return hit;

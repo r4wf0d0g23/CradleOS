@@ -25,6 +25,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { findCharacterForWallet, fetchTribeInfo, type CharacterInfo } from "../../lib";
 import { resolveSolarSystemName } from "../../lib/solarSystems";
+import { PUBLIC_UNIVERSE_AVAILABLE } from "../../lib/cycle";
 import {
   FRAGMENTS,
   pickFragmentForSeed,
@@ -455,8 +456,11 @@ export function KeeperCipherPanel() {
         setVerifyError("Lattice silent. No target candidate available right now.");
         return;
       }
-      // Static catalog (sync after first load) — zero RPC for known universe ids.
-      const resolvedName = await resolveSolarSystemName(target).catch(() => undefined);
+      // The names dictionary does not validate invented/fixed expedition IDs.
+      // Without a current universe catalog, label only event-backed targets.
+      const eventBacked = exp.targetSelector.kind === "bloodiest_24h" || exp.targetSelector.kind === "bloodiest_7d";
+      const resolvedName = PUBLIC_UNIVERSE_AVAILABLE || eventBacked
+        ? await resolveSolarSystemName(target).catch(() => undefined) : undefined;
       const name = resolvedName && resolvedName !== `System ${target}` ? resolvedName : undefined;
 
       const newExp: ActiveExpedition = {
