@@ -89,3 +89,14 @@ Production Pages project: `cradleos`, branch `main`, domains cradleos.io/www.cra
 - Preview deployment: `2bf06f65` on `cycle7-preview.cradleos-d75.pages.dev`; browser route checks pass. Preview intentionally lacks the production-only media secret and reports "media delivery not configured"; the production Chapter 2 endpoint is independently verified HTTP 200 with the immutable hash/length above.
 - Production index cut over via `~/.config/systemd/user/character-index.service.d/20261002-cycle7.conf`. Public character resolution matches the official current-world read; at cutover 1,658 characters and 5,761 owned objects, increasing from the initial snapshot.
 - Frontend production deployment ID and final live checks are recorded in the rollout receipt after publication.
+
+### Production receipt
+
+- Published October 2: `https://54e4e2fc.cradleos-d75.pages.dev`, production domains cradleos.io / www.cradleos.io.
+- Application source commit: `5d876140d241a148f24b5689b35fc5be3708e4d9`, branch `cycle7-vestiges-20261002` (pushed to GitHub; no protected branch merge).
+- Live assets: `index-0Emmt49s.js`, `index-D_K0sBVG.css`.
+- Live browser check passes seven routes, desktop/mobile layout, no page exceptions or retired-map requests, and opening the recovery panel.
+- Production Chapter 2 range request: HTTP 206, bytes 0–63 of 49,437,043, matching immutable SHA ETag. Automated Chromium lacks this H.264/AAC codec (`canPlayType` empty), so **end-to-end audiovisual playback is not claimed**. No media cut or encoding was altered.
+- Final full owned-object pass: 5,762 upserts, two confirmed stale objects removed, `allOk=true`; subsequent incremental pass wrote 19 objects. Current character resolution remains independently checked against the official chain.
+- Both pre-wallet transaction guards and discovery/atomic-index regressions pass: 98 frontend + 20 backend tests; eight canon checks; IOC scan clean.
+- Existing large-bundle warning remains. Chapter 1's missing approved media and full legacy extension migration remain explicit follow-ups, not completed work.
