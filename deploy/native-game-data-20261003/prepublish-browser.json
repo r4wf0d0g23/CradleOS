@@ -1,0 +1,29 @@
+{
+  "base": "http://127.0.0.1:5193",
+  "checks": [
+    {
+      "width": 1440,
+      "items": "distinct same-name graphics, raw-attribute disclaimer, API-only item, source disagreement"
+    },
+    {
+      "width": 1440,
+      "recipes": "fuel quantities, multi-output, patch attribution, raw runtime, empty search and pagination"
+    },
+    {
+      "width": 390,
+      "items": "distinct same-name graphics, raw-attribute disclaimer, API-only item, source disagreement"
+    },
+    {
+      "width": 390,
+      "recipes": "fuel quantities, multi-output, patch attribution, raw runtime, empty search and pagination"
+    },
+    {
+      "nativeFailure": "API cards still usable; Retry recovers"
+    },
+    {
+      "wrongCycle": "blocked without archived fallback"
+    }
+  ],
+  "errors": [],
+  "retiredRequests": []
+}

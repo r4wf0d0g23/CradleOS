@@ -1,5 +1,11 @@
 # Cycle 7 Game Data snapshot
 
+**Native extension added October3 evening:** see [NATIVE.md](NATIVE.md) for the
+separately validated cFSD recipe/base-attribute pipeline. The original extractor
+below remains the source of the API/text/event snapshot. Run the native exporter
+after it to restore the native metadata extension; do not publish regenerated
+base metadata alone with stale native data.
+
 Build `3573151`, local Stillness client (`cycle-7`, branch `//frontier/cycle-7`).
 Extractor rejects another build until reviewed. Source resource byte sizes and
 MD5 values must match the launcher's manifest. SHA-256 provenance is recorded.
@@ -32,9 +38,11 @@ searchable. Presence in the client is not proof of live availability.
 `eventtypes.static` is decoded only for the validated dict/int/single-string
 schema and known object layout, with length, offset, header and duplicate checks.
 These internal client event IDs are not Sui events. Unknown formats fail closed.
-Types/groups/dogma/industry fsdbinary resources are hash-verified but not decoded;
-the older partial decoder does not establish field semantics. No guessed
-recipes, combat stats, old-world data, or 3D stand-ins are presented as current.
+This base extractor hash-verifies but does not itself decode the fsdbinary
+resources. The separately documented matching native readers now decode types,
+groups, dogma, units, graphics and blueprint definitions. The older partial
+decoder is not used for those fields. No guessed recipes, old-world data, or 3D
+stand-ins are presented as current.
 
 `changes.json` is an editorial **fact summary** of official 0.7.0.0, 0.7.0.1 and
 0.7.1.0 notes; it is not generated from those opaque binaries. Quantities not
