@@ -1,0 +1,55 @@
+{
+  "deployment": "15d65d99",
+  "source": "981b26a",
+  "url": "https://cradleos.io",
+  "bundle": "/assets/index-D8uiR3PQ.js",
+  "sha256": "749a4e43f06d1c488d9d94709f57de3fdf9bcc9011da45d8e68278b8786cf5d2",
+  "verifiedAt": "2026-10-03T13:35:48.639Z",
+  "backend": [
+    {
+      "path": "/keeper/submit",
+      "status": 410
+    },
+    {
+      "path": "/keeper/ocr",
+      "status": 410
+    },
+    {
+      "path": "/v1/chat/completions",
+      "status": 410
+    },
+    {
+      "path": "/rag/query",
+      "status": 410
+    },
+    {
+      "path": "/keeper/novelty-stats",
+      "status": 410
+    },
+    {
+      "path": "/queue",
+      "status": 410
+    },
+    {
+      "path": "/telemetry/combined",
+      "status": 200
+    },
+    {
+      "path": "/index/health",
+      "status": 200
+    },
+    {
+      "path": "/sui-status",
+      "status": 200
+    },
+    {
+      "path": "/sui",
+      "status": 200,
+      "chain": "4c78adac"
+    }
+  ],
+  "frontendTests": 55,
+  "routeTests": 3,
+  "browserScope": "Desktop/mobile anonymous navigation and exact bundle; no wallet signing",
+  "review": "Independent native reviewer PASS; Opus unavailable"
+}

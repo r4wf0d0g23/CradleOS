@@ -1,3 +1,5 @@
+> Superseded frontend: 2026-10-03 Keeper + stale calendar removal, source `981b26a`, Pages `15d65d99`. See `../keeper-removal-20261003/release.json`. Cycle7 on-chain deployment remains unchanged.
+
 # Cycle 7 production activation receipt — 2026-10-02
 
 > **System names update:** deployment `a2635a4e`, source `213a54b`, supersedes the web bundles below. Names-only Cycle 7 client lookup; no map/topology or on-chain changes. See [extraction/scope](SYSTEM-NAMES.md) and [live receipt](system-names-release.json).

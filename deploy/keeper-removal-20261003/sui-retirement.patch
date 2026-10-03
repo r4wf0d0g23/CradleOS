@@ -1,0 +1,18 @@
+--- a/server.js
++++ b/server.js
+@@ -420,6 +420,15 @@
+     return;
+   }
+ 
++  // Retired Keeper paths may reach this origin via legacy tunnel routing.
++  // Stop before RPC parsing/forwarding; normal /sui routes are untouched.
++  const requestPath = (req.url ?? "/").split("?", 1)[0];
++  if (/^\/(?:keeper|v1|queue|rag|submissions)(?:\/|$)/i.test(requestPath)) {
++    res.writeHead(410, { "Content-Type": "application/json", "Cache-Control": "no-store" });
++    res.end(JSON.stringify({ error: "Keeper has been retired.", code: "KEEPER_RETIRED" }));
++    return;
++  }
++
+   // GET endpoints — health + metrics.
+   if (req.method === "GET") {
+     if (req.url === "/health" || req.url === "/") {
