@@ -23,8 +23,10 @@ spike merged into the app. It publishes no executable or raw client binaries.
   matches the patch;75D1 output is native evidence, not a patch-note claim.
 
 Not verified: facility eligibility, facility/timing/skill modifiers, effective
-fitted stats, live availability, or all model assemblies. Industry/fitting
-calculators remain historical. Game Data is a reference browser, not a planner.
+fitted stats, live availability, or all model assemblies. The fitting
+calculator remains historical. Game Data is a reference browser; the separate
+Recipes tab now plans batches and ingredient routes from these base quantities,
+without facility eligibility, production duration or gameplay-modifier claims.
 No chain state, wallet, user profile, or live launcher cache changes.
 
 ## Reproduce

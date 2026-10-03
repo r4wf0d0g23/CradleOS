@@ -1,1349 +1,181 @@
-import { useState, useMemo, useRef, useEffect } from "react";
-import industryData from "../data/industry.json";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { GAME_DATA_BASE, validateNativeSnapshot, type NativeSnapshot, type NativeRecipe } from "../lib/gameData";
+import { materialListText, planRecipe, producersFor, type MaterialLine, type RouteChoices } from "../lib/recipePlanner";
+import "./RecipePlanner.css";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface TypeInfo {
-  name: string;
-  category: string;
-  group: string;
-  volume?: number;
+const number = (n: number) => n.toLocaleString();
+function batchLabel(data: NativeSnapshot, recipe: NativeRecipe): string {
+  return `#${recipe.id} · ${recipe.inputs.map(x => `${x.quantity} ${data.types[x.typeID].name}`).join(" + ")}`;
+}
+function Lines({ data, lines }: { data: NativeSnapshot; lines: MaterialLine[] }) {
+  return <ul className="recipe-lines">{lines.map(x => <li key={x.typeID}>
+    <strong>{number(x.quantity)} × {data.types[x.typeID].name}</strong>
+    <small>Type {x.typeID}{!data.types[x.typeID].apiPublished && " · client-only definition"}</small>
+  </li>)}</ul>;
 }
 
-interface IndustryMeta {
-  cycle?: string;
-  version?: string;
-  build?: string;
-  extracted_at?: string;
-  counts?: Record<string, number>;
-}
-
-interface BlueprintMaterial {
-  quantity: number;
-  typeID: number;
-}
-
-interface Blueprint {
-  bpId: number;
-  time: number;
-  materials: BlueprintMaterial[];
-  products: BlueprintMaterial[];
-  /** True for blueprints/recipes that consume salvage drops ("Salvaged Materials",
-   *  "Mummified Clone", etc.). Salvage paths can be excluded from the supply
-   *  chain via the IndustryPanel toggle since they're rare in practice. */
-  salvage?: boolean;
-}
-
-interface Recipe {
-  name: string;
-  facility: string;
-  time: number;
-  inputs: BlueprintMaterial[];
-  outputs: BlueprintMaterial[];
-  /** True for salvage-class refinery recipes. Excluded from supply chain
-   *  resolution by default — see IndustryPanel `includeSalvage` toggle. */
-  salvage?: boolean;
-}
-
-interface TreeNode {
-  typeId: number;
-  name: string;
-  category: string;
-  group: string;
-  quantity: number;
-  timePerUnit: number;
-  totalTime: number;
-  isRaw: boolean;
-  depth: number;
-  children: TreeNode[];
-}
-
-interface RawSummaryItem {
-  typeId: number;
-  name: string;
-  category: string;
-  group: string;
-  totalQuantity: number;
-}
-
-interface TimeSummary {
-  totalSeconds: number;
-  byDepth: { depth: number; label: string; seconds: number }[];
-}
-
-// ── Data setup ────────────────────────────────────────────────────────────────
-
-const types = industryData.types as Record<string, TypeInfo>;
-const blueprints = industryData.blueprints as Record<string, Blueprint>;
-const recipes = (industryData as { recipes?: Recipe[] }).recipes ?? [];
-const industryMeta = (industryData as { meta?: IndustryMeta }).meta ?? {};
-const industryDelta = (industryData as { delta?: { added_blueprints?: number[]; changed_blueprints?: number[]; removed_blueprints?: number[] } }).delta ?? {};
-
-// Convert recipes into blueprint-like entries for unified supply chain resolution.
-// Recipe key format: "r_<index>" to avoid collisions with numeric blueprint keys.
-// Salvage flag propagates from recipe → blueprint shape so resolution can filter.
-const recipeBps: Record<string, Blueprint> = {};
-for (let i = 0; i < recipes.length; i++) {
-  const r = recipes[i];
-  recipeBps[`r_${i}`] = {
-    bpId: -1 - i,
-    time: r.time,
-    materials: r.inputs,
-    products: r.outputs,
-    salvage: r.salvage === true,
-  };
-}
-
-// Merge blueprints + recipes into a single lookup.
-// Blueprint entries take priority — if an item has both, the assembly blueprint wins.
-const allBlueprints: Record<string, Blueprint> = { ...blueprints };
-for (const [key, rbp] of Object.entries(recipeBps)) {
-  allBlueprints[key] = rbp;
-}
-
-/** Build a typeID → blueprint-key lookup, optionally excluding salvage recipes.
- *  When salvage is excluded, salvage recipe outputs only register as producers
- *  if NO non-salvage producer exists for that output (so the toggle is
- *  authoritative — if you turn it off, salvage paths disappear entirely from
- *  the resolver, even if they were the first registered producer). */
-function buildProductToBp(includeSalvage: boolean): Map<number, string> {
-  const map = new Map<number, string>();
-  // Assembly blueprints first (highest priority — always non-salvage).
-  for (const [key, bp] of Object.entries(blueprints)) {
-    for (const prod of bp.products) {
-      map.set(prod.typeID, key);
-    }
-  }
-  // Then non-salvage recipes (only fill gaps).
-  for (const [key, bp] of Object.entries(recipeBps)) {
-    if (bp.salvage) continue;
-    for (const prod of bp.products) {
-      if (!map.has(prod.typeID)) {
-        map.set(prod.typeID, key);
+function Planner({ data }: { data: NativeSnapshot }) {
+  const producers = useMemo(() => producersFor(data), [data]);
+  const products = useMemo(() => [...producers.keys()].map(id => data.types[id])
+    .sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id), [data, producers]);
+  const categories = useMemo(() => [...new Set(products.map(x => x.category || "Client-only"))].sort(), [products]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [shown, setShown] = useState(40);
+  const [target, setTarget] = useState<number | null>(null);
+  const [rootID, setRootID] = useState<number | null>(null);
+  const [quantity, setQuantity] = useState("1");
+  const [mode, setMode] = useState<"direct" | "chain">("direct");
+  const [choices, setChoices] = useState<RouteChoices>({});
+  const [copied, setCopied] = useState("");
+  const currentCopy = useRef("");
+  const matches = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return products.filter(x => (category === "All" || (x.category || "Client-only") === category) &&
+      (!q || String(x.id) === q || `${x.name} ${x.group ?? ""}`.toLowerCase().includes(q)));
+  }, [products, search, category]);
+  const options = target === null ? [] : producers.get(target) ?? [];
+  const recipe = options.find(r => r.id === rootID);
+  const calculation = useMemo(() => {
+    if (target === null || rootID === null) return { plan: null, error: "" };
+    try {
+      if (!/^\d+$/.test(quantity) || Number(quantity) <= 0 || !Number.isSafeInteger(Number(quantity))) {
+        throw new Error("Enter a positive whole-number quantity. Fractions and rounded estimates are not used.");
       }
-    }
+      return { plan: planRecipe(data, target, Number(quantity), rootID, mode, choices), error: "" };
+    } catch (e) { return { plan: null, error: e instanceof Error ? e.message : String(e) }; }
+  }, [data, target, rootID, quantity, mode, choices]);
+  const plan = calculation.plan;
+  const copyText = plan?.status === "ready" ? materialListText(data, plan) : "";
+  currentCopy.current = copyText;
+  useEffect(() => { setCopied(""); }, [copyText]);
+  const rootJob = plan?.jobs.find(j => j.recipeID === rootID);
+  const rootOutput = rootJob?.outputs.find(x => x.typeID === target);
+  const surplus = plan?.jobs.flatMap(job => job.outputs.filter(x => x.surplus > 0).map(x => ({ ...x, recipeID: job.recipeID }))) ?? [];
+  function select(id: number) {
+    setTarget(id); setRootID(producers.get(id)?.length === 1 ? producers.get(id)![0].id : null);
+    setChoices({}); setCopied("");
   }
-  // Finally salvage recipes, only if explicitly included AND no non-salvage
-  // producer was found above.
-  if (includeSalvage) {
-    for (const [key, bp] of Object.entries(recipeBps)) {
-      if (!bp.salvage) continue;
-      for (const prod of bp.products) {
-        if (!map.has(prod.typeID)) {
-          map.set(prod.typeID, key);
-        }
-      }
-    }
+  async function copy() {
+    if (!copyText) return;
+    const requestedText = copyText;
+    try {
+      await navigator.clipboard.writeText(requestedText);
+      if (currentCopy.current === requestedText) setCopied("Material list copied.");
+    } catch { if (currentCopy.current === requestedText) setCopied("Clipboard unavailable. Open the text version below to select and copy it."); }
   }
-  return map;
+  return <div className="recipe-planner">
+    <header className="recipe-header">
+      <div><div className="recipe-eyebrow">CYCLE 7 · VESTIGES · CLIENT {data.build}</div><h2>Recipes &amp; Materials</h2>
+        <p>Choose a product, compare its recipes, and plan whole production batches.</p></div>
+      <div className="recipe-count"><strong>{data.counts.recipes}</strong> recipes <span>·</span> <strong>{products.length}</strong> products</div>
+    </header>
+    <p className="recipe-scope">Current-client quantities. Facility availability, production duration and gameplay modifiers are not verified. No starting inventory is assumed.</p>
+    <div className="recipe-layout">
+      <aside className="recipe-catalog" aria-label="Recipe product catalog">
+        <label htmlFor="recipe-search">Find a product</label>
+        <input id="recipe-search" aria-label="Search recipe products" placeholder="Name, type ID, or group…" value={search} onChange={e => { setSearch(e.target.value); setShown(40); }} />
+        <label htmlFor="recipe-category">Category</label>
+        <select id="recipe-category" value={category} onChange={e => { setCategory(e.target.value); setShown(40); }}>
+          <option>All</option>{categories.map(c => <option key={c}>{c}</option>)}
+        </select>
+        <p className="recipe-muted">{matches.length} matching products</p>
+        <div className="recipe-product-list">{matches.slice(0, shown).map(item => <button key={item.id} className={`recipe-product${target === item.id ? " selected" : ""}`} aria-pressed={target === item.id} onClick={() => select(item.id)}>
+          <strong>{item.name}</strong><small>Type {item.id} · {producers.get(item.id)!.length} recipe{producers.get(item.id)!.length === 1 ? "" : "s"}</small>
+          {!item.apiPublished && <small>Client-only reference</small>}
+        </button>)}</div>
+        {!matches.length && <p>No matching products in the current recipe snapshot.</p>}
+        {shown < matches.length && <button onClick={() => setShown(n => n + 40)}>Show more products</button>}
+      </aside>
+      <section className="recipe-workspace" aria-label="Recipe plan">
+        {target === null ? <div className="recipe-empty"><h3>What are you building?</h3><p>Select a product to compare its ingredient routes and batch yields.</p><button className="recipe-primary" onClick={() => { setSearch("88335"); setCategory("All"); select(88335); }}>Try D1 Fuel</button></div> : <>
+          <section className="recipe-card">
+            <h3>{data.types[target].name} <small>Type {target}</small></h3>
+            <div className="recipe-controls">
+              <div><label htmlFor="root-recipe">Recipe route</label>
+                <select id="root-recipe" value={rootID ?? ""} onChange={e => { setRootID(e.target.value ? Number(e.target.value) : null); setChoices({}); }}>
+                  <option value="">Choose one of {options.length} recipes</option>{options.map(r => <option key={r.id} value={r.id}>{batchLabel(data, r)}</option>)}
+                </select>
+              </div>
+              <div><label htmlFor="recipe-quantity">Units wanted</label><input id="recipe-quantity" inputMode="numeric" value={quantity} onChange={e => setQuantity(e.target.value)} /></div>
+            </div>
+            {!recipe && <p className="recipe-muted">Choose the ingredients you want to use. No route is ranked as cheapest or assumed available.</p>}
+            {recipe && <>
+              <div className="recipe-two-column recipe-one-batch"><div><h4>Inputs per batch</h4><Lines data={data} lines={recipe.inputs} /></div><div><h4>Outputs per batch</h4><Lines data={data} lines={recipe.outputs} /></div></div>
+              <details className="recipe-source"><summary>Recipe #{recipe.id} · source details</summary><p>Native <code>runTime</code>: {recipe.runTime}, raw unit unverified. No duration estimate is calculated. Primary type ID: {recipe.primaryTypeID}.</p>
+                {data.patchChecks.filter(x => x.recipeID === recipe.id).map(x => <p key={x.recipeID}><a href={x.url} target="_blank" rel="noreferrer">Official patch check</a>: {x.fields}.</p>)}
+              </details>
+            </>}
+          </section>
+          <div className="recipe-mode" role="group" aria-label="Planning mode">
+            <button aria-pressed={mode === "direct"} onClick={() => setMode("direct")}>Direct ingredients</button>
+            <button aria-pressed={mode === "chain"} onClick={() => setMode("chain")}>Supply chain</button>
+          </div>
+          <p className="recipe-muted">{mode === "direct" ? "Acquire the selected recipe’s inputs; no intermediate recipes are assumed." : "Build intermediates or acquire them externally. Shared batches are combined. By-products assigned to other routes are not automatically credited; this is not an optimized schedule."}</p>
+          {calculation.error && <p className="recipe-alert" role="alert">{calculation.error}</p>}
+          {mode === "chain" && plan && plan.routes.some(r => r.typeID !== target) && <section className="recipe-card">
+            <h3>Ingredient routes</h3><p className="recipe-muted">One choice per ingredient, applied everywhere in this plan. Acquire means source externally—not necessarily mineable or obtainable.</p>
+            {plan.routes.filter(r => r.typeID !== target).map(route => {
+              const candidates = producers.get(route.typeID) ?? [];
+              return <div className="recipe-route" key={route.typeID}>
+                <label htmlFor={`route-${route.typeID}`}>{data.types[route.typeID].name}<small>Type {route.typeID}</small></label>
+                {candidates.length ? <select id={`route-${route.typeID}`} value={choices[route.typeID] ?? ""} onChange={e => setChoices(old => {
+                  const next = { ...old }; if (!e.target.value) delete next[route.typeID]; else next[route.typeID] = e.target.value === "acquire" ? "acquire" : Number(e.target.value); return next;
+                })}>
+                  <option value="">{candidates.length === 1 ? `Automatic · recipe #${candidates[0].id}` : "Choose a recipe or acquire"}</option>
+                  <option value="acquire">Acquire externally · stop expansion</option>
+                  {candidates.map(r => <option key={r.id} value={r.id}>{batchLabel(data, r)}</option>)}
+                </select> : <span className="recipe-muted">Acquire · no producer in this snapshot</span>}
+              </div>;
+            })}
+          </section>}
+          {plan?.status === "cycle" && <p role="alert" className="recipe-alert">The selected routes form a production loop. Choose Acquire for a loop ingredient, or use another recipe. Totals are withheld until resolved. Affected recipe IDs: {plan.cycleRecipes.join(", ")}.</p>}
+          {plan?.status === "needs-routes" && <p role="alert" className="recipe-alert">Plan incomplete: choose a recipe or Acquire for {plan.required.filter(x => x.reason === "choice").length} ingredient(s). The list below is provisional and cannot yet be copied as a finished plan.</p>}
+          {rootJob && rootOutput && <div className="recipe-metrics" aria-label="Batch totals">
+            <div><small>Requested</small><strong>{number(plan!.requested.quantity)}</strong></div>
+            <div><small>Final recipe batches</small><strong>{number(rootJob.runs)}</strong></div>
+            <div><small>Produced</small><strong>{number(rootOutput.quantity)}</strong></div>
+            <div><small>Extra target units</small><strong>{number(rootOutput.surplus)}</strong></div>
+          </div>}
+          {plan && plan.status !== "cycle" && <>
+            <section className="recipe-card" aria-label="Materials to acquire">
+              <div className="recipe-section-heading"><h3>{plan.status === "ready" ? "Materials to acquire" : "Provisional material requirements"}</h3><button onClick={copy} disabled={!copyText}>Copy material list</button></div>
+              <p className="recipe-muted">Total requirements before subtracting anything you own. “No producer” means absent from this snapshot, not a confirmed raw resource.</p>
+              <ul className="recipe-lines">{plan.required.map(line => <li key={line.typeID}><strong>{number(line.quantity)} × {data.types[line.typeID].name}</strong><small>Type {line.typeID} · {line.reason === "choice" ? "route choice required" : line.reason === "external" ? "no producer in snapshot" : "acquire externally"}</small></li>)}</ul>
+              {copied && <p role="status">{copied}</p>}
+              {copyText && <details><summary>Text version</summary><textarea aria-label="Material list text" readOnly value={copyText} rows={Math.min(16, plan.required.length + 6)} /></details>}
+            </section>
+            <section className="recipe-card"><h3>Batch plan <small>{plan.jobs.length} recipe job{plan.jobs.length === 1 ? "" : "s"}</small></h3>
+              <p className="recipe-muted">Ingredients first, final product last. Counts assume the client’s unmodified quantities; no elapsed time is implied.</p>
+              {plan.jobs.map(job => <details key={job.recipeID} className="recipe-job"><summary><strong>Recipe #{job.recipeID}</strong> · {number(job.runs)} batch{job.runs === 1 ? "" : "es"} · {job.outputs.map(x => data.types[x.typeID].name).join(" + ")}</summary>
+                <div className="recipe-two-column"><div><h4>Total inputs</h4><Lines data={data} lines={job.inputs} /></div><div><h4>Total outputs</h4><Lines data={data} lines={job.outputs} /></div></div>
+              </details>)}
+            </section>
+            <section className="recipe-card"><h3>Surplus &amp; by-products</h3>
+              {!surplus.length ? <p className="recipe-muted">No unallocated output from these batches.</p> : <><p className="recipe-muted">Output left after this recipe’s assigned demand. Not automatically deducted from another route’s inputs.</p><ul className="recipe-lines">{surplus.map(x => <li key={`${x.recipeID}-${x.typeID}`}><strong>{number(x.surplus)} × {data.types[x.typeID].name}</strong><small>From recipe #{x.recipeID} · type {x.typeID}</small></li>)}</ul></>}
+            </section>
+          </>}
+        </>}
+      </section>
+    </div>
+    <footer className="recipe-footer">Build {data.build} · snapshot {data.extractedAt.slice(0, 10)} · <a href={`${GAME_DATA_BASE}/native-v1.json`} target="_blank" rel="noreferrer">Recipe data &amp; provenance</a> · Names and availability can differ between client definitions and the published API.</footer>
+  </div>;
 }
-
-/** Set of typeIDs producible under a given includeSalvage setting. Items
- *  whose only producers are salvage recipes drop out of this set when salvage
- *  is excluded — they then surface as raw inputs in the supply chain. */
-function buildProducibleSet(productToBp: Map<number, string>): Set<number> {
-  return new Set(productToBp.keys());
-}
-
-function getTypeInfo(typeId: number): TypeInfo {
-  const info = types[String(typeId)];
-  if (!info) return { name: `Unknown (${typeId})`, category: "Unknown", group: "" };
-  return {
-    name: info.name || `type_${typeId}`,
-    category: info.category || "Unknown",
-    group: info.group || "",
-  };
-}
-
-// ── Supply tree builder ───────────────────────────────────────────────────────
-
-function buildSupplyTree(
-  productTypeId: number,
-  qty: number,
-  depth: number,
-  visited: Set<number>,
-  productToBp: Map<number, string>,
-): TreeNode {
-  const info = getTypeInfo(productTypeId);
-  const bpKey = productToBp.get(productTypeId);
-
-  if (!bpKey || visited.has(productTypeId)) {
-    return {
-      typeId: productTypeId,
-      name: info.name,
-      category: info.category,
-      group: info.group,
-      quantity: qty,
-      timePerUnit: 0,
-      totalTime: 0,
-      isRaw: true,
-      depth,
-      children: [],
-    };
-  }
-
-  const bp = allBlueprints[bpKey];
-  const productEntry = bp.products.find(p => p.typeID === productTypeId);
-  const producedPerRun = productEntry?.quantity ?? 1;
-  const runs = Math.ceil(qty / producedPerRun);
-
-  const newVisited = new Set(visited);
-  newVisited.add(productTypeId);
-
-  const children: TreeNode[] = bp.materials.map(mat => {
-    const childQty = mat.quantity * runs;
-    return buildSupplyTree(mat.typeID, childQty, depth + 1, newVisited, productToBp);
-  });
-
-  const selfTime = bp.time * runs;
-  const childTotalTime = children.reduce((s, c) => s + c.totalTime, 0);
-
-  return {
-    typeId: productTypeId,
-    name: info.name,
-    category: info.category,
-    group: info.group,
-    quantity: qty,
-    timePerUnit: bp.time,
-    totalTime: selfTime + childTotalTime,
-    isRaw: false,
-    depth,
-    children,
-  };
-}
-
-// ── Aggregators ───────────────────────────────────────────────────────────────
-
-/**
- * Collect materials with optional depth cutoff.
- * maxDepth=null → collect only natural raw materials (full tree).
- * maxDepth=N    → treat nodes at depth >= N as terminal inputs.
- *                  The root (depth 0) always recurses into children.
- */
-function collectMaterialsWithDepthFilter(
-  node: TreeNode,
-  acc: Map<number, RawSummaryItem>,
-  maxDepth: number | null
-) {
-  const atBoundary = maxDepth !== null && node.depth >= maxDepth;
-  const shouldAdd = node.isRaw || atBoundary;
-
-  // Root is the product being built — always recurse, never add it to shopping list
-  if (node.depth === 0 && !node.isRaw) {
-    for (const child of node.children) {
-      collectMaterialsWithDepthFilter(child, acc, maxDepth);
-    }
-    return;
-  }
-
-  if (shouldAdd) {
-    const existing = acc.get(node.typeId);
-    if (existing) {
-      existing.totalQuantity += node.quantity;
-    } else {
-      acc.set(node.typeId, {
-        typeId: node.typeId,
-        name: node.name,
-        category: node.category,
-        group: node.group,
-        totalQuantity: node.quantity,
-      });
-    }
-    return;
-  }
-
-  for (const child of node.children) {
-    collectMaterialsWithDepthFilter(child, acc, maxDepth);
-  }
-}
-
-function collectTimeByDepth(node: TreeNode, acc: Map<number, number>) {
-  if (!node.isRaw && node.timePerUnit > 0) {
-    const selfTime = node.timePerUnit * Math.ceil(node.quantity);
-    acc.set(node.depth, (acc.get(node.depth) ?? 0) + selfTime);
-  }
-  for (const child of node.children) {
-    collectTimeByDepth(child, acc);
-  }
-}
-
-// ── Formatting ────────────────────────────────────────────────────────────────
-
-function fmtTime(seconds: number): string {
-  if (seconds === 0) return "—";
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-  if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
-}
-
-// ── Category colors ───────────────────────────────────────────────────────────
-
-const CAT_COLORS: Record<string, { bg: string; text: string }> = {
-  Ship:      { bg: "rgba(220,40,40,0.18)",   text: "#ff6b6b" },
-  Module:    { bg: "rgba(255,140,0,0.18)",   text: "#ffaa33" },
-  Charge:    { bg: "rgba(220,200,0,0.18)",   text: "#ffe033" },
-  Material:  { bg: "rgba(40,180,80,0.18)",   text: "#44cc66" },
-  Commodity: { bg: "rgba(40,80,220,0.18)",   text: "#6699ff" },
-  Asteroid:  { bg: "rgba(130,130,130,0.15)", text: "#aaaaaa" },
-  Raw:       { bg: "rgba(100,100,100,0.15)", text: "#999999" },
-  Unknown:   { bg: "rgba(80,80,80,0.12)",    text: "#888888" },
-};
-
-function catStyle(cat: string, isRaw: boolean) {
-  if (isRaw) return CAT_COLORS["Raw"];
-  return CAT_COLORS[cat] ?? CAT_COLORS["Unknown"];
-}
-
-// ── Depth color gradient ──────────────────────────────────────────────────────
-
-// Orange (L0) → Yellow-Orange (L3) → Grey (L7)
-const DEPTH_COLORS = [
-  "#FF4700", // L0 — orange
-  "#FF6200", // L1
-  "#FF8A00", // L2
-  "#FFAF00", // L3 — gold-orange
-  "#C89600", // L4 — olive-gold
-  "#8A7A00", // L5 — olive
-  "#666655", // L6 — grey-green
-  "#444444", // L7 — dark grey
-];
-
-function getDepthColor(depth: number): string {
-  return DEPTH_COLORS[Math.min(depth, DEPTH_COLORS.length - 1)];
-}
-
-// ── Tree connector prefix ─────────────────────────────────────────────────────
-
-/**
- * Build unicode box-drawing prefix for a tree node.
- * isLastPath[i] = true if the ancestor at that level was the last child.
- */
-function buildPrefix(isLastPath: boolean[]): string {
-  if (isLastPath.length === 0) return "";
-  let prefix = "";
-  for (let i = 0; i < isLastPath.length; i++) {
-    if (i === isLastPath.length - 1) {
-      // Connection to current node
-      prefix += isLastPath[i] ? "└─ " : "├─ ";
-    } else {
-      // Ancestor pipe or gap
-      prefix += isLastPath[i] ? "   " : "│  ";
-    }
-  }
-  return prefix;
-}
-
-// ── Badge ─────────────────────────────────────────────────────────────────────
-
-function Badge({ label, colors }: { label: string; colors: { bg: string; text: string } }) {
-  return (
-    <span style={{
-      display: "inline-block",
-      padding: "1px 6px",
-      borderRadius: "2px",
-      fontSize: "9px",
-      fontWeight: 700,
-      letterSpacing: "0.08em",
-      textTransform: "uppercase",
-      background: colors.bg,
-      color: colors.text,
-      border: `1px solid ${colors.text}33`,
-      fontFamily: "IBM Plex Mono, monospace",
-      flexShrink: 0,
-    }}>
-      {label}
-    </span>
-  );
-}
-
-// ── Pill button ───────────────────────────────────────────────────────────────
-
-function Pill({
-  label,
-  active,
-  onClick,
-  accentColor = "#FF4700",
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  accentColor?: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "2px 10px",
-        borderRadius: "10px",
-        fontSize: "9px",
-        fontFamily: "IBM Plex Mono, monospace",
-        fontWeight: active ? 700 : 400,
-        letterSpacing: "0.07em",
-        textTransform: "uppercase" as const,
-        cursor: "pointer",
-        border: active ? `1px solid ${accentColor}` : "1px solid rgba(255,71,0,0.18)",
-        background: active ? `${accentColor}28` : "transparent",
-        color: active ? accentColor : "rgba(180,160,140,0.35)",
-        transition: "all 0.12s",
-        outline: "none",
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
-// ── Tree Node Row ─────────────────────────────────────────────────────────────
-
-function TreeRow({
-  node,
-  expanded,
-  onToggle,
-  maxDepth,
-  isLastPath,
-  siblingIndex,
-}: {
-  node: TreeNode;
-  expanded: Set<string>;
-  onToggle: (key: string) => void;
-  maxDepth: number | null;
-  isLastPath: boolean[];
-  siblingIndex: number;
-}) {
-  const key = `${node.depth}-${node.typeId}-${node.quantity}`;
-  const hasChildren = node.children.length > 0;
-
-  // Apply depth filter to visible children
-  const visibleChildren = maxDepth !== null
-    ? node.children.filter(c => c.depth <= maxDepth)
-    : node.children;
-  const hasVisibleChildren = visibleChildren.length > 0;
-
-  const isOpen = expanded.has(key);
-  const colors = catStyle(node.category, node.isRaw);
-  const prefix = buildPrefix(isLastPath);
-  const depthColor = getDepthColor(node.depth);
-
-  // Alternate row shading (very subtle)
-  const rowBg = node.depth === 0
-    ? "rgba(255,71,0,0.06)"
-    : siblingIndex % 2 === 0
-      ? "transparent"
-      : "rgba(255,255,255,0.018)";
-
-  return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-          padding: "7px 8px 7px 6px",
-          borderLeft: `3px solid ${depthColor}${node.depth === 0 ? "99" : "44"}`,
-          cursor: hasVisibleChildren ? "pointer" : "default",
-          background: rowBg,
-          transition: "background 0.1s",
-        }}
-        onClick={() => hasVisibleChildren && onToggle(key)}
-        onMouseEnter={e => {
-          if (hasVisibleChildren) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,71,0,0.04)";
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLDivElement).style.background = rowBg;
-        }}
-      >
-        {/* Unicode tree connector prefix */}
-        {prefix && (
-          <span style={{
-            fontFamily: "IBM Plex Mono, monospace",
-            fontSize: "11px",
-            color: `${depthColor}55`,
-            flexShrink: 0,
-            whiteSpace: "pre",
-            userSelect: "none",
-          }}>
-            {prefix}
-          </span>
-        )}
-
-        {/* Expand/collapse chevron */}
-        <span style={{
-          fontSize: "9px",
-          color: "rgba(255,71,0,0.5)",
-          width: "10px",
-          flexShrink: 0,
-          fontFamily: "monospace",
-          userSelect: "none",
-        }}>
-          {hasVisibleChildren ? (isOpen ? "▾" : "▸") : ""}
-        </span>
-
-        {/* Icon */}
-        <span style={{ fontSize: "11px", flexShrink: 0 }}>
-          {node.isRaw ? "🪨" : "⚙"}
-        </span>
-
-        {/* Name */}
-        <span style={{
-          flex: 1,
-          fontSize: "12px",
-          fontFamily: "IBM Plex Mono, monospace",
-          color: node.depth === 0 ? "#FF4700" : node.isRaw ? "#888" : "rgba(220,200,180,0.9)",
-          fontWeight: node.depth === 0 ? 700 : 400,
-          minWidth: 0,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}>
-          {node.name}
-        </span>
-
-        {/* Collapsed sub-items count badge */}
-        {hasChildren && !isOpen && (
-          <span style={{
-            fontSize: "9px",
-            color: "rgba(180,160,140,0.28)",
-            flexShrink: 0,
-            fontFamily: "IBM Plex Mono, monospace",
-            fontStyle: "italic",
-          }}>
-            ({node.children.length} sub-item{node.children.length !== 1 ? "s" : ""})
-          </span>
-        )}
-
-        {/* Quantity */}
-        <span style={{
-          fontSize: "11px",
-          fontFamily: "IBM Plex Mono, monospace",
-          color: "#FF4700",
-          fontWeight: 700,
-          flexShrink: 0,
-        }}>
-          ×{node.quantity.toLocaleString()}
-        </span>
-
-        {/* Category badge */}
-        <Badge
-          label={node.isRaw ? "RAW" : node.category}
-          colors={colors}
-        />
-
-        {/* Manufacturing time */}
-        {!node.isRaw && node.timePerUnit > 0 && (
-          <span style={{
-            fontSize: "9px",
-            fontFamily: "IBM Plex Mono, monospace",
-            color: "rgba(180,160,140,0.35)",
-            flexShrink: 0,
-          }}>
-            ⏱{fmtTime(node.timePerUnit * node.quantity)}
-          </span>
-        )}
-      </div>
-
-      {/* Children */}
-      {hasVisibleChildren && isOpen && visibleChildren.map((child, i) => (
-        <TreeRow
-          key={`${child.depth}-${child.typeId}-${i}`}
-          node={child}
-          expanded={expanded}
-          onToggle={onToggle}
-          maxDepth={maxDepth}
-          isLastPath={[...isLastPath, i === visibleChildren.length - 1]}
-          siblingIndex={i}
-        />
-      ))}
-    </>
-  );
-}
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const CATEGORY_PILLS = ["All", "Ship", "Module", "Charge", "Material", "Commodity"];
-const LEVEL_LABELS = ["All", "L0", "L1", "L2", "L3", "L4", "L5", "L6", "L7"];
-
-// ── Main Panel ────────────────────────────────────────────────────────────────
 
 export function IndustryPanel() {
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
-  const [quantity, setQuantity] = useState(1);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [maxDepth, setMaxDepth] = useState<number | null>(null);
-  const [shoppingListOpen, setShoppingListOpen] = useState(true);
-  const [mfgTimeOpen, setMfgTimeOpen] = useState(true);
-  /** Toggle: include salvage refinery recipes (Salvaged Materials,
-   *  Mummified Clone) in supply chain resolution. Off by default — those
-   *  drops are too rare in practice to anchor large bills of materials, and
-   *  the calculator's default behavior should bottom out at base materials
-   *  (Carbon Weave, Reinforced Alloys, etc.) so the user can source them
-   *  via market or non-salvage refining instead. */
-  const [includeSalvage, setIncludeSalvage] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Recompute productToBp whenever the salvage toggle flips. When salvage
-  // is excluded, salvage-recipe-only products (e.g. Carbon Weave) drop out
-  // of the producible set and surface as raw inputs in the tree.
-  const productToBp = useMemo(
-    () => buildProductToBp(includeSalvage),
-    [includeSalvage],
-  );
-  const producibleTypeIds = useMemo(
-    () => buildProducibleSet(productToBp),
-    [productToBp],
-  );
-
-  // All producible products sorted by category then name
-  const products = useMemo(() => {
-    const result: { typeId: number; info: TypeInfo }[] = [];
-    for (const typeId of producibleTypeIds) {
-      const info = getTypeInfo(typeId);
-      result.push({ typeId, info });
-    }
-    return result.sort((a, b) => {
-      const catCmp = a.info.category.localeCompare(b.info.category);
-      if (catCmp !== 0) return catCmp;
-      return a.info.name.localeCompare(b.info.name);
-    });
-  }, [producibleTypeIds]);
-
-  // Filtered products (category pill + text search)
-  const filtered = useMemo(() => {
-    let result = products;
-    if (categoryFilter !== "All") {
-      result = result.filter(p => p.info.category === categoryFilter);
-    }
-    if (!search.trim()) return result;
-    const q = search.toLowerCase();
-    return result.filter(p =>
-      p.info.name.toLowerCase().includes(q) ||
-      p.info.category.toLowerCase().includes(q) ||
-      p.info.group.toLowerCase().includes(q)
-    );
-  }, [products, search, categoryFilter]);
-
-  // Group filtered by category
-  const grouped = useMemo(() => {
-    const map = new Map<string, typeof filtered>();
-    for (const item of filtered) {
-      const cat = item.info.category || "Unknown";
-      if (!map.has(cat)) map.set(cat, []);
-      map.get(cat)!.push(item);
-    }
-    return map;
-  }, [filtered]);
-
-  // Build supply chain tree. Re-runs when salvage toggle flips because
-  // productToBp changes — e.g. Carbon Weave goes from "resolves to Salvaged
-  // Materials" to "raw input" when includeSalvage flips false.
-  const tree = useMemo(() => {
-    if (selectedTypeId === null) return null;
-    const qty = Math.max(1, Math.floor(quantity));
-    return buildSupplyTree(selectedTypeId, qty, 0, new Set(), productToBp);
-  }, [selectedTypeId, quantity, productToBp]);
-
-  // Auto-expand root and first-level children when tree changes
+  const [data, setData] = useState<NativeSnapshot | null>(null);
+  const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    if (!tree) { setExpanded(new Set()); return; }
-    const initialExpanded = new Set<string>();
-    initialExpanded.add(`0-${tree.typeId}-${tree.quantity}`);
-    tree.children.forEach(child => {
-      initialExpanded.add(`${child.depth}-${child.typeId}-${child.quantity}`);
-    });
-    setExpanded(initialExpanded);
-  }, [tree]);
-
-  // Raw materials summary with depth filter
-  const rawSummary = useMemo(() => {
-    if (!tree) return [];
-    const acc = new Map<number, RawSummaryItem>();
-    collectMaterialsWithDepthFilter(tree, acc, maxDepth);
-    return Array.from(acc.values()).sort((a, b) => b.totalQuantity - a.totalQuantity);
-  }, [tree, maxDepth]);
-
-  // Manufacturing time summary
-  const timeSummary = useMemo((): TimeSummary => {
-    if (!tree) return { totalSeconds: 0, byDepth: [] };
-    const depthMap = new Map<number, number>();
-    collectTimeByDepth(tree, depthMap);
-    const total = Array.from(depthMap.values()).reduce((s, v) => s + v, 0);
-    const byDepth = Array.from(depthMap.entries())
-      .sort((a, b) => a[0] - b[0])
-      .map(([depth, seconds]) => ({
-        depth,
-        label: depth === 0 ? "Final product" : `Level ${depth}`,
-        seconds,
-      }));
-    return { totalSeconds: total, byDepth };
-  }, [tree]);
-
-  const handleToggle = (key: string) => {
-    setExpanded(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
-  const handleSelect = (typeId: number, name: string) => {
-    setSelectedTypeId(typeId);
-    setSearch(name);
-    setShowDropdown(false);
-    inputRef.current?.blur();
-  };
-
-  const copyShoppingList = () => {
-    const text = rawSummary
-      .map(item => `${item.totalQuantity.toLocaleString()}x ${item.name}`)
-      .join("\n");
-    navigator.clipboard.writeText(text).catch(() => {});
-  };
-
-  const [notepadCopied, setNotepadCopied] = useState(false);
-
-  /** Export full supply chain as EVE Frontier in-game notepad rich text */
-  const exportNotepad = () => {
-    if (!tree || !selectedInfo) return;
-    const WHITE = '#bfffffff';
-    const ORANGE = '#ffd98d00';
-    const GREEN = '#ff00ff00';
-    const GREY = '#ff999999';
-    const YELLOW = '#ffffffd0';
-
-    const font = (text: string, color: string, size = 14) =>
-      `<font size="${size}" color="${color}">${text}</font>`;
-    const link = (typeId: number, name: string, color = ORANGE) =>
-      `<font size="14" color="${color}"><a href="showinfo:${typeId}">${name}</a></font>`;
-
-    const lines: string[] = [];
-
-    // Header
-    lines.push(font(`═══ ${selectedInfo.name} ×${quantity} ═══`, ORANGE, 18));
-    lines.push(font(`Total build time: ${fmtTime(timeSummary.totalSeconds)}`, GREY));
-    lines.push('');
-
-    // Supply chain tree
-    lines.push(font('── SUPPLY CHAIN ──', ORANGE, 16));
-
-    function renderNode(node: TreeNode, prefix: string, isLast: boolean) {
-      const connector = node.depth === 0 ? '' : (isLast ? '└─ ' : '├─ ');
-      const icon = node.isRaw ? '🪨' : '⚙';
-      const qtyStr = `×${node.quantity.toLocaleString()}`;
-      const timeStr = !node.isRaw && node.timePerUnit > 0
-        ? ` (${fmtTime(node.timePerUnit * node.quantity)})`
-        : '';
-      const tag = node.isRaw ? ' [RAW]' : '';
-
-      lines.push(
-        font(`${prefix}${connector}`, GREY) +
-        font(`${icon} `, WHITE) +
-        link(node.typeId, node.name, node.isRaw ? GREY : YELLOW) +
-        font(` ${qtyStr}`, ORANGE) +
-        font(`${timeStr}${tag}`, GREY)
-      );
-
-      const childPrefix = prefix + (node.depth === 0 ? '' : (isLast ? '   ' : '│  '));
-      node.children.forEach((child, i) => {
-        renderNode(child, childPrefix, i === node.children.length - 1);
-      });
-    }
-    renderNode(tree, '', true);
-
-    lines.push('');
-
-    // Raw materials shopping list
-    lines.push(font('── RAW MATERIALS (SHOPPING LIST) ──', GREEN, 16));
-    for (const item of rawSummary) {
-      lines.push(
-        font(`  ${item.totalQuantity.toLocaleString().padStart(8)} `, ORANGE) +
-        link(item.typeId, item.name, GREEN) +
-        font(` [${item.category}/${item.group}]`, GREY)
-      );
-    }
-
-    lines.push('');
-    lines.push(font(`── Generated by CradleOS Industry Calculator ──`, GREY));
-
-    const result = lines.join('\n');
-    navigator.clipboard.writeText(result).then(() => {
-      setNotepadCopied(true);
-      setTimeout(() => setNotepadCopied(false), 2000);
-    }).catch(() => {});
-  };
-
-  const expandAll = () => {
-    if (!tree) return;
-    const allKeys = new Set<string>();
-    function collectKeys(node: TreeNode) {
-      allKeys.add(`${node.depth}-${node.typeId}-${node.quantity}`);
-      node.children.forEach(collectKeys);
-    }
-    collectKeys(tree);
-    setExpanded(allKeys);
-  };
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (
-        dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
-        inputRef.current && !inputRef.current.contains(e.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const selectedInfo = selectedTypeId !== null ? getTypeInfo(selectedTypeId) : null;
-
-  // Small reusable header button style
-  const headerBtn: React.CSSProperties = {
-    background: "none",
-    border: "1px solid rgba(255,71,0,0.2)",
-    color: "rgba(255,71,0,0.5)",
-    fontSize: "9px",
-    fontFamily: "IBM Plex Mono, monospace",
-    padding: "2px 8px",
-    cursor: "pointer",
-    letterSpacing: "0.08em",
-    outline: "none",
-  };
-
-  return (
-    <div style={{
-      fontFamily: "IBM Plex Mono, monospace",
-      color: "rgba(220,200,180,0.9)",
-      padding: "16px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "14px",
-      maxWidth: "900px",
-    }}>
-
-      {/* ── Header ── */}
-      <div style={{ borderBottom: "1px solid rgba(255,71,0,0.2)", paddingBottom: "12px" }}>
-        <div style={{
-          fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase",
-          color: "rgba(255,71,0,0.7)", marginBottom: "4px",
-        }}>
-          ⚙ Industry — Supply Chain Calculator
-        </div>
-        <div style={{ fontSize: "10px", color: "rgba(180,160,140,0.4)", letterSpacing: "0.08em" }}>
-          {Object.keys(blueprints).length} blueprints · {recipes.length} recipes · {producibleTypeIds.size} producible items
-          {industryMeta.build && (
-            <span style={{ marginLeft: "12px", color: "rgba(255,71,0,0.5)", fontSize: "9px" }}>
-              ▸ {industryMeta.cycle ?? ""} build {industryMeta.build}
-              {(industryDelta.added_blueprints?.length ?? 0) > 0 && (
-                <span style={{ marginLeft: "6px", color: "rgba(80,200,120,0.7)" }}>
-                  +{industryDelta.added_blueprints!.length} new
-                </span>
-              )}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* ── Category Quick-Filter Pills ── */}
-      <div>
-        <div style={{
-          fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase",
-          color: "rgba(255,71,0,0.4)", marginBottom: "6px",
-        }}>
-          Category
-        </div>
-        <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
-          {CATEGORY_PILLS.map(cat => (
-            <Pill
-              key={cat}
-              label={cat}
-              active={categoryFilter === cat}
-              onClick={() => setCategoryFilter(cat)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* ── Controls row: search + quantity ── */}
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
-
-        {/* Product search */}
-        <div style={{ position: "relative", flex: "1 1 280px" }}>
-          <div style={{
-            fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase",
-            color: "rgba(255,71,0,0.5)", marginBottom: "4px",
-          }}>
-            Product to build
-          </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setShowDropdown(true);
-              if (!e.target.value) setSelectedTypeId(null);
-            }}
-            onFocus={() => setShowDropdown(true)}
-            placeholder="Search by name, category, group..."
-            style={{
-              width: "100%",
-              background: "#0d0d0d",
-              border: "1px solid rgba(255,71,0,0.3)",
-              color: "#FF4700",
-              fontFamily: "IBM Plex Mono, monospace",
-              fontSize: "12px",
-              padding: "8px 12px",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
-          />
-
-          {/* Dropdown */}
-          {showDropdown && filtered.length > 0 && (
-            <div
-              ref={dropdownRef}
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                right: 0,
-                background: "#111",
-                border: "1px solid rgba(255,71,0,0.3)",
-                borderTop: "none",
-                maxHeight: "320px",
-                overflowY: "auto",
-                zIndex: 100,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.8)",
-              }}
-            >
-              {Array.from(grouped.entries()).map(([cat, items]) => (
-                <div key={cat}>
-                  <div style={{
-                    padding: "4px 10px",
-                    fontSize: "8px",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "rgba(255,71,0,0.4)",
-                    background: "rgba(255,71,0,0.04)",
-                    borderTop: "1px solid rgba(255,71,0,0.1)",
-                    position: "sticky",
-                    top: 0,
-                  }}>
-                    {cat} ({items.length})
-                  </div>
-                  {items.map(({ typeId, info }) => (
-                    <div
-                      key={typeId}
-                      onMouseDown={() => handleSelect(typeId, info.name)}
-                      style={{
-                        padding: "6px 12px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        borderBottom: "1px solid rgba(255,71,0,0.05)",
-                      }}
-                      onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "rgba(255,71,0,0.1)"}
-                      onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
-                    >
-                      <span style={{ fontSize: "11px", color: "rgba(220,200,180,0.9)", flex: 1 }}>
-                        {info.name}
-                      </span>
-                      {info.group && (
-                        <span style={{ fontSize: "9px", color: "rgba(180,160,140,0.4)" }}>
-                          {info.group}
-                        </span>
-                      )}
-                      <Badge label={cat} colors={catStyle(cat, false)} />
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Quantity */}
-        <div style={{ flex: "0 0 140px" }}>
-          <div style={{
-            fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase",
-            color: "rgba(255,71,0,0.5)", marginBottom: "4px",
-          }}>
-            Quantity
-          </div>
-          <input
-            type="number"
-            min={1}
-            value={quantity}
-            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-            style={{
-              width: "100%",
-              background: "#0d0d0d",
-              border: "1px solid rgba(255,71,0,0.3)",
-              color: "#FF4700",
-              fontFamily: "IBM Plex Mono, monospace",
-              fontSize: "14px",
-              fontWeight: 700,
-              padding: "8px 12px",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* ── Selected product info strip ── */}
-      {selectedInfo && (
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          padding: "8px 12px",
-          background: "rgba(255,71,0,0.04)",
-          border: "1px solid rgba(255,71,0,0.15)",
-        }}>
-          <span style={{ fontSize: "18px" }}>⚙</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "#FF4700" }}>{selectedInfo.name}</div>
-            <div style={{ fontSize: "10px", color: "rgba(180,160,140,0.5)" }}>{selectedInfo.group}</div>
-          </div>
-          <Badge label={selectedInfo.category} colors={catStyle(selectedInfo.category, false)} />
-          {tree && (
-            <div style={{ fontSize: "10px", color: "rgba(180,160,140,0.5)", textAlign: "right" }}>
-              <div>Total time: <span style={{ color: "#FF4700" }}>{fmtTime(timeSummary.totalSeconds)}</span></div>
-              <div>Raw inputs: <span style={{ color: "#FF4700" }}>{rawSummary.length}</span> types</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Supply Chain Tree ── */}
-      {tree && (
-        <div>
-          {/* Level filter pills + salvage toggle */}
-          <div style={{
-            display: "flex",
-            gap: "4px",
-            marginBottom: "8px",
-            flexWrap: "wrap",
-            alignItems: "center",
-          }}>
-            <span style={{
-              fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
-              color: "rgba(255,71,0,0.35)", marginRight: "4px",
-            }}>
-              Depth:
-            </span>
-            {LEVEL_LABELS.map((label, i) => {
-              const level = i === 0 ? null : i - 1;
-              return (
-                <Pill
-                  key={label}
-                  label={label}
-                  active={maxDepth === level}
-                  onClick={() => setMaxDepth(level)}
-                />
-              );
-            })}
-            {/* Vertical divider */}
-            <span style={{
-              width: 1, height: 16, marginLeft: 8, marginRight: 4,
-              background: "rgba(255,71,0,0.2)",
-            }} />
-            {/* Salvage toggle: when off (default) Carbon Weave / Reinforced
-                Alloys / Thermal Composites surface as raw inputs instead of
-                resolving through the rare Salvaged Materials drop. Tooltip
-                explains the trade-off. */}
-            <span style={{
-              fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
-              color: "rgba(255,71,0,0.35)", marginRight: "4px",
-            }}>
-              Sources:
-            </span>
-            <button
-              onClick={() => setIncludeSalvage(s => !s)}
-              title={
-                includeSalvage
-                  ? "Salvage recipes ON — Carbon Weave, Reinforced Alloys, Thermal Composites, and Aromatic Carbon Weave will resolve through Salvaged Materials / Mummified Clone drops when no other path exists. Click to exclude salvage and treat those base materials as terminal raw inputs."
-                  : "Salvage recipes OFF — base materials produced only by salvage (Carbon Weave, Reinforced Alloys, Thermal Composites) surface as raw inputs to be sourced directly. Click to include salvage drops in the supply chain."
-              }
-              style={{
-                fontSize: 9,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                padding: "3px 8px",
-                border: `1px solid ${includeSalvage ? "rgba(255,71,0,0.6)" : "rgba(255,71,0,0.2)"}`,
-                background: includeSalvage ? "rgba(255,71,0,0.18)" : "transparent",
-                color: includeSalvage ? "#FF4700" : "rgba(180,160,140,0.5)",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Salvage: {includeSalvage ? "on" : "off"}
-            </button>
-          </div>
-
-          {/* Tree container */}
-          <div style={{ border: "1px solid rgba(255,71,0,0.15)", background: "#0a0a0a" }}>
-            {/* Header */}
-            <div style={{
-              padding: "8px 12px",
-              borderBottom: "1px solid rgba(255,71,0,0.1)",
-              fontSize: "9px",
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              color: "rgba(255,71,0,0.5)",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}>
-              <span>
-                Supply Chain Tree
-                {maxDepth !== null && (
-                  <span style={{ color: "rgba(255,71,0,0.35)", marginLeft: "8px" }}>
-                    (showing L0–L{maxDepth})
-                  </span>
-                )}
-              </span>
-              <div style={{ display: "flex", gap: "6px" }}>
-                <button onClick={expandAll} style={headerBtn}>Expand All</button>
-                <button onClick={() => setExpanded(new Set())} style={headerBtn}>Collapse All</button>
-                <button onClick={exportNotepad} style={{ ...headerBtn, borderColor: notepadCopied ? "rgba(0,255,150,0.4)" : "rgba(255,71,0,0.2)", color: notepadCopied ? "#00ff96" : "rgba(255,71,0,0.5)" }}>
-                  {notepadCopied ? "✓ Copied!" : "📝 Export Notepad"}
-                </button>
-              </div>
-            </div>
-
-            {/* Tree rows */}
-            <div style={{ padding: "6px 4px", maxHeight: "500px", overflowY: "auto" }}>
-              <TreeRow
-                node={tree}
-                expanded={expanded}
-                onToggle={handleToggle}
-                maxDepth={maxDepth}
-                isLastPath={[]}
-                siblingIndex={0}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Bottom panels: shopping list + time summary ── */}
-      {tree && (
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-
-          {/* ── Shopping List (collapsible) ── */}
-          <div style={{
-            flex: "1 1 300px",
-            border: "1px solid rgba(100,100,100,0.3)",
-            background: "#0a0a0a",
-          }}>
-            {/* Header */}
-            <div
-              onClick={() => setShoppingListOpen(v => !v)}
-              style={{
-                padding: "8px 12px",
-                borderBottom: shoppingListOpen ? "1px solid rgba(100,100,100,0.2)" : "none",
-                fontSize: "9px",
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: "#aaaaaa",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                cursor: "pointer",
-                userSelect: "none",
-              }}
-            >
-              <span>
-                <span style={{ color: "rgba(255,71,0,0.5)", marginRight: "4px" }}>
-                  {shoppingListOpen ? "▾" : "▸"}
-                </span>
-                🪨 Shopping List — Raw Materials
-              </span>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                <span style={{ color: "rgba(180,160,140,0.4)" }}>{rawSummary.length} types</span>
-                {rawSummary.length > 0 && (
-                  <button
-                    onClick={e => { e.stopPropagation(); copyShoppingList(); }}
-                    style={{
-                      ...headerBtn,
-                      border: "1px solid rgba(100,100,100,0.3)",
-                      color: "rgba(160,140,120,0.6)",
-                      fontSize: "8px",
-                    }}
-                    title="Copy shopping list to clipboard"
-                  >
-                    📋 Copy
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Content */}
-            {shoppingListOpen && (
-              <>
-                <div style={{ maxHeight: "360px", overflowY: "auto" }}>
-                  {rawSummary.length === 0 ? (
-                    <div style={{ padding: "12px", fontSize: "11px", color: "rgba(180,160,140,0.4)" }}>
-                      No materials — this item is a base material.
-                    </div>
-                  ) : (
-                    rawSummary.map((item, i) => {
-                      const colors = catStyle(item.category, true);
-                      return (
-                        <div
-                          key={item.typeId}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            padding: "5px 12px",
-                            borderBottom: "1px solid rgba(255,255,255,0.03)",
-                            background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.015)",
-                          }}
-                        >
-                          <span style={{
-                            fontSize: "10px",
-                            fontFamily: "IBM Plex Mono, monospace",
-                            color: "#FF4700",
-                            fontWeight: 700,
-                            minWidth: "60px",
-                            textAlign: "right",
-                          }}>
-                            {item.totalQuantity.toLocaleString()}
-                          </span>
-                          <span style={{
-                            flex: 1,
-                            fontSize: "11px",
-                            color: "rgba(200,180,160,0.8)",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}>
-                            {item.name}
-                          </span>
-                          {item.category && (
-                            <Badge label={item.category} colors={colors} />
-                          )}
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-                {rawSummary.length > 0 && (
-                  <div style={{
-                    padding: "7px 12px",
-                    borderTop: "1px solid rgba(100,100,100,0.2)",
-                    fontSize: "9px",
-                    color: "rgba(180,160,140,0.4)",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}>
-                    <span>Total raw types</span>
-                    <span style={{ color: "#FF4700" }}>{rawSummary.length}</span>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-
-          {/* ── Manufacturing Time (collapsible) ── */}
-          <div style={{
-            flex: "0 1 220px",
-            border: "1px solid rgba(255,71,0,0.15)",
-            background: "#0a0a0a",
-            alignSelf: "flex-start",
-          }}>
-            {/* Header */}
-            <div
-              onClick={() => setMfgTimeOpen(v => !v)}
-              style={{
-                padding: "8px 12px",
-                borderBottom: mfgTimeOpen ? "1px solid rgba(255,71,0,0.1)" : "none",
-                fontSize: "9px",
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: "rgba(255,71,0,0.5)",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                cursor: "pointer",
-                userSelect: "none",
-              }}
-            >
-              <span style={{ color: "rgba(255,71,0,0.4)" }}>
-                {mfgTimeOpen ? "▾" : "▸"}
-              </span>
-              <span>⏱ Manufacturing Time</span>
-            </div>
-
-            {/* Content */}
-            {mfgTimeOpen && (
-              <div style={{ padding: "8px 12px" }}>
-                <div style={{
-                  fontSize: "22px",
-                  fontWeight: 700,
-                  color: "#FF4700",
-                  marginBottom: "12px",
-                }}>
-                  {fmtTime(timeSummary.totalSeconds)}
-                </div>
-                {timeSummary.byDepth.map(row => (
-                  <div
-                    key={row.depth}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "3px 0",
-                      borderBottom: "1px solid rgba(255,71,0,0.05)",
-                      fontSize: "10px",
-                    }}
-                  >
-                    <span style={{ color: "rgba(180,160,140,0.5)" }}>{row.label}</span>
-                    <span style={{ color: "rgba(220,200,180,0.8)", fontFamily: "IBM Plex Mono, monospace" }}>
-                      {fmtTime(row.seconds)}
-                    </span>
-                  </div>
-                ))}
-                {timeSummary.totalSeconds === 0 && (
-                  <div style={{ fontSize: "11px", color: "rgba(180,160,140,0.4)" }}>
-                    No manufacturing steps found.
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── Empty state ── */}
-      {!tree && (
-        <div style={{
-          textAlign: "center",
-          padding: "60px 24px",
-          color: "rgba(175,175,155,0.4)",
-          border: "1px solid rgba(255,71,0,0.06)",
-          background: "#0a0a0a",
-        }}>
-          <div style={{ fontSize: "36px", marginBottom: "12px", opacity: 0.3 }}>⚙</div>
-          <div style={{ fontSize: "13px", marginBottom: "6px" }}>Select a product to calculate its supply chain</div>
-          <div style={{ fontSize: "11px", color: "rgba(175,175,155,0.35)" }}>
-            {producibleTypeIds.size} buildable items across {Object.keys(blueprints).length} blueprints + {recipes.length} recipes
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    const controller = new AbortController();
+    setData(null); setError("");
+    fetch(`${GAME_DATA_BASE}/native-v1.json`, { signal: controller.signal })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(validateNativeSnapshot)
+      .then(value => { if (!controller.signal.aborted) setData(value); })
+      .catch(e => { if (!controller.signal.aborted) setError(String(e.message ?? e)); });
+    return () => controller.abort();
+  }, [attempt]);
+  if (!data) return <section className="recipe-planner"><h2>Recipes &amp; Materials</h2><p role="status">{error ? `Could not load current recipe data: ${error}` : "Loading verified Cycle 7 recipes…"}</p>{error && <button onClick={() => setAttempt(n => n + 1)}>Retry recipe data</button>}<p className="recipe-muted">No previous-cycle recipes are substituted.</p></section>;
+  return <Planner data={data} />;
 }

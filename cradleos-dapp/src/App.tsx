@@ -442,6 +442,7 @@ const ROUTE_MAP: Record<string, Tab> = {
   "inventory":     "inventory",
   "dashboard":     "dashboard",
   "industry":      "industry",
+  "recipes":       "industry",
   "gates":         "gates",
   "tribe":         "tribe",
   "intel":         "intel",
@@ -805,14 +806,14 @@ function AppInner() {
     // links tab removed — merged into StructurePanel KIOSK section
     // war tab removed 2026-05-22 — LineageWar panel hidden pending refresh
     industry: {
-      title: "Industry — supply chain calculator for EVE Frontier manufacturing",
+      title: "Recipes — current Cycle 7 materials planner",
       steps: [
-        "Search for any buildable item by name, category, or group",
-        "Set quantity to scale all material requirements",
-        "Expand the supply chain tree to see every intermediate product",
-        "⚙ = intermediate item (craftable), 🪨 = raw material (mine/buy)",
-        "Raw Materials card aggregates your full shopping list",
-        "Time Summary shows total manufacturing time per level",
+        "Search products from the verified current-client recipe snapshot",
+        "Choose a recipe route and target quantity; complete batches, inputs and surplus are calculated",
+        "Direct ingredients lists what to acquire; Supply chain expands your chosen intermediate recipes",
+        "Choose alternatives explicitly, or acquire an ingredient externally; production loops are flagged",
+        "Shared batches are combined and multi-output recipes retain every product",
+        "Copy the material list when routes are resolved; no inventory, facility or duration assumptions",
       ],
     },
     flappy: {
@@ -1011,22 +1012,16 @@ function AppInner() {
               // "defense" temporarily removed 2026-06-24 — see comment on
               // the main tab strip above. Re-add when turrets return.
               // "gamedata" added 2026-06-24 (public tab, Sanctuary viewport).
-              // 'industry' tab hidden 2026-06-27: extracted recipe/blueprint catalog
-              // only covers ~57% of referenced type ids (43% render as 'Unknown'),
-              // and the genBlueprints FSD blob hasn't been decoded into the simple
-              // recipe form the panel expects — so the Supply Chain Calculator
-              // produces misleading trees for most products. Will resurface once
-              // the Sanctuary genBlueprints decode is finished and industry.json
-              // is regenerated with full type-name coverage. Panel + data file
-              // intentionally kept on disk for fast revival.
+              // Recipes restored October3: current native recipe/type joins and
+              // explicit batch/route planning replace the incomplete old corpus.
               const ORDER: Tab[] = [
                 "casino",
                 "dashboard", "inventory", "tribe",
                 "gates", "intel", "calendar", "voting",
-                "origins", "query", "gamedata", "dapps",
+                "origins", "query", "industry", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "dapps", "query", "intel", "gamedata", "origins",
+                "dapps", "query", "intel", "industry", "gamedata", "origins",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -1053,7 +1048,7 @@ function AppInner() {
                 : tab === "efmap"      ? "EF-MAP"
                 : tab === "dapps"      ? "DAPPS"
                 : tab === "query"      ? "QUERY"
-                : tab === "industry"   ? "IND"
+                : tab === "industry"   ? "RCP"
                 : tab === "gamedata"   ? "GAMEDATA"
                 : tab === "voting"     ? "VOTE"
                 : tab === "casino"     ? "CASINO"
@@ -1331,9 +1326,9 @@ function AppInner() {
             "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
             static data; public, no wallet required. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "origins", "query", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "origins", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "gamedata", "origins"]);
+          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry", "gamedata", "origins"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1388,7 +1383,7 @@ function AppInner() {
                   : tab === "query"      ? "Query"
                   : tab === "efmap"      ? "EF-Map"
                   : tab === "dapps"      ? "DApps"
-                  : tab === "industry"  ? "Industry"
+                  : tab === "industry"  ? "Recipes"
                   : tab === "gamedata"  ? "Game Data"
                   : tab === "voting"    ? "Vote"
                   : tab === "casino"    ? "◆ BJ"
@@ -1417,7 +1412,7 @@ function AppInner() {
                   : tab === "dapps"         ? "⧫ Community DApps"
                   : tab === "gamedata"      ? "◇ Game Data"
                   : tab === "dashboard"     ? "Dashboard"
-                  : tab === "industry"      ? "⚙ Industry"
+                  : tab === "industry"      ? "⚙ Recipes"
                   : tab === "voting"        ? "◣ Elections"
                   : tab === "casino"        ? "◆ Casino"
                   : tab === "origins"       ? "◈ Origins"
@@ -1477,7 +1472,7 @@ function AppInner() {
           {activeTab === "wiki"          && <div style={{ background: "transparent", height: "calc(100vh - 260px)", minHeight: 500, display: "flex", flexDirection: "column" }}><LoreWikiPanel /></div>}
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><HistoricalDataNotice /><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
-          {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><HistoricalDataNotice /><IndustryPanel /></div>}
+          {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><IndustryPanel /></div>}
           {activeTab === "gamedata"      && <div style={{ background: "transparent" }} className="content-panel"><GameDataPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
           {/* Bankroll lives INSIDE CasinoPanel (casinoView.mode === "bankroll"),

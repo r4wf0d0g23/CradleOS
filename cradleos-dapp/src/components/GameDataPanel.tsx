@@ -79,7 +79,7 @@ function RecipesView({ state }: { state: NativeState }) {
   const recipes = useMemo(() => data ? filterNativeRecipes(data, query) : [], [data, query]);
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}><strong>{data.counts.recipes} client recipe definitions</strong> · build {data.build}. Exact input/output quantities from the native client schema. Presence here does not prove a recipe is currently available at a facility. This reference does not update the historical Industry planner.</p>
+    <p style={note}><strong>{data.counts.recipes} client recipe definitions</strong> · build {data.build}. Exact input/output quantities from the native client schema. Presence here does not prove a recipe is currently available at a facility. The Recipes tab uses these quantities for route choices, batch planning and material lists.</p>
     <input aria-label="Search client recipes" placeholder="Search input, output, type ID, or recipe ID…" value={query} onChange={e => { setQuery(e.target.value); setLimit(30); }} style={{ ...control, width: "100%", boxSizing: "border-box" }} />
     <p style={note}>{recipes.length} matching recipes · showing {Math.min(limit, recipes.length)}</p>
     <div style={grid}>{recipes.slice(0, limit).map(r => <article key={r.id} style={card}>

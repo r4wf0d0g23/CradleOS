@@ -1,0 +1,24 @@
+{
+  "base": "http://127.0.0.1:5194",
+  "checks": [
+    {
+      "width": 1440,
+      "recipes": "public navigation, explicit fuel routes, exact batches/surplus, clipboard, quantity errors, pending chain routes, acquire override, multi-output refining, no horizontal overflow"
+    },
+    {
+      "width": 390,
+      "recipes": "public navigation, explicit fuel routes, exact batches/surplus, clipboard, quantity errors, pending chain routes, acquire override, multi-output refining, no horizontal overflow"
+    },
+    {
+      "deepLinks": "industry and recipes aliases resolve current planner"
+    },
+    {
+      "failure": "Retry recovers; wrong-cycle snapshot blocked; no archived fallback"
+    },
+    {
+      "cycleFixture": "Synthetic self-cycle shows warning and withholds totals/copy"
+    }
+  ],
+  "errors": [],
+  "retiredRequests": []
+}

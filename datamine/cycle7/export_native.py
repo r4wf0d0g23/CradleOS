@@ -180,7 +180,8 @@ def main():
         if row["resource"] in {x["virtual"] for x in inputs["files"]}:
             row["decodeStatus"] = "Decoded using matching native cFSD reader; bounded reference export in native-v1.json."
     meta["coverage"] = [x for x in meta["coverage"] if not x.startswith("Client binary recipes")]
-    native_note = "Native client recipes and raw base attributes are available as reference data. Facility rules, timing units, effective fitted statistics and complete 3D models are not verified. Industry and fitting calculators remain historical."
+    meta["coverage"] = [x for x in meta["coverage"] if not x.startswith("Native client recipes and raw base attributes")]
+    native_note = "Native client recipes and raw base attributes are available as reference data. The Recipes tab plans base input/output quantities. Facility rules, timing units, effective fitted statistics and complete 3D models are not verified. Fitting remains historical."
     if native_note not in meta["coverage"]:
         meta["coverage"].append(native_note)
     (args.snapshot / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, separators=(",", ":")) + "\n")
