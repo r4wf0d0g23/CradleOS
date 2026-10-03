@@ -1,0 +1,144 @@
+{
+  "deployment": "5d179f48",
+  "deploymentUrl": "https://5d179f48.cradleos-d75.pages.dev",
+  "source": "193e0bf7ebd4237a60777d495951d0746db3cff4",
+  "production": "https://cradleos.io/#/recipes",
+  "verifiedAt": "2026-10-03T23:22:29.102Z",
+  "liveVerification": {
+    "base": "https://cradleos.io",
+    "verifiedAt": "2026-10-03T23:22:29.102Z",
+    "bundle": "/assets/index-BvAoFGxx.js",
+    "files": [
+      {
+        "path": "/assets/index-BvAoFGxx.js",
+        "bytes": 1904385,
+        "sha256": "203df4bf0c693ea9df25ffebfac97dc3c4f3428553cc31f7bcc9ebd5392042a1"
+      },
+      {
+        "path": "/assets/index-BBiH-kaT.css",
+        "bytes": 708896,
+        "sha256": "90cbf96f141453e22ee88ce83724f742dd3eda5b7e1a29dfb92ded75b4749a60"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/meta.json",
+        "bytes": 4180,
+        "sha256": "55155f5fc231504fc6889080e124b482c0d587226d4e2f1d8dcab04eb4b7efdd"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/native-v1.json",
+        "bytes": 351535,
+        "sha256": "a7702649eebcb1d12d6c18ce8dbd3df8ab88363a254bd02cef9574e847dcb66a"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/items.json",
+        "bytes": 153554,
+        "sha256": "bbe80a9f3a4124b69b3fd57c0f81b465ba03b2c91a6b5879554ce99665cdfd37"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/strings.json",
+        "bytes": 18530229,
+        "sha256": "2b08db1921a8272a4faa62e03220288dc0746f2fa1618191f62f8c2e841ccd50"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/events.json",
+        "bytes": 2890,
+        "sha256": "5c608470a07b000763b65024d8d2a6d9c04833bfba6df541c83f7e6e3673939c"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/changes.json",
+        "bytes": 3821,
+        "sha256": "b9958ea1b6417b5c8e2683180ac0e08fb79039c45a0c3a9258713d9a2afe41fb"
+      },
+      {
+        "path": "/data/system-names-stillness-cycle7-3573151.json",
+        "bytes": 535534,
+        "sha256": "1ab219e3f64415e176a1b614d0a2c9144d3fea059a32261d2ac6f93a29204c9f"
+      }
+    ],
+    "retired": [
+      {
+        "path": "/data/game-data-catalogue.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-cycle-deltas.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-eventtypes.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-meta.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-strings-index.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      }
+    ],
+    "backend": [
+      {
+        "path": "/keeper/novelty-stats",
+        "status": 410
+      },
+      {
+        "path": "/telemetry/combined",
+        "status": 200
+      },
+      {
+        "path": "/index/health",
+        "status": 200
+      },
+      {
+        "path": "/sui-status",
+        "status": 200
+      }
+    ]
+  },
+  "browser": {
+    "base": "https://cradleos.io",
+    "checks": [
+      {
+        "width": 1440,
+        "recipes": "public navigation, explicit fuel routes, exact batches/surplus, clipboard, quantity errors, pending chain routes, acquire override, multi-output refining, no horizontal overflow"
+      },
+      {
+        "width": 390,
+        "recipes": "public navigation, explicit fuel routes, exact batches/surplus, clipboard, quantity errors, pending chain routes, acquire override, multi-output refining, no horizontal overflow"
+      },
+      {
+        "deepLinks": "industry and recipes aliases resolve current planner"
+      }
+    ],
+    "errors": [],
+    "retiredRequests": []
+  },
+  "checks": {
+    "frontendTests": 74,
+    "plannerCases": 11,
+    "extractionTests": 15,
+    "canonChecks": 8,
+    "ioc": "PASS; no dependency changes",
+    "typescriptAndVite": "PASS"
+  },
+  "review": {
+    "architecture": "Independent reviewer PASS; explicit routes, safe integer DAG batching and incomplete-plan guards",
+    "source": "Independent maths/UI/source reviewer PASS; shared outputs, cycles, copy guard, public/kiosk navigation and corrected exporter coverage",
+    "deployment": "Independent live JS/CSS/native/meta/system-name hash and source audit PASS"
+  },
+  "scope": [
+    "299 native recipes,263 output products; no old corpus import",
+    "Direct ingredients and optional user-selected supply chain",
+    "No inventory, time, facility, availability, price or gameplay modifier claims",
+    "No by-product netting across other assigned routes; no optimizer claim",
+    "Primary cradleos.io only; no GitHub mirror update claimed",
+    "Fitting remains historical; no wallet/contracts/services changed"
+  ],
+  "rollback": "Previous primary Pages060aa144"
+}

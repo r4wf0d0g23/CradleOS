@@ -44,3 +44,5 @@ Evidence: workspace research/cradleos-recipes-20261003. Production release.json
 is recorded after live verification. Scope primary cradleos.io as prior Cycle7
 releases; no GitHub Pages mirror claim. Rollback060aa144. Worktree remains live
 indexer source; never delete it. Source branchcycle7-vestiges-20261002.
+
+Release COMPLETE: Pages5d179f48, source193e0bf. Live JS/CSS+sixGameDataJSON+systemnames all exact hashes; production1440/390 workflows and both aliases PASS; independent deployment audit PASS. See release.json.
