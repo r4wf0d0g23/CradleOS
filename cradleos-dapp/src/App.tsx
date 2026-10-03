@@ -31,15 +31,12 @@ import { ShipFittingPanel } from "./components/ShipFittingPanel";
 import { QueryPanel } from "./components/QueryPanel";
 import { SRPPanel } from "./components/SRPPanel";
 import { InventoryPanel } from "./components/InventoryPanel";
-import { KeeperPanel } from "./components/KeeperPanel";
 import { UpgradePanel } from "./components/UpgradePanel";
 import { DashboardPanel } from "./components/DashboardPanel";
 // LinksPanel removed — kiosk link controls merged into StructurePanel
 import { IndustryPanel } from "./components/IndustryPanel";
-import KeeperOrb from "./components/KeeperOrb";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
-import { KeeperCipherPanel } from "./components/keeperCipher/KeeperCipherPanel";
 import { CasinoPanel } from "./components/CasinoPanel";
 import { ComicsPanel } from "./components/ComicsPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
@@ -429,13 +426,13 @@ function haNodes(status: PrivateNodeStatusValue): HaNode[] {
   }];
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "keeper" | "cipher" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "origins";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "origins";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
 // 2026-06-08 panel slimming: routes for hidden panels (structures, registry,
 // bounties, srp, cargo, succession, announcements, recruiting, hierarchy,
-// assets, wiki, fitting, map, efmap, keeper, cipher, flappy) intentionally
+// assets, wiki, fitting, map, efmap, flappy) intentionally
 // removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
   // Cycle 7: keep service and exploration-status deep-links reachable.
@@ -567,12 +564,12 @@ function AppInner() {
   const [lastDigest, setLastDigest] = useState<string | undefined>();
   const [connectError, setConnectError] = useState<string | undefined>();
   const [muted, setMutedState] = useState<boolean>(() => isMuted());
-  // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting/cipher from public set
+  // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting from public set
   // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
   // "origins" is public: reading requires no wallet and no chain state.
   const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting", "gamedata"]);
   // Default landing tab:
-  //   - hash override always wins (e.g. linked-from kiosk URL with #/cipher)
+  //   - hash override always wins (e.g. linked-from kiosk URL with #/intel)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
   //   - if no wallet at all on first paint, the wallet-gate UI in the panel area renders
   //     a clear "Connect EVE Vault" CTA, which is the correct first-touch experience
@@ -769,7 +766,7 @@ function AppInner() {
     calendar: {
       title: "Community event calendar — schedule and track tribe operations",
       steps: [
-        "Hackathon schedule is built-in and visible to everyone",
+        "Your events are saved in this browser for the selected tribe vault",
         "Custom events save locally per tribe vault",
         "Add events with type, date, and description",
         "Calendar grid highlights days with scheduled events",
@@ -805,14 +802,6 @@ function AppInner() {
         "Tribe view shows all on-chain members, token info, and description",
       ],
     },
-    keeper: {
-      title: "Keeper — ancient intelligence beyond known space",
-      steps: [
-        "Ask about the world chain, structures, blueprints, tribal economies",
-        "The Keeper perceives your wallet, tribe, and on-chain state",
-        "Your data stays on Sui — the Keeper reads only what the lattice reveals",
-      ],
-    },
     // links tab removed — merged into StructurePanel KIOSK section
     // war tab removed 2026-05-22 — LineageWar panel hidden pending refresh
     industry: {
@@ -829,18 +818,6 @@ function AppInner() {
     flappy: {
       title: "Flappy Frontier — dev only",
       steps: ["Navigate your ship through Smart Gates", "Click or Space to warp", "Don't die"],
-    },
-    cipher: {
-      title: "Keeper Cipher — daily encrypted Keeper transmission with optional in-game expeditions",
-      steps: [
-        "A Keeper fragment is broadcast each UTC day, encoded as a substitution cipher",
-        "Click any glyph, then assign a letter; free hints are pre-filled",
-        "Decoded text updates live; solve = unlock the transcript",
-        "Some fragments carry an EXPEDITION ORDER — the Keeper picks a real solar system",
-        "Travel there in EVE Frontier and anchor a Network Node to complete the mission",
-        "Verification scans on-chain LocationRevealedEvents — no extra contracts required",
-        "Daily seed combines UTC date + latest killmail tx digest — same puzzle for everyone",
-      ],
     },
     voting: {
       title: "Elections — current-cycle public voting",
@@ -902,7 +879,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", keeper: "keeper", cipher: "cipher", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
+      calendar: "calendar", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
       voting: "voting", origins: "origins",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
@@ -1027,7 +1004,7 @@ function AppInner() {
               // 2026-06-08 panel slimming: focused tab set for pre-wipe push.
               // Hidden: structures, registry, bounties, srp, cargo, succession,
               // announcements, recruiting, hierarchy, assets, wiki, fitting,
-              // map, efmap, keeper, cipher, flappy. Re-enable by adding back to
+              // map, efmap, flappy. Re-enable by adding back to
               // ORDER (and KIOSK_PUBLIC if it should work without a wallet).
               // "defense" temporarily removed 2026-06-24 — see comment on
               // the main tab strip above. Re-add when turrets return.
@@ -1076,7 +1053,6 @@ function AppInner() {
                 : tab === "query"      ? "QUERY"
                 : tab === "industry"   ? "IND"
                 : tab === "gamedata"   ? "GAMEDATA"
-                : tab === "cipher"     ? "CIPHER"
                 : tab === "voting"     ? "VOTE"
                 : tab === "casino"     ? "CASINO"
                 : tab === "origins"    ? "ORIGINS"
@@ -1217,14 +1193,12 @@ function AppInner() {
           </p>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"20px", margin:"0 0 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <KeeperOrb size={48} onClick={() => setActiveTab("keeper")} title="Open Keeper" />
               <h1 style={{
                 fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 800, letterSpacing: "0.06em",
                 color: "#FF4700", margin: 0,
               }}>
                 C<span style={{ textTransform: "lowercase", letterSpacing: "0.04em" }}>radle</span>OS
               </h1>
-              <KeeperOrb size={48} onClick={() => setActiveTab("keeper")} title="Open Keeper" />
             </div>
             <button
               onClick={() => window.location.reload()}
@@ -1345,7 +1319,7 @@ function AppInner() {
         {/* 2026-06-08 panel slimming: focused tab set for pre-wipe push.
             Hidden: structures, registry, bounties, srp, cargo, succession,
             announcements, recruiting, hierarchy, assets, wiki, fitting,
-            map, efmap, keeper, cipher, flappy. Panels themselves still
+            map, efmap, flappy. Panels themselves still
             render below if active tab is set programmatically; only the
             nav buttons are removed. Re-enable by adding tab id back to
             this list (and PUBLIC_TABS if public-without-wallet). */}
@@ -1412,10 +1386,8 @@ function AppInner() {
                   : tab === "query"      ? "Query"
                   : tab === "efmap"      ? "EF-Map"
                   : tab === "dapps"      ? "DApps"
-                  : tab === "keeper"     ? "◆"
                   : tab === "industry"  ? "Industry"
                   : tab === "gamedata"  ? "Game Data"
-                  : tab === "cipher"    ? "⊕ Cipher"
                   : tab === "voting"    ? "Vote"
                   : tab === "casino"    ? "◆ BJ"
                   : tab === "origins"   ? "◈ Origins"
@@ -1441,11 +1413,9 @@ function AppInner() {
                   : tab === "query"         ? "Query"
                   : tab === "efmap"         ? "⬡ EF-Map"
                   : tab === "dapps"         ? "⧫ Community DApps"
-                  : tab === "keeper"        ? "◆ Keeper"
                   : tab === "gamedata"      ? "◇ Game Data"
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Industry"
-                  : tab === "cipher"        ? "⊕ Keeper Cipher"
                   : tab === "voting"        ? "◣ Elections"
                   : tab === "casino"        ? "◆ Casino"
                   : tab === "origins"       ? "◈ Origins"
@@ -1505,10 +1475,8 @@ function AppInner() {
           {activeTab === "wiki"          && <div style={{ background: "transparent", height: "calc(100vh - 260px)", minHeight: 500, display: "flex", flexDirection: "column" }}><LoreWikiPanel /></div>}
           {activeTab === "fitting"       && <div style={{ background: "transparent" }} className="content-panel"><HistoricalDataNotice /><ShipFittingPanel /></div>}
           {activeTab === "query"         && <div style={{ background: "transparent" }} className="content-panel"><QueryPanel /></div>}
-          {activeTab === "keeper"        && <div style={{ background: "transparent" }} className="content-panel"><KeeperPanel /></div>}
           {activeTab === "industry"      && <div style={{ background: "transparent" }} className="content-panel"><HistoricalDataNotice /><IndustryPanel /></div>}
           {activeTab === "gamedata"      && <div style={{ background: "transparent" }} className="content-panel"><GameDataPanel /></div>}
-          {activeTab === "cipher"       && <div style={{ background: "transparent" }} className="content-panel"><KeeperCipherPanel /></div>}
           {activeTab === "voting"        && <div style={{ background: "transparent" }} className="content-panel"><VotingPanel /></div>}
           {/* Bankroll lives INSIDE CasinoPanel (casinoView.mode === "bankroll"),
               not as a top-level tab: it is casino infrastructure, not a domain. */}

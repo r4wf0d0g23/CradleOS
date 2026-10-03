@@ -8,6 +8,7 @@
  * Note: events are local to this browser. Broadcast through Announcements tab.
  */
 import { useState, useMemo } from "react";
+import { withoutRetiredCalendarEvents } from "../lib/calendarEvents";
 import { useQuery } from "@tanstack/react-query";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { fetchCharacterTribeId, getCachedVaultId, fetchTribeVault, type TribeVaultState } from "../lib";
@@ -66,35 +67,15 @@ const TYPE_BORDER: Record<EventType, string> = {
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// ── Hackathon schedule (always visible, public, not deletable) ────────────────
-
-const HACKATHON_EVENTS: CommunityEvent[] = [
-  { id: "hk-start",    title: "Hackathon Begins",               date: "2026-03-11", time: "", description: "EVE Frontier Hackathon build period opens. All submissions must target Utopia.", type: "Social",   visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-  { id: "hk-build",    title: "Build Period (Mar 11 – Mar 31)", date: "2026-03-11", time: "", description: "Open build window. Deploy and iterate on Utopia testnet.",                   type: "Industry", visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-  { id: "hk-deadline", title: "Submission Deadline",            date: "2026-03-31", time: "", description: "All hackathon submissions must be in by end of day.",                        type: "CTA",      visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-  { id: "hk-deploy",   title: "Deploy to Stillness (Optional)", date: "2026-04-01", time: "", description: "Optional: deploy your project into the live Stillness environment (Apr 1–8).", type: "Industry", visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-  { id: "hk-vote",     title: "Community Voting Opens",         date: "2026-04-01", time: "", description: "Community voting period runs April 1–15.",                                   type: "Alliance", visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-  { id: "hk-judging",  title: "Judging Period",                 date: "2026-04-15", time: "", description: "Official judging by Fenris Creations. Runs April 15–22.",                  type: "Defense",  visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-  { id: "hk-winners",  title: "Winners Announced",              date: "2026-04-24", time: "", description: "Hackathon winners revealed on April 24.",                                    type: "Social",   visibility: "public", createdBy: "Fenris Creations", createdAt: 0 },
-];
-
-const HACKATHON_IDS = new Set(HACKATHON_EVENTS.map(e => e.id));
-
-
-// ── Built-in event IDs (cannot be deleted by users) ───────────────────────────
-
-const BUILTIN_IDS = new Set<string>([...HACKATHON_IDS]);
-
 // ── localStorage helpers ──────────────────────────────────────────────────────
 
 function loadEvents(vaultId: string): CommunityEvent[] {
   try {
     const raw = localStorage.getItem(`cradleos:events:${vaultId}`);
     const stored: CommunityEvent[] = raw ? (JSON.parse(raw) as CommunityEvent[]) : [];
-    // Merge: built-in events always present, user events after, no duplicates
-    const userEvents = stored.filter(e => !BUILTIN_IDS.has(e.id));
-    return [...HACKATHON_EVENTS, ...userEvents];
-  } catch { return [...HACKATHON_EVENTS]; }
+    // Earlier saves included built-in schedule rows. Exclude only their exact IDs.
+    return withoutRetiredCalendarEvents(stored);
+  } catch { return []; }
 }
 
 function saveEvents(vaultId: string, events: CommunityEvent[]): void {
@@ -332,9 +313,6 @@ function EventCard({
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "3px", flexWrap: "wrap" }}>
             <TypeBadge type={event.type} />
             <VisibilityBadge visibility={event.visibility ?? "tribe"} />
-            {HACKATHON_IDS.has(event.id) && (
-              <span style={{ fontSize: 10, color: "#FF4700", border: "1px solid #FF470044", padding: "0px 5px", background: "rgba(255,71,0,0.07)" }}>HACKATHON</span>
-            )}
             <span style={{ color: "#c8c8b8", fontSize: "13px", fontWeight: 600 }}>{event.title}</span>
           </div>
           <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "11px" }}>
@@ -361,7 +339,7 @@ function EventCard({
             </div>
           )}
         </div>
-        {isFounder && !BUILTIN_IDS.has(event.id) && (
+        {isFounder && (
           <button
             onClick={() => onDelete(event.id)}
             style={{
@@ -608,15 +586,7 @@ function PublicCalendarView({ loading, noVault }: { loading: boolean; noVault: b
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const today = toDateStr(new Date());
 
-  const eventsByDate = useMemo(() => {
-    const m = new Map<string, CommunityEvent[]>();
-    for (const ev of HACKATHON_EVENTS) {
-      const arr = m.get(ev.date) ?? [];
-      arr.push(ev);
-      m.set(ev.date, arr);
-    }
-    return m;
-  }, []);
+  const eventsByDate = useMemo(() => new Map<string, CommunityEvent[]>(), []);
 
   const months = useMemo(() => {
     const now = new Date();
@@ -626,18 +596,13 @@ function PublicCalendarView({ loading, noVault }: { loading: boolean; noVault: b
     });
   }, []);
 
-  const listedEvents = useMemo(() => {
-    if (selectedDate) return eventsByDate.get(selectedDate) ?? [];
-    return [...HACKATHON_EVENTS].sort((a, b) => a.date.localeCompare(b.date));
-  }, [selectedDate, eventsByDate]);
-
   return (
     <div className="card">
       <div style={{ color: "#aaa", fontWeight: 700, fontSize: "16px", marginBottom: "4px", letterSpacing: "0.04em" }}>
         Event Calendar
       </div>
       <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px", marginBottom: "12px" }}>
-        Public schedule — connect wallet and create a tribe vault to add tribe events
+        Connect your wallet and select a tribe vault to view and manage this browser’s events
       </div>
 
       {/* Status hint */}
@@ -682,14 +647,11 @@ function PublicCalendarView({ loading, noVault }: { loading: boolean; noVault: b
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "10px", letterSpacing: "0.08em", marginBottom: "10px", fontWeight: 700 }}>
-            {selectedDate ? `EVENTS — ${selectedDate}` : "HACKATHON SCHEDULE"}
+            {selectedDate ? `EVENTS — ${selectedDate}` : "EVENTS"}
           </div>
-          {listedEvents.length === 0
-            ? <div style={{ color: "rgba(175,175,155,0.4)", fontSize: "12px", padding: "20px 0", textAlign: "center" }}>No events on this date.</div>
-            : listedEvents.map((ev) => (
-              <EventCard key={ev.id} event={ev} isFounder={false} onDelete={() => {}} />
-            ))
-          }
+          <div style={{ color: "rgba(175,175,155,0.4)", fontSize: "12px", padding: "20px 0", textAlign: "center" }}>
+            {selectedDate ? "No events on this date." : "No public events scheduled."}
+          </div>
         </div>
       </div>
     </div>
@@ -736,7 +698,6 @@ function EventCalendarPanelInner({ vault }: { vault: TribeVaultState }) {
   };
 
   const handleDelete = (id: string) => {
-    if (BUILTIN_IDS.has(id)) return; // hackathon events are permanent
     const updated = events.filter((e) => e.id !== id);
     setEvents(updated);
     saveEvents(vault.objectId, updated);
@@ -920,7 +881,7 @@ export function EventCalendarPanel() {
     staleTime: 30_000,
   });
 
-  // Public view: show hackathon schedule even without wallet/vault
+  // Without a vault, show the calendar with an empty public schedule.
   if (!account || vaultLoading || !vault) {
     return (
       <PublicCalendarView

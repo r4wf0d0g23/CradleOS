@@ -2990,7 +2990,7 @@ export async function discoverDexIdForVault(vaultId: string): Promise<string | n
 // 2026-06-25 wipe-day: pre-wipe CharacterRegistry (typed under orphaned pkg
 // 0x7541ac23...) replaced with a fresh registry created via PTB tx
 // CnuugJF5CnsopcPAxVsoS75QagPCUx44TRRPjZ6t1yYi alongside BountyBoard,
-// TrustlessBountyBoard, and KeeperShrine.
+// TrustlessBountyBoard.
 export const CHARACTER_REGISTRY_ID = CYCLE_DEPLOYMENT.objects.characterRegistry; // v16 re-init'd under wallet-we-control 0x177583b2 (2026-07-18 cutover). Prev 0x36338164 (orphaned).
 
 export type TribeClaim = {
@@ -4931,121 +4931,6 @@ export function buildClaimBountyTrustlessTransaction(
       tx.object(killmailId),
       tx.object(killerCharId),
       tx.object(CLOCK),
-    ],
-  });
-  return tx;
-}
-
-// ── Keeper Shrine ─────────────────────────────────────────────────────────────
-
-export type KeeperShrineState = {
-  objectId: string;
-  keeper: string;
-  balance: number;       // raw units (divide by 1e9 for EVE display)
-  totalDonated: number;
-  donationCount: number;
-};
-
-export type DonationEvent = {
-  shrineId: string;
-  donor: string;
-  amount: number;
-  newBalance: number;
-  totalDonated: number;
-  donationCount: number;
-  timestampMs: number;
-};
-
-/**
- * Fetch the current state of a KeeperShrine shared object.
- * Returns null if the shrine ID is empty or the object is not found.
- */
-export async function fetchKeeperShrine(shrineId: string): Promise<KeeperShrineState | null> {
-  if (!shrineId) return null;
-  try {
-    const fields = await rpcGetObject(shrineId);
-    if (fields._deleted) return null;
-    return {
-      objectId: shrineId,
-      keeper: String(fields.admin ?? fields.keeper ?? ""),
-      balance: Number(fields.offerings ?? fields.balance ?? 0),
-      totalDonated: Number(fields.total_offered ?? fields.total_donated ?? 0),
-      donationCount: Number(fields.offering_count ?? fields.donation_count ?? 0),
-    };
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Fetch recent Donation events for a KeeperShrine, most recent first.
- * Returns up to `limit` events (default 20).
- */
-export async function fetchRecentDonations(shrineId: string, limit = 20): Promise<DonationEvent[]> {
-  if (!shrineId) return [];
-  try {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1,
-        method: "suix_queryEvents",
-        params: [
-          { MoveEventType: `${CRADLEOS_UPGRADE_ORIGIN}::keeper_shrine::OfferingMade` },
-          null,
-          limit,
-          true, // descending
-        ],
-      }),
-    });
-    const json = await res.json() as {
-      result?: {
-        data?: Array<{
-          parsedJson?: Record<string, unknown>;
-          timestampMs?: string | number;
-        }>;
-      };
-    };
-    return (json.result?.data ?? [])
-      .filter(e => {
-        const pj = e.parsedJson ?? {};
-        // Filter by shrine_id if available in event
-        return !pj.shrine_id || String(pj.shrine_id) === shrineId;
-      })
-      .map(e => {
-        const pj = e.parsedJson ?? {};
-        return {
-          shrineId: String(pj.shrine_id ?? shrineId),
-          donor: String(pj.pilgrim ?? pj.donor ?? ""),
-          amount: Number(pj.amount ?? 0),
-          newBalance: Number(pj.new_balance ?? 0),
-          totalDonated: Number(pj.total_offered ?? pj.total_donated ?? 0),
-          donationCount: Number(pj.offering_number ?? pj.donation_count ?? 0),
-          timestampMs: Number(e.timestampMs ?? 0),
-        };
-      });
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Build a donation transaction for a KeeperShrine.
- * Splits `amount` from the provided eveCoinId and calls keeper_shrine::make_offering.
- *
- * @param shrineId   - Object ID of the shared KeeperShrine
- * @param eveCoinId  - Object ID of the Coin<EVE> to split from
- * @param amount     - Amount in raw units (e.g. 1_000_000_000n = 1 EVE)
- */
-export function buildDonateTransaction(shrineId: string, eveCoinId: string, amount: bigint): Transaction {
-  const tx = new Transaction();
-  const [splitCoin] = tx.splitCoins(tx.object(eveCoinId), [tx.pure.u64(amount)]);
-  tx.moveCall({
-    target: `${CRADLEOS_PKG}::keeper_shrine::make_offering`,
-    typeArguments: [EVE_COIN_TYPE],
-    arguments: [
-      tx.object(shrineId),
-      splitCoin,
     ],
   });
   return tx;

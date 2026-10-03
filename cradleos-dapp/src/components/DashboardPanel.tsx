@@ -3,7 +3,6 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { createPortal } from "react-dom";
 import { playPowerOn, playPowerOff } from "../lib/sound";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
-import { TribeLeaderboardPanel } from "./TribeLeaderboardPanel";
 import { LinksPanel } from "./LinksPanel";
 import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { SERVER_ENV, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC } from "../constants";
@@ -1761,25 +1760,7 @@ export function DashboardPanel() {
         </div>
       )}
 
-      {/* ── LATTICE CONTRIBUTIONS ── */}
-      <div style={{ marginTop: 24 }}>
-        <div style={{
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: "0.14em",
-          color: "rgba(0,255,153,0.6)",
-          textTransform: "uppercase" as const,
-          marginBottom: 4,
-          paddingLeft: 2,
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-        }}>
-          <span style={{ width: 2, height: 10, background: "rgba(0,255,153,0.5)", display: "inline-block" }} />
-          LATTICE CONTRIBUTIONS
-        </div>
-        <TribeLeaderboardPanel />
-      </div>
+
     </div>
   );
 }

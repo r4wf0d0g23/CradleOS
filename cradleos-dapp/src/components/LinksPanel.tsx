@@ -2,7 +2,6 @@
  * LinksPanel — Attach CradleOS services to your on-chain structures.
  *
  * Stores the link as the structure's metadata.url field on-chain.
- * The Keeper easter egg is unlabeled — players discover it.
  */
 
 import { useState, useEffect } from "react";
@@ -21,7 +20,6 @@ import { PortalSelect } from "./PortalSelect";
 // ── Service definitions ───────────────────────────────────────────────────────
 
 const BASE = "https://cradleos.io";
-const KEEPER_URL = `${BASE}/#/keeper`;
 
 interface ServiceDef {
   id: string;
@@ -29,7 +27,6 @@ interface ServiceDef {
   description: string;
   url: string;
   icon: string;
-  secret?: boolean;
 }
 
 // Service catalog — mirrors the Tab list in App.tsx (sans dev-only `flappy`).
@@ -142,19 +139,10 @@ const SERVICES: ServiceDef[] = [
     icon: "◆",
   },
 
-  // ── Keeper (easter egg — unlabeled in dropdown via `secret: true`) ──
-  {
-    id: "keeper",
-    label: "",            // intentionally blank — easter egg
-    description: "",
-    url: KEEPER_URL,
-    icon: "❖",
-    secret: true,
-  },
 ];
 
-// Services shown in the dropdown (exclude secret and non-kiosk tabs)
-const DROPDOWN_SERVICES = SERVICES.filter(s => !s.secret);
+// All supported kiosk services are shown in the dropdown.
+const DROPDOWN_SERVICES = SERVICES;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -197,7 +185,6 @@ function StructureCard({
   // selectStyle removed 2026-05-01 — native <select> replaced with
   // PortalSelect; styles now live inline at the call site below.
 
-
   return (
     <div style={{
       marginBottom: 10,
@@ -239,7 +226,7 @@ function StructureCard({
           </span>
 
           {/* Linked service — prominent green badge */}
-          {currentUrl && matchedService && !matchedService.secret && (
+          {currentUrl && matchedService && (
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 5,
               fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 3,
@@ -248,13 +235,6 @@ function StructureCard({
             }}>
               {matchedService.icon} {matchedService.label}
             </span>
-          )}
-          {currentUrl && matchedService?.secret && (
-            <span style={{
-              fontSize: 12, padding: "3px 8px", borderRadius: 3,
-              background: "rgba(255,255,255,0.04)", color: "rgba(175,175,155,0.6)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}>⚓</span>
           )}
           {currentUrl && !matchedService && (
             <span style={{
@@ -291,7 +271,7 @@ function StructureCard({
               fontSize: 10, fontFamily: "monospace", color: "rgba(180,160,140,0.5)",
               marginBottom: 8, wordBreak: "break-all",
             }}>
-              {matchedService?.secret ? "███████████████" : currentUrl}
+              {currentUrl}
             </div>
             <button
               onClick={() => onDetach(s)}
@@ -398,25 +378,6 @@ function StructureCard({
                 LINK
               </button>
             </div>
-
-            {/* Easter egg — only visible on Nodes and SSUs */}
-            {(s.kind === "NetworkNode" || s.kind === "StorageUnit") && (
-              <div style={{ marginTop: 8, textAlign: "right" }}>
-                <button
-                  onClick={() => onLink(s, KEEPER_URL)}
-                  disabled={isBusy}
-                  title=""
-                  style={{
-                    padding: "3px 8px", fontSize: 13, cursor: "pointer", borderRadius: 2,
-                    background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
-                    color: "rgba(175,175,155,0.3)", fontFamily: "inherit",
-                    opacity: isBusy ? 0.4 : 1,
-                  }}
-                >
-                  🔒
-                </button>
-              </div>
-            )}
           </div>
         )}
         {isBusy && (

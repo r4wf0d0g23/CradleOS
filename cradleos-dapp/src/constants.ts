@@ -158,7 +158,6 @@ export const TRIBE_VAULT_TYPE = `${CRADLEOS_ORIGINAL}::tribe_vault::TribeVault`;
 export const TRIBE_DEX_TYPE   = `${CRADLEOS_ORIGINAL}::tribe_dex::TribeDex`;
 export const BOUNTY_BOARD = CYCLE_DEPLOYMENT.objects.bountyBoard;
 export const TRUSTLESS_BOUNTY_BOARD = CYCLE_DEPLOYMENT.objects.trustlessBountyBoard;
-export const KEEPER_SHRINE = CYCLE_DEPLOYMENT.objects.keeperShrine;
 export const WIKI_BOARD   = "";
 export const WIKI_MOD_CAP = "";
 

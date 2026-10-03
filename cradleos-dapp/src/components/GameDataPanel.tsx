@@ -376,7 +376,7 @@ function EventTypesView() {
 
 // Hand-curated GLB stand-ins for each ship and structure class, shipped under
 // /public/models/ and rendered with the same point-cloud + edge-wireframe styling
-// as the Keeper viewport (see components/KeeperViewport.tsx). These are NOT
+// as the original catalog viewer. These are NOT
 // decoded from the live .cmf/.black client assets — when CCP starts shipping .cmf
 // and we wire up a real loader, we swap these for the extracted geometry.
 const MODEL_ROSTER: Array<{ file: string; label: string; group: string; accent: number }> = [
@@ -662,7 +662,7 @@ function Viewport3D() {
         <div style={{ color: ACCENT, fontWeight: 700, marginBottom: 6 }}>◇ 3D Model Browser</div>
         <p style={{ margin: "0 0 6px 0", color: "rgba(220,220,200,0.85)" }}>
           Hand-curated GLB stand-ins for each EVE Frontier ship and structure class, rendered with
-          the same point-cloud + edge-wireframe styling as the Keeper viewport. Click any entry to
+          point-cloud and edge-wireframe styling. Click any entry to
           load it.
         </p>
         <p style={{ margin: 0, color: MUTED, fontSize: 10 }}>

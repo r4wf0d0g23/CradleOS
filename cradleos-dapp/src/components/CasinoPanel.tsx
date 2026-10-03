@@ -831,7 +831,7 @@ function GameCard({ entry, onClick }: { entry: GameEntry; onClick: () => void })
   const [hovered, setHovered] = useState(false);
   // Asset Studio card art (public/casino/cards/<key>.webp). If the image is
   // missing or the webview can't load it, fall back to the glyph silently
-  // (KeeperPanel RAG-image pattern — capability degrades, never breaks).
+  // (optional imagery degrades gracefully and never blocks the panel).
   const [artFailed, setArtFailed] = useState(false);
   const artSrc = `${import.meta.env.BASE_URL}casino/cards/${entry.key}.webp`;
   return (
