@@ -837,6 +837,8 @@ function AppInner() {
         "Client Text: searchable current-build localization with message IDs, not item IDs",
         "Event Types: decoded internal client definitions, separate from Sui contract events",
         "Cycle 7 Changes: sourced patch summaries, including verified fuel and material changes",
+        "Client Recipes: native input/output quantities, searchable by item or recipe ID; facility availability and timing are unverified",
+        "Item details: raw base attributes and graphics references, with API/client differences preserved; not fitted statistics",
         "Sources: snapshot provenance, official GitHub checks and explicit coverage gaps",
       ],
     },
