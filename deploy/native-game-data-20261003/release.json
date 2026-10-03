@@ -1,0 +1,155 @@
+{
+  "deployment": "060aa144",
+  "deploymentUrl": "https://060aa144.cradleos-d75.pages.dev",
+  "source": "cd5451f8b92f1348cf0b754dc7919c0ae6be2e3a",
+  "production": "https://cradleos.io",
+  "publishedAt": "2026-10-03T23:02:08.025Z",
+  "liveVerification": {
+    "base": "https://cradleos.io",
+    "verifiedAt": "2026-10-03T23:02:08.025Z",
+    "bundle": "/assets/index-DflpTZB5.js",
+    "files": [
+      {
+        "path": "/assets/index-DflpTZB5.js",
+        "bytes": 1963198,
+        "sha256": "e9aeaed3dead52f80a282527606f9728cde0dd129f624918eb47f87353cdbb46"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/meta.json",
+        "bytes": 4152,
+        "sha256": "924f0d1250e6c8cfef20f6e74305773c981a399fb872d1d41d0b863473d11b98"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/native-v1.json",
+        "bytes": 351535,
+        "sha256": "a7702649eebcb1d12d6c18ce8dbd3df8ab88363a254bd02cef9574e847dcb66a"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/items.json",
+        "bytes": 153554,
+        "sha256": "bbe80a9f3a4124b69b3fd57c0f81b465ba03b2c91a6b5879554ce99665cdfd37"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/strings.json",
+        "bytes": 18530229,
+        "sha256": "2b08db1921a8272a4faa62e03220288dc0746f2fa1618191f62f8c2e841ccd50"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/events.json",
+        "bytes": 2890,
+        "sha256": "5c608470a07b000763b65024d8d2a6d9c04833bfba6df541c83f7e6e3673939c"
+      },
+      {
+        "path": "/data/game-data-cycle7-3573151/changes.json",
+        "bytes": 3821,
+        "sha256": "b9958ea1b6417b5c8e2683180ac0e08fb79039c45a0c3a9258713d9a2afe41fb"
+      },
+      {
+        "path": "/data/system-names-stillness-cycle7-3573151.json",
+        "bytes": 535534,
+        "sha256": "1ab219e3f64415e176a1b614d0a2c9144d3fea059a32261d2ac6f93a29204c9f"
+      }
+    ],
+    "retired": [
+      {
+        "path": "/data/game-data-catalogue.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-cycle-deltas.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-eventtypes.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-meta.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      },
+      {
+        "path": "/data/game-data-strings-index.json",
+        "status": 200,
+        "oldJsonAbsent": true
+      }
+    ],
+    "backend": [
+      {
+        "path": "/keeper/novelty-stats",
+        "status": 410
+      },
+      {
+        "path": "/telemetry/combined",
+        "status": 200
+      },
+      {
+        "path": "/index/health",
+        "status": 200
+      },
+      {
+        "path": "/sui-status",
+        "status": 200
+      }
+    ]
+  },
+  "browser": {
+    "base": "https://cradleos.io",
+    "checks": [
+      {
+        "width": 1440,
+        "items": "distinct same-name graphics, raw-attribute disclaimer, API-only item, source disagreement"
+      },
+      {
+        "width": 1440,
+        "recipes": "fuel quantities, multi-output, patch attribution, raw runtime, empty search and pagination"
+      },
+      {
+        "width": 390,
+        "items": "distinct same-name graphics, raw-attribute disclaimer, API-only item, source disagreement"
+      },
+      {
+        "width": 390,
+        "recipes": "fuel quantities, multi-output, patch attribution, raw runtime, empty search and pagination"
+      }
+    ],
+    "errors": [],
+    "retiredRequests": []
+  },
+  "checks": {
+    "frontendTests": 63,
+    "extractionTests": 15,
+    "canonChecks": 8,
+    "typescriptAndVite": "PASS",
+    "ioc": "Recovered existing scanner PASS; no dependencies changed"
+  },
+  "review": {
+    "extraction": "Independent native reviewer PASS; pinned run/decoded/API data and semantic joins audited",
+    "ui": "Independent reviewer PASS; error handling, source distinctions and tests audited",
+    "production": "Independent reviewer fetched live JS/native/meta/system names: exact hashes, current namespace and fuel quantities PASS"
+  },
+  "nativeRun": {
+    "script": "native_decode.py",
+    "exit": 0,
+    "inputsSha256": "95ded19b5f875f708cdf6cf9a8af8b2d9ce4da11c2d6190cf99388f04d01a7b0",
+    "scriptSha256": "d2db8551420df42e97289aa3b04332ce0b2e4ea1dd10c42f7ad9e3bb98955bce",
+    "runnerSha256": "8e207aa7f8ef18efb4850e7dfc9f899d9575a4f61884e1d29cf89716a1c64dd1",
+    "runtimeScope": "Dedicated profile/processes; no network/filesystem sandbox claimed",
+    "cleaned": true,
+    "inputsUnchanged": true,
+    "logs": {
+      "native-stderr.log": "3e33a8aa18c271b7a1806701217b9753c14a54fbbf97915aede1ef4c733bfb23",
+      "native-stdout.log": "ccb2a2fc1c8d07836c7c3140f62e4fe617da9ac4d4dc0019e8ea57d45b7c6fdf"
+    }
+  },
+  "scope": [
+    "Primary cradleos.io only; GitHub Pages mirror not changed or claimed",
+    "Native recipes/raw attributes are reference data, not live facility availability or effective fitted statistics",
+    "Industry and fitting calculators remain historical",
+    "No contracts, wallet transactions, authenticated launcher profile or shared service changes"
+  ],
+  "rollback": "Previous primary Pages deployment8f878413"
+}

@@ -31,3 +31,5 @@ character-index runs from it. Rollback is the prior8f878413 Pages deployment.
 
 Postpublication source hash, deployment ID, bundle/data digests and live browser
 results are recorded in release.json after verification.
+
+Live verification COMPLETE: Pages060aa144; reviewed JS and all six Game Data JSON files plus system names match exact local hashes. Desktop/mobile UI PASS with no page errors/retired requests. Independent production audit PASS. Receipt: release.json.
