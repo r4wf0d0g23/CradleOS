@@ -831,13 +831,13 @@ function AppInner() {
       ],
     },
     gamedata: {
-      title: "Game Data — historical Sanctuary client archive",
+      title: "Game Data — current Cycle 7 Stillness reference",
       steps: [
-        "Catalogue: archived Sanctuary typeID groups; not a verified Cycle 7 catalog",
-        "Strings: searchable index of ~217k human-readable game strings (typeID + display name)",
-        "Cycle Deltas: historical changes from Cycle 5 to Cycle 6 / Sanctuary",
-        "Event Types: historical client event definitions, not a current-world schema",
-        "3D Preview: illustrative GLB stand-ins, not official live ship geometry",
+        "Items: official World API catalogue with real item type IDs, categories, mass and volume",
+        "Client Text: searchable current-build localization with message IDs, not item IDs",
+        "Event Types: decoded internal client definitions, separate from Sui contract events",
+        "Cycle 7 Changes: sourced patch summaries, including verified fuel and material changes",
+        "Sources: snapshot provenance, official GitHub checks and explicit coverage gaps",
       ],
     },
     casino: {

@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-03",
+  "latestPatch": "0.7.1.0",
+  "patches": [
+    {
+      "version": "0.7.1.0",
+      "date": "2026-10-01",
+      "url": "https://evefrontier.com/en/news/patch-notes-founder-access-0-7-1-0-vestiges",
+      "title": "Starter industry and salvage",
+      "changes": [
+        "Network Node construction now requires 8 of each component item, reduced from 10.",
+        "All salvage cuts into Debris. Refining 10 Debris produces 6 Salvaged Materials, 2 Aromatic Carbon Weave, 2 Nickel-Iron Veins and 6 Silicon Dust.",
+        "The starter refining task uses Debris instead of Cinderwrack. The official known-issues list warns that tutorial text still mentions the old output.",
+        "Collier and Shifter scan ranges increased. Inculcator Foundations request specific materials from their drones.",
+        "Regolith and industrial-product descriptions were corrected. The blueprint tracker and several logout/warp fuel-loss problems were fixed."
+      ]
+    },
+    {
+      "version": "0.7.0.1",
+      "date": "2026-09-30",
+      "url": "https://evefrontier.com/en/news/patch-notes-founder-access-0-7-0-1-vestiges",
+      "title": "Fuel and material hotfix",
+      "changes": [
+        "A new recipe converts 21 Hydrocarbon Residue into 75 D1 Fuel. It is available on the Material Processor, Refinery module, Refinery and Heavy Refinery.",
+        "The Water Ice input for D1 Fuel is 208, reduced from 275. The patch does not state the output quantity for that recipe.",
+        "Hydrated Gossan Matrix yields only Water Ice, with increased yield. Crustal Anorthosite Crystals yield more Hydrocarbon Residue, less Silica Grains and some Iron-Rich Nodules.",
+        "Carbon Weave requires 15 Hydrocarbon Residue. Thermal Composites require 6 Hydrocarbon Residue and 4 Silica Grains.",
+        "The Residue-to-Troilite/Tholin conversion was removed from the starter Material Processor and Refinery module, but remains on the Refinery."
+      ]
+    },
+    {
+      "version": "0.7.0.0",
+      "date": "2026-09-29",
+      "url": "https://evefrontier.com/en/news/patch-notes-founder-access-0-7-0-0-vestiges",
+      "title": "Vestiges foundations",
+      "changes": [
+        "New characters start in a Reiver. The Docking Clamp enables physical docking; starter and advanced onboard industry are separated.",
+        "Aim Flight is the default, with strafing and rolling. Ship handling depends more directly on engines, thrusters and fittings.",
+        "Exploration is character-specific. Public solar-system, constellation and character-jump API endpoints were removed; client strings are not a live or discovered-universe catalog.",
+        "Nine skills grow through deepening Memories. Crowns carry up to six Memories; Ascension banks acquired depth. Pathways were removed.",
+        "Mining produces Regoliths across Silicate, Carbonaceous, Metallic, Sulfide and Volatile families. New Conservator Collier and Shifter drones mine and salvage."
+      ]
+    }
+  ],
+  "github": [
+    {"repo":"evefrontier/world-contracts","sha":"d33ff232bd3878e8f9ad0721e18564b21facc925","url":"https://github.com/evefrontier/world-contracts/commit/d33ff232bd3878e8f9ad0721e18564b21facc925","note":"Current upstream head; structure power values aligned with the game server."},
+    {"repo":"evefrontier/wallet-core","sha":"94b15da05a943e4f2b267177498f0f8c042c0df8","url":"https://github.com/evefrontier/wallet-core/commit/94b15da05a943e4f2b267177498f0f8c042c0df8","note":"Current upstream head; package IDs resolved through MVR."},
+    {"repo":"evefrontier/builder-documentation","sha":"4a2edd51ad57521b3a97305ab665c59f343fdc23","url":"https://github.com/evefrontier/builder-documentation/commit/4a2edd51ad57521b3a97305ab665c59f343fdc23","note":"Current builder-documentation head checked for API context."}
+  ]
+}
