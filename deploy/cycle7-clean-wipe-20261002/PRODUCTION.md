@@ -1,3 +1,5 @@
+> **Current frontend:** 2026-10-03 verified Cycle 7 Game Data refresh, source `65cfbda`, Pages `8f878413`. See [release receipt](../game-data-cycle7-20261003/release.json). Keeper/calendar removal remains applied; Cycle 7 on-chain deployment is unchanged.
+
 > Superseded frontend: 2026-10-03 Keeper + stale calendar removal, source `981b26a`, Pages `15d65d99`. See `../keeper-removal-20261003/release.json`. Cycle7 on-chain deployment remains unchanged.
 
 # Cycle 7 production activation receipt — 2026-10-02

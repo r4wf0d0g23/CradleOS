@@ -1,0 +1,158 @@
+{
+  "deployment": "8f878413",
+  "deploymentUrl": "https://8f878413.cradleos-d75.pages.dev",
+  "source": "65cfbdad3b41568a08159cdf599c293462050907",
+  "base": "https://cradleos.io",
+  "verifiedAt": "2026-10-03T13:45:08.365Z",
+  "bundle": "/assets/index-CoEF0oTo.js",
+  "files": [
+    {
+      "path": "/assets/index-CoEF0oTo.js",
+      "bytes": 1956020,
+      "sha256": "a7380fca8b8a518fe5cb5e407f90554d48f5661ee73c54d13ae70b3a36ed2984"
+    },
+    {
+      "path": "/data/game-data-cycle7-3573151/meta.json",
+      "bytes": 3640,
+      "sha256": "cb9bc444fe54d8ccc1a36994e3f89db1d3cdfd0d952dcabe4570d61776bcc22f"
+    },
+    {
+      "path": "/data/game-data-cycle7-3573151/items.json",
+      "bytes": 153554,
+      "sha256": "bbe80a9f3a4124b69b3fd57c0f81b465ba03b2c91a6b5879554ce99665cdfd37"
+    },
+    {
+      "path": "/data/game-data-cycle7-3573151/strings.json",
+      "bytes": 18530229,
+      "sha256": "2b08db1921a8272a4faa62e03220288dc0746f2fa1618191f62f8c2e841ccd50"
+    },
+    {
+      "path": "/data/game-data-cycle7-3573151/events.json",
+      "bytes": 2890,
+      "sha256": "5c608470a07b000763b65024d8d2a6d9c04833bfba6df541c83f7e6e3673939c"
+    },
+    {
+      "path": "/data/game-data-cycle7-3573151/changes.json",
+      "bytes": 3821,
+      "sha256": "b9958ea1b6417b5c8e2683180ac0e08fb79039c45a0c3a9258713d9a2afe41fb"
+    },
+    {
+      "path": "/data/system-names-stillness-cycle7-3573151.json",
+      "bytes": 535534,
+      "sha256": "1ab219e3f64415e176a1b614d0a2c9144d3fea059a32261d2ac6f93a29204c9f"
+    }
+  ],
+  "retired": [
+    {
+      "path": "/data/game-data-catalogue.json",
+      "status": 200,
+      "oldJsonAbsent": true
+    },
+    {
+      "path": "/data/game-data-cycle-deltas.json",
+      "status": 200,
+      "oldJsonAbsent": true
+    },
+    {
+      "path": "/data/game-data-eventtypes.json",
+      "status": 200,
+      "oldJsonAbsent": true
+    },
+    {
+      "path": "/data/game-data-meta.json",
+      "status": 200,
+      "oldJsonAbsent": true
+    },
+    {
+      "path": "/data/game-data-strings-index.json",
+      "status": 200,
+      "oldJsonAbsent": true
+    }
+  ],
+  "backend": [
+    {
+      "path": "/keeper/novelty-stats",
+      "status": 410
+    },
+    {
+      "path": "/telemetry/combined",
+      "status": 200
+    },
+    {
+      "path": "/index/health",
+      "status": 200
+    },
+    {
+      "path": "/sui-status",
+      "status": 200
+    }
+  ],
+  "counts": {
+    "officialItemTypes": 538,
+    "readableClientStrings": 151879,
+    "clientEventDefinitions": 63
+  },
+  "clientBuild": "3573151",
+  "latestPatch": "0.7.1.0",
+  "tests": {
+    "frontend": 58,
+    "extractor": 5,
+    "typecheckAndBuild": "PASS",
+    "localBrowser": "1440px and 390px; wrong-cycle rejection and Retry recovery PASS",
+    "productionBrowser": [
+      {
+        "width": 1440,
+        "items": "true item IDs, new Docking Clamp, unnamed fallback, category filter"
+      },
+      {
+        "width": 1440,
+        "strings": "correct localization message ID"
+      },
+      {
+        "width": 1440,
+        "events": 63
+      },
+      {
+        "width": 1440,
+        "patches": "three source-linked current-cycle updates"
+      },
+      {
+        "width": 1440,
+        "provenance": "coverage gaps, client provenance, official GitHub"
+      },
+      {
+        "width": 390,
+        "items": "true item IDs, new Docking Clamp, unnamed fallback, category filter"
+      },
+      {
+        "width": 390,
+        "strings": "correct localization message ID"
+      },
+      {
+        "width": 390,
+        "events": 63
+      },
+      {
+        "width": 390,
+        "patches": "three source-linked current-cycle updates"
+      },
+      {
+        "width": 390,
+        "provenance": "coverage gaps, client provenance, official GitHub"
+      }
+    ],
+    "productionErrors": [],
+    "retiredRequests": [],
+    "removalRegression": "Desktop/mobile, Origins and shipped-bundle audit PASS"
+  },
+  "review": {
+    "source": "Independent native reviewer PASS; source manifest, extracted data, API proof, patch quantities and UI audited. Requested Opus unavailable.",
+    "deployment": "Independent native reviewer PASS: live entry/bundle and all five JSON hashes match source; item IDs and metadata correct; retired runtime markers absent; all 25,337 names preserved."
+  },
+  "limits": [
+    "Full current recipe, combat-stat and 3D geometry binaries have not been decoded; not substituted with retired data.",
+    "No wallet signing or on-chain change in this release.",
+    "Industry planner remains explicitly historical; this release only supplies source-linked verified patch quantities."
+  ],
+  "propagation": "Immediate post-deploy requests briefly served the prior entry/HTML fallback. Fresh production browser and all file hashes subsequently verified against the new release."
+}
