@@ -1,0 +1,10 @@
+{
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "upstreamCommit": "d33ff232bd3878e8f9ad0721e18564b21facc925",
+  "moveTests": 19,
+  "sourceReview": "independent contract source gate PASS",
+  "wallet": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "sourceSha256": "4edfe1035f4e5ff180b635c493e6c19ba6bf6bebb6d040c478d6f65c365ac6db",
+  "effectsScope": "New isolated turret package only; no initializer, no automatic user turret changes; current core and all balances unchanged",
+  "custody": "Existing authorized Cycle 7 wallet; refresh existing Jetson2 backup proof; deferred second-host task retained; no new private key generated"
+}

@@ -1,0 +1,9 @@
+[package]
+name = "cradleos_turret"
+edition = "2024"
+
+[dependencies]
+world = { local = "../world-contracts/contracts/world" }
+
+[environments]
+testnet_stillness = "4c78adac"
