@@ -530,7 +530,7 @@ recorded with the index deliberately unreachable (fallback path exercised).
 - **Evidence required**: tx digest, object id, or screenshot per PASS.
   "It loaded" is not evidence (SOUL: verify before claiming).
 
-**Automatable subset (wire into deploy-both.sh as a gate over time):** the
+**Automatable subset (wire into the primary-only release gates over time):** the
 type-identity class is ~100% automatable with zero wallets/gas/UI via
 devInspect (S-5), plus: resolver fixture asserts (3 wallets: live-only,
 rerolled, zero-state — via index path AND with the index stubbed to fail),
@@ -543,13 +543,12 @@ signing UX, and in-game visibility remain manual by nature.
 ## 7. Phase E — Ship + post-deploy verification
 
 **E1.** IOC gate: `scripts/scan-npm-iocs.sh` (hard block on non-zero).
-**E2.** `./deploy-both.sh` — **both** targets (CF Pages primary + gh-pages mirror).
-Never one target; drift shipped stale house numbers twice (2026-07-07, 2026-07-18).
-**E3.** Live bundle hash matches the just-built bundle, on **both** origins.
-This is a **hard gate inside deploy-both.sh** (retries up to ~3 min per origin,
-then exits non-zero on mismatch — hardened 2026-07-27 per audit H-4). A drift
-identical to 2026-07-07/2026-07-18 now fails the script instead of logging a
-warning.
+**E2.** Follow `PRIMARY_DEPLOY.md`: deploy the app to **cradleos.io only**.
+GitHub Pages is redirect-only as of 2026-10-05; do not build/publish a mirror.
+The old `deploy-both.sh` is retired and must not be restored.
+**E3.** Verify live primary HTML/bundle and changed data bytes/hashes against the
+reviewed build. An upload success is not proof the site serves the new release.
+The static GitHub redirect needs separate verification only when it changes.
 **E4.** Re-run the Phase D matrix against **production URLs**, not dev.
 **E5.** Record in `memory/YYYY-MM-DD.md`: pkg id, UpgradeCap, digest, publisher,
 **B0 commit hash + tag**, QA matrix result, known-broken list.
