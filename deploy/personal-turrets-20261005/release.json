@@ -1,0 +1,133 @@
+{
+  "verifiedAt": "2026-10-05T19:13:35.920Z",
+  "base": "https://cradleos.io",
+  "files": [
+    {
+      "file": "/assets/index-CuRF64an.js",
+      "status": 200,
+      "bytes": 1860151,
+      "sha256": "db608568f175571b01e8f422f2a4e45db80f704da56dff1e3d04a566b5be38ae"
+    },
+    {
+      "file": "/assets/index-wYvR8_MV.css",
+      "status": 200,
+      "bytes": 712921,
+      "sha256": "ca71a76830dac67c2deed5ea4888572f2cda1aedbff1926143630ab0de29b8af"
+    },
+    {
+      "file": "/data/icon-api.md",
+      "status": 200,
+      "bytes": 5210,
+      "sha256": "b74fd824abab05396c3b5fc8c42b9e4f924bd16c8b9b3a489ff5b67b9bc58a5f"
+    },
+    {
+      "file": "/data/icon-api-v1.json",
+      "status": 200,
+      "bytes": 18119,
+      "sha256": "6b08d73df2d45a25f403a80b621e81ac14d3a2df82cc7c1cf7cc5358ef9c6f17"
+    },
+    {
+      "file": "/data/icons-cycle7-3573151/NOTICE.txt",
+      "status": 200,
+      "bytes": 405,
+      "sha256": "a3f967f84c7b9e170dea539eab76c205bc4bdf209988c98def31778ff022dbba"
+    },
+    {
+      "file": "/data/icons-cycle7-3573151/cradleos-icons-cycle7-3573151.zip",
+      "status": 200,
+      "bytes": 5736262,
+      "sha256": "2002ccb44528c16bba1cfc9befb0fca91f1637a2a8ab17b2df4c1f2f3b2e3e2d"
+    },
+    {
+      "file": "/data/icons-cycle7-3573151/manifest.json",
+      "status": 200,
+      "bytes": 291463,
+      "sha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7"
+    },
+    {
+      "file": "/data/game-data-cycle7-3573151/native-v1.json",
+      "status": 200,
+      "bytes": 351535,
+      "sha256": "a7702649eebcb1d12d6c18ce8dbd3df8ab88363a254bd02cef9574e847dcb66a"
+    }
+  ],
+  "browser": [
+    {
+      "width": 1440,
+      "route": "defense",
+      "heading": true,
+      "ownerWalletPrompt": true
+    },
+    {
+      "route": "gamedata",
+      "sourcesFenris": true,
+      "icons": true
+    },
+    {
+      "route": "industry",
+      "detailsCollapsed": true,
+      "plannerLoads": true
+    },
+    {
+      "route": "gates",
+      "loaded": true
+    },
+    {
+      "route": "origins",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "route": "defense",
+      "heading": true,
+      "ownerWalletPrompt": true
+    },
+    {
+      "legacyRedirect": true
+    }
+  ],
+  "api": {
+    "search": true,
+    "attribution": "EVE Frontier artwork \u00a9 Fenris Creations Not relicensed by CradleOS.",
+    "cors": true
+  },
+  "deployment": "c8398be2",
+  "preview": "https://c8398be2.cradleos-d75.pages.dev",
+  "source": "e1820aa70b8a3f174e7e5be249384f164cbd5591",
+  "rollback": "b7360bef",
+  "contract": {
+    "chainId": "4c78adac",
+    "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+    "sourceCommit": "8d188b2",
+    "packageId": "0x58fec9cb6c4026d6951d6df86442c281dfd69b6c7a2225d7016c08674e1b3e35",
+    "upgradeCap": "0xa159292a8105d6cb7b9861d50fceea511be15a09591778bc3eaaadc6849d03dd",
+    "wallet": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+    "digest": "4WTuFcVdra9pvrEamg1WXfj7YHeePFi3kUvktdDtKqNA",
+    "modules": [
+      "turret"
+    ],
+    "automaticTurretMutations": false
+  },
+  "tests": {
+    "move": 19,
+    "frontendAndServer": 112,
+    "pythonIconExtraction": 4,
+    "originsCanon": 8,
+    "functionsTypecheck": "PASS",
+    "ioc": "PASS",
+    "productionBuild": "PASS",
+    "independentPrepublicationReview": "PASS; native inherited reviewer, Opus unavailable",
+    "desktopMobileInteractions": "PASS",
+    "publicReadDiscovery": "PASS",
+    "sourceVerification": "PASS",
+    "publishedVmSimulation": "PASS; read-only simulation, checks disabled; not game-server dispatcher verification"
+  },
+  "automaticTurretMutations": false,
+  "privateDispatcherAndInGameFiring": "unverified",
+  "githubPages": "redirect-only; verified unchanged",
+  "independentPostdeploymentReview": "PASS: desktop/mobile public owner controls, Sources, gallery/search, API/docs/NOTICE, no page exceptions or horizontal overflow",
+  "knownConsoleMessages": [
+    "Wallet SDK SmartObjectProvider: no object ID",
+    "Slush wallet metadata fetch CORS failure; nonblocking for tested public routes. No claim of a clean browser console."
+  ]
+}
