@@ -1,0 +1,733 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CradleOS Current-client Icon API",
+    "version": "1.0.0",
+    "description": "Public read-only, no key. Case-insensitive name search, type ID metadata and images. Response build/world scope current snapshot; duplicate names are not identities. EVE Frontier artwork \u00a9 CCP hf.; not MIT-relicensed."
+  },
+  "servers": [
+    {
+      "url": "https://cradleos.io"
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/api/icons": {
+      "get": {
+        "operationId": "searchIcons",
+        "summary": "Search icon references by name or ID",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Case/accent-insensitive AND-token name/key search. Do not combine with name."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Alias for q."
+          },
+          {
+            "name": "collection",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "items",
+                "ui",
+                "library",
+                "all"
+              ],
+              "default": "items"
+            },
+            "description": "UI/library are shipped art, not proof of live content."
+          },
+          {
+            "name": "available",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by image availability."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "default": 0
+            },
+            "description": "Page offset."
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Search"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "ETag matched; no body"
+          },
+          "400": {
+            "description": "Invalid query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "summary": "Search headers, no body",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Case/accent-insensitive AND-token name/key search. Do not combine with name."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Alias for q."
+          },
+          {
+            "name": "collection",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "items",
+                "ui",
+                "library",
+                "all"
+              ],
+              "default": "items"
+            },
+            "description": "UI/library are shipped art, not proof of live content."
+          },
+          {
+            "name": "available",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by image availability."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000,
+              "default": 0
+            },
+            "description": "Page offset."
+          },
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same headers as GET, no body"
+          },
+          "304": {
+            "description": "Not modified"
+          },
+          "400": {
+            "description": "Invalid query; no body"
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "204": {
+            "description": "GET, HEAD, OPTIONS allowed; wildcard CORS, no credentials"
+          }
+        }
+      }
+    },
+    "/api/icons/{typeId}": {
+      "parameters": [
+        {
+          "name": "typeId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "Exact item type ID; duplicate names remain separate."
+        }
+      ],
+      "get": {
+        "operationId": "getTypeIcon",
+        "summary": "Get exact type icon metadata, including unresolved types",
+        "parameters": [
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lookup"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "ETag matched; no body"
+          },
+          "400": {
+            "description": "Invalid query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Missing type, image or endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "summary": "Type metadata headers, no body",
+        "parameters": [
+          {
+            "name": "If-None-Match",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same headers as GET"
+          },
+          "304": {
+            "description": "Not modified"
+          },
+          "404": {
+            "description": "Type not found"
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "204": {
+            "description": "GET, HEAD, OPTIONS allowed; wildcard CORS, no credentials"
+          }
+        }
+      }
+    },
+    "/api/icons/{typeId}/image": {
+      "parameters": [
+        {
+          "name": "typeId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "Exact item type ID; duplicate names remain separate."
+        }
+      ],
+      "get": {
+        "operationId": "getTypeIconImage",
+        "summary": "Redirect to original PNG; unresolved icons return404",
+        "responses": {
+          "302": {
+            "description": "Short-cache redirect to content-hash PNG",
+            "headers": {
+              "Location": {
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Missing type, image or endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "summary": "Image redirect headers without body",
+        "responses": {
+          "302": {
+            "description": "Location points to original PNG"
+          },
+          "404": {
+            "description": "Type or image missing"
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "204": {
+            "description": "GET, HEAD, OPTIONS allowed; wildcard CORS, no credentials"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Icon": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "enum": [
+              "items",
+              "ui",
+              "library"
+            ]
+          },
+          "key": {
+            "type": "string"
+          },
+          "typeId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "available": {
+            "type": "boolean",
+            "description": "Whether an icon image is available; not gameplay availability"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "lookupUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "imageEndpoint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "apiPublished": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "unavailableReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "collection",
+          "key",
+          "typeId",
+          "name",
+          "available",
+          "imageUrl",
+          "lookupUrl",
+          "imageEndpoint",
+          "source",
+          "apiPublished",
+          "unavailableReason"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "cycle": {
+            "type": "integer"
+          },
+          "cycleName": {
+            "type": "string"
+          },
+          "server": {
+            "type": "string"
+          },
+          "build": {
+            "type": "string"
+          },
+          "world": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "cycle",
+          "cycleName",
+          "server",
+          "build",
+          "world",
+          "error"
+        ]
+      },
+      "Lookup": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "cycle": {
+            "type": "integer"
+          },
+          "cycleName": {
+            "type": "string"
+          },
+          "server": {
+            "type": "string"
+          },
+          "build": {
+            "type": "string"
+          },
+          "world": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Icon"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "cycle",
+          "cycleName",
+          "server",
+          "build",
+          "world",
+          "data"
+        ]
+      },
+      "Search": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "const": 1
+          },
+          "cycle": {
+            "type": "integer"
+          },
+          "cycleName": {
+            "type": "string"
+          },
+          "server": {
+            "type": "string"
+          },
+          "build": {
+            "type": "string"
+          },
+          "world": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "collection": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "nextOffset": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Icon"
+            }
+          },
+          "links": {
+            "type": "object",
+            "properties": {
+              "documentation": {
+                "type": "string",
+                "format": "uri"
+              },
+              "openapi": {
+                "type": "string",
+                "format": "uri"
+              },
+              "manifest": {
+                "type": "string",
+                "format": "uri"
+              },
+              "download": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          },
+          "scope": {
+            "type": "string"
+          },
+          "attribution": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "cycle",
+          "cycleName",
+          "server",
+          "build",
+          "world",
+          "query",
+          "collection",
+          "total",
+          "limit",
+          "offset",
+          "nextOffset",
+          "data",
+          "links",
+          "scope",
+          "attribution"
+        ]
+      }
+    }
+  }
+}

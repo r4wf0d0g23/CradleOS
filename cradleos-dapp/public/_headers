@@ -1,0 +1,11 @@
+/data/icons-cycle7-3573151/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Expose-Headers: ETag
+  X-Content-Type-Options: nosniff
+
+/data/icons-cycle7-3573151/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/icon-api*
+  Access-Control-Allow-Origin: *
+  X-Content-Type-Options: nosniff
