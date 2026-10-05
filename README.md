@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://r4wf0d0g23.github.io/CradleOS/">Live dApp</a> ·
+  <a href="https://cradleos.io/">Live dApp</a> ·
   <a href="cradleos/README.md">Move source</a> ·
   <a href="cradleos-dapp/README.md">dApp source</a> ·
   <a href="cradleos_voting/README.md">Voting</a> ·
@@ -35,7 +35,7 @@ stack:
 
 | Server | URL |
 |---|---|
-| **Stillness** (live) | <https://r4wf0d0g23.github.io/CradleOS/> |
+| **Stillness** (live) | <https://cradleos.io/> |
 
 Open in any browser. Wallet connects via EVE Vault (auto-injected in the EVE Frontier
 in-game browser) or Slush / Sui Wallet on the web.
@@ -46,9 +46,9 @@ in-game browser) or Slush / Sui Wallet on the web.
 
 The dApp runs inside the EVE Frontier in-game browser. Two paths:
 
-1. **Set a structure's metadata URL** to `https://r4wf0d0g23.github.io/CradleOS/` and
+1. **Set a structure's metadata URL** to `https://cradleos.io/` and
    press **F** near the structure to open it overlaid on the game.
-2. **Bookmark from the web** — `https://r4wf0d0g23.github.io/CradleOS/` works in any
+2. **Bookmark from the web** — `https://cradleos.io/` works in any
    browser; the EVE Vault wallet is detected when running in the game client.
 
 ---
@@ -98,11 +98,11 @@ npm install
 npm run dev        # local dev server at localhost:5173
 ```
 
-To deploy to GitHub Pages:
+The only app deployment is Cloudflare Pages at cradleos.io. GitHub Pages is redirect-only:
 
 ```bash
-VITE_BASE=/CradleOS/ npm run build
-# See cradleos-dapp/DEPLOY.md for the full deploy SOP
+VITE_BASE=/ npm run build
+# See cradleos-dapp/PRIMARY_DEPLOY.md for the current web release procedure
 ```
 
 ---

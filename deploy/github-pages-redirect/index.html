@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <meta name="referrer" content="no-referrer">
+  <link rel="canonical" href="https://cradleos.io/">
+  <title>CradleOS has moved to cradleos.io</title>
+  <noscript><meta http-equiv="refresh" content="0;url=https://cradleos.io/"></noscript>
+</head>
+<body>
+  <h1>CradleOS has moved</h1>
+  <p>Continue to <a id="destination" href="https://cradleos.io/">cradleos.io</a>.</p>
+  <script>
+    (() => {
+      const base = "/CradleOS";
+      let path = window.location.pathname;
+      if (path === base || path === base + "/") path = "/";
+      else if (path.startsWith(base + "/")) path = path.slice(base.length);
+      if (path === "/index.html") path = "/";
+      // Set URL components on a fixed origin: user input cannot choose a host.
+      const destination = new URL("https://cradleos.io/");
+      destination.pathname = path;
+      destination.search = window.location.search;
+      destination.hash = window.location.hash;
+      document.getElementById("destination").href = destination.href;
+      window.location.replace(destination.href);
+    })();
+  </script>
+</body>
+</html>

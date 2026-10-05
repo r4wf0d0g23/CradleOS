@@ -1,11 +1,15 @@
-# CradleOS dApp — Deployment Standard Operating Procedure
+# CradleOS dApp — Historical Deployment Reference
+
+> **2026-10-05: Web deployment instructions below are historical.**
+> Follow [PRIMARY_DEPLOY.md](./PRIMARY_DEPLOY.md): cradleos.io is the only app.
+> GitHub Pages is redirect-only. `deploy-both.sh` is disabled; do not follow old
+> mirror, GitHub app-build or dual-origin verification commands below.
 
 > # ⚠️ SUPERSEDED (2026-07-27)
 > **For Move package publishes and world-rotation flows this document is SUPERSEDED
 > by [`FRESH_DEPLOY_PROTOCOL.md`](./FRESH_DEPLOY_PROTOCOL.md) (v0.2).**
-> **The canonical dApp deploy is `./deploy-both.sh`** (CF Pages primary +
-> gh-pages mirror, IOC gate, hard bundle verification) — NOT the `npx gh-pages`
-> steps below.
+> Web deployment is now governed by `PRIMARY_DEPLOY.md`; all dual-target
+> commands in this historical reference are retired.
 >
 > Several steps below are **DEAD** and marked as such inline:
 > - Smoke tests against `fullnode.testnet.sui.io` (JSON-RPC dead / 404 since 2026-07-08)
