@@ -19,10 +19,10 @@ from extract_game_data import BUILD, WORLD
 
 ICON_INPUTS_SHA = "8c70511cc992f2fe73b1e00d3b8d962d8d2cb2bf88011d79384ada134a3251a1"
 PREFIXES = ("res:/ui/texture/eveicon/", "res:/ui/texture/icons/frontier/")
-NOTICE = """EVE Frontier client artwork © CCP hf. All rights reserved.
+NOTICE = """EVE Frontier client artwork © Fenris Creations All rights reserved.
 Extracted from Stillness / Cycle 7 / client build 3573151 for CradleOS companion UI use.
 These original game assets are not covered by CradleOS's MIT code license.
-This pack does not grant a license to third-party artwork or imply CCP endorsement.
+This pack does not grant a license to third-party artwork or imply Fenris Creations endorsement.
 No raw executables, credentials, or client databases are distributed here.
 """
 

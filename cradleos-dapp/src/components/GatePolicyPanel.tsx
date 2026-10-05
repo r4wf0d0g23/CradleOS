@@ -47,7 +47,7 @@ import { translateTxError } from "../lib/txError";
 import { CharacterAutocomplete } from "./CharacterAutocomplete";
 import { useCharacterDirectory, findCharacterById } from "../lib/characterDirectory";
 import { staggeredRefetch } from "../lib/staggeredRefetch";
-import { PersonalPolicySection } from "./TurretPolicyPanel";
+import { PersonalGatePolicySection } from "./PersonalGatePolicySection";
 
 const ACCESS_LEVELS = [0, 1, 2, 3] as const;
 const LEVEL_COLORS: Record<number, string> = {
@@ -207,7 +207,7 @@ export function GatePolicyPanel() {
       </div>
 
       {policyTab === "personal" && tribeId !== null && (
-        <PersonalPolicySection account={account} characterTribeId={tribeId} />
+        <PersonalGatePolicySection />
       )}
       {policyTab === "personal" && tribeId === null && (
         <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 12, padding: 16 }}>

@@ -71,7 +71,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
         <p>Choose a product, compare its recipes, and plan whole production batches.</p></div>
       <div className="recipe-count"><strong>{data.counts.recipes}</strong> recipes <span>·</span> <strong>{products.length}</strong> products</div>
     </header>
-    <p className="recipe-scope">Current-client quantities. Facility availability, production duration and gameplay modifiers are not verified. No starting inventory is assumed.</p>
+    <details className="recipe-scope"><summary>Calculation details</summary><p>Uses current-client quantities and whole batches, starting from zero inventory. Facility restrictions, production time and gameplay modifiers are not included.</p></details>
     <div className="recipe-layout">
       <aside className="recipe-catalog" aria-label="Recipe product catalog">
         <label htmlFor="recipe-search">Find a product</label>

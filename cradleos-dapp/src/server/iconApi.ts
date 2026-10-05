@@ -93,7 +93,7 @@ export async function iconApi(request: Request): Promise<Response> {
       links: { documentation: `${url.origin}/data/icon-api.md`, openapi: `${url.origin}/data/icon-api-v1.json`,
         manifest: `${url.origin}${PACK_PATH}/manifest.json`, download: `${url.origin}${PACK_PATH}/cradleos-icons-cycle7-${pack.build}.zip` },
       scope: "available means icon image available, not gameplay availability. API and recipe-linked item references; UI/source-art presence does not establish active gameplay availability.",
-      attribution: "EVE Frontier artwork © CCP hf. Not relicensed by CradleOS." });
+      attribution: "EVE Frontier artwork © Fenris Creations Not relicensed by CradleOS." });
   } catch (error) {
     return failure(request, 400, "invalid_query", error instanceof Error ? error.message : "Invalid query.");
   }

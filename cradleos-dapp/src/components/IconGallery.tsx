@@ -11,7 +11,7 @@ export function IconGallery() {
     if (!data) return [];
     const rows = group === "items" ? Object.entries(data.types).map(([key, x]) => ({ key, name: x.name, asset: x.asset, source: x.source,
       detail: `Type ${key} · ${x.apiPublished ? "API-published" : "Recipe-linked client definition"}${x.asset ? "" : " · " + x.reason}` })) :
-      Object.entries(group === "ui" ? data.ui : data.library).map(([key, x]) => ({ key, name: key, asset: x.asset, source: x.source, detail: "Client asset · not proof of active gameplay content" }));
+      Object.entries(group === "ui" ? data.ui : data.library).map(([key, x]) => ({ key, name: key, asset: x.asset, source: x.source, detail: "Source artwork" }));
     const q = query.trim().toLowerCase();
     return rows.filter(x => !q || `${x.key} ${x.name} ${x.source ?? ""}`.toLowerCase().includes(q));
   }, [data, group, query]);
@@ -19,7 +19,7 @@ export function IconGallery() {
   return <section className="icon-gallery" aria-label="Current-client icon pack">
     <h3>Current-client icon pack</h3>
     <p>{data.counts.resolved} of {data.counts.types} item references · {data.counts.ui} UI symbols · {data.counts.library} Frontier source-art entries · {data.counts.assets} unique PNGs.</p>
-    <p>Original images from Stillness build {data.build}. Shared images retain separate type IDs. Unresolved items use a neutral placeholder; no older-cycle art is substituted. The source-art library includes unused or inherited assets.</p>
+    <p>Stillness build {data.build}. Search by name or ID, or download the complete pack.</p>
     <p><a href={`${GAME_ICON_BASE}/cradleos-icons-cycle7-3573151.zip`} download>Download icon pack</a> · <a href={`${GAME_ICON_BASE}/manifest.json`} target="_blank" rel="noreferrer">ID index</a> · <a href={`${GAME_ICON_BASE}/provenance.json`} target="_blank" rel="noreferrer">Source hashes</a> · <a href={`${GAME_ICON_BASE}/NOTICE.txt`} target="_blank" rel="noreferrer">Artwork attribution</a></p>
     <p>Use in another app: <a href="https://cradleos.io/api/icons?name=D1%20Fuel" target="_blank" rel="noreferrer">Name-search API</a> · <a href="https://cradleos.io/data/icon-api.md" target="_blank" rel="noreferrer">API documentation</a> · <a href="https://cradleos.io/data/icon-api-v1.json" target="_blank" rel="noreferrer">OpenAPI schema</a>. Public, read-only, no key required.</p>
     <div className="icon-gallery-controls">
@@ -34,6 +34,5 @@ export function IconGallery() {
     </article>)}</div>
     {!matches.length && <p>No matching icons.</p>}
     {limit < matches.length && <div className="icon-gallery-controls"><button onClick={() => setLimit(n => n + 48)}>Show more icons</button></div>}
-    <p>Game artwork © CCP hf.; not relicensed under CradleOS’s code license.</p>
   </section>;
 }

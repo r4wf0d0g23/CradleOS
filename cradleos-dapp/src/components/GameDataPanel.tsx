@@ -82,7 +82,7 @@ function RecipesView({ state }: { state: NativeState }) {
   const recipes = useMemo(() => data ? filterNativeRecipes(data, query) : [], [data, query]);
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}><strong>{data.counts.recipes} client recipe definitions</strong> · build {data.build}. Exact input/output quantities from the native client schema. Presence here does not prove a recipe is currently available at a facility. The Recipes tab uses these quantities for route choices, batch planning and material lists.</p>
+    <p style={note}><strong>{data.counts.recipes} client recipe definitions</strong> · build {data.build}. Input/output quantities from the current client. Open Recipes for batch planning and material lists.</p>
     <input aria-label="Search client recipes" placeholder="Search input, output, type ID, or recipe ID…" value={query} onChange={e => { setQuery(e.target.value); setLimit(30); }} style={{ ...control, width: "100%", boxSizing: "border-box" }} />
     <p style={note}>{recipes.length} matching recipes · showing {Math.min(limit, recipes.length)}</p>
     <div style={grid}>{recipes.slice(0, limit).map(r => <article key={r.id} style={card}>
@@ -172,7 +172,7 @@ function EventsView({ meta }: { meta: GameDataMeta }) {
   const { data, error, retry } = useSnapshot<Record<string, { eventTypeName: string }>>("events");
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}>{Object.keys(data).length} internal client event definitions decoded from the hash-verified <code>eventtypes.static</code> in build {meta.build}. These are not Sui contract events or a guarantee that every event is used in the current world.</p>
+    <p style={note}>{Object.keys(data).length} internal client event definitions decoded from the hash-verified <code>eventtypes.static</code> in build {meta.build}. </p>
     <div style={grid}>{Object.entries(data).map(([id, event]) => <div key={id} style={{ ...card, fontSize: 12 }}><span style={{ color: "#ffb58b" }}>Event {id}</span> · {event.eventTypeName}</div>)}</div>
   </section>;
 }
@@ -181,7 +181,7 @@ function ChangesView() {
   const { data, error, retry } = useSnapshot<GameDataChanges>("changes");
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}>Verified official changes through {data.latestPatch}, checked {data.checkedAt}. Recipe quantities below are specific published changes, not a complete blueprint database or a refreshed Industry planner.</p>
+    <p style={note}>Verified official changes through {data.latestPatch}, checked {data.checkedAt}.</p>
     <div style={{ display: "grid", gap: 12 }}>{data.patches.map(p => <article key={p.version} style={card}>
       <h3 style={{ color: TEXT, fontSize: 14, margin: "0 0 5px" }}>{p.title}</h3>
       <SourceLink href={p.url}>Official patch {p.version} · {p.date}</SourceLink>
@@ -193,6 +193,7 @@ function ChangesView() {
 function SourcesView({ meta }: { meta: GameDataMeta }) {
   const { data: changes, error, retry } = useSnapshot<GameDataChanges>("changes");
   return <section style={{ display: "grid", gap: 12 }}>
+    <article style={card}><h3 style={{ color: TEXT, marginTop: 0 }}>Attribution</h3><p style={note}>EVE Frontier artwork © Fenris Creations. Game assets retain their original rights; CradleOS’s code license covers its code only.</p><p style={note}><SourceLink href="https://fenris.com/news/2026/studio-behind-eve-online-goes-independent-rebrands-as-fenris-creations-enters-research-partnership-with-google-deepmind">Studio name change · May 6, 2026</SourceLink></p></article>
     <article style={card}><h3 style={{ color: TEXT, marginTop: 0 }}>Snapshot coverage</h3><ul style={{ ...note, paddingLeft: 18 }}>{meta.coverage.map(x => <li key={x} style={{ marginBottom: 6 }}>{x}</li>)}</ul>
       <p style={note}>Physical item values are reported as published by the API. Missing names and placeholder descriptions are retained honestly. No old-cycle game state or balances are included.</p>
     </article>

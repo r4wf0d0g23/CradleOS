@@ -438,6 +438,8 @@ const ROUTE_MAP: Record<string, Tab> = {
   // Cycle 7: keep service and exploration-status deep-links reachable.
   "casino": "casino", "map": "map", "efmap": "efmap", "fitting": "fitting",
   "defense":       "defense",
+  "turrets":       "defense",
+  "structures":    "structures",
   "storage":       "inventory",
   "inventory":     "inventory",
   "dashboard":     "dashboard",
@@ -570,7 +572,7 @@ function AppInner() {
   // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting from public set
   // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
   // "origins" is public: reading requires no wallet and no chain state.
-  const PUBLIC_TABS = new Set<Tab>(["dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting", "gamedata"]);
+  const PUBLIC_TABS = new Set<Tab>(["defense", "dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting", "gamedata"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/intel)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -620,7 +622,7 @@ function AppInner() {
         "Bring Online / Take Offline with a single click — direct on-chain tx",
         "Batch Online brings up all affordable structures within the node's energy budget",
         "Rename any structure with the ✎ button — writes on-chain metadata",
-        "Apply Tribe Policy delegates turret or gate control to your tribe's defense settings",
+        "Use My Turrets for personal targeting; Gates has separate access policies",
       ],
     },
     structures: {
@@ -630,7 +632,7 @@ function AppInner() {
         "Structures are grouped by solar system",
         "Bring All Online sends a single batched transaction within energy limits",
         "Rename any structure with the ✎ button — writes on-chain",
-        "Turrets: Apply Tribe Policy to delegate defense targeting to your tribe policy",
+        "Turrets: open My Turrets and save your own targeting settings",
         "Gates: Apply Tribe Policy to enforce your tribe's access control rules",
       ],
     },
@@ -653,14 +655,13 @@ function AppInner() {
       ],
     },
     defense: {
-      title: "Defense & Turret Policy — control who your turrets target",
+      title: "My Turrets — personal targeting controls",
       steps: [
-        "Founder: create a defense policy for your tribe vault",
-        "Set security relations: mark tribes as GREEN (safe), YELLOW (caution), or RED (hostile)",
-        "Add specific character IDs to the hostile override list for KOS targeting",
-        "Same-tribe pilots are always safe by default — overrides only apply to outsiders",
-        "Members: apply your tribe's policy to your own turrets from this tab",
-        "Passage events from your turrets are logged on-chain and shown here",
+        "Connect the wallet that owns your current character",
+        "Choose a turret and set its engagement mode, target priority and class preference",
+        "Use Advanced for friendly and hostile character or tribe IDs",
+        "Save with your wallet — no tribe vault or founder role required",
+        "Manage turret power separately in Structures",
       ],
     },
     registry: {
@@ -1011,19 +1012,15 @@ function AppInner() {
               // announcements, recruiting, hierarchy, assets, wiki, fitting,
               // map, efmap, flappy. Re-enable by adding back to
               // ORDER (and KIOSK_PUBLIC if it should work without a wallet).
-              // "defense" temporarily removed 2026-06-24 — see comment on
-              // the main tab strip above. Re-add when turrets return.
-              // "gamedata" added 2026-06-24 (public tab, Sanctuary viewport).
-              // Recipes restored October3: current native recipe/type joins and
-              // explicit batch/route planning replace the incomplete old corpus.
+              // Current-world personal turret settings are available.
               const ORDER: Tab[] = [
                 "casino",
                 "dashboard", "inventory", "tribe",
-                "gates", "intel", "calendar", "voting",
+                "gates", "defense", "intel", "calendar", "voting",
                 "origins", "query", "industry", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "dapps", "query", "intel", "industry", "gamedata", "origins",
+                "defense", "dapps", "query", "intel", "industry", "gamedata", "origins",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -1033,7 +1030,7 @@ function AppInner() {
                 tab === "dashboard"  ? "DASH"
                 : tab === "inventory"  ? "INV"
                 : tab === "tribe"      ? "TRIBE"
-                : tab === "defense"    ? "DEFENSE"
+                : tab === "defense"    ? "MY TURRETS"
                 : tab === "bounties"   ? "BOUNTY"
                 : tab === "srp"        ? "SRP"
                 : tab === "cargo"      ? "CARGO"
@@ -1322,15 +1319,11 @@ function AppInner() {
             render below if active tab is set programmatically; only the
             nav buttons are removed. Re-enable by adding tab id back to
             this list (and PUBLIC_TABS if public-without-wallet). */}
-        {/* "defense" temporarily removed 2026-06-24 — next wipe ships without
-            turrets, so the TurretPolicyPanel has nothing to act on. Re-add
-            (here AND in the kiosk ORDER below) once Fenris restores turrets.
-            "gamedata" added 2026-06-24 — Sanctuary viewport of extracted client
-            static data; public, no wallet required. */}
+        {/* Personal turret controls restored for the current-world callback. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "intel", "calendar", "voting", "casino", "origins", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "defense", "intel", "calendar", "voting", "casino", "origins", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["dapps", "query", "intel", "industry", "gamedata", "origins"]);
+          const PUBLIC_TABS = new Set(["defense", "dapps", "query", "intel", "industry", "gamedata", "origins"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1367,7 +1360,7 @@ function AppInner() {
                 ? (tab === "structures" ? "Structs"
                   : tab === "inventory"  ? "Inv"
                   : tab === "tribe"      ? "Tribe"
-                  : tab === "defense"    ? "Defense"
+                  : tab === "defense"    ? "My Turrets"
                   : tab === "registry"   ? "Contest"
                   : tab === "bounties"   ? "Bounties"
                   : tab === "srp"        ? "SRP"
@@ -1395,7 +1388,7 @@ function AppInner() {
                 : (tab === "structures" ? "Structures"
                   : tab === "inventory"  ? "Inventory"
                   : tab === "tribe"      ? "Tribe Vault"
-                  : tab === "defense"    ? "Defense"
+                  : tab === "defense"    ? "My Turrets"
                   : tab === "registry"   ? "Contest"
                   : tab === "bounties"   ? "Bounties"
                   : tab === "srp"        ? "Insurance & SRP"

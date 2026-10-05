@@ -1,0 +1,57 @@
+{
+  "packageId": "0x58fec9cb6c4026d6951d6df86442c281dfd69b6c7a2225d7016c08674e1b3e35",
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "turret": "0x0499c11d01ab291b9589157648e5afcf738afb8b868059f561f07bc39110254e",
+  "readOnly": true,
+  "results": [
+    {
+      "name": "valid-owner",
+      "status": {
+        "success": true,
+        "error": null
+      },
+      "priorities": [
+        {
+          "item": "13",
+          "weight": "101"
+        }
+      ]
+    },
+    {
+      "name": "hold-fire",
+      "status": {
+        "success": true,
+        "error": null
+      },
+      "priorities": []
+    },
+    {
+      "name": "wrong-owner",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 1st command, 'ESenderCannotAccessCharacter': Sender cannot access Character, in '0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::borrow_owner_cap' (line 196)",
+          "command": 0,
+          "MoveAbort": {
+            "abortCode": "13836466271979962379",
+            "location": {
+              "package": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+              "module": "character",
+              "function": 11,
+              "instruction": 11,
+              "functionName": "borrow_owner_cap"
+            },
+            "cleverError": {
+              "errorCode": 5,
+              "lineNumber": 196,
+              "constantName": "ESenderCannotAccessCharacter",
+              "value": "Sender cannot access Character"
+            }
+          }
+        }
+      },
+      "priorities": null
+    }
+  ]
+}

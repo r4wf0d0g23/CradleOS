@@ -117,7 +117,7 @@ export const ELIGIBILITY_OPTIONS: PickerOption[] = [
   {
     value: ELIGIBILITY_KIND.TRIBE_INGAME,
     title: "Tribe (in-game) — character_registry membership",
-    summary: "Voter must be a member of the configured tribe per CCP's on-chain character_registry.",
+    summary: "Voter must be a member of the configured tribe per the official on-chain character registry.",
     tradeoff:
       "Pros: matches the in-game corp identity that pilots actually wear. Cons: requires an attestor (trust assumption) to issue tribe-membership attestations; if attestor goes idle, no new members can join the eligibility set. Best for: official tribe governance.",
   },

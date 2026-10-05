@@ -112,4 +112,4 @@ HEAD preserves GET status/headers with no response body. OPTIONS returns 204.
 - [Complete ZIP](https://cradleos.io/data/icons-cycle7-3573151/cradleos-icons-cycle7-3573151.zip)
 - [Artwork notice](https://cradleos.io/data/icons-cycle7-3573151/NOTICE.txt)
 
-EVE Frontier artwork © CCP hf.; not relicensed under CradleOS's MIT code license.
+EVE Frontier artwork © Fenris Creations; not relicensed under CradleOS's MIT code license.

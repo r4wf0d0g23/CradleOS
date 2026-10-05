@@ -1,0 +1,13 @@
+{
+  "chainId": "4c78adac",
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "sourceCommit": "8d188b2",
+  "packageId": "0x58fec9cb6c4026d6951d6df86442c281dfd69b6c7a2225d7016c08674e1b3e35",
+  "upgradeCap": "0xa159292a8105d6cb7b9861d50fceea511be15a09591778bc3eaaadc6849d03dd",
+  "wallet": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "digest": "4WTuFcVdra9pvrEamg1WXfj7YHeePFi3kUvktdDtKqNA",
+  "modules": [
+    "turret"
+  ],
+  "automaticTurretMutations": false
+}

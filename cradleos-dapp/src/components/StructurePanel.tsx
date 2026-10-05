@@ -22,7 +22,7 @@ const isWrongServerUrl = (url?: string) =>
 
 const DAPP_PRESETS: Record<string, Array<{ label: string; url: string; desc: string }>> = {
   Turret: [
-    { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Tribe defense policy + passage intel" },
+    { label: "⚔ Defense", url: `${DAPP_BASE}/#/defense`, desc: "Personal turret targeting settings" },
   ],
   Gate: [
     { label: "🔀 Gates",  url: `${DAPP_BASE}/#/gates`,   desc: "Gate policy + tribe access rules" },
@@ -601,8 +601,10 @@ function StructureRow({
         </div>
       )}
 
-      {/* Tribe policy delegation — Turrets and Gates only */}
-      {(structure.kind === "Turret" || structure.kind === "Gate") && account && (
+      {structure.kind === "Turret" && <p><a href="#/defense">Configure targeting in My Turrets →</a></p>}
+
+      {/* Gate policy delegation (turrets use owner controls above). */}
+      {structure.kind === "Gate" && account && (
         <div style={{
           marginTop: "10px",
           borderTop: "1px solid rgba(255,71,0,0.1)",

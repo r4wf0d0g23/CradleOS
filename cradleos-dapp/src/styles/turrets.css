@@ -1,0 +1,192 @@
+.personal-turrets {
+  max-width: 1100px;
+  margin: auto;
+  padding: 18px;
+  color: #e0e0d0;
+}
+.turret-page-header,
+.turret-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.turret-page-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+.turret-page-header p,
+.turret-help,
+.turret-footnote {
+  color: #b2afa3;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.turret-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.turret-card {
+  background: #161715e8;
+  border: 1px solid #41443b;
+  border-top: 2px solid #c1c89d;
+  border-radius: 4px;
+  padding: 20px;
+  min-width: 0;
+}
+.turret-card h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+.turret-card small {
+  font-size: 11px;
+  color: #aaa99f;
+  line-height: 1.6;
+}
+.turret-state {
+  font-size: 12px;
+  color: #c1c89d;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #424439;
+}
+.turret-online,
+.turret-offline {
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: #253527;
+  color: #b4ddb7;
+}
+.turret-offline {
+  background: #30312c;
+  color: #b2afa3;
+}
+.turret-card fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.turret-main-controls {
+  display: grid;
+  gap: 12px;
+}
+.turret-card label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  color: #d0d0be;
+}
+.turret-card select,
+.turret-card input:not([type="checkbox"]) {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 10px;
+  color: #eeeede;
+  background: #0f100e;
+  border: 1px solid #505346;
+  border-radius: 3px;
+  font: inherit;
+}
+.personal-turrets button {
+  cursor: pointer;
+  border: 1px solid #656b52;
+  background: #272c21;
+  color: #e8edd6;
+  border-radius: 3px;
+  padding: 9px 13px;
+  font: inherit;
+  font-size: 12px;
+}
+.personal-turrets button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.turret-card fieldset:disabled {
+  opacity: 0.6;
+}
+.turret-card .turret-primary {
+  background: #bfc895;
+  color: #161b10;
+  border-color: #bfc895;
+  font-weight: 700;
+}
+.turret-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.turret-advanced {
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.turret-advanced summary {
+  cursor: pointer;
+  color: #c6c9b9;
+}
+.turret-card .turret-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+.turret-check input {
+  margin-top: 3px;
+}
+.turret-id-lists {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+}
+.turret-error {
+  color: #ffb59e;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.turret-confirmed {
+  color: #b4ddb7;
+  font-size: 12px;
+}
+.turret-empty {
+  padding: 28px;
+  border: 1px solid #484c3d;
+  border-radius: 4px;
+  color: #c6c9b9;
+  line-height: 1.7;
+}
+.turret-reset {
+  border: 1px solid #68634c;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+.turret-reset button + button {
+  margin-left: 8px;
+}
+.turret-footnote a {
+  color: #c1c89d;
+}
+.personal-turrets :focus-visible {
+  outline: 2px solid #d5dfac;
+  outline-offset: 3px;
+}
+@media (max-width: 500px) {
+  .personal-turrets {
+    padding: 10px;
+  }
+  .turret-card {
+    padding: 15px;
+  }
+  .turret-page-header h2 {
+    font-size: 20px;
+  }
+}
