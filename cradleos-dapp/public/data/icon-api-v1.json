@@ -3,7 +3,7 @@
   "info": {
     "title": "CradleOS Current-client Icon API",
     "version": "1.0.0",
-    "description": "Public read-only, no key. Case-insensitive name search, type ID metadata and images. Response build/world scope current snapshot; duplicate names are not identities. EVE Frontier artwork \u00a9 CCP hf.; not MIT-relicensed."
+    "description": "Public read-only, no key. Case-insensitive name search, type ID metadata and images. Response build/world scope current snapshot; duplicate names are not identities. EVE Frontier artwork \u00a9 CCP hf.; not MIT-relicensed. Server-side clients should send a descriptive User-Agent; host edge filtering can reject stock Python urllib with non-JSON 403/1010 before the API."
   },
   "servers": [
     {

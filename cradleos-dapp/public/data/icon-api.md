@@ -76,6 +76,24 @@ Or use the stable type lookup directly in HTML:
 
 ## Caching and errors
 
+For server-side clients, send a descriptive `User-Agent`, such as
+`MyFrontierApp/1.0`. The host's edge filtering blocks stock Python `urllib`
+requests with HTTP 403 / code 1010 before they reach this API. Browser requests
+and Python requests with a descriptive agent were verified. This does not
+require an API key, and edge rejections are not the JSON errors described below.
+
+```python
+import json
+from urllib.request import Request, urlopen
+
+request = Request(
+    "https://cradleos.io/api/icons?name=D1%20Fuel",
+    headers={"User-Agent": "MyFrontierApp/1.0"},
+)
+with urlopen(request, timeout=15) as response:
+    icons = json.load(response)
+```
+
 JSON responses include ETag; send If-None-Match to receive bodyless 304 when
 unchanged. GET/HEAD JSON cache: browser 5 minutes, shared cache 1 hour. Numeric
 image redirects cache 5 minutes. Content-hash PNGs cache immutably for a year.
