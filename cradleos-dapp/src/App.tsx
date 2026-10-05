@@ -443,6 +443,8 @@ const ROUTE_MAP: Record<string, Tab> = {
   "dashboard":     "dashboard",
   "industry":      "industry",
   "recipes":       "industry",
+  "gamedata":      "gamedata",
+  "game-data":     "gamedata",
   "gates":         "gates",
   "tribe":         "tribe",
   "intel":         "intel",

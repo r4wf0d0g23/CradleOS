@@ -5,6 +5,9 @@ import {
   type GameDataMeta, type GameItem, type GameDataChanges, type NativeSnapshot,
 } from "../lib/gameData";
 
+import { ItemIcon } from "./GameIcon";
+import { IconGallery } from "./IconGallery";
+
 const ACCENT = "#FF4700";
 const MUTED = "rgba(190,190,175,0.68)";
 const TEXT = "#e0e0d0";
@@ -13,8 +16,8 @@ const card: CSSProperties = { background: "rgba(255,255,255,0.025)", border: "1p
 const note: CSSProperties = { fontSize: 11, lineHeight: 1.6, color: MUTED };
 const grid: CSSProperties = { display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 270px), 1fr))" };
 
-type Tab = "items" | "recipes" | "strings" | "events" | "changes" | "sources";
-const TABS: Array<[Tab, string]> = [["items", "ITEMS"], ["recipes", "CLIENT RECIPES"], ["strings", "CLIENT TEXT"], ["events", "EVENT TYPES"], ["changes", "CYCLE 7 CHANGES"], ["sources", "SOURCES"]];
+type Tab = "icons" | "items" | "recipes" | "strings" | "events" | "changes" | "sources";
+const TABS: Array<[Tab, string]> = [["items", "ITEMS"], ["icons", "ICONS"], ["recipes", "CLIENT RECIPES"], ["strings", "CLIENT TEXT"], ["events", "EVENT TYPES"], ["changes", "CYCLE 7 CHANGES"], ["sources", "SOURCES"]];
 
 function useSnapshot<T>(file: string, validate?: (data: T) => T) {
   const [data, setData] = useState<T | null>(null);
@@ -88,7 +91,7 @@ function RecipesView({ state }: { state: NativeState }) {
       {(["inputs", "outputs"] as const).map(side => <div key={side} style={{ marginTop: 8 }}>
         <strong style={{ fontSize: 11 }}>{side === "inputs" ? "INPUTS" : "OUTPUTS"}</strong>
         <ul style={{ ...note, paddingLeft: 18, margin: "4px 0" }}>{r[side].map(line => <li key={line.typeID}>
-          <strong style={{ color: TEXT }}>{line.quantity.toLocaleString()} × {data.types[line.typeID].name}</strong>
+          <strong className="icon-label" style={{ color: TEXT }}><ItemIcon typeId={line.typeID} size={28} /><span>{line.quantity.toLocaleString()} × {data.types[line.typeID].name}</span></strong>
           <div>Type {line.typeID}{!data.types[line.typeID].apiPublished && " · client-only reference; not in API catalog"}</div>
         </li>)}</ul>
       </div>)}
@@ -124,7 +127,7 @@ function ItemsView({ meta, native }: { meta: GameDataMeta; native: NativeState }
     </div>
     <p style={note}>{matches.length} matching items · showing {Math.min(limit, matches.length)}</p>
     <div style={grid}>{matches.slice(0, limit).map(item => <article key={item.id} style={card}>
-      <div style={{ color: TEXT, fontWeight: 700, fontSize: 13 }}>{itemLabel(item)}</div>
+      <div className="icon-label" style={{ color: TEXT, fontWeight: 700, fontSize: 13 }}><ItemIcon typeId={item.id} size={48} /><span>{itemLabel(item)}</span></div>
       <div style={{ ...note, color: "#ffb58b" }}>Type ID {item.id} · {item.categoryName} / {item.groupName}</div>
       <div style={{ ...note, marginTop: 5 }}>{item.volume.toLocaleString(undefined, { maximumFractionDigits: 4 })} m³ · {item.mass.toLocaleString(undefined, { maximumFractionDigits: 4 })} kg</div>
       {item.description && <p style={{ ...note, whiteSpace: "pre-wrap", marginBottom: 0 }}>{item.description.replace(/<br\s*\/?\s*>/gi, "\n").replace(/<[^>]*>/g, "")}</p>}
@@ -219,6 +222,7 @@ export function GameDataPanel() {
     {!meta ? <Status error={error} retry={retry} /> : <>
       <p style={note}>Stillness reference data · {meta.counts.items} official item types · {meta.counts.eventTypes} client event definitions · snapshot {meta.extractedAt.slice(0,10)}</p>
       <nav aria-label="Game Data sections" style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 14 }}>{TABS.map(([id,label]) => <button key={id} type="button" onClick={() => setTab(id)} aria-pressed={tab === id} style={{ ...control, cursor: "pointer", borderBottom: `2px solid ${tab === id ? ACCENT : "transparent"}`, color: tab === id ? "#ffb58b" : TEXT }}>{label}</button>)}</nav>
+      {tab === "icons" && <IconGallery />}
       {tab === "items" && <ItemsView meta={meta} native={native} />}
       {tab === "recipes" && <RecipesView state={native} />}
       {tab === "strings" && <StringsView meta={meta} />}

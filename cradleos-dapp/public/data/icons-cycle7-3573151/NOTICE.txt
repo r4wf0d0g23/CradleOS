@@ -1,0 +1,5 @@
+EVE Frontier client artwork © CCP hf. All rights reserved.
+Extracted from Stillness / Cycle 7 / client build 3573151 for CradleOS companion UI use.
+These original game assets are not covered by CradleOS's MIT code license.
+This pack does not grant a license to third-party artwork or imply CCP endorsement.
+No raw executables, credentials, or client databases are distributed here.

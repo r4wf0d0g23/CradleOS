@@ -1,0 +1,7 @@
+.game-icon{display:inline-block;object-fit:contain;vertical-align:middle;flex-shrink:0;max-width:100%;border-radius:3px;background:#161819;image-rendering:auto}
+.game-icon-missing{display:inline-flex;align-items:center;justify-content:center;color:#817c71;border:1px solid #ffffff15;box-sizing:border-box;font:14px monospace}
+.icon-label{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%;vertical-align:middle}.icon-label>span{min-width:0;overflow-wrap:anywhere}
+.icon-gallery{font:12px/1.6 monospace;color:#ded5c7}.icon-gallery a{color:#8dc4ff}.icon-gallery p{color:#b9b0a1}
+.icon-gallery-controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.icon-gallery input,.icon-gallery select,.icon-gallery button{font:inherit;background:#14120f;color:#ded5c7;border:1px solid #675342;padding:8px;min-width:0;max-width:100%}
+.icon-gallery input{flex:1 1 200px}.icon-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:8px}
+.icon-gallery-card{min-width:0;border:1px solid #594433;background:#11120ff0;padding:12px;overflow-wrap:anywhere}.icon-gallery-card>strong{display:block;margin-top:8px}.icon-gallery-card small{display:block;color:#b9b0a1;margin:6px 0}.icon-gallery-card .game-icon{border:1px solid #ffffff18}

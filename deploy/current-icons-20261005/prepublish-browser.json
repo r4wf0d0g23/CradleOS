@@ -1,0 +1,19 @@
+{
+  "base": "http://127.0.0.1:5195",
+  "checks": [
+    {
+      "width": 1440,
+      "status": "Recipes exact fuel math/icons, one manifest, item/UI/library search, source lookup, unresolved placeholder, no overflow, downloadable pack"
+    },
+    {
+      "width": 390,
+      "status": "Recipes exact fuel math/icons, one manifest, item/UI/library search, source lookup, unresolved placeholder, no overflow, downloadable pack"
+    },
+    {
+      "failures": "503/Retry recovery; wrong-world pack rejected; broken image neutral fallback with name retained; changed identity recovers"
+    }
+  ],
+  "errors": [],
+  "manifestRequests": 8,
+  "pass": true
+}

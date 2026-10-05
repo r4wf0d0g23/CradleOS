@@ -1,3 +1,4 @@
+import { ItemIcon } from "./GameIcon";
 import { useState, useEffect, useRef, useMemo, Fragment } from "react";
 import { PortalSelect } from "./PortalSelect";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
@@ -1837,7 +1838,7 @@ async function _handleWithdraw(item: InventoryItem) {
                       }}
                       title={name}
                     >
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{name}</span>
+                      <ItemIcon typeId={item.typeId} size={24} /><span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{name}</span>
                       {partitionBadge && (
                         <span
                           title={partitionBadge.tip}
@@ -2400,7 +2401,7 @@ function WalletStuckItemsSection({
               >
                 <div style={{ minWidth: 0 }}>
                   <div style={{ color: "#fff", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {it.quantity.toLocaleString()}× {itemName}
+                    <ItemIcon typeId={it.typeId} size={24} /> {it.quantity.toLocaleString()}× {itemName}
                   </div>
                   <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 9, marginTop: 2 }}>
                     from {ssuLabel} · #{it.itemObjectId.slice(-6)}
@@ -2714,7 +2715,7 @@ function WalletItemsSection({
                     flex: "1 1 160px",
                   }}
                 >
-                  {item.name}
+                  <span className="icon-label"><ItemIcon typeId={item.typeId} size={24} /><span>{item.name}</span></span>
                 </div>
                 <div
                   style={{

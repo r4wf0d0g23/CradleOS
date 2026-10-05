@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { GAME_DATA_BASE, validateNativeSnapshot, type NativeSnapshot, type NativeRecipe } from "../lib/gameData";
 import { materialListText, planRecipe, producersFor, type MaterialLine, type RouteChoices } from "../lib/recipePlanner";
 import "./RecipePlanner.css";
+import { ItemIcon, ClientUIIcon } from "./GameIcon";
 
 const number = (n: number) => n.toLocaleString();
 function batchLabel(data: NativeSnapshot, recipe: NativeRecipe): string {
@@ -9,7 +10,7 @@ function batchLabel(data: NativeSnapshot, recipe: NativeRecipe): string {
 }
 function Lines({ data, lines }: { data: NativeSnapshot; lines: MaterialLine[] }) {
   return <ul className="recipe-lines">{lines.map(x => <li key={x.typeID}>
-    <strong>{number(x.quantity)} × {data.types[x.typeID].name}</strong>
+    <strong className="icon-label"><ItemIcon typeId={x.typeID} size={28} /><span>{number(x.quantity)} × {data.types[x.typeID].name}</span></strong>
     <small>Type {x.typeID}{!data.types[x.typeID].apiPublished && " · client-only definition"}</small>
   </li>)}</ul>;
 }
@@ -66,7 +67,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
   }
   return <div className="recipe-planner">
     <header className="recipe-header">
-      <div><div className="recipe-eyebrow">CYCLE 7 · VESTIGES · CLIENT {data.build}</div><h2>Recipes &amp; Materials</h2>
+      <div><div className="recipe-eyebrow">CYCLE 7 · VESTIGES · CLIENT {data.build}</div><h2><ClientUIIcon name="gameplay/manufacturing_32px" size={24} /> Recipes &amp; Materials</h2>
         <p>Choose a product, compare its recipes, and plan whole production batches.</p></div>
       <div className="recipe-count"><strong>{data.counts.recipes}</strong> recipes <span>·</span> <strong>{products.length}</strong> products</div>
     </header>
@@ -81,7 +82,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
         </select>
         <p className="recipe-muted">{matches.length} matching products</p>
         <div className="recipe-product-list">{matches.slice(0, shown).map(item => <button key={item.id} className={`recipe-product${target === item.id ? " selected" : ""}`} aria-pressed={target === item.id} onClick={() => select(item.id)}>
-          <strong>{item.name}</strong><small>Type {item.id} · {producers.get(item.id)!.length} recipe{producers.get(item.id)!.length === 1 ? "" : "s"}</small>
+          <strong className="icon-label"><ItemIcon typeId={item.id} /><span>{item.name}</span></strong><small>Type {item.id} · {producers.get(item.id)!.length} recipe{producers.get(item.id)!.length === 1 ? "" : "s"}</small>
           {!item.apiPublished && <small>Client-only reference</small>}
         </button>)}</div>
         {!matches.length && <p>No matching products in the current recipe snapshot.</p>}
@@ -90,7 +91,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
       <section className="recipe-workspace" aria-label="Recipe plan">
         {target === null ? <div className="recipe-empty"><h3>What are you building?</h3><p>Select a product to compare its ingredient routes and batch yields.</p><button className="recipe-primary" onClick={() => { setSearch("88335"); setCategory("All"); select(88335); }}>Try D1 Fuel</button></div> : <>
           <section className="recipe-card">
-            <h3>{data.types[target].name} <small>Type {target}</small></h3>
+            <h3><span className="icon-label"><ItemIcon typeId={target} size={48} /><span>{data.types[target].name}</span></span> <small>Type {target}</small></h3>
             <div className="recipe-controls">
               <div><label htmlFor="root-recipe">Recipe route</label>
                 <select id="root-recipe" value={rootID ?? ""} onChange={e => { setRootID(e.target.value ? Number(e.target.value) : null); setChoices({}); }}>
@@ -141,7 +142,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
             <section className="recipe-card" aria-label="Materials to acquire">
               <div className="recipe-section-heading"><h3>{plan.status === "ready" ? "Materials to acquire" : "Provisional material requirements"}</h3><button onClick={copy} disabled={!copyText}>Copy material list</button></div>
               <p className="recipe-muted">Total requirements before subtracting anything you own. “No producer” means absent from this snapshot, not a confirmed raw resource.</p>
-              <ul className="recipe-lines">{plan.required.map(line => <li key={line.typeID}><strong>{number(line.quantity)} × {data.types[line.typeID].name}</strong><small>Type {line.typeID} · {line.reason === "choice" ? "route choice required" : line.reason === "external" ? "no producer in snapshot" : "acquire externally"}</small></li>)}</ul>
+              <ul className="recipe-lines">{plan.required.map(line => <li key={line.typeID}><strong className="icon-label"><ItemIcon typeId={line.typeID} size={28} /><span>{number(line.quantity)} × {data.types[line.typeID].name}</span></strong><small>Type {line.typeID} · {line.reason === "choice" ? "route choice required" : line.reason === "external" ? "no producer in snapshot" : "acquire externally"}</small></li>)}</ul>
               {copied && <p role="status">{copied}</p>}
               {copyText && <details><summary>Text version</summary><textarea aria-label="Material list text" readOnly value={copyText} rows={Math.min(16, plan.required.length + 6)} /></details>}
             </section>
@@ -152,7 +153,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
               </details>)}
             </section>
             <section className="recipe-card"><h3>Surplus &amp; by-products</h3>
-              {!surplus.length ? <p className="recipe-muted">No unallocated output from these batches.</p> : <><p className="recipe-muted">Output left after this recipe’s assigned demand. Not automatically deducted from another route’s inputs.</p><ul className="recipe-lines">{surplus.map(x => <li key={`${x.recipeID}-${x.typeID}`}><strong>{number(x.surplus)} × {data.types[x.typeID].name}</strong><small>From recipe #{x.recipeID} · type {x.typeID}</small></li>)}</ul></>}
+              {!surplus.length ? <p className="recipe-muted">No unallocated output from these batches.</p> : <><p className="recipe-muted">Output left after this recipe’s assigned demand. Not automatically deducted from another route’s inputs.</p><ul className="recipe-lines">{surplus.map(x => <li key={`${x.recipeID}-${x.typeID}`}><strong className="icon-label"><ItemIcon typeId={x.typeID} size={28} /><span>{number(x.surplus)} × {data.types[x.typeID].name}</span></strong><small>From recipe #{x.recipeID} · type {x.typeID}</small></li>)}</ul></>}
             </section>
           </>}
         </>}
@@ -176,6 +177,6 @@ export function IndustryPanel() {
       .catch(e => { if (!controller.signal.aborted) setError(String(e.message ?? e)); });
     return () => controller.abort();
   }, [attempt]);
-  if (!data) return <section className="recipe-planner"><h2>Recipes &amp; Materials</h2><p role="status">{error ? `Could not load current recipe data: ${error}` : "Loading verified Cycle 7 recipes…"}</p>{error && <button onClick={() => setAttempt(n => n + 1)}>Retry recipe data</button>}<p className="recipe-muted">No previous-cycle recipes are substituted.</p></section>;
+  if (!data) return <section className="recipe-planner"><h2><ClientUIIcon name="gameplay/manufacturing_32px" size={24} /> Recipes &amp; Materials</h2><p role="status">{error ? `Could not load current recipe data: ${error}` : "Loading verified Cycle 7 recipes…"}</p>{error && <button onClick={() => setAttempt(n => n + 1)}>Retry recipe data</button>}<p className="recipe-muted">No previous-cycle recipes are substituted.</p></section>;
   return <Planner data={data} />;
 }
