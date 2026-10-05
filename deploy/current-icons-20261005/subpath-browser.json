@@ -1,0 +1,16 @@
+{
+  "base": "http://127.0.0.1:5196/CradleOS",
+  "checks": [
+    {
+      "width": 1440,
+      "status": "Recipes exact fuel math/icons, one manifest, item/UI/library search, source lookup, unresolved placeholder, no overflow, downloadable pack"
+    },
+    {
+      "width": 390,
+      "status": "Recipes exact fuel math/icons, one manifest, item/UI/library search, source lookup, unresolved placeholder, no overflow, downloadable pack"
+    }
+  ],
+  "errors": [],
+  "manifestRequests": 4,
+  "pass": true
+}

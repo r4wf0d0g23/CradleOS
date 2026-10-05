@@ -1,0 +1,152 @@
+{
+  "deployedAt": "2026-10-05T17:49:33.166039+00:00",
+  "deployment": "e3732607",
+  "url": "https://cradleos.io",
+  "preview": "https://e3732607.cradleos-d75.pages.dev",
+  "source": "fc526b54a120ff5978ac82e31f9713e9ccc3c177",
+  "rollback": "5d179f48",
+  "mirrorUpdated": false,
+  "counts": {
+    "types": 566,
+    "resolved": 564,
+    "ui": 244,
+    "library": 571,
+    "assets": 862,
+    "assetBytes": 6118859
+  },
+  "manifestSha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7",
+  "verifiedFiles": [
+    {
+      "file": "data/icons-cycle7-3573151/NOTICE.txt",
+      "bytes": 383,
+      "sha256": "76ef622ff7feef9bfa321f013cfd2d386891b0dd0657bae3aec48d6607a98d53",
+      "mime": "text/plain; charset=utf-8"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/provenance.json",
+      "bytes": 269211,
+      "sha256": "39519992195951b2c21278fe3689bdca79721e88fd6cc45118bc42fd079e1bad",
+      "mime": "application/json"
+    },
+    {
+      "file": "assets/index-DB1z-_UL.css",
+      "bytes": 710171,
+      "sha256": "499e720fb5173ba0b64dfd8e71a3e64195cded479d8f3224adb2094104ed60ed",
+      "mime": "text/css; charset=utf-8"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/manifest.json",
+      "bytes": 291463,
+      "sha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7",
+      "mime": "application/json"
+    },
+    {
+      "file": "assets/index-Brt_4Uth.js",
+      "bytes": 1911678,
+      "sha256": "c3157c1ecacf1f57ef5d781dd4b345d69819aaeeaca98c03840c986d14b7481d",
+      "mime": "application/javascript"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/6ab518751aba21ce71a48abadcdbc2147760da342c6fef7dd9baf308e3441643.png",
+      "bytes": 3446,
+      "sha256": "6ab518751aba21ce71a48abadcdbc2147760da342c6fef7dd9baf308e3441643",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/c4ae031549391714da52e13eb80beff738e710efabe7d4c680acfc8df130cd44.png",
+      "bytes": 8307,
+      "sha256": "c4ae031549391714da52e13eb80beff738e710efabe7d4c680acfc8df130cd44",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png",
+      "bytes": 23903,
+      "sha256": "d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/aa2b271c409816afac56c0d0090505d113b4517a52c753dca9fe4d13534dd205.png",
+      "bytes": 11427,
+      "sha256": "aa2b271c409816afac56c0d0090505d113b4517a52c753dca9fe4d13534dd205",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/cradleos-icons-cycle7-3573151.zip",
+      "bytes": 5736256,
+      "sha256": "854ff3fc9f5e83c58fd7331315a7857e162da5c7814c12e4698ccfc6f179ec65",
+      "mime": "application/zip"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png",
+      "bytes": 23184,
+      "sha256": "35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png",
+      "bytes": 21218,
+      "sha256": "f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/e45681814725dd2e15ad1486304201ea96b47b2be9d92aa8cfea5509c2151b0f.png",
+      "bytes": 8563,
+      "sha256": "e45681814725dd2e15ad1486304201ea96b47b2be9d92aa8cfea5509c2151b0f",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/2bcbd7cbbca632cfb039d459b2f269adf142f54aad45939c807dd2c674640b99.png",
+      "bytes": 25566,
+      "sha256": "2bcbd7cbbca632cfb039d459b2f269adf142f54aad45939c807dd2c674640b99",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/6418a38bada09ef4606505be8b7b45ba7cebea89adee0df30e5751f972dc086c.png",
+      "bytes": 4660,
+      "sha256": "6418a38bada09ef4606505be8b7b45ba7cebea89adee0df30e5751f972dc086c",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/a01114a45ee50bf4d0d172db188b8e51df641bbcc14cd430ec1a5074689ec2dd.png",
+      "bytes": 7577,
+      "sha256": "a01114a45ee50bf4d0d172db188b8e51df641bbcc14cd430ec1a5074689ec2dd",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/game-data-cycle7-3573151/native-v1.json",
+      "bytes": 351535,
+      "sha256": "a7702649eebcb1d12d6c18ce8dbd3df8ab88363a254bd02cef9574e847dcb66a",
+      "mime": "application/json"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/51789334c0cf498afe2530865649812c4c13ab29a633558bb183ad797627a4c3.png",
+      "bytes": 10079,
+      "sha256": "51789334c0cf498afe2530865649812c4c13ab29a633558bb183ad797627a4c3",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/111fdcc74e9548a28603013900c3c2848bb85bb4c9885d186be8a2bcdc904541.png",
+      "bytes": 415,
+      "sha256": "111fdcc74e9548a28603013900c3c2848bb85bb4c9885d186be8a2bcdc904541",
+      "mime": "image/png"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/assets/b94eb9d9bb1bc958f8fee038af9ba8418a23c323bcb8caff392fe0e9bc81cfea.png",
+      "bytes": 340,
+      "sha256": "b94eb9d9bb1bc958f8fee038af9ba8418a23c323bcb8caff392fe0e9bc81cfea",
+      "mime": "image/png"
+    }
+  ],
+  "tests": {
+    "frontend": 78,
+    "extraction": 19,
+    "originsCanon": 8,
+    "sourceReview": "PASS, inherited native reviewer; Opus unavailable",
+    "browserLocal": "PASS",
+    "browserProduction": "PASS",
+    "browserSubpath": "PASS",
+    "walletTransactions": "not exercised",
+    "postdeploymentReview": "PASS: independent live manifest/provenance/PNG/full ZIP hashes and browser evidence"
+  },
+  "scope": "Native PNG pack plus shared UI/icons. No contracts, custody, gameplay/recipe math, launcher profile/cache, or service changes."
+}
