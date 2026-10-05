@@ -1,0 +1,121 @@
+{
+  "verifiedAt": "2026-10-05T18:03:13.008Z",
+  "deployment": "b7360bef",
+  "url": "https://cradleos.io",
+  "preview": "https://b7360bef.cradleos-d75.pages.dev",
+  "source": "488ee2fd6c5dd0c68cc3ed94945d6bfda5a48c4a",
+  "rollback": "e3732607",
+  "mirrorUpdated": false,
+  "api": "https://cradleos.io/api/icons",
+  "documentation": "https://cradleos.io/data/icon-api.md",
+  "openapi": "https://cradleos.io/data/icon-api-v1.json",
+  "readOnly": true,
+  "authentication": "none",
+  "snapshot": {
+    "build": 3573151,
+    "cycle": 7,
+    "cycleName": "Vestiges",
+    "server": "Stillness",
+    "items": 566,
+    "resolvedItems": 564,
+    "ui": 244,
+    "library": 571,
+    "allRecords": 1381
+  },
+  "tests": {
+    "frontendAndServer": 85,
+    "originsCanon": 8,
+    "functionsTypeCheck": "PASS",
+    "ioc": "PASS",
+    "productionBuild": "PASS",
+    "prepublicationReview": "PASS; independent inherited native reviewer; Opus unavailable",
+    "localApi": {
+      "base": "http://127.0.0.1:5197",
+      "checks": [
+        "Exact name/numeric lookup; image redirect and static PNG SHA/MIME/CORS/immutable cache",
+        "HEAD/ETag304/preflight; 400/404/405 JSON+CORS; missing icons; duplicate names; partial search; pagination; UI/all collections",
+        "Published human docs/OpenAPI exact hashes",
+        {
+          "crossOriginBrowser": {
+            "status": 200,
+            "etag": "\"af98d0ef5ae1ed82280b9e5719318d76d81cf0d7b6b6a447fe48e07ce7a88f7b\"",
+            "type": 88335,
+            "pngBytes": 3446,
+            "width": 64,
+            "pixels": 16384
+          }
+        },
+        "Gallery exposes primary-domain API/docs/schema links"
+      ],
+      "pass": true
+    },
+    "productionApi": {
+      "base": "https://cradleos.io",
+      "checks": [
+        "Exact name/numeric lookup; image redirect and static PNG SHA/MIME/CORS/immutable cache",
+        "HEAD/ETag304/preflight; 400/404/405 JSON+CORS; missing icons; duplicate names; partial search; pagination; UI/all collections",
+        "Published human docs/OpenAPI exact hashes",
+        {
+          "crossOriginBrowser": {
+            "status": 200,
+            "etag": "W/\"a80d2880ba13978f7e550f3f83edd8131dd2b314e7c52ef9d46d83df614b8353\"",
+            "type": 88335,
+            "pngBytes": 3446,
+            "width": 64,
+            "pixels": 16384
+          }
+        },
+        "Gallery exposes primary-domain API/docs/schema links"
+      ],
+      "pass": true
+    },
+    "postdeploymentReview": "PASS: independent public search/key/lookup/redirect/PNG/docs checks; final documentation-only change separately reviewed",
+    "pythonClient": "PASS: urllib Request with descriptive User-Agent, HTTP200/88335"
+  },
+  "verifiedFiles": [
+    {
+      "file": "assets/index-krwYF97C.js",
+      "status": 200,
+      "mime": "application/javascript",
+      "bytes": 1912145,
+      "sha256": "d81923a9b6070b8eaddf56c3ea85a4463eb5db9a30b76422109117b82a1efdb1"
+    },
+    {
+      "file": "assets/index-DB1z-_UL.css",
+      "status": 200,
+      "mime": "text/css; charset=utf-8",
+      "bytes": 710171,
+      "sha256": "499e720fb5173ba0b64dfd8e71a3e64195cded479d8f3224adb2094104ed60ed"
+    },
+    {
+      "file": "data/icon-api.md",
+      "status": 200,
+      "mime": "text/markdown; charset=utf-8",
+      "bytes": 5201,
+      "sha256": "613d0425a42433feb366c0663a19f171f6ccaa9f9c90f599cd5e3304587a1072"
+    },
+    {
+      "file": "data/icon-api-v1.json",
+      "status": 200,
+      "mime": "application/json",
+      "bytes": 18110,
+      "sha256": "684fbf98b08718902e3271a731f35ad1a1ab7456e6839f7915e4f0b02976d0b8"
+    },
+    {
+      "file": "data/icons-cycle7-3573151/manifest.json",
+      "status": 200,
+      "mime": "application/json",
+      "bytes": 291463,
+      "sha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7"
+    },
+    {
+      "file": "data/game-data-cycle7-3573151/native-v1.json",
+      "status": 200,
+      "mime": "application/json",
+      "bytes": 351535,
+      "sha256": "a7702649eebcb1d12d6c18ce8dbd3df8ab88363a254bd02cef9574e847dcb66a"
+    }
+  ],
+  "scope": "Read-only compiled icon snapshot API and docs, immutable PNG CORS/cache headers, gallery links. No contracts, secrets, wallet, RPC/index, recipes math, source art or manifest changes.",
+  "edgeCompatibility": "Stock Python urllib User-Agent receives upstream 403/1010. Descriptive User-Agent works; human docs and OpenAPI disclose this. Edge policy unchanged."
+}
