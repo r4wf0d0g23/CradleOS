@@ -1,0 +1,190 @@
+{
+  "verifiedAt": "2026-10-05T18:19:00.387860+00:00",
+  "status": "live_verified",
+  "legacyUrl": "https://r4wf0d0g23.github.io/CradleOS/",
+  "destination": "https://cradleos.io/",
+  "sourcePR": {
+    "url": "https://github.com/r4wf0d0g23/CradleOS/pull/22",
+    "state": "MERGED",
+    "mergedAt": "2026-10-05T18:16:17Z",
+    "mergeCommit": "70ef2a13ce011658ba4f32a1ab4ffd025e2c396e"
+  },
+  "pagesPR": {
+    "url": "https://github.com/r4wf0d0g23/CradleOS/pull/23",
+    "state": "MERGED",
+    "mergedAt": "2026-10-05T18:16:22Z",
+    "mergeCommit": "e3484d3340113c59668b54d489cbb212edfc064b"
+  },
+  "activeSourceCleanup": "074ddf8",
+  "previousPagesCommit": "c9237396a10d1c8f5e8f97cf1cfaca08c105d479",
+  "build": {
+    "url": "https://github.com/r4wf0d0g23/CradleOS/actions/runs/37354701031",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "pagesConfig": {
+    "source": "gh-pages:/",
+    "buildType": "legacy",
+    "cname": null,
+    "status": "built",
+    "changed": false
+  },
+  "authorization": "Raw explicitly approved existing admin merge permission for PR22 and23 at2026-10-05 13:15:52CT; no branch protections modified. Both retain requiredreview1/enforceAdminsfalse.",
+  "primaryAppUnchanged": {
+    "deployment": "b7360bef",
+    "bundle": "index-krwYF97C.js",
+    "iconApi": "HTTP200 / D1Fuel88335"
+  },
+  "local": {
+    "mode": "local",
+    "pass": true,
+    "checks": [
+      {
+        "from": "/CradleOS/",
+        "to": "https://cradleos.io/",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/index.html?mode=kiosk#/recipes",
+        "to": "https://cradleos.io/?mode=kiosk#/recipes",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/?x=1&x=2&name=D1%20Fuel#/gamedata",
+        "to": "https://cradleos.io/?x=1&x=2&name=D1%20Fuel#/gamedata",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/recipes?qty=76#/recipes",
+        "to": "https://cradleos.io/recipes?qty=76#/recipes",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/origins/chapter-2?view=reader#page-7",
+        "to": "https://cradleos.io/origins/chapter-2?view=reader#page-7",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/?redirect=https%3A%2F%2Fevil.example#/casino",
+        "to": "https://cradleos.io/?redirect=https%3A%2F%2Fevil.example#/casino",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS//evil.example/path",
+        "to": "https://cradleos.io//evil.example/path",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/%2F%2Fevil.example",
+        "to": "https://cradleos.io/%2F%2Fevil.example",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "javaScript": false,
+        "to": "https://cradleos.io/"
+      }
+    ]
+  },
+  "live": {
+    "mode": "live",
+    "pass": true,
+    "checks": [
+      {
+        "from": "/CradleOS/",
+        "to": "https://cradleos.io/",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/index.html?mode=kiosk#/recipes",
+        "to": "https://cradleos.io/?mode=kiosk#/recipes",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/?x=1&x=2&name=D1%20Fuel#/gamedata",
+        "to": "https://cradleos.io/?x=1&x=2&name=D1%20Fuel#/gamedata",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/recipes?qty=76#/recipes",
+        "to": "https://cradleos.io/recipes?qty=76#/recipes",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/origins/chapter-2?view=reader#page-7",
+        "to": "https://cradleos.io/origins/chapter-2?view=reader#page-7",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/?redirect=https%3A%2F%2Fevil.example#/casino",
+        "to": "https://cradleos.io/?redirect=https%3A%2F%2Fevil.example#/casino",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS//evil.example/path",
+        "to": "https://cradleos.io//evil.example/path",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "from": "/CradleOS/%2F%2Fevil.example",
+        "to": "https://cradleos.io/%2F%2Fevil.example",
+        "oldAppBundleRequests": 0
+      },
+      {
+        "javaScript": false,
+        "to": "https://cradleos.io/"
+      }
+    ]
+  },
+  "actualAppLandings": {
+    "http": [
+      {
+        "path": "",
+        "status": 200,
+        "sha256": "ef84c935c4ba45d152f6932fdfc764d56b0f4a53ae09ce565df18d4dfb15090f"
+      },
+      {
+        "path": "404.html",
+        "status": 200,
+        "sha256": "ef84c935c4ba45d152f6932fdfc764d56b0f4a53ae09ce565df18d4dfb15090f"
+      },
+      {
+        "path": "recipes",
+        "status": 404,
+        "sha256": "ef84c935c4ba45d152f6932fdfc764d56b0f4a53ae09ce565df18d4dfb15090f"
+      },
+      {
+        "path": "assets/retired-probe.js",
+        "status": 404,
+        "sha256": "ef84c935c4ba45d152f6932fdfc764d56b0f4a53ae09ce565df18d4dfb15090f"
+      }
+    ],
+    "landings": [
+      {
+        "from": "#/recipes",
+        "to": "https://cradleos.io/#/industry",
+        "heading": "Recipes & Materials",
+        "oldAppRequests": 0,
+        "pageErrors": 0
+      },
+      {
+        "from": "recipes?origin=old-bookmark",
+        "to": "https://cradleos.io/recipes?origin=old-bookmark",
+        "heading": "Recipes & Materials",
+        "oldAppRequests": 0,
+        "pageErrors": 0
+      },
+      {
+        "from": "?origin=old-bookmark#/gamedata",
+        "to": "https://cradleos.io/?origin=old-bookmark#/gamedata",
+        "heading": "\u25c7 GAME DATA",
+        "oldAppRequests": 0,
+        "pageErrors": 0
+      }
+    ],
+    "pass": true,
+    "primary": "Unchanged current bundle and icon API200/88335"
+  },
+  "sourceReview": "PASS independent native reviewer; Opus unavailable",
+  "postpublicationReview": "PASS: independent exact live root/404/deep-path bytes, real query/hash-preserving browser landing and no legacy bundle loads",
+  "limitations": "Browser redirect, not HTTP301; no-JS falls back to homepage; raw API/asset consumers must update base URL. Browser-local state/permissions not migrated."
+}
