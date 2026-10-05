@@ -4,7 +4,7 @@ React/TypeScript command interface for the CradleOS on-chain civilization stack.
 34 panels covering governance, economy, defense, logistics, intelligence, and social
 coordination for EVE Frontier tribes.
 
-**Live:** <https://r4wf0d0g23.github.io/CradleOS/>
+**Live:** <https://cradleos.io/>
 **Move source:** [`../cradleos/`](../cradleos/README.md)
 **Voting extension:** [`../cradleos_voting/`](../cradleos_voting/README.md)
 **SSU shared access:** [`../cradleos_ssu_access/`](../cradleos_ssu_access/README.md)
@@ -54,14 +54,11 @@ npm run dev        # dev server at localhost:5173
 
 ```bash
 # Stillness (live CradleOS deployment)
-VITE_BASE=/CradleOS/ npm run build
-
-# Utopia (alternate testnet world)
-VITE_BASE=/CradleOS/ VITE_SERVER_ENV=utopia npm run build
+VITE_BASE=/ npm run build
 ```
 
-See `DEPLOY.md` for the deployment SOP with pre-flight IOC scan, branch protection check,
-and gh-pages publish steps.
+See `PRIMARY_DEPLOY.md` for the reviewed single-origin release procedure.
+GitHub Pages is redirect-only; never publish an app build there.
 
 ## Stack
 
@@ -95,8 +92,8 @@ and gh-pages publish steps.
 ## Environment
 
 ```
-VITE_SERVER_ENV=utopia|stillness   # default: stillness
-VITE_BASE=/CradleOS/               # for GitHub Pages builds
+VITE_SERVER_ENV=stillness   # current live environment
+VITE_BASE=/                 # cradleos.io, the only app origin
 ```
 
 ## Supply Chain
