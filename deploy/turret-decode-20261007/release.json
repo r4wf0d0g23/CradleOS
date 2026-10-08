@@ -1,0 +1,179 @@
+{
+  "verifiedAt": "2026-10-08T02:56:17.403Z",
+  "base": "https://cradleos.io",
+  "files": [
+    {
+      "file": "/assets/index-EizkMQu2.js",
+      "status": 200,
+      "bytes": 1860369,
+      "sha256": "6e254b2787efdfc16169271cfa02e64b71eacd75845d095dd02d4e3a5bb5efe4"
+    },
+    {
+      "file": "/assets/index-wYvR8_MV.css",
+      "status": 200,
+      "bytes": 712921,
+      "sha256": "ca71a76830dac67c2deed5ea4888572f2cda1aedbff1926143630ab0de29b8af"
+    },
+    {
+      "file": "/data/icon-api.md",
+      "status": 200,
+      "bytes": 5210,
+      "sha256": "b74fd824abab05396c3b5fc8c42b9e4f924bd16c8b9b3a489ff5b67b9bc58a5f"
+    },
+    {
+      "file": "/data/icon-api-v1.json",
+      "status": 200,
+      "bytes": 18119,
+      "sha256": "6b08d73df2d45a25f403a80b621e81ac14d3a2df82cc7c1cf7cc5358ef9c6f17"
+    },
+    {
+      "file": "/data/icons-cycle7-3573151/NOTICE.txt",
+      "status": 200,
+      "bytes": 405,
+      "sha256": "a3f967f84c7b9e170dea539eab76c205bc4bdf209988c98def31778ff022dbba"
+    },
+    {
+      "file": "/data/icons-cycle7-3573151/cradleos-icons-cycle7-3573151.zip",
+      "status": 200,
+      "bytes": 5736262,
+      "sha256": "2002ccb44528c16bba1cfc9befb0fca91f1637a2a8ab17b2df4c1f2f3b2e3e2d"
+    },
+    {
+      "file": "/data/icons-cycle7-3573151/manifest.json",
+      "status": 200,
+      "bytes": 291463,
+      "sha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7"
+    },
+    {
+      "file": "/data/game-data-cycle7-3573151/native-v1.json",
+      "status": 200,
+      "bytes": 351535,
+      "sha256": "a7702649eebcb1d12d6c18ce8dbd3df8ab88363a254bd02cef9574e847dcb66a"
+    }
+  ],
+  "browser": [
+    {
+      "width": 1440,
+      "route": "defense",
+      "heading": true,
+      "ownerWalletPrompt": true,
+      "overflow": false
+    },
+    {
+      "route": "gamedata",
+      "sourcesFenris": true,
+      "icons": true
+    },
+    {
+      "route": "industry",
+      "detailsCollapsed": true,
+      "plannerLoads": true
+    },
+    {
+      "route": "gates",
+      "loaded": true
+    },
+    {
+      "route": "origins",
+      "loaded": true
+    },
+    {
+      "width": 390,
+      "route": "defense",
+      "heading": true,
+      "ownerWalletPrompt": true,
+      "overflow": false
+    },
+    {
+      "legacyRedirect": true
+    }
+  ],
+  "api": {
+    "search": true,
+    "attribution": "EVE Frontier artwork \u00a9 Fenris Creations Not relicensed by CradleOS.",
+    "cors": true
+  },
+  "source": "be3021f4b9a2dd40a187e745d80b096463b5912c",
+  "deployment": "5c2a6e1a",
+  "preview": "https://5c2a6e1a.cradleos-d75.pages.dev",
+  "rollback": "c8398be2",
+  "tests": {
+    "frontendAndServer": 133,
+    "focusedTurrets": 42,
+    "independentFocused": 48,
+    "originsCanon": 8,
+    "ioc": "PASS",
+    "typecheckBuild": "PASS",
+    "independentSourceReview": "PASS; inherited native reviewer, Opus unavailable"
+  },
+  "reproduction": {
+    "capturedLiveTurrets": 30,
+    "configuredStrings": 4,
+    "priorRegressionFailures": 9,
+    "liveOwnedFleetAfterPatch": 4
+  },
+  "localBrowser": [
+    {
+      "width": 1440,
+      "liveOwnedTurrets": 4,
+      "configured": 4,
+      "foreignConsent": true,
+      "frozenGuard": true,
+      "ownRecognition": true,
+      "gameDefaults": true,
+      "noTransactionsSigned": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "actualWalletDisconnectedRoute": true
+    },
+    {
+      "width": 390,
+      "liveOwnedTurrets": 4,
+      "configured": 4,
+      "foreignConsent": true,
+      "frozenGuard": true,
+      "ownRecognition": true,
+      "gameDefaults": true,
+      "noTransactionsSigned": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "actualWalletDisconnectedRoute": true
+    }
+  ],
+  "immutable": {
+    "base": "https://5c2a6e1a.cradleos-d75.pages.dev",
+    "files": [
+      {
+        "file": "/index.html",
+        "sha256": "31c200e2f82bceeafc3a9324cc62a619ab24cac1b9751029953bfc5225c420ba",
+        "bytes": 2071
+      },
+      {
+        "file": "/assets/index-EizkMQu2.js",
+        "sha256": "6e254b2787efdfc16169271cfa02e64b71eacd75845d095dd02d4e3a5bb5efe4",
+        "bytes": 1860369
+      },
+      {
+        "file": "/assets/index-wYvR8_MV.css",
+        "sha256": "ca71a76830dac67c2deed5ea4888572f2cda1aedbff1926143630ab0de29b8af",
+        "bytes": 712921
+      }
+    ]
+  },
+  "automaticTurretMutations": false,
+  "walletSignatures": false,
+  "contractsChanged": false,
+  "privateDispatcherAndInGameFiring": "unverified",
+  "reportedPlayerSpecificWallet": "not identified",
+  "independentPostdeploymentReview": "PASS: exact production/immutable assets; desktop1440 and touch390 owner-wallet prompts; no overflow/page exceptions or exposed QA harness; native inherited reviewer",
+  "knownConsoleMessages": [
+    "Wallet SDK SmartObjectProvider: no object ID",
+    "Slush wallet metadata CORS/ERR_FAILED; independently confirmed present on prior c8398be2 release; not claimed fixed"
+  ]
+}
