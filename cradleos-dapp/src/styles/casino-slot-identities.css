@@ -67,7 +67,7 @@
   isolation: isolate;
   margin: 0;
 }
-.slot-identity .fleet-cell {
+.slot-identity :is(.fleet-cell, .slot-motion-symbol) {
   box-sizing: border-box;
 }
 .identity-stage-foot {
@@ -217,7 +217,7 @@
   gap: 0;
   border-inline: 2px solid #181713;
 }
-.scene-scrapyard .fleet-cell {
+.scene-scrapyard :is(.fleet-cell, .slot-motion-symbol) {
   background: linear-gradient(90deg, #ddd0a818, #fff0cb33 50%, #c4aa7722);
   border: 0;
   border-bottom: 1px solid #0d151555;
@@ -335,13 +335,13 @@
   box-shadow: inset 5px 0 12px #0009;
   gap: 9px;
 }
-.scene-wreckway .fleet-cell {
+.scene-wreckway :is(.fleet-cell, .slot-motion-symbol) {
   background: none;
   border: 0;
   border-bottom: 1px dashed #4f6566;
   border-radius: 0;
 }
-.scene-wreckway .fleet-cell img {
+.scene-wreckway :is(.fleet-cell, .slot-motion-symbol) img {
   filter: brightness(1.35) drop-shadow(0 3px 3px #000);
 }
 .scene-wreckway .fleet-cell-win {
@@ -466,13 +466,13 @@
   gap: 6px;
   border-radius: 0;
 }
-.scene-reactor .fleet-cell {
+.scene-reactor :is(.fleet-cell, .slot-motion-symbol) {
   background: radial-gradient(ellipse, #df70161a, transparent);
   border: 0;
   border-radius: 50%;
   max-height: 78px;
 }
-.scene-reactor .fleet-cell img {
+.scene-reactor :is(.fleet-cell, .slot-motion-symbol) img {
   width: 90% !important;
   height: 90% !important;
   filter: drop-shadow(0 0 6px #f07a1244);
@@ -550,7 +550,7 @@
   gap: 0;
   overflow: visible;
 }
-.scene-feral .fleet-cell {
+.scene-feral :is(.fleet-cell, .slot-motion-symbol) {
   border: 1px solid #5e754034;
   border-radius: 50%;
   background: radial-gradient(circle, #354c1b66, #15221700 70%);
@@ -683,7 +683,7 @@
   gap: 9px;
   overflow: visible;
 }
-.scene-vault .fleet-cell {
+.scene-vault :is(.fleet-cell, .slot-motion-symbol) {
   aspect-ratio: 1;
   border-radius: 50%;
   margin: 0;
@@ -813,7 +813,7 @@
   padding-block: 10px;
   overflow: visible;
 }
-.scene-gatecrash .fleet-cell {
+.scene-gatecrash :is(.fleet-cell, .slot-motion-symbol) {
   border: 0;
   border-radius: 0;
   background: none;
@@ -827,7 +827,7 @@
   background: #d391ed44;
   box-shadow: 0 0 15px #d4a8e6a0;
 }
-.scene-gatecrash .fleet-cell img {
+.scene-gatecrash :is(.fleet-cell, .slot-motion-symbol) img {
   filter: drop-shadow(0 0 4px #e9b5e855);
 }
 /* Deployment console: crisp scanline display, drone schematic and hardpoint rail. */
@@ -930,13 +930,13 @@
   border-radius: 0;
   gap: 5px;
 }
-.scene-drones .fleet-cell {
+.scene-drones :is(.fleet-cell, .slot-motion-symbol) {
   background: linear-gradient(135deg, #64bcb211, #153b3822);
   border: 1px solid #356a6b;
   border-radius: 0;
   clip-path: polygon(0 0, 86% 0, 100% 15%, 100% 100%, 14% 100%, 0 85%);
 }
-.scene-drones .fleet-cell img {
+.scene-drones :is(.fleet-cell, .slot-motion-symbol) img {
   filter: brightness(1.6) drop-shadow(0 0 4px #73c3b93d);
 }
 .scene-drones .fleet-wild {
@@ -1071,7 +1071,7 @@
   overflow: visible;
   box-shadow: inset 0 0 13px #ffffff08;
 }
-.scene-eclipse .fleet-cell {
+.scene-eclipse :is(.fleet-cell, .slot-motion-symbol) {
   background: none;
   border: 0;
   border-radius: 50%;
@@ -1086,7 +1086,7 @@
   background: #d6c09a1f;
   box-shadow: 0 0 14px #f7db8755;
 }
-.scene-eclipse .fleet-cell img {
+.scene-eclipse :is(.fleet-cell, .slot-motion-symbol) img {
   filter: drop-shadow(0 3px 7px #000) brightness(1.1);
 }
 /* Native WILD/SCATTER labels stay legible against every theme. */
@@ -1348,7 +1348,7 @@
   .scene-vault .fleet-reel {
     gap: 6px;
   }
-  .scene-vault .fleet-cell {
+  .scene-vault :is(.fleet-cell, .slot-motion-symbol) {
     min-height: 25px;
   }
   .scene-vault .fleet-coin {
@@ -1412,7 +1412,7 @@
     padding-block: 9px;
     gap: 5px;
   }
-  .scene-eclipse .fleet-cell {
+  .scene-eclipse :is(.fleet-cell, .slot-motion-symbol) {
     min-height: 28px;
   }
   .eclipse-corona,

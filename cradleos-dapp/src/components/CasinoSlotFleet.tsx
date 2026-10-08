@@ -1,5 +1,5 @@
 import measured from "../data/casino-slot-math.json";
-import { useContext, useEffect, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, type CSSProperties } from "react";
 
 import {
   SLOT_IDENTITIES,
@@ -16,7 +16,15 @@ import {
   FeralConnections,
 } from "./SlotIdentityArt";
 import "../styles/casino-slot-identities.css";
-import { CasinoFeedback } from "../lib/casinoFeedback";
+import { type SlotMotionRun } from "../lib/casinoSlotMotion";
+import {
+  useSlotMotion,
+  MotionReel,
+  MotionFall,
+  CascadeGhosts,
+  MotionSocket,
+  GateSweep,
+} from "./SlotMotion";
 import { chipLabel } from "../lib/casinoPractice";
 import {
   BASE_POINTS,
@@ -45,7 +53,6 @@ export const FLEET_CATALOG: GameEntry[] = FLEET_KEYS.map((key) => ({
   hook: FLEET[key].feature,
   status: "live",
 }));
-export const SLOT_REVEAL_MS = 1500;
 const mult = (n: number) => `${Number(n.toFixed(4))}×`;
 export function FleetTile({ game }: { game: FleetKey }) {
   const t = SLOT_IDENTITIES[game];
@@ -75,16 +82,17 @@ export function FleetBoard({
   receipt,
   busy,
   reduced,
+  run,
 }: {
   game: FleetKey;
   receipt?: SlotReceipt;
   busy: boolean;
   reduced: boolean;
+  run: SlotMotionRun;
 }) {
   const g = FLEET[game],
-    t = SLOT_IDENTITIES[game],
-    play = useContext(CasinoFeedback);
-  const [expanded, setExpanded] = useState(true);
+    t = SLOT_IDENTITIES[game];
+  const lastVisible = useRef<{ game: FleetKey; grid: number[][] } | null>(null);
   const index = receipt
     ? Math.min(
         receipt.frames.length - 1,
@@ -93,19 +101,10 @@ export function FleetBoard({
     : 0;
   const frame = receipt?.frames[index];
   const covered = !!receipt && !busy && receipt.cursor === 0;
-  useEffect(() => {
-    setExpanded(!busy || reduced);
-    if (!busy || reduced) return;
-    const timers = [
-      setTimeout(() => {
-        setExpanded(true);
-        play("stop", game);
-      }, 900),
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, [busy, index, receipt?.draws, game, reduced, play]);
+  const previous = receipt && index > 0 ? receipt.frames[index - 1] : undefined;
+  const motion = useSlotMotion(game, frame, previous, busy, reduced, run);
   const shown = frame
-    ? expanded
+    ? motion.expanded
       ? frame.grid
       : frame.original
     : Array.from({ length: 5 }, (_, c) =>
@@ -114,8 +113,12 @@ export function FleetBoard({
   const won = new Set(
     !busy && !covered ? frame?.wins.flatMap((w) => w.cells) : [],
   );
-  const previous = receipt && index > 0 ? receipt.frames[index - 1] : null;
-  const previousWins = new Set(previous?.wins.flatMap((w) => w.cells) ?? []);
+  const before =
+    previous?.grid ??
+    (lastVisible.current?.game === game ? lastVisible.current.grid : undefined);
+  useLayoutEffect(() => {
+    if (!busy && !covered) lastVisible.current = { game, grid: shown };
+  }, [busy, covered, game, shown]);
   const count = frame?.coins.filter((n) => n > 0).length ?? 0;
   const revealed =
     receipt && receipt.cursor > 0
@@ -123,7 +126,8 @@ export function FleetBoard({
       : 0;
   return (
     <div
-      className={`fleet-board slot-identity scene-${t.scene} fleet-${g.mode} ${busy && !reduced ? "fleet-spinning" : ""} ${covered ? "fleet-covered" : ""}`}
+      ref={motion.root}
+      className={`fleet-board slot-identity scene-${t.scene} fleet-${g.mode} ${motion.active ? `slot-motion-${motion.plan.kind}` : ""} ${busy && !reduced ? "fleet-spinning" : ""} ${covered ? "fleet-covered" : ""}`}
       style={
         {
           "--fleet-accent": t.accent,
@@ -133,6 +137,11 @@ export function FleetBoard({
       data-slot-game={game}
       data-stage={index}
       data-cursor={receipt?.cursor ?? 0}
+      data-motion-run={run.id}
+      data-motion-start={run.started}
+      data-motion-kind={motion.plan.kind}
+      data-raw-stopped={motion.rawStopped}
+      data-expanded={motion.expanded}
     >
       <div
         className={`identity-stage ${game === "slot_vault" && !busy && !covered && count >= 6 ? "vault-open" : ""} ${busy && !reduced ? "identity-active" : ""} ${!busy && frame?.kind === "free" && !covered ? "identity-free" : ""}`}
@@ -145,7 +154,7 @@ export function FleetBoard({
         <SlotFeatureInstrument
           game={game}
           frame={frame ? { ...frame, grid: shown } : undefined}
-          covered={covered}
+          covered={covered || !motion.rawStopped}
         />
         <div className="identity-playfield">
           <div
@@ -154,7 +163,9 @@ export function FleetBoard({
             aria-label={
               covered
                 ? "Saved spin ready to reveal"
-                : `${g.name} ${slotFrameLabel(game, frame)}. ${shown.map((col, c) => `Reel ${c + 1}: ${col.map((n) => (n === WILD ? "Wild" : n === SCATTER ? "Scatter" : n === COIN ? "Value token" : n === EMPTY ? "Empty" : slotSymbol(game, n)?.name)).join(", ")}`).join(". ")}`
+                : busy && !motion.rawStopped
+                  ? "Symbols moving; saved result revealing"
+                  : `${g.name} ${slotFrameLabel(game, frame)}. ${shown.map((col, c) => `Reel ${c + 1}: ${col.map((n) => (n === WILD ? "Wild" : n === SCATTER ? "Scatter" : n === COIN ? "Value token" : n === EMPTY ? "Empty" : slotSymbol(game, n)?.name)).join(", ")}`).join(". ")}`
             }
           >
             {shown.map((col, c) => (
@@ -174,32 +185,16 @@ export function FleetBoard({
                       previous?.kind === "free" &&
                       symbol === WILD &&
                       before === WILD);
-                  // Refill cells enter from above; each survivor falls from its actual prior row.
-                  const refills =
-                    previous?.grid[c]?.filter((_, y) =>
-                      previousWins.has(c * 5 + y),
-                    ).length ?? 0;
-                  const animate =
-                    busy &&
-                    !reduced &&
-                    !locked &&
-                    (frame?.kind !== "cascade" || r < refills);
-                  const survivors =
-                    previous?.grid[c]?.flatMap((_, y) =>
-                      previousWins.has(c * 5 + y) ? [] : [y],
-                    ) ?? [];
-                  const fall =
-                    busy &&
-                    !reduced &&
-                    frame?.kind === "cascade" &&
-                    r >= refills
-                      ? r - (survivors[r - refills] ?? r)
-                      : 0;
+                  const pending =
+                    motion.active &&
+                    motion.plan.kind === "reels" &&
+                    !motion.stopped(c) &&
+                    !locked;
                   return (
                     <div
                       key={r}
-                      style={{ "--fall": fall, "--row": r } as CSSProperties}
-                      className={`fleet-cell ${symbol === WILD ? "fleet-wild" : symbol === SCATTER ? "fleet-scatter" : symbol === COIN ? "fleet-coin" : symbol === EMPTY ? "fleet-empty" : ""} ${won.has(id) ? "fleet-cell-win" : ""} ${animate ? "fleet-cell-drop" : ""} ${fall > 0 ? "fleet-cell-fall" : ""} ${locked ? "fleet-locked" : ""}`}
+                      style={{ "--row": r } as CSSProperties}
+                      className={`fleet-cell ${symbol === WILD ? "fleet-wild" : symbol === SCATTER ? "fleet-scatter" : symbol === COIN ? "fleet-coin" : symbol === EMPTY ? "fleet-empty" : ""} ${won.has(id) ? "fleet-cell-win" : ""} ${pending ? "motion-pending" : ""} ${locked ? "fleet-locked" : ""}`}
                       data-symbol={symbol}
                       data-cell={id}
                       title={
@@ -216,45 +211,121 @@ export function FleetBoard({
                                   : slotSymbol(game, symbol)?.name
                       }
                     >
-                      {covered ? (
-                        <span>◇</span>
-                      ) : symbol < 7 ? (
-                        <SlotSymbolArt game={game} symbol={symbol} size={64} />
-                      ) : symbol === WILD ? (
-                        <>
-                          <SlotSymbolArt game={game} symbol={WILD} size={52} />
-                          <b>WILD</b>
-                        </>
-                      ) : symbol === SCATTER ? (
-                        <>
+                      <div className="slot-symbol-face">
+                        {covered ? (
+                          <span>◇</span>
+                        ) : symbol < 7 ? (
                           <SlotSymbolArt
                             game={game}
-                            symbol={SCATTER}
-                            size={52}
+                            symbol={symbol}
+                            size={64}
                           />
-                          <b>SCATTER</b>
-                        </>
-                      ) : symbol === COIN ? (
-                        <SlotCoinValue
-                          value={effectiveMultiplier(g, coinValue)}
-                        />
-                      ) : (
-                        <span>·</span>
-                      )}
-                      {locked && !covered && (
-                        <small className="fleet-lock">◆</small>
-                      )}
+                        ) : symbol === WILD ? (
+                          <>
+                            <SlotSymbolArt
+                              game={game}
+                              symbol={WILD}
+                              size={52}
+                            />
+                            <b>WILD</b>
+                          </>
+                        ) : symbol === SCATTER ? (
+                          <>
+                            <SlotSymbolArt
+                              game={game}
+                              symbol={SCATTER}
+                              size={52}
+                            />
+                            <b>SCATTER</b>
+                          </>
+                        ) : symbol === COIN ? (
+                          <SlotCoinValue
+                            value={effectiveMultiplier(g, coinValue)}
+                          />
+                        ) : (
+                          <span>·</span>
+                        )}
+                        {locked && !covered && (
+                          <small className="fleet-lock">◆</small>
+                        )}
+                      </div>
+                      {motion.active &&
+                        motion.plan.kind === "cascade" &&
+                        previous && (
+                          <MotionFall
+                            previous={previous}
+                            column={c}
+                            row={r}
+                            run={run}
+                          />
+                        )}
+                      {motion.active &&
+                        motion.plan.kind === "hold" &&
+                        !locked && (
+                          <MotionSocket
+                            coin={symbol === COIN}
+                            column={c}
+                            row={r}
+                            run={run}
+                          />
+                        )}
+                      {pending &&
+                        game === "slot_drones" &&
+                        frame?.kind === "free" && (
+                          <MotionReel
+                            game={game}
+                            final={[frame.original[c][r]]}
+                            before={[before ?? 0]}
+                            column={c}
+                            run={run}
+                            socket
+                          />
+                        )}
                     </div>
                   );
                 })}
+                {motion.active &&
+                  motion.plan.kind === "reels" &&
+                  !motion.stopped(c) &&
+                  !(game === "slot_drones" && frame?.kind === "free") && (
+                    <MotionReel
+                      game={game}
+                      final={frame?.original[c] ?? col}
+                      before={before?.[c]}
+                      column={c}
+                      run={run}
+                    />
+                  )}
+                {motion.active &&
+                  game === "slot_gatecrash" &&
+                  frame &&
+                  motion.plan.expand > motion.plan.rawStop &&
+                  frame.original[c].includes(WILD) &&
+                  frame.original[c].some((n, r) => n !== frame.grid[c][r]) && (
+                    <GateSweep
+                      origin={
+                        ((frame.original[c].indexOf(WILD) + 0.5) / col.length) *
+                        100
+                      }
+                      run={run}
+                      at={motion.plan.expand}
+                    />
+                  )}
               </div>
             ))}
+            {motion.active && motion.plan.kind === "cascade" && previous && (
+              <CascadeGhosts game={game} previous={previous} run={run} />
+            )}
           </div>
           {game === "slot_feral" && (
             <FeralConnections frame={frame} visible={!busy && !covered} />
           )}
         </div>
-        {!busy && !covered && <SlotBonusPanel game={game} frame={frame} />}
+        {(g.free > 0 || g.mode === "hold") && (
+          <div className="slot-bonus-space">
+            {!busy && !covered && <SlotBonusPanel game={game} frame={frame} />}
+          </div>
+        )}
         <div className="identity-stage-foot">
           <span>{g.mechanic}</span>
           <span>{g.feature}</span>
@@ -265,15 +336,17 @@ export function FleetBoard({
           {covered
             ? "SAVED ROUND"
             : busy
-              ? frame?.kind === "hold"
-                ? "RESPINNING"
-                : frame?.kind === "cascade"
-                  ? "CASCADING"
-                  : "REELS ACTIVE"
+              ? motion.plan.kind === "collect"
+                ? "COLLECTING"
+                : frame?.kind === "hold"
+                  ? "RESPINNING"
+                  : frame?.kind === "cascade"
+                    ? "CASCADING"
+                    : "REELS ACTIVE"
               : slotFrameLabel(game, frame)}
         </span>
         <strong>
-          {covered
+          {covered || !motion.rawStopped
             ? "—"
             : g.mode === "hold"
               ? `${count}/15 COINS`
@@ -285,6 +358,7 @@ export function FleetBoard({
       {game === "slot_gatecrash" &&
         frame &&
         !covered &&
+        motion.rawStopped &&
         frame.scatters >= 3 && (
           <small className="fleet-trigger">
             {frame.scatters} scatters before wild expansion

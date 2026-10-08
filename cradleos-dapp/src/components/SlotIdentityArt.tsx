@@ -12,10 +12,12 @@ export function SlotSymbolArt({
   game,
   symbol,
   size = 64,
+  eager = false,
 }: {
   game: FleetKey;
   symbol: number;
   size?: number;
+  eager?: boolean;
 }) {
   const { data } = useGameIcons(),
     t = SLOT_IDENTITIES[game];
@@ -45,6 +47,7 @@ export function SlotSymbolArt({
       size={size}
       name={name}
       code={code}
+      eager={eager}
     />
   );
 }
@@ -53,11 +56,13 @@ function IdentityImage({
   size,
   name,
   code,
+  eager,
 }: {
   src: string | null;
   size: number;
   name: string;
   code: string;
+  eager: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   return src && !failed ? (
@@ -67,7 +72,7 @@ function IdentityImage({
       width={size}
       height={size}
       alt=""
-      loading="lazy"
+      loading={eager ? "eager" : "lazy"}
       decoding="async"
       onError={() => setFailed(true)}
     />

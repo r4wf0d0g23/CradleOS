@@ -1,10 +1,10 @@
+import { slotRevealMs, type SlotMotionRun } from "../lib/casinoSlotMotion";
 import { slotAwaitingCollection } from "../lib/casinoSlotIdentity";
 import {
   FleetBoard,
   FleetRules,
   FleetTile,
   FLEET_CATALOG,
-  SLOT_REVEAL_MS,
 } from "./CasinoSlotFleet";
 import { FLEET, isFleet } from "../lib/casinoSlotFleet";
 import { CasinoPackControls } from "./CasinoPackControls";
@@ -160,6 +160,7 @@ function GameSurface({
   busy,
   reducedMotion,
   selectedProfile,
+  slotRun,
 }: {
   game: PracticeGame;
   state: Session;
@@ -167,6 +168,7 @@ function GameSurface({
   busy: boolean;
   reducedMotion: boolean;
   selectedProfile: keyof typeof PROFILES;
+  slotRun: SlotMotionRun;
 }) {
   const pack = state.pack?.game === game ? state.pack : null;
   const [receiptTicket, setReceiptTicket] = useState(0);
@@ -178,6 +180,7 @@ function GameSurface({
         receipt={pack?.slot}
         busy={busy}
         reduced={reducedMotion}
+        run={slotRun}
       />
     );
   if (game === "keno" && pack) {
@@ -459,6 +462,13 @@ export function CasinoExperience() {
   const [busy, setBusy] = useState(false),
     busyRef = useRef(false),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const slotGeneration = useRef(0);
+  const [slotRun, setSlotRun] = useState<SlotMotionRun>({ id: 0, started: 0 });
+  const beginSlotMotion = () => {
+    const run = { id: ++slotGeneration.current, started: performance.now() };
+    setSlotRun(run);
+    return run;
+  };
   const [chainBusy, setChainBusy] = useState(false),
     [error, setError] = useState(state.notice ?? ""),
     [resetConfirm, setResetConfirm] = useState(false);
@@ -555,6 +565,7 @@ export function CasinoExperience() {
       }
       return;
     }
+    const motionRun = beginSlotMotion();
     busyRef.current = true;
     setBusy(true);
     feedback.play(
@@ -574,7 +585,14 @@ export function CasinoExperience() {
           busyRef.current = false;
         }
       },
-      reduce ? 40 : SLOT_REVEAL_MS,
+      reduce
+        ? 40
+        : Math.max(
+            0,
+            motionRun.started +
+              slotRevealMs(saved.pack!.slot!, cursor) -
+              performance.now(),
+          ),
     );
   }
   function act(action?: TableAction) {
@@ -598,6 +616,7 @@ export function CasinoExperience() {
             options,
           );
       commit(next);
+      const motionRun = next.pack?.slot ? beginSlotMotion() : null;
       setBusy(true);
       feedback.play(
         game === "blackjack" ? "deal" : "spin",
@@ -630,7 +649,12 @@ export function CasinoExperience() {
         reduce
           ? 40
           : isFleet(game)
-            ? SLOT_REVEAL_MS
+            ? Math.max(
+                0,
+                motionRun!.started +
+                  slotRevealMs(next.pack!.slot!, 0) -
+                  performance.now(),
+              )
             : game === "blackjack"
               ? 450
               : game === "plinko"
@@ -995,6 +1019,7 @@ export function CasinoExperience() {
                     busy={busy}
                     reducedMotion={reduce}
                     selectedProfile={options.profile ?? "Low"}
+                    slotRun={slotRun}
                   />
                   <div
                     className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}

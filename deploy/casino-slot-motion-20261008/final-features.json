@@ -1,0 +1,12 @@
+[
+  "320 cascade: 5 exact saved stages, unchanged ledger",
+  "320 cluster: 3 exact saved stages, unchanged ledger",
+  "320 full: 2 exact saved stages, unchanged ledger",
+  "320 miss: 1 exact saved stages, unchanged ledger",
+  "320 mid-spin mute: all voices closed through stop deadlines",
+  "1440 cascade: 5 exact saved stages, unchanged ledger",
+  "1440 cluster: 3 exact saved stages, unchanged ledger",
+  "1440 full: 2 exact saved stages, unchanged ledger",
+  "1440 miss: 1 exact saved stages, unchanged ledger",
+  "1440 mid-spin mute: all voices closed through stop deadlines"
+]

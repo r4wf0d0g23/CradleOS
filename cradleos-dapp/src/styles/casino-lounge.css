@@ -2192,7 +2192,7 @@
   background: #0b141b;
   border-radius: 8px;
 }
-.fleet-cell {
+:is(.fleet-cell, .slot-motion-symbol) {
   aspect-ratio: 1;
   max-height: 100px;
   min-height: 34px;
@@ -2205,7 +2205,7 @@
   background: linear-gradient(150deg, #17222a, #0b1019);
   overflow: hidden;
 }
-.fleet-cell img {
+:is(.fleet-cell, .slot-motion-symbol) img {
   width: 80% !important;
   height: 80% !important;
   max-width: 68px;
@@ -2374,7 +2374,7 @@
 .fleet-cell-drop {
   animation: fleet-drop 0.8s calc(var(--reel) * 0.1s) both;
 }
-.fleet-covered .fleet-cell {
+.fleet-covered :is(.fleet-cell, .slot-motion-symbol) {
   color: #6b8394;
 }
 .fleet-spinning .fleet-cell-win {
@@ -2389,7 +2389,7 @@
   .fleet-reel {
     gap: 3px;
   }
-  .fleet-cell {
+  :is(.fleet-cell, .slot-motion-symbol) {
     border-radius: 4px;
   }
   .fleet-feature-strip {

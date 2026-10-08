@@ -1,0 +1,155 @@
+/* Finite presentation choreography: real saved endpoints, no ambient animation. */
+.slot-identity .fleet-reel {
+  position: relative;
+}
+.slot-symbol-face {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: inherit;
+  position: relative;
+  backface-visibility: hidden;
+}
+.slot-identity .motion-pending > .slot-symbol-face {
+  opacity: 0;
+}
+.motion-marker {
+  display: none;
+}
+.slot-reel-window {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 4;
+  contain: strict;
+  pointer-events: none;
+  background: #0a1015;
+}
+.slot-reel-strip {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  inset: 0 0 auto;
+  will-change: transform;
+}
+.slot-motion-symbol {
+  flex: none;
+  width: 100%;
+  height: var(--motion-cell-height, 50px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+.slot-reel-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#0007, transparent 23% 77%, #0007);
+}
+.scene-scrapyard .slot-reel-window {
+  background: linear-gradient(90deg, #484035, #6c5e4b, #302e29);
+}
+.scene-scrapyard .slot-motion-symbol {
+  border-bottom: 1px solid #19191588;
+}
+.scene-wreckway .slot-reel-window {
+  background: linear-gradient(90deg, #152630, #080f16);
+}
+.scene-reactor .slot-reel-window {
+  background: linear-gradient(90deg, #241109, #3c1e10, #21150d);
+  border-radius: 15px;
+}
+.scene-feral .slot-reel-window {
+  background: #101b10;
+  border-radius: 18px;
+}
+.scene-gatecrash .slot-reel-window {
+  background: linear-gradient(90deg, #301b3c, #49254b, #291736);
+  border-radius: 12px;
+}
+.scene-eclipse .slot-reel-window {
+  background: #181525;
+  border-radius: 25px;
+}
+.scene-drones .slot-reel-window {
+  background: #0c2627;
+}
+.slot-motion-cascade .fleet-reel {
+  overflow: hidden;
+}
+.cascade-ghost-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cascade-ghost {
+  position: absolute;
+  transform-origin: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, #141913, #141913bb 60%, transparent 70%);
+}
+.cascade-ghost .slot-motion-symbol {
+  height: 100%;
+}
+.scene-reactor .cascade-ghost {
+  background: radial-gradient(circle, #301709, #301709ee 62%, transparent 70%);
+}
+.slot-gate-sweep {
+  position: absolute;
+  inset: 5px -3px;
+  z-index: 6;
+  pointer-events: none;
+  background: linear-gradient(90deg, #d482f433, #fff0fd, #ecb0f877);
+  box-shadow: 0 0 14px #e8b1d977;
+  opacity: 0;
+}
+.slot-bonus-space {
+  min-height: 65px;
+}
+.scene-eclipse .fleet-grid {
+  height: clamp(270px, 55vw, 455px);
+  min-height: 270px;
+}
+.slot-motion-collect .ring-inner {
+  animation: vault-collect 0.65s ease-out both;
+}
+@keyframes vault-collect {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+/* Only actual revealed winners receive the settling accent. Not used while any reel is moving. */
+.slot-identity:not(.fleet-spinning) .fleet-cell-win > .slot-symbol-face {
+  animation: slot-winner-settle 0.36s ease-out both;
+}
+@keyframes slot-winner-settle {
+  from {
+    transform: scale(0.97);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slot-reel-window,
+  .cascade-ghost-layer,
+  .slot-gate-sweep {
+    display: none !important;
+  }
+  .slot-motion-collect .ring-inner,
+  .slot-identity:not(.fleet-spinning) .fleet-cell-win > .slot-symbol-face {
+    animation: none !important;
+  }
+}
