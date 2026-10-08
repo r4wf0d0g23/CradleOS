@@ -1,3 +1,5 @@
+import { slotBonusView } from "../lib/casinoSlotBonus";
+import { SlotBonusRail, SlotBonusEntry } from "./SlotBonusExperience";
 import measured from "../data/casino-slot-math.json";
 import { useLayoutEffect, useRef, type CSSProperties } from "react";
 
@@ -10,7 +12,6 @@ import {
   SlotScenery,
   SlotSymbolArt,
   SlotWordmark,
-  SlotBonusPanel,
   SlotCoinValue,
   SlotFeatureInstrument,
   FeralConnections,
@@ -83,12 +84,14 @@ export function FleetBoard({
   busy,
   reduced,
   run,
+  onNextSlot,
 }: {
   game: FleetKey;
   receipt?: SlotReceipt;
   busy: boolean;
   reduced: boolean;
   run: SlotMotionRun;
+  onNextSlot: () => void;
 }) {
   const g = FLEET[game],
     t = SLOT_IDENTITIES[game];
@@ -102,6 +105,7 @@ export function FleetBoard({
   const frame = receipt?.frames[index];
   const covered = !!receipt && !busy && receipt.cursor === 0;
   const previous = receipt && index > 0 ? receipt.frames[index - 1] : undefined;
+  const bonus = slotBonusView(receipt, busy);
   const motion = useSlotMotion(game, frame, previous, busy, reduced, run);
   const shown = frame
     ? motion.expanded
@@ -127,7 +131,7 @@ export function FleetBoard({
   return (
     <div
       ref={motion.root}
-      className={`fleet-board slot-identity scene-${t.scene} fleet-${g.mode} ${motion.active ? `slot-motion-${motion.plan.kind}` : ""} ${busy && !reduced ? "fleet-spinning" : ""} ${covered ? "fleet-covered" : ""}`}
+      className={`fleet-board slot-identity ${bonus && bonus.phase !== "complete" ? "bonus-live" : ""} scene-${t.scene} fleet-${g.mode} ${motion.active ? `slot-motion-${motion.plan.kind}` : ""} ${busy && !reduced ? "fleet-spinning" : ""} ${covered ? "fleet-covered" : ""}`}
       style={
         {
           "--fleet-accent": t.accent,
@@ -151,6 +155,15 @@ export function FleetBoard({
           <small>{t.tagline}</small>
           <SlotWordmark game={game} />
         </header>
+        {bonus && (
+          <SlotBonusRail
+            view={bonus}
+            game={game}
+            busy={busy}
+            run={run}
+            reduced={reduced || (busy && !motion.active)}
+          />
+        )}
         <SlotFeatureInstrument
           game={game}
           frame={frame ? { ...frame, grid: shown } : undefined}
@@ -321,10 +334,15 @@ export function FleetBoard({
             <FeralConnections frame={frame} visible={!busy && !covered} />
           )}
         </div>
-        {(g.free > 0 || g.mode === "hold") && (
-          <div className="slot-bonus-space">
-            {!busy && !covered && <SlotBonusPanel game={game} frame={frame} />}
-          </div>
+        {bonus && receipt && (
+          <SlotBonusEntry
+            view={bonus}
+            game={game}
+            receipt={receipt}
+            run={run}
+            reduced={reduced}
+            onContinue={onNextSlot}
+          />
         )}
         <div className="identity-stage-foot">
           <span>{g.mechanic}</span>

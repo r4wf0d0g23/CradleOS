@@ -1,0 +1,350 @@
+/* Finite feature accents, never manufactured outcomes or ambient flashing loops. */
+.slot-bonus-rail {
+  position: relative;
+  z-index: 3;
+  margin: 10px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--fleet-accent);
+  border-left: 4px solid var(--fleet-accent);
+  background: linear-gradient(
+    110deg,
+    color-mix(in srgb, var(--fleet-accent) 18%, #080e15),
+    #090e15
+  );
+  box-shadow: 0 0 18px color-mix(in srgb, var(--fleet-accent) 18%, transparent);
+  color: #fcf5df;
+  font-family: monospace;
+}
+.bonus-rail-top,
+.bonus-rail-bottom,
+.bonus-rail-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bonus-rail-top {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--fleet-accent);
+}
+.bonus-rail-top > b {
+  font-size: 9px;
+  letter-spacing: 0;
+  text-align: right;
+}
+.bonus-rail-count {
+  margin: 5px 0;
+}
+.bonus-rail-count > strong {
+  font-size: clamp(12px, 2.4vw, 20px);
+  letter-spacing: 0.06em;
+}
+.bonus-rail-count > b {
+  color: var(--fleet-accent);
+  font-size: clamp(21px, 4vw, 34px);
+  white-space: nowrap;
+  line-height: 1.1;
+}
+.bonus-spin-track,
+.bonus-lock-track {
+  display: flex;
+  gap: 4px;
+  height: 5px;
+  margin: 7px 0;
+}
+.bonus-spin-track > i,
+.bonus-lock-track > i {
+  flex: 1;
+  background: #ffffff20;
+  transform: skew(-15deg);
+}
+.bonus-spin-track > .done,
+.bonus-lock-track > .done {
+  background: var(--fleet-accent);
+}
+.bonus-spin-track > .current {
+  background: #fff8e5;
+  box-shadow: 0 0 8px var(--fleet-accent);
+}
+.bonus-rail-bottom {
+  font-size: 10px;
+  color: #bfcbd0;
+}
+.bonus-rail-bottom > b {
+  font-size: 13px;
+  color: #f6edd7;
+}
+.bonus-rail-bottom small {
+  font-size: 10px;
+  color: #bfcbd0;
+  font-weight: normal;
+}
+.bonus-complete {
+  box-shadow: none;
+  border-color: #76858b;
+}
+.bonus-complete .bonus-rail-count > strong {
+  font-size: clamp(10px, 2vw, 16px);
+}
+.slot-identity.bonus-live .identity-stage {
+  border-color: var(--fleet-accent);
+  box-shadow:
+    inset 0 0 40px color-mix(in srgb, var(--fleet-accent) 9%, transparent),
+    0 0 20px color-mix(in srgb, var(--fleet-accent) 18%, transparent);
+}
+.slot-identity.bonus-live .slot-wordmark {
+  text-shadow: 0 0 25px color-mix(in srgb, var(--fleet-accent) 48%, transparent);
+}
+.bonus-launching {
+  animation: bonus-launch 0.7s ease-out both;
+}
+@keyframes bonus-launch {
+  0% {
+    box-shadow: 0 0 28px
+      color-mix(in srgb, var(--fleet-accent) 45%, transparent);
+    transform: translateY(1px);
+  }
+  100% {
+    box-shadow: 0 0 18px
+      color-mix(in srgb, var(--fleet-accent) 18%, transparent);
+    transform: translateY(0);
+  }
+}
+.slot-bonus-entry {
+  position: absolute;
+  inset: 8px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--fleet-accent);
+  background: radial-gradient(
+    ellipse at 50% 37%,
+    color-mix(in srgb, var(--fleet-accent) 24%, #0a1016),
+    #071017f7 70%
+  );
+  border-radius: 12px;
+  text-align: center;
+  color: #fff6dc;
+  isolation: isolate;
+}
+.bonus-entry-content {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 440px);
+  padding: 20px 16px;
+  box-sizing: border-box;
+}
+.bonus-entry-content > small {
+  font: 11px monospace;
+  letter-spacing: 3px;
+  color: var(--fleet-accent);
+}
+.bonus-emblem {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 12px auto;
+  display: grid;
+  place-items: center;
+}
+.bonus-emblem img {
+  width: 72px !important;
+  height: 72px !important;
+  filter: drop-shadow(0 0 20px var(--fleet-accent));
+}
+.bonus-emblem > i {
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--fleet-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--fleet-accent) 35%, transparent);
+}
+.bonus-entry-content h3 {
+  font: 800 clamp(18px, 3.5vw, 32px)/1.05 sans-serif;
+  margin: 12px 0 6px;
+  color: #fff5dc;
+  letter-spacing: 0.06em;
+}
+.bonus-award {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.bonus-award > strong {
+  font: 900 clamp(62px, 10vw, 100px)/0.95 sans-serif;
+  color: var(--fleet-accent);
+  text-shadow:
+    0 3px 0 #111,
+    0 0 30px color-mix(in srgb, var(--fleet-accent) 33%, transparent);
+}
+.bonus-award > span {
+  font: 800 clamp(19px, 4vw, 28px)/1.15 sans-serif;
+  letter-spacing: 2px;
+}
+.bonus-entry-content > p {
+  font: 12px/1.4 monospace;
+  color: #e4dece;
+  margin: 14px 0 18px;
+}
+.frontier-casino .bonus-enter {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid #fff3cf;
+  background: var(--fleet-accent);
+  color: #101419;
+  border-radius: 5px;
+  font: 800 13px monospace;
+  box-shadow:
+    0 4px 0 #05090e,
+    0 0 22px color-mix(in srgb, var(--fleet-accent) 28%, transparent);
+}
+.frontier-casino .bonus-enter:hover,
+.frontier-casino .bonus-enter:focus-visible {
+  filter: brightness(1.12);
+  outline: 2px solid #fff3cf;
+  outline-offset: 3px;
+}
+.frontier-casino .bonus-view-reels {
+  display: block;
+  margin: 12px auto 0;
+  background: none;
+  border: 0;
+  color: #d0d8da;
+  font: 11px monospace;
+  text-decoration: underline;
+  min-height: 44px;
+}
+.bonus-burst-rays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.bonus-burst-rays > i {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 2px;
+  height: 35%;
+  background: linear-gradient(var(--fleet-accent), transparent);
+  transform-origin: 50% 0;
+  transform: rotate(calc(var(--ray) * 30deg));
+}
+.bonus-entry-burst {
+  animation: bonus-arrive 0.5s cubic-bezier(0.16, 0.7, 0.3, 1) both;
+}
+.bonus-entry-burst .bonus-burst-rays {
+  animation: bonus-rays 1.3s ease-out both;
+}
+.bonus-entry-burst .bonus-emblem > i {
+  animation: bonus-ring 1.1s ease-out both;
+}
+@keyframes bonus-arrive {
+  from {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes bonus-rays {
+  0% {
+    opacity: 0.1;
+    transform: scale(0.5);
+  }
+  35% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+@keyframes bonus-ring {
+  from {
+    transform: scale(0.6);
+    opacity: 0.25;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  .slot-bonus-rail {
+    padding: 8px;
+    margin: 7px 0 9px;
+  }
+  .bonus-rail-top {
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+  .bonus-rail-top > b {
+    font-size: 8px;
+  }
+  .bonus-rail-count > b {
+    font-size: 25px;
+  }
+  .bonus-rail-bottom {
+    font-size: 8px;
+  }
+  .bonus-rail-bottom > b {
+    font-size: 11px;
+  }
+  .bonus-entry-content {
+    padding: 14px 10px;
+  }
+  .bonus-entry-content > small {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  .bonus-emblem {
+    width: 62px;
+    height: 62px;
+    margin: 10px auto;
+  }
+  .bonus-emblem img {
+    width: 52px !important;
+    height: 52px !important;
+  }
+  .bonus-entry-content h3 {
+    font-size: 19px;
+  }
+  .bonus-award > strong {
+    font-size: 70px;
+  }
+  .bonus-award > span {
+    font-size: 22px;
+  }
+  .bonus-entry-content > p {
+    font-size: 10px;
+  }
+  .frontier-casino .bonus-enter {
+    font-size: 11px;
+    min-height: 46px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bonus-launching,
+  .bonus-entry-burst,
+  .bonus-entry-burst .bonus-burst-rays,
+  .bonus-entry-burst .bonus-emblem > i {
+    animation: none !important;
+  }
+  .bonus-burst-rays {
+    display: none;
+  }
+  .slot-bonus-entry {
+    scroll-behavior: auto;
+  }
+}

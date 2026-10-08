@@ -161,6 +161,7 @@ function GameSurface({
   reducedMotion,
   selectedProfile,
   slotRun,
+  onNextSlot,
 }: {
   game: PracticeGame;
   state: Session;
@@ -169,6 +170,7 @@ function GameSurface({
   reducedMotion: boolean;
   selectedProfile: keyof typeof PROFILES;
   slotRun: SlotMotionRun;
+  onNextSlot: () => void;
 }) {
   const pack = state.pack?.game === game ? state.pack : null;
   const [receiptTicket, setReceiptTicket] = useState(0);
@@ -181,6 +183,7 @@ function GameSurface({
         busy={busy}
         reduced={reducedMotion}
         run={slotRun}
+        onNextSlot={onNextSlot}
       />
     );
   if (game === "keno" && pack) {
@@ -569,7 +572,11 @@ export function CasinoExperience() {
     busyRef.current = true;
     setBusy(true);
     feedback.play(
-      saved.pack!.slot!.frames[cursor].kind === "cascade" ? "cascade" : "spin",
+      saved.pack!.slot!.frames[cursor].kind === "cascade"
+        ? "cascade"
+        : saved.pack!.slot!.frames[cursor].kind === "free"
+          ? "bonus_spin"
+          : "spin",
       saved.pack!.slot!.key,
     );
     timer.current = setTimeout(
@@ -1020,6 +1027,7 @@ export function CasinoExperience() {
                     reducedMotion={reduce}
                     selectedProfile={options.profile ?? "Low"}
                     slotRun={slotRun}
+                    onNextSlot={() => nextSlot()}
                   />
                   <div
                     className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}

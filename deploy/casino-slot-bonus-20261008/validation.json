@@ -1,0 +1,20 @@
+{
+  "tests": 271,
+  "files": 26,
+  "bonusBrowserChecks": 21,
+  "temporalRegressionChecks": 15,
+  "accountingWidths": [
+    320,
+    390,
+    844,
+    1440
+  ],
+  "sourceReview": "PASS",
+  "typescript": true,
+  "origins": 8,
+  "ioc": "CLEAN",
+  "productionBuild": true,
+  "economicFilesUnchanged": 5,
+  "artworkUnchanged": 92,
+  "public": "pending"
+}
