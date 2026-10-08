@@ -1,0 +1,17 @@
+{
+  "url": "https://cradleos.io/",
+  "source": "3f2f4c1",
+  "deployment": "91253fe3",
+  "artifacts": {
+    "index-DIDRr4pu.css": {
+      "sha256": "a6f4583f99f93a25f9e01afc70f10e5e8957cfe21f78ec4d746752571451581e",
+      "bytes": 814866,
+      "matchesReviewed": true
+    },
+    "index-BpPvreTp.js": {
+      "sha256": "5defa0b3f1b3b952c8554e8673626216b283b8772c903a3b3d20c4f7634a86f5",
+      "bytes": 2321747,
+      "matchesReviewed": true
+    }
+  }
+}

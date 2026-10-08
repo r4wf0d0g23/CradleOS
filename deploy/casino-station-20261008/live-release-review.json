@@ -1,0 +1,75 @@
+{
+  "scope": "Actual published app without route fulfillment, mocks or save fixtures. Fresh anonymous touch browser. One native slot at a time.",
+  "publicRelay": {
+    "host": "spark-2def.tail587192.ts.net",
+    "forcedPublicIP": "209.177.145.97"
+  },
+  "viewport": "390x844 touch",
+  "pageErrors": [],
+  "consoleErrors": [
+    "(assets/index-BpPvreTp.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at AX (https://cradleos.io/assets/index-BpPvreTp.js:61:25501)\n    at OX (https://cradleos.io/assets/index-BpPvreTp.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BpPvreTp.js:61:105035)\n    at https://cradleos.io/assets/index-BpPvreTp.js:61:105530\n    at Array.map (<anonymous>)\n    at AZ (https://cradleos.io/assets/index-BpPvreTp.js:61:105486)\n    at MZ (https://cradleos.io/assets/index-BpPvreTp.js:61:111535)\n    at https://cradleos.io/assets/index-BpPvreTp.js:64:7207"
+  ],
+  "financialRequests": [],
+  "websockets": [
+    {
+      "url": "wss://spark-2def.tail587192.ts.net:10000/join?codec=av1",
+      "binaryFrames": 28,
+      "states": 6,
+      "lastStats": {
+        "frames": 25,
+        "bytes": 405957
+      }
+    },
+    {
+      "url": "wss://spark-2def.tail587192.ts.net:10000/join?codec=av1",
+      "binaryFrames": 8,
+      "states": 3,
+      "lastStats": {
+        "frames": 5,
+        "bytes": 84289
+      }
+    }
+  ],
+  "bundleHashes": {
+    "index-DIDRr4pu.css": "a6f4583f99f93a25f9e01afc70f10e5e8957cfe21f78ec4d746752571451581e",
+    "index-BpPvreTp.js": "5defa0b3f1b3b952c8554e8673626216b283b8772c903a3b3d20c4f7634a86f5"
+  },
+  "canvas": {
+    "width": 960,
+    "height": 540,
+    "sampledColors": 924,
+    "nonblackSamples": 4196
+  },
+  "noOverflow": true,
+  "savedPracticeSHA256": "8afb18fbfb33aec97278cfb861841a8ef2e2d6a18a99d0020d2b933dd1fc23ab",
+  "returnedNativeAndExactSave": true,
+  "remountExactSave": true,
+  "noGameOverflow": true,
+  "noDevToolbar": true,
+  "pass": true,
+  "activeConsoleErrors": [
+    "(assets/index-BpPvreTp.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at AX (https://cradleos.io/assets/index-BpPvreTp.js:61:25501)\n    at OX (https://cradleos.io/assets/index-BpPvreTp.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BpPvreTp.js:61:105035)\n    at https://cradleos.io/assets/index-BpPvreTp.js:61:105530\n    at Array.map (<anonymous>)\n    at AZ (https://cradleos.io/assets/index-BpPvreTp.js:61:105486)\n    at MZ (https://cradleos.io/assets/index-BpPvreTp.js:61:111535)\n    at https://cradleos.io/assets/index-BpPvreTp.js:64:7207"
+  ],
+  "activePageErrors": [],
+  "postCloseHealth": {
+    "ready": true,
+    "capacity": 2,
+    "active": 0
+  },
+  "slotReleased": true,
+  "release": {
+    "pages": "91253fe3",
+    "source": "3f2f4c1"
+  },
+  "knownSDKDiagnostics": [
+    "SmartObjectProvider: No object ID provided",
+    "Slush metadata CORS/fetch failure"
+  ],
+  "newStationPageExceptions": []
+}
