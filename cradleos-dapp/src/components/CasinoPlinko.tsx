@@ -6,8 +6,6 @@ import {
   plinkoPeg,
   plinkoBucketX,
   PLINKO_ROWS,
-  PLINKO_ENTRY_MS,
-  PLINKO_HOP_MS,
   PLINKO_MOTION_MS,
   PLINKO_BALL_RADIUS,
   PLINKO_PEG_RADIUS,
@@ -15,74 +13,77 @@ import {
 
 export function CasinoPlinko({
   round,
+  rounds: packRounds,
+  payouts = PLINKO_BPS,
+  profile = "Low",
   busy,
   reducedMotion,
 }: {
   round: Round | null;
+  rounds?: Round[];
+  payouts?: readonly number[];
+  profile?: string;
   busy: boolean;
   reducedMotion: boolean;
 }) {
-  const route = useMemo(
-    () => (round ? buildPlinkoRoute(round.values) : null),
-    [round],
+  const rounds = useMemo(
+    () => packRounds ?? (round ? [round] : []),
+    [packRounds, round],
   );
-  const [tick, setTick] = useState<{ round: Round | null; elapsed: number }>({
-    round: null,
-    elapsed: 0,
-  });
+  const routes = useMemo(
+    () => rounds.map((r) => buildPlinkoRoute(r.values)),
+    [rounds],
+  );
+  const duration = PLINKO_MOTION_MS + Math.max(0, rounds.length - 1) * 120;
+  const [tick, setTick] = useState({ rounds, elapsed: 0 });
   useEffect(() => {
-    if (!round || !busy || reducedMotion) return;
+    if (!rounds.length || !busy || reducedMotion) return;
     const start = performance.now();
     let frame = 0;
     const advance = (now: number) => {
-      const elapsed = Math.min(PLINKO_MOTION_MS, now - start);
-      setTick({ round, elapsed });
-      if (elapsed < PLINKO_MOTION_MS) frame = requestAnimationFrame(advance);
+      const elapsed = Math.min(duration, now - start);
+      setTick({ rounds, elapsed });
+      if (elapsed < duration) frame = requestAnimationFrame(advance);
     };
-    setTick({ round, elapsed: 0 });
+    setTick({ rounds, elapsed: 0 });
     frame = requestAnimationFrame(advance);
     return () => cancelAnimationFrame(frame);
-  }, [round, busy, reducedMotion]);
-  // A new round never renders the previous round's final animation frame.
+  }, [rounds, busy, reducedMotion, duration]);
   const elapsed =
     !busy || reducedMotion
-      ? PLINKO_MOTION_MS
-      : tick.round === round
+      ? duration
+      : tick.rounds === rounds
         ? tick.elapsed
         : 0;
-  const landed = !!route && elapsed >= PLINKO_MOTION_MS;
-  const impactRow = Math.floor((elapsed - PLINKO_ENTRY_MS) / PLINKO_HOP_MS);
-  const sinceImpact = elapsed - PLINKO_ENTRY_MS - impactRow * PLINKO_HOP_MS;
-  const impact =
-    busy &&
-    !reducedMotion &&
-    impactRow >= 0 &&
-    impactRow < PLINKO_ROWS &&
-    sinceImpact < 120
-      ? route?.pegs[impactRow]
-      : null;
-  const ball = route ? samplePlinko(route, elapsed) : null;
-  const trail =
-    route && busy && !reducedMotion
-      ? Array.from({ length: 7 }, (_, i) =>
-          samplePlinko(route, Math.max(0, elapsed - (6 - i) * 20)),
-        )
-          .map((p) => `${p.x},${p.y}`)
-          .join(" ")
-      : "";
+  const landed = routes.length > 0 && elapsed >= duration;
+  const balls = routes.map((route, i) => ({
+    route,
+    time: elapsed - i * 120,
+    point: samplePlinko(route, Math.max(0, elapsed - i * 120)),
+  }));
   return (
     <div className="lounge-plinko">
       <svg
         viewBox="0 0 300 250"
         role="img"
-        aria-label="Twelve-row Plinko board, low-risk payouts"
+        aria-label={`Twelve-row Plinko board, ${profile} payouts, ${rounds.length || 1} balls`}
         data-landed={landed}
       >
-        {route && !busy && <path d={route.svg} className="plinko-route" />}
+        {!busy &&
+          routes.map((r, i) => (
+            <path key={i} d={r.svg} className="plinko-route" />
+          ))}
         {Array.from({ length: PLINKO_ROWS }, (_, row) =>
           Array.from({ length: row + 1 }, (_, column) => {
             const p = plinkoPeg(row, column),
-              hit = impact?.x === p.x && impact?.y === p.y;
+              hit =
+                busy &&
+                balls.some(
+                  (b) =>
+                    b.time >= 0 &&
+                    b.time < PLINKO_MOTION_MS &&
+                    Math.hypot(b.point.x - p.x, b.point.y - p.y) < 12,
+                );
             return (
               <g key={`${row}-${column}`}>
                 {hit && (
@@ -90,8 +91,8 @@ export function CasinoPlinko({
                     className="plinko-impact"
                     cx={p.x}
                     cy={p.y}
-                    r={5 + sinceImpact / 24}
-                    opacity={1 - sinceImpact / 120}
+                    r={8}
+                    opacity={0.6}
                   />
                 )}
                 <circle
@@ -107,15 +108,23 @@ export function CasinoPlinko({
             );
           }),
         )}
-        {PLINKO_BPS.map((bps, i) => (
-          <g key={i} data-bucket={i} data-hit={landed && route?.bucket === i}>
+        {payouts.map((bps, i) => (
+          <g
+            key={i}
+            data-bucket={i}
+            data-hit={landed && routes.some((r) => r.bucket === i)}
+          >
             <rect
               x={plinkoBucketX(i) - 8.5}
               y="227"
               width="17"
               height="19"
               rx="3"
-              fill={landed && route?.bucket === i ? "#a2311b" : "#25261f"}
+              fill={
+                landed && routes.some((r) => r.bucket === i)
+                  ? "#a2311b"
+                  : "#25261f"
+              }
             />
             <text
               x={plinkoBucketX(i)}
@@ -128,14 +137,29 @@ export function CasinoPlinko({
             </text>
           </g>
         ))}
-        {trail && <polyline points={trail} className="plinko-trail" />}
-        {ball && (
-          <circle
-            className="plinko-ball"
-            cx={ball.x}
-            cy={ball.y}
-            r={PLINKO_BALL_RADIUS}
-          />
+        {balls.map(
+          (b, i) =>
+            b.time >= 0 && (
+              <g key={rounds[i].id}>
+                {busy && !reducedMotion && (
+                  <polyline
+                    className="plinko-trail"
+                    points={Array.from({ length: 7 }, (_, n) =>
+                      samplePlinko(b.route, Math.max(0, b.time - (6 - n) * 20)),
+                    )
+                      .map((p) => `${p.x},${p.y}`)
+                      .join(" ")}
+                  />
+                )}
+                <circle
+                  className="plinko-ball"
+                  data-ball={i}
+                  cx={b.point.x}
+                  cy={b.point.y}
+                  r={PLINKO_BALL_RADIUS}
+                />
+              </g>
+            ),
         )}
       </svg>
     </div>

@@ -1,0 +1,18 @@
+{
+  "sourceTests": 229,
+  "testFiles": 22,
+  "newOptionsTests": 24,
+  "plinkoEnumeratedProfilePaths": 16384,
+  "blackjackThreeSeatShoes": 150,
+  "originsGuard": 8,
+  "ioc": "clean",
+  "typescript": "pass",
+  "productionBuild": "pass",
+  "artworkHashesPreserved": 43,
+  "warnings": [
+    "Existing large bundle and mixed static/dynamic imports"
+  ],
+  "financialWrites": 0,
+  "contractsPublished": 0,
+  "rollbackPagesId": "9909b62f"
+}

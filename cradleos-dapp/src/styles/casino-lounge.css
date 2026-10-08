@@ -1834,20 +1834,255 @@
 }
 
 /* Bank seeding is an explicit wallet surface, separate from the play floor. */
-.frontier-casino .casino-donate { max-width: 850px; margin: 22px auto; padding: clamp(16px, 4vw, 32px); background: #111518; border: 1px solid #ff470055; }
-.frontier-casino .casino-donate-heading { display: flex; align-items: center; gap: 16px; }
-.frontier-casino .casino-donate-heading h2 { margin: 5px 0; font-size: clamp(24px, 5vw, 38px); }
-.frontier-casino .casino-donate-heading p { margin-top: 6px; }
-.frontier-casino .casino-donate-status { display: flex; flex-wrap: wrap; gap: 22px; padding: 20px 0; border-bottom: 1px solid #ffffff20; }
-.frontier-casino .casino-donate-status div { display: grid; gap: 6px; min-width: 140px; overflow-wrap: anywhere; }
-.frontier-casino .casino-donate-status span { color: #adbbb9; font-size: 12px; }
-.frontier-casino .casino-donate fieldset { display: grid; gap: 14px; padding: 18px 0; margin: 0; border: none; min-width: 0; }
-.frontier-casino .casino-donate label { display: grid; gap: 7px; font-weight: 650; }
-.frontier-casino .casino-donate input { width: 100%; box-sizing: border-box; background: #080c0e; color: #fff; border: 1px solid #ffffff35; padding: 13px; font: inherit; }
-.frontier-casino .casino-donate p { line-height: 1.65; }
-.frontier-casino .casino-donate-id, .frontier-casino .casino-donate-pending, .frontier-casino .casino-donate-receipt { overflow-wrap: anywhere; }
-.frontier-casino .casino-donate-receipt { display: grid; gap: 10px; border-left: 3px solid #dfffad; padding: 16px; margin-top: 20px; }
-.frontier-casino .casino-donate-pending { display: block; }
-.frontier-casino .casino-donate button { min-height: 44px; white-space: normal; }
-.frontier-casino .lounge-donate-link { color: #ffb194; border-color: #ff470088; }
-@media (max-width: 420px) { .frontier-casino .casino-donate-heading > span, .frontier-casino .casino-donate-heading > img { display: none; } }
+.frontier-casino .casino-donate {
+  max-width: 850px;
+  margin: 22px auto;
+  padding: clamp(16px, 4vw, 32px);
+  background: #111518;
+  border: 1px solid #ff470055;
+}
+.frontier-casino .casino-donate-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.frontier-casino .casino-donate-heading h2 {
+  margin: 5px 0;
+  font-size: clamp(24px, 5vw, 38px);
+}
+.frontier-casino .casino-donate-heading p {
+  margin-top: 6px;
+}
+.frontier-casino .casino-donate-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  padding: 20px 0;
+  border-bottom: 1px solid #ffffff20;
+}
+.frontier-casino .casino-donate-status div {
+  display: grid;
+  gap: 6px;
+  min-width: 140px;
+  overflow-wrap: anywhere;
+}
+.frontier-casino .casino-donate-status span {
+  color: #adbbb9;
+  font-size: 12px;
+}
+.frontier-casino .casino-donate fieldset {
+  display: grid;
+  gap: 14px;
+  padding: 18px 0;
+  margin: 0;
+  border: none;
+  min-width: 0;
+}
+.frontier-casino .casino-donate label {
+  display: grid;
+  gap: 7px;
+  font-weight: 650;
+}
+.frontier-casino .casino-donate input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #080c0e;
+  color: #fff;
+  border: 1px solid #ffffff35;
+  padding: 13px;
+  font: inherit;
+}
+.frontier-casino .casino-donate p {
+  line-height: 1.65;
+}
+.frontier-casino .casino-donate-id,
+.frontier-casino .casino-donate-pending,
+.frontier-casino .casino-donate-receipt {
+  overflow-wrap: anywhere;
+}
+.frontier-casino .casino-donate-receipt {
+  display: grid;
+  gap: 10px;
+  border-left: 3px solid #dfffad;
+  padding: 16px;
+  margin-top: 20px;
+}
+.frontier-casino .casino-donate-pending {
+  display: block;
+}
+.frontier-casino .casino-donate button {
+  min-height: 44px;
+  white-space: normal;
+}
+.frontier-casino .lounge-donate-link {
+  color: #ffb194;
+  border-color: #ff470088;
+}
+@media (max-width: 420px) {
+  .frontier-casino .casino-donate-heading > span,
+  .frontier-casino .casino-donate-heading > img {
+    display: none;
+  }
+}
+
+/* Finite shared-round play options: compact controls, explicit aggregate stake. */
+.frontier-casino .casino-option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+.frontier-casino .casino-option-row button {
+  flex: 1;
+  min-width: 48px;
+  min-height: 42px;
+}
+.frontier-casino .casino-roulette-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+}
+.frontier-casino .casino-roulette-grid button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 4px;
+}
+.frontier-casino .casino-roulette-grid .red {
+  background: #722b21;
+  color: #fff;
+}
+.frontier-casino .casino-roulette-grid .black {
+  background: #141a1d;
+  color: #fff;
+}
+.frontier-casino .casino-roulette-grid .zero {
+  grid-column: 1/-1;
+  background: #204b3d;
+  color: #fff;
+}
+.frontier-casino .casino-wager-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 190px;
+  overflow: auto;
+}
+.frontier-casino .casino-wager-list button {
+  font-size: 12px;
+  min-height: 40px;
+}
+.frontier-casino .casino-total-stake {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-top: 1px solid #555547;
+  gap: 12px;
+}
+.frontier-casino .casino-seat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+.frontier-casino .casino-seat-grid section {
+  padding: 10px;
+  border: 1px solid #47483c;
+  border-radius: 12px;
+  min-width: 0;
+}
+.frontier-casino .casino-seat-grid .active-seat {
+  border-color: #e5c080;
+  box-shadow: inset 0 0 20px #c78e2020;
+}
+.frontier-casino .casino-seat-grid .lounge-playing-card {
+  width: 58px;
+  height: 86px;
+  flex-shrink: 0;
+}
+.frontier-casino .casino-seat-grid .lounge-playing-card img {
+  max-width: 40px;
+  max-height: 45px;
+}
+.frontier-casino .casino-seat-grid .lounge-card-row > div {
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.frontier-casino .casino-multi-blackjack {
+  padding: 15px 8px;
+}
+.frontier-casino .casino-ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+.frontier-casino .casino-scratch-pack {
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.frontier-casino .casino-scratch-ticket {
+  padding: 10px;
+  border: 1px solid #786746;
+  border-radius: 10px;
+  min-width: 0;
+}
+.frontier-casino .casino-scratch-ticket h4 {
+  margin: 4px 0 10px;
+}
+.frontier-casino .casino-scratch-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 300/230;
+}
+.frontier-casino .casino-scratch-area canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+  border-radius: 8px;
+}
+.frontier-casino .casino-scratch-symbols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 100%;
+  place-items: center;
+}
+.frontier-casino .casino-scratch-ticket > button {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 44px;
+}
+.frontier-casino .casino-pack-receipt {
+  margin: 16px 0;
+  padding: 14px;
+  background: #1b201c;
+  border: 1px solid #454b3e;
+}
+.frontier-casino .casino-pack-receipt summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+.frontier-casino .casino-pack-receipt > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  border-top: 1px solid #333b30;
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .frontier-casino .casino-seat-grid {
+    grid-template-columns: 1fr;
+  }
+  .frontier-casino .casino-option-row button {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  .frontier-casino .casino-scratch-pack {
+    padding: 10px;
+  }
+}
+.frontier-casino .casino-board-caption{display:block;text-align:center;color:#d9bf8b;padding:8px}

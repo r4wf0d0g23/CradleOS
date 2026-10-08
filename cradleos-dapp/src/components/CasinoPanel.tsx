@@ -3,15 +3,9 @@ import { CASINO_READY } from "../lib/cycleDeployment";
 /**
  * CasinoPanel — CradleOS Casino. Flagship: interactive on-chain Blackjack ($EVE).
  *
- * Real Hit / Stand / Double buttons via commit-reveal:
- *   Tx1 `deal` consumes on-chain randomness ONCE and commits the full shuffled
- *   deck inside a player-owned Hand (only your cards + dealer upcard shown).
- *   Hit/Stand/Double are subsequent txs that advance a cursor over that fixed
- *   deck — no new randomness, so the player genuinely reacts to each card but
- *   can't re-roll a loss, and the house can't cheat. The full deck is revealed
- *   in the settlement event for provably-fair audit.
- *
- * House edge is MEASURED (scripts/edge_sim.py), not invented.
+ * Live blackjack draws fresh on-chain randomness for actions; it does not
+ * publish a hidden future shoe. Practice rules are separate from this contract.
+ * Wager activation is gated independently from rendering this UI.
  * Cards use real EVE Frontier art (ship hulls, structure icons) — see casinoTheme.
  *
  * Nav (Phase 1): lobby grid + search + category rail + router swap.
@@ -699,7 +693,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
                   {(feedQ.data ?? []).map((h, i) => <FeedRow key={h.txDigest + i} h={h} me={addr} />)}
                 </div>
                 <div style={{ color: "#555", fontSize: 10, marginTop: 10, lineHeight: 1.5 }}>
-                  Each hand shuffles once via Sui on-chain randomness (0x8); your hit/stand/double replays that fixed deck. No re-rolls, no house cheating — the full deck is published on settlement for anyone to verify.
+                  This testnet version draws fresh Sui randomness for card actions. Its rules are separate from Play Money tables; wagering availability is checked independently.
                 </div>
               </div>
             </div>

@@ -1,3 +1,24 @@
+import { CasinoPackControls } from "./CasinoPackControls";
+import { CasinoScratchPack } from "./CasinoScratchPack";
+import {
+  SESSION_KEY,
+  OPTIONS_KEY,
+  restoreOptions,
+  PROFILES,
+  activeSession,
+  actSession,
+  playSession,
+  restoreSession,
+  initialSession,
+  packTotal,
+  sum,
+  type Session,
+  type Options,
+} from "../lib/casinoSessions";
+import {
+  tableActionAllowed,
+  type TableAction,
+} from "../lib/casinoBlackjackTable";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { HouseDonatePanel } from "./HouseDonatePanel";
@@ -23,16 +44,11 @@ import {
 import {
   PRACTICE_GAMES,
   PRACTICE_KEY,
-  actPractice,
   cardTotal,
   chipLabel,
-  initialPractice,
-  playPractice,
   practiceBet,
-  restorePractice,
   SLOT_BPS,
   type PracticeGame,
-  type PracticeState,
   type Round,
 } from "../lib/casinoPractice";
 import "../styles/casino-lounge.css";
@@ -45,9 +61,12 @@ const titles = (key: string) =>
   };
 function initial() {
   try {
-    return restorePractice(sessionStorage.getItem(PRACTICE_KEY));
+    return restoreSession(
+      sessionStorage.getItem(SESSION_KEY),
+      sessionStorage.getItem(PRACTICE_KEY),
+    );
   } catch {
-    return initialPractice();
+    return initialSession();
   }
 }
 function PlayingCard({
@@ -127,13 +146,102 @@ function GameSurface({
   result,
   busy,
   reducedMotion,
+  selectedProfile,
 }: {
   game: PracticeGame;
-  state: PracticeState;
+  state: Session;
   result: Round | null;
   busy: boolean;
   reducedMotion: boolean;
+  selectedProfile: keyof typeof PROFILES;
 }) {
+  const pack = state.pack?.game === game ? state.pack : null;
+  const [receiptTicket, setReceiptTicket] = useState(0);
+  useEffect(() => setReceiptTicket(0), [pack]);
+  if (game === "keno" && pack) {
+    const ticket = Math.min(receiptTicket, pack.rounds.length - 1),
+      round = pack.rounds[ticket];
+    return (
+      <div className="casino-keno-pack">
+        <div
+          className="casino-option-row"
+          role="group"
+          aria-label="View ticket result"
+        >
+          {pack.rounds.map((r, i) => (
+            <button
+              key={r.id}
+              disabled={busy}
+              aria-pressed={i === ticket}
+              onClick={() => setReceiptTicket(i)}
+            >
+              Result {i + 1}
+            </button>
+          ))}
+        </div>
+        <small className="casino-board-caption">
+          Ticket {ticket + 1} outlined · same shared draw
+        </small>
+        <CasinoRoundStage
+          game="keno"
+          round={round}
+          busy={busy}
+          reduced={reducedMotion}
+        />
+        {!busy && (
+          <p className="casino-board-caption">
+            {round.label} · Return {chipLabel(round.payout)} chips
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (game === "scratch_cards" && pack)
+    return (
+      <CasinoScratchPack
+        key={pack.rounds[0].id}
+        rounds={pack.rounds}
+        reduced={reducedMotion}
+      />
+    );
+  if (game === "blackjack" && (state.table || pack?.table)) {
+    const table = state.table ?? pack!.table!;
+    return (
+      <div className="lounge-blackjack casino-multi-blackjack">
+        <CardRow
+          label="Dealer · stands on 17"
+          cards={table.dealer}
+          hidden={!table.complete}
+        />
+        <div className="felt-line">
+          <span>BLACKJACK PAYS 3:2 · SPLIT 21 PAYS 1:1</span>
+        </div>
+        <div className="casino-seat-grid">
+          {table.hands.map((h, i) => (
+            <section
+              key={i}
+              className={table.active === i ? "active-seat" : ""}
+              aria-label={`Seat ${h.seat + 1}${h.split ? " split" : ""}${table.active === i ? " active" : ""}`}
+            >
+              <CardRow
+                label={`Seat ${h.seat + 1}${h.split ? " · split" : ""}`}
+                cards={h.cards}
+              />
+              <small>
+                {chipLabel(h.stake)} chips ·{" "}
+                {table.active === i
+                  ? "YOUR MOVE"
+                  : h.done
+                    ? "Complete"
+                    : "Waiting"}
+              </small>
+            </section>
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (game === "blackjack") {
     const values = result?.values ?? [],
       separator = values.indexOf(-1),
@@ -142,7 +250,7 @@ function GameSurface({
       dealer = state.hand?.dealer ?? values.slice(separator < 0 ? 2 : cut + 1);
     return (
       <div className="lounge-blackjack">
-        <CardRow label="Dealer" cards={dealer} hidden={!!state.hand} />
+        <CardRow label="Dealer" cards={dealer} hidden={activeSession(state)} />
         <div className="felt-line">
           <span>BLACKJACK PAYS 3:2</span>
         </div>
@@ -156,14 +264,35 @@ function GameSurface({
       </div>
     );
   }
-  if (game === "plinko")
+  if (game === "plinko") {
+    const previousProfile = pack?.profile ?? "Low";
+    const preview =
+      !busy &&
+      (state.history[0]?.game !== "plinko" ||
+        previousProfile !== selectedProfile);
+    const profile = preview ? selectedProfile : (pack?.profile ?? "Low");
     return (
-      <CasinoPlinko
-        round={state.history[0]?.game === "plinko" ? state.history[0] : null}
-        busy={busy}
-        reducedMotion={reducedMotion}
-      />
+      <>
+        <small className="casino-board-caption">
+          {preview ? "Next drop preview" : "Last drop"} · {profile}
+        </small>
+        <CasinoPlinko
+          round={
+            preview
+              ? null
+              : state.history[0]?.game === "plinko"
+                ? state.history[0]
+                : null
+          }
+          rounds={preview ? undefined : pack?.rounds}
+          profile={profile}
+          payouts={PROFILES[profile]}
+          busy={busy}
+          reducedMotion={reducedMotion}
+        />
+      </>
     );
+  }
   return (
     <CasinoRoundStage
       game={game}
@@ -180,16 +309,16 @@ function Rules({ game, picks }: { game: PracticeGame; picks: number[] }) {
     slots:
       "Three independent 16-stop reels. Symbol weights: 4, 3, 3, 2, 2, 1, 1. Exactly two matching symbols return 1.8×. Triple returns are shown below.",
     blackjack:
-      "Single shuffled deck. Dealer stands on all 17s. Blackjack returns 2.5× (3:2 profit); a normal win 2×; a push returns your stake. Double on the first two cards. No splits or insurance in practice.",
+      "Single shuffled deck. Dealer stands on all 17s. Blackjack returns 2.5× (3:2 profit); a normal win 2×; a push returns your stake. Double on the first two cards. Up to 3 seats share one shoe and dealer. Split an exact-rank pair once per seat; no resplits. Split aces get one card each. Double only an unsplit first-two-card hand. All returns settle together. No insurance. Existing saved legacy hands keep their original no-split rules.",
     roulette:
-      "European single-zero wheel. Red or black returns 2×; an exact number returns 36×. Zero loses both color bets.",
+      "European single-zero wheel. Combine number (36×), color, odd/even, high/low (2×), dozen and column bets (3×) on one spin. Zero loses all outside bets. Repeated chips merge up to 1,000 chips per selection. Repeat only copies selections; it never spins.",
     coinflip:
       "Heads and tails each have a 50% chance. A correct call returns 1.96× your stake.",
     dice: "Roll an integer from 1 to 100. Over and under are strict: matching the target loses. A win returns 98 ÷ win-chance-percent times your stake.",
     wheel:
       "20 equally likely sectors: twelve blanks, five 1.2×, two 1.6×, one 10×.",
     plinko:
-      "Low-risk table. Twelve independent left/right bounces; the bucket is the number of right bounces. The landing multipliers are shown on the board.",
+      "Choose Classic, Low, Medium or High risk, with 1, 3, 5 or 10 balls. Twelve independent left/right bounces; the bucket is the number of right bounces. The landing multipliers are shown on the board.",
     war: "Two independent card ranks, 2 low through Ace high. Higher returns 2×; a tie returns only half your stake.",
   };
   return (
@@ -276,12 +405,12 @@ function TestnetStatus({ q }: { q: ReturnType<typeof useLoungeHouse> }) {
 }
 export function CasinoExperience() {
   const [state, setState] = useState(initial),
-    current = useRef<PracticeState>(state);
+    current = useRef<Session>(state);
   const [mode, setMode] = useState<"practice" | "testnet" | "donate">(
     "practice",
   );
   const [game, setGame] = useState<string | null>(() =>
-    state.hand ? "blackjack" : null,
+    activeSession(state) ? "blackjack" : (state.pack?.game ?? null),
   );
   const [category, setCategory] = useState("all"),
     [search, setSearch] = useState("");
@@ -289,12 +418,26 @@ export function CasinoExperience() {
     [side, setSide] = useState(0),
     [target, setTarget] = useState(50),
     [over, setOver] = useState(true);
+  const [options, setOptions] = useState<Options>(() => {
+    try {
+      return restoreOptions(sessionStorage.getItem(OPTIONS_KEY), state);
+    } catch {
+      return restoreOptions(null, state);
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(OPTIONS_KEY, JSON.stringify(options));
+    } catch {
+      /* Preferences cannot block or overwrite the ledger. */
+    }
+  }, [options]);
   const [picks, setPicks] = useState<number[]>([7, 17, 27]);
   const [busy, setBusy] = useState(false),
     busyRef = useRef(false),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [chainBusy, setChainBusy] = useState(false),
-    [error, setError] = useState(""),
+    [error, setError] = useState(state.notice ?? ""),
     [resetConfirm, setResetConfirm] = useState(false);
   const [reduce, setReduce] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -315,17 +458,18 @@ export function CasinoExperience() {
       if (timer.current) clearTimeout(timer.current);
     };
   }, []);
-  const locked = busy || chainBusy || !!state.hand;
-  const commit = (next: PracticeState) => {
+  const locked = busy || chainBusy || activeSession(state);
+  const commit = (next: Session) => {
     // Tab-scoped: simultaneous tabs never race to overwrite one shared balance.
     // Fail before changing UI if durable hand/outcome storage is unavailable.
-    sessionStorage.setItem(PRACTICE_KEY, JSON.stringify(next));
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(next));
     current.current = next;
     setState(next);
   };
   function navigate(key: string | null) {
-    if (locked || busyRef.current || current.current.hand) return;
+    if (locked || busyRef.current || activeSession(current.current)) return;
     setGame(key);
+    setOptions((o) => ({ ...o, count: 1 }));
     setSide(0);
     setTarget(
       key === "dice" ? 50 : key === "crash" || key === "limbo" ? 200 : 2,
@@ -335,7 +479,7 @@ export function CasinoExperience() {
     feedback.play("select");
   }
   function changeMode(value: typeof mode) {
-    if (locked || busyRef.current || current.current.hand) return;
+    if (locked || busyRef.current || activeSession(current.current)) return;
     setMode(value);
     setGame(null);
     setCategory("all");
@@ -343,20 +487,26 @@ export function CasinoExperience() {
     setError("");
     feedback.play("select");
   }
-  function act(action?: "hit" | "stand" | "double") {
+  function act(action?: TableAction) {
     if (busyRef.current || mode !== "practice" || !game) return;
     busyRef.current = true;
     setError("");
     try {
       const previous = current.current;
       const next = action
-        ? actPractice(previous, action)
-        : playPractice(previous, game as PracticeGame, practiceBet(stake), {
-            side,
-            target,
-            over,
-            picks,
-          });
+        ? actSession(previous, action)
+        : playSession(
+            previous,
+            game as PracticeGame,
+            practiceBet(stake),
+            {
+              side,
+              target,
+              over,
+              picks,
+            },
+            options,
+          );
       commit(next);
       setBusy(true);
       feedback.play(game === "blackjack" ? "deal" : "spin");
@@ -366,7 +516,14 @@ export function CasinoExperience() {
           busyRef.current = false;
           if (next.sequence > previous.sequence)
             feedback.play(
-              next.history[0].payout > next.history[0].stake ? "win" : "loss",
+              (
+                next.pack
+                  ? packTotal(next.pack, "payout") >
+                    packTotal(next.pack, "stake")
+                  : next.history[0].payout > next.history[0].stake
+              )
+                ? "win"
+                : "loss",
             );
         },
         reduce
@@ -374,7 +531,7 @@ export function CasinoExperience() {
           : game === "blackjack"
             ? 450
             : game === "plinko"
-              ? PLINKO_REVEAL_MS
+              ? PLINKO_REVEAL_MS + ((next.pack?.rounds.length ?? 1) - 1) * 120
               : casinoRoundMs(next.history[0] ?? null),
       );
     } catch (e) {
@@ -388,9 +545,9 @@ export function CasinoExperience() {
     }
   }
   function refill() {
-    if (locked || busyRef.current || current.current.hand) return;
+    if (locked || busyRef.current || activeSession(current.current)) return;
     try {
-      commit(initialPractice());
+      commit(initialSession());
       setResetConfirm(false);
       setError("");
       feedback.play("select");
@@ -413,10 +570,38 @@ export function CasinoExperience() {
         .includes(search.trim().toLowerCase()),
   );
   const categories = [...new Set(games.map((g) => g.category))];
-  const last = state.history[0]?.game === game ? state.history[0] : null,
-    result = busy ? null : last;
+  const last = state.history[0]?.game === game ? state.history[0] : null;
+  const pack = state.pack?.game === game ? state.pack : null;
+  const result = busy
+    ? null
+    : pack
+      ? {
+          ...pack.rounds[0],
+          stake: packTotal(pack, "stake"),
+          payout: packTotal(pack, "payout"),
+          label: `${pack.rounds.length} ${game === "roulette" ? "selections" : game === "blackjack" ? "hands" : "plays"} · total`,
+        }
+      : last;
+  let totalStake = 0;
+  try {
+    totalStake =
+      game === "roulette"
+        ? sum((options.wagers ?? []).map((w) => w.stake))
+        : game === "keno"
+          ? sum((options.tickets ?? []).map((t) => t.stake))
+          : practiceBet(stake) *
+            (game === "blackjack"
+              ? (options.seats ?? 1)
+              : game === "plinko" || game === "scratch_cards"
+                ? (options.count ?? 1)
+                : 1);
+  } catch {
+    /* Input validation is shown on play. */
+  }
   const displayedBalance =
-    busy && last && !state.hand ? state.balance - last.payout : state.balance;
+    busy && last && !activeSession(state)
+      ? state.balance - (pack ? packTotal(pack, "payout") : last.payout)
+      : state.balance;
   const meta = game ? titles(game) : null;
   return (
     <CasinoFeedback.Provider value={feedback.play}>
@@ -667,7 +852,7 @@ export function CasinoExperience() {
                   <div className="lounge-surface-label">
                     <span>CRADLE / {meta!.tag}</span>
                     <span>
-                      {state.hand
+                      {activeSession(state)
                         ? "HAND IN PLAY"
                         : busy
                           ? "RESOLVING"
@@ -680,6 +865,7 @@ export function CasinoExperience() {
                     result={result}
                     busy={busy}
                     reducedMotion={reduce}
+                    selectedProfile={options.profile ?? "Low"}
                   />
                   <div
                     className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}
@@ -688,6 +874,11 @@ export function CasinoExperience() {
                   >
                     {busy ? (
                       <span>Resolving…</span>
+                    ) : state.table ? (
+                      <span>
+                        Seat {state.table.hands[state.table.active].seat + 1} ·
+                        Your move
+                      </span>
                     ) : state.hand ? (
                       <span>Your total · {cardTotal(state.hand.player)}</span>
                     ) : null}
@@ -695,7 +886,7 @@ export function CasinoExperience() {
                       <span>Your move · Hit, stand or double</span>
                     )}
                     {!busy &&
-                      !state.hand &&
+                      !activeSession(state) &&
                       (result ? (
                         <>
                           <strong>{result.label}</strong>
@@ -714,13 +905,28 @@ export function CasinoExperience() {
                 <aside className="lounge-console">
                   <span className="lounge-eyebrow">PLAY MONEY</span>
                   <h3>Your controls</h3>
+                  {state.table && (
+                    <p className="casino-active-summary">
+                      Seat {state.table.hands[state.table.active].seat + 1} ·{" "}
+                      <strong>
+                        {cardTotal(state.table.hands[state.table.active].cards)}
+                      </strong>{" "}
+                      vs dealer{" "}
+                      <strong>{cardTotal([state.table.dealer[0]])}</strong>
+                    </p>
+                  )}
                   <label className="stake-label">
-                    Stake <span>chips</span>
+                    {game === "roulette"
+                      ? "Chip value"
+                      : game === "keno"
+                        ? "Ticket stake to apply"
+                        : "Stake per play"}{" "}
+                    <span>chips</span>
                     <input
                       aria-label="Stake in play chips"
                       inputMode="decimal"
                       value={stake}
-                      disabled={busy || !!state.hand}
+                      disabled={busy || activeSession(state)}
                       onChange={(e) => setStake(e.target.value)}
                     />
                   </label>
@@ -728,7 +934,7 @@ export function CasinoExperience() {
                     {[10, 25, 100, 500].map((n) => (
                       <button
                         key={n}
-                        disabled={busy || !!state.hand}
+                        disabled={busy || activeSession(state)}
                         onClick={() => setStake(String(n))}
                       >
                         {n}
@@ -736,18 +942,30 @@ export function CasinoExperience() {
                     ))}
                   </div>
                   <fieldset
-                    disabled={busy || !!state.hand}
+                    disabled={busy || activeSession(state)}
                     className="lounge-options"
                   >
-                    <ExpandedOptions
+                    <CasinoPackControls
+                      key={game}
                       game={game}
-                      side={side}
-                      setSide={setSide}
-                      target={target}
-                      setTarget={setTarget}
-                      picks={picks}
-                      setPicks={setPicks}
+                      options={options}
+                      setOptions={setOptions}
+                      stake={stake}
+                      pack={pack}
+                      onError={setError}
+                      onActivePicks={setPicks}
                     />
+                    {game !== "keno" && (
+                      <ExpandedOptions
+                        game={game}
+                        side={side}
+                        setSide={setSide}
+                        target={target}
+                        setTarget={setTarget}
+                        picks={picks}
+                        setPicks={setPicks}
+                      />
+                    )}
                     {game === "coinflip" && (
                       <>
                         <legend>Your call</legend>
@@ -760,38 +978,6 @@ export function CasinoExperience() {
                             {s}
                           </button>
                         ))}
-                      </>
-                    )}
-                    {game === "roulette" && (
-                      <>
-                        <legend>Place your bet</legend>
-                        {["Red", "Black", "Number"].map((s, i) => (
-                          <button
-                            key={s}
-                            aria-pressed={side === i}
-                            onClick={() => {
-                              setSide(i);
-                              if (i === 2) setTarget(0);
-                            }}
-                          >
-                            {s}
-                          </button>
-                        ))}
-                        {side === 2 && (
-                          <label>
-                            Number
-                            <input
-                              aria-label="Roulette number"
-                              type="number"
-                              min="0"
-                              max="36"
-                              value={target}
-                              onChange={(e) =>
-                                setTarget(Number(e.target.value))
-                              }
-                            />
-                          </label>
-                        )}
                       </>
                     )}
                     {game === "dice" && (
@@ -830,13 +1016,35 @@ export function CasinoExperience() {
                         </p>
                       </>
                     )}
-                    {game === "plinko" && (
-                      <p>
-                        LOW RISK <span>12 rows · up to 5×</span>
-                      </p>
-                    )}
                   </fieldset>
-                  {game === "blackjack" && state.hand ? (
+                  {!activeSession(state) && (
+                    <div className="casino-total-stake">
+                      <span>Total stake</span>
+                      <strong>{chipLabel(totalStake)} chips</strong>
+                    </div>
+                  )}
+                  {game === "blackjack" && state.table ? (
+                    <div className="lounge-hand-actions">
+                      {(["hit", "stand", "double", "split"] as const).map(
+                        (a) => (
+                          <button
+                            key={a}
+                            disabled={
+                              busy ||
+                              !tableActionAllowed(
+                                state.table!,
+                                a,
+                                state.balance,
+                              )
+                            }
+                            onClick={() => act(a)}
+                          >
+                            {a[0].toUpperCase() + a.slice(1)}
+                          </button>
+                        ),
+                      )}
+                    </div>
+                  ) : game === "blackjack" && state.hand ? (
                     <div className="lounge-hand-actions">
                       <button
                         className="lounge-primary"
@@ -889,6 +1097,24 @@ export function CasinoExperience() {
               </div>
             )}
           </>
+        )}
+        {mode === "practice" && pack && !busy && (
+          <details className="casino-pack-receipt">
+            <summary>
+              Last round · {pack.rounds.length} individual returns
+              {pack.profile ? ` · ${pack.profile}` : ""}
+            </summary>
+            {pack.rounds.map((r, i) => (
+              <div key={r.id}>
+                <span>
+                  {i + 1}. {r.label}
+                </span>
+                <span>
+                  {chipLabel(r.stake)} → {chipLabel(r.payout)} chips
+                </span>
+              </div>
+            ))}
+          </details>
         )}
         {mode === "practice" && state.history.length > 0 && !busy && (
           <section className="lounge-history">
