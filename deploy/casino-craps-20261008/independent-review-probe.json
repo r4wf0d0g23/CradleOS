@@ -1,0 +1,35 @@
+{
+  "headroom": {
+    "balance": 999999999496,
+    "escrow": 600,
+    "total": 1000000000096,
+    "restoresWithoutNotice": true,
+    "refundError": "Error: Not enough available chips."
+  },
+  "malformed": [
+    {
+      "name": "revealed-point-mismatch",
+      "tableValid": true,
+      "restoreAccepted": true,
+      "shownBalance": 1000500
+    },
+    {
+      "name": "extra-table-field",
+      "tableValid": true,
+      "restoreAccepted": true,
+      "shownBalance": 1000500
+    },
+    {
+      "name": "extra-receipt-field",
+      "tableValid": true,
+      "restoreAccepted": true,
+      "shownBalance": 1000500
+    },
+    {
+      "name": "impossible-pending-before-balance",
+      "tableValid": true,
+      "restoreAccepted": true,
+      "shownBalance": -1000
+    }
+  ]
+}

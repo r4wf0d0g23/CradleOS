@@ -1,0 +1,35 @@
+{
+  "url": "http://127.0.0.1:5296/#/casino",
+  "checks": [
+    "Saved mixed-point roll displays before point6/escrow42/cash9958; no dice/receipt/future payout and no automatic replay",
+    "Reduced reversal stays settled; reveal-write failure retains original pending ledger/before-state; tray visibility recorded separately",
+    "Retry/reload reveals exact committed3+3 and gross88/resolved42 once, with no extra payout",
+    "Occupied place6 shows exact +30/tap for selected25 chip and charges3000; compact hint paragraphs do not overlap",
+    "Parked table resumes only in practice, testnet remains23 with no entry, refill disabled, exact legal refund"
+  ],
+  "errors": [],
+  "tray": {
+    "x": 97,
+    "y": 213.078125,
+    "width": 126,
+    "height": 90
+  },
+  "trayVisible": true,
+  "hints": [
+    {
+      "tag": "P",
+      "x": 22,
+      "y": 202.078125,
+      "w": 276,
+      "h": 38.375
+    },
+    {
+      "tag": "SMALL",
+      "x": 22,
+      "y": 256.453125,
+      "w": 276,
+      "h": 57.5625
+    }
+  ],
+  "PASS": true
+}

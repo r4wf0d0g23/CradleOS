@@ -1,0 +1,14 @@
+{
+  "unchanged": {
+    "src/lib/casinoPractice.ts": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+    "src/lib/casinoExpanded.ts": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226",
+    "src/lib/casinoSlotFleet.ts": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8",
+    "src/lib/casinoBlackjackTable.ts": "a2406def69d4c7b99ad17841a2f00a29951382f80aeb58d5d7f788955d09dfcc",
+    "src/lib/casinoDonations.ts": "6a06863c7a8229eb1dce582fbda2691a57c726bc3520a8db4953c4834c8ccb70",
+    "src/lib/cycleDeployment.ts": "95180cfec64e081bea9af7d84eb4ec54b0ca488d7b0b8bc9cbf9ffdacede54ae",
+    "src/components/HouseDonatePanel.tsx": "b79e333de18ceccf7ab10e8525c97afdd253f0cf8178d6686794181094b0ea81",
+    "src/components/CasinoPanel.tsx": "ad2362df1049d88a9fadb06c98dedbb2b1a945909a996c30aa55f8b072b719e6",
+    "src/components/InstantGamePanel.tsx": "870085704824ae4d95ef5859b363b43196c7415cfa85fb28c106b7eaef826bbd"
+  },
+  "preservedArtwork": 92
+}

@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-08T21:09:19.420Z",
+  "baseHead": "266b5512de2147c9fe2f901b05fda6314c8eaea2",
+  "source": {
+    "src/lib/casinoCraps.ts": "85b67791722e86e15d9db2a26276f724ac7c4224cd09b4694d17b663959939b1",
+    "src/lib/casinoCrapsSession.ts": "60b398794c1695ee236fd325d82d7fce8d0dd1463ed045dc1cae3a6b35977897",
+    "src/lib/casinoCraps.test.ts": "da84c853d9b34885cd70375cf7d882f7f4ee7e2dc56f5dd408e26a6c3d6a3481",
+    "src/lib/casinoSessions.ts": "80d1576592748fd26ae9132fdaf5623a33c06d8b3b3e89857094bba18f46fe0a",
+    "src/lib/casinoLounge.ts": "30c5221689e29f1f146f53a388c7bee8ac15065f9165d09c85693dd7cda50200",
+    "src/components/CasinoCraps.tsx": "723450e0945c3dbb5ef823db8600ce98ff3c27c154e2f9cd3f5e6c18e91be87e",
+    "src/components/CasinoExperience.tsx": "fe784b2f8f9d6cbd92d4a0bd7541fe1851196b5052d710ff26363987e3062aca",
+    "src/components/CasinoRoundStage.tsx": "ba7e9508fd745b6303592ee7f935d8355f5c9b92d3019fef1662c74b6b13741d",
+    "src/styles/casino-craps.css": "11b3f85ad277a8b922e911adc47487401a3b579867949faf72bbb2fb57612d94"
+  },
+  "frozen": [
+    {
+      "path": "src/lib/casinoPractice.ts",
+      "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoExpanded.ts",
+      "sha256": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoSlotFleet.ts",
+      "sha256": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoBlackjackTable.ts",
+      "sha256": "a2406def69d4c7b99ad17841a2f00a29951382f80aeb58d5d7f788955d09dfcc",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/plinkoMotion.ts",
+      "sha256": "94a59692c40432f1aee0c38070e748669934f0b52768226368fa3810761c9832",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoSlotMotion.ts",
+      "sha256": "aff2786fc7e8cea359367afc41f161d8f00202fcd6f89b0b21f0c9a5a59dbfc9",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoSlotBonus.ts",
+      "sha256": "61521ad9d1029d03d76e9e60c3e065f5b2f75a435e05c2d5956e80b7d2f8b555",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoFeedback.ts",
+      "sha256": "59598a90540c99411ad1a3a47b21620a5b27631d80a355623c3d0dda5496537d",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoSoundDesign.ts",
+      "sha256": "e7918e4ef1d420cb2397fd431548f2aee9cb6b6079f46aeb9a061e31a9681fda",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoResultFeedback.ts",
+      "sha256": "88b5c76aa662087fd2a49289a75546a53590682a4fbcea17171bb6980fd970d0",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/casinoDonations.ts",
+      "sha256": "6a06863c7a8229eb1dce582fbda2691a57c726bc3520a8db4953c4834c8ccb70",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/HouseDonatePanel.tsx",
+      "sha256": "b79e333de18ceccf7ab10e8525c97afdd253f0cf8178d6686794181094b0ea81",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/InstantGamePanel.tsx",
+      "sha256": "870085704824ae4d95ef5859b363b43196c7415cfa85fb28c106b7eaef826bbd",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/CasinoPanel.tsx",
+      "sha256": "ad2362df1049d88a9fadb06c98dedbb2b1a945909a996c30aa55f8b072b719e6",
+      "unchanged": true
+    }
+  ],
+  "bundles": [
+    {
+      "path": "assets/index-BOxHGjjA.js",
+      "sha256": "a98bf30fa431450b5205594d1dfa04ac67163ad9266e1ef1f6c5ca7e0098cd2b",
+      "bytes": 2309814
+    },
+    {
+      "path": "assets/index-DPIXiR1G.css",
+      "sha256": "3642f229a5b1acbafa0d08f6e4c8de3e4d1f70b78583bc62ac25d2759bb0d413",
+      "bytes": 809841
+    }
+  ],
+  "pendingRefillTitle": "Resolve or take down your craps bets before refilling",
+  "PASS": true
+}

@@ -1,3 +1,5 @@
+import { CasinoCraps, CrapsTile, CRAPS_CATALOG } from "./CasinoCraps";
+import { crapsEscrow, evaluateCraps } from "../lib/casinoCraps";
 import { slotRevealMs, type SlotMotionRun } from "../lib/casinoSlotMotion";
 import { slotAwaitingCollection } from "../lib/casinoSlotIdentity";
 import {
@@ -486,7 +488,15 @@ export function CasinoExperience() {
     "practice",
   );
   const [game, setGame] = useState<string | null>(() =>
-    state.hand || state.table ? "blackjack" : (state.pack?.game ?? null),
+    state.craps?.pending
+      ? "craps"
+      : state.hand || state.table
+        ? "blackjack"
+        : activeSession(state)
+          ? (state.pack?.game ?? null)
+          : crapsEscrow(state.craps) || state.craps?.point
+            ? "craps"
+            : (state.pack?.game ?? null),
   );
   const [category, setCategory] = useState("all"),
     [search, setSearch] = useState("");
@@ -947,7 +957,13 @@ export function CasinoExperience() {
     };
   }, [autoRun, busy, state, mode]);
   function refill() {
-    if (locked || busyRef.current || activeSession(current.current)) return;
+    if (
+      locked ||
+      busyRef.current ||
+      activeSession(current.current) ||
+      crapsEscrow(current.current.craps)
+    )
+      return;
     try {
       commit(initialSession());
       setPayoutEvent(undefined);
@@ -959,13 +975,15 @@ export function CasinoExperience() {
     }
   }
   const games = (
-    mode === "testnet" ? CASINO_CATALOG : [...CASINO_CATALOG, ...FLEET_CATALOG]
+    mode === "testnet"
+      ? CASINO_CATALOG
+      : [...CASINO_CATALOG, ...FLEET_CATALOG, CRAPS_CATALOG]
   ).filter(
     (g) =>
       !g.disabled &&
       (mode === "testnet"
         ? !TESTNET_QUARANTINE.has(g.key)
-        : PRACTICE_GAMES.includes(g.key as PracticeGame)),
+        : g.key === "craps" || PRACTICE_GAMES.includes(g.key as PracticeGame)),
   );
   const filtered = games.filter(
     (g) =>
@@ -1013,8 +1031,9 @@ export function CasinoExperience() {
   }
   const spinRun = state.spinRun?.game === game ? state.spinRun : undefined;
   const runTotals = spinRunTotals(state);
-  const displayedBalance =
-    pack?.slot && pendingSlot(state)
+  const displayedBalance = state.craps?.pending
+    ? state.balance - evaluateCraps(state.craps.rolls[0]).payout
+    : pack?.slot && pendingSlot(state)
       ? state.balance -
         pack.slot.payout +
         (pack.slot.cursor > 0
@@ -1110,7 +1129,14 @@ export function CasinoExperience() {
                 {chipLabel(displayedBalance)} <small>chips</small>
               </span>
               <button
-                disabled={locked}
+                disabled={locked || !!crapsEscrow(state.craps)}
+                title={
+                  crapsEscrow(
+                    state.craps?.pending ? state.craps.rolls[0] : state.craps,
+                  )
+                    ? "Resolve or take down your craps bets before refilling"
+                    : undefined
+                }
                 onClick={() => setResetConfirm(!resetConfirm)}
               >
                 Refill
@@ -1125,7 +1151,10 @@ export function CasinoExperience() {
         {resetConfirm && mode === "practice" && (
           <div className="lounge-confirm">
             <span>Reset this tab to 10,000 chips and clear its history?</span>
-            <button onClick={refill} disabled={locked}>
+            <button
+              onClick={refill}
+              disabled={locked || !!crapsEscrow(state.craps)}
+            >
               Reset chips
             </button>
             <button onClick={() => setResetConfirm(false)}>Cancel</button>
@@ -1180,6 +1209,20 @@ export function CasinoExperience() {
                 <span>CRADLE // SALVAGE REELS</span>
               </div>
             </div>
+            {mode === "practice" &&
+              state.craps &&
+              (crapsEscrow(state.craps) > 0 || state.craps.point > 0) && (
+                <div className="craps-resume">
+                  <span>
+                    Craps · {chipLabel(crapsEscrow(state.craps))} chips on the
+                    table
+                    {state.craps.point ? ` · Point ${state.craps.point}` : ""}
+                  </span>
+                  <button onClick={() => navigate("craps")}>
+                    Return to table
+                  </button>
+                </div>
+              )}
             <div className="lounge-catalog-heading">
               <h3>
                 {mode === "practice" ? "Practice floor" : "Testnet tables"}{" "}
@@ -1223,7 +1266,9 @@ export function CasinoExperience() {
                     onClick={() => navigate(entry.key)}
                   >
                     <div className="tile-art">
-                      {isFleet(entry.key) ? (
+                      {entry.key === "craps" ? (
+                        <CrapsTile />
+                      ) : isFleet(entry.key) ? (
                         <FleetTile game={entry.key} />
                       ) : (
                         <img
@@ -1287,6 +1332,18 @@ export function CasinoExperience() {
                   onLobby={() => navigate(null)}
                 />
               </div>
+            ) : game === "craps" ? (
+              <CasinoCraps
+                state={state}
+                commit={commit}
+                busy={busy}
+                setBusy={(value) => {
+                  busyRef.current = value;
+                  setBusy(value);
+                }}
+                reduced={reduce}
+                onError={setError}
+              />
             ) : (
               <div className="lounge-play-layout">
                 <div
@@ -1651,7 +1708,7 @@ export function CasinoExperience() {
             )}
           </>
         )}
-        {mode === "practice" && (
+        {mode === "practice" && game !== "craps" && (
           <CasinoRoundHistory
             state={state}
             busy={busy}

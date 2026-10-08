@@ -14,6 +14,7 @@ export const LOUNGE_NAMES: Record<
   string,
   { title: string; tag: string; icon: number }
 > = {
+  craps: { title: "Frontier Craps", tag: "DICE DECK", icon: 87848 },
   slots: { title: "Salvage Reels", tag: "SLOTS", icon: 72244 },
   blackjack: { title: "Command Deck", tag: "BLACKJACK", icon: 82425 },
   roulette: { title: "Orbital Roulette", tag: "ROULETTE", icon: 84955 },

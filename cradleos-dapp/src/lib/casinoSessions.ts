@@ -1,4 +1,10 @@
 import {
+  validCraps,
+  crapsReserve,
+  evaluateCraps,
+  type CrapsTable,
+} from "./casinoCraps";
+import {
   isFleet,
   spinFleet,
   validSlotReceipt,
@@ -81,6 +87,7 @@ export type Session = Omit<PracticeState, "version"> & {
   pack: Pack | null;
   notice?: string;
   spinRun?: SpinRun;
+  craps?: CrapsTable;
 };
 export type Options = {
   count?: number;
@@ -121,6 +128,7 @@ export const pendingScratch = (s: Session) =>
   s.pack?.game === "scratch_cards" &&
   scratchRevealed(s).length < s.pack.rounds.length;
 export const activeSession = (s: Session) =>
+  !!s.craps?.pending ||
   !!s.hand ||
   !!s.table ||
   pendingSlot(s) ||
@@ -218,7 +226,10 @@ function settle(s: Session, p: Pack): Session {
   if (!integer(stake) || s.balance < stake)
     throw Error("Not enough chips for the total stake.");
   const balance = s.balance - stake + payout;
-  if (!integer(balance) || !integer(s.sequence + p.rounds.length))
+  if (
+    !integer(balance + crapsReserve(s.craps)) ||
+    !integer(s.sequence + p.rounds.length)
+  )
     throw Error("Practice balance limit reached.");
   const rounds = p.rounds.map((r, i) => ({ ...r, id: s.sequence + i + 1 }));
   return {
@@ -408,7 +419,12 @@ export function actSession(s: Session, action: TableAction): Session {
     const { table, debit } = actTable(s.table, action, s.balance);
     return finishTable(s, table, debit);
   }
-  if (s.hand && action !== "split") return wrap(actPractice(base(s), action));
+  if (s.hand && action !== "split") {
+    const next = wrap(actPractice(base(s), action));
+    if (!integer(next.balance + crapsReserve(s.craps)))
+      throw Error("Practice balance limit reached.");
+    return { ...next, ...(s.craps ? { craps: s.craps } : {}) };
+  }
   throw Error("There is no active hand.");
 }
 export function revealSlot(s: Session, all = false): Session {
@@ -692,11 +708,27 @@ export function restoreSession(
     if (s.pack !== null && (s.hand || s.table || !validPack(s.pack, s)))
       throw Error();
     if (!validSpinRun(s)) throw Error();
+    if (
+      s.craps !== undefined &&
+      (!validCraps(s.craps) ||
+        !integer(s.balance + crapsReserve(s.craps)) ||
+        (s.craps.pending &&
+          s.balance < evaluateCraps(s.craps.rolls[0]).payout) ||
+        (s.craps.pending &&
+          (s.hand ||
+            s.table ||
+            pendingSlot(s) ||
+            pendingSpinRun(s) ||
+            pendingClassicSpin(s) ||
+            pendingScratch(s))))
+    )
+      throw Error();
     return {
       ...wrap(checked),
       table: s.table,
       pack: s.pack,
       ...(s.spinRun ? { spinRun: s.spinRun } : {}),
+      ...(s.craps ? { craps: s.craps } : {}),
     };
   } catch {
     return {

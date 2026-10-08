@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Stop mid-classic, reload covered, explicit reveal, no future debit or repeat result",
+    "Reload retains locked stake and count; hiding and returning never restarts spending",
+    "Storage failures on Stop and next debit leave ledger intact and auto-run paused",
+    "Testnet catalogue unchanged: no slot batch controls or new wagers"
+  ],
+  "errors": []
+}

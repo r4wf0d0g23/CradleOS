@@ -104,7 +104,7 @@ const PIPS = [
   [0, 2, 4, 6, 8],
   [0, 2, 3, 5, 6, 8],
 ];
-function PhysicalDie({
+export function PhysicalDie({
   face,
   index,
   t,
