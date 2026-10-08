@@ -1,0 +1,36 @@
+{
+  "url": "https://cradleos.io/#/casino",
+  "errors": [],
+  "consoleDiagnostics": [
+    "(assets/index-BjoNOKiG.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at YJ (https://cradleos.io/assets/index-BjoNOKiG.js:61:25501)\n    at JJ (https://cradleos.io/assets/index-BjoNOKiG.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BjoNOKiG.js:61:105031)\n    at https://cradleos.io/assets/index-BjoNOKiG.js:61:105526\n    at Array.map (<anonymous>)\n    at YQ (https://cradleos.io/assets/index-BjoNOKiG.js:61:105482)\n    at QQ (https://cradleos.io/assets/index-BjoNOKiG.js:61:111531)\n    at https://cradleos.io/assets/index-BjoNOKiG.js:64:7207"
+  ],
+  "postMethods": [
+    "Cloudflare analytics"
+  ],
+  "fixture": {
+    "stake": 2500,
+    "payout": 1877,
+    "draws": 15
+  },
+  "activePartial": {
+    "text": "PAYOUT\n18.77 chips\nPartial return · Total bet 25 chips",
+    "lastNotes": [
+      428.5125,
+      572
+    ],
+    "expectedNotes": [
+      428.5125,
+      572
+    ],
+    "noInputOrDisclosureReplay": true
+  },
+  "reducedReversalNoReplay": true,
+  "cursor": 1,
+  "balanceUnchanged": true,
+  "historyUnchanged": true,
+  "restoredStaticAndSilent": true,
+  "PASS": true
+}

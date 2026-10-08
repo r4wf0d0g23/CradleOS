@@ -10,4 +10,4 @@
 - Sound evidence is Web Audio scheduling, not physical-device acoustic testing.
 - Expected existing Vite mixed-import/large-chunk and external SDK diagnostics remain.
 
-Public verification pending deployment.
+Public checks: 98 delivered file hashes match; both origins serve the reviewed JS/CSS; icon API responds. All seven live 390px feedback/lifecycle/free-spin checks pass. Independent live 320px review PASS: exact bundles, partial-hit cue, once-only pulse, reduced cancellation, unchanged ledger, silent reload. See live-review.md.

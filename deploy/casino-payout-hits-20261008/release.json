@@ -1,0 +1,13 @@
+{
+  "source": "f222d32e13c141620817fe86b4a85e1f7e5ca507",
+  "deployment": "4c8cbbda",
+  "primary": "https://cradleos.io/#/casino",
+  "immutable": "https://4c8cbbda.cradleos-d75.pages.dev",
+  "rollback": "0c1d38f9",
+  "scope": "practice-only short payout acknowledgements and finite fresh-reveal amount highlight",
+  "tests": 280,
+  "testFiles": 28,
+  "verification": "PASS: 15 preview cases, 7 live mobile cases, 7 bonus regressions, 98 public hashes/API, independent source and LIVE review",
+  "wagering": "HOLD unchanged; seed-only donations unchanged",
+  "ownedTestServersStopped": true
+}

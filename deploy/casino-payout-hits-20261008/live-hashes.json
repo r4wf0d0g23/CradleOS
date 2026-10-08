@@ -1,0 +1,54 @@
+{
+  "PASS": true,
+  "checks": [
+    {
+      "origin": "https://cradleos.io",
+      "path": "/assets/index-BjoNOKiG.js",
+      "status": 200,
+      "bytes": 2275298,
+      "sha256": "689aa7f03547da1f5fe45583d4c0b137acbe13a2ce5cb5e20420eb3d7f0236bd",
+      "PASS": true
+    },
+    {
+      "origin": "https://cradleos.io",
+      "path": "/assets/index-C8qlwbq9.css",
+      "status": 200,
+      "bytes": 789116,
+      "sha256": "8e53b948ee8c222d853642eea7d6330ba2c70d9001c1cab7ad34382eac51d2e4",
+      "PASS": true
+    },
+    {
+      "origin": "https://cradleos.io",
+      "path": "/",
+      "status": 200,
+      "bytes": 2438,
+      "sha256": "c472e2d4d8388222c8c815141d564865451f32447cc7c472afa44d7b0726f72c",
+      "PASS": true
+    },
+    {
+      "origin": "https://4c8cbbda.cradleos-d75.pages.dev",
+      "path": "/assets/index-BjoNOKiG.js",
+      "status": 200,
+      "bytes": 2275298,
+      "sha256": "689aa7f03547da1f5fe45583d4c0b137acbe13a2ce5cb5e20420eb3d7f0236bd",
+      "PASS": true
+    },
+    {
+      "origin": "https://4c8cbbda.cradleos-d75.pages.dev",
+      "path": "/assets/index-C8qlwbq9.css",
+      "status": 200,
+      "bytes": 789116,
+      "sha256": "8e53b948ee8c222d853642eea7d6330ba2c70d9001c1cab7ad34382eac51d2e4",
+      "PASS": true
+    },
+    {
+      "origin": "https://4c8cbbda.cradleos-d75.pages.dev",
+      "path": "/",
+      "status": 200,
+      "bytes": 2071,
+      "sha256": "ddcead96bd1be391f0a1c6ff1b3ce3fa97174c018a543dd22433b7f49b3bfe78",
+      "PASS": true
+    }
+  ],
+  "sourceDrift": []
+}
