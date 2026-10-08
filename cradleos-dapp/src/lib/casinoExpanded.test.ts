@@ -64,7 +64,7 @@ it("quarantines new known defects without reviving pre-drawn games", () => {
     expect(source(g)).toMatch(/assert!\(false, EGameDisabled\)/);
   }
   expect(PRACTICE_GAMES).not.toContain("hilo");
-  expect(PRACTICE_GAMES).toHaveLength(25);
+  expect(PRACTICE_GAMES.filter(g=>!g.startsWith("slot_"))).toHaveLength(25);
   // Freeze dangerous current-chain state as an activation regression guard.
   expect(
     readFileSync(new URL("./cycleDeployment.ts", import.meta.url), "utf8"),

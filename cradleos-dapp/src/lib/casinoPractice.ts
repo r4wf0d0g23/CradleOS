@@ -1,3 +1,4 @@
+import { FLEET_KEYS, isFleet } from "./casinoSlotFleet";
 import {
   EXPANDED_GAMES,
   expandedOutcome,
@@ -16,6 +17,7 @@ export const PRACTICE_GAMES = [
   "plinko",
   "war",
   ...EXPANDED_GAMES,
+  ...FLEET_KEYS,
 ] as const;
 export type PracticeGame = (typeof PRACTICE_GAMES)[number];
 export const PRACTICE_KEY = "cradleos:casino:practice:v1";
@@ -153,6 +155,8 @@ export function playPractice(
   rng: RandomInt = randomInt,
 ): PracticeState {
   if (s.hand) throw Error("Finish your blackjack hand first.");
+  if (isFleet(game))
+    throw Error("Fleet slots require the saved-feature session engine.");
   if (!PRACTICE_GAMES.includes(game) || !integer(stake, 100, MAX_BET))
     throw Error("Invalid practice stake or game.");
   if (stake > s.balance)
@@ -317,6 +321,8 @@ function validValues(game: PracticeGame, values: unknown): values is number[] {
   if (!Array.isArray(values)) return false;
   const shape = (length: number, min: number, max: number) =>
     values.length === length && values.every((v) => integer(v, min, max));
+  if (isFleet(game))
+    return values.length === 2 && values[0] === 1 && integer(values[1], 1, 32);
   switch (game) {
     case "slots":
       return shape(3, 0, 6);

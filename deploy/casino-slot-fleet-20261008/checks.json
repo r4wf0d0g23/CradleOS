@@ -1,0 +1,22 @@
+{
+  "tests": 252,
+  "testFiles": 23,
+  "typecheck": "passed",
+  "origins": 8,
+  "ioc": "clean",
+  "productionBuild": "passed",
+  "preservedAssets": 43,
+  "browserWidths": [
+    320,
+    390,
+    844,
+    1440
+  ],
+  "practiceGames": 33,
+  "slotGames": 9,
+  "testnetCatalog": 23,
+  "contractsChanged": false,
+  "walletActions": false,
+  "baselineDeployment": "9ccc3c8c",
+  "monteCarloValidationRounds": 12000000
+}

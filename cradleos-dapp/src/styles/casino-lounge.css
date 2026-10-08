@@ -2085,4 +2085,382 @@
     padding: 10px;
   }
 }
-.frontier-casino .casino-board-caption{display:block;text-align:center;color:#d9bf8b;padding:8px}
+.frontier-casino .casino-board-caption {
+  display: block;
+  text-align: center;
+  color: #d9bf8b;
+  padding: 8px;
+}
+
+/* Original slot fleet: readable cells, actual evaluated boards, restrained Frontier light. */
+.frontier-casino .fleet-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 190px;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at 50% 70%,
+    color-mix(in srgb, var(--fleet-accent) 25%, transparent),
+    #0b1119 74%
+  );
+  color: var(--fleet-accent);
+}
+.frontier-casino .fleet-tile img {
+  position: relative;
+  width: 112px !important;
+  height: 112px !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 0 20px var(--fleet-accent));
+}
+.frontier-casino .fleet-tile > span:last-child {
+  position: absolute;
+  bottom: 14px;
+  font: 11px var(--font-mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.fleet-orbit {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.25;
+  box-shadow:
+    0 0 0 20px #ffffff05,
+    0 0 0 45px #ffffff03;
+}
+.fleet-cluster .fleet-orbit {
+  border-radius: 18%;
+  transform: rotate(45deg);
+}
+.fleet-hold .fleet-orbit {
+  border-radius: 12px;
+  box-shadow: inset 0 0 35px currentColor;
+}
+.fleet-board {
+  --fleet-accent: #bba272;
+  padding: clamp(8px, 2vw, 24px);
+  max-width: 740px;
+  margin: auto;
+  color: #dae5e8;
+}
+.fleet-feature-strip,
+.fleet-meter,
+.fleet-stage-win {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.fleet-feature-strip {
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+.fleet-feature-strip strong {
+  color: var(--fleet-accent);
+  font-size: 14px;
+}
+.fleet-feature-strip span {
+  color: #99acb9;
+}
+.fleet-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 5px;
+  padding: 8px;
+  background: #03080ddd;
+  border: 1px solid color-mix(in srgb, var(--fleet-accent) 65%, transparent);
+  border-radius: 15px;
+  box-shadow:
+    0 0 25px color-mix(in srgb, var(--fleet-accent) 14%, transparent),
+    inset 0 0 25px #000;
+  overflow: hidden;
+  min-height: 210px;
+}
+.fleet-reel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  overflow: hidden;
+  background: #0b141b;
+  border-radius: 8px;
+}
+.fleet-cell {
+  aspect-ratio: 1;
+  max-height: 100px;
+  min-height: 34px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #32404b60;
+  border-radius: 7px;
+  background: linear-gradient(150deg, #17222a, #0b1019);
+  overflow: hidden;
+}
+.fleet-cell img {
+  width: 80% !important;
+  height: 80% !important;
+  max-width: 68px;
+  max-height: 68px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px #000);
+}
+.fleet-cell-win {
+  border-color: var(--fleet-accent);
+  box-shadow: inset 0 0 16px
+    color-mix(in srgb, var(--fleet-accent) 22%, transparent);
+}
+.fleet-wild {
+  background: linear-gradient(135deg, #493754, #1f202c);
+  border-color: #b3a0d4;
+}
+.fleet-scatter {
+  border-color: #779985;
+  background: linear-gradient(135deg, #233d37, #13232a);
+}
+.fleet-wild b,
+.fleet-scatter b {
+  position: absolute;
+  bottom: 3px;
+  font: 700 clamp(7px, 1.5vw, 10px) monospace;
+  background: #061015d9;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+.fleet-coin {
+  border-radius: 50%;
+  margin: 3px;
+  background: radial-gradient(circle at 30% 25%, #63523d, #251a1e);
+  border: 2px solid var(--fleet-accent);
+  font-size: clamp(8px, 1.65vw, 15px);
+  color: #f4d6a6;
+}
+.fleet-empty {
+  background: #080e16;
+  border-color: #161f29;
+  color: #344555;
+}
+.fleet-lock {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  color: var(--fleet-accent);
+  font-size: 9px;
+}
+.fleet-meter {
+  font: 11px monospace;
+  min-height: 46px;
+  color: var(--fleet-accent);
+}
+.fleet-meter strong {
+  color: #dce3df;
+}
+.fleet-stage-win {
+  font-size: 12px;
+  background: #050d1477;
+  border-radius: 8px;
+  padding: 12px;
+}
+.fleet-stage-win b {
+  font-variant-numeric: tabular-nums;
+  color: #ead8ae;
+}
+.fleet-respins {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 14px;
+  font: 10px monospace;
+}
+.fleet-respins i {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--fleet-accent);
+  border-radius: 50%;
+}
+.fleet-respins .on {
+  background: var(--fleet-accent);
+  box-shadow: 0 0 10px var(--fleet-accent);
+}
+.fleet-free-progress {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.fleet-free-progress progress {
+  width: 100%;
+  max-width: 240px;
+  accent-color: var(--fleet-accent);
+  height: 5px;
+}
+.fleet-trigger {
+  display: block;
+  margin-bottom: 12px;
+  color: #c6b6df;
+  font-size: 11px;
+}
+.fleet-win-detail {
+  font-size: 11px;
+  margin-top: 12px;
+  color: #b5c4ce;
+}
+.fleet-win-detail summary {
+  cursor: pointer;
+}
+.fleet-win-detail p {
+  margin: 5px 0;
+}
+.fleet-reveal-controls {
+  display: grid;
+  gap: 10px;
+}
+.fleet-reveal-controls button {
+  min-height: 46px;
+}
+.fleet-reveal-controls small {
+  color: #95a7b8;
+  text-align: center;
+  font-size: 11px;
+}
+.fleet-paylines {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  color: #cfb578;
+}
+.fleet-paylines svg {
+  background: #111c25;
+  border-radius: 6px;
+  max-width: 100%;
+}
+.fleet-rules .lounge-paytable > div {
+  flex-wrap: wrap;
+}
+.fleet-rules .lounge-paytable small {
+  display: block;
+  color: #90a2ae;
+  font-size: 10px;
+}
+.fleet-rules a {
+  color: #d6b985;
+  text-decoration: underline;
+}
+@keyframes fleet-drop {
+  0% {
+    transform: translateY(-110%);
+    filter: blur(3px);
+    opacity: 0.25;
+  }
+  65% {
+    transform: translateY(8%);
+    filter: blur(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.fleet-cell-drop {
+  animation: fleet-drop 0.8s calc(var(--reel) * 0.1s) both;
+}
+.fleet-covered .fleet-cell {
+  color: #6b8394;
+}
+.fleet-spinning .fleet-cell-win {
+  box-shadow: none;
+}
+@media (max-width: 480px) {
+  .fleet-grid {
+    padding: 5px;
+    gap: 3px;
+    min-height: 150px;
+  }
+  .fleet-reel {
+    gap: 3px;
+  }
+  .fleet-cell {
+    border-radius: 4px;
+  }
+  .fleet-feature-strip {
+    gap: 5px;
+    font-size: 10px;
+  }
+  .fleet-feature-strip strong {
+    font-size: 12px;
+  }
+  .fleet-meter {
+    font-size: 9px;
+  }
+  .fleet-stage-win {
+    font-size: 11px;
+    padding: 9px;
+  }
+  .fleet-paylines {
+    gap: 4px;
+  }
+  .fleet-tile {
+    min-height: 150px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fleet-cell-drop {
+    animation: none !important;
+  }
+}
+.frontier-casino .tile-art .fleet-tile {
+  min-height: 0 !important;
+  position: absolute;
+  inset: 0;
+}
+.frontier-casino .fleet-tile > span:last-child {
+  display: none;
+}
+.fleet-math-summary {
+  padding: 12px;
+  border: 1px solid #71684e55;
+  border-radius: 8px;
+  background: #0c1218;
+}
+.fleet-math-summary p {
+  margin: 8px 0 !important;
+}
+.fleet-free-progress {
+  white-space: nowrap;
+}
+.fleet-free-progress progress {
+  min-width: 30px;
+  flex: 1;
+}
+@keyframes fleet-fall {
+  from {
+    transform: translateY(calc(var(--fall) * (-100% - var(--fleet-gap, 5px))));
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.fleet-cell-fall {
+  animation: fleet-fall 0.7s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fleet-cell-fall {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .fleet-board {
+    --fleet-gap: 3px;
+  }
+}

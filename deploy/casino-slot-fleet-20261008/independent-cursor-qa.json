@@ -1,0 +1,19 @@
+{
+  "errors": [],
+  "count": 33,
+  "route": "slot_gatecrash",
+  "triggerBefore": 3,
+  "triggerAfter": 0,
+  "cursorEconomicsStable": true,
+  "reloadDuringRevealStable": true,
+  "quotaPreservedCursor": true,
+  "noOverflow": true,
+  "lossAudio": [
+    146.83,
+    220,
+    164.81,
+    110,
+    82.41
+  ],
+  "falseBonusOnLoss": false
+}

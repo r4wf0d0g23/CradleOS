@@ -1,3 +1,11 @@
+import {
+  FleetBoard,
+  FleetRules,
+  FleetTile,
+  FLEET_CATALOG,
+  SLOT_REVEAL_MS,
+} from "./CasinoSlotFleet";
+import { FLEET, isFleet } from "../lib/casinoSlotFleet";
 import { CasinoPackControls } from "./CasinoPackControls";
 import { CasinoScratchPack } from "./CasinoScratchPack";
 import {
@@ -6,6 +14,8 @@ import {
   restoreOptions,
   PROFILES,
   activeSession,
+  pendingSlot,
+  revealSlot,
   actSession,
   playSession,
   restoreSession,
@@ -54,7 +64,9 @@ import {
 import "../styles/casino-lounge.css";
 const base = import.meta.env.BASE_URL;
 const titles = (key: string) =>
-  LOUNGE_NAMES[key] ?? {
+  (isFleet(key)
+    ? { title: FLEET[key].name, tag: "SLOT FLEET", icon: FLEET[key].icon }
+    : LOUNGE_NAMES[key]) ?? {
     title: CASINO_CATALOG.find((g) => g.key === key)?.name ?? key,
     tag: "TABLE",
     icon: 72244,
@@ -158,6 +170,15 @@ function GameSurface({
   const pack = state.pack?.game === game ? state.pack : null;
   const [receiptTicket, setReceiptTicket] = useState(0);
   useEffect(() => setReceiptTicket(0), [pack]);
+  if (isFleet(game))
+    return (
+      <FleetBoard
+        game={game}
+        receipt={pack?.slot}
+        busy={busy}
+        reduced={reducedMotion}
+      />
+    );
   if (game === "keno" && pack) {
     const ticket = Math.min(receiptTicket, pack.rounds.length - 1),
       round = pack.rounds[ticket];
@@ -304,7 +325,8 @@ function GameSurface({
 }
 
 function Rules({ game, picks }: { game: PracticeGame; picks: number[] }) {
-  const text: Record<PracticeGame, string> = {
+  if (isFleet(game)) return <FleetRules game={game} />;
+  const text: Partial<Record<PracticeGame, string>> = {
     ...EXPANSION_RULES,
     slots:
       "Three independent 16-stop reels. Symbol weights: 4, 3, 3, 2, 2, 1, 1. Exactly two matching symbols return 1.8×. Triple returns are shown below.",
@@ -410,7 +432,7 @@ export function CasinoExperience() {
     "practice",
   );
   const [game, setGame] = useState<string | null>(() =>
-    activeSession(state) ? "blackjack" : (state.pack?.game ?? null),
+    state.hand || state.table ? "blackjack" : (state.pack?.game ?? null),
   );
   const [category, setCategory] = useState("all"),
     [search, setSearch] = useState("");
@@ -487,6 +509,68 @@ export function CasinoExperience() {
     setError("");
     feedback.play("select");
   }
+  function slotDone(id: number, cursor: number, all = false) {
+    const saved = current.current;
+    if (
+      !pendingSlot(saved) ||
+      saved.pack?.rounds[0].id !== id ||
+      saved.pack.slot?.cursor !== cursor
+    )
+      return;
+    const next = revealSlot(saved, all);
+    commit(next);
+    const feature = next.pack!.slot!;
+    const frame = feature.frames[feature.cursor - 1];
+    if (feature.cursor === feature.frames.length)
+      feedback.play(feature.payout > feature.stake ? "win" : "loss");
+    else if (frame.remaining > 0 && frame.kind === "spin")
+      feedback.play("bonus");
+    else
+      feedback.play(
+        frame.kind === "hold"
+          ? "coin"
+          : frame.kind === "cascade"
+            ? "cascade"
+            : "stop",
+      );
+  }
+  function nextSlot(all = false) {
+    if (busyRef.current || !pendingSlot(current.current)) return;
+    const saved = current.current,
+      id = saved.pack!.rounds[0].id,
+      cursor = saved.pack!.slot!.cursor;
+    setError("");
+    if (all) {
+      try {
+        slotDone(id, cursor, true);
+      } catch {
+        setError(
+          "Browser storage is unavailable. Your saved round is unchanged; try revealing again.",
+        );
+      }
+      return;
+    }
+    busyRef.current = true;
+    setBusy(true);
+    feedback.play(
+      saved.pack!.slot!.frames[cursor].kind === "cascade" ? "cascade" : "spin",
+    );
+    timer.current = setTimeout(
+      () => {
+        try {
+          slotDone(id, cursor);
+        } catch {
+          setError(
+            "Browser storage is unavailable. Your saved round is unchanged; try revealing again.",
+          );
+        } finally {
+          setBusy(false);
+          busyRef.current = false;
+        }
+      },
+      reduce ? 40 : SLOT_REVEAL_MS,
+    );
+  }
   function act(action?: TableAction) {
     if (busyRef.current || mode !== "practice" || !game) return;
     busyRef.current = true;
@@ -514,7 +598,15 @@ export function CasinoExperience() {
         () => {
           setBusy(false);
           busyRef.current = false;
-          if (next.sequence > previous.sequence)
+          if (next.pack?.slot) {
+            try {
+              slotDone(next.pack.rounds[0].id, 0);
+            } catch {
+              setError(
+                "Browser storage is unavailable. Your round is saved; try revealing again.",
+              );
+            }
+          } else if (next.sequence > previous.sequence)
             feedback.play(
               (
                 next.pack
@@ -528,11 +620,13 @@ export function CasinoExperience() {
         },
         reduce
           ? 40
-          : game === "blackjack"
-            ? 450
-            : game === "plinko"
-              ? PLINKO_REVEAL_MS + ((next.pack?.rounds.length ?? 1) - 1) * 120
-              : casinoRoundMs(next.history[0] ?? null),
+          : isFleet(game)
+            ? SLOT_REVEAL_MS
+            : game === "blackjack"
+              ? 450
+              : game === "plinko"
+                ? PLINKO_REVEAL_MS + ((next.pack?.rounds.length ?? 1) - 1) * 120
+                : casinoRoundMs(next.history[0] ?? null),
       );
     } catch (e) {
       busyRef.current = false;
@@ -555,7 +649,9 @@ export function CasinoExperience() {
       setError("Browser storage is unavailable.");
     }
   }
-  const games = CASINO_CATALOG.filter(
+  const games = (
+    mode === "testnet" ? CASINO_CATALOG : [...CASINO_CATALOG, ...FLEET_CATALOG]
+  ).filter(
     (g) =>
       !g.disabled &&
       (mode === "testnet"
@@ -572,16 +668,19 @@ export function CasinoExperience() {
   const categories = [...new Set(games.map((g) => g.category))];
   const last = state.history[0]?.game === game ? state.history[0] : null;
   const pack = state.pack?.game === game ? state.pack : null;
-  const result = busy
-    ? null
-    : pack
-      ? {
-          ...pack.rounds[0],
-          stake: packTotal(pack, "stake"),
-          payout: packTotal(pack, "payout"),
-          label: `${pack.rounds.length} ${game === "roulette" ? "selections" : game === "blackjack" ? "hands" : "plays"} · total`,
-        }
-      : last;
+  const result =
+    busy || pendingSlot(state)
+      ? null
+      : pack
+        ? {
+            ...pack.rounds[0],
+            stake: packTotal(pack, "stake"),
+            payout: packTotal(pack, "payout"),
+            label: pack.slot
+              ? pack.rounds[0].label
+              : `${pack.rounds.length} ${game === "roulette" ? "selections" : game === "blackjack" ? "hands" : "plays"} · total`,
+          }
+        : last;
   let totalStake = 0;
   try {
     totalStake =
@@ -599,9 +698,15 @@ export function CasinoExperience() {
     /* Input validation is shown on play. */
   }
   const displayedBalance =
-    busy && last && !activeSession(state)
-      ? state.balance - (pack ? packTotal(pack, "payout") : last.payout)
-      : state.balance;
+    pack?.slot && pendingSlot(state)
+      ? state.balance -
+        pack.slot.payout +
+        (pack.slot.cursor > 0
+          ? pack.slot.frames[pack.slot.cursor - 1].total
+          : 0)
+      : busy && last && !activeSession(state)
+        ? state.balance - (pack ? packTotal(pack, "payout") : last.payout)
+        : state.balance;
   const meta = game ? titles(game) : null;
   return (
     <CasinoFeedback.Provider value={feedback.play}>
@@ -732,9 +837,16 @@ export function CasinoExperience() {
                 </p>
                 <button
                   className="lounge-primary"
-                  onClick={() => navigate("slots")}
+                  onClick={() =>
+                    mode === "practice"
+                      ? setCategory("slots")
+                      : navigate("slots")
+                  }
                 >
-                  Play Salvage Reels <span>↗</span>
+                  {mode === "practice"
+                    ? "Explore 9 slot games"
+                    : "Play Salvage Reels"}{" "}
+                  <span>↗</span>
                 </button>
               </div>
               <div className="lounge-hero-art" aria-hidden="true">
@@ -786,14 +898,18 @@ export function CasinoExperience() {
                     onClick={() => navigate(entry.key)}
                   >
                     <div className="tile-art">
-                      <img
-                        src={`${base}casino/cards/${entry.key}.webp`}
-                        alt=""
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.style.visibility = "hidden";
-                        }}
-                      />
+                      {isFleet(entry.key) ? (
+                        <FleetTile game={entry.key} />
+                      ) : (
+                        <img
+                          src={`${base}casino/cards/${entry.key}.webp`}
+                          alt=""
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.visibility = "hidden";
+                          }}
+                        />
+                      )}
                       <span className="tile-icon">
                         <ItemIcon typeId={m.icon} size={42} />
                       </span>
@@ -801,7 +917,9 @@ export function CasinoExperience() {
                     </div>
                     <div>
                       <small>
-                        {entry.name}{" "}
+                        {isFleet(entry.key)
+                          ? FLEET[entry.key].mechanic
+                          : entry.name}{" "}
                         <span>
                           {mode === "practice" ? "FREE PLAY" : "TESTNET"}
                         </span>
@@ -852,11 +970,13 @@ export function CasinoExperience() {
                   <div className="lounge-surface-label">
                     <span>CRADLE / {meta!.tag}</span>
                     <span>
-                      {activeSession(state)
-                        ? "HAND IN PLAY"
-                        : busy
-                          ? "RESOLVING"
-                          : "PRACTICE TABLE"}
+                      {pendingSlot(state)
+                        ? "FEATURE SAVED"
+                        : activeSession(state)
+                          ? "HAND IN PLAY"
+                          : busy
+                            ? "RESOLVING"
+                            : "PRACTICE TABLE"}
                     </span>
                   </div>
                   <GameSurface
@@ -1023,7 +1143,31 @@ export function CasinoExperience() {
                       <strong>{chipLabel(totalStake)} chips</strong>
                     </div>
                   )}
-                  {game === "blackjack" && state.table ? (
+                  {pendingSlot(state) ? (
+                    <div className="fleet-reveal-controls">
+                      <button
+                        className="lounge-primary"
+                        disabled={busy}
+                        onClick={() => nextSlot()}
+                      >
+                        {busy
+                          ? "Revealing…"
+                          : pack?.slot?.cursor === 0
+                            ? "Reveal saved spin"
+                            : pack?.slot?.frames[pack.slot.cursor]?.kind ===
+                                "free"
+                              ? "Next free spin"
+                              : pack?.slot?.frames[pack.slot.cursor]?.kind ===
+                                  "hold"
+                                ? "Respin"
+                                : "Next cascade"}
+                      </button>
+                      <button disabled={busy} onClick={() => nextSlot(true)}>
+                        Reveal all
+                      </button>
+                      <small>Already paid · no additional stake</small>
+                    </div>
+                  ) : game === "blackjack" && state.table ? (
                     <div className="lounge-hand-actions">
                       {(["hit", "stand", "double", "split"] as const).map(
                         (a) => (
@@ -1075,7 +1219,8 @@ export function CasinoExperience() {
                     >
                       {busy
                         ? "Resolving…"
-                        : game === "slots" ||
+                        : isFleet(game) ||
+                            game === "slots" ||
                             game === "roulette" ||
                             game === "wheel"
                           ? "Spin"
@@ -1122,24 +1267,30 @@ export function CasinoExperience() {
               Your recent rounds <span>PLAY MONEY</span>
             </h3>
             <div>
-              {state.history.slice(0, 6).map((r) => (
-                <div key={r.id}>
-                  <span>{titles(r.game).title}</span>
-                  <small>Stake {chipLabel(r.stake)}</small>
-                  <strong
-                    className={
-                      r.payout > r.stake
-                        ? "positive"
-                        : r.payout === r.stake
-                          ? "neutral"
-                          : "negative"
-                    }
-                  >
-                    {r.payout - r.stake > 0 ? "+" : ""}
-                    {chipLabel(r.payout - r.stake)}
-                  </strong>
-                </div>
-              ))}
+              {state.history
+                .filter(
+                  (r) =>
+                    !pendingSlot(state) || r.id !== state.pack?.rounds[0].id,
+                )
+                .slice(0, 6)
+                .map((r) => (
+                  <div key={r.id}>
+                    <span>{titles(r.game).title}</span>
+                    <small>Stake {chipLabel(r.stake)}</small>
+                    <strong
+                      className={
+                        r.payout > r.stake
+                          ? "positive"
+                          : r.payout === r.stake
+                            ? "neutral"
+                            : "negative"
+                      }
+                    >
+                      {r.payout - r.stake > 0 ? "+" : ""}
+                      {chipLabel(r.payout - r.stake)}
+                    </strong>
+                  </div>
+                ))}
             </div>
           </section>
         )}

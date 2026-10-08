@@ -1,5 +1,14 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-export type CasinoCue = "select" | "deal" | "spin" | "win" | "loss";
+export type CasinoCue =
+  | "select"
+  | "deal"
+  | "spin"
+  | "win"
+  | "loss"
+  | "stop"
+  | "bonus"
+  | "cascade"
+  | "coin";
 export const CasinoFeedback = createContext<(cue: CasinoCue) => void>(() => {});
 /** Original synthesized cues, plus the existing Frontier power sample. Opt-in only. */
 export function useCasinoFeedback() {
@@ -15,15 +24,23 @@ export function useCasinoFeedback() {
     if (!active.current || !c || c.state !== "running" || document.hidden)
       return;
     const notes =
-      cue === "win"
-        ? [261.63, 329.63, 392]
-        : cue === "loss"
-          ? [110, 82.41]
-          : cue === "spin"
-            ? [146.83, 220]
-            : cue === "deal"
-              ? [392]
-              : [660];
+      cue === "bonus"
+        ? [293.66, 440, 587.33, 880]
+        : cue === "cascade"
+          ? [220, 293.66, 349.23]
+          : cue === "coin"
+            ? [880, 1174.66]
+            : cue === "stop"
+              ? [164.81]
+              : cue === "win"
+                ? [261.63, 329.63, 392]
+                : cue === "loss"
+                  ? [110, 82.41]
+                  : cue === "spin"
+                    ? [146.83, 220]
+                    : cue === "deal"
+                      ? [392]
+                      : [660];
     notes.forEach((hz, i) => {
       const o = c.createOscillator(),
         g = c.createGain(),

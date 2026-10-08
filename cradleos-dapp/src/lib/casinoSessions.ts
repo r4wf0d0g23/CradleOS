@@ -1,4 +1,10 @@
 import {
+  isFleet,
+  spinFleet,
+  validSlotReceipt,
+  type SlotReceipt,
+} from "./casinoSlotFleet";
+import {
   initialPractice,
   restorePractice,
   playPractice,
@@ -55,6 +61,7 @@ export type Pack = {
   wagers?: Wager[];
   tickets?: Ticket[];
   table?: BlackjackTable;
+  slot?: SlotReceipt;
 };
 export type Session = Omit<PracticeState, "version"> & {
   version: 2;
@@ -87,7 +94,10 @@ const wrap = (s: PracticeState): Session => ({
   pack: null,
 });
 export const initialSession = () => wrap(initialPractice());
-export const activeSession = (s: Session) => !!s.hand || !!s.table;
+export const pendingSlot = (s: Session) =>
+  !!s.pack?.slot && s.pack.slot.cursor < s.pack.slot.frames.length;
+export const activeSession = (s: Session) =>
+  !!s.hand || !!s.table || pendingSlot(s);
 export const packTotal = (p: Pack, key: "stake" | "payout") =>
   sum(p.rounds.map((r) => r[key]));
 export function rouletteBps(w: Wager, n: number): number {
@@ -171,8 +181,7 @@ function drawNumbers(size: number, count: number, rng: RandomInt): number[] {
 }
 const money = (stake: number, bps: number) => Math.floor((stake * bps) / 10000);
 function ensureFree(s: Session) {
-  if (activeSession(s))
-    throw Error("Finish the current blackjack table first.");
+  if (activeSession(s)) throw Error("Finish the current round first.");
 }
 function settle(s: Session, p: Pack): Session {
   const stake = packTotal(p, "stake"),
@@ -241,6 +250,24 @@ export function playSession(
     return n;
   };
   if (!validStake(stake)) throw Error("Enter a stake from 1 to 1,000 chips.");
+  if (isFleet(game)) {
+    if (stake > s.balance) throw Error("Not enough chips for this spin.");
+    const slot = spinFleet(game, stake, rng);
+    return settle(s, {
+      game,
+      slot,
+      rounds: [
+        {
+          id: 0,
+          game,
+          stake,
+          payout: slot.payout,
+          values: [1, slot.frames.length],
+          label: `${slot.frames.length} stage${slot.frames.length === 1 ? "" : "s"} · ${slot.capReached ? "Cap reached" : slot.payout > stake ? "Win" : slot.payout === stake ? "Push" : slot.payout ? "Partial return" : "No return"}`,
+        },
+      ],
+    });
+  }
   if (game === "blackjack") {
     const { table, debit } = dealTable(
       options.seats ?? 1,
@@ -349,6 +376,20 @@ export function actSession(s: Session, action: TableAction): Session {
   if (s.hand && action !== "split") return wrap(actPractice(base(s), action));
   throw Error("There is no active hand.");
 }
+export function revealSlot(s: Session, all = false): Session {
+  if (!pendingSlot(s) || !s.pack?.slot)
+    throw Error("No saved slot feature to reveal.");
+  return {
+    ...s,
+    pack: {
+      ...s.pack,
+      slot: {
+        ...s.pack.slot,
+        cursor: all ? s.pack.slot.frames.length : s.pack.slot.cursor + 1,
+      },
+    },
+  };
+}
 function validPack(p: Pack, s: Session): boolean {
   if (
     !p ||
@@ -379,6 +420,18 @@ function validPack(p: Pack, s: Session): boolean {
     JSON.stringify([...p.rounds].reverse().slice(0, 20))
   )
     return false;
+  if (isFleet(p.game))
+    return (
+      !!p.slot &&
+      validSlotReceipt(p.slot) &&
+      p.slot.key === p.game &&
+      p.rounds.length === 1 &&
+      p.rounds[0].stake === p.slot.stake &&
+      p.rounds[0].payout === p.slot.payout &&
+      JSON.stringify(p.rounds[0].values) ===
+        JSON.stringify([1, p.slot.frames.length])
+    );
+  if (p.slot !== undefined) return false;
   if (p.game === "plinko")
     return (
       !!p.profile &&
@@ -473,6 +526,7 @@ export function restoreSession(
 ): Session {
   if (raw === null) return wrap(restorePractice(legacy));
   try {
+    if (raw.length > 300000) throw Error();
     const s = JSON.parse(raw) as Session;
     if (s.version !== 2) throw Error();
     const b = base(s),
@@ -486,7 +540,7 @@ export function restoreSession(
         s.pack !== null)
     )
       throw Error();
-    if (s.pack !== null && (activeSession(s) || !validPack(s.pack, s)))
+    if (s.pack !== null && (s.hand || s.table || !validPack(s.pack, s)))
       throw Error();
     return { ...wrap(checked), table: s.table, pack: s.pack };
   } catch {

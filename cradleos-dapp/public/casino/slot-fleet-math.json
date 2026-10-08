@@ -1,0 +1,1173 @@
+{
+  "version": 1,
+  "published": "2026-10-08",
+  "currency": "Nonredeemable play chips only",
+  "targetPercent": 96,
+  "measurement": {
+    "phase": "validation",
+    "count": 1000000,
+    "seed": 903718,
+    "stake": 10000,
+    "method": "Independent paid rounds, deterministic xorshift32 rejection-sampled bounded draws; interval uses sample SD/sqrt(n), approximate Monte Carlo, not certification.",
+    "games": {
+      "slot_scrapyard": {
+        "scale": 6257344,
+        "rtpPercent": 96.38209645007315,
+        "interval95Percent": [
+          95.88462031510055,
+          96.87957258504575
+        ],
+        "hitPercent": 35.455999999999996,
+        "netWinPercent": 24.254800000000003,
+        "featurePercent": 5.7263,
+        "capCount": 0,
+        "maxObservedReturn": 138.913,
+        "maxFrames": 6,
+        "meanPoints": 15.403364,
+        "recommendedScale": 6232405
+      },
+      "slot_wreckways": {
+        "scale": 1152213,
+        "rtpPercent": 96.52626672994626,
+        "interval95Percent": [
+          95.90758330799056,
+          97.14495015190197
+        ],
+        "hitPercent": 42.8342,
+        "netWinPercent": 18.6872,
+        "featurePercent": 5.727200000000001,
+        "capCount": 0,
+        "maxObservedReturn": 296.303,
+        "maxFrames": 7,
+        "meanPoints": 83.776832,
+        "recommendedScale": 1145902
+      },
+      "slot_reactor": {
+        "scale": 30747077,
+        "rtpPercent": 95.39293540001613,
+        "interval95Percent": [
+          94.65670218094728,
+          96.12916861908498
+        ],
+        "hitPercent": 14.496500000000001,
+        "netWinPercent": 14.496500000000001,
+        "featurePercent": 0,
+        "capCount": 0,
+        "maxObservedReturn": 276.1087,
+        "maxFrames": 6,
+        "meanPoints": 3.102532,
+        "recommendedScale": 30942469
+      },
+      "slot_feral": {
+        "scale": 12422698,
+        "rtpPercent": 96.25892782011732,
+        "interval95Percent": [
+          95.63479077374164,
+          96.883064866493
+        ],
+        "hitPercent": 23.6676,
+        "netWinPercent": 18.0869,
+        "featurePercent": 0,
+        "capCount": 0,
+        "maxObservedReturn": 322.4932,
+        "maxFrames": 4,
+        "meanPoints": 7.748708,
+        "recommendedScale": 12389162
+      },
+      "slot_vault": {
+        "scale": 36029283,
+        "rtpPercent": 96.0780058300715,
+        "interval95Percent": [
+          95.04808146311875,
+          97.10793019702425
+        ],
+        "hitPercent": 9.0208,
+        "netWinPercent": 9.0208,
+        "featurePercent": 9.0208,
+        "capCount": 0,
+        "maxObservedReturn": 223.3815,
+        "maxFrames": 23,
+        "meanPoints": 2.666677,
+        "recommendedScale": 35999861
+      },
+      "slot_gatecrash": {
+        "scale": 5119368,
+        "rtpPercent": 96.36647601995614,
+        "interval95Percent": [
+          95.60268734005352,
+          97.13026469985874
+        ],
+        "hitPercent": 30.9114,
+        "netWinPercent": 17.6291,
+        "featurePercent": 5.7371,
+        "capCount": 0,
+        "maxObservedReturn": 514.1893,
+        "maxFrames": 6,
+        "meanPoints": 18.824238,
+        "recommendedScale": 5099808
+      },
+      "slot_drones": {
+        "scale": 2394927,
+        "rtpPercent": 95.21312526985956,
+        "interval95Percent": [
+          94.21110195620642,
+          96.21514858351271
+        ],
+        "hitPercent": 35.941,
+        "netWinPercent": 12.8635,
+        "featurePercent": 5.711200000000001,
+        "capCount": 0,
+        "maxObservedReturn": 446.6538,
+        "maxFrames": 9,
+        "meanPoints": 39.757276,
+        "recommendedScale": 2414652
+      },
+      "slot_eclipse": {
+        "scale": 482378,
+        "rtpPercent": 96.00907296991562,
+        "interval95Percent": [
+          95.44376776733807,
+          96.57437817249317
+        ],
+        "hitPercent": 51.4789,
+        "netWinPercent": 19.2352,
+        "featurePercent": 8.6311,
+        "capCount": 0,
+        "maxObservedReturn": 222.3955,
+        "maxFrames": 7,
+        "meanPoints": 199.038018,
+        "recommendedScale": 482320
+      }
+    }
+  },
+  "stakeAndTailBatches": {
+    "samplesPerSeed": 250000,
+    "seeds": [
+      1023449,
+      701209
+    ],
+    "stakes": [
+      100,
+      2500,
+      100000
+    ],
+    "games": {
+      "slot_scrapyard": [
+        {
+          "seed": 1023449,
+          "bonus": 14303,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235697,
+            "6": 14303
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 95.78733599998624,
+              "interval95Percent": [
+                94.79352850394854,
+                96.78114349602394
+              ],
+              "hitPercent": 35.3344,
+              "netProfitPercent": 22.409200000000002,
+              "capCount": 0,
+              "maxObservedReturn": 111.38,
+              "over100": 4,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 95.90016767995844,
+              "interval95Percent": [
+                94.90586202125013,
+                96.89447333866674
+              ],
+              "hitPercent": 35.3344,
+              "netProfitPercent": 24.1232,
+              "capCount": 0,
+              "maxObservedReturn": 111.3804,
+              "over100": 4,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 95.90650877603275,
+              "interval95Percent": [
+                94.91218757700356,
+                96.90082997506194
+              ],
+              "hitPercent": 35.3344,
+              "netProfitPercent": 24.1232,
+              "capCount": 0,
+              "maxObservedReturn": 111.38072,
+              "over100": 4,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 14294,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235706,
+            "6": 14294
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.74023199998514,
+              "interval95Percent": [
+                95.72531401583042,
+                97.75514998413985
+              ],
+              "hitPercent": 35.5124,
+              "netProfitPercent": 22.6208,
+              "capCount": 0,
+              "maxObservedReturn": 163.56,
+              "over100": 10,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.85447647995782,
+              "interval95Percent": [
+                95.83906460626747,
+                97.86988835364816
+              ],
+              "hitPercent": 35.5124,
+              "netProfitPercent": 24.3276,
+              "capCount": 0,
+              "maxObservedReturn": 163.5668,
+              "over100": 10,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.86082797203301,
+              "interval95Percent": [
+                95.84540084923935,
+                97.87625509482665
+              ],
+              "hitPercent": 35.5124,
+              "netProfitPercent": 24.3276,
+              "capCount": 0,
+              "maxObservedReturn": 163.56697,
+              "over100": 10,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_wreckways": [
+        {
+          "seed": 1023449,
+          "bonus": 14122,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235878,
+            "7": 14122
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 95.2142399999802,
+              "interval95Percent": [
+                93.99407646158173,
+                96.43440353837866
+              ],
+              "hitPercent": 42.7556,
+              "netProfitPercent": 18.5696,
+              "capCount": 0,
+              "maxObservedReturn": 203.25,
+              "over100": 5,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 95.42347744006017,
+              "interval95Percent": [
+                94.20301574894417,
+                96.64393913117617
+              ],
+              "hitPercent": 42.7556,
+              "netProfitPercent": 18.5696,
+              "capCount": 0,
+              "maxObservedReturn": 203.25,
+              "over100": 5,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 95.43360112401982,
+              "interval95Percent": [
+                94.2131254881716,
+                96.65407675986803
+              ],
+              "hitPercent": 42.7556,
+              "netProfitPercent": 18.5696,
+              "capCount": 0,
+              "maxObservedReturn": 203.25037,
+              "over100": 5,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 14285,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235715,
+            "7": 14285
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.63492399997895,
+              "interval95Percent": [
+                95.41763258607779,
+                97.85221541388012
+              ],
+              "hitPercent": 43.024,
+              "netProfitPercent": 18.758,
+              "capCount": 0,
+              "maxObservedReturn": 149.32,
+              "over100": 1,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.8454270400618,
+              "interval95Percent": [
+                95.62783694564024,
+                98.06301713448335
+              ],
+              "hitPercent": 43.024,
+              "netProfitPercent": 18.758,
+              "capCount": 0,
+              "maxObservedReturn": 149.3268,
+              "over100": 1,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.85560644801802,
+              "interval95Percent": [
+                95.6380022729967,
+                98.07321062303933
+              ],
+              "hitPercent": 43.024,
+              "netProfitPercent": 18.758,
+              "capCount": 0,
+              "maxObservedReturn": 149.3268,
+              "over100": 1,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_reactor": [
+        {
+          "seed": 1023449,
+          "bonus": 0,
+          "cascade": 36250,
+          "full": 0,
+          "stages": {
+            "1": 213750,
+            "2": 31295,
+            "3": 4427,
+            "4": 483,
+            "5": 38,
+            "6": 7
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 95.53707200001348,
+              "interval95Percent": [
+                94.04000687691901,
+                97.03413712310795
+              ],
+              "hitPercent": 14.499999999999998,
+              "netProfitPercent": 14.499999999999998,
+              "capCount": 0,
+              "maxObservedReturn": 308.08,
+              "over100": 26,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 95.66534768001685,
+              "interval95Percent": [
+                94.16763592458585,
+                97.16305943544783
+              ],
+              "hitPercent": 14.499999999999998,
+              "netProfitPercent": 14.499999999999998,
+              "capCount": 0,
+              "maxObservedReturn": 308.0856,
+              "over100": 26,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 95.66784877201236,
+              "interval95Percent": [
+                94.17012139177068,
+                97.16557615225405
+              ],
+              "hitPercent": 14.499999999999998,
+              "netProfitPercent": 14.499999999999998,
+              "capCount": 0,
+              "maxObservedReturn": 308.08571,
+              "over100": 26,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 0,
+          "cascade": 35952,
+          "full": 0,
+          "stages": {
+            "1": 214048,
+            "2": 31072,
+            "3": 4397,
+            "4": 437,
+            "5": 41,
+            "6": 5
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 93.83466400001193,
+              "interval95Percent": [
+                92.37986929186329,
+                95.28945870816057
+              ],
+              "hitPercent": 14.380799999999999,
+              "netProfitPercent": 14.380799999999999,
+              "capCount": 0,
+              "maxObservedReturn": 262.58,
+              "over100": 25,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 93.9619809600166,
+              "interval95Percent": [
+                92.5065300319912,
+                95.41743188804199
+              ],
+              "hitPercent": 14.380799999999999,
+              "netProfitPercent": 14.380799999999999,
+              "capCount": 0,
+              "maxObservedReturn": 262.58,
+              "over100": 25,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 93.96446168401131,
+              "interval95Percent": [
+                92.5089950061637,
+                95.41992836185894
+              ],
+              "hitPercent": 14.380799999999999,
+              "netProfitPercent": 14.380799999999999,
+              "capCount": 0,
+              "maxObservedReturn": 262.58003,
+              "over100": 25,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_feral": [
+        {
+          "seed": 1023449,
+          "bonus": 0,
+          "cascade": 58946,
+          "full": 0,
+          "stages": {
+            "1": 191054,
+            "2": 49466,
+            "3": 8135,
+            "4": 1345
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.2498440000085,
+              "interval95Percent": [
+                95.01412129686517,
+                97.48556670315183
+              ],
+              "hitPercent": 23.5784,
+              "netProfitPercent": 18.1036,
+              "capCount": 0,
+              "maxObservedReturn": 200,
+              "over100": 2,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.3449894399766,
+              "interval95Percent": [
+                95.10885888490155,
+                97.58111999505165
+              ],
+              "hitPercent": 23.5784,
+              "netProfitPercent": 18.1036,
+              "capCount": 0,
+              "maxObservedReturn": 200.0052,
+              "over100": 2,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.34923311603471,
+              "interval95Percent": [
+                95.11308638611332,
+                97.58537984595611
+              ],
+              "hitPercent": 23.5784,
+              "netProfitPercent": 18.1036,
+              "capCount": 0,
+              "maxObservedReturn": 200.00543,
+              "over100": 2,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 0,
+          "cascade": 59161,
+          "full": 0,
+          "stages": {
+            "1": 190839,
+            "2": 49633,
+            "3": 8118,
+            "4": 1410
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.56009200000787,
+              "interval95Percent": [
+                95.3061857400522,
+                97.81399825996354
+              ],
+              "hitPercent": 23.6644,
+              "netProfitPercent": 18.1648,
+              "capCount": 0,
+              "maxObservedReturn": 188.57,
+              "over100": 9,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.65582863997676,
+              "interval95Percent": [
+                95.40152096552612,
+                97.9101363144274
+              ],
+              "hitPercent": 23.6644,
+              "netProfitPercent": 18.1648,
+              "capCount": 0,
+              "maxObservedReturn": 188.5764,
+              "over100": 9,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.660098340036,
+              "interval95Percent": [
+                95.40577456708283,
+                97.91442211298919
+              ],
+              "hitPercent": 23.6644,
+              "netProfitPercent": 18.1648,
+              "capCount": 0,
+              "maxObservedReturn": 188.57655,
+              "over100": 9,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_vault": [
+        {
+          "seed": 1023449,
+          "bonus": 22700,
+          "cascade": 0,
+          "full": 2232,
+          "stages": {
+            "1": 227300,
+            "4": 848,
+            "5": 1106,
+            "6": 1461,
+            "7": 1976,
+            "8": 2311,
+            "9": 2499,
+            "10": 2728,
+            "11": 2544,
+            "12": 2214,
+            "13": 1755,
+            "14": 1356,
+            "15": 838,
+            "16": 510,
+            "17": 299,
+            "18": 156,
+            "19": 56,
+            "20": 31,
+            "21": 9,
+            "22": 1,
+            "23": 2
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.4037519999991,
+              "interval95Percent": [
+                94.32728384215956,
+                98.48022015783864
+              ],
+              "hitPercent": 9.08,
+              "netProfitPercent": 9.08,
+              "capCount": 0,
+              "maxObservedReturn": 224.82,
+              "over100": 30,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.43860559998974,
+              "interval95Percent": [
+                94.36187972861728,
+                98.51533147136222
+              ],
+              "hitPercent": 9.08,
+              "netProfitPercent": 9.08,
+              "capCount": 0,
+              "maxObservedReturn": 224.8224,
+              "over100": 30,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.44039734400562,
+              "interval95Percent": [
+                94.36365825613353,
+                98.51713643187772
+              ],
+              "hitPercent": 9.08,
+              "netProfitPercent": 9.08,
+              "capCount": 0,
+              "maxObservedReturn": 224.82272,
+              "over100": 30,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 22745,
+          "cascade": 0,
+          "full": 2202,
+          "stages": {
+            "1": 227255,
+            "3": 1,
+            "4": 936,
+            "5": 1050,
+            "6": 1499,
+            "7": 1906,
+            "8": 2204,
+            "9": 2648,
+            "10": 2706,
+            "11": 2632,
+            "12": 2253,
+            "13": 1687,
+            "14": 1333,
+            "15": 867,
+            "16": 480,
+            "17": 317,
+            "18": 129,
+            "19": 54,
+            "20": 29,
+            "21": 8,
+            "22": 4,
+            "23": 2
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.0608559999995,
+              "interval95Percent": [
+                93.9991984313054,
+                98.1225135686936
+              ],
+              "hitPercent": 9.098,
+              "netProfitPercent": 9.098,
+              "capCount": 0,
+              "maxObservedReturn": 238.87,
+              "over100": 25,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.09589071999014,
+              "interval95Percent": [
+                94.03397226211126,
+                98.15780917786901
+              ],
+              "hitPercent": 9.098,
+              "netProfitPercent": 9.098,
+              "capCount": 0,
+              "maxObservedReturn": 238.874,
+              "over100": 25,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.0976862880055,
+              "interval95Percent": [
+                94.03575460235444,
+                98.15961797365657
+              ],
+              "hitPercent": 9.098,
+              "netProfitPercent": 9.098,
+              "capCount": 0,
+              "maxObservedReturn": 238.87414,
+              "over100": 25,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_gatecrash": [
+        {
+          "seed": 1023449,
+          "bonus": 14427,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235573,
+            "6": 14427
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 95.21779599996624,
+              "interval95Percent": [
+                93.75486141463003,
+                96.68073058530244
+              ],
+              "hitPercent": 30.666,
+              "netProfitPercent": 17.48,
+              "capCount": 0,
+              "maxObservedReturn": 278.49,
+              "over100": 26,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 95.39854560000042,
+              "interval95Percent": [
+                93.93528145363462,
+                96.8618097463662
+              ],
+              "hitPercent": 30.666,
+              "netProfitPercent": 17.48,
+              "capCount": 0,
+              "maxObservedReturn": 278.4936,
+              "over100": 26,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 95.40599607194102,
+              "interval95Percent": [
+                93.94271949190008,
+                96.86927265198196
+              ],
+              "hitPercent": 30.666,
+              "netProfitPercent": 17.48,
+              "capCount": 0,
+              "maxObservedReturn": 278.49361,
+              "over100": 26,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 14354,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235646,
+            "6": 14354
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 97.07956799996674,
+              "interval95Percent": [
+                95.52589716836333,
+                98.63323883157015
+              ],
+              "hitPercent": 31.002800000000004,
+              "netProfitPercent": 17.6812,
+              "capCount": 0,
+              "maxObservedReturn": 293.54,
+              "over100": 43,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 97.26248928000112,
+              "interval95Percent": [
+                95.70850061326242,
+                98.81647794673982
+              ],
+              "hitPercent": 31.002800000000004,
+              "netProfitPercent": 17.6812,
+              "capCount": 0,
+              "maxObservedReturn": 293.5444,
+              "over100": 43,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 97.27001699193879,
+              "interval95Percent": [
+                95.71601660617155,
+                98.82401737770603
+              ],
+              "hitPercent": 31.002800000000004,
+              "netProfitPercent": 17.6812,
+              "capCount": 0,
+              "maxObservedReturn": 293.54456,
+              "over100": 43,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_drones": [
+        {
+          "seed": 1023449,
+          "bonus": 14085,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235915,
+            "9": 14085
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 94.29951600000199,
+              "interval95Percent": [
+                92.34644496809794,
+                96.25258703190602
+              ],
+              "hitPercent": 35.8992,
+              "netProfitPercent": 12.616,
+              "capCount": 0,
+              "maxObservedReturn": 316.32,
+              "over100": 87,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 94.4484110400132,
+              "interval95Percent": [
+                92.49510225203115,
+                96.40171982799524
+              ],
+              "hitPercent": 35.8992,
+              "netProfitPercent": 12.8,
+              "capCount": 0,
+              "maxObservedReturn": 316.3216,
+              "over100": 87,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 94.45787092804082,
+              "interval95Percent": [
+                92.50455359965724,
+                96.4111882564244
+              ],
+              "hitPercent": 35.8992,
+              "netProfitPercent": 12.8,
+              "capCount": 0,
+              "maxObservedReturn": 316.32195,
+              "over100": 87,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 14013,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 235987,
+            "9": 14013
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 94.48627200000121,
+              "interval95Percent": [
+                92.49039831603801,
+                96.48214568396442
+              ],
+              "hitPercent": 35.9344,
+              "netProfitPercent": 12.547600000000001,
+              "capCount": 0,
+              "maxObservedReturn": 315.17,
+              "over100": 106,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 94.6353062400129,
+              "interval95Percent": [
+                92.63919940667756,
+                96.63141307334823
+              ],
+              "hitPercent": 35.9344,
+              "netProfitPercent": 12.7472,
+              "capCount": 0,
+              "maxObservedReturn": 315.172,
+              "over100": 106,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 94.64475185604265,
+              "interval95Percent": [
+                92.64863654043826,
+                96.64086717164702
+              ],
+              "hitPercent": 35.9344,
+              "netProfitPercent": 12.7472,
+              "capCount": 0,
+              "maxObservedReturn": 315.17239,
+              "over100": 106,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ],
+      "slot_eclipse": [
+        {
+          "seed": 1023449,
+          "bonus": 21569,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 228431,
+            "7": 21569
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.04969999998595,
+              "interval95Percent": [
+                94.90535904092899,
+                97.19404095904292
+              ],
+              "hitPercent": 51.5244,
+              "netProfitPercent": 19.104,
+              "capCount": 0,
+              "maxObservedReturn": 139.27,
+              "over100": 5,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 96.30166592000677,
+              "interval95Percent": [
+                95.15703921738272,
+                97.4462926226308
+              ],
+              "hitPercent": 51.5244,
+              "netProfitPercent": 19.159599999999998,
+              "capCount": 0,
+              "maxObservedReturn": 139.272,
+              "over100": 5,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 96.31180549199325,
+              "interval95Percent": [
+                95.16716887164225,
+                97.45644211234425
+              ],
+              "hitPercent": 51.5244,
+              "netProfitPercent": 19.159599999999998,
+              "capCount": 0,
+              "maxObservedReturn": 139.27217,
+              "over100": 5,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        },
+        {
+          "seed": 701209,
+          "bonus": 21601,
+          "cascade": 0,
+          "full": 0,
+          "stages": {
+            "1": 228399,
+            "7": 21601
+          },
+          "stakes": [
+            {
+              "stake": 100,
+              "rtpPercent": 96.84661599998566,
+              "interval95Percent": [
+                95.69053906346858,
+                98.00269293650274
+              ],
+              "hitPercent": 51.4436,
+              "netProfitPercent": 19.1904,
+              "capCount": 0,
+              "maxObservedReturn": 140.85,
+              "over100": 7,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 2500,
+              "rtpPercent": 97.09701632000794,
+              "interval95Percent": [
+                95.94065349253499,
+                98.2533791474809
+              ],
+              "hitPercent": 51.4436,
+              "netProfitPercent": 19.2492,
+              "capCount": 0,
+              "maxObservedReturn": 140.854,
+              "over100": 7,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            },
+            {
+              "stake": 100000,
+              "rtpPercent": 97.10714289999204,
+              "interval95Percent": [
+                95.950770014238,
+                98.26351578574607
+              ],
+              "hitPercent": 51.4436,
+              "netProfitPercent": 19.2492,
+              "capCount": 0,
+              "maxObservedReturn": 140.85437,
+              "over100": 7,
+              "over500": 0,
+              "zeroCapOneSided95UpperProbability": 1.1982857299197569e-05
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "analyticalAnchors": {
+    "scope": "Exact rational-probability expectation before cap and chip rounding; hold rare capped extremes require simulation bound. Cascade/connected/sticky mechanics measured separately.",
+    "trigger3x5": 0.057133323827631366,
+    "triggerVariable": 0.08604569063372841,
+    "coinMean": 1.6600000000000001,
+    "games": {
+      "slot_scrapyard": {
+        "meanPoints": 15.341972231148604,
+        "recommendedScale": 6257344
+      },
+      "slot_wreckways": {
+        "meanPoints": 83.31791022810023,
+        "recommendedScale": 1152213
+      },
+      "slot_gatecrash": {
+        "meanPoints": 18.752314152013316,
+        "recommendedScale": 5119368
+      },
+      "slot_eclipse": {
+        "meanPoints": 199.0137515807065,
+        "recommendedScale": 482378
+      },
+      "slot_vault": {
+        "meanPoints": 2.6644992562342726,
+        "recommendedScale": 36029283
+      }
+    }
+  },
+  "notes": [
+    "Each sample is a complete paid round including its entire free/hold/cascade feature.",
+    "Observed return is not certification or a promised individual return. Confidence intervals use sample variance and normal approximation; rare rewards may be undersampled.",
+    "Simulation uses deterministic rejection-sampled bounded draws with separate calibration and validation seeds; production uses browser cryptographic draws.",
+    "Minimum stake is 1 chip; all saved currency uses hundredths of a chip. Cumulative rounding carries between stages.",
+    "Cap is 2500 times total stake. Zero observed caps is not zero probability; tail batches include one-sided event-rate upper bounds.",
+    "No real-money wagering, bonus purchases or pooled progressive jackpots.",
+    "Analytical anchors exclude integer rounding and the cap. Do not label them exact capped RTP."
+  ]
+}
