@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "width": 320,
+      "case": "partial",
+      "text": "PAYOUT\n12.5 chips\nPartial return · Total bet 25 chips",
+      "settledBet": 2500,
+      "payout": 1250,
+      "keyboardFocusPreserved": true,
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 320,
+      "case": "Nonzero base feature; pending raw DOM/AX/history withheld; completed totals distinct and reload exact",
+      "total": "PAYOUT\n89.58 chips\nWin · Total bet 25 chips",
+      "bonus": "FEATURE TOTAL\n20.47 chips"
+    }
+  ],
+  "pageErrors": [],
+  "consoleDiagnostics": [
+    "(assets/index-CfKZzGax.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at qJ (https://cradleos.io/assets/index-CfKZzGax.js:61:25501)\n    at KJ (https://cradleos.io/assets/index-CfKZzGax.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-CfKZzGax.js:61:105031)\n    at https://cradleos.io/assets/index-CfKZzGax.js:61:105526\n    at Array.map (<anonymous>)\n    at qQ (https://cradleos.io/assets/index-CfKZzGax.js:61:105482)\n    at JQ (https://cradleos.io/assets/index-CfKZzGax.js:61:111531)\n    at https://cradleos.io/assets/index-CfKZzGax.js:64:7207",
+    "Access to fetch at 'https://keeper.reapers.shop/telemetry/combined' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+  ],
+  "postMethods": [
+    "Cloudflare analytics"
+  ],
+  "bonus": {
+    "base": 6911,
+    "payout": 8958,
+    "bonus": 2047
+  },
+  "PASS": true
+}

@@ -1,0 +1,12 @@
+{
+  "source": "77c4b00a777f0a0d2a2717dc4bbd2761516d60c3",
+  "deployment": "0c1d38f9",
+  "primary": "https://cradleos.io/#/casino",
+  "immutable": "https://0c1d38f9.cradleos-d75.pages.dev",
+  "rollback": "230071f3",
+  "scope": "nonredeemable practice result/history presentation and pending receipt masking",
+  "tests": 277,
+  "verification": "PASS: 21 preview UX checks, 14 live UX checks, prior bonus/accounting regressions, 98 public hashes, independent source+LIVE review",
+  "wagering": "HOLD unchanged; seed-only donations unchanged",
+  "ownedTestServersStopped": true
+}
