@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CasinoPanel } from "./CasinoPanel";
+import { CasinoPlinko } from "./CasinoPlinko";
+import { PLINKO_REVEAL_MS } from "../lib/plinkoMotion";
 import { ItemIcon } from "./GameIcon";
 import { CASINO_CATALOG, CATEGORY_LABELS } from "../lib/casinoCatalog";
 import { CasinoFeedback, useCasinoFeedback } from "../lib/casinoFeedback";
@@ -20,7 +22,6 @@ import {
   playPractice,
   practiceBet,
   restorePractice,
-  PLINKO_BPS,
   RED,
   SLOT_BPS,
   WHEEL_BPS,
@@ -222,98 +223,18 @@ function OrbitWheel({
     </div>
   );
 }
-function Plinko({ result, busy }: { result: Round | null; busy: boolean }) {
-  const path = result?.values ?? [],
-    bucket = path.reduce((a, b) => a + b, 0);
-  let rights = 0;
-  const points = [
-    "150,12",
-    ...path.map((n, row) => {
-      rights += n;
-      return `${150 - (row + 1) * 9 + rights * 18},${28 + row * 16}`;
-    }),
-  ].join(" ");
-  return (
-    <div className="lounge-plinko">
-      <svg
-        viewBox="0 0 300 250"
-        role="img"
-        aria-label="Twelve-row Plinko board, low-risk payouts"
-      >
-        {Array.from({ length: 12 }, (_, row) =>
-          Array.from({ length: row + 2 }, (_, col) => (
-            <circle
-              key={`${row}-${col}`}
-              cx={150 - (row + 1) * 9 + col * 18}
-              cy={24 + row * 16}
-              r="2.2"
-              fill="#d6d9c0"
-            />
-          )),
-        )}
-        {!busy && path.length > 0 && (
-          <>
-            <polyline
-              points={points}
-              stroke="#ff6749"
-              fill="none"
-              strokeWidth="2"
-              opacity=".8"
-            />
-            <circle
-              cx={150 - 108 + bucket * 18}
-              cy="216"
-              r="5"
-              fill="#fff1b2"
-            />
-          </>
-        )}
-        {PLINKO_BPS.map((bps, i) => (
-          <g key={i}>
-            <rect
-              x={33 + i * 18}
-              y="227"
-              width="17"
-              height="19"
-              rx="3"
-              fill={
-                !busy && path.length > 0 && i === bucket ? "#a2311b" : "#25261f"
-              }
-            />
-            <text
-              x={41 + i * 18}
-              y="240"
-              fill="#fafae5"
-              textAnchor="middle"
-              fontSize="8"
-            >
-              {bps / 10000}×
-            </text>
-          </g>
-        ))}
-        {busy && (
-          <circle
-            className="lounge-falling"
-            cx="150"
-            cy="12"
-            r="5"
-            fill="#fff1b2"
-          />
-        )}
-      </svg>
-    </div>
-  );
-}
 function GameSurface({
   game,
   state,
   result,
   busy,
+  reducedMotion,
 }: {
   game: PracticeGame;
   state: PracticeState;
   result: Round | null;
   busy: boolean;
+  reducedMotion: boolean;
 }) {
   if (game === "slots")
     return (
@@ -361,7 +282,14 @@ function GameSurface({
     return (
       <OrbitWheel roulette={game === "roulette"} result={result} busy={busy} />
     );
-  if (game === "plinko") return <Plinko result={result} busy={busy} />;
+  if (game === "plinko")
+    return (
+      <CasinoPlinko
+        round={state.history[0]?.game === "plinko" ? state.history[0] : null}
+        busy={busy}
+        reducedMotion={reducedMotion}
+      />
+    );
   if (game === "war")
     return (
       <div className="lounge-duel">
@@ -562,7 +490,13 @@ export function CasinoExperience() {
               next.history[0].payout > next.history[0].stake ? "win" : "loss",
             );
         },
-        reduce ? 40 : game === "blackjack" ? 450 : 1100,
+        reduce
+          ? 40
+          : game === "blackjack"
+            ? 450
+            : game === "plinko"
+              ? PLINKO_REVEAL_MS
+              : 1100,
       );
     } catch (e) {
       busyRef.current = false;
@@ -844,6 +778,7 @@ export function CasinoExperience() {
                     state={state}
                     result={result}
                     busy={busy}
+                    reducedMotion={reduce}
                   />
                   <div
                     className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}

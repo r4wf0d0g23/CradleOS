@@ -1,0 +1,67 @@
+{
+  "base": "http://127.0.0.1:5199/",
+  "checks": [
+    {
+      "width": 320,
+      "bucket": 0,
+      "frames": 154,
+      "all12PegContacts": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "balanceConserved": true
+    },
+    {
+      "width": 390,
+      "bucket": 12,
+      "frames": 154,
+      "all12PegContacts": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "balanceConserved": true
+    },
+    {
+      "width": 1440,
+      "bucket": 6,
+      "frames": 154,
+      "all12PegContacts": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "balanceConserved": true
+    }
+  ],
+  "pageerrors": [],
+  "ok": true
+}
