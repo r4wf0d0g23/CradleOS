@@ -383,16 +383,20 @@ export function FleetBoard({
             {frame.kind === "spin" ? " · 5 free spins" : " · no retrigger"}
           </small>
         )}
-      {frame && !busy && !covered && (
-        <div className="fleet-stage-win">
-          <span>
-            Stage return <b>{chipLabel(frame.award)}</b>
-          </span>
-          <span>
-            Collected <b>{chipLabel(revealed)}</b> chips
-          </span>
-        </div>
-      )}
+      {frame &&
+        !busy &&
+        !covered &&
+        receipt &&
+        receipt.cursor < receipt.frames.length && (
+          <div className="fleet-stage-win">
+            <span>
+              Stage return <b>{chipLabel(frame.award)}</b>
+            </span>
+            <span>
+              Collected <b>{chipLabel(revealed)}</b> chips
+            </span>
+          </div>
+        )}
       {frame && !busy && !covered && frame.wins.length > 0 && (
         <details className="fleet-win-detail">
           <summary>
@@ -541,7 +545,7 @@ export function FleetRules({ game }: { game: FleetKey }) {
           {measured[game].interval.map((n) => n.toFixed(2)).join("–")}%
         </p>
         <p>
-          Any return {measured[game].hit.toFixed(2)}% · net profit{" "}
+          Any payout {measured[game].hit.toFixed(2)}% · payout above bet{" "}
           {measured[game].profit.toFixed(2)}%
         </p>
         <p>

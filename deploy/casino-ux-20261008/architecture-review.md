@@ -1,0 +1,1 @@
+Independent architecture PASS (inherited native reviewer, not Opus). Required gates: omit pending-slot receipts from DOM; exact aggregate bet beside payout; distinguish bonus subtotal from full-round payout; accessible signed history and unchanged win/loss cues. All included in implementation and acceptance checks.

@@ -35,6 +35,7 @@ import { useQuery } from "@tanstack/react-query";
 import { HouseDonatePanel } from "./HouseDonatePanel";
 import { CasinoPanel } from "./CasinoPanel";
 import { CasinoRoundStage, casinoRoundMs } from "./CasinoRoundStage";
+import { CasinoRoundSummary, CasinoRoundHistory } from "./CasinoRoundSummary";
 import { ExpandedOptions } from "./CasinoExpandedOptions";
 import {
   EXPANSION_RULES,
@@ -1031,18 +1032,18 @@ export function CasinoExperience() {
                   />
                   <div
                     className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}
-                    role="status"
-                    aria-live="polite"
                   >
                     {busy ? (
-                      <span>Resolving…</span>
+                      <span role="status">Resolving…</span>
                     ) : state.table ? (
-                      <span>
+                      <span role="status">
                         Seat {state.table.hands[state.table.active].seat + 1} ·
                         Your move
                       </span>
                     ) : state.hand ? (
-                      <span>Your total · {cardTotal(state.hand.player)}</span>
+                      <span role="status">
+                        Your total · {cardTotal(state.hand.player)}
+                      </span>
                     ) : null}
                     {!busy && state.hand && (
                       <span>Your move · Hit, stand or double</span>
@@ -1050,15 +1051,7 @@ export function CasinoExperience() {
                     {!busy &&
                       !activeSession(state) &&
                       (result ? (
-                        <>
-                          <strong>{result.label}</strong>
-                          <span>
-                            Return {chipLabel(result.payout)}{" "}
-                            <small>chips</small> · Net{" "}
-                            {result.payout - result.stake > 0 ? "+" : ""}
-                            {chipLabel(result.payout - result.stake)}
-                          </span>
-                        </>
+                        <CasinoRoundSummary round={result} />
                       ) : (
                         <span>Set your stake. Make your move.</span>
                       ))}
@@ -1287,56 +1280,12 @@ export function CasinoExperience() {
             )}
           </>
         )}
-        {mode === "practice" && pack && !busy && (
-          <details className="casino-pack-receipt">
-            <summary>
-              Last round · {pack.rounds.length} individual returns
-              {pack.profile ? ` · ${pack.profile}` : ""}
-            </summary>
-            {pack.rounds.map((r, i) => (
-              <div key={r.id}>
-                <span>
-                  {i + 1}. {r.label}
-                </span>
-                <span>
-                  {chipLabel(r.stake)} → {chipLabel(r.payout)} chips
-                </span>
-              </div>
-            ))}
-          </details>
-        )}
-        {mode === "practice" && state.history.length > 0 && !busy && (
-          <section className="lounge-history">
-            <h3>
-              Your recent rounds <span>PLAY MONEY</span>
-            </h3>
-            <div>
-              {state.history
-                .filter(
-                  (r) =>
-                    !pendingSlot(state) || r.id !== state.pack?.rounds[0].id,
-                )
-                .slice(0, 6)
-                .map((r) => (
-                  <div key={r.id}>
-                    <span>{titles(r.game).title}</span>
-                    <small>Stake {chipLabel(r.stake)}</small>
-                    <strong
-                      className={
-                        r.payout > r.stake
-                          ? "positive"
-                          : r.payout === r.stake
-                            ? "neutral"
-                            : "negative"
-                      }
-                    >
-                      {r.payout - r.stake > 0 ? "+" : ""}
-                      {chipLabel(r.payout - r.stake)}
-                    </strong>
-                  </div>
-                ))}
-            </div>
-          </section>
+        {mode === "practice" && (
+          <CasinoRoundHistory
+            state={state}
+            busy={busy}
+            title={(key) => titles(key).title}
+          />
         )}
         <footer className="lounge-footer">
           <span>◇ CRADLE CASINO</span>

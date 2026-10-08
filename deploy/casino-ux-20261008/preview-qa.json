@@ -1,0 +1,27 @@
+{
+  "checks": [
+    "320 win: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "320 zero: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "320 partial: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "320 equal: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "320 batch: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "320 table: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "320: no pending receipt or future label at every cursor; previous history accessible; final base+bonus vs feature subtotal correct; rapid spin once; testnet/donation boundaries preserved",
+    "390 win: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "390 zero: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "390 partial: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "390 equal: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "390 batch: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "390 table: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "390: no pending receipt or future label at every cursor; previous history accessible; final base+bonus vs feature subtotal correct; rapid spin once; testnet/donation boundaries preserved",
+    "1440 win: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "1440 zero: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "1440 partial: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "1440 equal: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "1440 batch: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "1440 table: exact payout/aggregate bet, truthful status, keyboard details, ledger/reload stable, mobile fit",
+    "1440: no pending receipt or future label at every cursor; previous history accessible; final base+bonus vs feature subtotal correct; rapid spin once; testnet/donation boundaries preserved"
+  ],
+  "errors": [],
+  "badAssets": []
+}

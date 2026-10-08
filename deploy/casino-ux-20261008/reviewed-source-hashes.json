@@ -1,0 +1,29 @@
+{
+  "timestampUTC": "2026-10-08T17:19:07.406338+00:00",
+  "reviewed": {
+    "src/components/CasinoRoundSummary.tsx": "43791de0285b0e0813445ca55a3f694d906600163dc633a2463c0fa33c83e486",
+    "src/components/CasinoExperience.tsx": "c93419acb067dfc32fb6d18479eee26314b4f9065ee726814918c205349faeb8",
+    "src/components/CasinoSlotFleet.tsx": "4a5e73f2cd8e2b8a2db0716e7e461348e6ef569322d61d475120968dc4312a29",
+    "src/styles/casino-lounge.css": "886b223e19f7be927eb5d495671c45bbc8eb32238a4bdb000d67f1231f0d715c",
+    "src/lib/casinoRoundSummary.test.tsx": "13736d77e19513819764e8bd6982e4837d055df6fd385b3d5512a727fd110199"
+  },
+  "unchangedFromBd3156ca": {
+    "src/lib/casinoSlotFleet.ts": true,
+    "src/lib/casinoSessions.ts": true,
+    "src/lib/casinoPractice.ts": true,
+    "src/lib/casinoExpanded.ts": true,
+    "src/lib/casinoDonations.ts": true,
+    "src/lib/casinoFeedback.ts": true,
+    "src/lib/casinoSoundDesign.ts": true,
+    "src/lib/casinoSlotMotion.ts": true,
+    "src/lib/casinoSlotBonus.ts": true,
+    "src/components/SlotMotion.tsx": true,
+    "src/components/SlotBonusExperience.tsx": true,
+    "src/styles/casino-slot-bonus.css": true,
+    "src/components/HouseDonatePanel.tsx": true,
+    "src/components/InstantGamePanel.tsx": true,
+    "src/components/CasinoPanel.tsx": true,
+    "public/casino/slot-fleet-math.json": true,
+    "src/data/casino-slot-math.json": true
+  }
+}

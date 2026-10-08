@@ -1,0 +1,14 @@
+{
+  "tests": 277,
+  "files": 27,
+  "typescript": "PASS",
+  "originsChecks": 8,
+  "ioc": "PASS (invoked through bash because scanner is not executable)",
+  "build": "PASS",
+  "warnings": "existing Vite mixed static/dynamic import and large bundle warnings",
+  "uxMatrix": "21 checks at320/390/1440",
+  "priorBonusMatrix": "7 checks at390 incl all6bonus machines",
+  "priorAccountingMatrix": "320/1440 all8machines; normal motion, opt-in sound and failedstorage behavior",
+  "knownHarnessNotes": "Preview required VITE_BASE=/; first connection failed before correctly configured server. Two inherited regression scripts shared output filename ux-preview-qa.json; combined terminal outputs confirm both passed; retained JSON identifies which run wrote it.",
+  "physicalDeviceClaims": false
+}

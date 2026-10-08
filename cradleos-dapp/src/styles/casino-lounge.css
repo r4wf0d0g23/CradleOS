@@ -546,6 +546,67 @@
 .lounge-result small {
   font-size: 11px;
 }
+.casino-payout-summary {
+  display: grid;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.casino-payout-label {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 10px;
+}
+.lounge-result .casino-payout-summary strong {
+  font-size: clamp(26px, 4vw, 36px);
+}
+.casino-round-details {
+  width: 100%;
+  text-align: left;
+  margin-top: 6px;
+}
+.casino-round-details > summary {
+  text-align: center;
+  color: var(--l-dim);
+}
+.casino-round-details > summary,
+.lounge-history summary {
+  cursor: pointer;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 12px 8px;
+  line-height: 20px;
+}
+.casino-round-details summary:focus-visible,
+.lounge-history summary:focus-visible {
+  outline: 2px solid var(--l-gold);
+  outline-offset: 2px;
+}
+.casino-round-breakdown {
+  padding: 12px;
+  background: #101612;
+  border-top: 1px solid var(--l-line);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.casino-round-breakdown p {
+  margin: 0 0 10px;
+}
+.casino-round-breakdown dl {
+  margin: 0 0 10px;
+}
+.casino-round-breakdown dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+}
+.casino-round-breakdown dd {
+  margin: 0;
+  color: var(--l-ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
 .lounge-result.result-win strong,
 .frontier-casino .positive {
   color: #b4d994 !important;
@@ -949,44 +1010,40 @@
 }
 .lounge-history {
   margin: 30px 28px;
+  border-top: 1px solid var(--l-line);
 }
-.lounge-history h3 {
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.lounge-history > summary {
+  font-size: 14px;
+  color: var(--l-ink);
 }
-.lounge-history h3 > span {
+.lounge-history > summary > span {
   font-size: 8px;
   letter-spacing: 1.5px;
   color: var(--l-dim);
+  margin-left: 10px;
 }
-.lounge-history > div {
+.lounge-history .casino-history-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 9px;
   margin-top: 15px;
 }
-.lounge-history > div > div {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 6px;
+.casino-history-round {
+  min-width: 0;
   font-size: 12px;
   border: 1px solid var(--l-line);
   border-radius: 7px;
-  padding: 12px;
   background: #151913;
 }
-.lounge-history small {
-  color: var(--l-dim);
-  font-size: 10px;
-  grid-row: 2;
+.casino-history-round summary {
+  padding: 12px;
 }
-.lounge-history strong {
-  grid-column: 2;
-  grid-row: 1/3;
-  align-self: center;
-  font-size: 14px;
+.casino-history-round small {
+  display: block;
+  color: var(--l-dim);
+  margin-top: 4px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 .lounge-footer {
@@ -1327,16 +1384,8 @@
   .lounge-history {
     margin: 24px 16px;
   }
-  .lounge-history > div {
+  .lounge-history .casino-history-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .lounge-history > div > div {
-    font-size: 10px;
-    padding: 9px;
-    gap: 6px;
-  }
-  .lounge-history strong {
-    font-size: 12px;
   }
   .lounge-footer {
     padding: 18px 16px;
@@ -1408,7 +1457,7 @@
   .lounge-hero p {
     font-size: 10px;
   }
-  .lounge-history > div {
+  .lounge-history .casino-history-grid {
     grid-template-columns: 1fr;
   }
   .lounge-duel {
