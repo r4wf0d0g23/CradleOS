@@ -1,0 +1,21 @@
+{
+  "base": "https://cradleos.io/",
+  "at": "2026-10-08T11:43:53.512Z",
+  "checks": [
+    "All8 practice games settle once; integer ledger conserved; no casino POST requests or overflow at390px",
+    "Triple-click single debit and reload mid-reveal preserves committed outcome",
+    "Malformed saved slot values safely reset free session",
+    "All26 staged testnet tables mount at390px with disabled new-bet controls; paused house remains closed",
+    "Storage quota rejects before mutation; 320px and missing image fallback remain usable"
+  ],
+  "pageerrors": [],
+  "unexpectedWrites": [],
+  "siteTelemetry": [
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "purpose": "Existing Cloudflare site analytics, not a casino transaction"
+    }
+  ],
+  "testnetStatus": "$EVE Testnet \u00b7 house paused\n\nBankroll: 0 $EVE \u00b7 Sui Testnet \u00b7 Cycle 7\n\nTables are connected; wagering awaits bankroll and operating limits. Play Money is available now.\n\nRefresh status",
+  "ok": true
+}

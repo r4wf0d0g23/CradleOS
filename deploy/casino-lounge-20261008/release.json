@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-08",
+  "source": "4d354b590436d294f54705016ea0d44bc1d63518",
+  "primary": "https://cradleos.io/#/casino",
+  "deployment": "0558af33",
+  "immutable": "https://0558af33.cradleos-d75.pages.dev",
+  "rollback": "5c2a6e1a",
+  "bundle": {
+    "/assets/index-CIhzXOxG.js": "cb94f8e707aed5924aad136776f1cd4f4a8978e9d00f3f5fa6a16c9b27abd586",
+    "/assets/index-B8LUWRAT.css": "c8bf07d63dd9b9aa35d903e7196a0e900aec2017390465c8fec56af9c6cd49bd"
+  },
+  "practice": {
+    "games": [
+      "slots",
+      "blackjack",
+      "roulette",
+      "coinflip",
+      "dice",
+      "wheel",
+      "plinko",
+      "war"
+    ],
+    "startingChips": 10000,
+    "storage": "sessionStorage; tab-scoped",
+    "walletOrChainWrites": false
+  },
+  "testnet": {
+    "tables": 26,
+    "casinoFunded": false,
+    "housePaused": true,
+    "bank": "0",
+    "minBetAtomic": "1",
+    "maxBetAtomic": "1",
+    "fundedWageringTested": false,
+    "adminTransactions": false
+  },
+  "verification": {
+    "unitTests": 158,
+    "originsChecks": 8,
+    "ioc": "clean",
+    "build": "pass",
+    "liveAssetHashMatches": 47,
+    "eightPracticeGames": "pass",
+    "twentySixStagedTables": "pass",
+    "desktopAndMobile": "pass",
+    "liveFeedback": "pass",
+    "routes": [
+      "casino",
+      "defense",
+      "industry",
+      "gamedata",
+      "origins"
+    ],
+    "primaryHtml": "Expected Cloudflare analytics injection; bundle references exact",
+    "independentSourceReview": "pass",
+    "independentLiveReview": "pass"
+  }
+}

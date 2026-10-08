@@ -1,0 +1,13 @@
+{
+  "base": "https://cradleos.io/",
+  "actualWebAudio": {
+    "contexts": 1,
+    "closes": 1,
+    "plays": 1,
+    "oscillators": 1
+  },
+  "wheelOutcomePointers": true,
+  "reducedMotionNoTableVideo": true,
+  "unfundedDealDisabled": true,
+  "ok": true
+}
