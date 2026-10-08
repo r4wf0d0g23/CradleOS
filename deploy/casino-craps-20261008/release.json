@@ -1,0 +1,21 @@
+{
+  "source": "cd5a5094719fe273c2a28d6428688213c0b2ac22",
+  "deployment": "934b20d7",
+  "url": "https://cradleos.io/#/casino",
+  "immutable": "https://934b20d7.cradleos-d75.pages.dev",
+  "rollback": "4900a6d9",
+  "releasedAt": "2026-10-08T21:12:26.752544+00:00",
+  "practiceGames": 34,
+  "stagedTestnetGames": 23,
+  "testnetActivation": false,
+  "tests": 306,
+  "testFiles": 31,
+  "parentLiveChecks": 14,
+  "verifiedFileHashes": 98,
+  "independentLive": "PASS",
+  "ownedTestServersStopped": [
+    5196,
+    5296
+  ],
+  "status": "verified live"
+}

@@ -1,0 +1,111 @@
+{
+  "origins": [
+    "https://cradleos.io",
+    "https://934b20d7.cradleos-d75.pages.dev"
+  ],
+  "hashes": [
+    {
+      "origin": "https://cradleos.io",
+      "file": "assets/index-BOxHGjjA.js",
+      "sha256": "a98bf30fa431450b5205594d1dfa04ac67163ad9266e1ef1f6c5ca7e0098cd2b",
+      "bytes": 2309814,
+      "match": true
+    },
+    {
+      "origin": "https://cradleos.io",
+      "file": "assets/index-DPIXiR1G.css",
+      "sha256": "3642f229a5b1acbafa0d08f6e4c8de3e4d1f70b78583bc62ac25d2759bb0d413",
+      "bytes": 809841,
+      "match": true
+    },
+    {
+      "origin": "https://934b20d7.cradleos-d75.pages.dev",
+      "file": "assets/index-BOxHGjjA.js",
+      "sha256": "a98bf30fa431450b5205594d1dfa04ac67163ad9266e1ef1f6c5ca7e0098cd2b",
+      "bytes": 2309814,
+      "match": true
+    },
+    {
+      "origin": "https://934b20d7.cradleos-d75.pages.dev",
+      "file": "assets/index-DPIXiR1G.css",
+      "sha256": "3642f229a5b1acbafa0d08f6e4c8de3e4d1f70b78583bc62ac25d2759bb0d413",
+      "bytes": 809841,
+      "match": true
+    }
+  ],
+  "checks": [
+    "Fresh real-RNG Pass+Field+Place6 roll commits exact expected gross; pending reload masks dice/puck/escrow/cash and does not reroll",
+    "Actual touch reveal centers animated dice; exact committed endpoint and cash, silent static reload, no duplicate credit",
+    "Parked escrow survives mode changes; refill blocked; craps absent from23 Testnet tables/resume; wagering HOLD and disconnected donation submit remain"
+  ],
+  "pageErrors": [],
+  "consoleDiagnostics": [
+    {
+      "type": "error",
+      "text": "(assets/index-BOxHGjjA.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at CX (https://cradleos.io/assets/index-BOxHGjjA.js:61:25501)\n    at IX (https://cradleos.io/assets/index-BOxHGjjA.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BOxHGjjA.js:61:105031)\n    at https://cradleos.io/assets/index-BOxHGjjA.js:61:105526\n    at Array.map (<anonymous>)\n    at CZ (https://cradleos.io/assets/index-BOxHGjjA.js:61:105482)\n    at NZ (https://cradleos.io/assets/index-BOxHGjjA.js:61:111531)\n    at https://cradleos.io/assets/index-BOxHGjjA.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-BOxHGjjA.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at CX (https://cradleos.io/assets/index-BOxHGjjA.js:61:25501)\n    at IX (https://cradleos.io/assets/index-BOxHGjjA.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BOxHGjjA.js:61:105031)\n    at https://cradleos.io/assets/index-BOxHGjjA.js:61:105526\n    at Array.map (<anonymous>)\n    at CZ (https://cradleos.io/assets/index-BOxHGjjA.js:61:105482)\n    at NZ (https://cradleos.io/assets/index-BOxHGjjA.js:61:111531)\n    at https://cradleos.io/assets/index-BOxHGjjA.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-BOxHGjjA.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at CX (https://cradleos.io/assets/index-BOxHGjjA.js:61:25501)\n    at IX (https://cradleos.io/assets/index-BOxHGjjA.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BOxHGjjA.js:61:105031)\n    at https://cradleos.io/assets/index-BOxHGjjA.js:61:105526\n    at Array.map (<anonymous>)\n    at CZ (https://cradleos.io/assets/index-BOxHGjjA.js:61:105482)\n    at NZ (https://cradleos.io/assets/index-BOxHGjjA.js:61:111531)\n    at https://cradleos.io/assets/index-BOxHGjjA.js:64:7207"
+    }
+  ],
+  "financialRequests": [],
+  "roll": {
+    "dice": [
+      2,
+      6
+    ],
+    "total": 8,
+    "passPayout": 0,
+    "fieldPayout": 0,
+    "beforeBalance": 998400,
+    "committedBalance": 998400
+  },
+  "tray": {
+    "x": 97,
+    "y": 213.078125,
+    "width": 126,
+    "height": 90
+  },
+  "PASS": true
+}

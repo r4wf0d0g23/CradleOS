@@ -1,0 +1,266 @@
+{
+  "checks": [
+    "34 practice games; chip placement, lobby parking/resume, refill guard and legal take-down",
+    "Actual browser RNG two-face roll; rapid triple click pays exactly one roll",
+    "Pending reload hides point, dice, receipts and never advances by itself; explicit reveal only",
+    "Saved winning roll masks old bets, point and available chips until reveal; no extra credit",
+    "Placement, roll and reveal storage failures cause no partial debit, double credit or lost escrow",
+    "Reload prioritizes an active blackjack hand over parked craps bets",
+    "Point-lock on Pass; odds removable with exact returned escrow",
+    "1440px table and controls fit without horizontal overflow",
+    "844px table and controls fit without horizontal overflow",
+    "390px table and controls fit without horizontal overflow",
+    "320px table and controls fit without horizontal overflow",
+    "Two tumbling dice advance over time; live reduced-motion cancellation is sticky, without ledger effects",
+    "23 testnet games unchanged; craps is practice-only; donation route intact"
+  ],
+  "errors": [],
+  "targets1440": [
+    {
+      "width": 140.15625,
+      "height": 119
+    },
+    {
+      "width": 140.171875,
+      "height": 119
+    },
+    {
+      "width": 140.171875,
+      "height": 119
+    },
+    {
+      "width": 140.15625,
+      "height": 119
+    },
+    {
+      "width": 140.171875,
+      "height": 119
+    },
+    {
+      "width": 140.171875,
+      "height": 119
+    },
+    {
+      "width": 861,
+      "height": 128.5
+    },
+    {
+      "width": 427.5,
+      "height": 116
+    },
+    {
+      "width": 427.5,
+      "height": 116
+    },
+    {
+      "width": 427.5,
+      "height": 108.5
+    },
+    {
+      "width": 427.5,
+      "height": 108.5
+    },
+    {
+      "width": 211.5,
+      "height": 108.5
+    },
+    {
+      "width": 211.5,
+      "height": 108.5
+    },
+    {
+      "width": 211.5,
+      "height": 108.5
+    },
+    {
+      "width": 211.5,
+      "height": 108.5
+    }
+  ],
+  "targets844": [
+    {
+      "width": 121,
+      "height": 119
+    },
+    {
+      "width": 121,
+      "height": 119
+    },
+    {
+      "width": 121,
+      "height": 119
+    },
+    {
+      "width": 121,
+      "height": 119
+    },
+    {
+      "width": 121,
+      "height": 119
+    },
+    {
+      "width": 121,
+      "height": 119
+    },
+    {
+      "width": 746,
+      "height": 128.5
+    },
+    {
+      "width": 370,
+      "height": 116
+    },
+    {
+      "width": 370,
+      "height": 116
+    },
+    {
+      "width": 370,
+      "height": 108.5
+    },
+    {
+      "width": 370,
+      "height": 108.5
+    },
+    {
+      "width": 182.75,
+      "height": 108.5
+    },
+    {
+      "width": 182.75,
+      "height": 108.5
+    },
+    {
+      "width": 182.75,
+      "height": 108.5
+    },
+    {
+      "width": 182.75,
+      "height": 108.5
+    }
+  ],
+  "targets390": [
+    {
+      "width": 112,
+      "height": 88
+    },
+    {
+      "width": 112,
+      "height": 88
+    },
+    {
+      "width": 112,
+      "height": 88
+    },
+    {
+      "width": 112,
+      "height": 105.5
+    },
+    {
+      "width": 112,
+      "height": 105.5
+    },
+    {
+      "width": 112,
+      "height": 105.5
+    },
+    {
+      "width": 342,
+      "height": 117
+    },
+    {
+      "width": 168,
+      "height": 104
+    },
+    {
+      "width": 168,
+      "height": 104
+    },
+    {
+      "width": 168,
+      "height": 98
+    },
+    {
+      "width": 168,
+      "height": 98
+    },
+    {
+      "width": 81.75,
+      "height": 98
+    },
+    {
+      "width": 81.75,
+      "height": 98
+    },
+    {
+      "width": 81.75,
+      "height": 98
+    },
+    {
+      "width": 81.75,
+      "height": 98
+    }
+  ],
+  "targets320": [
+    {
+      "width": 88.65625,
+      "height": 88
+    },
+    {
+      "width": 88.671875,
+      "height": 88
+    },
+    {
+      "width": 88.65625,
+      "height": 88
+    },
+    {
+      "width": 88.65625,
+      "height": 105.5
+    },
+    {
+      "width": 88.671875,
+      "height": 105.5
+    },
+    {
+      "width": 88.65625,
+      "height": 105.5
+    },
+    {
+      "width": 272,
+      "height": 117
+    },
+    {
+      "width": 133,
+      "height": 104
+    },
+    {
+      "width": 133,
+      "height": 104
+    },
+    {
+      "width": 133,
+      "height": 98
+    },
+    {
+      "width": 133,
+      "height": 98
+    },
+    {
+      "width": 64.25,
+      "height": 98
+    },
+    {
+      "width": 64.25,
+      "height": 98
+    },
+    {
+      "width": 64.25,
+      "height": 98
+    },
+    {
+      "width": 64.25,
+      "height": 98
+    }
+  ]
+}
