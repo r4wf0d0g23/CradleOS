@@ -1,10 +1,12 @@
+import { useContext } from "react";
+import { CasinoFeedback } from "../lib/casinoFeedback";
 import { CASINO_READY } from "../lib/cycleDeployment";
 /**
  * InstantGamePanel — config-driven UI for single-tx casino games:
  * coinflip, dice, roulette, slots, wheel, limbo, hilo, plinko, keno, sicbo.
  * One bet → one signature → result (resolved by the play tx's own digest).
  */
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { TableVideoBackdrop } from "./TableVideoBackdrop";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
@@ -159,7 +161,9 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   red_dog: "Two anchor cards dealt face-up. Bet on whether a third falls strictly between them. Spread 1 = 5:1 · Spread 5+ = 1:1 · Pair match = 11:1. 2.23% house edge.",
 };
 
-export function InstantGamePanel({ game }: { game: InstantGameKey }) {
+export function InstantGamePanel({ game, wageringReady = false, onBusyChange }: { game: InstantGameKey; wageringReady?: boolean; onBusyChange?: (busy: boolean) => void }) {
+  const feedback = useContext(CasinoFeedback);
+  const betsEnabled = CASINO_READY && wageringReady;
   const dAppKit = useDAppKit();
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
@@ -170,15 +174,9 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [err, setErr] = useState<string | null>(null);
   const [pending, setPending] = useState<InstantResult | null>(null);
   const [result, setResult] = useState<InstantResult | null>(null);
-  const winSfx  = useRef<HTMLAudioElement | null>(null);
-  const lossSfx = useRef<HTMLAudioElement | null>(null);
-  useEffect(() => {
-    winSfx.current  = new Audio("sounds/power-on.mp3");  if (winSfx.current)  winSfx.current.volume  = 0.4;
-    lossSfx.current = new Audio("sounds/power-off.mp3"); if (lossSfx.current) lossSfx.current.volume = 0.3;
-  }, []);
   const reveal = useCallback((r: InstantResult) => {
     setResult(r);
-    (r.payout > 0 ? winSfx : lossSfx).current?.play().catch(() => {});
+    feedback(r.payout > r.wager ? "win" : "loss");
   }, []);
 
   // ── Game params — original games ──────────────────────────────────────────
@@ -211,6 +209,8 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const [andarBaharSide, setAndarBaharSide] = useState<0|1>(0);     // 0=Andar 1=Bahar
   const [chuckTarget, setChuckTarget] = useState(1);                 // 1..6 chosen face
 
+  useEffect(() => { onBusyChange?.(busy || !!hiloLive || (!!pending && !result)); }, [busy, hiloLive, pending, result, onBusyChange]);
+
   // Log-scale limbo slider helpers (slider 0..10000 → 1.01x..1000x).
   // NOTE: 10000 bps = 1.00x, so 1.01x = 10100 bps (NOT 101 — sub-1x targets are
   // guaranteed "wins" that pay back less than the stake; never offer them).
@@ -235,7 +235,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
   const bank  = houseQ.data?.bankBalance ?? 0;
 
   const play = useCallback(async () => {
-    if (!CASINO_READY) { setErr("New bets paused for fresh Cycle 7 setup."); return; }
+    if (!betsEnabled) { setErr("New bets paused for fresh Cycle 7 setup."); return; }
     if (!addr) { setErr("Connect a wallet."); return; }
     const wager = Number(betEve);
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
@@ -313,7 +313,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
         setErr(translateTxError(e));
       }
     } finally { setBusy(false); }
-  }, [addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
+  }, [betsEnabled, addr, betEve, game, choice, diceTarget, diceOver, rKind, rTarget,
       limboBps, kenoPicks, sicboKind, sicboTarget, plinkoMode,
       crashBps, doubleDiceKind, doubleDiceTarget, baccaratKind,
       dragonTigerBet, underOver7Kind, oreTier, riskWheelMode, andarBaharSide, chuckTarget, dAppKit]);
@@ -1215,7 +1215,7 @@ export function InstantGamePanel({ game }: { game: InstantGameKey }) {
               </div>
             )}
             <button
-              disabled={!CASINO_READY || busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
+              disabled={!betsEnabled || busy || !addr || overExposure || overHouseMaxBet || (!!pending && !result)}
               onClick={play}
               style={{ marginTop: 4, width: "100%", background: `linear-gradient(180deg, ${ACCENT}, #b83400)`, border: "none", color: "#fff", fontSize: 16, fontWeight: 800, letterSpacing: "0.1em", padding: "13px", cursor: "pointer", opacity: busy || !addr || overExposure || overHouseMaxBet ? 0.5 : 1 }}
             >

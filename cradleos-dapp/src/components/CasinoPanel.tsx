@@ -16,7 +16,7 @@ import { CASINO_READY } from "../lib/cycleDeployment";
  * Nav (Phase 1): lobby grid + search + category rail + router swap.
  * casinoView drives "lobby" vs "game" mode; game panels are lazy-mounted.
  */
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { TableVideoBackdrop } from "./TableVideoBackdrop";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
@@ -24,7 +24,6 @@ import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
 import { translateTxError } from "../lib/txError";
 import { findLatestCharacterForWallet } from "../lib";
-import { CASINO_AVAILABLE } from "../constants";
 import {
   fetchEveCoins, fetchHouseState, withGas, betPresets,
   buildDealTx, buildHitTx, buildStandTx, buildDoubleTx,
@@ -51,7 +50,8 @@ import {
   type Variance,
 } from "../lib/casinoCatalog";
 
-const ACCENT = "#FF4700";
+import { CasinoFeedback } from "../lib/casinoFeedback";
+const ACCENT = "#FF2800";
 const GOLD = "#E8B84B";
 const GREEN = "#3FCF6A";
 
@@ -135,7 +135,10 @@ function HandRow({ label, cards, total, hideHole }: { label: string; cards: numb
 type Phase = "idle" | "dealing" | "player" | "resolving" | "settled";
 type GameKey = "blackjack" | "mines" | "dragon_tower" | "video_poker" | InstantGameKey;
 
-export function CasinoPanel() {
+export function CasinoPanel({ initialGame = "blackjack", embedded = false, wageringReady = false, onBusyChange, onLobby }: { initialGame?: string; embedded?: boolean; wageringReady?: boolean; onBusyChange?: (busy: boolean) => void; onLobby?: () => void }) {
+  const feedback = useContext(CasinoFeedback);
+  const betsEnabled = CASINO_READY && wageringReady;
+  const [nestedBusy, setNestedBusy] = useState(false);
   const dAppKit = useDAppKit();
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
@@ -149,8 +152,8 @@ export function CasinoPanel() {
   // tab (2026-08-07) — wrong: it is meaningless outside casino context, and
   // top-level slots are scarce (see NAV_PLAN.md, flat bar dies ~25 games).
   const [casinoView, setCasinoView] = useState<{ mode: "lobby" | "game" | "bankroll"; gameKey: string }>({
-    mode: "lobby",
-    gameKey: "blackjack",
+    mode: embedded ? "game" : "lobby",
+    gameKey: initialGame,
   });
   const [lobbySearch, setLobbySearch] = useState("");
   const [lobbyCategory, setLobbyCategory] = useState<CasinoCategory | "all">("all");
@@ -166,12 +169,7 @@ export function CasinoPanel() {
   const [drawing, setDrawing] = useState(false); // polling for the freshly-drawn card
   const [err, setErr] = useState<string | null>(null);
 
-  const dealSfx = useRef<HTMLAudioElement | null>(null);
-  const bustSfx = useRef<HTMLAudioElement | null>(null);
-  useEffect(() => {
-    dealSfx.current = new Audio("sounds/power-on.mp3"); if (dealSfx.current) dealSfx.current.volume = 0.35;
-    bustSfx.current = new Audio("sounds/power-off.mp3"); if (bustSfx.current) bustSfx.current.volume = 0.35;
-  }, []);
+  useEffect(() => { onBusyChange?.(busy || drawing || !!hand || !!splitHand || nestedBusy); }, [busy, drawing, hand, splitHand, nestedBusy, onBusyChange]);
 
   const houseState = useQuery({ queryKey: ["casinoHouseLive"], queryFn: () => fetchHouseStateLive(), refetchInterval: 15000 });
   const feedQ = useQuery({ queryKey: ["casinoLiveFeed"], queryFn: () => fetchRecentLiveHands(20), refetchInterval: 15000 });
@@ -185,7 +183,7 @@ export function CasinoPanel() {
 
   // ── Deal ──
   const deal = useCallback(async () => {
-    if (!CASINO_READY) { setErr("New bets paused for fresh Cycle 7 setup. The new-cycle house must be initialized and funded first."); return; }
+    if (!betsEnabled) { setErr("New bets paused for fresh Cycle 7 setup. The new-cycle house must be initialized and funded first."); return; }
     if (!addr) { setErr("Connect a wallet."); return; }
     const wager = Number(betEve);
     if (!(wager > 0)) { setErr("Enter a positive bet."); return; }
@@ -198,7 +196,7 @@ export function CasinoPanel() {
         if (!ids.length) throw new Error("No $EVE in wallet.");
         return withGas(buildDealTx(ids, BigInt(Math.floor(wager * 1e9)), charInfo.characterId), addr);
       };
-      dealSfx.current?.play().catch(() => {});
+      feedback("deal");
       let result: any;
       try {
         result = await signer().signAndExecuteTransaction({ transaction: await buildTx() });
@@ -225,10 +223,11 @@ export function CasinoPanel() {
       refreshAll();
     } catch (e) { setErr(translateTxError(e)); setPhase("idle"); }
     finally { setBusy(false); }
-  }, [addr, betEve, dAppKit]);
+  }, [addr, betEve, dAppKit, betsEnabled]);
 
   const act = useCallback(async (kind: "hit" | "stand" | "double") => {
     if (!hand) return;
+    if (kind === "double" && !betsEnabled) { setErr("New stakes are paused for this testnet house."); return; }
     setBusy(true); setErr(null);
     try {
       let tx;
@@ -299,22 +298,23 @@ export function CasinoPanel() {
       refreshAll();
     } catch (e) { setErr(translateTxError(e)); }
     finally { setBusy(false); }
-  }, [hand, addr, dAppKit]);
+  }, [hand, addr, dAppKit, betsEnabled]);
 
   const finishSettle = (s: LiveSettlement) => {
     setSettlement(s); setHand(null); setPhase("settled");
     const won = s.outcome === OUT_WIN || s.outcome === OUT_BLACKJACK;
-    if (!won && s.outcome !== OUT_PUSH) bustSfx.current?.play().catch(() => {});
+    if (!won && s.outcome !== OUT_PUSH) feedback("loss");
   };
   const finishSplitSettle = (s: SplitSettlement) => {
     setSplitSettlement(s); setSplitHand(null); setHand(null); setPhase("settled");
-    if (s.payout === 0) bustSfx.current?.play().catch(() => {});
+    if (s.payout === 0) feedback("loss");
   };
   const newHand = () => { setSettlement(null); setHand(null); setSplitHand(null); setSplitSettlement(null); setPhase("idle"); };
 
   // ── Split a same-rank pair ──
   const actSplit = useCallback(async () => {
     if (!hand) return;
+    if (!betsEnabled) { setErr("New stakes are paused for this testnet house."); return; }
     setBusy(true); setErr(null);
     try {
       const { ids } = await fetchEveCoins(addr);
@@ -341,7 +341,7 @@ export function CasinoPanel() {
       refreshAll();
     } catch (e) { setErr(translateTxError(e)); setPhase("player"); }
     finally { setBusy(false); }
-  }, [hand, addr, dAppKit]);
+  }, [hand, addr, dAppKit, betsEnabled]);
 
   // ── Hit/stand on the active split hand (poll-until-changed, direct fullnode) ──
   const actSplitMove = useCallback(async (kind: "hit" | "stand") => {
@@ -388,13 +388,14 @@ export function CasinoPanel() {
   // ── Navigation helpers ────────────────────────────────────────────────────
   const openGame = (key: string) => {
     // Block opening any game that's been pulled offline.
-    if (CASINO_READY && CASINO_CATALOG.find((g) => g.key === key)?.disabled) return;
+    if (CASINO_CATALOG.find((g) => g.key === key)?.disabled) return;
     setCasinoView({ mode: "game", gameKey: key });
   };
-  const backToLobby = () => setCasinoView((prev) => ({ mode: "lobby", gameKey: prev.gameKey }));
+  const backToLobby = () => onLobby ? onLobby() : setCasinoView((prev) => ({ mode: "lobby", gameKey: prev.gameKey }));
   const openBankroll = () => setCasinoView((prev) => ({ mode: "bankroll", gameKey: prev.gameKey }));
 
-  if (!CASINO_AVAILABLE) return <div style={{ color: "#888", padding: 24 }}>Casino is only available on Stillness.</div>;
+  // Presentation remains available while the current house is staged.
+  // New wagers are separately gated by static deployment and live house status.
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const game = casinoView.gameKey as GameKey;
@@ -425,9 +426,9 @@ export function CasinoPanel() {
   const gameDisabled = !!gameEntry?.disabled;
 
   return (
-    <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+    <div className="casino-chain" data-embedded={embedded} style={{ maxWidth: 1080, margin: "0 auto" }}>
       {/* ── Header (always visible) ── */}
-      <div style={{ background: `linear-gradient(180deg, rgba(20,8,4,0.92), rgba(10,10,10,0.96)), url(banner-battle.png)`, backgroundSize: "cover", backgroundPosition: "center", border: `1px solid ${ACCENT}33`, padding: "18px 22px", marginBottom: 16 }}>
+      <div hidden={embedded} style={{ background: `linear-gradient(180deg, rgba(20,8,4,0.92), rgba(10,10,10,0.96)), url(banner-battle.png)`, backgroundSize: "cover", backgroundPosition: "center", border: `1px solid ${ACCENT}33`, padding: "18px 22px", marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ color: ACCENT, fontSize: 22, fontWeight: 800, letterSpacing: "0.12em" }}>◈ CRADLE CASINO</div>
@@ -484,7 +485,7 @@ export function CasinoPanel() {
 
         /* ── BANKROLL (house infrastructure, not a game) ── */
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+          <div className="casino-chain-breadcrumb" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
             <button type="button" onClick={backToLobby} style={chip}>← LOBBY</button>
             <span style={{ color: "#9a9a8a", fontSize: 11, letterSpacing: "0.08em" }}>CASINO / BANKROLL</span>
           </div>
@@ -568,7 +569,7 @@ export function CasinoPanel() {
         /* ── GAME VIEW ── */
         <div>
           {/* Back button + breadcrumb */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+          <div className="casino-chain-breadcrumb" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
             <button
               onClick={backToLobby}
               style={{
@@ -596,26 +597,26 @@ export function CasinoPanel() {
           </div>
 
           {/* Game panels — unchanged, lazy-mounted only in game mode */}
-          {game === "mines" ? (
-            <MinesPanel />
-          ) : gameDisabled ? (
+          {gameDisabled ? (
             <div style={{ textAlign: "center", padding: "40px 20px", color: "#9a9a8a" }}>
               <div style={{ color: ACCENT, fontSize: 18, fontWeight: 800, letterSpacing: "0.1em" }}>GAME OFFLINE</div>
               <div style={{ fontSize: 12, marginTop: 8 }}>This game is temporarily unavailable for maintenance.</div>
               <button onClick={backToLobby} style={{ marginTop: 16, background: `${ACCENT}22`, border: `1px solid ${ACCENT}`, color: ACCENT, padding: "8px 18px", cursor: "pointer" }}>← BACK TO LOBBY</button>
             </div>
+          ) : game === "mines" ? (
+            <MinesPanel />
           ) : game === "dragon_tower" ? (
             <DragonTowerPanel />
           ) : game === "video_poker" ? (
             <VideoPokerPanel />
           ) : game !== "blackjack" ? (
-            <InstantGamePanel game={game as InstantGameKey} />
+            <InstantGamePanel game={game as InstantGameKey} wageringReady={betsEnabled} onBusyChange={setNestedBusy} />
           ) : (
 
             /* ── BLACKJACK TABLE ── */
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
               {/* Table */}
-              <div style={{ flex: "1 1 440px", minWidth: 340 }}>
+              <div style={{ flex: "1 1 440px", minWidth: 0 }}>
                 <div style={{ background: `radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)`, border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)", position: "relative", isolation: "isolate", overflow: "hidden" }}>
                   <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 15%, rgba(20,53,31,0.32) 0%, rgba(12,28,18,0.48) 55%, rgba(6,10,8,0.70) 100%)" />
                   {inSplit ? (
@@ -658,8 +659,8 @@ export function CasinoPanel() {
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                       <button disabled={busy} onClick={() => act("hit")} style={actionBtn(ACCENT)}>{drawing ? "◆ DRAWING…" : "◆ HIT"}</button>
                       <button disabled={busy} onClick={() => act("stand")} style={actionBtn("#666")}>■ STAND</button>
-                      <button disabled={!CASINO_READY || busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
-                      {CASINO_READY && canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
+                      <button disabled={!betsEnabled || busy || !canDouble || myEve < (hand?.wager ?? 0)} onClick={() => act("double")} style={actionBtn(GOLD)}>✦ DOUBLE</button>
+                      {betsEnabled && canSplit && <button disabled={busy} onClick={actSplit} style={actionBtn("#7FC8FF")}>◫ SPLIT</button>}
                     </div>
                   ) : phase === "settled" ? (
                     <button onClick={newHand} style={dealBtn}>◈ NEW HAND</button>
@@ -674,7 +675,7 @@ export function CasinoPanel() {
                           </div>
                         </label>
                       </div>
-                      <button disabled={!CASINO_READY || busy || phase === "dealing" || !addr} onClick={deal} style={{ ...dealBtn, opacity: busy || !addr ? 0.5 : 1 }}>
+                      <button disabled={!betsEnabled || busy || phase === "dealing" || !addr} onClick={deal} style={{ ...dealBtn, opacity: busy || !addr ? 0.5 : 1 }}>
                         {busy ? "SIGNING…" : "◈ DEAL"}
                       </button>
                     </>

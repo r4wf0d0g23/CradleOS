@@ -1,5 +1,5 @@
 import { CURRENT_CYCLE } from "./lib/cycle";
-import { CORE_READY, CASINO_READY, VOTING_READY } from "./lib/cycleDeployment";
+import { CORE_READY, VOTING_READY } from "./lib/cycleDeployment";
 import { CycleStatus, CycleContractSetup, HistoricalDataNotice } from "./components/CycleStatus";
 import { useState, useCallback, useEffect } from "react";
 import { PlaygroundHarness } from "./playground/PlaygroundHarness";
@@ -37,7 +37,7 @@ import { DashboardPanel } from "./components/DashboardPanel";
 import { IndustryPanel } from "./components/IndustryPanel";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
-import { CasinoPanel } from "./components/CasinoPanel";
+import { CasinoExperience as CasinoPanel } from "./components/CasinoExperience";
 import { ComicsPanel } from "./components/ComicsPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
@@ -871,7 +871,7 @@ function AppInner() {
   };
 
   const needsFreshContract = new Set<Tab>(["tribe","defense","registry","bounties","srp","cargo","gates","succession","announcements","recruiting","hierarchy","assets","calendar","voting","casino"]).has(activeTab);
-  const currentServiceReady = activeTab === "casino" ? CASINO_READY : activeTab === "voting" ? VOTING_READY : CORE_READY;
+  const currentServiceReady = activeTab === "casino" ? true : activeTab === "voting" ? VOTING_READY : CORE_READY;
   const waitingForDeployment = needsFreshContract && !currentServiceReady;
   const brief = TAB_BRIEF[activeTab];
 
@@ -1020,7 +1020,7 @@ function AppInner() {
                 "origins", "query", "industry", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "defense", "dapps", "query", "intel", "industry", "gamedata", "origins",
+                "defense", "dapps", "query", "intel", "industry", "gamedata", "origins", "casino",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -1323,7 +1323,7 @@ function AppInner() {
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
         {(["dashboard", "inventory", "tribe", "gates", "defense", "intel", "calendar", "voting", "casino", "origins", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["defense", "dapps", "query", "intel", "industry", "gamedata", "origins"]);
+          const PUBLIC_TABS = new Set(["defense", "dapps", "query", "intel", "industry", "gamedata", "origins", "casino"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -1381,7 +1381,7 @@ function AppInner() {
                   : tab === "industry"  ? "Recipes"
                   : tab === "gamedata"  ? "Game Data"
                   : tab === "voting"    ? "Vote"
-                  : tab === "casino"    ? "◆ BJ"
+                  : tab === "casino"    ? "◆ CASINO"
                   : tab === "origins"   ? "◈ Origins"
                   : tab === "flappy"    ? "🚀"
                   :                       "Map")

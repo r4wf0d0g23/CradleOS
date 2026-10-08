@@ -16,12 +16,6 @@
 // missing asset) since this component simply renders nothing in those cases.
 import React from "react";
 
-// NOTE: no prefers-reduced-motion gate here — the casino's game reveals are
-// heavily animated regardless, so hiding only the ambient backdrop for
-// reduced-motion users creates inconsistency instead of comfort. (It also
-// silently blanked the backdrop for Windows users with OS animations off —
-// Raw hit exactly this on 2026-07-12.)
-
 // Ambient reel pool — add new self-hosted clips here and they enter rotation.
 // Per-reel visual calibration: the Free Trial nebula reel is very dark footage
 // (mean luma ~0.08) and needs a strong brightness lift to read through the
@@ -32,6 +26,8 @@ const REELS: { src: string; filter: string; opacity: number }[] = [
 ];
 
 export function TableVideoBackdrop({ tint }: { tint: string }) {
+  const [reduce, setReduce] = React.useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  React.useEffect(() => { const mq = window.matchMedia('(prefers-reduced-motion: reduce)'); const update = () => setReduce(mq.matches); mq.addEventListener('change', update); return () => mq.removeEventListener('change', update); }, []);
   const [failed, setFailed] = React.useState(false);
   // Random pick, stable for the lifetime of this mount. If the chosen reel
   // fails to play we fall through to the next before giving up entirely.
@@ -42,13 +38,14 @@ export function TableVideoBackdrop({ tint }: { tint: string }) {
   // saver, background tabs, embedded webviews). Retry play() after mount,
   // shortly after, and on the first user interaction.
   React.useEffect(() => {
-    const tryPlay = () => { videoRef.current?.play().catch(() => {}); };
+    const tryPlay = () => { if (!reduce && !document.hidden) videoRef.current?.play().catch(() => {}); else videoRef.current?.pause(); };
+    document.addEventListener("visibilitychange", tryPlay);
     tryPlay();
     const t = setTimeout(tryPlay, 1500);
     document.addEventListener("pointerdown", tryPlay, { once: true });
-    return () => { clearTimeout(t); document.removeEventListener("pointerdown", tryPlay); };
-  }, [reelIdx]);
-  if (failed) return null;
+    return () => { clearTimeout(t); document.removeEventListener("visibilitychange", tryPlay); document.removeEventListener("pointerdown", tryPlay); };
+  }, [reelIdx, reduce]);
+  if (failed || reduce) return null;
   const onError = () => {
     if (attempts + 1 >= REELS.length) { setFailed(true); return; }
     setAttempts(attempts + 1);
@@ -63,7 +60,7 @@ export function TableVideoBackdrop({ tint }: { tint: string }) {
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         src={`${import.meta.env.BASE_URL}${REELS[reelIdx].src}`}
         onError={onError}
         style={{
