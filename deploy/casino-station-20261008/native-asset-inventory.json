@@ -1,0 +1,2928 @@
+{
+  "clientBuild": 3573151,
+  "purpose": "Research inventory, not a rendering/fidelity claim",
+  "assets": [
+    {
+      "resource": "res:/dx9/audio_controllers/frontier_deployable_hangar_controller.black",
+      "available": true,
+      "bytes": 367,
+      "manifestMd5": "9b1074bb10cb970632f5ff94bfd90777"
+    },
+    {
+      "resource": "res:/dx9/audio_controllers/frontier_hangar_atmos_controller.black",
+      "available": true,
+      "bytes": 694,
+      "manifestMd5": "2785c1f18319f147c19d753571f66c43"
+    },
+    {
+      "resource": "res:/dx9/audio_controllers/frontier_hangar_incidental01_controller.black",
+      "available": true,
+      "bytes": 735,
+      "manifestMd5": "da19ec50e4f4fa52ca707e3934b5ab23"
+    },
+    {
+      "resource": "res:/dx9/audio_controllers/frontier_hangar_incidental03_controller.black",
+      "available": true,
+      "bytes": 735,
+      "manifestMd5": "39682ecd6c24c503494f3be433f5963f"
+    },
+    {
+      "resource": "res:/dx9/audio_controllers/frontier_hangarvs_controller.black",
+      "available": true,
+      "bytes": 321,
+      "manifestMd5": "41d47a692e83f07da3f8749c3b8eb557"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/clone_hangar_m_01/dep_clone_hangar_m.cmf",
+      "available": true,
+      "bytes": 585062,
+      "manifestMd5": "d9df30f038a8e2c0d3c497edbf73d094"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/clone_hangar_m_01/dep_clone_hangar_m_lowdetail.cmf",
+      "available": true,
+      "bytes": 70296,
+      "manifestMd5": "b045d95fd013880dda8f21149d36724c"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/hangar_b_01v01/dep_hangar_b_01v01.cmf",
+      "available": true,
+      "bytes": 3358726,
+      "manifestMd5": "41232cfb75f751993de9f57d66bc4fe7"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/hangar_b_01v01/dep_hangar_b_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 291960,
+      "manifestMd5": "9480d394d30bba69d37b3234ee201f15"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/hangar_m_01v01/dep_hangar_m_01v01.cmf",
+      "available": true,
+      "bytes": 780222,
+      "manifestMd5": "a4d0dc6943874a29da64dfea4e785e23"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/hangar_m_01v01/dep_hangar_m_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 108912,
+      "manifestMd5": "3a8bf21e0a04465de1beb44c2e5a110c"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/hangar_s_01v01/dep_hangar_s_01v01.cmf",
+      "available": true,
+      "bytes": 1560534,
+      "manifestMd5": "02f27d089f9f0e32d548510b8b16ade5"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/hangar_s_01v01/dep_hangar_s_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 114616,
+      "manifestMd5": "55310996a6ea94f2d4b009bd10dcd1b0"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/smart_hangar_01/dep_smart_hangar_01.cmf",
+      "available": true,
+      "bytes": 1559479,
+      "manifestMd5": "6526b8e2734121eb713ba35ccde3c237"
+    },
+    {
+      "resource": "res:/dx9/model/deployables/smart_hangar_01/dep_smart_hangar_01_lowdetail.cmf",
+      "available": true,
+      "bytes": 114073,
+      "manifestMd5": "39ebcb303a60a45da9aabfd0e457e82d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/cl_han_gen_01v01_child.black",
+      "available": true,
+      "bytes": 1563,
+      "manifestMd5": "25c01d5cafdf6a1c5b3a02ab00cb0036"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/fx/han_gen_01_fx_traffic_01.black",
+      "available": true,
+      "bytes": 1004,
+      "manifestMd5": "05877e66dd903f1cdbbaa9c37ea89eb7"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/fx/han_gen_01_fx_traffic_01.cmf",
+      "available": true,
+      "bytes": 1708,
+      "manifestMd5": "49aa476bc284b6251ba4c9a4effb19fd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/han_gen_01v01.cmf",
+      "available": true,
+      "bytes": 22953401,
+      "manifestMd5": "8b80af0fb29969fb2f4c6890244c905c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/han_gen_01v01_lights.black",
+      "available": true,
+      "bytes": 37635,
+      "manifestMd5": "46a2a5835e61ff86339388b724d4d0a2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/han_gen_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 1249139,
+      "manifestMd5": "393eb2901aed08cd87238115146898a8"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/han_gen_01v01_scenesettings.black",
+      "available": true,
+      "bytes": 1493,
+      "manifestMd5": "0866e4a3826df6ff5b5a44cf0e7503c5"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/scene_han_gen_01.black",
+      "available": true,
+      "bytes": 2216,
+      "manifestMd5": "b952f9a9b6a88dcfcb11ef7a5c326f91"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/han_gen_01/shiplightrig.black",
+      "available": true,
+      "bytes": 1372,
+      "manifestMd5": "632450746a957c8ddb39b67da44108cd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/addon_01/han_gen_mod_addon_01v01.cmf",
+      "available": true,
+      "bytes": 162739,
+      "manifestMd5": "42fafdfe73657b4415b1a2d959b03226"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/addon_01/han_gen_mod_addon_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 37165,
+      "manifestMd5": "8869a74b26480d41838722d473b5e31d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/bar_01/han_gen_mod_bar_01v01.cmf",
+      "available": true,
+      "bytes": 150545,
+      "manifestMd5": "04e8867ecf4183f165b9f8009ef06952"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/bar_01/han_gen_mod_bar_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 16755,
+      "manifestMd5": "0a37dd06beea36972061fce5bb1dfbba"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/building_01/han_gen_mod_building_01v01.cmf",
+      "available": true,
+      "bytes": 310998,
+      "manifestMd5": "b7c50ca5f5d5edbc506bd22b9fcdb6a2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/building_01/han_gen_mod_building_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 29120,
+      "manifestMd5": "fe737522b08db1f40201cb75f39f7009"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/building_02/han_gen_mod_building_02v01.cmf",
+      "available": true,
+      "bytes": 2200894,
+      "manifestMd5": "0a58bce64b0956e9af64022ff469b01a"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/building_02/han_gen_mod_building_02v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 325120,
+      "manifestMd5": "f32b6df97e31ba8aa821f02f49ab951b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/building_03/han_gen_mod_building_03v01.cmf",
+      "available": true,
+      "bytes": 1527334,
+      "manifestMd5": "03b860cbddaa8ffbf44e05bc4df9db6c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/building_03/han_gen_mod_building_03v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 247888,
+      "manifestMd5": "8df1dfd292a697aa1480fc624e868efd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/column_01/han_gen_mod_column_01v01.cmf",
+      "available": true,
+      "bytes": 197628,
+      "manifestMd5": "3420ab1103ca3ee6b9ccd77d4e2ce7f8"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/column_01/han_gen_mod_column_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 20310,
+      "manifestMd5": "722a1103e0e68d1b2d3913de47531a16"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/container_01/han_gen_mod_container_01v01.cmf",
+      "available": true,
+      "bytes": 12455,
+      "manifestMd5": "6764914726b01e0182ee19261266ee78"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/container_01/han_gen_mod_container_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 5945,
+      "manifestMd5": "6cc54f78800ae0ce8174b8e753d70d06"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/crane_01/han_gen_crane_01v01.cmf",
+      "available": true,
+      "bytes": 310679,
+      "manifestMd5": "ab64e31a2159458a10c01642215695f6"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/crane_01/han_gen_crane_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 22353,
+      "manifestMd5": "d47a0dabefbf2bb54c5d9d03c31cf002"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/dock_01/han_gen_mod_dock_01v01.cmf",
+      "available": true,
+      "bytes": 441514,
+      "manifestMd5": "d8b431fb0d127434138ad7a485fc3b0c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/dock_01/han_gen_mod_dock_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 42380,
+      "manifestMd5": "57303e2f0cdb65716cb58b65678fc1aa"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/dock_02/han_gen_mod_dock_02v01.cmf",
+      "available": true,
+      "bytes": 1509562,
+      "manifestMd5": "253f87684497d766b1774f3c1ec4f3f7"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/dock_02/han_gen_mod_dock_02v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 176036,
+      "manifestMd5": "d7508ff8ae4917996e14335670c5eeac"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v01.cmf",
+      "available": true,
+      "bytes": 95669,
+      "manifestMd5": "70372fc584e88698de82bf6cba279b9b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 12367,
+      "manifestMd5": "ba57d589a24df79db2f3c577e3070705"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v02.cmf",
+      "available": true,
+      "bytes": 92685,
+      "manifestMd5": "5488cfb6c21c262d2401f79d8f33c413"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v02_lowdetail.cmf",
+      "available": true,
+      "bytes": 16191,
+      "manifestMd5": "327e6ddf852172344ceac812e9305552"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v03.cmf",
+      "available": true,
+      "bytes": 133525,
+      "manifestMd5": "c770870d44d44f98e74dbfd070eb45f2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v03_lowdetail.cmf",
+      "available": true,
+      "bytes": 12071,
+      "manifestMd5": "0157285657d8c279b4d5c1b2f88362b7"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v04.cmf",
+      "available": true,
+      "bytes": 115397,
+      "manifestMd5": "0cbea457f56eef499911cc8aa3424b25"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v04_lowdetail.cmf",
+      "available": true,
+      "bytes": 16679,
+      "manifestMd5": "cf6328d365288603d28f02097195bba2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v05.cmf",
+      "available": true,
+      "bytes": 127469,
+      "manifestMd5": "a6baf08a1434dc1d8a81aeafaa8f9993"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/floater_01/han_gen_mod_floater_01v05_lowdetail.cmf",
+      "available": true,
+      "bytes": 10015,
+      "manifestMd5": "b3a516fbef58a4be5387071fdbf05d2e"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_01/han_gen_mod_monument_01v01.cmf",
+      "available": true,
+      "bytes": 274854,
+      "manifestMd5": "6b2304c64b6aa49990e79b5601a1ebf1"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_01/han_gen_mod_monument_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 32352,
+      "manifestMd5": "48e6b5918a13eba3bb9c718525bdb41f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_02/han_gen_mod_monument_02v01.cmf",
+      "available": true,
+      "bytes": 942702,
+      "manifestMd5": "0475b1523ec5ac305b4e8419da8d6bc3"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_02/han_gen_mod_monument_02v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 41192,
+      "manifestMd5": "6461f08f2cd861c407bb46e25afc0c6f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_03/han_gen_mod_monument_03v01.cmf",
+      "available": true,
+      "bytes": 1539630,
+      "manifestMd5": "79bcdf404c416169bdaf495c5a8b166a"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_03/han_gen_mod_monument_03v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 54496,
+      "manifestMd5": "bff8f8cd1d157c941c99c381005ac2d9"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_04/han_gen_mod_monument_04v01.cmf",
+      "available": true,
+      "bytes": 785782,
+      "manifestMd5": "9f7330e9d9a7ddad52249e9d83e5030f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/monument_04/han_gen_mod_monument_04v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 17032,
+      "manifestMd5": "385156d7790dfb956f963dab0db0becc"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/small_dock_01/han_gen_mod_small_dock_01v01.cmf",
+      "available": true,
+      "bytes": 115328,
+      "manifestMd5": "0f58b3bda8215b1be0b6476c38012860"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/small_dock_01/han_gen_mod_small_dock_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 14874,
+      "manifestMd5": "c12d460d7b0b8043e09dd6314a99e4ec"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/statue_01/han_gen_mod_statue_01v01.cmf",
+      "available": true,
+      "bytes": 1284212,
+      "manifestMd5": "305d3f007b3b50af4df92abf8e6c5eb1"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/statue_01/han_gen_mod_statue_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 19190,
+      "manifestMd5": "37a691694c77cecfd8fcfd27088ec21f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/vertical_01/han_gen_mod_vertical_01v01.cmf",
+      "available": true,
+      "bytes": 49446,
+      "manifestMd5": "c42a610723fa4dbdd076c26443e0a544"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/generic/modules/vertical_01/han_gen_mod_vertical_01v01_lowdetail.cmf",
+      "available": true,
+      "bytes": 10008,
+      "manifestMd5": "ba55632e81458df776a0fc4c9038c879"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/audio/base_upwell_audio_atmo.black",
+      "available": true,
+      "bytes": 2818,
+      "manifestMd5": "6da3a830c4e2256a4cd76c0a1b938806"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/audio/engineering_upwell_audio_atmo.black",
+      "available": true,
+      "bytes": 2856,
+      "manifestMd5": "14acbede049cea8d0c7cf932b9eb078f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/audio/refinery_upwell_audio_atmo.black",
+      "available": true,
+      "bytes": 2844,
+      "manifestMd5": "222563a02f2a0c45eeffeb0927377071"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/effects/mgenh_ch01_fx_01a.black",
+      "available": true,
+      "bytes": 983,
+      "manifestMd5": "ce8891146a4be29ea8cb9578d1cb97e4"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgen_ch01_abandoned.cmf",
+      "available": true,
+      "bytes": 5335,
+      "manifestMd5": "194d742f0899e15f8018056dd41c427f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgen_ch01_lowpower.cmf",
+      "available": true,
+      "bytes": 10374,
+      "manifestMd5": "2638bc1758c2ad47558351f1a5fca178"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgen_ch01_lowpower_lowdetail.cmf",
+      "available": true,
+      "bytes": 4856,
+      "manifestMd5": "9153008df9002ccaecf6827700e89c2b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgen_ch01_operatingstate_01a.cmf",
+      "available": true,
+      "bytes": 3848,
+      "manifestMd5": "309e5cedf6fd81b6ab877f585e85e792"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgenh_ch01_countdown_01a.cmf",
+      "available": true,
+      "bytes": 1844,
+      "manifestMd5": "5aae1aae60228e036c34232c33f80c56"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgenh_ch01_fx_01a.black",
+      "available": true,
+      "bytes": 1210690,
+      "manifestMd5": "316a3237c5670af98ea0c453645de726"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgenh_ch01_holodocking_fx_01a.cmf",
+      "available": true,
+      "bytes": 96033,
+      "manifestMd5": "6f0ae20e4f7ff87fa1774bd988ea71b5"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgenh_ch01_holodocking_fx_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 9107,
+      "manifestMd5": "95cd48735fce60d0d17697b9e62ad3d9"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgenh_ch01_traffic.black",
+      "available": true,
+      "bytes": 1004,
+      "manifestMd5": "fb763bc9e0592366e6b30a135e6c58b2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/fx/mgenh_ch01_traffic.cmf",
+      "available": true,
+      "bytes": 35670,
+      "manifestMd5": "98abcf5bb12d6d1133ebc2868a844fdd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/mgenh_ch01.cmf",
+      "available": true,
+      "bytes": 15089006,
+      "manifestMd5": "faccaced74d63f9db5fa6d6d9f1b1e00"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/capital/mgenh_ch01/mgenh_ch01_lowdetail.cmf",
+      "available": true,
+      "bytes": 823616,
+      "manifestMd5": "967530d8b747eb507ee154b632edb43d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce01/effects/mgenh_ce01_fx_01a.black",
+      "available": true,
+      "bytes": 97119,
+      "manifestMd5": "03e8bf9173d5d0ee54da66eb7976f41a"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce01/effects/mgenh_ce01_traffic.black",
+      "available": true,
+      "bytes": 1014,
+      "manifestMd5": "04c9cdf23facd98a78194b60194a88ce"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce01/effects/mgenh_ce01_traffic.cmf",
+      "available": true,
+      "bytes": 18942,
+      "manifestMd5": "03d3c54ac8c25931ef98fbe9ab655655"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce01/mgenh_ce01.cmf",
+      "available": true,
+      "bytes": 4319198,
+      "manifestMd5": "bf6847b93cc353582e37c2786feb8b49"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce01/mgenh_ce01_lowdetail.cmf",
+      "available": true,
+      "bytes": 168664,
+      "manifestMd5": "8262746c5f44a08502e5e23a1923f1c0"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce02/effects/mgenh_ce02_fx_01a.black",
+      "available": true,
+      "bytes": 108673,
+      "manifestMd5": "ad437da3061cf358f780170d13a992ab"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce02/effects/mgenh_ce02_traffic.black",
+      "available": true,
+      "bytes": 1014,
+      "manifestMd5": "80297578b4043750e1b10a03cc090716"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce02/effects/mgenh_ce02_traffic.cmf",
+      "available": true,
+      "bytes": 9862,
+      "manifestMd5": "14c796d4003bb367aa2f9eb54bee5498"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce02/mgenh_ce02.cmf",
+      "available": true,
+      "bytes": 408798,
+      "manifestMd5": "d9dd918d56a679d3e963a2be4af871f3"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/ceiling/mgenh_ce02/mgenh_ce02_lowdetail.cmf",
+      "available": true,
+      "bytes": 8808,
+      "manifestMd5": "be8d5a57c0a843ffc6719bb8bd9b31fa"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/gb01_fx_01a.black",
+      "available": true,
+      "bytes": 503691,
+      "manifestMd5": "71c6e14f966757cd0cdae00d26d4ab60"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgen_gb01_abandoned_01a.cmf",
+      "available": true,
+      "bytes": 4011,
+      "manifestMd5": "9b8c34b72b2f4bf3a0940fab4af6fb08"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgen_gb01_countdown_01a.cmf",
+      "available": true,
+      "bytes": 2323,
+      "manifestMd5": "4db43e53c539503a9451e8502a21141a"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgen_gb01_customcubes_01a.cmf",
+      "available": true,
+      "bytes": 44861,
+      "manifestMd5": "47d14025fb4bd61294d0a1c17016c1fd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgen_gb01_customcubes_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 5559,
+      "manifestMd5": "324974e105adbad38fbfe1c8882a59cd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgen_gb01_lowpower_01a.cmf",
+      "available": true,
+      "bytes": 5770,
+      "manifestMd5": "2dfe48fce8e9cab714d4b1f34923ca60"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgen_gb01_operatingstate_01a.cmf",
+      "available": true,
+      "bytes": 1864,
+      "manifestMd5": "e0e16221dea15baf144366671e693269"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgenh_gb01_traffic.black",
+      "available": true,
+      "bytes": 1010,
+      "manifestMd5": "46dcbac5fe14d0128aa654ed481d6cc4"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/fx/mgenh_gb01_traffic.cmf",
+      "available": true,
+      "bytes": 22822,
+      "manifestMd5": "bb86ffe332ad304d1ed51009166c0d68"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/mgenh_gb01.cmf",
+      "available": true,
+      "bytes": 14601886,
+      "manifestMd5": "50244d0e87e100c6a68b6ea9a0720e47"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/mgenh_gb01_lowdetail.cmf",
+      "available": true,
+      "bytes": 585568,
+      "manifestMd5": "0aa4a9d4b77ad115d8229640670eb91a"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/groundbase/mgenh_gb01/mgenh_gb01_mediumdetail.cmf",
+      "available": true,
+      "bytes": 10454659,
+      "manifestMd5": "104a5d56042804e2bca5af9487325fb2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_corridor01/fx/mgenh_iw01_corridor01_fx_01a.black",
+      "available": true,
+      "bytes": 369197,
+      "manifestMd5": "e54b48e41e85be31e6a4f49aca8379b5"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_corridor01/fx/mgenh_iw01_corridor01_traffic.black",
+      "available": true,
+      "bytes": 1086,
+      "manifestMd5": "f92aa5685a3a19efe3835e28e33f6f34"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_corridor01/mgenh_iw01_corridor01.cmf",
+      "available": true,
+      "bytes": 4534913,
+      "manifestMd5": "5c915d0603bc60aa83735a5748d59a58"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_corridor01/mgenh_iw01_corridor01_lowdetail.cmf",
+      "available": true,
+      "bytes": 192611,
+      "manifestMd5": "164777390eef2e93c668231a879734c8"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_wall01/fx/mgenh_iw01_wall01_fx_01a.black",
+      "available": true,
+      "bytes": 59545,
+      "manifestMd5": "4d426b3371de3742f8d8c1b1552b0269"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_wall01/mgenh_iw01_wall01.cmf",
+      "available": true,
+      "bytes": 2682141,
+      "manifestMd5": "332b88c5f95f1ce530e1a102d9cb2166"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/addon/mgenh_iw01_wall01/mgenh_iw01_wall01_lowdetail.cmf",
+      "available": true,
+      "bytes": 106959,
+      "manifestMd5": "52d80d15754f85ddf90c3927df964926"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/audio/mgen_iw01_audio_ctrl.black",
+      "available": true,
+      "bytes": 2662,
+      "manifestMd5": "61e93f3588550f388600b6b974112777"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgen_iw01_abandoned.cmf",
+      "available": true,
+      "bytes": 3279,
+      "manifestMd5": "8fd51247c2d6b674a09d44e472e6fd6d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgen_iw01_customcubes_01a.cmf",
+      "available": true,
+      "bytes": 546573,
+      "manifestMd5": "eb59036b8dc6efa8f9e0a4cd6e7d7044"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgen_iw01_customcubes_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 6391,
+      "manifestMd5": "28a994d2b124f69e63331ef7a9656c5d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgen_iw01_lowpower.cmf",
+      "available": true,
+      "bytes": 5398,
+      "manifestMd5": "05aebadec09d075e1a9df3928692000b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgen_iw01_operatingstate_01a.cmf",
+      "available": true,
+      "bytes": 2384,
+      "manifestMd5": "b03bd670679b816775179f65007c2528"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgenh_iw01_fx_01a.black",
+      "available": true,
+      "bytes": 558782,
+      "manifestMd5": "420f6e24a96e0843a3b43456a6eedaa6"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgenh_iw01_traffic.black",
+      "available": true,
+      "bytes": 1008,
+      "manifestMd5": "b2aea0062b32d1f48bd40d0d8ae14457"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/fx/mgenh_iw01_traffic.cmf",
+      "available": true,
+      "bytes": 17390,
+      "manifestMd5": "f96abb43b756e73b2a05b66f87321a19"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/mgenh_iw01.cmf",
+      "available": true,
+      "bytes": 35159742,
+      "manifestMd5": "7b9b38b118c040c4e99c4b28b61f11cd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/mgenh_iw01_lowdetail.cmf",
+      "available": true,
+      "bytes": 1193768,
+      "manifestMd5": "13930f6131a7f27500525d88e721a19d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/innerwall/mgenh_iw01/mgenh_iw01_mediumdetail.cmf",
+      "available": true,
+      "bytes": 4534875,
+      "manifestMd5": "4757a9a1fdd256260515bea326974702"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/audio/audio_mgenh_mh01_ctrl.black",
+      "available": true,
+      "bytes": 4236,
+      "manifestMd5": "7ec8316fbb7b3a047264b10b764f85a3"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/ctrl/ctrl_dock_mesh_01a.black",
+      "available": true,
+      "bytes": 13900,
+      "manifestMd5": "d62cd4c0f354f9c9d6f232da8d5601bd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/ctrl/ctrl_dock_mesh_01a_instanced.black",
+      "available": true,
+      "bytes": 583,
+      "manifestMd5": "64fd59436cab598aeeb13c56a15d6050"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/ctrl/ctrl_dock_mesh_instanced_01a.black",
+      "available": true,
+      "bytes": 559,
+      "manifestMd5": "cccc5d3e2e85dc64a68bedf7891ffa60"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/aura_3d.cmf",
+      "available": true,
+      "bytes": 3120387,
+      "manifestMd5": "85570db728aa66f337348ec617404d15"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/aura_3d_lowdetail.cmf",
+      "available": true,
+      "bytes": 57189,
+      "manifestMd5": "353a644f18145d01c1396b0fc99517e2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/aura_3d_packedts.cmf",
+      "available": true,
+      "bytes": 3600004,
+      "manifestMd5": "ea39134fe3676c63d084079ceb3a5f8d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/aura_3d_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 104558,
+      "manifestMd5": "c87896ec3e98ff05fb025d30fb94dd67"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_firegroup_01a_heavy.black",
+      "available": true,
+      "bytes": 22830,
+      "manifestMd5": "211bb6e3d5c71057382bbf07f58e0b75"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_firegroup_01a_simple.black",
+      "available": true,
+      "bytes": 5063,
+      "manifestMd5": "7d6067a552d72ad35e176c0947ecd5af"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_hologram_01a_combined.cmf",
+      "available": true,
+      "bytes": 21983,
+      "manifestMd5": "10fd46e10a2c86f3e6b48ee6807a3fba"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_hologram_01a_combined_lowdetail.cmf",
+      "available": true,
+      "bytes": 4481,
+      "manifestMd5": "09080b0285f1ae6faac3c26dd8d730bf"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_mh01_fx_01a.black",
+      "available": true,
+      "bytes": 262344,
+      "manifestMd5": "616e422df3778c4694b3ba4bf969c68d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_mh01_fx_01a_instanced.black",
+      "available": true,
+      "bytes": 13497,
+      "manifestMd5": "f7ad4177283a6ccaf38ff57a9c67d419"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_mh01_fx_01a_simple.black",
+      "available": true,
+      "bytes": 210412,
+      "manifestMd5": "be04dea56bdf53bf609348a7bcb35291"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/mgenh_noentry02.cmf",
+      "available": true,
+      "bytes": 1507,
+      "manifestMd5": "8a6f223749e0c9949cf738e5d11ed8cc"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/minihangar_electro_fx_01a.cmf",
+      "available": true,
+      "bytes": 2109,
+      "manifestMd5": "70550ba89d539e39f22534259157a348"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/minihangar_holodocking_fx_01a.cmf",
+      "available": true,
+      "bytes": 2897,
+      "manifestMd5": "50d96d6c7ca29f6648b6b9e21cf55571"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/minihangar_holodocking_fx_01b.cmf",
+      "available": true,
+      "bytes": 20009,
+      "manifestMd5": "340a3c9a9f441729b98dacd1f1fee1bc"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/minihangar_holodocking_fx_01b_lowdetail.cmf",
+      "available": true,
+      "bytes": 4467,
+      "manifestMd5": "2cb206c4a29a27f86c063fb44fe9a54c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/minihangar_noentry_fx_01a.cmf",
+      "available": true,
+      "bytes": 1517,
+      "manifestMd5": "9cfb802a893e4f46260ebf38b9d17301"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/minihangar_upwellclosed_fx_01a.cmf",
+      "available": true,
+      "bytes": 2362,
+      "manifestMd5": "05be3c59efda6e1a9d808b1ad30729ea"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/shiparm_fx_01a.cmf",
+      "available": true,
+      "bytes": 19018,
+      "manifestMd5": "522eefc05c38df31bd9cc7f277135a21"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/shiparm_fx_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 2948,
+      "manifestMd5": "8872c83efe00905cf16eec0faafba80b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/shiparm_fx_01b.cmf",
+      "available": true,
+      "bytes": 93826,
+      "manifestMd5": "dbbbaf5c96344fb5557febdfbc923137"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/effects/shiparm_fx_01b_lowdetail.cmf",
+      "available": true,
+      "bytes": 6068,
+      "manifestMd5": "54a2016e2af3992fb2e2ab89e510ccc7"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/mgenh_mh01.cmf",
+      "available": true,
+      "bytes": 8865662,
+      "manifestMd5": "179751a3f3b948d31f63cef797c07561"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/mgenh_mh01_lowdetail.cmf",
+      "available": true,
+      "bytes": 528888,
+      "manifestMd5": "0ad96f4b49f9e189d7434f8bc349914c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/mgenh_mh01_mediumdetail.cmf",
+      "available": true,
+      "bytes": 8666355,
+      "manifestMd5": "a643b700738a838c892dc37c58dc9828"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/mgenh_mh01_simple.cmf",
+      "available": true,
+      "bytes": 941541,
+      "manifestMd5": "2ecd21611ab5bbbd32c82fd7c76cb5ec"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/minihangar/mgenh_mh01/mgenh_mh01_simple_lowdetail.cmf",
+      "available": true,
+      "bytes": 36343,
+      "manifestMd5": "eb22031a78cc097d32cbd9add012ef0e"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/audio/audio_mgenh_ow01_ctrl.black",
+      "available": true,
+      "bytes": 299,
+      "manifestMd5": "d2a1bb8943930f6ea394bef287168b4d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/effects/mgenh_ow01.cmf",
+      "available": true,
+      "bytes": 13270,
+      "manifestMd5": "5c8e6ea02368e9a0dc85cccdb087c611"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/effects/mgenh_ow01_fx_01a.black",
+      "available": true,
+      "bytes": 33087,
+      "manifestMd5": "b72c0449909d4761c382dd8fe937fc5b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/effects/mgenh_ow01_traffic.black",
+      "available": true,
+      "bytes": 1002,
+      "manifestMd5": "9f3494bffbfabbf4edb74538b9caa7c0"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/mgenh_ow01.cmf",
+      "available": true,
+      "bytes": 3010918,
+      "manifestMd5": "02b10349a2908d6e8ea8dfe813f68736"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/mgenh_ow01_lowdetail.cmf",
+      "available": true,
+      "bytes": 98152,
+      "manifestMd5": "f13c103fab5f5441d7ddc9bb029e6290"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/outerwall/mgenh_ow01/mgenh_ow01_mediumdetail.cmf",
+      "available": true,
+      "bytes": 2685275,
+      "manifestMd5": "64032208f1cca44c354a75b66e9dbeda"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/audio/audio_mgenh_pl01_ctrl.black",
+      "available": true,
+      "bytes": 1692,
+      "manifestMd5": "7254fc301089b1134568c77e88ba6df6"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_litparticlegeo_01a.cmf",
+      "available": true,
+      "bytes": 1043,
+      "manifestMd5": "8866c7588c2dcde5c75deaa574bb7107"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_customcube_fx_01a.cmf",
+      "available": true,
+      "bytes": 191047,
+      "manifestMd5": "cd3dcb7bc27ca439583b2b61f6f03714"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_customcube_fx_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 8089,
+      "manifestMd5": "94f2d13b99ca342cde7f2f9fa4585830"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_customcube_industrial_fx_01a.cmf",
+      "available": true,
+      "bytes": 26874,
+      "manifestMd5": "153b6db2020502284323ea67f8f3818c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_customcube_industrial_fx_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 4420,
+      "manifestMd5": "14cd22b3edad65880b286767e69c6417"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_holodocking_fx_01a.cmf",
+      "available": true,
+      "bytes": 5072,
+      "manifestMd5": "f23f3e5fac894f12e604254d7dbb9817"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_holodocking_fx_01b.cmf",
+      "available": true,
+      "bytes": 13032,
+      "manifestMd5": "e623a6608b7f5e43ce3adae31f49e2ae"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_holodocking_fx_01b_lowdetail.cmf",
+      "available": true,
+      "bytes": 3578,
+      "manifestMd5": "c77d6da403e396ad1f1d2856588804d5"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_rings_fx_01a.cmf",
+      "available": true,
+      "bytes": 29042,
+      "manifestMd5": "157544c8c8b928986e748ea4caf0cf0f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgen_pl01_rings_fx_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 4492,
+      "manifestMd5": "63cf0c75643ab0adfd0e01b5764813f3"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgenh_pl01_firegroup_heavy_fx_01a.black",
+      "available": true,
+      "bytes": 22843,
+      "manifestMd5": "c58f325946d9f542cc25215e8c339540"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgenh_pl01_firegroup_simple_fx_01a.black",
+      "available": true,
+      "bytes": 5051,
+      "manifestMd5": "e3cbe4cade023ec2dacc9608728808d7"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgenh_pl01_fx_01a.black",
+      "available": true,
+      "bytes": 410086,
+      "manifestMd5": "1a81f173df617025d2e1ac73c2b62674"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgenh_pl01_traffic.black",
+      "available": true,
+      "bytes": 1146,
+      "manifestMd5": "4736ee3f635c017eaa2997cafdb2f909"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgenh_pl01_traffic.cmf",
+      "available": true,
+      "bytes": 5702,
+      "manifestMd5": "c7835b55ffcb9b12496d30f2364522c3"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/effects/mgenh_pl_electropacks_01a.cmf",
+      "available": true,
+      "bytes": 4757,
+      "manifestMd5": "9b5f5c0df3db3ac28a0c341fd17eec9b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/mgenh_pl01.cmf",
+      "available": true,
+      "bytes": 6707294,
+      "manifestMd5": "51747ec2e64b04987b148de973c51789"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/generic/platform/mgenh_pl01/mgenh_pl01_lowdetail.cmf",
+      "available": true,
+      "bytes": 290224,
+      "manifestMd5": "8fa4e292be4bb355ae8f50d6c5858e93"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/scene/upwell_hangar_scene_01a.black",
+      "available": true,
+      "bytes": 1291,
+      "manifestMd5": "6911a220371eaca03c1510685b677bdb"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/scene/upwell_hangar_scene_01b.black",
+      "available": true,
+      "bytes": 1398,
+      "manifestMd5": "ca4b331993e69873f01f3917624ed23d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/scene/upwell_hangar_scene_engineeringcomplex_01a.black",
+      "available": true,
+      "bytes": 1291,
+      "manifestMd5": "1f35f0f72741c83ae6f50456c3d3c8ba"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/scene/upwell_hangar_scene_engineeringcomplex_01b.black",
+      "available": true,
+      "bytes": 1420,
+      "manifestMd5": "d2993a23882439057e8d3f4b774e59d0"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/scene/upwell_hangar_scene_refinery_01a.black",
+      "available": true,
+      "bytes": 1254,
+      "manifestMd5": "f4fce1e85b86f8297169322ca7660330"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/scene/upwell_hangar_scene_refinery_01b.black",
+      "available": true,
+      "bytes": 1401,
+      "manifestMd5": "e506b32f09857f4d7bce2a7979a204b7"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg01/fx/msh_hg01_fx_01a.black",
+      "available": true,
+      "bytes": 19707,
+      "manifestMd5": "eeac979f818ed9bbbf27eaccce14be12"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg01/fx/msh_hg01_holos_01a.cmf",
+      "available": true,
+      "bytes": 79710,
+      "manifestMd5": "815146f4fa46be429c7776ef34edc574"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg01/fx/msh_hg01_holos_01a_lowdetail.cmf",
+      "available": true,
+      "bytes": 7016,
+      "manifestMd5": "182727e10ed67a47b53e3487aa1d4871"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg01/msh_hg01.cmf",
+      "available": true,
+      "bytes": 3661732,
+      "manifestMd5": "898a10161481f1c52b1e6bf668dacb8d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg01/msh_hg01_lowdetail.cmf",
+      "available": true,
+      "bytes": 175550,
+      "manifestMd5": "9791bf2f5a4457d6affac2f0bc1bfbe2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg02/msh_hg02.cmf",
+      "available": true,
+      "bytes": 2402012,
+      "manifestMd5": "882817a55a8411ff5dc4fc43a64cc706"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/3d_hologram/msh_hg02/msh_hg02_lowdetail.cmf",
+      "available": true,
+      "bytes": 112230,
+      "manifestMd5": "b7061cab63073e220bc5b3c7ed6c7e63"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/reactor_module/msh_rm01/fx/msh_rm01_fx_01a.black",
+      "available": true,
+      "bytes": 28193,
+      "manifestMd5": "777789d086d559d6d23240663dafd3c6"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/reactor_module/msh_rm01/msh_rm01.cmf",
+      "available": true,
+      "bytes": 611852,
+      "manifestMd5": "5e37135353af1dfcc68fa89f388a5a18"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/reactor_module/msh_rm01/msh_rm01_lowdetail.cmf",
+      "available": true,
+      "bytes": 27638,
+      "manifestMd5": "139be559bbd9fb2cb76feb5adccd7415"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/reprocessing_facility/msh_rf01/fx/msh_rf01_fx_01a.black",
+      "available": true,
+      "bytes": 26285,
+      "manifestMd5": "a859256207a7ccf449b5d4e518921ae2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/reprocessing_facility/msh_rf01/msh_rf01.cmf",
+      "available": true,
+      "bytes": 906780,
+      "manifestMd5": "f7dbfd24920b3cd3ac545cf1fc3465eb"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/modular/shared/reprocessing_facility/msh_rf01/msh_rf01_lowdetail.cmf",
+      "available": true,
+      "bytes": 34654,
+      "manifestMd5": "b2f125a3faa1a73b4fdbcf2805996325"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_01a_packedts.cmf",
+      "available": true,
+      "bytes": 2970,
+      "manifestMd5": "6d39cc2cf4fcfbf887aff19ea5796289"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_02a_packedts.cmf",
+      "available": true,
+      "bytes": 50898,
+      "manifestMd5": "b917ef9c9f0cb9bb88d82ae2200c239f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_02a_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 7716,
+      "manifestMd5": "55d417013b477f9e01b113d097b59230"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_02a_x_packedts.cmf",
+      "available": true,
+      "bytes": 318748,
+      "manifestMd5": "19a1ac6b59d84581437b73b569f01cf5"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_02a_x_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 7886,
+      "manifestMd5": "29af616fcb9dfbb6f6ddee0dd068e47b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_03a_packedts.cmf",
+      "available": true,
+      "bytes": 84026,
+      "manifestMd5": "d690b9738cb9f6a7bc4f852665d81d99"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automabob_03a_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 21876,
+      "manifestMd5": "7ef8c452ad954f051cb8fd1e7fce455d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automahaulerbob_01a_packedts.cmf",
+      "available": true,
+      "bytes": 751984,
+      "manifestMd5": "4e358bcc8c9a61916ec2aae65e7605a5"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automahaulerbob_01a_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 23914,
+      "manifestMd5": "03b2628bc39db36436b43b54ea9c220f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automahaulerbob_logo_01a.cmf",
+      "available": true,
+      "bytes": 1204,
+      "manifestMd5": "4165c544dc3f74193f253e9a19871722"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automatrainbob_01a_packedts.cmf",
+      "available": true,
+      "bytes": 1404983,
+      "manifestMd5": "e91f59d558de60f12d0850e9e1e77fd2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automatrainbob_01a_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 67153,
+      "manifestMd5": "a38b24bd132ddf12975443dd558970b1"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automatrainbob_advert_01a_packedts.cmf",
+      "available": true,
+      "bytes": 385894,
+      "manifestMd5": "5f38a450cfca888ad59ecccfcc53437d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/automabob/automatrainbob_advert_01a_packedts_lowdetail.cmf",
+      "available": true,
+      "bytes": 11128,
+      "manifestMd5": "441ef1dce4b04bb68c77c03f78a7bb69"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/controller/hangar_owner_controller_01a.black",
+      "available": true,
+      "bytes": 1726,
+      "manifestMd5": "201d218d22816b58cd3861c8b5609d0b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/docker/docker_lightrig_01a.black",
+      "available": true,
+      "bytes": 7590,
+      "manifestMd5": "5b3b7a5afaf0c46f021719f8798530a4"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/docker/docker_lightrig_capital_01a.black",
+      "available": true,
+      "bytes": 4208,
+      "manifestMd5": "b797d683828364026496f648765314a3"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/docker/fxattributes_01a.black",
+      "available": true,
+      "bytes": 108,
+      "manifestMd5": "b95534579abff94ddd57f0c4cd44417b"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/docker/multieffect_depthoffield.black",
+      "available": true,
+      "bytes": 2852,
+      "manifestMd5": "6b1347eb5e2558612efa6f9fe1bbe133"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/docker/multieffect_docker_01a.black",
+      "available": true,
+      "bytes": 38578,
+      "manifestMd5": "3f5debc3cf7b267e0437a90a71a52fa4"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/fire/fire_01b_simple.black",
+      "available": true,
+      "bytes": 2452,
+      "manifestMd5": "bb619ee264d7eb0434c5e7eb686ee520"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/holodockstate/upwell_minihangar_dockstate_npc.black",
+      "available": true,
+      "bytes": 11982,
+      "manifestMd5": "639705abd6be08864e4ab2e2c51de929"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/holodockstate/upwell_minihangar_dockstate_player.black",
+      "available": true,
+      "bytes": 11982,
+      "manifestMd5": "639705abd6be08864e4ab2e2c51de929"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/nearfield/hangar_nearfield_upwell_01a.black",
+      "available": true,
+      "bytes": 5220,
+      "manifestMd5": "4a1fd7ea1514340aea83b8c59973bdff"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_arrival_exhaust_automagic_01a.black",
+      "available": true,
+      "bytes": 3931,
+      "manifestMd5": "a59ac9d7d6b70c35a122799b4f0e3cbd"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_arrival_exhaust_automagic_01b.black",
+      "available": true,
+      "bytes": 7180,
+      "manifestMd5": "88d47215feceb0c23e8839a8dad2904d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_depart_exhaust_automagic_01a.black",
+      "available": true,
+      "bytes": 11386,
+      "manifestMd5": "e62be46747979677cb473b5c2218bd7f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_electro_ambient_platform_s_01a.black",
+      "available": true,
+      "bytes": 8140,
+      "manifestMd5": "fbf46d3aeb1c7be365ec9f1a0c2a50ce"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_electro_intense_platform_s_01a.black",
+      "available": true,
+      "bytes": 8158,
+      "manifestMd5": "b80452de3cfc86711e6e4e2c690c27e8"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_gas_hangar_automagic_01a.black",
+      "available": true,
+      "bytes": 5241,
+      "manifestMd5": "0642c0ac997393aef3a4f0cc2c5bcec2"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_gas_hangar_automagic_leakdown_01a.black",
+      "available": true,
+      "bytes": 2437,
+      "manifestMd5": "383de3f4fd76747b915c2038a5cd8cbe"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_gasexplosion_01a.black",
+      "available": true,
+      "bytes": 14620,
+      "manifestMd5": "845fb81a446049d018eeca8ce5d96601"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/propagation_undockcancelled_exhaust_automagic_01a.black",
+      "available": true,
+      "bytes": 9386,
+      "manifestMd5": "0b5086dfa39e450a8b1049272790037d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/automagic_shipfx_01a.black",
+      "available": true,
+      "bytes": 13326,
+      "manifestMd5": "ee3c40a6148d2abd4666bc9803340e32"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/automagic_shipfx_01a_reversed.black",
+      "available": true,
+      "bytes": 13277,
+      "manifestMd5": "853dc1ee72674fce207e937c3cbf7b1f"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01a.black",
+      "available": true,
+      "bytes": 3630,
+      "manifestMd5": "26d0e451d811cd09cd0e301149c49c6c"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01a_reversed.black",
+      "available": true,
+      "bytes": 3802,
+      "manifestMd5": "bd865c662e448b677ef4a29162b79663"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01a_reversed_skinned.black",
+      "available": true,
+      "bytes": 3810,
+      "manifestMd5": "a9d2bac4dbfb8c6398df27b60343f5e8"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01a_skinned.black",
+      "available": true,
+      "bytes": 3622,
+      "manifestMd5": "4f58f597d9ae6588ca3f8bba881e63f0"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01b.black",
+      "available": true,
+      "bytes": 1631,
+      "manifestMd5": "b71d12ad35a1d3f5447f2f9ac94245a9"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01b_reversed.black",
+      "available": true,
+      "bytes": 1631,
+      "manifestMd5": "83b314ab4c24523bcf98758d61159019"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01b_reversed_skinned.black",
+      "available": true,
+      "bytes": 1647,
+      "manifestMd5": "d45d09554b0b47ee37f9117c8da8d72d"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/shipmaterialization/materialization_ov_01b_skinned.black",
+      "available": true,
+      "bytes": 1647,
+      "manifestMd5": "6d9857d040885fd45de29579feaa97ed"
+    },
+    {
+      "resource": "res:/dx9/model/hangar/shared/fx/sparks/sparks_01a.black",
+      "available": true,
+      "bytes": 5330,
+      "manifestMd5": "12410b64551ede8fe7706cae150eb645"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/blueprintscaldari_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5456,
+      "manifestMd5": "c00d483d2276a22e3cd212ae3192d04f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/blueprintscaldari_1x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4934,
+      "manifestMd5": "bfed86b54cfbabe30cec66d33d1dce3a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "dabd0134dae08df58a3aa375852dfc28"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01b_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "762542964baa9236489ac6d9af21f7cb"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01c_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "7e2eb15b9ffa485bc778085ffa2e591b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01d_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "73c5137397caaf63519bac0ffd2b107b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01e_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "241f1e0261739a014a774a256863822f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01f_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "6bff1666cac9b0aaa86a365a09af338e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/caldari_navy_1x1_01g_hangar.black",
+      "available": true,
+      "bytes": 6294,
+      "manifestMd5": "4321021399a472137a9e6b8643ec997b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/cbd_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4329,
+      "manifestMd5": "ddd4809e17a2d02399e62dc1e7d2217a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/cbd_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4249,
+      "manifestMd5": "dd741fee5afe0a2c30ca31ba844ec2fe"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/cbdcorporation_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4351,
+      "manifestMd5": "32d9f9f583cfa8fab1218989f18f1427"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/cbdcorporation_1x1_01b_hangar.black",
+      "available": true,
+      "bytes": 4351,
+      "manifestMd5": "9504fabefdaf4396e2ceb79347aebef5"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/cbdcorporation_1x1_01b_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4271,
+      "manifestMd5": "160ba1c69df4de0a00f98c7e43b9fa34"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/chemaltech_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4350,
+      "manifestMd5": "e5695ca8db0c5e1d42a613a73c648588"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/chemaltech_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4270,
+      "manifestMd5": "6316abca54f24be17c2e97adc945768b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/concord_1x1_atlas_03a_hangar.black",
+      "available": true,
+      "bytes": 5466,
+      "manifestMd5": "2cfd546e721ff85f51cf17175530976b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/concord_1x1_atlas_03a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5058,
+      "manifestMd5": "bd89f0c683c101bf84e423d3f84c63fb"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/dcm_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4336,
+      "manifestMd5": "950e98eb4156ec9f4e955a8c5aa9cf71"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/dcm_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4256,
+      "manifestMd5": "823516ee3a4b4292b54287e9f9df1c78"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ducia_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4340,
+      "manifestMd5": "783691befed420662cda60be9ff4ec44"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ducia_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4260,
+      "manifestMd5": "d442944aa290d60db121162936c0ed27"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/edencom_thunderchild_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4363,
+      "manifestMd5": "a8f2e8a19e9a310557c509388ca1c667"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/edencom_thunderchild_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4283,
+      "manifestMd5": "f53a741a398c3ed0e063c576f12fbef0"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/eifyr_implant_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4356,
+      "manifestMd5": "20aa8816624274f17ba2727b22ad66df"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/eifyr_implant_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4276,
+      "manifestMd5": "eeaa83eb2b83e4406d22b0ec9599a396"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/eifyrco_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4344,
+      "manifestMd5": "b5adf60bc22fba6e4e9ae6ba58e1e382"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/eifyrco_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4264,
+      "manifestMd5": "076a7bf5d4f0e8bc46ebad14ab490322"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/expertdistribution_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4359,
+      "manifestMd5": "3b23b9315cef4a095f20f2976e25f17c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/expertdistribution_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4279,
+      "manifestMd5": "23a2f2cfc6be2f4bcb55dd750b669150"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/freedomextension_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4362,
+      "manifestMd5": "6b1913fdefd941eb97999ae5531189e7"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/freedomextension_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4282,
+      "manifestMd5": "3eed9f2c7bb3224ee190f952c688ba1f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/hypernet_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5708,
+      "manifestMd5": "c9a36dda898641858d1235dc8a50ab29"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/hypernet_1x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5300,
+      "manifestMd5": "a58789e4a744294089d6c31840d60bc4"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/impro_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4333,
+      "manifestMd5": "effa4999a5744b53f6652f839b7c448c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/impro_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4253,
+      "manifestMd5": "0de2b44f14d771fa36595186e9c59a4e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/intaki_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4342,
+      "manifestMd5": "4b67fb97652bb67f8a38740317cf8a26"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/intaki_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4262,
+      "manifestMd5": "2ac44052b014337451c73a1206201897"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/interbus_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4339,
+      "manifestMd5": "b1201fb037c01be258df22035b10a00e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/interbus_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4259,
+      "manifestMd5": "b2e487391d940e4a387bd46303d89c49"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/interbus_1x1_01b_hangar.black",
+      "available": true,
+      "bytes": 4339,
+      "manifestMd5": "2e45379df50bc7e5f06456b0fc069359"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/interbus_1x1_01b_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4259,
+      "manifestMd5": "81cc33e005b69141454e3aea7bbcaa8a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitadistrict_dcm_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4355,
+      "manifestMd5": "2c42088a81e3d75f9020acf143412f5a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitadistrict_dcm_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4275,
+      "manifestMd5": "6b0fbcea5d26a2bad854db3dec884862"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitadistrict_hypernet_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4365,
+      "manifestMd5": "dc8e7f240cdb5bb71da780102ea8afcd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitadistrict_laidai_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4361,
+      "manifestMd5": "603ecc4d46a5a1d8e5c311ec86eac76f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitalogo_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 6826,
+      "manifestMd5": "c090a30a1bfe8fad81f979f0a3369ff9"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitanumbers_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 6864,
+      "manifestMd5": "8426eecf5bcad2981d2f80ddf8f6de02"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitanumbers_1x1_atlas_02a_hangar.black",
+      "available": true,
+      "bytes": 6872,
+      "manifestMd5": "d34e1da1d3defd1c29f2804812db3e56"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/jitanumbers_1x1_atlas_03a_hangar.black",
+      "available": true,
+      "bytes": 6872,
+      "manifestMd5": "60d14ae87c30fd2bcf55e0d039238e30"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/leisuregroup_advert_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5457,
+      "manifestMd5": "ae87627e433c14a60f4d3e2bc523899d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/leisuregroup_advert_1x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5049,
+      "manifestMd5": "78a79750d3161ac981ff806cddcd4e5e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/materialacq_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4345,
+      "manifestMd5": "2f7e5dc97396329f8695f00e5c54a485"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/materialacq_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4265,
+      "manifestMd5": "1da8599ec7ff17e9e3753d5c9f2ffb4c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/materialacq_1x1_01b_hangar.black",
+      "available": true,
+      "bytes": 4345,
+      "manifestMd5": "7ab12010a718c84ed96aafc2b91559b4"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/modernfinance_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4349,
+      "manifestMd5": "ad9e525ea8b4cffc6a2a642acf649363"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/morduslegion_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4354,
+      "manifestMd5": "a053d20af0194f48f64ad709523244aa"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/morduslegion_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4274,
+      "manifestMd5": "b1951fe7c64301efb10fe29dd0d1c5cd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/nurtura_advert_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5447,
+      "manifestMd5": "fbe38df5a9cea35c54390177a68fef34"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/nurtura_advert_1x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5039,
+      "manifestMd5": "ee7b12edd07d7754ff8f81cbc759fcc8"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01a_hangar.black",
+      "available": true,
+      "bytes": 4327,
+      "manifestMd5": "b7adff27bfb12c2b645ffb75b9a0edf1"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4247,
+      "manifestMd5": "b7c40d61ffb6d35a12a09bd11c1a5abe"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01b_hangar.black",
+      "available": true,
+      "bytes": 4327,
+      "manifestMd5": "b5a7335310a04659035d72abc4ffdf58"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01c_hangar.black",
+      "available": true,
+      "bytes": 4327,
+      "manifestMd5": "1338147f1664418bf832468f315e1648"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01d_hangar.black",
+      "available": true,
+      "bytes": 4327,
+      "manifestMd5": "2924822a23509c870f8083ba135c4747"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01d_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4247,
+      "manifestMd5": "f3fbd29c2b8edda858969066b3b13c5a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01e_hangar.black",
+      "available": true,
+      "bytes": 4327,
+      "manifestMd5": "521e628baef37beab90dda8ca7a571d2"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01f_hangar.black",
+      "available": true,
+      "bytes": 4327,
+      "manifestMd5": "1b5fd5aa5d4efe16d981c536b930fcc7"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01g_hangar.black",
+      "available": true,
+      "bytes": 4334,
+      "manifestMd5": "26cf1f212cf2eb67600f666ac03565c8"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ore_1x_01g_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4254,
+      "manifestMd5": "6e36e020d2e96bca262c3d916e903a2f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/pkn_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4329,
+      "manifestMd5": "5d9cf8505c9a5b691c36b7103e27cb26"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/pkn_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4249,
+      "manifestMd5": "0681494defa96b91928494dc02b20d9b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/plug/plug_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4551,
+      "manifestMd5": "e74708a7f7f56e40e766dbf8dcc5fdff"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/promptdelivery_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4351,
+      "manifestMd5": "4241dcb70cd064bec74b8b88a6fb2e25"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/promptdelivery_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4271,
+      "manifestMd5": "4ff51991a4a97362c029b3f0ad021024"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/propeldynamics_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4358,
+      "manifestMd5": "ba6f8d33ef5d891f4a8494444ec11ca4"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/propeldynamics_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4278,
+      "manifestMd5": "266d172d4a0925ff7d3c9e29157faee8"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/rapidassembly_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4349,
+      "manifestMd5": "9624bd90eac8588694a43212959c07fd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/rapidassembly_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4269,
+      "manifestMd5": "595a8ba5f2939aeef2fe719c32ee71e6"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/scope_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4340,
+      "manifestMd5": "817a62ae9a1469f8fa41f6895a5208c4"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/scope_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4260,
+      "manifestMd5": "6f72f27b0a65a70d7bb755af78cd4e19"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/scope_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5661,
+      "manifestMd5": "48131f0332fb53ae56199d26c1b06c10"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/scope_1x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5253,
+      "manifestMd5": "d393199ffdfd83779b9b3b710530af91"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/shortterm/shortterm_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 6300,
+      "manifestMd5": "8f6137f2d1437d4583f07f46ca846220"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/shortterm/shortterm_1x1_02a_hangar.black",
+      "available": true,
+      "bytes": 6300,
+      "manifestMd5": "17c77b84521e24b2017b95696e39d597"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/shortterm/shortterm_1x1_03a_hangar.black",
+      "available": true,
+      "bytes": 6300,
+      "manifestMd5": "6cb35861e3145f82276c816ed5be6096"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/shortterm/shortterm_1x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 6876,
+      "manifestMd5": "b14412bb151abaf6c5cd47fa7bce5998"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/shortterm/shortterm_1x1_atlas_02a_hangar.black",
+      "available": true,
+      "bytes": 7105,
+      "manifestMd5": "d66891eab19c7c57797563a8e398589e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/shortterm/shortterm_1x1_atlas_03a_hangar.black",
+      "available": true,
+      "bytes": 6930,
+      "manifestMd5": "d9ebd95c3cb581a381ab2c187b293367"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/starsi_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4342,
+      "manifestMd5": "50cea3dd67dd82e7927074ac2325a543"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/starsi_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4262,
+      "manifestMd5": "116f8ea9753250a24be616b6b282b790"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/theleisurecorp_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4351,
+      "manifestMd5": "aa8327875f210655459baebba85279c6"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/theleisurecorp_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4271,
+      "manifestMd5": "3cd36bcfb728f78b9d5f58f67e1b5ca0"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/theleisurecorp_1x1_01b_hangar.black",
+      "available": true,
+      "bytes": 4351,
+      "manifestMd5": "fee112d79bad7046337ac126c75f32f6"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/topdown_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4337,
+      "manifestMd5": "f3941fc858182c0920d7da1b7e7a6764"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/transstellar_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4347,
+      "manifestMd5": "8e2d4ead436366c1805d18d356bb83c0"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/transstellar_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4267,
+      "manifestMd5": "804513326c0ffabae38ed485735c5bf8"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/transstellar_1x1_01b_hangar.black",
+      "available": true,
+      "bytes": 4347,
+      "manifestMd5": "145ed4ab896ee517a4f7e0f111264747"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/transstellar_1x1_01b_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4267,
+      "manifestMd5": "19f77611818e0f8941edbcdb2e3f48f3"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_armor_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4346,
+      "manifestMd5": "e88c9e8160e24398c105d07241b7f525"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_armor_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4266,
+      "manifestMd5": "698a3bd853f1429dc800ce38ae67d1eb"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_moondrill_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4354,
+      "manifestMd5": "990ea6fb80abb033f98d53f5b284dba1"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_moondrill_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4274,
+      "manifestMd5": "3af63c0cdcecdc73812b3a52b704d8c8"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_research_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4352,
+      "manifestMd5": "2301048cb229c5c83e6552b9ff1b177c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_research_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4272,
+      "manifestMd5": "8d6861938e0e069ab9444d12902b3de7"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_shipyard_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4352,
+      "manifestMd5": "268e7061d73d5922f58b2d430720c3ee"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_shipyard_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4272,
+      "manifestMd5": "c531f97da621298fbd8e363735be3863"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_vorton_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4348,
+      "manifestMd5": "4f750ba8285998af51a244ff305087ed"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/uw_vorton_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4268,
+      "manifestMd5": "07074b6d1ff6c05efae041e7762b1fbb"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ytiri_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4340,
+      "manifestMd5": "c06a404554782e683375d791fd8ca122"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/ytiri_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4260,
+      "manifestMd5": "00006ed97ab8c0d0a04b1c24f1f826a3"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/zoarandsons_1x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4352,
+      "manifestMd5": "822732e1f90d4c76dccd9e243fe0bc28"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x1/zoarandsons_1x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4272,
+      "manifestMd5": "aa6a7583058f988c2aae95cb3d00e44d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/air_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 6256,
+      "manifestMd5": "5cc496fc4e8c10512a0a2ff55cff65a2"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/air_1x2_02a_hangar.black",
+      "available": true,
+      "bytes": 6256,
+      "manifestMd5": "8868d80d051bb4af2bb1b5284c774dde"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/air_1x2_03a_hangar.black",
+      "available": true,
+      "bytes": 6256,
+      "manifestMd5": "5e25716fe45c98a67344f0bc7c46b40b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/caldarinavy_1x2_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 4979,
+      "manifestMd5": "b5bc7f80fee6c4c53353b05ac535bc8c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/chemal_tech_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4157,
+      "manifestMd5": "8975c0c9493bf951fd337879699ac9c0"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/chemal_tech_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4172,
+      "manifestMd5": "7059146016c36093cc6ad077fc038bae"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/dcm_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 6249,
+      "manifestMd5": "95c12db955e0e765ec68332ebf6c7559"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/dcm_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4149,
+      "manifestMd5": "da8ca6435678f617be5ecc7d6b77e760"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/dcmcore_advert_atlas_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 5042,
+      "manifestMd5": "49619db5e5a1724a58ca9fc2a47b1c41"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/dcmcore_advert_atlas_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5090,
+      "manifestMd5": "80b5090438988aff6b2c88831ca71773"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/ducia_foundry_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4161,
+      "manifestMd5": "5a6c4d25554880647c1ee49325af709d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/ducia_foundry_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4176,
+      "manifestMd5": "ef02ea9fb7840a384bee7704c6415975"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/edencom_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 6257,
+      "manifestMd5": "ebe5c7882b7833cc2e0d4f6638cc2760"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/edencom_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4157,
+      "manifestMd5": "ab5465c26cff8e39cbba4619a5ba829b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/fleetup_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4142,
+      "manifestMd5": "9650c4622bbf9ecd85aadf7fef431e7b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/fleetup_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4157,
+      "manifestMd5": "b861d7498495b48d975fd944986e133b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/freedom_extension_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4169,
+      "manifestMd5": "0eff957757626c80cb66a1a8ebb80384"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/freedom_extension_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4184,
+      "manifestMd5": "d6b133e2f5c090dfe3f618480bd5b127"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/impetus_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4149,
+      "manifestMd5": "27605cb740c62fc5795d36cd96ce874f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/impetus_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4164,
+      "manifestMd5": "f04f3503b25a4d1996f69a66c7d2a8b1"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/jita_logo_1x2_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 7183,
+      "manifestMd5": "689c736024f83b566b10d7ee4d43e733"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/laidai_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4140,
+      "manifestMd5": "1cf2074d2bf9094b37f2b167701bd34a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/laidai_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4155,
+      "manifestMd5": "5bab79f6a65312c1161e3ae9a6067a12"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/laidai_security_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4158,
+      "manifestMd5": "1f8185d0d780ae391f6e0ce56c33bcfa"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/laidai_security_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4173,
+      "manifestMd5": "fe1643439e760885a493964d44515837"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/matigusushi_1x2_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5099,
+      "manifestMd5": "b6a716a9fe22c950616eee34ac791b24"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/matigusushi_1x2_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 5154,
+      "manifestMd5": "c603ed18406e113d3d986b44b211e338"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/modernfinances_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4156,
+      "manifestMd5": "2bccf7ff141a2aa680b7f2f17a8dd203"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/modernfinances_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4171,
+      "manifestMd5": "10d91ba6e596b9d13a18a69b712aaf35"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/mordus_legion_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4161,
+      "manifestMd5": "04c2fff8316957021e3cd970e8d4544c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/mordus_legion_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4176,
+      "manifestMd5": "e69fd23f9ac66dd973bf15bfd5fd7a2d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/nurtura_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4142,
+      "manifestMd5": "1ab7eec29b507e533170c0992e463f0d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/nurtura_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4157,
+      "manifestMd5": "d511eae19b7fb96a329400146af07c06"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/nurturahands_atlas_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4959,
+      "manifestMd5": "602b2d1f87e49177457156f93e43e24d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/nurturahands_atlas_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4993,
+      "manifestMd5": "ee38d9d46655c6a9f987dcd8ffcee078"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4134,
+      "manifestMd5": "c42e7e33476683c270ef9dfd55c90a4e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4149,
+      "manifestMd5": "bc8f4413baae455d5d530d9ea7ad9d59"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_1x2_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 4992,
+      "manifestMd5": "a0af7a473435bb3397a2e81d38e14ec4"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_1x2_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4960,
+      "manifestMd5": "15ad258733c15cd1cc8427c5936d54b5"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_hypernetrelay_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4157,
+      "manifestMd5": "87c89c15a9bfc6ed05cdf0c2c877f199"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_hypernetrelay_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4172,
+      "manifestMd5": "6be8c9a8f0ae7d46991a45c7446d2e67"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/pkn_jita_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4144,
+      "manifestMd5": "44f9019cf3564d137d3b97a58b82dd22"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/plug/plug_advert_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4451,
+      "manifestMd5": "4777d4f0d8b7eac0b1b493746762107d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/plug/plug_advert_1x2_atlasdetail_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 2527,
+      "manifestMd5": "c10132e547b6d57aa75d3fea4f971da4"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/propel_dynamics_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4165,
+      "manifestMd5": "7ec3e9b4503b0ca9c39ebda0615a4e3d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/propel_dynamics_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4180,
+      "manifestMd5": "6fcb00fcbc0f5b35fc7c7cb81cd38722"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/research_labs_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4161,
+      "manifestMd5": "aa19c12f2658bc8b980faad18bed44a5"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/research_labs_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4176,
+      "manifestMd5": "13c63dc5826eed6f1719597d6224329d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4156,
+      "manifestMd5": "f9c3911cbb1628cfe383960c775ea276"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_02a_hangar.black",
+      "available": true,
+      "bytes": 4156,
+      "manifestMd5": "fe39191eb93e4fdb62d8a2ec3f7be0a8"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 5049,
+      "manifestMd5": "f56d6b756db5616479d51da4d4fa5133"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_atlas_02a_hangar.black",
+      "available": true,
+      "bytes": 4989,
+      "manifestMd5": "c31260bc8d0b49742bced946d0458752"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_upwellonly_01a_hangar.black",
+      "available": true,
+      "bytes": 4165,
+      "manifestMd5": "9ed723f68f78257f69d31fdaa213c3cd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_upwellonly_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4165,
+      "manifestMd5": "9ed723f68f78257f69d31fdaa213c3cd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_upwellonly_02a_hangar.black",
+      "available": true,
+      "bytes": 4165,
+      "manifestMd5": "9ed723f68f78257f69d31fdaa213c3cd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/shortterm/shortterm_1x2_upwellonly_02a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4165,
+      "manifestMd5": "9ed723f68f78257f69d31fdaa213c3cd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/spacelanepatrol_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 6273,
+      "manifestMd5": "5b7bd35b253b3129051ab5e9b14d9e78"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/spacelanepatrol_1x2_02a_hangar.black",
+      "available": true,
+      "bytes": 6273,
+      "manifestMd5": "5de35fe366a658bd6796bcfff36ae63d"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/spacelanepatrol_1x2_02a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4173,
+      "manifestMd5": "73fe4f61e6c2f104538fcd9d822e485b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/upwell_armor_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4186,
+      "manifestMd5": "ac628561c9bdc0b5b42af29364812941"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/upwell_hull_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4184,
+      "manifestMd5": "15ec35a57c7c2933daf30dc219da38c1"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/upwell_moonmining_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4162,
+      "manifestMd5": "2797124f7c0b18670d42862656bb394b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/upwell_moonmining_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4177,
+      "manifestMd5": "0b3d48641705f9c7bf8eaaf9e08d0dc5"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/upwell_upwell_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4150,
+      "manifestMd5": "7f4bd68dd0e92e6c69b95d600c0b76dc"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/upwell_upwell_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4165,
+      "manifestMd5": "9ed723f68f78257f69d31fdaa213c3cd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/zoar_sons_1x2_01a_hangar.black",
+      "available": true,
+      "bytes": 4153,
+      "manifestMd5": "8f1b6b01d5c29bd5a7fac783a1df524f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/1x2/zoar_sons_1x2_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4168,
+      "manifestMd5": "dca31340db006ab8c28ef7377ecbfee0"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_chemaltech_01a_hangar.black",
+      "available": true,
+      "bytes": 5496,
+      "manifestMd5": "d5dff889dcb4878ed77427dc69dce00b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_eyfir_01a_hangar.black",
+      "available": true,
+      "bytes": 10103,
+      "manifestMd5": "fa5ff8be286eb42a93716c562cd1b877"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_genolution_01a_hangar.black",
+      "available": true,
+      "bytes": 35251,
+      "manifestMd5": "dc3c6abbceabdfaf66977f0e8eea5d9c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_impetus_01a_hangar.black",
+      "available": true,
+      "bytes": 4555,
+      "manifestMd5": "32e171a297e8d34df6dadd0275f101c2"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_jitatradehub_01a_hangar.black",
+      "available": true,
+      "bytes": 2615,
+      "manifestMd5": "cbc533a113e47703018ee516f8c63a3e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_khanid_01a_hangar.black",
+      "available": true,
+      "bytes": 11331,
+      "manifestMd5": "3d66e2c50349097e6f8426ca7aa41600"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_matigusushi_01a_hangar.black",
+      "available": true,
+      "bytes": 12090,
+      "manifestMd5": "31a378c289781f9fd4df6b93aed75d5b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_propel_dynamics_01a_hangar.black",
+      "available": true,
+      "bytes": 21554,
+      "manifestMd5": "7778273f63d629b6403ae7763937082c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_quafelogo_01a_hangar.black",
+      "available": true,
+      "bytes": 4214,
+      "manifestMd5": "ec92121586b3de173a11fe653867719e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_upwell_01a_hangar.black",
+      "available": true,
+      "bytes": 9051,
+      "manifestMd5": "89d0aef685f8c218a4fd64584544d9c2"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/3d_complex/3d_zoar_and_sons_01a_hangar.black",
+      "available": true,
+      "bytes": 4020,
+      "manifestMd5": "3fb59b9ecb216068e9ee3aef45393271"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/air_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 6394,
+      "manifestMd5": "82ec9bd5bfc76f280598a4df83df2a8a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/air_6x1_02a_hangar.black",
+      "available": true,
+      "bytes": 6394,
+      "manifestMd5": "c08b9542e07bb630fce4bed42157e124"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/caldarinavy_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4265,
+      "manifestMd5": "1b94a8fccea4c2a9ce5417780eb48bad"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/caldarinavy_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4187,
+      "manifestMd5": "6eced68da629a92d2a3107b68aca0b5a"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/cbd_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4249,
+      "manifestMd5": "97a2f9b8be272d9891727862e8466718"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/cbd_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4171,
+      "manifestMd5": "be5259117bca2716de132cb12d33dc5f"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/chemaltech_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4270,
+      "manifestMd5": "ab1b416b5ef4635b81fc76b2b9757524"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/chemaltech_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4192,
+      "manifestMd5": "93cc173fceb218d4d02aa27f0c772f33"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/compression_advert_atlas_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4525,
+      "manifestMd5": "65bbd40037d091b3568a4b71b53810d0"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/compression_advert_atlas_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4426,
+      "manifestMd5": "b24e8221c4745302d1668399b60a8572"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/corporation_6x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 4158,
+      "manifestMd5": "709fe55b11d1598224a1059a95797b81"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/corporation_6x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4212,
+      "manifestMd5": "75570449ac0d4f3e4cdb7483dc97ca8c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/jitadice_6x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 4272,
+      "manifestMd5": "3270d23b293522cdd342797c866c4a89"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/jitalogo_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4259,
+      "manifestMd5": "7f6be22fce6f8a259f97dec06ca6af05"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/jitalogo_6x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 4517,
+      "manifestMd5": "52a483500f778863e2fa21de1f14a60c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/matigusushi_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4265,
+      "manifestMd5": "68284d5a774af64e34c360651fc3ce82"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/matigusushi_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4187,
+      "manifestMd5": "436a3b58bd93f8f3ac835d8d5d50aaf3"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/ore_6x_01a_hangar.black",
+      "available": true,
+      "bytes": 4247,
+      "manifestMd5": "8f52d7606971830561a68d4b0c9174c6"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/ore_6x_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4169,
+      "manifestMd5": "2868c4d1d18391940a5e0f1360d0a6cc"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/plug/plug_advert_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4399,
+      "manifestMd5": "218ee7b2f9c3163cedfea2fd53480284"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/sinfinamondo_6x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 4521,
+      "manifestMd5": "26ae28120c25573fea65fa579deb0f05"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/sinfinamondo_6x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4422,
+      "manifestMd5": "b58285afa13f9db55ced0eb3f1d41257"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/starsi_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4262,
+      "manifestMd5": "57b26a95401c6abb07667e83f8e5183e"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/starsi_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4184,
+      "manifestMd5": "15e3549fe8683f0573db93c9bad1047c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/statebank_6x1_atlas_01a_hangar.black",
+      "available": true,
+      "bytes": 3931,
+      "manifestMd5": "d52544472ef7a2bace0570c3f2d20ea3"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/statebank_6x1_atlas_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4035,
+      "manifestMd5": "40892bc3db3a0e19ac9d8d7bc80e279b"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/zoarssons_6x1_01a_hangar.black",
+      "available": true,
+      "bytes": 4261,
+      "manifestMd5": "80ad7753fd4fbfe4a80390de5b4a8bd3"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/6x1/zoarssons_6x1_01a_hangar_smallplatform.black",
+      "available": true,
+      "bytes": 4183,
+      "manifestMd5": "e8f22e4e6bb42a058214b5556c12f8ae"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/ad_loader/plug/plug_ad_loader_1x1_00a_source_hangar.black",
+      "available": true,
+      "bytes": 11037,
+      "manifestMd5": "fbb6ffde3076971a07702527ec2ec1f6"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/ad_loader/plug/plug_ad_loader_1x1_00a_source_hangar_upwell.black",
+      "available": true,
+      "bytes": 9279,
+      "manifestMd5": "bd1a8328ecf327108fb1e96a609d177c"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/ad_loader/plug/plug_ad_loader_1x2_00a_source_hangar.black",
+      "available": true,
+      "bytes": 5623,
+      "manifestMd5": "a83c22f6b06e053edf6ed292b08bbebd"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/ad_loader/plug/plug_ad_loader_1x2_00a_source_hangar_upwell.black",
+      "available": true,
+      "bytes": 7263,
+      "manifestMd5": "4d75f80b7e15d424ddf7ca575d15a7d9"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/ad_loader/plug/plug_ad_loader_6x1_00a_source_hangar.black",
+      "available": true,
+      "bytes": 3540,
+      "manifestMd5": "08640f5503f456bf207cd0ffc6d0c153"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/advertisement/ad_loader/plug/plug_ad_loader_6x1_00a_source_hangar_upwell.black",
+      "available": true,
+      "bytes": 4613,
+      "manifestMd5": "9bd6fb2ea1ce5ef34b9f37f9b1c59a49"
+    },
+    {
+      "resource": "res:/dx9/model/shared/fx/billboard/videoscreen_hangar_01a.black",
+      "available": true,
+      "bytes": 1726,
+      "manifestMd5": "0c32638a6c172d44c2e242ca89267160"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/factions/hangar_generic_01.black",
+      "available": true,
+      "bytes": 7267,
+      "manifestMd5": "01f027142c7bf62f050c0d5c36934313"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/hulls/dep_clone_hangar_m.black",
+      "available": true,
+      "bytes": 2433,
+      "manifestMd5": "2db0675a4c5d6a4ae22875f76ac308f2"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/hulls/dep_hangar_b_01v01.black",
+      "available": true,
+      "bytes": 4295,
+      "manifestMd5": "f1bcc93ebeefb33d075ed6e47c4ddfb0"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/hulls/dep_hangar_m_01v01.black",
+      "available": true,
+      "bytes": 2616,
+      "manifestMd5": "1cbc0d5d979518f23954472eb913b085"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/hulls/dep_hangar_s_01v01.black",
+      "available": true,
+      "bytes": 2493,
+      "manifestMd5": "57496d20fd43715005e5658df29e8966"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/hulls/dep_smart_hangar_01.black",
+      "available": true,
+      "bytes": 2498,
+      "manifestMd5": "892f33ec5d4a2f1741b131d298f51d90"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/layouts/upwell_capitalhangar.black",
+      "available": true,
+      "bytes": 333,
+      "manifestMd5": "b9eeccdc8b54d72453e01f1217be51ec"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/layouts/upwell_hangar.black",
+      "available": true,
+      "bytes": 571,
+      "manifestMd5": "b9cdbd4e7e85c31f4c5cb7e64a6cc881"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/layouts/upwell_hangar_lowsec.black",
+      "available": true,
+      "bytes": 585,
+      "manifestMd5": "10059818ae99efdc73dc922aca4debb8"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/layouts/upwell_minihangar.black",
+      "available": true,
+      "bytes": 331,
+      "manifestMd5": "8e75d38d1917306745c138dc1bfcfcb1"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/layouts/upwell_minihangar_instanced.black",
+      "available": true,
+      "bytes": 330,
+      "manifestMd5": "a9951c6ff48807e2520addf78f3b09cf"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/materials/hangar_concrete_dark.black",
+      "available": true,
+      "bytes": 299,
+      "manifestMd5": "b02d9a8f6907f909b57568b789124563"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/materials/hangar_concrete_polished.black",
+      "available": true,
+      "bytes": 303,
+      "manifestMd5": "3767e2fd5ec7b0ceb30104b11f69fafe"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/materials/hangar_concrete_rough.black",
+      "available": true,
+      "bytes": 300,
+      "manifestMd5": "debfe5a6b6aaa78ba855e75f15cf8c9f"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/materials/hangar_metal_polished.black",
+      "available": true,
+      "bytes": 300,
+      "manifestMd5": "d7bb0b76715826b9ac9e79e98c797b39"
+    },
+    {
+      "resource": "res:/dx9/model/spaceobjectfactory/materials/hangar_metal_rough.black",
+      "available": true,
+      "bytes": 297,
+      "manifestMd5": "996e329c184d5610e2cb218fa8c2c9a1"
+    }
+  ]
+}

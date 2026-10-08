@@ -32,7 +32,6 @@ import {
   COIN_POINTS,
   COIN_THRESHOLDS,
   FLEET,
-  FLEET_KEYS,
   LINES,
   WILD,
   SCATTER,
@@ -43,17 +42,7 @@ import {
   type FleetKey,
   type SlotReceipt,
 } from "../lib/casinoSlotFleet";
-import type { GameEntry } from "../lib/casinoCatalog";
-export const FLEET_CATALOG: GameEntry[] = FLEET_KEYS.map((key) => ({
-  key,
-  name: FLEET[key].name,
-  category: "slots",
-  variance: "H",
-  buildClass: "I",
-  glyph: "◇",
-  hook: FLEET[key].feature,
-  status: "live",
-}));
+export { FLEET_CATALOG } from "../lib/casinoExperienceCatalog";
 const mult = (n: number) => `${Number(n.toFixed(4))}×`;
 export function FleetTile({ game }: { game: FleetKey }) {
   const t = SLOT_IDENTITIES[game];

@@ -1,0 +1,39 @@
+{
+  "schema": "cradle.casino.native-station-proof.v1",
+  "nativeRuntime": "Carbon Trinity DX11 under Wine/FEX",
+  "renderRun": "e20f8f6159314485b903527747ab0df9",
+  "cleanupVerified": true,
+  "interactive": false,
+  "browserRenderer": false,
+  "finalArt": false,
+  "terminalCount": 34,
+  "triangles": 24720,
+  "cmfSha256": "4cbdf0b98c0021a40d0a01df39bae29dac2912b8c794c7523dea1f061d6ab126",
+  "views": [
+    {
+      "view": 0,
+      "sha256": "eac87f09a4d9bf5487ae9a5fe8fb0af13521de3cd47575cb7d2f28857875e44d",
+      "foregroundPixelsVsEmpty": 1480415
+    },
+    {
+      "view": 1,
+      "sha256": "d0c673d63b286aa717ad6ccf34013c27aa5e8e5e24538f0949c46789dc8c8dd3",
+      "foregroundPixelsVsEmpty": 1509133
+    },
+    {
+      "view": 2,
+      "sha256": "ce537f5ab585cd302f313eb88fc5e6886517223014db724d70cd408885627bba",
+      "foregroundPixelsVsEmpty": 1560739
+    }
+  ],
+  "sourceHashes": {
+    "build_station.py": "77def704bd6c0418c1760b5c2ae707c2b1a1b33e79536bd14690036a62f0a67b",
+    "native_scene.py": "0b29e3583177bdedce794317e72f4a871f0373fd1ffebb44055af07fde2c68a9",
+    "render_station.py": "fb9711446f533c73849540772dce98c59317ed9e063f9827c46205143e69b186"
+  },
+  "limitations": [
+    "Gray material/blockout capture, not a qualified final material treatment",
+    "No walking/input or streaming service tested",
+    "Native current-client hangar scene loads as EveSpaceScene with no placed objects; it is not a ready-made casino interior"
+  ]
+}

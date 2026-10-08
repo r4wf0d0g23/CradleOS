@@ -1,0 +1,333 @@
+{
+  "schema": "cradle.casino.native-station.v1",
+  "asset_id": "casino-station-blockout-01",
+  "status": "blockout-not-final",
+  "skeletal_skinning": false,
+  "materials": {
+    "hull": [
+      0.2,
+      0.22,
+      0.23,
+      1
+    ],
+    "armor": [
+      0.3,
+      0.32,
+      0.33,
+      1
+    ],
+    "recess": [
+      0.025,
+      0.03,
+      0.04,
+      1
+    ],
+    "amber": [
+      0.95,
+      0.23,
+      0.035,
+      1
+    ],
+    "vein": [
+      0.3,
+      0.66,
+      0.64,
+      1
+    ],
+    "sign": [
+      0.85,
+      0.81,
+      0.71,
+      1
+    ]
+  },
+  "meshes": [
+    {
+      "name": "hull",
+      "material": "hull",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 0,
+      "vertices": 22320,
+      "triangles": 7440
+    },
+    {
+      "name": "armor",
+      "material": "armor",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 1,
+      "vertices": 10440,
+      "triangles": 3480
+    },
+    {
+      "name": "recess",
+      "material": "recess",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 2,
+      "vertices": 12420,
+      "triangles": 4140
+    },
+    {
+      "name": "amber",
+      "material": "amber",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 3,
+      "vertices": 13680,
+      "triangles": 4560
+    },
+    {
+      "name": "vein",
+      "material": "vein",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 4,
+      "vertices": 9000,
+      "triangles": 3000
+    },
+    {
+      "name": "sign",
+      "material": "sign",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 5,
+      "vertices": 6300,
+      "triangles": 2100
+    }
+  ],
+  "terminalCount": 34,
+  "terminals": [
+    {
+      "x": -16,
+      "z": -16,
+      "zone": "slot-gallery",
+      "ordinal": 0
+    },
+    {
+      "x": -12,
+      "z": -16,
+      "zone": "slot-gallery",
+      "ordinal": 1
+    },
+    {
+      "x": -8,
+      "z": -16,
+      "zone": "slot-gallery",
+      "ordinal": 2
+    },
+    {
+      "x": -16,
+      "z": -10,
+      "zone": "slot-gallery",
+      "ordinal": 3
+    },
+    {
+      "x": -12,
+      "z": -10,
+      "zone": "slot-gallery",
+      "ordinal": 4
+    },
+    {
+      "x": -8,
+      "z": -10,
+      "zone": "slot-gallery",
+      "ordinal": 5
+    },
+    {
+      "x": -16,
+      "z": -4,
+      "zone": "slot-gallery",
+      "ordinal": 6
+    },
+    {
+      "x": -12,
+      "z": -4,
+      "zone": "slot-gallery",
+      "ordinal": 7
+    },
+    {
+      "x": -8,
+      "z": -4,
+      "zone": "slot-gallery",
+      "ordinal": 8
+    },
+    {
+      "x": 8,
+      "z": -16,
+      "zone": "card-lounge",
+      "ordinal": 0
+    },
+    {
+      "x": 12,
+      "z": -16,
+      "zone": "card-lounge",
+      "ordinal": 1
+    },
+    {
+      "x": 16,
+      "z": -16,
+      "zone": "card-lounge",
+      "ordinal": 2
+    },
+    {
+      "x": 8,
+      "z": -10,
+      "zone": "card-lounge",
+      "ordinal": 3
+    },
+    {
+      "x": 12,
+      "z": -10,
+      "zone": "card-lounge",
+      "ordinal": 4
+    },
+    {
+      "x": 16,
+      "z": -10,
+      "zone": "card-lounge",
+      "ordinal": 5
+    },
+    {
+      "x": 8,
+      "z": -4,
+      "zone": "card-lounge",
+      "ordinal": 6
+    },
+    {
+      "x": 12,
+      "z": -4,
+      "zone": "card-lounge",
+      "ordinal": 7
+    },
+    {
+      "x": -15,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 0
+    },
+    {
+      "x": -9,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 1
+    },
+    {
+      "x": -3,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 2
+    },
+    {
+      "x": 3,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 3
+    },
+    {
+      "x": 9,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 4
+    },
+    {
+      "x": 15,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 5
+    },
+    {
+      "x": -15,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 6
+    },
+    {
+      "x": -9,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 7
+    },
+    {
+      "x": -3,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 8
+    },
+    {
+      "x": 3,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 9
+    },
+    {
+      "x": 9,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 10
+    },
+    {
+      "x": -3,
+      "z": -16,
+      "zone": "salvage-arcade",
+      "ordinal": 0
+    },
+    {
+      "x": 3,
+      "z": -16,
+      "zone": "salvage-arcade",
+      "ordinal": 1
+    },
+    {
+      "x": -3,
+      "z": -10,
+      "zone": "salvage-arcade",
+      "ordinal": 2
+    },
+    {
+      "x": 3,
+      "z": -10,
+      "zone": "salvage-arcade",
+      "ordinal": 3
+    },
+    {
+      "x": -3,
+      "z": -4,
+      "zone": "salvage-arcade",
+      "ordinal": 4
+    },
+    {
+      "x": 3,
+      "z": -4,
+      "zone": "salvage-arcade",
+      "ordinal": 5
+    }
+  ],
+  "units": "authored human-scale scene units",
+  "renderer": "native Carbon Trinity DX11"
+}

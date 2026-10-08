@@ -1,0 +1,114 @@
+{
+  "verdict": "PASS bounded common groundwork; not shipping approval",
+  "head": "52d5a7c5c0f9f33439a12471004a11c4f0a2730c",
+  "reviewedSourceHashes": {
+    "src/components/CasinoExperience.tsx": "1134bd8e778a20a3741806952ae3d093fac17aea0dc350d367d235a326490f41",
+    "src/components/CasinoCraps.tsx": "21b12a4cff7a153d5036c572535af2248ebebbc7e03ad3b347c5289912882b35",
+    "src/components/CasinoSlotFleet.tsx": "479abe2ce48f2b6282fe32fa202afd1280324ba6507c8b18381cf1cf65264d65",
+    "src/lib/casinoExperienceCatalog.ts": "ac0c736660715bae71b3e3f4f52af4a6b225c09b6c4a764ae3f07e2982ba5c71",
+    "src/lib/casinoStationSession.ts": "7703cc3c645192a6eeba82dfe8fedca381157634aae4b995842b2388edc99458",
+    "src/lib/casinoStationSession.test.ts": "55d642eb5394bc3b46e50909fcb36fc471fd7dbe727b56c45e4e599352cae085"
+  },
+  "boundary": {
+    "src/lib/casinoSessions.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "80d1576592748fd26ae9132fdaf5623a33c06d8b3b3e89857094bba18f46fe0a"
+    },
+    "src/lib/casinoPractice.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac"
+    },
+    "src/lib/casinoSlotFleet.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8"
+    },
+    "src/lib/casinoCraps.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "85b67791722e86e15d9db2a26276f724ac7c4224cd09b4694d17b663959939b1"
+    },
+    "src/lib/casinoCrapsSession.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "60b398794c1695ee236fd325d82d7fce8d0dd1463ed045dc1cae3a6b35977897"
+    },
+    "src/lib/casinoDonations.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "6a06863c7a8229eb1dce582fbda2691a57c726bc3520a8db4953c4834c8ccb70"
+    },
+    "src/components/HouseDonatePanel.tsx": {
+      "unchangedFromHEAD": true,
+      "sha256": "b79e333de18ceccf7ab10e8525c97afdd253f0cf8178d6686794181094b0ea81"
+    },
+    "src/lib/casinoFeedback.ts": {
+      "unchangedFromHEAD": true,
+      "sha256": "59598a90540c99411ad1a3a47b21620a5b27631d80a355623c3d0dda5496537d"
+    }
+  },
+  "independentTests": {
+    "command": "npx vitest run src/lib/casinoStationSession.test.ts src/lib/casinoSessions.test.ts src/lib/casinoSpinRun.test.ts src/lib/casinoCraps.test.ts",
+    "files": 4,
+    "passed": 48
+  },
+  "nativeRun": ".tmp/openclaw-spikes/casino-station-native-20261008/render-01/native/e20f8f6159314485b903527747ab0df9",
+  "nativeQualification": "Original authored CMF station geometry, three static native Trinity DX11 captures only",
+  "images": [
+    {
+      "file": ".tmp/openclaw-spikes/casino-station-native-20261008/render-01/native/e20f8f6159314485b903527747ab0df9/runtime/station-0.png",
+      "sha256": "eac87f09a4d9bf5487ae9a5fe8fb0af13521de3cd47575cb7d2f28857875e44d",
+      "captureHashMatches": true,
+      "width": 1920,
+      "height": 1080,
+      "pixelsDifferingFromEmptyPercent": 73.18619791666666,
+      "meanAbsoluteDifferenceFromEmpty": 30.622554012345677,
+      "eye": [
+        0,
+        1.7,
+        21
+      ],
+      "focus": [
+        0,
+        1.7,
+        0
+      ]
+    },
+    {
+      "file": ".tmp/openclaw-spikes/casino-station-native-20261008/render-01/native/e20f8f6159314485b903527747ab0df9/runtime/station-1.png",
+      "sha256": "d0c673d63b286aa717ad6ccf34013c27aa5e8e5e24538f0949c46789dc8c8dd3",
+      "captureHashMatches": true,
+      "width": 1920,
+      "height": 1080,
+      "pixelsDifferingFromEmptyPercent": 76.36935763888889,
+      "meanAbsoluteDifferenceFromEmpty": 24.84514660493827,
+      "eye": [
+        -5,
+        1.7,
+        0
+      ],
+      "focus": [
+        -12,
+        1.7,
+        -10
+      ]
+    },
+    {
+      "file": ".tmp/openclaw-spikes/casino-station-native-20261008/render-01/native/e20f8f6159314485b903527747ab0df9/runtime/station-2.png",
+      "sha256": "ce537f5ab585cd302f313eb88fc5e6886517223014db724d70cd408885627bba",
+      "captureHashMatches": true,
+      "width": 1920,
+      "height": 1080,
+      "pixelsDifferingFromEmptyPercent": 76.36974344135803,
+      "meanAbsoluteDifferenceFromEmpty": 32.94059702932099,
+      "eye": [
+        5,
+        1.7,
+        0
+      ],
+      "focus": [
+        12,
+        1.7,
+        -10
+      ]
+    }
+  ],
+  "receiptCaveat": "Top-level scene_rendered=false and ship scope stale; nested result/probe scene_rendered=true, station_blockout=true, interactive_client=false; wine_cleanup=true",
+  "runtimeChoice": "pending Raw; no deployment approval"
+}

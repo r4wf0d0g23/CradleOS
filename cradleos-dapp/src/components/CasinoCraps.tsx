@@ -23,18 +23,8 @@ import {
   evaluateCraps,
   type CrapsKey,
 } from "../lib/casinoCraps";
-import type { GameEntry } from "../lib/casinoCatalog";
 import "../styles/casino-craps.css";
-export const CRAPS_CATALOG: GameEntry = {
-  key: "craps",
-  name: "CRAPS",
-  category: "dice",
-  variance: "M-H",
-  buildClass: "S",
-  glyph: "◇",
-  hook: "Two dice. One point. Hold the line.",
-  status: "live",
-};
+export { CRAPS_CATALOG } from "../lib/casinoExperienceCatalog";
 export function CrapsTile() {
   return (
     <div className="craps-tile">

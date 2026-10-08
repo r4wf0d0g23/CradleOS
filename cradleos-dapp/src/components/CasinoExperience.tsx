@@ -1,13 +1,10 @@
-import { CasinoCraps, CrapsTile, CRAPS_CATALOG } from "./CasinoCraps";
+import { PRACTICE_CATALOG } from "../lib/casinoExperienceCatalog";
+import { casinoLaunchGame } from "../lib/casinoStationSession";
+import { CasinoCraps, CrapsTile } from "./CasinoCraps";
 import { crapsEscrow, evaluateCraps } from "../lib/casinoCraps";
 import { slotRevealMs, type SlotMotionRun } from "../lib/casinoSlotMotion";
 import { slotAwaitingCollection } from "../lib/casinoSlotIdentity";
-import {
-  FleetBoard,
-  FleetRules,
-  FleetTile,
-  FLEET_CATALOG,
-} from "./CasinoSlotFleet";
+import { FleetBoard, FleetRules, FleetTile } from "./CasinoSlotFleet";
 import { FLEET, isFleet } from "../lib/casinoSlotFleet";
 import { CasinoPackControls } from "./CasinoPackControls";
 import { CasinoScratchPack } from "./CasinoScratchPack";
@@ -481,22 +478,20 @@ function TestnetStatus({ q }: { q: ReturnType<typeof useLoungeHouse> }) {
     </div>
   );
 }
-export function CasinoExperience() {
+export function CasinoExperience({
+  initialGame,
+  onReturnToStation,
+}: {
+  initialGame?: string;
+  onReturnToStation?: () => void;
+} = {}) {
   const [state, setState] = useState(initial),
     current = useRef<Session>(state);
   const [mode, setMode] = useState<"practice" | "testnet" | "donate">(
     "practice",
   );
   const [game, setGame] = useState<string | null>(() =>
-    state.craps?.pending
-      ? "craps"
-      : state.hand || state.table
-        ? "blackjack"
-        : activeSession(state)
-          ? (state.pack?.game ?? null)
-          : crapsEscrow(state.craps) || state.craps?.point
-            ? "craps"
-            : (state.pack?.game ?? null),
+    casinoLaunchGame(state, initialGame),
   );
   const [category, setCategory] = useState("all"),
     [search, setSearch] = useState("");
@@ -580,6 +575,7 @@ export function CasinoExperience() {
     setSlotRun(run);
     return run;
   };
+  const chainBusyRef = useRef(false);
   const [chainBusy, setChainBusy] = useState(false),
     [error, setError] = useState(state.notice ?? ""),
     [resetConfirm, setResetConfirm] = useState(false);
@@ -974,11 +970,7 @@ export function CasinoExperience() {
       setError("Browser storage is unavailable.");
     }
   }
-  const games = (
-    mode === "testnet"
-      ? CASINO_CATALOG
-      : [...CASINO_CATALOG, ...FLEET_CATALOG, CRAPS_CATALOG]
-  ).filter(
+  const games = (mode === "testnet" ? CASINO_CATALOG : PRACTICE_CATALOG).filter(
     (g) =>
       !g.disabled &&
       (mode === "testnet"
@@ -1056,6 +1048,19 @@ export function CasinoExperience() {
     <CasinoFeedback.Provider value={feedback.play}>
       <section className="frontier-casino" data-mode={mode}>
         <header className="lounge-header">
+          {onReturnToStation && (
+            <button
+              className="lounge-station-return"
+              disabled={chainBusy}
+              onClick={() => {
+                if (chainBusyRef.current) return;
+                pauseRun();
+                onReturnToStation();
+              }}
+            >
+              ← Station floor
+            </button>
+          )}
           <a
             className="lounge-brand"
             href="#/casino"
@@ -1170,6 +1175,7 @@ export function CasinoExperience() {
           <HouseDonatePanel
             onBusyChange={(value) => {
               busyRef.current = value;
+              chainBusyRef.current = value;
               setChainBusy(value);
             }}
           />
@@ -1328,7 +1334,10 @@ export function CasinoExperience() {
                   initialGame={game}
                   wageringReady={wageringReady}
                   embedded
-                  onBusyChange={setChainBusy}
+                  onBusyChange={(value) => {
+                    chainBusyRef.current = value;
+                    setChainBusy(value);
+                  }}
                   onLobby={() => navigate(null)}
                 />
               </div>
