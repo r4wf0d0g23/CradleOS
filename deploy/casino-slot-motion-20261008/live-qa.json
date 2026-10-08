@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "320px: 33 practice / 9 slots / 23 unchanged testnet; all 8 saved features resume, winning cells match engine, skip preserves ledger, triple-click one paid spin, rules fit",
+    "1440px: 33 practice / 9 slots / 23 unchanged testnet; all 8 saved features resume, winning cells match engine, skip preserves ledger, triple-click one paid spin, rules fit",
+    "Normal motion shows original board then transformation; sound remains enabled; failed cursor/spin storage writes do not debit or advance"
+  ],
+  "errors": [],
+  "badAssets": []
+}

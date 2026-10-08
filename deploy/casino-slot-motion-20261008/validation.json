@@ -19,5 +19,5 @@
   "supplyChainScan": "clean",
   "productionBuild": true,
   "sourceReview": "PASS: independent M1\u2013M3 correction and temporal recheck",
-  "public": "pending"
+  "public": "PASS:98hashes, independent LIVE and gameplay/lifecycle checks"
 }

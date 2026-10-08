@@ -1,11 +1,18 @@
 from pathlib import Path
-import urllib.request,json,hashlib,concurrent.futures,os
+import urllib.request,urllib.error,json,hashlib,concurrent.futures,os,time
 root=Path('/home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002/deploy/casino-slot-motion-20261008')
 deployment=os.environ['DEPLOYMENT'];source=os.environ['SOURCE_SHA']
 base='https://cradleos.io';immutable=f'https://{deployment}.cradleos-d75.pages.dev'
 assets=json.loads((root/'assets-preserved.json').read_text());bundle=json.loads((root/'bundle-hashes.json').read_text())
 def get(url):
- with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'CradleOS-Casino-Release-Verification/1.0','Cache-Control':'no-cache'}),timeout=30) as r:return r.read(),dict(r.headers)
+ for attempt in range(3):
+  try:
+   with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'CradleOS-Casino-Release-Verification/1.0','Cache-Control':'no-cache'}),timeout=30) as r:return r.read(),dict(r.headers)
+  except (TimeoutError,urllib.error.URLError) as e:
+   if isinstance(e,urllib.error.HTTPError) and e.code<500:raise
+   if attempt==2:raise
+   print('Transient read retry',attempt+1,url,flush=True)
+   time.sleep(1)
 def verify(job):
  url,want=job;b,h=get(url);actual=hashlib.sha256(b).hexdigest();assert actual==want,(url,actual,want);return {'url':url,'bytes':len(b),'sha256':actual}
 mathHash=hashlib.sha256((root.parent.parent/'cradleos-dapp/dist/casino/slot-fleet-math.json').read_bytes()).hexdigest()

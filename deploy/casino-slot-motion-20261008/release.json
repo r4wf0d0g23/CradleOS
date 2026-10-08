@@ -1,0 +1,14 @@
+{
+  "source": "12886d252270ed77ebbe5d73441648c5c1020a77",
+  "deployment": "d589ed26",
+  "primary": "https://cradleos.io/#/casino",
+  "immutable": "https://d589ed26.cradleos-d75.pages.dev",
+  "rollback": "b9d836f4",
+  "runtime": "practice-slot-presentation-only",
+  "wagering": "HOLD unchanged; donations seed-only",
+  "verification": "PASS: independent LIVE, 98 public file hashes, exact HTML bundle references, icon API, 320/1440 accounting and 390 temporal lifecycle",
+  "tests": 265,
+  "publicTemporalChecks": 15,
+  "physicalPhoneFrameRate": "not measured",
+  "ownedTestServersStopped": true
+}

@@ -1,0 +1,239 @@
+{
+  "url": "https://cradleos.io/#/casino",
+  "viewport": 320,
+  "checks": [
+    {
+      "case": "Actual unseeded production-RNG normal-motion touch spin",
+      "early": {
+        "windows": 5,
+        "expanded": "false",
+        "strip": [
+          -754.925,
+          -827.895,
+          -899.965,
+          -970.56,
+          -1040.82
+        ],
+        "ghosts": [],
+        "fall": [],
+        "symbols": [
+          0,
+          1,
+          2,
+          4,
+          3,
+          0,
+          1,
+          4,
+          1,
+          6,
+          3,
+          0,
+          5,
+          0,
+          0
+        ]
+      },
+      "moving": {
+        "windows": 5,
+        "expanded": "false",
+        "strip": [
+          -398.977,
+          -491.214,
+          -580.304,
+          -667.127,
+          -752.173
+        ],
+        "ghosts": [],
+        "fall": [],
+        "symbols": [
+          0,
+          1,
+          2,
+          4,
+          3,
+          0,
+          1,
+          4,
+          1,
+          6,
+          3,
+          0,
+          5,
+          0,
+          0
+        ]
+      },
+      "stake": 100,
+      "payout": 0,
+      "balance": 999900,
+      "cursor": 1,
+      "reloadExact": true
+    },
+    {
+      "case": "Explicit isolated valid Feral saved cascade fixture",
+      "clear": {
+        "windows": 0,
+        "expanded": "false",
+        "strip": [],
+        "ghosts": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "fall": [
+          {
+            "source": "-2",
+            "y": -84.7812
+          },
+          {
+            "source": "0",
+            "y": -42.3906
+          },
+          {
+            "source": "-3",
+            "y": -127.219
+          },
+          {
+            "source": "-2",
+            "y": -127.219
+          },
+          {
+            "source": "0",
+            "y": -84.8125
+          },
+          {
+            "source": "-3",
+            "y": -127.219
+          },
+          {
+            "source": "-2",
+            "y": -127.219
+          }
+        ],
+        "symbols": [
+          1,
+          3,
+          1,
+          1,
+          6,
+          0,
+          5,
+          2,
+          5,
+          4,
+          3,
+          5,
+          6,
+          1,
+          1,
+          4,
+          2,
+          1,
+          3,
+          1,
+          3,
+          6,
+          2,
+          0,
+          5
+        ]
+      },
+      "falling": {
+        "windows": 0,
+        "expanded": "false",
+        "strip": [],
+        "ghosts": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fall": [
+          {
+            "source": "-2",
+            "y": -70.0481
+          },
+          {
+            "source": "0",
+            "y": -29.9687
+          },
+          {
+            "source": "-3",
+            "y": -114.746
+          },
+          {
+            "source": "-2",
+            "y": -114.746
+          },
+          {
+            "source": "0",
+            "y": -73.3918
+          },
+          {
+            "source": "-3",
+            "y": -117.882
+          },
+          {
+            "source": "-2",
+            "y": -117.867
+          }
+        ],
+        "symbols": [
+          1,
+          3,
+          1,
+          1,
+          6,
+          0,
+          5,
+          2,
+          5,
+          4,
+          3,
+          5,
+          6,
+          1,
+          1,
+          4,
+          2,
+          1,
+          3,
+          1,
+          3,
+          6,
+          2,
+          0,
+          5
+        ]
+      },
+      "settledExact": true
+    },
+    {
+      "case": "Explicit isolated valid Gate saved fixture: normal/reduced/normal",
+      "windows": [
+        5,
+        0,
+        0
+      ],
+      "expanded": "true",
+      "cursor": 2,
+      "reloadExact": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleDiagnostics": [
+    "(assets/index-BhNxrfzD.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at VJ (https://cradleos.io/assets/index-BhNxrfzD.js:61:25501)\n    at HJ (https://cradleos.io/assets/index-BhNxrfzD.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BhNxrfzD.js:61:105035)\n    at https://cradleos.io/assets/index-BhNxrfzD.js:61:105530\n    at Array.map (<anonymous>)\n    at VQ (https://cradleos.io/assets/index-BhNxrfzD.js:61:105486)\n    at qQ (https://cradleos.io/assets/index-BhNxrfzD.js:61:111535)\n    at https://cradleos.io/assets/index-BhNxrfzD.js:64:7207",
+    "Access to fetch at 'https://keeper.reapers.shop/telemetry/combined' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+  ],
+  "postMethods": [
+    "Cloudflare analytics"
+  ],
+  "PASS": true
+}
