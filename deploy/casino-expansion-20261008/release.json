@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-08T12:41:52.183949+00:00",
+  "source": "b02ca5a1975521ee5a2efbe09e7b1f3e9dd926b2",
+  "branch": "cycle7-vestiges-20261002",
+  "deployment": "105a5fc4",
+  "production": "https://cradleos.io/#/casino",
+  "immutable": "https://105a5fc4.cradleos-d75.pages.dev/#/casino",
+  "rollback": "058ed040",
+  "practiceGames": 25,
+  "newPracticeGames": 17,
+  "stagedTestnetPreviews": 23,
+  "retired": [
+    "mines",
+    "dragon_tower",
+    "video_poker"
+  ],
+  "newTestnetQuarantine": [
+    "hilo",
+    "baccarat",
+    "scratch_cards"
+  ],
+  "contractsChanged": false,
+  "signingOrFunding": false,
+  "casinoFunded": false,
+  "houseSnapshot": "house-snapshot.json",
+  "checks": {
+    "unitTests": 195,
+    "origins": 8,
+    "ioc": "clean",
+    "typescript": "pass",
+    "productionBuild": "pass",
+    "productionBrowserGameChecks": 75,
+    "liveBrowserGameChecks": 75,
+    "livePageExceptions": 0,
+    "publicFileHashes": 47,
+    "preservedAssets": 43,
+    "practiceChainReads": 0,
+    "casinoWrites": 0,
+    "normalMotion": true,
+    "plinkoRegression": true,
+    "optInAudio": true,
+    "independentCandidate": "PASS",
+    "independentLive": "PASS for practice-only scope"
+  },
+  "limitations": [
+    "On-chain defects remain unpatched in current bytecode; do not fund or unpause. See ARCHITECTURE-REVIEW.md.",
+    "One independent browser saw official GraphQL CORS/status unavailable and verified fail-closed wagering. Main live sweep and direct snapshot read paused bank0.",
+    "Pre-existing SDK/Slush diagnostics and bundle size warnings remain; no claim of a completely clean console.",
+    "Wrangler dirty warning was pre-existing untracked .wrangler directories; reviewed tracked source was committed."
+  ]
+}

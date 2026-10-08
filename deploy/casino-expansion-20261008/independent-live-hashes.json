@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://cradleos.io/assets/index-DPo35JVe.js",
+    "status": 200,
+    "bytes": 2116786,
+    "sha256": "e0df19fc77dd9494b6b07c83c17b7f4b5ff4cb7ca8bbb99d4569de05cf70c6f7",
+    "matchesLocalDist": true
+  },
+  {
+    "url": "https://cradleos.io/assets/index-DGn-09B_.css",
+    "status": 200,
+    "bytes": 740806,
+    "sha256": "aa0c60adf02321117ddff88fc53558755674847fcf66782bca62a74cbc9832c8",
+    "matchesLocalDist": true
+  },
+  {
+    "url": "https://105a5fc4.cradleos-d75.pages.dev/assets/index-DPo35JVe.js",
+    "status": 200,
+    "bytes": 2116786,
+    "sha256": "e0df19fc77dd9494b6b07c83c17b7f4b5ff4cb7ca8bbb99d4569de05cf70c6f7",
+    "matchesLocalDist": true
+  },
+  {
+    "url": "https://105a5fc4.cradleos-d75.pages.dev/assets/index-DGn-09B_.css",
+    "status": 200,
+    "bytes": 740806,
+    "sha256": "aa0c60adf02321117ddff88fc53558755674847fcf66782bca62a74cbc9832c8",
+    "matchesLocalDist": true
+  }
+]
