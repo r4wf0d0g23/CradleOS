@@ -1,6 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
   deriveDynamicFieldID,
+  isValidStructTag,
   normalizeStructTag,
   normalizeSuiAddress,
 } from "@mysten/sui/utils";
@@ -55,6 +56,27 @@ function option(value: any): any {
   if (Array.isArray(value)) return value[0] ?? null;
   if (value.vec) return value.vec[0] ?? null;
   return value;
+}
+/** GraphQL flattens Option<TypeName> to string | null, unlike raw Move JSON. */
+function turretExtension(value: unknown): string | null {
+  const invalid = () => new Error("Turret extension data is incomplete or invalid. Refresh to retry.");
+  if (value === null) return null;
+  // Retain the older option representations without treating missing or
+  // malformed data as 'no extension' (which could bypass replacement consent).
+  if (Array.isArray(value) || (typeof value === "object" && value !== null && "vec" in value)) {
+    const vec = Array.isArray(value) ? value : (value as { vec: unknown }).vec;
+    if (!Array.isArray(vec) || vec.length > 1) throw invalid();
+    if (!vec.length) return null;
+    value = vec[0];
+  }
+  const name = typeof value === "string"
+    ? value
+    : typeof value === "object" && value !== null && "name" in value
+      ? (value as { name: unknown }).name
+      : undefined;
+  if (typeof name !== "string" || !/^(?:0x)?[\da-fA-F]{1,64}::/.test(name) || !isValidStructTag(name))
+    throw invalid();
+  return normalizeStructTag(name);
 }
 async function objects(ids: string[]): Promise<Array<ObjectRow | null>> {
   if (!ids.length) return [];
@@ -124,12 +146,7 @@ export async function fetchPersonalTurrets(
       const meta = option(f.metadata);
       if (!meta || typeof meta.description !== "string")
         throw new Error("Turret metadata is unavailable. Refresh to retry.");
-      const rawExtension = option(f.extension);
-      if (rawExtension !== null && typeof rawExtension.name !== "string")
-        throw new Error("Turret extension data is incomplete.");
-      const extension = rawExtension?.name ?? null;
-      if (extension !== null && typeof extension !== "string")
-        throw new Error("Turret extension data is incomplete.");
+      const extension = turretExtension(f.extension);
       const status = f.status?.status;
       out.push({
         id: row.address,
@@ -144,11 +161,7 @@ export async function fetchPersonalTurrets(
           status?.variant === "ONLINE" ||
           status?.["@variant"] === "ONLINE",
         frozen: rows[i + batch.length] !== null,
-        extension: extension
-          ? extension.startsWith("0x")
-            ? extension
-            : `0x${extension}`
-          : null,
+        extension,
         description: meta.description,
         settings: readTurretSettings(meta.description),
         version: row.version,

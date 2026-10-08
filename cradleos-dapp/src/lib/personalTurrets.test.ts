@@ -68,6 +68,58 @@ function setup() {
     .mockResolvedValueOnce({ o0: char })
     .mockResolvedValueOnce({ o0: turret, o1: null });
 }
+function setupExtension(extension: unknown) {
+  setup();
+  vi.mocked(queryChain)
+    .mockReset()
+    .mockResolvedValueOnce({ o0: char })
+    .mockResolvedValueOnce({
+      o0: row(id(3), `${CURRENT_WORLD}::turret::Turret`, {
+        ...turret.asMoveObject.contents.json,
+        extension,
+      }),
+      o1: null,
+    });
+}
+// Captured from the public current-world GraphQL response on 2026-10-08 UTC:
+// turret 0x0e5be29757fac288bd8594e0db59329ad251b30d0a0b2166c52ddf3820755ee5.
+// Option<TypeName> is flattened to a string, NOT { name: string }.
+const liveExtension =
+  "84f0dc475c0942fff9d0b8e771623857a87926106016f1f2a10fda6d41861f9e::turret::CommercialAuthV2";
+it("decodes the live configured extension without losing foreign replacement consent", async () => {
+  setupExtension(liveExtension);
+  const [result] = await fetchPersonalTurrets(id(1));
+  expect(result.extension).toBe(`0x${liveExtension}`);
+  expect(isOurTurretExtension(result.extension)).toBe(false);
+  expect(() => build(id(1), result, defaults)).toThrow(/Confirm/);
+  expect(() => build(id(1), result, defaults, true)).not.toThrow();
+});
+it.each([
+  PERSONAL_TURRET_AUTH,
+  PERSONAL_TURRET_AUTH.slice(2),
+  { name: PERSONAL_TURRET_AUTH },
+  [PERSONAL_TURRET_AUTH],
+  { vec: [{ name: PERSONAL_TURRET_AUTH.slice(2) }] },
+])("recognizes our extension in supported JSON forms: %j", async (extension) => {
+  setupExtension(extension);
+  const [result] = await fetchPersonalTurrets(id(1));
+  expect(result.extension).toBe(PERSONAL_TURRET_AUTH);
+  expect(isOurTurretExtension(result.extension)).toBe(true);
+  expect(() => build(id(1), result, null)).not.toThrow();
+});
+it.each([null, [], { vec: [] }])("keeps an explicit empty extension as defaults: %j", async (extension) => {
+  setupExtension(extension);
+  const [result] = await fetchPersonalTurrets(id(1));
+  expect(result.extension).toBeNull();
+});
+it.each([
+  undefined, "", "not-a-type", 7, {}, { name: 7 }, { name: "" },
+  { vec: "invalid" }, [liveExtension, liveExtension], { vec: [null] },
+  [null], { name: "0x123::turret::Auth::extra" },
+])("fails closed for incomplete or malformed extension data: %j", async (extension) => {
+  setupExtension(extension);
+  await expect(fetchPersonalTurrets(id(1))).rejects.toThrow(/extension data/);
+});
 it("borrows, saves and returns OwnerCap without extra config object", () => {
   const tx = build(id(1), base, defaults).getData();
   expect(tx.sender).toBe(id(1));
