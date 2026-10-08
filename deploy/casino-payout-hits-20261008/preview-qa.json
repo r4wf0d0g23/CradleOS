@@ -1,0 +1,20 @@
+{
+  "checks": [
+    "320 partial: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "320 zero: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "320 win: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "320: reduced/hidden cancellation and reversal, late hidden result, muted reveal, navigation and blocked storage do not replay or falsely acknowledge",
+    "390 partial: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "390 zero: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "390 win: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "390: reduced/hidden cancellation and reversal, late hidden result, muted reveal, navigation and blocked storage do not replay or falsely acknowledge",
+    "390 positive free frame: only actual award cues; terminal aggregate once",
+    "390 zero free frame: only actual award cues; terminal aggregate once",
+    "390 terminal free frame: only actual award cues; terminal aggregate once",
+    "1440 partial: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "1440 zero: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "1440 win: exact terminal cue once, truthful status, positive-only finite flash, reload/input/details silent; ledger intact",
+    "1440: reduced/hidden cancellation and reversal, late hidden result, muted reveal, navigation and blocked storage do not replay or falsely acknowledge"
+  ],
+  "errors": []
+}

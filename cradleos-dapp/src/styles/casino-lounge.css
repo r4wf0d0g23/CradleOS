@@ -559,6 +559,25 @@
 .lounge-result .casino-payout-summary strong {
   font-size: clamp(26px, 4vw, 36px);
 }
+.casino-payout-summary .casino-payout-hit {
+  animation: casino-payout-receipt 900ms ease-out both;
+}
+@keyframes casino-payout-receipt {
+  0% {
+    text-shadow: 0 0 0 transparent;
+    transform: translateY(0);
+  }
+  22% {
+    text-shadow:
+      0 0 18px #91dddfaa,
+      0 0 5px #fafae588;
+    transform: translateY(-2px);
+  }
+  100% {
+    text-shadow: 0 0 0 transparent;
+    transform: translateY(0);
+  }
+}
 .casino-round-details {
   width: 100%;
   text-align: left;

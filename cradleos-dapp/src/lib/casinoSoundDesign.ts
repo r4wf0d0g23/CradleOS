@@ -5,6 +5,7 @@ export type CasinoCue =
   | "deal"
   | "spin"
   | "win"
+  | "payout"
   | "loss"
   | "stop"
   | "bonus_spin"
@@ -21,6 +22,7 @@ export type SoundNote = {
   wave: OscillatorType;
 };
 const NOTES: Record<CasinoCue, number[]> = {
+  payout: [659.25, 880],
   bonus_spin: [293.66, 440, 587.33],
   bonus: [293.66, 440, 587.33, 880],
   cascade: [220, 293.66, 349.23],
@@ -131,6 +133,17 @@ export function casinoSoundNotes(cue: CasinoCue, game?: FleetKey): SoundNote[] {
     sweep: 0.8,
     gain: 0.045,
   };
+  // A brief transfer/hit cue, distinct from the full win or earned bonus fanfare.
+  if (cue === "payout")
+    return NOTES.payout.map((hz, i) => ({
+      hz: hz * v.pitch,
+      endHz: hz * v.pitch,
+      at: i * 0.075,
+      duration: 0.15,
+      attack: 0.006,
+      gain: Math.min(0.023, v.gain),
+      wave: "sine",
+    }));
   if (cue === "bonus" && voice) {
     const note = (
       hz: number,

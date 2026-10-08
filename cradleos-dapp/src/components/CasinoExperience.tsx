@@ -36,6 +36,7 @@ import { HouseDonatePanel } from "./HouseDonatePanel";
 import { CasinoPanel } from "./CasinoPanel";
 import { CasinoRoundStage, casinoRoundMs } from "./CasinoRoundStage";
 import { CasinoRoundSummary, CasinoRoundHistory } from "./CasinoRoundSummary";
+import { roundCue, type PayoutEvent } from "../lib/casinoResultFeedback";
 import { ExpandedOptions } from "./CasinoExpandedOptions";
 import {
   EXPANSION_RULES,
@@ -468,6 +469,8 @@ export function CasinoExperience() {
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const slotGeneration = useRef(0);
   const [slotRun, setSlotRun] = useState<SlotMotionRun>({ id: 0, started: 0 });
+  const payoutGeneration = useRef(0);
+  const [payoutEvent, setPayoutEvent] = useState<PayoutEvent | undefined>();
   const beginSlotMotion = () => {
     const run = { id: ++slotGeneration.current, started: performance.now() };
     setSlotRun(run);
@@ -505,6 +508,7 @@ export function CasinoExperience() {
   };
   function navigate(key: string | null) {
     if (locked || busyRef.current || activeSession(current.current)) return;
+    setPayoutEvent(undefined);
     setGame(key);
     setOptions((o) => ({ ...o, count: 1 }));
     setSide(0);
@@ -517,12 +521,31 @@ export function CasinoExperience() {
   }
   function changeMode(value: typeof mode) {
     if (locked || busyRef.current || activeSession(current.current)) return;
+    setPayoutEvent(undefined);
     setMode(value);
     setGame(null);
     setCategory("all");
     setSearch("");
     setError("");
     feedback.play("select");
+  }
+  function presentRound(
+    round: Pick<Round, "id" | "game" | "payout" | "stake">,
+  ) {
+    feedback.play(
+      roundCue(round),
+      isFleet(round.game) ? round.game : undefined,
+    );
+    setPayoutEvent(
+      round.payout > 0 && !document.hidden
+        ? {
+            id: ++payoutGeneration.current,
+            roundId: round.id,
+            game: round.game,
+            at: performance.now(),
+          }
+        : undefined,
+    );
   }
   function slotDone(id: number, cursor: number, all = false) {
     const saved = current.current;
@@ -537,12 +560,16 @@ export function CasinoExperience() {
     const feature = next.pack!.slot!;
     const frame = feature.frames[feature.cursor - 1];
     if (feature.cursor === feature.frames.length)
-      feedback.play(
-        feature.payout > feature.stake ? "win" : "loss",
-        feature.key,
-      );
+      presentRound({
+        id,
+        game: feature.key,
+        payout: feature.payout,
+        stake: feature.stake,
+      });
     else if (frame.remaining > 0 && frame.kind === "spin")
       feedback.play("bonus", feature.key);
+    else if (frame.kind === "free" && frame.award > 0)
+      feedback.play("payout", feature.key);
     else
       feedback.play(
         frame.kind === "hold"
@@ -605,6 +632,7 @@ export function CasinoExperience() {
   }
   function act(action?: TableAction) {
     if (busyRef.current || mode !== "practice" || !game) return;
+    setPayoutEvent(undefined);
     busyRef.current = true;
     setError("");
     try {
@@ -643,15 +671,14 @@ export function CasinoExperience() {
               );
             }
           } else if (next.sequence > previous.sequence)
-            feedback.play(
-              (
-                next.pack
-                  ? packTotal(next.pack, "payout") >
-                    packTotal(next.pack, "stake")
-                  : next.history[0].payout > next.history[0].stake
-              )
-                ? "win"
-                : "loss",
+            presentRound(
+              next.pack
+                ? {
+                    ...next.pack.rounds[0],
+                    payout: packTotal(next.pack, "payout"),
+                    stake: packTotal(next.pack, "stake"),
+                  }
+                : next.history[0],
             );
         },
         reduce
@@ -683,6 +710,7 @@ export function CasinoExperience() {
     if (locked || busyRef.current || activeSession(current.current)) return;
     try {
       commit(initialSession());
+      setPayoutEvent(undefined);
       setResetConfirm(false);
       setError("");
       feedback.play("select");
@@ -1051,7 +1079,16 @@ export function CasinoExperience() {
                     {!busy &&
                       !activeSession(state) &&
                       (result ? (
-                        <CasinoRoundSummary round={result} />
+                        <CasinoRoundSummary
+                          round={result}
+                          reduced={reduce}
+                          event={
+                            payoutEvent?.roundId === result.id &&
+                            payoutEvent.game === game
+                              ? payoutEvent
+                              : undefined
+                          }
+                        />
                       ) : (
                         <span>Set your stake. Make your move.</span>
                       ))}

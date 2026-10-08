@@ -1,5 +1,10 @@
+import { useEffect, useState } from "react";
 import { chipLabel, type Round } from "../lib/casinoPractice";
 import { packTotal, pendingSlot, type Session } from "../lib/casinoSessions";
+import {
+  payoutFlashRemaining,
+  type PayoutEvent,
+} from "../lib/casinoResultFeedback";
 
 type Amounts = Pick<Round, "stake" | "payout" | "label">;
 
@@ -43,8 +48,71 @@ function RoundBreakdown({ round }: { round: Amounts }) {
   );
 }
 
+function PayoutAmount({
+  payout,
+  event,
+  reduced,
+}: {
+  payout: number;
+  event?: PayoutEvent;
+  reduced: boolean;
+}) {
+  const [flash, setFlash] = useState(
+    () =>
+      !!event &&
+      payout > 0 &&
+      !reduced &&
+      typeof document !== "undefined" &&
+      !document.hidden &&
+      !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      payoutFlashRemaining(event.at, performance.now()) > 0,
+  );
+  useEffect(() => {
+    if (reduced) setFlash(false);
+  }, [reduced]);
+  useEffect(() => {
+    if (!flash || !event) return;
+    if (document.hidden) {
+      setFlash(false);
+      return;
+    }
+    const timer = setTimeout(
+      () => setFlash(false),
+      payoutFlashRemaining(event.at, performance.now()),
+    );
+    const visibility = () => {
+      if (document.hidden) setFlash(false);
+    };
+    const media = matchMedia("(prefers-reduced-motion: reduce)");
+    const motion = (event: MediaQueryListEvent) => {
+      if (event.matches) setFlash(false);
+    };
+    if (media.matches) setFlash(false);
+    document.addEventListener("visibilitychange", visibility);
+    media.addEventListener("change", motion);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", visibility);
+      media.removeEventListener("change", motion);
+    };
+  }, [flash, event]);
+  return (
+    <strong className={flash ? "casino-payout-hit" : undefined}>
+      {chipLabel(payout)} <small>chips</small>
+    </strong>
+  );
+}
+
 /** Amounts come from the settled round, never the editable next-bet field. */
-export function CasinoRoundSummary({ round }: { round: Amounts }) {
+export function CasinoRoundSummary({
+  round,
+  event,
+  reduced = false,
+}: {
+  round: Amounts;
+  event?: PayoutEvent;
+  reduced?: boolean;
+}) {
   return (
     <>
       <div
@@ -54,9 +122,12 @@ export function CasinoRoundSummary({ round }: { round: Amounts }) {
         aria-atomic="true"
       >
         <span className="casino-payout-label">Payout</span>
-        <strong>
-          {chipLabel(round.payout)} <small>chips</small>
-        </strong>
+        <PayoutAmount
+          key={event?.id ?? 0}
+          payout={round.payout}
+          event={event}
+          reduced={reduced}
+        />
         <span>
           {roundOutcome(round)} · Total bet {chipLabel(round.stake)} chips
         </span>
