@@ -1,0 +1,19 @@
+[Unit]
+Description=Cradle native Carbon station renderer
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+[Service]
+WorkingDirectory=/home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002
+ExecStart=/usr/bin/python3 services/casino-station/native/supervise.py
+Environment=STATION_IPC=/dev/shm/cradle-station-1000
+Environment=STATION_NATIVE_LIFETIME=28800
+Restart=on-failure
+RestartSec=30
+UMask=0077
+KillMode=mixed
+TimeoutStopSec=150
+MemoryMax=20G
+TasksMax=512
+[Install]
+WantedBy=default.target

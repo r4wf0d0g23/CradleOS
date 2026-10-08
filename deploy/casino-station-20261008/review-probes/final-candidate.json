@@ -1,0 +1,19 @@
+{
+  "pass": true,
+  "scope": "Reviewed compiled dist fulfilled at primary origin; WebSocket transport mocked, no native slot or public app deployment claim",
+  "viewport": "320x568 touch",
+  "lobbyStationEntry": true,
+  "entryRect": {
+    "x": 23,
+    "y": 134.9375,
+    "width": 99.671875,
+    "height": 46
+  },
+  "expectedWssEndpoint": "wss://spark-2def.tail587192.ts.net:10000/join",
+  "oneLedgerOwner": true,
+  "unmountedOnReturn": true,
+  "crapsEscrowExactAcrossReturnRemount": true,
+  "noHorizontalOverflow": true,
+  "pageErrors": [],
+  "financialRequests": []
+}

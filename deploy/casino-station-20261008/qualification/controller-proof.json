@@ -1,0 +1,25 @@
+{
+  "metrics": [
+    {
+      "frames": 347,
+      "samples": 200,
+      "p50": 190.5,
+      "p95": 243,
+      "state": {
+        "state": "walking",
+        "msg": "Native Carbon"
+      }
+    },
+    {
+      "frames": 331,
+      "samples": 200,
+      "p50": 165.09999990463257,
+      "p95": 215.70000004768372,
+      "state": {
+        "state": "walking",
+        "msg": "Native Carbon"
+      }
+    }
+  ],
+  "jpeg": true
+}

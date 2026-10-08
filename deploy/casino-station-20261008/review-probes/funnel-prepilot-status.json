@@ -1,0 +1,22 @@
+{
+  "readOnly": true,
+  "tcpPorts": [
+    "4174",
+    "443",
+    "8443"
+  ],
+  "webPorts": {
+    "4174": [
+      "/"
+    ],
+    "443": [
+      "/"
+    ],
+    "8443": [
+      "/"
+    ]
+  },
+  "allowFunnelByPort": {},
+  "canonicalConfigSHA256": "766c7d9d901951f0be7a3875142b5713cac52bac358a3134d7f12dc5b610d02b",
+  "configurationChanged": false
+}

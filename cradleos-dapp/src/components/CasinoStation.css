@@ -1,0 +1,324 @@
+.casino-station {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: radial-gradient(ellipse at 50% 65%, #18302c, #0b1015 65%);
+  color: #f5eee1;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+  isolation: isolate;
+}
+.casino-station > canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  touch-action: none;
+}
+.casino-station button {
+  border: 1px solid #576064;
+  background: #141d20eb;
+  color: #eee8dc;
+  min-height: 44px;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 3px;
+  font: inherit;
+  touch-action: manipulation;
+}
+.casino-station button:hover,
+.casino-station button:focus-visible {
+  border-color: #ff7136;
+  background: #2c2521;
+  outline: 2px solid transparent;
+}
+.station-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: linear-gradient(#090d13f5, #090d1390, transparent);
+  gap: 12px;
+}
+.station-wordmark {
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  color: #f2e6d1;
+}
+.station-wordmark span {
+  font-weight: 400;
+  color: #91b3aa;
+}
+.station-bar nav {
+  display: flex;
+  gap: 8px;
+}
+.station-bar nav span {
+  color: #ff8543;
+  font-size: 12px;
+  margin-left: 8px;
+}
+.station-status {
+  position: absolute;
+  top: 88px;
+  left: 26px;
+  max-width: calc(100% - 52px);
+  font-size: 12px;
+  color: #ccd8d1;
+  background: #0a1018c9;
+  padding: 8px 12px;
+  border: 1px solid #465048;
+}
+.station-status i {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #db874b;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.station-status i[data-ready="true"] {
+  background: #91ceb3;
+}
+.station-entry {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 85vw);
+  padding: 38px;
+  background: #0c141bef;
+  border: 1px solid #5c574d;
+  box-shadow: 0 15px 80px #0009;
+}
+.station-entry small {
+  color: #ff9c64;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+}
+.station-entry h1 {
+  font-size: clamp(25px, 4vw, 40px);
+  margin: 18px 0;
+}
+.station-entry p {
+  color: #b4c3be;
+  margin: 12px 0 24px;
+}
+.station-entry button {
+  margin: 6px 8px 0 0;
+}
+.casino-station .station-primary {
+  background: #e7652a;
+  color: #120f0a;
+  border-color: #ff9053;
+  font-weight: 700;
+}
+.station-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 32px;
+  pointer-events: none;
+  text-shadow: 0 1px 5px #000;
+}
+.station-play {
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 48vw;
+}
+.station-joystick {
+  position: absolute;
+  left: max(24px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  height: 118px;
+  width: 118px;
+  border: 1px solid #93aa9c88;
+  border-radius: 50%;
+  background: #0a1c20a0;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  user-select: none;
+}
+.station-joystick b {
+  display: grid;
+  place-items: center;
+  width: 55px;
+  height: 55px;
+  background: #426c6e99;
+  border: 1px solid #a3c1b5;
+  border-radius: 50%;
+  font-size: 25px;
+  pointer-events: none;
+}
+.station-look {
+  position: absolute;
+  right: 35px;
+  bottom: 35px;
+  font-size: 12px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.station-help {
+  position: absolute;
+  right: 24px;
+  top: 80px;
+  width: min(330px, 86vw);
+  padding: 24px;
+  background: #101920f5;
+  border: 1px solid #687367;
+}
+.station-help > button {
+  float: right;
+}
+.station-help p {
+  font-size: 14px;
+  color: #c2d0c7;
+}
+.station-directory {
+  position: absolute;
+  inset: 80px 24px 20px;
+  background: #0b121af2;
+  border: 1px solid #47514d;
+  overflow: auto;
+  padding: 24px;
+}
+.station-directory-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.station-directory h1 {
+  font-size: clamp(22px, 4vw, 34px);
+}
+.station-directory input {
+  width: min(450px, 100%);
+  box-sizing: border-box;
+  padding: 14px;
+  background: #121e25;
+  color: #f2e5ce;
+  border: 1px solid #68786c;
+  font: inherit;
+  margin-bottom: 22px;
+}
+.station-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+}
+.casino-station .station-games button {
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border-top: 2px solid #ff6f30;
+}
+.station-games span {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #9dc0b2;
+}
+.station-games strong {
+  font-size: 20px;
+}
+.station-games small {
+  color: #a7bab0;
+  line-height: 1.5;
+  flex: 1;
+}
+.station-games b {
+  color: #ff9762;
+  font-size: 13px;
+}
+.station-game {
+  position: absolute;
+  inset: 0;
+  background: #0b1118;
+  overflow: auto;
+  padding: 12px;
+  overscroll-behavior: contain;
+}
+.station-game .casino-experience {
+  max-width: 1500px;
+  margin: auto;
+}
+@media (max-width: 600px) {
+  .station-bar {
+    padding: 12px;
+  }
+  .station-wordmark {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .station-wordmark span {
+    display: block;
+    font-size: 9px;
+    margin-top: 4px;
+  }
+  .station-bar nav {
+    gap: 4px;
+  }
+  .station-bar button {
+    padding: 8px 10px;
+  }
+  .station-status {
+    top: 70px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+  }
+  .station-entry {
+    padding: 25px;
+  }
+  .station-directory {
+    inset: 68px 10px 12px;
+    padding: 16px;
+  }
+  .station-directory-heading {
+    align-items: flex-start;
+  }
+  .station-directory-heading button {
+    font-size: 12px;
+  }
+  .station-games {
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  }
+  .casino-station .station-games button {
+    padding: 14px;
+  }
+  .station-games strong {
+    font-size: 16px;
+  }
+  .station-games small {
+    display: none;
+  }
+  .station-play {
+    bottom: 165px;
+    max-width: 90vw;
+    white-space: nowrap;
+  }
+  .station-help {
+    right: 10px;
+    top: 70px;
+  }
+  .station-game {
+    padding: 4px;
+  }
+  .station-joystick {
+    width: 105px;
+    height: 105px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .casino-station * {
+    scroll-behavior: auto !important;
+  }
+}

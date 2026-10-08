@@ -1,0 +1,20 @@
+{
+  "publicRelay": "209.177.145.97",
+  "localCandidateHTML": true,
+  "independentPublicMovement": true,
+  "streams": [
+    {
+      "fps": 18.9,
+      "mbps": 2.2723008
+    },
+    {
+      "fps": 20,
+      "mbps": 2.421512
+    }
+  ],
+  "savedGamePreserved": true,
+  "fullscreenEntered": true,
+  "fullscreenExited": true,
+  "mobileNative": true,
+  "errors": []
+}

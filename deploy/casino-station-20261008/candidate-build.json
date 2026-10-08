@@ -1,0 +1,13 @@
+{
+  "installedStopCleanup": true,
+  "services": {
+    "cradle-station-render.service": "active",
+    "cradle-station-gateway.service": "active"
+  },
+  "artifactHashes": {
+    "index-DIDRr4pu.css": "a6f4583f99f93a25f9e01afc70f10e5e8957cfe21f78ec4d746752571451581e",
+    "index-BpPvreTp.js": "5defa0b3f1b3b952c8554e8673626216b283b8772c903a3b3d20c4f7634a86f5"
+  },
+  "funding": "seed-only unchanged",
+  "testnetWagering": "HOLD unchanged"
+}

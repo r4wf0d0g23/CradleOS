@@ -1,0 +1,1032 @@
+{
+  "schema": "cradle.casino.native-station.v1",
+  "asset_id": "casino-station-pilot-02",
+  "status": "native-streaming-pilot",
+  "skeletal_skinning": false,
+  "materials": {
+    "hull": [
+      0.2,
+      0.22,
+      0.23,
+      1
+    ],
+    "armor": [
+      0.3,
+      0.32,
+      0.33,
+      1
+    ],
+    "recess": [
+      0.025,
+      0.03,
+      0.04,
+      1
+    ],
+    "amber": [
+      0.95,
+      0.23,
+      0.035,
+      1
+    ],
+    "vein": [
+      0.3,
+      0.66,
+      0.64,
+      1
+    ],
+    "sign": [
+      0.85,
+      0.81,
+      0.71,
+      1
+    ],
+    "screen0": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen1": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen2": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen3": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen4": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen5": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen6": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen7": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen8": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen9": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen10": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen11": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen12": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen13": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen14": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen15": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen16": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen17": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen18": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen19": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen20": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen21": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen22": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen23": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen24": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen25": [
+      0.9058823529411765,
+      0.7098039215686275,
+      0.396078431372549,
+      1
+    ],
+    "screen26": [
+      0.7137254901960784,
+      0.8588235294117647,
+      0.9215686274509803,
+      1
+    ],
+    "screen27": [
+      1.0,
+      0.6901960784313725,
+      0.30980392156862746,
+      1
+    ],
+    "screen28": [
+      0.7529411764705882,
+      0.9450980392156862,
+      0.5686274509803921,
+      1
+    ],
+    "screen29": [
+      0.9137254901960784,
+      0.8274509803921568,
+      0.6352941176470588,
+      1
+    ],
+    "screen30": [
+      0.9176470588235294,
+      0.615686274509804,
+      0.8274509803921568,
+      1
+    ],
+    "screen31": [
+      0.5019607843137255,
+      0.9058823529411765,
+      0.8823529411764706,
+      1
+    ],
+    "screen32": [
+      0.9019607843137255,
+      0.8745098039215686,
+      0.7568627450980392,
+      1
+    ],
+    "screen33": [
+      0.68,
+      0.9,
+      0.84,
+      1
+    ],
+    "screen-sign": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "meshes": [
+    {
+      "name": "hull",
+      "material": "hull",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 0,
+      "vertices": 22320,
+      "triangles": 7440
+    },
+    {
+      "name": "armor",
+      "material": "armor",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 1,
+      "vertices": 10440,
+      "triangles": 3480
+    },
+    {
+      "name": "recess",
+      "material": "recess",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 2,
+      "vertices": 12420,
+      "triangles": 4140
+    },
+    {
+      "name": "amber",
+      "material": "amber",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 3,
+      "vertices": 13680,
+      "triangles": 4560
+    },
+    {
+      "name": "vein",
+      "material": "vein",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 4,
+      "vertices": 9000,
+      "triangles": 3000
+    },
+    {
+      "name": "sign",
+      "material": "sign",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 5,
+      "vertices": 6300,
+      "triangles": 2100
+    },
+    {
+      "name": "screen0",
+      "material": "screen0",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 6,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen1",
+      "material": "screen1",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 7,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen2",
+      "material": "screen2",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 8,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen3",
+      "material": "screen3",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 9,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen4",
+      "material": "screen4",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 10,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen5",
+      "material": "screen5",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 11,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen6",
+      "material": "screen6",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 12,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen7",
+      "material": "screen7",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 13,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen8",
+      "material": "screen8",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 14,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen9",
+      "material": "screen9",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 15,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen10",
+      "material": "screen10",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 16,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen11",
+      "material": "screen11",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 17,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen12",
+      "material": "screen12",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 18,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen13",
+      "material": "screen13",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 19,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen14",
+      "material": "screen14",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 20,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen15",
+      "material": "screen15",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 21,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen16",
+      "material": "screen16",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 22,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen17",
+      "material": "screen17",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 23,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen18",
+      "material": "screen18",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 24,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen19",
+      "material": "screen19",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 25,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen20",
+      "material": "screen20",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 26,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen21",
+      "material": "screen21",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 27,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen22",
+      "material": "screen22",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 28,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen23",
+      "material": "screen23",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 29,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen24",
+      "material": "screen24",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 30,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen25",
+      "material": "screen25",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 31,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen26",
+      "material": "screen26",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 32,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen27",
+      "material": "screen27",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 33,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen28",
+      "material": "screen28",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 34,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen29",
+      "material": "screen29",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 35,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen30",
+      "material": "screen30",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 36,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen31",
+      "material": "screen31",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 37,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen32",
+      "material": "screen32",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 38,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen33",
+      "material": "screen33",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 39,
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "screen-sign",
+      "material": "screen-sign",
+      "layer": "intact",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "mesh_index": 40,
+      "vertices": 4,
+      "triangles": 2
+    }
+  ],
+  "terminalCount": 34,
+  "terminals": [
+    {
+      "x": -16,
+      "z": -16,
+      "zone": "slot-gallery",
+      "ordinal": 0,
+      "key": "blackjack"
+    },
+    {
+      "x": -12,
+      "z": -16,
+      "zone": "slot-gallery",
+      "ordinal": 1,
+      "key": "coinflip"
+    },
+    {
+      "x": -8,
+      "z": -16,
+      "zone": "slot-gallery",
+      "ordinal": 2,
+      "key": "dice"
+    },
+    {
+      "x": -16,
+      "z": -10,
+      "zone": "slot-gallery",
+      "ordinal": 3,
+      "key": "roulette"
+    },
+    {
+      "x": -12,
+      "z": -10,
+      "zone": "slot-gallery",
+      "ordinal": 4,
+      "key": "slots"
+    },
+    {
+      "x": -8,
+      "z": -10,
+      "zone": "slot-gallery",
+      "ordinal": 5,
+      "key": "wheel"
+    },
+    {
+      "x": -16,
+      "z": -4,
+      "zone": "slot-gallery",
+      "ordinal": 6,
+      "key": "limbo"
+    },
+    {
+      "x": -12,
+      "z": -4,
+      "zone": "slot-gallery",
+      "ordinal": 7,
+      "key": "plinko"
+    },
+    {
+      "x": -8,
+      "z": -4,
+      "zone": "slot-gallery",
+      "ordinal": 8,
+      "key": "keno"
+    },
+    {
+      "x": 8,
+      "z": -16,
+      "zone": "card-lounge",
+      "ordinal": 0,
+      "key": "sicbo"
+    },
+    {
+      "x": 12,
+      "z": -16,
+      "zone": "card-lounge",
+      "ordinal": 1,
+      "key": "crash"
+    },
+    {
+      "x": 16,
+      "z": -16,
+      "zone": "card-lounge",
+      "ordinal": 2,
+      "key": "diamonds"
+    },
+    {
+      "x": 8,
+      "z": -10,
+      "zone": "card-lounge",
+      "ordinal": 3,
+      "key": "double_dice"
+    },
+    {
+      "x": 12,
+      "z": -10,
+      "zone": "card-lounge",
+      "ordinal": 4,
+      "key": "war"
+    },
+    {
+      "x": 16,
+      "z": -10,
+      "zone": "card-lounge",
+      "ordinal": 5,
+      "key": "baccarat"
+    },
+    {
+      "x": 8,
+      "z": -4,
+      "zone": "card-lounge",
+      "ordinal": 6,
+      "key": "three_card_poker"
+    },
+    {
+      "x": 12,
+      "z": -4,
+      "zone": "card-lounge",
+      "ordinal": 7,
+      "key": "dragon_tiger"
+    },
+    {
+      "x": -15,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 0,
+      "key": "under_over_7"
+    },
+    {
+      "x": -9,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 1,
+      "key": "ore_refine"
+    },
+    {
+      "x": -3,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 2,
+      "key": "risk_wheel"
+    },
+    {
+      "x": 3,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 3,
+      "key": "money_wheel"
+    },
+    {
+      "x": 9,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 4,
+      "key": "andar_bahar"
+    },
+    {
+      "x": 15,
+      "z": 6,
+      "zone": "probability-deck",
+      "ordinal": 5,
+      "key": "scratch_cards"
+    },
+    {
+      "x": -15,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 6,
+      "key": "chuck_a_luck"
+    },
+    {
+      "x": -9,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 7,
+      "key": "red_dog"
+    },
+    {
+      "x": -3,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 8,
+      "key": "slot_scrapyard"
+    },
+    {
+      "x": 3,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 9,
+      "key": "slot_wreckways"
+    },
+    {
+      "x": 9,
+      "z": 12,
+      "zone": "probability-deck",
+      "ordinal": 10,
+      "key": "slot_reactor"
+    },
+    {
+      "x": -3,
+      "z": -16,
+      "zone": "salvage-arcade",
+      "ordinal": 0,
+      "key": "slot_feral"
+    },
+    {
+      "x": 3,
+      "z": -16,
+      "zone": "salvage-arcade",
+      "ordinal": 1,
+      "key": "slot_vault"
+    },
+    {
+      "x": -3,
+      "z": -10,
+      "zone": "salvage-arcade",
+      "ordinal": 2,
+      "key": "slot_gatecrash"
+    },
+    {
+      "x": 3,
+      "z": -10,
+      "zone": "salvage-arcade",
+      "ordinal": 3,
+      "key": "slot_drones"
+    },
+    {
+      "x": -3,
+      "z": -4,
+      "zone": "salvage-arcade",
+      "ordinal": 4,
+      "key": "slot_eclipse"
+    },
+    {
+      "x": 3,
+      "z": -4,
+      "zone": "salvage-arcade",
+      "ordinal": 5,
+      "key": "craps"
+    }
+  ],
+  "units": "authored human-scale scene units",
+  "renderer": "native Carbon Trinity DX11"
+}

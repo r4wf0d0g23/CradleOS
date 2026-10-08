@@ -1,0 +1,16 @@
+{
+  "method": "actual React UI, isolated mocked video transport; no native slots consumed",
+  "movedWithHelp": false,
+  "geometry": {
+    "x": 34.8125,
+    "right": 310,
+    "y": 70,
+    "bottom": 366,
+    "viewport": 320
+  },
+  "gameCount": 34,
+  "ledgerOwners": 1,
+  "afterReturnOwners": 0,
+  "joinedSockets": 3,
+  "pageErrors": []
+}

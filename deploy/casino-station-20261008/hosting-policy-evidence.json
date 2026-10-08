@@ -1,0 +1,122 @@
+[
+  {
+    "url": "https://www.cloudflare.com/service-specific-terms-application-services/",
+    "finalUrl": "https://www.cloudflare.com/service-specific-terms-application-services/",
+    "status": 200,
+    "fetchedUTC": "2026-10-08T21:38:37.957257+00:00",
+    "htmlSha256": "6c0cf70d8ab25b64dfe86f99d30713554a20d39452a24a584508b1bb818cb00a",
+    "excerpts": [
+      {
+        "term": "Content Delivery Network (Free",
+        "text": " WHETHER OR NOT CLOUDFLARE HAS BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGE. Content Delivery Network (Free, Pro, or Business) Cloudflare\u2019s content delivery network (the \u201c CDN \u201d) Service can be used to cache and serve web pages and websites. Unless you are an Enterprise customer, Cloudflare offers specific Paid Services (e.g., the Developer Platform, Images, and Stream) that you must use in order to serve video and other large files via the CDN. Cloudflare reserves the right to disable or limit your access to or use of the CDN, or to limit your End Users\u2019 access to certain of your resources through the CDN, if you use or are suspected of using the CDN without such Paid Services to serve video or a disproportionate percentage of pictures, audio files, or other large files. We will use reasonable efforts to provide you with notice of such action. CSAM Scanning Tool Acknowledgement of Relevant Legal Requirements In connection with your obligation to comply with all laws and regulations applicabl"
+      },
+      {
+        "term": "Last updated",
+        "text": "network Global locations and status Log in Contact sales Service-Specific Terms Last updated: September 28, 2026 These Service-Specific Terms supplement the applicable master agreement(s) located at https://www.cloudflare.com/legal/terms/ (the \u201cAgreement\u201d), which govern your access to and use of Cloudflare's Services. Unless defined below, all capitalized terms have the definitions given to them in the Agreement. All references to \u201cyou\u201d and \u201cyour\u201d in the Service-Specific Terms below refer to the Customer named in the applicable Order Form or other ordering document. Please click on the following links to navigate to the Service-Specific Terms applicable to your specific Cloudflare Services. Overview Application Services Network Services Zero Trust Services Developer Platform Other Terms Always Online\u2122 Always Online is a Service that serves a limited copy of the portions of your Zone (as defined in the Service-Specific Terms Units of Measurements) that are available from the Int"
+      }
+    ]
+  },
+  {
+    "url": "https://developers.cloudflare.com/network/websockets/",
+    "finalUrl": "https://developers.cloudflare.com/network/websockets/",
+    "status": 200,
+    "fetchedUTC": "2026-10-08T21:38:38.190873+00:00",
+    "htmlSha256": "85689ad9724d7fb2435bc836e3c44c9fdd8b3608453ef66362ab084a79b03579",
+    "excerpts": [
+      {
+        "term": "restart",
+        "text": " Technical note When Cloudflare releases new code to its global network, we may restart servers, which terminates WebSockets connections. Best practices Implement a keepalive \u2197\ufe0e . Review and then remove or extend timeout settings on the origin and/or on the client. Troubleshooting Investigating issues with Websocket can be facilitated with client tools like wscat \u2197\ufe0e . Being able to reproduce an issue on a single URL with a minimalistic tool helps narrowing down the issue. The EdgeStartTimestamp and EdgeStopTimestamp fields in HTTP requests logs represent the duration of the WebSocket connection (they do not represent the initial HTTP connection). Connection limits Idle timeout Cloudflare will close a WebSocket connection when no data is transmitted in either direction for a period of time. Enterprise customers can contact their account team to configure a custom idle timeout. To keep long-lived connections alive during periods of inactivity, implement a client-side heartbe"
+      },
+      {
+        "term": "Bandwidth",
+        "text": "view Background Enable WebSockets Compatibility notes Availability Requests and Bandwidth measurement Technical note Best practices Troubleshooting Connection limits Idle timeout Session affinity for load-balanced WebSocket origins Cloudflare supports proxied WebSocket connections without additional configuration. Background WebSockets are open connections sustained between the client and the origin server. Inside a WebSockets connection, the client and the origin can pass data back and forth without having to reestablish sessions. This makes exchanging data within a WebSockets connection fast. WebSockets are often used for real-time applications such as live chat and gaming. Enable WebSockets To enable WebSockets connections to your origin server in the dashboard: In the Cloudflare dashboard, go to the Network page. Go to Network \u2197 For WebSockets , switch the toggle to On . To enable WebSockets connections to your origin server with the API, send a PATCH request with websoc"
+      },
+      {
+        "term": "Bandwidth",
+        "text": "s). Availability WebSockets are supported on all Cloudflare plans. Requests and Bandwidth measurement Given the nature of WebSocket connections, you may notice they differ from typical HTTP traffic in terms of requests and bandwidth usage. If you are an Enterprise customer, it is important to consider how Cloudflare measures requests and bandwidth to accurately estimate your usage. Cloudflare measures a single WebSocket connection in the following way: Requests : Cloudflare recognizes only the initial upgrade request per WebSocket connection as an HTTP request. Even though you can send a bidirectional message stream through the established WebSocket connection, it will be counted as a single long-lived HTTP request. Bandwidth : Cloudflare measures data transfer sent from Cloudflare to the client. This typically means that messages from the WebSocket server behind Cloudflare to the WebSocket client are counted towards bandwidth usage. Once a WebSocket connection is closed, yo"
+      },
+      {
+        "term": "Bandwidth",
+        "text": ", you may notice they differ from typical HTTP traffic in terms of requests and bandwidth usage. If you are an Enterprise customer, it is important to consider how Cloudflare measures requests and bandwidth to accurately estimate your usage. Cloudflare measures a single WebSocket connection in the following way: Requests : Cloudflare recognizes only the initial upgrade request per WebSocket connection as an HTTP request. Even though you can send a bidirectional message stream through the established WebSocket connection, it will be counted as a single long-lived HTTP request. Bandwidth : Cloudflare measures data transfer sent from Cloudflare to the client. This typically means that messages from the WebSocket server behind Cloudflare to the WebSocket client are counted towards bandwidth usage. Once a WebSocket connection is closed, you can view your aggregated WebSocket usage through Traffic Analytics , the GraphQL Analytics API , and HTTP requests logs . Technical note When"
+      },
+      {
+        "term": "Idle timeout",
+        "text": "dth measurement Technical note Best practices Troubleshooting Connection limits Idle timeout Session affinity for load-balanced WebSocket origins Cloudflare supports proxied WebSocket connections without additional configuration. Background WebSockets are open connections sustained between the client and the origin server. Inside a WebSockets connection, the client and the origin can pass data back and forth without having to reestablish sessions. This makes exchanging data within a WebSockets connection fast. WebSockets are often used for real-time applications such as live chat and gaming. Enable WebSockets To enable WebSockets connections to your origin server in the dashboard: In the Cloudflare dashboard, go to the Network page. Go to Network \u2197 For WebSockets , switch the toggle to On . To enable WebSockets connections to your origin server with the API, send a PATCH request with websockets as the setting name in the URI path, and the value parameter set to \"on\" . Compatibi"
+      },
+      {
+        "term": "Idle timeout",
+        "text": "nnection (they do not represent the initial HTTP connection). Connection limits Idle timeout Cloudflare will close a WebSocket connection when no data is transmitted in either direction for a period of time. Enterprise customers can contact their account team to configure a custom idle timeout. To keep long-lived connections alive during periods of inactivity, implement a client-side heartbeat (ping/pong) mechanism. Session affinity for load-balanced WebSocket origins If your WebSocket origin is behind a Cloudflare Load Balancer, turn on Session affinity to ensure all requests from the same client are routed to the same origin server. Without session affinity, a WebSocket reconnect may land on a different origin that does not have the session state. Previous Understanding the True-Client-IP Header Was this helpful? Yes No Edit page Report issue On this page Overview Background Enable WebSockets Compatibility notes Availability Requests and Bandwidth measurement Technical note B"
+      },
+      {
+        "term": "Idle timeout",
+        "text": "time. Enterprise customers can contact their account team to configure a custom idle timeout. To keep long-lived connections alive during periods of inactivity, implement a client-side heartbeat (ping/pong) mechanism. Session affinity for load-balanced WebSocket origins If your WebSocket origin is behind a Cloudflare Load Balancer, turn on Session affinity to ensure all requests from the same client are routed to the same origin server. Without session affinity, a WebSocket reconnect may land on a different origin that does not have the session state. Previous Understanding the True-Client-IP Header Was this helpful? Yes No Edit page Report issue On this page Overview Background Enable WebSockets Compatibility notes Availability Requests and Bandwidth measurement Technical note Best practices Troubleshooting Connection limits Idle timeout Session affinity for load-balanced WebSocket origins Edit page Report issue Getting started Plans Contact sales Partners Find a partner Start"
+      },
+      {
+        "term": "Last updated",
+        "text": ".txt \u2197\ufe0e Cloudflare Docs llms-full.txt \u2197\ufe0e Home / Network / WebSockets WebSockets Last updated Aug 14, 2026 | Copy as Markdown | View as Markdown | Agent setup Overview Background Enable WebSockets Compatibility notes Availability Requests and Bandwidth measurement Technical note Best practices Troubleshooting Connection limits Idle timeout Session affinity for load-balanced WebSocket origins Cloudflare supports proxied WebSocket connections without additional configuration. Background WebSockets are open connections sustained between the client and the origin server. Inside a WebSockets connection, the client and the origin can pass data back and forth without having to reestablish sessions. This makes exchanging data within a WebSockets connection fast. WebSockets are often used for real-time applications such as live chat and gaming. Enable WebSockets To enable WebSockets connections to your origin server in the dashboard: In the Cloudflare dashboard, go to the Network page. G"
+      }
+    ]
+  },
+  {
+    "url": "https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/routing-to-tunnel/protocols/",
+    "finalUrl": "https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/routing-to-tunnel/protocols/",
+    "status": 200,
+    "fetchedUTC": "2026-10-08T21:38:38.426785+00:00",
+    "htmlSha256": "c0d8b459930eb7ba188f434e1ec5cd082500a99854b7ec20b36c650edfe4907b",
+    "excerpts": [
+      {
+        "term": "Bandwidth",
+        "text": "tistics Traceroutes Packet captures \u2197\ufe0e Querying Cloudflare WAN IPsec/GRE tunnel bandwidth analytics with GraphQL Querying Cloudflare WAN IPsec/GRE tunnel health check results with GraphQL Public to private via Cloudflare WAN \u2197\ufe0e Beta Troubleshooting Troubleshoot IPsec tunnels Troubleshoot tunnel health Troubleshoot connectivity Troubleshoot routing and BGP Reference Anti-replay protection Bandwidth measurement Device compatibility GRE and IPsec tunnels MTU and MSS Traffic steering Tunnel health checks How Cloudflare calculates tunnel health alerts Legal Third party licenses Granular permissions for Tunnels and Mesh nodes Routes Add routes Reserved IP addresses Configure initial resolved IPs Resolvers and proxies DNS Locations Add locations DNS resolver IPs and hostnames DNS over TLS (DoT) DNS over HTTPS (DoH) Proxy endpoints Overview PAC file best practices Configure a PAC file on your device Virtual networks Access controls Overview Applications Overview Choose an applicatio"
+      },
+      {
+        "term": "Bandwidth",
+        "text": "hoot connectivity Troubleshoot routing and BGP Reference Anti-replay protection Bandwidth measurement Device compatibility GRE and IPsec tunnels MTU and MSS Traffic steering Tunnel health checks How Cloudflare calculates tunnel health alerts Legal Third party licenses Granular permissions for Tunnels and Mesh nodes Routes Add routes Reserved IP addresses Configure initial resolved IPs Resolvers and proxies DNS Locations Add locations DNS resolver IPs and hostnames DNS over TLS (DoT) DNS over HTTPS (DoH) Proxy endpoints Overview PAC file best practices Configure a PAC file on your device Virtual networks Access controls Overview Applications Overview Choose an application type Add web applications Overview SaaS applications Overview Generic OIDC application Generic SAML application Adobe Acrobat Sign Area 1 Asana Atlassian Cloud AWS Braintree Coupa Digicert DocuSign Dropbox GitHub Enterprise Cloud Google Cloud Google Workspace Grafana Grafana Cloud Greenhouse Recruiting Hubsp"
+      },
+      {
+        "term": "TCP Streams",
+        "text": " TLS Same as HTTPS, but uses a Unix socket. unix+tls:/home/production/echo.sock TCP Streams TCP over a WebSocket connection. End users run cloudflared access tcp to connect . For long-lived connections, use Client-to-Tunnel instead. tcp://localhost:2222 SSH Streams SSH over a WebSocket connection. End users run cloudflared access ssh to connect . For long-lived connections, use Client-to-Tunnel instead. ssh://localhost:22 RDP Streams RDP over a WebSocket connection. For more information, refer to Connect to RDP with client-side cloudflared . rdp://localhost:3389 SMB Streams SMB over a WebSocket connection. For more information, refer to Connect to SMB with client-side cloudflared . smb://localhost:445 HTTP_STATUS Responds to all requests with a fixed HTTP status code. http_status:404 BASTION Allows cloudflared to act as a jump host, providing access to any local address. bastion HELLO_WORLD Test server for validating your Cloudflare Tunnel connection (for locally managed tunne"
+      },
+      {
+        "term": "Last updated",
+        "text": "unnel / Published applications / Protocols Protocols for published applications Last updated Apr 17, 2026 | Copy as Markdown | View as Markdown | Agent setup When you add a published application route to a Cloudflare Tunnel, you are instructing Cloudflare to proxy requests for your public hostname to a service running privately behind cloudflared . The table below lists the service types you can route to a public hostname. Non-HTTP services require installing cloudflared on the client for end users to connect. Service type Description Example service value HTTP Proxies incoming HTTPS requests to your local web service over HTTP. http://localhost:8000 HTTPS Proxies incoming HTTPS requests directly to your local web service. You can disable TLS verification for self-signed certificates. https://localhost:8000 UNIX Same as HTTP, but uses a Unix socket. unix:/home/production/echo.sock UNIX + TLS Same as HTTPS, but uses a Unix socket. unix+tls:/home/production/echo.sock TCP Streams "
+      }
+    ]
+  },
+  {
+    "url": "https://developers.cloudflare.com/dns/proxy-status/",
+    "finalUrl": "https://developers.cloudflare.com/dns/proxy-status/",
+    "status": 200,
+    "fetchedUTC": "2026-10-08T21:38:38.651243+00:00",
+    "htmlSha256": "e7bcf5a72dbcf2d6662c71c60dfac7047abd2124c5fe4462f6d0bbe703951f88",
+    "excerpts": [
+      {
+        "term": "DNS-only",
+        "text": "lready exist Stale response Proxy status Overview Use cases Limitations Enforce DNS-only DNSSEC Overview Multi-signer DNSSEC About Setup DNSSEC states Migration tutorial NSEC3 support Validation and keys Troubleshooting CNAME flattening About Setup Example diagram Additional options Zone defaults Analytics and logs Reverse zones and PTR records Private origins Beta Overview Set up a private origin via Cloudflare WAN Private network routing Troubleshooting Internal DNS Overview Get started Internal zones Overview Manage internal zones Internal DNS records Reference zones Views Connectivity Analytics and logs DNS Firewall Overview Setup Analytics and logs FAQ Random prefix attack mitigation Overview About Setup Reference Analytics API properties Legacy Recommended third-party tools Migrate DNS from BIND \u2197\ufe0e Domain Connect Analytics MCP server MCP Troubleshooting Full resources list General DNS issues DNS_PROBE_FINISHED_NXDOMAIN DNS_PROBE_POSSIBLE Email issues Debug endpoints F"
+      },
+      {
+        "term": "DNS-only",
+        "text": "ords Protocol optimization Request and response size limits Connection timeouts DNS-only records When to use DNS-only While your DNS records contain information about your domain, the proxy status controls whether HTTP/HTTPS traffic for that record routes through Cloudflare's network or goes directly to your origin server. When a record is Proxied , Cloudflare sits between your visitors and your server \u2014 optimizing, caching, and protecting traffic along the way. When a record is DNS-only , Cloudflare responds with your server's actual IP address and does not route HTTP/HTTPS traffic through its network. Only records used for IP address resolution \u2014 A, AAAA, and CNAME records \u2014 can be proxied. Other record types (such as MX or TXT) are always DNS-only. Cloudflare recommends proxying all A, AAAA, and CNAME records that serve web traffic. Records used for other purposes, such as CNAME records that prove your domain ownership , should not be proxied. Note Proxying is on by defa"
+      },
+      {
+        "term": "DNS-only",
+        "text": "quest and response size limits Connection timeouts DNS-only records When to use DNS-only While your DNS records contain information about your domain, the proxy status controls whether HTTP/HTTPS traffic for that record routes through Cloudflare's network or goes directly to your origin server. When a record is Proxied , Cloudflare sits between your visitors and your server \u2014 optimizing, caching, and protecting traffic along the way. When a record is DNS-only , Cloudflare responds with your server's actual IP address and does not route HTTP/HTTPS traffic through its network. Only records used for IP address resolution \u2014 A, AAAA, and CNAME records \u2014 can be proxied. Other record types (such as MX or TXT) are always DNS-only. Cloudflare recommends proxying all A, AAAA, and CNAME records that serve web traffic. Records used for other purposes, such as CNAME records that prove your domain ownership , should not be proxied. Note Proxying is on by default when you onboard a domain"
+      },
+      {
+        "term": "DNS only",
+        "text": "pe Name Content Proxy status TTL A blog 192.0.2.1 Proxied Auto A shop 192.0.2.2 DNS only Auto In the example DNS table above, there are two DNS records. The record with the name blog has proxy on, while the record named shop has the proxy off (that is, DNS only ). This means that: A DNS query to the proxied record blog.example.com will be answered with Cloudflare anycast IP addresses \u2014 shared IP addresses used to route traffic through a nearby data center \u2014 instead of 192.0.2.1 . This ensures that HTTP/HTTPS requests for this name will be sent to Cloudflare's network and can be proxied, which allows the benefits listed above . A DNS query to the DNS-only record shop.example.com will be answered with the actual origin IP address, 192.0.2.2 . This exposes your origin IP address to anyone who queries the record, which removes a layer of protection against targeted attacks. Cloudflare also cannot provide HTTP/HTTPS analytics on those requests (only DNS analytics). For further c"
+      },
+      {
+        "term": "DNS only",
+        "text": "name blog has proxy on, while the record named shop has the proxy off (that is, DNS only ). This means that: A DNS query to the proxied record blog.example.com will be answered with Cloudflare anycast IP addresses \u2014 shared IP addresses used to route traffic through a nearby data center \u2014 instead of 192.0.2.1 . This ensures that HTTP/HTTPS requests for this name will be sent to Cloudflare's network and can be proxied, which allows the benefits listed above . A DNS query to the DNS-only record shop.example.com will be answered with the actual origin IP address, 192.0.2.2 . This exposes your origin IP address to anyone who queries the record, which removes a layer of protection against targeted attacks. Cloudflare also cannot provide HTTP/HTTPS analytics on those requests (only DNS analytics). For further context, refer to How Cloudflare works . Proxied records The sections below describe specific behaviors and expected outcomes when you have DNS records set to The proxy statu"
+      },
+      {
+        "term": "DNS only",
+        "text": "pe Name Content Proxy status TTL A blog 192.0.2.1 Proxied Auto A blog 192.0.2.5 DNS only Auto In this example, all traffic intended for blog.example.com will be treated as if both records were Proxied . Cloudflare will also proxy a request if a hostname on a CNAME chain \u2014 where one CNAME record points to another \u2014 is proxied. Example Consider that the same Cloudflare account has two different zones, example.com and example.net . DNS management for example.com : Type Name Content Proxy status TTL CNAME example.com origin.example.net DNS only Auto DNS management for example.net : Type Name Content Proxy status TTL CNAME origin.example.net <origin> Proxied Auto In this example, all traffic intended for example.com will be treated as Proxied . Note CNAME to a different Cloudflare account is prohibited and will result in a Error 1014 (CNAME Cross-User Banned) CNAME records With CNAME flattening , Cloudflare follows the CNAME chain to find the final IP address, helping DNS querie"
+      },
+      {
+        "term": "Last updated",
+        "text": ".txt \u2197\ufe0e Cloudflare Docs llms-full.txt \u2197\ufe0e Home / DNS / Proxy status Proxy status Last updated Apr 21, 2026 | Copy as Markdown | View as Markdown | Agent setup Overview Benefits Example Proxied records Predefined time to live Mix proxied and unproxied CNAME records Protocol optimization Request and response size limits Connection timeouts DNS-only records When to use DNS-only While your DNS records contain information about your domain, the proxy status controls whether HTTP/HTTPS traffic for that record routes through Cloudflare's network or goes directly to your origin server. When a record is Proxied , Cloudflare sits between your visitors and your server \u2014 optimizing, caching, and protecting traffic along the way. When a record is DNS-only , Cloudflare responds with your server's actual IP address and does not route HTTP/HTTPS traffic through its network. Only records used for IP address resolution \u2014 A, AAAA, and CNAME records \u2014 can be proxied. Other record types (such as MX "
+      }
+    ]
+  }
+]

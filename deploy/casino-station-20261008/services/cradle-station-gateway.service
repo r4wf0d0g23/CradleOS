@@ -1,0 +1,15 @@
+[Unit]
+Description=Cradle native casino video gateway (two visitors)
+After=network-online.target
+[Service]
+WorkingDirectory=/home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002
+ExecStart=/usr/bin/node services/casino-station/server.mjs /dev/shm/cradle-station-1000
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=yes
+MemoryMax=2G
+TasksMax=256
+TimeoutStopSec=10
+[Install]
+WantedBy=default.target

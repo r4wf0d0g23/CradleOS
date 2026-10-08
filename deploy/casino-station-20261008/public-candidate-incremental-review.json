@@ -1,0 +1,58 @@
+{
+  "verdict": "PASS bounded new controller/source and one-ledger handoff; separate public delivery gate remains",
+  "reviewedHashes": {
+    "cradleos-dapp/src/lib/casinoStationStream.ts": "35a2645982ed1d0e4143bb1fd0fcc09336491d116b360149c3831815e8f29ef9",
+    "cradleos-dapp/src/lib/casinoStationStream.test.ts": "79973145f119e24ccc2cb1604ba85157a6785f4865d63a2480efc1592fdf2909",
+    "cradleos-dapp/src/components/CasinoStation.tsx": "7b9539d1033d4eca1eb67ba422b1a917d35b89fabb3d704b5f1c1e78258a1719",
+    "cradleos-dapp/src/components/CasinoStation.css": "b58d5df9e64c91b85b11d0ca6c35d2d7e65da9bbae01616ea00de15d1cfeafc2",
+    "services/casino-station/server.mjs": "cd8642b19042e1280c8d8a60737b9d8b5314a21ab6beea067f907a835616594c",
+    "services/casino-station/motion.mjs": "176d62852b950eb7f158afa5798a62797db106ed07bf41417870ef4c298a9f8a",
+    "services/casino-station/frames.mjs": "50187b567434f484da4a41a156a8463c030a9c6dcd0edd4b1c2671c4e082cfa4"
+  },
+  "independentTests": {
+    "controllerTestsAddedAndPassed": 6,
+    "priorFinancialLaunchTestsPassed": 48,
+    "serviceTestsPassed": 4,
+    "typeScriptNoEmit": "PASS"
+  },
+  "browser": {
+    "method": "actual React UI, isolated mocked video transport; no native slots consumed",
+    "movedWithHelp": false,
+    "geometry": {
+      "x": 34.8125,
+      "right": 310,
+      "y": 70,
+      "bottom": 366,
+      "viewport": 320
+    },
+    "gameCount": 34,
+    "ledgerOwners": 1,
+    "afterReturnOwners": 0,
+    "joinedSockets": 3,
+    "pageErrors": []
+  },
+  "tailscaleReadOnly": {
+    "readOnly": true,
+    "tcpPorts": [
+      "4174",
+      "443",
+      "8443"
+    ],
+    "webPorts": {
+      "4174": [
+        "/"
+      ],
+      "443": [
+        "/"
+      ],
+      "8443": [
+        "/"
+      ]
+    },
+    "allowFunnelByPort": {},
+    "canonicalConfigSHA256": "766c7d9d901951f0be7a3875142b5713cac52bac358a3134d7f12dc5b610d02b",
+    "configurationChanged": false
+  },
+  "publicMediaConnectionTested": false,
+  "nativeCodecDecodeIndependentlyRetested": false
+}

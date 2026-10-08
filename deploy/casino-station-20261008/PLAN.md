@@ -4,7 +4,7 @@ Request: a walkable EVE Frontier-themed casino station that an owner can assign
 as an Assembly dApp, reusing the current games. All casino accounting, wagers,
 wallet boundaries and save semantics remain owned by the existing casino.
 
-## Evidence and architectural decision (pending Raw's runtime choice)
+## Evidence and architectural decision (hosted native selected)
 
 - Carbon Trinity upstream main checked 2026-10-08:
   `c4fd6af4fcda38416cdd6a044a04740f6e06aad6`.
@@ -21,9 +21,9 @@ wallet boundaries and save semantics remain owned by the existing casino.
 - The dormant Casino3D component uses Three.js and a stub walking controller;
   it is not a functioning Carbon casino and will not be relabeled as one.
 
-Choice presented to Raw: (A) ordinary browser dApp using Carbon-rendered assets
+Initial options presented: (A) ordinary browser dApp using Carbon-rendered assets
 and an explicitly identified browser renderer; (B) native Carbon station with
-per-visitor render/input streaming. No dependent deployment before this choice.
+per-visitor render/input streaming. Raw selected hosted native rendering at16:33CT; choice resolved.
 Native streaming needs a separate session isolation/resource budget, GPU runtime,
 WebRTC/TURN/auth, timeout cleanup and browser compatibility proof. Wallet actions
 must remain in the visitor's browser, never a shared remote browser session.
@@ -85,4 +85,4 @@ No contract changes, funding, new service purchase, or testnet activation.
   objects by itself: do not treat it as a complete interior.
 - Architecture review identifies one-writer/lifecycle and inherited assignment
   risks; see architecture-review.md. No assignment transactions were attempted.
-- Waiting on Raw's requested runtime choice; original live casino remains intact.
+- Runtime choice resolved by Raw: hosted native rendering. See HOSTED-NATIVE.md and current qualification receipts.

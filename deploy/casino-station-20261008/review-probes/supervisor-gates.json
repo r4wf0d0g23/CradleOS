@@ -1,0 +1,182 @@
+{
+  "source_sha256": "bb68805a9d1874ca6485e4606a71f8f390e0ae3464314f41b5844ca09098c542",
+  "scope": "isolated supervisor execution; mocked Popen; redirected STATE and global cleanup path; no native or service processes",
+  "pass": true,
+  "checks": [
+    {
+      "case": "abrupt_no_receipt",
+      "pass": true,
+      "spawns": 1,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "abrupt_bad_json",
+      "pass": true,
+      "spawns": 1,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "abrupt_array",
+      "pass": true,
+      "spawns": 1,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "abrupt_null",
+      "pass": true,
+      "spawns": 1,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "abrupt_false",
+      "pass": true,
+      "spawns": 1,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "stopping_unverified",
+      "pass": true,
+      "spawns": 1,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "stopping_verified",
+      "pass": true,
+      "spawns": 1,
+      "gate": false,
+      "active_retained": false,
+      "exit": null
+    },
+    {
+      "case": "preflight_no_job",
+      "pass": true,
+      "spawns": 1,
+      "gate": false,
+      "active_retained": false,
+      "exit": null
+    },
+    {
+      "case": "startup_unverified",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "startup_array",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "startup_null",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "startup_bad_json",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "startup_verified",
+      "pass": true,
+      "spawns": 1,
+      "gate": false,
+      "active_retained": false,
+      "exit": null
+    },
+    {
+      "case": "startup_missing_job",
+      "pass": true,
+      "spawns": 1,
+      "gate": false,
+      "active_retained": false,
+      "exit": null
+    },
+    {
+      "case": "sentinel_bad_json",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup requires inspection"
+      }
+    },
+    {
+      "case": "sentinel_bad_path",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": true,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Invalid owned-run sentinel"
+      }
+    },
+    {
+      "case": "existing_shared_gate",
+      "pass": true,
+      "spawns": 0,
+      "gate": true,
+      "active_retained": false,
+      "exit": {
+        "type": "SystemExit",
+        "message": "Native cleanup gate requires operator inspection"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "source_sha256": "bb68805a9d1874ca6485e4606a71f8f390e0ae3464314f41b5844ca09098c542",
+  "verified_old_job_removed": true,
+  "malformed_and_unverified_jobs_retained": true,
+  "newest_two_retained": true,
+  "receipt_archived": true,
+  "original_runtime_unchanged": true
+}

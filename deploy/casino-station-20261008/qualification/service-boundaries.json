@@ -1,0 +1,8 @@
+{
+  "invalidOriginRejected": true,
+  "thirdRejected": true,
+  "deadmanStops": true,
+  "unknownInputRejected": true,
+  "rateExceededCloses": true,
+  "allEncodersReleased": true
+}

@@ -1,0 +1,42 @@
+{
+  "verdict": "LOCAL PROOF ONLY; HOLD public readiness pending browser lifecycle and delivery gates",
+  "files": {
+    "server.mjs": "a434a9bb1389c54107dbfcf0d766183bd179b702a208b1dc2d0834f14eefe083",
+    "motion.mjs": "176d62852b950eb7f158afa5798a62797db106ed07bf41417870ef4c298a9f8a",
+    "frames.mjs": "c7483f66ab1e71f5728f75b60933bfe3703951724954b5a850d829c4f8992bbf",
+    "client.html": "de50163bb0f00e2e8b4061a1a2f634c21a332927422d546b2845c1de39d43987"
+  },
+  "tests": {
+    "command": "node --test services/casino-station/motion.test.mjs",
+    "passed": 4
+  },
+  "client": {
+    "sourceSHA256": "de50163bb0f00e2e8b4061a1a2f634c21a332927422d546b2845c1de39d43987",
+    "probeType": "isolated source VM, not browser",
+    "rapidJoin": {
+      "created": 2,
+      "firstClosed": false
+    },
+    "staleJpeg": {
+      "socketClosed": true,
+      "drawsAfterClose": 1
+    }
+  },
+  "encoderDrainProbe": {
+    "isolatedLoopbackAndIPC": true,
+    "actualNativeOrGPU": false,
+    "termResistantStubs": 2,
+    "reservedSlots": 2,
+    "thirdRejected": true,
+    "remainingAfterDeadline": 0,
+    "rejoinSucceeded": true,
+    "processesCleaned": true
+  },
+  "h264ThreeByteAUD": {
+    "standardAUD": true,
+    "framesEmitted": 0,
+    "bufferedBytes": 72
+  },
+  "publicEndpointsTested": false,
+  "tailscaleConfigurationChanged": false
+}

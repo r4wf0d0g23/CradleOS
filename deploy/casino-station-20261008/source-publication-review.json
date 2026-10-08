@@ -1,0 +1,63 @@
+{
+  "verdict": "PASS: source publication gate, public app smoke remains separate",
+  "reviewed_source_sha256": {
+    "cradleos-dapp/src/components/CasinoExperience.tsx": "e72104793d61115fdf89ac228a2c99f0a7c975b303c3a47b00f442af23b4a564",
+    "cradleos-dapp/src/components/CasinoStation.tsx": "b3069628f10c9ae6d739f4654c4cba1bf80f8d4ff291ae4d722c612c3a7088bc",
+    "cradleos-dapp/src/lib/casinoStationStream.ts": "35a2645982ed1d0e4143bb1fd0fcc09336491d116b360149c3831815e8f29ef9",
+    "cradleos-dapp/src/App.tsx": "6875976ad30a086ce0831636e28a75f8cc793ac7f5301926d99db3e86502d191",
+    "cradleos-dapp/src/components/StructurePanel.tsx": "aa7f3582c51f6a2d85a840324515bb869b0071ca4bbacb22e50ecdfb11e5d04b",
+    "services/casino-station/server.mjs": "e6c111925b08e5a6d0f1e1ae1835294f2277abf4def4f8f13d41a3d0b9b9d9c3",
+    "services/casino-station/motion.mjs": "06c7c13bbff58435ac66cdc93209a7a96ca0fd091c432941e36a8d33514db1bd",
+    "services/casino-station/frames.mjs": "7f587064385be8f526185a99bb9bd8508f9f4adc6a15026bdf76991f9308ff8f"
+  },
+  "protected_source_sha256": {
+    "src/constants.ts": "e89dfedae5d56b9c9c11686d8e42fc19f332c493a2a4bc9a21c197685b6e3634",
+    "src/lib/casinoSessions.ts": "80d1576592748fd26ae9132fdaf5623a33c06d8b3b3e89857094bba18f46fe0a",
+    "src/lib/casinoPractice.ts": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+    "src/lib/casinoCraps.ts": "85b67791722e86e15d9db2a26276f724ac7c4224cd09b4694d17b663959939b1",
+    "src/lib/casinoCrapsSession.ts": "60b398794c1695ee236fd325d82d7fce8d0dd1463ed045dc1cae3a6b35977897",
+    "src/lib/casinoSlotFleet.ts": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8",
+    "src/lib/casinoExpanded.ts": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226",
+    "src/lib/casinoDonations.ts": "6a06863c7a8229eb1dce582fbda2691a57c726bc3520a8db4953c4834c8ccb70",
+    "src/lib/casinoBlackjackTable.ts": "a2406def69d4c7b99ad17841a2f00a29951382f80aeb58d5d7f788955d09dfcc",
+    "src/components/HouseDonatePanel.tsx": "b79e333de18ceccf7ab10e8525c97afdd253f0cf8178d6686794181094b0ea81",
+    "src/lib/casinoSlotMotion.ts": "aff2786fc7e8cea359367afc41f161d8f00202fcd6f89b0b21f0c9a5a59dbfc9",
+    "src/lib/casinoSlotBonus.ts": "61521ad9d1029d03d76e9e60c3e065f5b2f75a435e05c2d5956e80b7d2f8b555"
+  },
+  "protected_unchanged_from_HEAD": true,
+  "bundle_hashes": {
+    "index-DIDRr4pu.css": "a6f4583f99f93a25f9e01afc70f10e5e8957cfe21f78ec4d746752571451581e",
+    "index-BpPvreTp.js": "5defa0b3f1b3b952c8554e8673626216b283b8772c903a3b3d20c4f7634a86f5"
+  },
+  "independent_browser": {
+    "pass": true,
+    "scope": "Reviewed compiled dist fulfilled at primary origin; WebSocket transport mocked, no native slot or public app deployment claim",
+    "viewport": "320x568 touch",
+    "lobbyStationEntry": true,
+    "entryRect": {
+      "x": 23,
+      "y": 134.9375,
+      "width": 99.671875,
+      "height": 46
+    },
+    "expectedWssEndpoint": "wss://spark-2def.tail587192.ts.net:10000/join",
+    "oneLedgerOwner": true,
+    "unmountedOnReturn": true,
+    "crapsEscrowExactAcrossReturnRemount": true,
+    "noHorizontalOverflow": true,
+    "pageErrors": [],
+    "financialRequests": []
+  },
+  "service_tests": {
+    "pass": 6,
+    "fail": 0
+  },
+  "shared_cleanup_gate_present": false,
+  "completed_service_receipt": {
+    "job": "job-1791497354164512048",
+    "wine_cleanup": true,
+    "exit": 0
+  },
+  "public_media": "Parent evidence reviewed; reviewer did not consume a public native slot",
+  "configuration_changes_by_reviewer": false
+}

@@ -1,0 +1,17 @@
+{
+  "verdict": "PASS: bounded source gate",
+  "source_sha256": {
+    "services/casino-station/native/run_stream.py": "82167a57b46030e5b0fb27b9afbcb637ac8f1f57af51bf3acfef2c02d7979ce4",
+    "services/casino-station/native/supervise.py": "bb68805a9d1874ca6485e4606a71f8f390e0ae3464314f41b5844ca09098c542",
+    "services/casino-station/native/stream_scene.py": "0fcfa0ff5452031b98416a7b584dde94e1eefbad53deb937dff165c6c5f914ed",
+    "deploy/casino-station-20261008/services/cradle-station-gateway.service": "084af2d6cadc76d6a581506fc871849f4757733fe789cb5c393ffea8edc51adf",
+    "deploy/casino-station-20261008/services/cradle-station-render.service": "68ae689fe02ad78b2f445f374e69569f4bd55381a1bd20150568666e1263d0ed"
+  },
+  "unit_syntax": "PASS",
+  "retention_probe": "PASS incl malformed receipts and original-runtime symlink preservation",
+  "exit_startup_cases": 17,
+  "exit_startup_pass": 17,
+  "O1": "RESOLVED",
+  "deployment_exercised": false,
+  "changes_by_reviewer": "reports/probes only; no runtime or configuration"
+}

@@ -38,6 +38,7 @@ const DAPP_PRESETS: Record<string, Array<{ label: string; url: string; desc: str
     { label: "📊 Assets",     url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
   ],
   Assembly: [
+    { label: "◇ Casino Station", url: "https://cradleos.io/#/casino-station", desc: "Walkable native Carbon casino; browser games and personal wallet" },
     { label: "📦 Inventory", url: `${DAPP_BASE}/#/inventory`, desc: "SSU inventory viewer" },
     { label: "📊 Assets",    url: `${DAPP_BASE}/#/assets`,     desc: "Tribe asset ledger" },
   ],

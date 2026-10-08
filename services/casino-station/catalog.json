@@ -1,0 +1,172 @@
+[
+  {
+    "key": "blackjack",
+    "name": "BLACKJACK",
+    "category": "cards"
+  },
+  {
+    "key": "coinflip",
+    "name": "COINFLIP",
+    "category": "dice"
+  },
+  {
+    "key": "dice",
+    "name": "DICE",
+    "category": "dice"
+  },
+  {
+    "key": "roulette",
+    "name": "ROULETTE",
+    "category": "wheels"
+  },
+  {
+    "key": "slots",
+    "name": "SLOTS",
+    "category": "slots"
+  },
+  {
+    "key": "wheel",
+    "name": "WHEEL",
+    "category": "wheels"
+  },
+  {
+    "key": "limbo",
+    "name": "LIMBO",
+    "category": "crash"
+  },
+  {
+    "key": "plinko",
+    "name": "PLINKO",
+    "category": "drop"
+  },
+  {
+    "key": "keno",
+    "name": "KENO",
+    "category": "lottery"
+  },
+  {
+    "key": "sicbo",
+    "name": "SIC BO",
+    "category": "dice"
+  },
+  {
+    "key": "crash",
+    "name": "CRASH",
+    "category": "crash"
+  },
+  {
+    "key": "diamonds",
+    "name": "DIAMONDS",
+    "category": "grid"
+  },
+  {
+    "key": "double_dice",
+    "name": "DBL DICE",
+    "category": "dice"
+  },
+  {
+    "key": "war",
+    "name": "WAR",
+    "category": "duels"
+  },
+  {
+    "key": "baccarat",
+    "name": "BACCARAT",
+    "category": "cards"
+  },
+  {
+    "key": "three_card_poker",
+    "name": "THREE CARD",
+    "category": "cards"
+  },
+  {
+    "key": "dragon_tiger",
+    "name": "DRAGON TIGER",
+    "category": "duels"
+  },
+  {
+    "key": "under_over_7",
+    "name": "UNDER/OVER 7",
+    "category": "dice"
+  },
+  {
+    "key": "ore_refine",
+    "name": "ORE REFINE",
+    "category": "eve-native"
+  },
+  {
+    "key": "risk_wheel",
+    "name": "RISK WHEEL",
+    "category": "wheels"
+  },
+  {
+    "key": "money_wheel",
+    "name": "MONEY WHEEL",
+    "category": "wheels"
+  },
+  {
+    "key": "andar_bahar",
+    "name": "ANDAR BAHAR",
+    "category": "cards"
+  },
+  {
+    "key": "scratch_cards",
+    "name": "SCRATCH PLEX",
+    "category": "grid"
+  },
+  {
+    "key": "chuck_a_luck",
+    "name": "CHUCK-A-LUCK",
+    "category": "dice"
+  },
+  {
+    "key": "red_dog",
+    "name": "RED DOG",
+    "category": "cards"
+  },
+  {
+    "key": "slot_scrapyard",
+    "name": "Scrapyard Circuit",
+    "category": "slots"
+  },
+  {
+    "key": "slot_wreckways",
+    "name": "Wreckway 243",
+    "category": "slots"
+  },
+  {
+    "key": "slot_reactor",
+    "name": "Reactor Fall",
+    "category": "slots"
+  },
+  {
+    "key": "slot_feral",
+    "name": "Feral Swarm",
+    "category": "slots"
+  },
+  {
+    "key": "slot_vault",
+    "name": "Null Vault",
+    "category": "slots"
+  },
+  {
+    "key": "slot_gatecrash",
+    "name": "Gatecrash",
+    "category": "slots"
+  },
+  {
+    "key": "slot_drones",
+    "name": "Drone Protocol",
+    "category": "slots"
+  },
+  {
+    "key": "slot_eclipse",
+    "name": "Eclipse Routes",
+    "category": "slots"
+  },
+  {
+    "key": "craps",
+    "name": "CRAPS",
+    "category": "dice"
+  }
+]

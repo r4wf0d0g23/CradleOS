@@ -1048,6 +1048,19 @@ export function CasinoExperience({
     <CasinoFeedback.Provider value={feedback.play}>
       <section className="frontier-casino" data-mode={mode}>
         <header className="lounge-header">
+          {!onReturnToStation && (
+            <button
+              className="lounge-station-return"
+              disabled={chainBusy}
+              onClick={() => {
+                if (chainBusyRef.current) return;
+                pauseRun();
+                window.location.hash = "/casino-station";
+              }}
+            >
+              Station ↗
+            </button>
+          )}
           {onReturnToStation && (
             <button
               className="lounge-station-return"

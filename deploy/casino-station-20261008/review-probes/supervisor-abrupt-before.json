@@ -1,0 +1,7 @@
+{
+  "source_sha256": "056e2ab5ea56b6116232d3d3d23f5bf8cb163789810fb6b624a8220cf67aad24",
+  "scenario": "isolated supervisor copy, child abruptly exits -9 after creating owned job without receipt",
+  "exit": -9,
+  "cleanup_gate_written": false,
+  "unverified_job_retained": true
+}

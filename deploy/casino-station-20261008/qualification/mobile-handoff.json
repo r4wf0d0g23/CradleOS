@@ -1,0 +1,29 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "errors": [],
+    "crapsEscrowPreserved": true,
+    "renderSlotReleased": true
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "errors": [],
+    "crapsEscrowPreserved": true,
+    "renderSlotReleased": true
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "errors": [],
+    "crapsEscrowPreserved": true,
+    "renderSlotReleased": true
+  }
+]

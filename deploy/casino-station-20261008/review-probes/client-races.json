@@ -1,0 +1,12 @@
+{
+  "sourceSHA256": "de50163bb0f00e2e8b4061a1a2f634c21a332927422d546b2845c1de39d43987",
+  "probeType": "isolated source VM, not browser",
+  "rapidJoin": {
+    "created": 2,
+    "firstClosed": false
+  },
+  "staleJpeg": {
+    "socketClosed": true,
+    "drawsAfterClose": 1
+  }
+}
