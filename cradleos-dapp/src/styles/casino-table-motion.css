@@ -769,3 +769,28 @@
   background: #334638;
   color: #f0f1d7;
 }
+
+/* Runs/reveals are one control group, not a second stake-grid column. */
+@media (max-width: 700px) {
+  .lounge-console > .casino-spin-run,
+  .lounge-console > .fleet-reveal-controls,
+  .lounge-console > .casino-total-stake,
+  .lounge-console > .lounge-primary:not(.lounge-start),
+  .lounge-console > small {
+    grid-column: 1 / -1;
+  }
+  .casino-spin-run > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .frontier-casino .casino-spin-run button {
+    min-height: 44px;
+    padding: 10px 8px;
+    line-height: 1.4;
+    font-size: 11px;
+  }
+  .lounge-console > .lounge-primary:not(.lounge-start) {
+    min-height: 48px;
+    margin: 0;
+  }
+}

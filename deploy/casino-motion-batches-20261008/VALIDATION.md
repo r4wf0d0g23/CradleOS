@@ -11,4 +11,6 @@
 - Existing Vite mixed-import/large-chunk warnings unchanged.
 - Browser automation and Web Audio scheduling only; physical-device acoustics/performance not claimed.
 
+Independent final candidate gate PASS: 844×390 touch and 320×568 normal/reduced. Full-width saved-spin CTA and 44px run controls visually verified after CSS-only adjustment. Exact final JS/CSS hashes match dist.
+
 Publication and live gate pending.

@@ -16,6 +16,7 @@
     "src/lib/casinoTableMotion.ts": "022c03eeca8c4fa698f3e8a3c8b8832d6ca4c9c7d0dd4390a76fc1b21002a9f4",
     "src/lib/casinoSpinRun.test.ts": "990518147b2464dd312ce0639da5a58597974b8b42b9ff440607994da27138ca",
     "src/lib/casinoTableMotion.test.ts": "a25fc87d0970f3ee40c4550482bad86887214ac2024402a8c2be8e0e6ae455ef",
-    "src/styles/casino-table-motion.css": "40851fa091198033d7c4e62231b9cd86d7678bf376fd895f69ea1746bf62bf4d"
-  }
+    "src/styles/casino-table-motion.css": "7938ca3391cee75aa8d9bc32f591a659ad9a672df22a39ef6e327930a13111ab"
+  },
+  "candidateReviewAt": "2026-10-08T19:21:24.763754+00:00"
 }

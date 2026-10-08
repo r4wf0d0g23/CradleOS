@@ -1,0 +1,264 @@
+{
+  "url": "http://127.0.0.1:5296",
+  "hashes": [
+    {
+      "path": "assets/index-B8DkMLsr.js",
+      "sha256": "417435f9db9c45e19f882c9bfd16385b984a972218778432122f31306b64aae5",
+      "bytes": 2294533,
+      "match": true
+    },
+    {
+      "path": "assets/index-Y1UkcxVh.css",
+      "sha256": "d071e545cf69ff99c97ace50d328b6369b169890819f0e44514e8fccfd088289",
+      "bytes": 801065,
+      "match": true
+    }
+  ],
+  "views": [
+    {
+      "width": 844,
+      "height": 390,
+      "reducedMotion": "no-preference",
+      "checks": [
+        "Run reveal, Resume, Pause and Stop touch-reachable; Pause/Stop prevent later debit; no overflow",
+        "Scratch Reveal all reachable, exact ledger and durable reload",
+        "Blackjack Split/Stand reachable; exact split stake; no overflow"
+      ],
+      "controls": [
+        {
+          "name": "Reveal saved spin",
+          "x": 575,
+          "y": 170.984375,
+          "width": 170.75,
+          "height": 48
+        },
+        {
+          "name": "Resume run",
+          "x": 588,
+          "y": 41.984375,
+          "width": 119.15625,
+          "height": 46
+        },
+        {
+          "name": "Pause run",
+          "x": 588,
+          "y": 41.984375,
+          "width": 104.9375,
+          "height": 46
+        },
+        {
+          "name": "Resume run",
+          "x": 588,
+          "y": 41.984375,
+          "width": 119.15625,
+          "height": 46
+        },
+        {
+          "name": "Stop future spins",
+          "x": 588,
+          "y": 95.984375,
+          "width": 152.078125,
+          "height": 46
+        },
+        {
+          "name": "Reveal all tickets",
+          "x": 82,
+          "y": 172.1875,
+          "width": 152.046875,
+          "height": 46
+        },
+        {
+          "name": "Split",
+          "x": 575,
+          "y": 171.984375,
+          "width": 208,
+          "height": 46
+        },
+        {
+          "name": "Stand",
+          "x": 645.640625,
+          "y": 119.984375,
+          "width": 64.65625,
+          "height": 46
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "reducedMotion": "no-preference",
+      "checks": [
+        "Run reveal, Resume, Pause and Stop touch-reachable; Pause/Stop prevent later debit; no overflow",
+        "Scratch Reveal all reachable, exact ledger and durable reload",
+        "Blackjack Split/Stand reachable; exact split stake; no overflow"
+      ],
+      "controls": [
+        {
+          "name": "Reveal saved spin",
+          "x": 38,
+          "y": 286.765625,
+          "width": 244,
+          "height": 48
+        },
+        {
+          "name": "Resume run",
+          "x": 51,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Pause run",
+          "x": 51,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Resume run",
+          "x": 51,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Stop future spins",
+          "x": 164,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Reveal all tickets",
+          "x": 46,
+          "y": 261.078125,
+          "width": 152.046875,
+          "height": 46
+        },
+        {
+          "name": "Split",
+          "x": 231.25,
+          "y": 289.265625,
+          "width": 50.75,
+          "height": 46
+        },
+        {
+          "name": "Stand",
+          "x": 94.734375,
+          "y": 491.265625,
+          "width": 57.8125,
+          "height": 46
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "reducedMotion": "reduce",
+      "checks": [
+        "Run reveal, Resume, Pause and Stop touch-reachable; Pause/Stop prevent later debit; no overflow",
+        "Scratch Reveal all reachable, exact ledger and durable reload",
+        "Blackjack Split/Stand reachable; exact split stake; no overflow"
+      ],
+      "controls": [
+        {
+          "name": "Reveal saved spin",
+          "x": 38,
+          "y": 286.765625,
+          "width": 244,
+          "height": 48
+        },
+        {
+          "name": "Resume run",
+          "x": 51,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Pause run",
+          "x": 51,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Resume run",
+          "x": 51,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Stop future spins",
+          "x": 164,
+          "y": 153.765625,
+          "width": 105,
+          "height": 94
+        },
+        {
+          "name": "Reveal all tickets",
+          "x": 46,
+          "y": 261.078125,
+          "width": 152.046875,
+          "height": 46
+        },
+        {
+          "name": "Split",
+          "x": 231.25,
+          "y": 289.265625,
+          "width": 50.75,
+          "height": 46
+        },
+        {
+          "name": "Stand",
+          "x": 94.734375,
+          "y": 491.265625,
+          "width": 57.8125,
+          "height": 46
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "PASS": true,
+  "priorHashes": [
+    {
+      "path": "assets/index-D18t07tS.js",
+      "sha256": "417435f9db9c45e19f882c9bfd16385b984a972218778432122f31306b64aae5",
+      "bytes": 2294533,
+      "match": true
+    },
+    {
+      "path": "assets/index-CYEK7tfs.css",
+      "sha256": "b866215d9fe96138943a6785923d8adb82a11809949d52aa92ff8b84e13f2921",
+      "bytes": 801032,
+      "match": true
+    }
+  ],
+  "finalPolish": {
+    "buttons": [
+      {
+        "text": "Resume run",
+        "font": "11px",
+        "minHeight": "44px",
+        "width": 105,
+        "height": 44
+      },
+      {
+        "text": "Stop future spins",
+        "font": "11px",
+        "minHeight": "44px",
+        "width": 105,
+        "height": 44
+      }
+    ],
+    "cta": {
+      "x": 38,
+      "y": 286.765625,
+      "width": 244,
+      "height": 48
+    },
+    "PASS": true
+  }
+}
