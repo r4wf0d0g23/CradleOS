@@ -1,0 +1,110 @@
+{
+  "imageErrorDistinct": true,
+  "labels": [
+    {
+      "text": "01",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "02",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "03",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "02",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "03",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "04",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "03",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "04",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "05",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "04",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "05",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "06",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "05",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "06",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    },
+    {
+      "text": "07",
+      "top": 6.84375,
+      "bottom": 6.84375,
+      "parentHeight": 29.6875,
+      "bHeight": 16
+    }
+  ]
+}

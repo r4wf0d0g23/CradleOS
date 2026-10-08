@@ -1,0 +1,146 @@
+[
+  {
+    "width": 320,
+    "game": "slot_feral",
+    "falls": [
+      {
+        "cell": 11,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -34.351)",
+        "animations": 1
+      },
+      {
+        "cell": 17,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -68.7273)",
+        "animations": 1
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "game": "slot_reactor",
+    "falls": [
+      {
+        "cell": 2,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -62.7104)",
+        "animations": 1
+      },
+      {
+        "cell": 3,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -62.7104)",
+        "animations": 1
+      },
+      {
+        "cell": 6,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -31.3668)",
+        "animations": 1
+      },
+      {
+        "cell": 7,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -31.3668)",
+        "animations": 1
+      },
+      {
+        "cell": 8,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -31.3668)",
+        "animations": 1
+      },
+      {
+        "cell": 13,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -62.7104)",
+        "animations": 1
+      },
+      {
+        "cell": 16,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -31.3668)",
+        "animations": 1
+      },
+      {
+        "cell": 22,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -31.3668)",
+        "animations": 1
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "game": "slot_feral",
+    "falls": [
+      {
+        "cell": 11,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -101.328)",
+        "animations": 1
+      },
+      {
+        "cell": 17,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -202.657)",
+        "animations": 1
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "game": "slot_reactor",
+    "falls": [
+      {
+        "cell": 2,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -130.172)",
+        "animations": 1
+      },
+      {
+        "cell": 3,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -130.172)",
+        "animations": 1
+      },
+      {
+        "cell": 6,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -65.086)",
+        "animations": 1
+      },
+      {
+        "cell": 7,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -65.086)",
+        "animations": 1
+      },
+      {
+        "cell": 8,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -65.086)",
+        "animations": 1
+      },
+      {
+        "cell": 13,
+        "fall": 2,
+        "transform": "matrix(1, 0, 0, 1, 0, -130.172)",
+        "animations": 1
+      },
+      {
+        "cell": 16,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -65.086)",
+        "animations": 1
+      },
+      {
+        "cell": 22,
+        "fall": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -65.086)",
+        "animations": 1
+      }
+    ]
+  }
+]

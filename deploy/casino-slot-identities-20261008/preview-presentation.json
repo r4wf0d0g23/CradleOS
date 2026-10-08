@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "320: all eight current saved boards, native images loaded, no fallback/overflow, readable token labels, no infinite animation",
+    "390: all eight current saved boards, native images loaded, no fallback/overflow, readable token labels, no infinite animation",
+    "1440: all eight current saved boards, native images loaded, no fallback/overflow, readable token labels, no infinite animation",
+    "manifest.json blocked: visible per-symbol codes/names survive",
+    "assets/*.png blocked: visible per-symbol codes/names survive",
+    "No initial audio; opt-in opens context; mute/hidden closes all voices"
+  ],
+  "errors": [],
+  "badAssets": []
+}

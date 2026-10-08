@@ -1,0 +1,8 @@
+import {chromium} from '/home/rawdata/.npm-global/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
+import fs from 'node:fs/promises';
+const OUT='/home/rawdata/.openclaw-captain/workspace/research/cradleos-casino-slot-identities-20261008',URL=process.env.QA_URL??'http://127.0.0.1:5199/',TAG=process.env.QA_TAG??'pass1';
+const fixtures=JSON.parse(await fs.readFile('/home/rawdata/.openclaw-captain/workspace/research/cradleos-casino-slot-fleet-20261008/fixtures.json','utf8'));
+const b=await chromium.launch({executablePath:'/home/rawdata/.cache/ms-playwright/chromium-1228/chrome-linux/chrome',args:['--no-sandbox']});
+try {for(const width of [390,1440]) {const ctx=await b.newContext({viewport:{width,height:1000},reducedMotion:'reduce'}),p=await ctx.newPage();await p.goto(URL+'#/casino');await p.locator('.lounge-game-tile').first().waitFor();await p.getByRole('button',{name:'SLOTS',exact:true}).click();await p.waitForTimeout(800);await p.screenshot({path:`${OUT}/${TAG}-${width}-lobby.png`,fullPage:true});
+for(const [key,r] of Object.entries(fixtures)) {const round={id:1,game:key,stake:r.stake,payout:r.payout,values:[1,r.frames.length],label:'Saved feature'},s={version:2,balance:1000000-r.stake+r.payout,sequence:1,history:[round],hand:null,table:null,pack:{game:key,rounds:[round],slot:{...r,cursor:1}}};await p.evaluate(s=>sessionStorage.setItem('cradleos:casino:practice:v2',JSON.stringify(s)),s);await p.reload();await p.locator(`[data-slot-game="${key}"]`).waitFor();await p.waitForTimeout(400);await p.locator('.identity-stage').screenshot({path:`${OUT}/${TAG}-${width}-${key}.png`});console.log(width,key);}
+await ctx.close();}}finally{await b.close()}

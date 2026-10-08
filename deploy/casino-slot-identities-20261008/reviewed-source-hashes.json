@@ -1,0 +1,10 @@
+{
+  "src/components/CasinoExperience.tsx": "ab80780013959c36099229a880e225e9303d9b31f23f9b42112407660d308f53",
+  "src/components/CasinoSlotFleet.tsx": "223d790f4bf972811d4917c911e05cfc9dc73332d60665fcb5bc7714bef09e49",
+  "src/components/SlotIdentityArt.tsx": "d001ebd8c91f8c0a88c774a0279c7d11c8afa9d263355b719055a3ad575e1ed8",
+  "src/lib/casinoSlotIdentity.ts": "b6e98a49cb474b4a149f51bcc96f3c21ffdb47a7da57dba43225e88eca643f81",
+  "src/lib/casinoSlotIdentity.test.tsx": "b609c744e45625040a95b8c0f7864e92630ca0dde4a1755bf0930b2f71789d93",
+  "src/lib/casinoSoundDesign.ts": "535c53c7eb8f1c4bb660049ce5d5174d41c1a5b0c6fef3d2fff859b65cca0d21",
+  "src/lib/casinoFeedback.ts": "59598a90540c99411ad1a3a47b21620a5b27631d80a355623c3d0dda5496537d",
+  "src/styles/casino-slot-identities.css": "4351794ee52280fbbd3f55c2d62d85ec8d8ae078d81a655df6f50188ecd70983"
+}

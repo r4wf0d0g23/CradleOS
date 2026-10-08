@@ -1,0 +1,18 @@
+{
+  "sourceTests": 260,
+  "testFiles": 24,
+  "typescript": true,
+  "originsGuard": 8,
+  "ioc": "clean",
+  "build": "pass, existing Vite large-bundle/mixed-import notices",
+  "economicFiles": "five byte-identical to a6fcebd",
+  "audio": "programmatic browser verification; physical device listening not claimed",
+  "newDependencies": false,
+  "nativeAssets": "seven distinct hashes per ordinary set, special roles checked",
+  "desktopAndMobileWidths": [
+    320,
+    390,
+    844,
+    1440
+  ]
+}

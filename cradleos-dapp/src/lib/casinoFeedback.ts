@@ -1,15 +1,10 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-export type CasinoCue =
-  | "select"
-  | "deal"
-  | "spin"
-  | "win"
-  | "loss"
-  | "stop"
-  | "bonus"
-  | "cascade"
-  | "coin";
-export const CasinoFeedback = createContext<(cue: CasinoCue) => void>(() => {});
+import type { FleetKey } from "./casinoSlotFleet";
+import { casinoSoundNotes, type CasinoCue } from "./casinoSoundDesign";
+export type { CasinoCue } from "./casinoSoundDesign";
+export const CasinoFeedback = createContext<
+  (cue: CasinoCue, game?: FleetKey) => void
+>(() => {});
 /** Original synthesized cues, plus the existing Frontier power sample. Opt-in only. */
 export function useCasinoFeedback() {
   const [enabled, setEnabled] = useState(false),
@@ -19,42 +14,27 @@ export function useCasinoFeedback() {
     generation = useRef(0),
     mounted = useRef(true),
     sample = useRef<HTMLAudioElement | null>(null);
-  const play = useCallback((cue: CasinoCue) => {
+  const play = useCallback((cue: CasinoCue, game?: FleetKey) => {
     const c = ctx.current;
     if (!active.current || !c || c.state !== "running" || document.hidden)
       return;
-    const notes =
-      cue === "bonus"
-        ? [293.66, 440, 587.33, 880]
-        : cue === "cascade"
-          ? [220, 293.66, 349.23]
-          : cue === "coin"
-            ? [880, 1174.66]
-            : cue === "stop"
-              ? [164.81]
-              : cue === "win"
-                ? [261.63, 329.63, 392]
-                : cue === "loss"
-                  ? [110, 82.41]
-                  : cue === "spin"
-                    ? [146.83, 220]
-                    : cue === "deal"
-                      ? [392]
-                      : [660];
-    notes.forEach((hz, i) => {
+    casinoSoundNotes(cue, game).forEach((note) => {
       const o = c.createOscillator(),
         g = c.createGain(),
-        t = c.currentTime + i * 0.09;
-      o.type = cue === "spin" ? "triangle" : "sine";
-      o.frequency.setValueAtTime(hz, t);
-      o.frequency.exponentialRampToValueAtTime(hz * 0.8, t + 0.16);
+        t = c.currentTime + note.at;
+      o.type = note.wave;
+      o.frequency.setValueAtTime(note.hz, t);
+      o.frequency.exponentialRampToValueAtTime(
+        note.endHz,
+        t + note.duration * 0.7,
+      );
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.045, t + 0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+      g.gain.linearRampToValueAtTime(note.gain, t + note.attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + note.duration);
       o.connect(g);
       g.connect(c.destination);
       o.start(t);
-      o.stop(t + 0.25);
+      o.stop(t + note.duration + 0.01);
       o.onended = () => {
         o.disconnect();
         g.disconnect();

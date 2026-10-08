@@ -1,7 +1,21 @@
 import measured from "../data/casino-slot-math.json";
 import { useContext, useEffect, useState, type CSSProperties } from "react";
-import { ItemIcon } from "./GameIcon";
-import { CASINO_SYMBOLS } from "../lib/casinoLounge";
+
+import {
+  SLOT_IDENTITIES,
+  slotSymbol,
+  slotFrameLabel,
+} from "../lib/casinoSlotIdentity";
+import {
+  SlotScenery,
+  SlotSymbolArt,
+  SlotWordmark,
+  SlotBonusPanel,
+  SlotCoinValue,
+  SlotFeatureInstrument,
+  FeralConnections,
+} from "./SlotIdentityArt";
+import "../styles/casino-slot-identities.css";
 import { CasinoFeedback } from "../lib/casinoFeedback";
 import { chipLabel } from "../lib/casinoPractice";
 import {
@@ -34,16 +48,25 @@ export const FLEET_CATALOG: GameEntry[] = FLEET_KEYS.map((key) => ({
 export const SLOT_REVEAL_MS = 1500;
 const mult = (n: number) => `${Number(n.toFixed(4))}×`;
 export function FleetTile({ game }: { game: FleetKey }) {
-  const g = FLEET[game];
+  const t = SLOT_IDENTITIES[game];
   return (
     <div
-      className={`fleet-tile fleet-${g.mode}`}
-      style={{ "--fleet-accent": g.accent } as CSSProperties}
+      className={`fleet-tile identity-tile scene-${t.scene}`}
+      style={
+        {
+          "--fleet-accent": t.accent,
+          "--scene-secondary": t.secondary,
+        } as CSSProperties
+      }
       aria-hidden="true"
     >
-      <div className="fleet-orbit" />
-      <ItemIcon typeId={g.icon} size={112} />
-      <span>{g.mechanic}</span>
+      <SlotScenery game={game} mini />
+      <SlotWordmark game={game} />
+      <div className="identity-tile-symbols">
+        {[0, 3, 6].map((n) => (
+          <SlotSymbolArt game={game} symbol={n} size={44} key={n} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -59,6 +82,7 @@ export function FleetBoard({
   reduced: boolean;
 }) {
   const g = FLEET[game],
+    t = SLOT_IDENTITIES[game],
     play = useContext(CasinoFeedback);
   const [expanded, setExpanded] = useState(true);
   const index = receipt
@@ -75,7 +99,7 @@ export function FleetBoard({
     const timers = [
       setTimeout(() => {
         setExpanded(true);
-        play("stop");
+        play("stop", game);
       }, 900),
     ];
     return () => timers.forEach(clearTimeout);
@@ -99,107 +123,142 @@ export function FleetBoard({
       : 0;
   return (
     <div
-      className={`fleet-board fleet-${g.mode} ${busy && !reduced ? "fleet-spinning" : ""} ${covered ? "fleet-covered" : ""}`}
-      style={{ "--fleet-accent": g.accent } as CSSProperties}
+      className={`fleet-board slot-identity scene-${t.scene} fleet-${g.mode} ${busy && !reduced ? "fleet-spinning" : ""} ${covered ? "fleet-covered" : ""}`}
+      style={
+        {
+          "--fleet-accent": t.accent,
+          "--scene-secondary": t.secondary,
+        } as CSSProperties
+      }
       data-slot-game={game}
       data-stage={index}
       data-cursor={receipt?.cursor ?? 0}
     >
-      <div className="fleet-feature-strip">
-        <strong>{g.mechanic}</strong>
-        <span>{g.feature}</span>
-      </div>
       <div
-        className="fleet-grid"
-        role="img"
-        aria-label={
-          covered
-            ? "Saved spin ready to reveal"
-            : `${g.name} ${frame?.label ?? "ready"}`
-        }
+        className={`identity-stage ${game === "slot_vault" && !busy && !covered && count >= 6 ? "vault-open" : ""} ${busy && !reduced ? "identity-active" : ""} ${!busy && frame?.kind === "free" && !covered ? "identity-free" : ""}`}
       >
-        {shown.map((col, c) => (
+        <SlotScenery game={game} />
+        <header className="identity-heading">
+          <small>{t.tagline}</small>
+          <SlotWordmark game={game} />
+        </header>
+        <SlotFeatureInstrument
+          game={game}
+          frame={frame ? { ...frame, grid: shown } : undefined}
+          covered={covered}
+        />
+        <div className="identity-playfield">
           <div
-            className="fleet-reel"
-            key={c}
-            style={{ "--reel": c } as CSSProperties}
+            className="fleet-grid"
+            role="img"
+            aria-label={
+              covered
+                ? "Saved spin ready to reveal"
+                : `${g.name} ${slotFrameLabel(game, frame)}. ${shown.map((col, c) => `Reel ${c + 1}: ${col.map((n) => (n === WILD ? "Wild" : n === SCATTER ? "Scatter" : n === COIN ? "Value token" : n === EMPTY ? "Empty" : slotSymbol(game, n)?.name)).join(", ")}`).join(". ")}`
+            }
           >
-            {col.map((symbol, r) => {
-              const id = c * 5 + r,
-                coinValue = frame?.coins[c * 3 + r] ?? 0;
-              const before = previous?.grid[c]?.[r];
-              const locked =
-                (g.mode === "hold" && symbol === COIN && before === COIN) ||
-                (game === "slot_drones" &&
-                  frame?.kind === "free" &&
-                  previous?.kind === "free" &&
-                  symbol === WILD &&
-                  before === WILD);
-              // Refill cells enter from above; each survivor falls from its actual prior row.
-              const refills =
-                previous?.grid[c]?.filter((_, y) => previousWins.has(c * 5 + y))
-                  .length ?? 0;
-              const animate =
-                busy &&
-                !reduced &&
-                !locked &&
-                (frame?.kind !== "cascade" || r < refills);
-              const survivors =
-                previous?.grid[c]?.flatMap((_, y) =>
-                  previousWins.has(c * 5 + y) ? [] : [y],
-                ) ?? [];
-              const fall =
-                busy && !reduced && frame?.kind === "cascade" && r >= refills
-                  ? r - (survivors[r - refills] ?? r)
-                  : 0;
-              return (
-                <div
-                  key={r}
-                  style={{ "--fall": fall, "--row": r } as CSSProperties}
-                  className={`fleet-cell ${symbol === WILD ? "fleet-wild" : symbol === SCATTER ? "fleet-scatter" : symbol === COIN ? "fleet-coin" : symbol === EMPTY ? "fleet-empty" : ""} ${won.has(id) ? "fleet-cell-win" : ""} ${animate ? "fleet-cell-drop" : ""} ${fall > 0 ? "fleet-cell-fall" : ""} ${locked ? "fleet-locked" : ""}`}
-                  data-symbol={symbol}
-                  data-cell={id}
-                  title={
-                    covered
-                      ? "Unrevealed"
-                      : symbol === WILD
-                        ? "Wild"
-                        : symbol === SCATTER
-                          ? "Scatter"
-                          : symbol === COIN
-                            ? `${mult(effectiveMultiplier(g, coinValue))} stake, collected at feature end`
-                            : symbol === EMPTY
-                              ? "Empty"
-                              : CASINO_SYMBOLS[symbol]?.name
-                  }
-                >
-                  {covered ? (
-                    <span>◇</span>
-                  ) : symbol < 7 ? (
-                    <ItemIcon typeId={CASINO_SYMBOLS[symbol].id} size={64} />
-                  ) : symbol === WILD ? (
-                    <>
-                      <ItemIcon typeId={84955} size={52} />
-                      <b>WILD</b>
-                    </>
-                  ) : symbol === SCATTER ? (
-                    <>
-                      <ItemIcon typeId={72244} size={52} />
-                      <b>SCATTER</b>
-                    </>
-                  ) : symbol === COIN ? (
-                    <b>{mult(effectiveMultiplier(g, coinValue))}</b>
-                  ) : (
-                    <span>·</span>
-                  )}
-                  {locked && !covered && (
-                    <small className="fleet-lock">◆</small>
-                  )}
-                </div>
-              );
-            })}
+            {shown.map((col, c) => (
+              <div
+                className="fleet-reel"
+                key={c}
+                style={{ "--reel": c } as CSSProperties}
+              >
+                {col.map((symbol, r) => {
+                  const id = c * 5 + r,
+                    coinValue = frame?.coins[c * 3 + r] ?? 0;
+                  const before = previous?.grid[c]?.[r];
+                  const locked =
+                    (g.mode === "hold" && symbol === COIN && before === COIN) ||
+                    (game === "slot_drones" &&
+                      frame?.kind === "free" &&
+                      previous?.kind === "free" &&
+                      symbol === WILD &&
+                      before === WILD);
+                  // Refill cells enter from above; each survivor falls from its actual prior row.
+                  const refills =
+                    previous?.grid[c]?.filter((_, y) =>
+                      previousWins.has(c * 5 + y),
+                    ).length ?? 0;
+                  const animate =
+                    busy &&
+                    !reduced &&
+                    !locked &&
+                    (frame?.kind !== "cascade" || r < refills);
+                  const survivors =
+                    previous?.grid[c]?.flatMap((_, y) =>
+                      previousWins.has(c * 5 + y) ? [] : [y],
+                    ) ?? [];
+                  const fall =
+                    busy &&
+                    !reduced &&
+                    frame?.kind === "cascade" &&
+                    r >= refills
+                      ? r - (survivors[r - refills] ?? r)
+                      : 0;
+                  return (
+                    <div
+                      key={r}
+                      style={{ "--fall": fall, "--row": r } as CSSProperties}
+                      className={`fleet-cell ${symbol === WILD ? "fleet-wild" : symbol === SCATTER ? "fleet-scatter" : symbol === COIN ? "fleet-coin" : symbol === EMPTY ? "fleet-empty" : ""} ${won.has(id) ? "fleet-cell-win" : ""} ${animate ? "fleet-cell-drop" : ""} ${fall > 0 ? "fleet-cell-fall" : ""} ${locked ? "fleet-locked" : ""}`}
+                      data-symbol={symbol}
+                      data-cell={id}
+                      title={
+                        covered
+                          ? "Unrevealed"
+                          : symbol === WILD
+                            ? "Wild"
+                            : symbol === SCATTER
+                              ? "Scatter"
+                              : symbol === COIN
+                                ? `${mult(effectiveMultiplier(g, coinValue))} stake, collected at feature end`
+                                : symbol === EMPTY
+                                  ? "Empty"
+                                  : slotSymbol(game, symbol)?.name
+                      }
+                    >
+                      {covered ? (
+                        <span>◇</span>
+                      ) : symbol < 7 ? (
+                        <SlotSymbolArt game={game} symbol={symbol} size={64} />
+                      ) : symbol === WILD ? (
+                        <>
+                          <SlotSymbolArt game={game} symbol={WILD} size={52} />
+                          <b>WILD</b>
+                        </>
+                      ) : symbol === SCATTER ? (
+                        <>
+                          <SlotSymbolArt
+                            game={game}
+                            symbol={SCATTER}
+                            size={52}
+                          />
+                          <b>SCATTER</b>
+                        </>
+                      ) : symbol === COIN ? (
+                        <SlotCoinValue
+                          value={effectiveMultiplier(g, coinValue)}
+                        />
+                      ) : (
+                        <span>·</span>
+                      )}
+                      {locked && !covered && (
+                        <small className="fleet-lock">◆</small>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
-        ))}
+          {game === "slot_feral" && (
+            <FeralConnections frame={frame} visible={!busy && !covered} />
+          )}
+        </div>
+        {!busy && !covered && <SlotBonusPanel game={game} frame={frame} />}
+        <div className="identity-stage-foot">
+          <span>{g.mechanic}</span>
+          <span>{g.feature}</span>
+        </div>
       </div>
       <div className="fleet-meter">
         <span>
@@ -211,7 +270,7 @@ export function FleetBoard({
                 : frame?.kind === "cascade"
                   ? "CASCADING"
                   : "REELS ACTIVE"
-              : (frame?.label ?? "READY")}
+              : slotFrameLabel(game, frame)}
         </span>
         <strong>
           {covered
@@ -242,24 +301,6 @@ export function FleetBoard({
           </span>
         </div>
       )}
-      {frame && !covered && g.mode === "hold" && frame.remaining > 0 && (
-        <div
-          className="fleet-respins"
-          aria-label={`${frame.remaining} respins remaining`}
-        >
-          {[0, 1, 2].map((n) => (
-            <i key={n} className={n < frame.remaining ? "on" : ""} />
-          ))}
-          <span>RESPINS LEFT</span>
-        </div>
-      )}
-      {frame && !covered && frame.kind === "free" && (
-        <div className="fleet-free-progress">
-          Free spin {frame.index}/{g.free}
-          <progress value={frame.index} max={g.free} />
-          {frame.multiplier > 1 && <b>{frame.multiplier}×</b>}
-        </div>
-      )}
       {frame && !busy && !covered && frame.wins.length > 0 && (
         <details className="fleet-win-detail">
           <summary>
@@ -272,7 +313,7 @@ export function FleetBoard({
           </summary>
           {frame.wins.map((w, i) => (
             <p key={i}>
-              {CASINO_SYMBOLS[w.symbol].name} · {w.count}{" "}
+              {slotSymbol(game, w.symbol).name} · {w.count}{" "}
               {g.mode === "lines" || g.mode === "ways" ? "reels" : "symbols"}
               {w.ways > 1 ? ` · ${w.ways} ways` : ""} ·{" "}
               {mult(effectiveMultiplier(g, w.points) * frame.multiplier)}
@@ -344,9 +385,9 @@ export function FleetRules({ game }: { game: FleetKey }) {
             </p>
           )}
           <div className="lounge-paytable">
-            {CASINO_SYMBOLS.map((s, i) => (
-              <div key={s.id}>
-                <ItemIcon typeId={s.id} />
+            {SLOT_IDENTITIES[game].symbols.map((s, i) => (
+              <div key={s.library}>
+                <SlotSymbolArt game={game} symbol={i} size={32} />
                 <span>
                   {s.name}
                   <small> {weights[i]}% per cell</small>

@@ -1,3 +1,4 @@
+import { slotAwaitingCollection } from "../lib/casinoSlotIdentity";
 import {
   FleetBoard,
   FleetRules,
@@ -522,9 +523,12 @@ export function CasinoExperience() {
     const feature = next.pack!.slot!;
     const frame = feature.frames[feature.cursor - 1];
     if (feature.cursor === feature.frames.length)
-      feedback.play(feature.payout > feature.stake ? "win" : "loss");
+      feedback.play(
+        feature.payout > feature.stake ? "win" : "loss",
+        feature.key,
+      );
     else if (frame.remaining > 0 && frame.kind === "spin")
-      feedback.play("bonus");
+      feedback.play("bonus", feature.key);
     else
       feedback.play(
         frame.kind === "hold"
@@ -532,6 +536,7 @@ export function CasinoExperience() {
           : frame.kind === "cascade"
             ? "cascade"
             : "stop",
+        feature.key,
       );
   }
   function nextSlot(all = false) {
@@ -554,6 +559,7 @@ export function CasinoExperience() {
     setBusy(true);
     feedback.play(
       saved.pack!.slot!.frames[cursor].kind === "cascade" ? "cascade" : "spin",
+      saved.pack!.slot!.key,
     );
     timer.current = setTimeout(
       () => {
@@ -593,7 +599,10 @@ export function CasinoExperience() {
           );
       commit(next);
       setBusy(true);
-      feedback.play(game === "blackjack" ? "deal" : "spin");
+      feedback.play(
+        game === "blackjack" ? "deal" : "spin",
+        isFleet(game) ? game : undefined,
+      );
       timer.current = setTimeout(
         () => {
           setBusy(false);
@@ -1154,13 +1163,15 @@ export function CasinoExperience() {
                           ? "Revealing…"
                           : pack?.slot?.cursor === 0
                             ? "Reveal saved spin"
-                            : pack?.slot?.frames[pack.slot.cursor]?.kind ===
-                                "free"
-                              ? "Next free spin"
+                            : slotAwaitingCollection(pack?.slot)
+                              ? "Collect vault"
                               : pack?.slot?.frames[pack.slot.cursor]?.kind ===
-                                  "hold"
-                                ? "Respin"
-                                : "Next cascade"}
+                                  "free"
+                                ? "Next free spin"
+                                : pack?.slot?.frames[pack.slot.cursor]?.kind ===
+                                    "hold"
+                                  ? "Respin"
+                                  : "Next cascade"}
                       </button>
                       <button disabled={busy} onClick={() => nextSlot(true)}>
                         Reveal all
