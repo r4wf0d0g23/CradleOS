@@ -1,0 +1,67 @@
+[
+  {
+    "path": "lib/casinoPractice.ts",
+    "unchanged": true,
+    "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac"
+  },
+  {
+    "path": "lib/casinoExpanded.ts",
+    "unchanged": true,
+    "sha256": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226"
+  },
+  {
+    "path": "lib/casinoSlotFleet.ts",
+    "unchanged": true,
+    "sha256": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8"
+  },
+  {
+    "path": "lib/casinoBlackjackTable.ts",
+    "unchanged": true,
+    "sha256": "a2406def69d4c7b99ad17841a2f00a29951382f80aeb58d5d7f788955d09dfcc"
+  },
+  {
+    "path": "lib/plinkoMotion.ts",
+    "unchanged": true,
+    "sha256": "94a59692c40432f1aee0c38070e748669934f0b52768226368fa3810761c9832"
+  },
+  {
+    "path": "lib/casinoSlotMotion.ts",
+    "unchanged": true,
+    "sha256": "aff2786fc7e8cea359367afc41f161d8f00202fcd6f89b0b21f0c9a5a59dbfc9"
+  },
+  {
+    "path": "lib/casinoSlotBonus.ts",
+    "unchanged": true,
+    "sha256": "61521ad9d1029d03d76e9e60c3e065f5b2f75a435e05c2d5956e80b7d2f8b555"
+  },
+  {
+    "path": "lib/casinoResultFeedback.ts",
+    "unchanged": true,
+    "sha256": "88b5c76aa662087fd2a49289a75546a53590682a4fbcea17171bb6980fd970d0"
+  },
+  {
+    "path": "lib/casinoFeedback.ts",
+    "unchanged": true,
+    "sha256": "59598a90540c99411ad1a3a47b21620a5b27631d80a355623c3d0dda5496537d"
+  },
+  {
+    "path": "lib/casinoDonations.ts",
+    "unchanged": true,
+    "sha256": "6a06863c7a8229eb1dce582fbda2691a57c726bc3520a8db4953c4834c8ccb70"
+  },
+  {
+    "path": "components/HouseDonatePanel.tsx",
+    "unchanged": true,
+    "sha256": "b79e333de18ceccf7ab10e8525c97afdd253f0cf8178d6686794181094b0ea81"
+  },
+  {
+    "path": "components/InstantGamePanel.tsx",
+    "unchanged": true,
+    "sha256": "870085704824ae4d95ef5859b363b43196c7415cfa85fb28c106b7eaef826bbd"
+  },
+  {
+    "path": "components/CasinoPanel.tsx",
+    "unchanged": true,
+    "sha256": "ad2362df1049d88a9fadb06c98dedbb2b1a945909a996c30aa55f8b072b719e6"
+  }
+]

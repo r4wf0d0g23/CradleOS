@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { chipLabel, MAX_BET, practiceBet, RED } from "../lib/casinoPractice";
 import {
   PROFILES,
+  isSlotGame,
   quickPick,
   wagerLabel,
   type Options,
@@ -35,18 +36,25 @@ export function CasinoPackControls({
     if (game === "keno" && activePicks) onActivePicks(activePicks);
   }, [game, activePicks, onActivePicks]);
   const patch = (o: Options) => setOptions({ ...options, ...o });
-  if (game === "plinko" || game === "scratch_cards" || game === "blackjack")
+  if (
+    isSlotGame(game) ||
+    game === "plinko" ||
+    game === "scratch_cards" ||
+    game === "blackjack"
+  )
     return (
       <>
         <legend>
-          {game === "plinko"
-            ? "Balls"
-            : game === "blackjack"
-              ? "Starting seats"
-              : "Tickets"}
+          {isSlotGame(game)
+            ? "Spins per run"
+            : game === "plinko"
+              ? "Balls"
+              : game === "blackjack"
+                ? "Starting seats"
+                : "Tickets"}
         </legend>
         <div className="casino-option-row">
-          {(game === "plinko"
+          {(game === "plinko" || isSlotGame(game)
             ? [1, 3, 5, 10]
             : game === "blackjack"
               ? [1, 2, 3]

@@ -16,6 +16,18 @@ import {
   PROFILES,
   activeSession,
   pendingSlot,
+  pendingClassicSpin,
+  pendingScratch,
+  pendingSpinRun,
+  scratchRevealed,
+  startSpinRun,
+  advanceSpinRun,
+  stopSpinRun,
+  revealClassicSpin,
+  revealScratch,
+  spinRunTotals,
+  wagerLabel,
+  isSlotGame,
   revealSlot,
   actSession,
   playSession,
@@ -34,7 +46,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { HouseDonatePanel } from "./HouseDonatePanel";
 import { CasinoPanel } from "./CasinoPanel";
-import { CasinoRoundStage, casinoRoundMs } from "./CasinoRoundStage";
+import { CasinoRoundStage } from "./CasinoRoundStage";
 import { CasinoRoundSummary, CasinoRoundHistory } from "./CasinoRoundSummary";
 import { roundCue, type PayoutEvent } from "../lib/casinoResultFeedback";
 import { ExpandedOptions } from "./CasinoExpandedOptions";
@@ -65,6 +77,15 @@ import {
   type Round,
 } from "../lib/casinoPractice";
 import "../styles/casino-lounge.css";
+import "../styles/casino-table-motion.css";
+import { useCasinoTimeline } from "./useCasinoTimeline";
+import { CasinoBlackjackMotion } from "./CasinoBlackjackMotion";
+import {
+  tableDuration,
+  blackjackPlan,
+  STILL_RUN,
+  type TableRun,
+} from "../lib/casinoTableMotion";
 const base = import.meta.env.BASE_URL;
 const titles = (key: string) =>
   (isFleet(key)
@@ -164,6 +185,8 @@ function GameSurface({
   selectedProfile,
   slotRun,
   onNextSlot,
+  tableRun,
+  onScratchReveal,
 }: {
   game: PracticeGame;
   state: Session;
@@ -173,9 +196,16 @@ function GameSurface({
   selectedProfile: keyof typeof PROFILES;
   slotRun: SlotMotionRun;
   onNextSlot: () => void;
+  tableRun: TableRun;
+  onScratchReveal: (index?: number) => boolean;
 }) {
   const pack = state.pack?.game === game ? state.pack : null;
   const [receiptTicket, setReceiptTicket] = useState(0);
+  const { t: kenoT } = useCasinoTimeline(
+    tableRun,
+    busy && game === "keno",
+    reducedMotion,
+  );
   useEffect(() => setReceiptTicket(0), [pack]);
   if (isFleet(game))
     return (
@@ -201,11 +231,18 @@ function GameSurface({
           {pack.rounds.map((r, i) => (
             <button
               key={r.id}
-              disabled={busy}
               aria-pressed={i === ticket}
               onClick={() => setReceiptTicket(i)}
             >
-              Result {i + 1}
+              Ticket {i + 1} ·{" "}
+              {
+                r.values
+                  .slice(-10)
+                  .slice(0, Math.min(10, Math.floor(kenoT * 11)))
+                  .filter((n) => r.values.slice(1, 1 + r.values[0]).includes(n))
+                  .length
+              }
+              /{r.values[0]}
             </button>
           ))}
         </div>
@@ -217,6 +254,7 @@ function GameSurface({
           round={round}
           busy={busy}
           reduced={reducedMotion}
+          run={tableRun}
         />
         {!busy && (
           <p className="casino-board-caption">
@@ -232,46 +270,20 @@ function GameSurface({
       <CasinoScratchPack
         key={pack.rounds[0].id}
         rounds={pack.rounds}
+        revealed={scratchRevealed(state)}
+        busy={busy}
+        onReveal={onScratchReveal}
+      />
+    );
+  if (game === "blackjack" && (state.table || pack?.table))
+    return (
+      <CasinoBlackjackMotion
+        state={state}
+        run={tableRun}
+        busy={busy}
         reduced={reducedMotion}
       />
     );
-  if (game === "blackjack" && (state.table || pack?.table)) {
-    const table = state.table ?? pack!.table!;
-    return (
-      <div className="lounge-blackjack casino-multi-blackjack">
-        <CardRow
-          label="Dealer · stands on 17"
-          cards={table.dealer}
-          hidden={!table.complete}
-        />
-        <div className="felt-line">
-          <span>BLACKJACK PAYS 3:2 · SPLIT 21 PAYS 1:1</span>
-        </div>
-        <div className="casino-seat-grid">
-          {table.hands.map((h, i) => (
-            <section
-              key={i}
-              className={table.active === i ? "active-seat" : ""}
-              aria-label={`Seat ${h.seat + 1}${h.split ? " split" : ""}${table.active === i ? " active" : ""}`}
-            >
-              <CardRow
-                label={`Seat ${h.seat + 1}${h.split ? " · split" : ""}`}
-                cards={h.cards}
-              />
-              <small>
-                {chipLabel(h.stake)} chips ·{" "}
-                {table.active === i
-                  ? "YOUR MOVE"
-                  : h.done
-                    ? "Complete"
-                    : "Waiting"}
-              </small>
-            </section>
-          ))}
-        </div>
-      </div>
-    );
-  }
   if (game === "blackjack") {
     const values = result?.values ?? [],
       separator = values.indexOf(-1),
@@ -294,6 +306,30 @@ function GameSurface({
       </div>
     );
   }
+  if (game === "roulette" && pack)
+    return (
+      <>
+        <CasinoRoundStage
+          game={game}
+          round={pack.rounds[0]}
+          busy={busy}
+          reduced={reducedMotion}
+          run={tableRun}
+        />
+        {!busy && (
+          <div
+            className="roulette-settled-wagers"
+            aria-label="Settled selections"
+          >
+            {pack.rounds.map((r, i) => (
+              <span key={r.id} className={r.payout > 0 ? "wager-paid" : ""}>
+                {wagerLabel(pack.wagers![i])} · {chipLabel(r.payout)} chips
+              </span>
+            ))}
+          </div>
+        )}
+      </>
+    );
   if (game === "plinko") {
     const previousProfile = pack?.profile ?? "Low";
     const preview =
@@ -319,6 +355,7 @@ function GameSurface({
           payouts={PROFILES[profile]}
           busy={busy}
           reducedMotion={reducedMotion}
+          run={tableRun}
         />
       </>
     );
@@ -326,9 +363,17 @@ function GameSurface({
   return (
     <CasinoRoundStage
       game={game}
-      round={state.history[0]?.game === game ? state.history[0] : null}
+      round={
+        pendingClassicSpin(state) && !busy
+          ? null
+          : state.history[0]?.game === game
+            ? state.history[0]
+            : null
+      }
       busy={busy}
       reduced={reducedMotion}
+      run={tableRun}
+      choice={tableRun.choice}
     />
   );
 }
@@ -445,7 +490,9 @@ export function CasinoExperience() {
   );
   const [category, setCategory] = useState("all"),
     [search, setSearch] = useState("");
-  const [stake, setStake] = useState("25"),
+  const [stake, setStake] = useState(() =>
+      String((state.spinRun?.stake ?? 2500) / 100),
+    ),
     [side, setSide] = useState(0),
     [target, setTarget] = useState(50),
     [over, setOver] = useState(true);
@@ -469,6 +516,53 @@ export function CasinoExperience() {
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const slotGeneration = useRef(0);
   const [slotRun, setSlotRun] = useState<SlotMotionRun>({ id: 0, started: 0 });
+  const [tableRun, setTableRun] = useState<TableRun>(STILL_RUN);
+  const tableGeneration = useRef(0);
+  const [autoRun, setAutoRun] = useState(false),
+    autoRef = useRef(false),
+    autoGeneration = useRef(0);
+  const autoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function pauseRun() {
+    autoRef.current = false;
+    autoGeneration.current++;
+    if (autoTimer.current) clearTimeout(autoTimer.current);
+    setAutoRun(false);
+  }
+  function resumeRun() {
+    if (
+      document.hidden ||
+      !pendingSpinRun(current.current) ||
+      pendingSlot(current.current) ||
+      pendingClassicSpin(current.current)
+    )
+      return;
+    autoRef.current = true;
+    autoGeneration.current++;
+    setAutoRun(true);
+  }
+  function stopRun() {
+    pauseRun();
+    try {
+      commit(stopSpinRun(current.current));
+      setError("");
+    } catch {
+      setError(
+        "Run paused. Storage unavailable; retry Stop to save cancellation. No future spins will start.",
+      );
+    }
+  }
+  useEffect(() => {
+    const hidden = () => {
+      if (document.hidden) pauseRun();
+    };
+    document.addEventListener("visibilitychange", hidden);
+    return () => {
+      document.removeEventListener("visibilitychange", hidden);
+      autoRef.current = false;
+      autoGeneration.current++;
+      if (autoTimer.current) clearTimeout(autoTimer.current);
+    };
+  }, []);
   const payoutGeneration = useRef(0);
   const [payoutEvent, setPayoutEvent] = useState<PayoutEvent | undefined>();
   const beginSlotMotion = () => {
@@ -510,6 +604,7 @@ export function CasinoExperience() {
     if (locked || busyRef.current || activeSession(current.current)) return;
     setPayoutEvent(undefined);
     setGame(key);
+    setTableRun(STILL_RUN);
     setOptions((o) => ({ ...o, count: 1 }));
     setSide(0);
     setTarget(
@@ -559,6 +654,12 @@ export function CasinoExperience() {
     commit(next);
     const feature = next.pack!.slot!;
     const frame = feature.frames[feature.cursor - 1];
+    if (
+      feature.cursor < feature.frames.length &&
+      feature.frames[feature.cursor].kind !== "cascade"
+    )
+      pauseRun();
+    if (!pendingSpinRun(next) && !pendingSlot(next)) pauseRun();
     if (feature.cursor === feature.frames.length)
       presentRound({
         id,
@@ -590,6 +691,7 @@ export function CasinoExperience() {
       try {
         slotDone(id, cursor, true);
       } catch {
+        pauseRun();
         setError(
           "Browser storage is unavailable. Your saved round is unchanged; try revealing again.",
         );
@@ -612,6 +714,7 @@ export function CasinoExperience() {
         try {
           slotDone(id, cursor);
         } catch {
+          pauseRun();
           setError(
             "Browser storage is unavailable. Your saved round is unchanged; try revealing again.",
           );
@@ -630,8 +733,80 @@ export function CasinoExperience() {
           ),
     );
   }
-  function act(action?: TableAction) {
-    if (busyRef.current || mode !== "practice" || !game) return;
+  function finishClassic(id: number) {
+    if (
+      !pendingClassicSpin(current.current) ||
+      current.current.pack?.rounds[0].id !== id
+    )
+      return;
+    const next = revealClassicSpin(current.current);
+    commit(next);
+    presentRound(next.pack!.rounds[0]);
+    if (!pendingSpinRun(next)) pauseRun();
+  }
+  function revealSavedClassic() {
+    if (busyRef.current || !pendingClassicSpin(current.current)) return;
+    const round = current.current.pack!.rounds[0],
+      duration = tableDuration(round);
+    const run = {
+      id: ++tableGeneration.current,
+      started: performance.now(),
+      duration,
+    };
+    setTableRun(run);
+    busyRef.current = true;
+    setBusy(true);
+    feedback.play("spin");
+    timer.current = setTimeout(
+      () => {
+        try {
+          finishClassic(round.id);
+        } catch {
+          pauseRun();
+          setError(
+            "Storage unavailable. Your paid spin is saved; retry reveal.",
+          );
+        } finally {
+          busyRef.current = false;
+          setBusy(false);
+        }
+      },
+      reduce ? 40 : duration,
+    );
+  }
+  function uncoverScratch(index?: number) {
+    if (busyRef.current || !pendingScratch(current.current)) return false;
+    try {
+      const before = current.current,
+        opened = scratchRevealed(before),
+        next = revealScratch(before, index);
+      const fresh = scratchRevealed(next).filter((i) => !opened.includes(i));
+      if (!fresh.length) return true;
+      commit(next);
+      const rounds = fresh.map((i) => next.pack!.rounds[i]);
+      feedback.play("scratch");
+      const total = {
+        ...next.pack!.rounds[0],
+        stake: sum(rounds.map((r) => r.stake)),
+        payout: sum(rounds.map((r) => r.payout)),
+      };
+      presentRound(total);
+      return true;
+    } catch {
+      setError(
+        "Storage unavailable. Your ticket remains saved; retry revealing.",
+      );
+      return false;
+    }
+  }
+  function act(action?: TableAction, advance = false) {
+    if (
+      busyRef.current ||
+      mode !== "practice" ||
+      !game ||
+      (advance && !autoRef.current)
+    )
+      return;
     setPayoutEvent(undefined);
     busyRef.current = true;
     setError("");
@@ -639,64 +814,93 @@ export function CasinoExperience() {
       const previous = current.current;
       const next = action
         ? actSession(previous, action)
-        : playSession(
-            previous,
-            game as PracticeGame,
-            practiceBet(stake),
-            {
-              side,
-              target,
-              over,
-              picks,
-            },
-            options,
-          );
+        : advance
+          ? advanceSpinRun(previous)
+          : isSlotGame(game)
+            ? startSpinRun(
+                previous,
+                game as PracticeGame,
+                practiceBet(stake),
+                options.count ?? 1,
+              )
+            : playSession(
+                previous,
+                game as PracticeGame,
+                practiceBet(stake),
+                { side, target, over, picks },
+                options,
+              );
       commit(next);
-      const motionRun = next.pack?.slot ? beginSlotMotion() : null;
+      if (!action && !advance && isSlotGame(game) && (options.count ?? 1) > 1) {
+        autoRef.current = true;
+        autoGeneration.current++;
+        setAutoRun(true);
+      }
+      const slotMotion = next.pack?.slot ? beginSlotMotion() : null;
+      const duration =
+        game === "blackjack"
+          ? blackjackPlan(next, previous).duration
+          : game === "plinko"
+            ? PLINKO_REVEAL_MS + ((next.pack?.rounds.length ?? 1) - 1) * 120
+            : tableDuration(next.history[0] ?? null);
+      const run: TableRun = {
+        id: ++tableGeneration.current,
+        started: performance.now(),
+        duration,
+        previous,
+        action,
+        choice: { side, target, over, picks: [...picks] },
+      };
+      if (!slotMotion) setTableRun(run);
       setBusy(true);
       feedback.play(
-        game === "blackjack" ? "deal" : "spin",
+        game === "blackjack"
+          ? "deal"
+          : game === "scratch_cards"
+            ? "select"
+            : "spin",
         isFleet(game) ? game : undefined,
       );
       timer.current = setTimeout(
         () => {
-          setBusy(false);
-          busyRef.current = false;
-          if (next.pack?.slot) {
-            try {
-              slotDone(next.pack.rounds[0].id, 0);
-            } catch {
-              setError(
-                "Browser storage is unavailable. Your round is saved; try revealing again.",
+          try {
+            if (next.pack?.slot) slotDone(next.pack.rounds[0].id, 0);
+            else if (pendingClassicSpin(next))
+              finishClassic(next.pack!.rounds[0].id);
+            else if (
+              next.sequence > previous.sequence &&
+              game !== "scratch_cards"
+            )
+              presentRound(
+                next.pack
+                  ? {
+                      ...next.pack.rounds[0],
+                      payout: packTotal(next.pack, "payout"),
+                      stake: packTotal(next.pack, "stake"),
+                    }
+                  : next.history[0],
               );
-            }
-          } else if (next.sequence > previous.sequence)
-            presentRound(
-              next.pack
-                ? {
-                    ...next.pack.rounds[0],
-                    payout: packTotal(next.pack, "payout"),
-                    stake: packTotal(next.pack, "stake"),
-                  }
-                : next.history[0],
+          } catch {
+            pauseRun();
+            setError(
+              "Browser storage is unavailable. Your paid round is saved; retry revealing.",
             );
+          } finally {
+            setBusy(false);
+            busyRef.current = false;
+          }
         },
         reduce
           ? 40
-          : isFleet(game)
-            ? Math.max(
-                0,
-                motionRun!.started +
-                  slotRevealMs(next.pack!.slot!, 0) -
-                  performance.now(),
-              )
-            : game === "blackjack"
-              ? 450
-              : game === "plinko"
-                ? PLINKO_REVEAL_MS + ((next.pack?.rounds.length ?? 1) - 1) * 120
-                : casinoRoundMs(next.history[0] ?? null),
+          : Math.max(
+              0,
+              (slotMotion
+                ? slotMotion.started + slotRevealMs(next.pack!.slot!, 0)
+                : run.started + duration) - performance.now(),
+            ),
       );
     } catch (e) {
+      pauseRun();
       busyRef.current = false;
       setBusy(false);
       setError(
@@ -706,6 +910,42 @@ export function CasinoExperience() {
       );
     }
   }
+  const scheduledAction = useRef({ act, nextSlot });
+  scheduledAction.current = { act, nextSlot };
+  useEffect(() => {
+    if (!autoRun || !autoRef.current || busy || mode !== "practice") return;
+    if (
+      pendingSlot(state) &&
+      state.pack!.slot!.frames[state.pack!.slot!.cursor].kind !== "cascade"
+    ) {
+      pauseRun();
+      return;
+    }
+    if (pendingClassicSpin(state)) return;
+    if (!pendingSlot(state) && !pendingSpinRun(state)) {
+      pauseRun();
+      return;
+    }
+    const generation = autoGeneration.current,
+      sequence = state.sequence,
+      cursor = state.pack?.slot?.cursor;
+    autoTimer.current = setTimeout(() => {
+      if (
+        !autoRef.current ||
+        autoGeneration.current !== generation ||
+        busyRef.current ||
+        document.hidden ||
+        current.current.sequence !== sequence ||
+        current.current.pack?.slot?.cursor !== cursor
+      )
+        return;
+      if (pendingSlot(current.current)) scheduledAction.current.nextSlot();
+      else scheduledAction.current.act(undefined, true);
+    }, 900);
+    return () => {
+      if (autoTimer.current) clearTimeout(autoTimer.current);
+    };
+  }, [autoRun, busy, state, mode]);
   function refill() {
     if (locked || busyRef.current || activeSession(current.current)) return;
     try {
@@ -738,7 +978,10 @@ export function CasinoExperience() {
   const last = state.history[0]?.game === game ? state.history[0] : null;
   const pack = state.pack?.game === game ? state.pack : null;
   const result =
-    busy || pendingSlot(state)
+    busy ||
+    pendingSlot(state) ||
+    pendingClassicSpin(state) ||
+    pendingScratch(state)
       ? null
       : pack
         ? {
@@ -760,12 +1003,16 @@ export function CasinoExperience() {
           : practiceBet(stake) *
             (game === "blackjack"
               ? (options.seats ?? 1)
-              : game === "plinko" || game === "scratch_cards"
+              : game === "plinko" ||
+                  game === "scratch_cards" ||
+                  isSlotGame(game ?? "")
                 ? (options.count ?? 1)
                 : 1);
   } catch {
     /* Input validation is shown on play. */
   }
+  const spinRun = state.spinRun?.game === game ? state.spinRun : undefined;
+  const runTotals = spinRunTotals(state);
   const displayedBalance =
     pack?.slot && pendingSlot(state)
       ? state.balance -
@@ -773,9 +1020,18 @@ export function CasinoExperience() {
         (pack.slot.cursor > 0
           ? pack.slot.frames[pack.slot.cursor - 1].total
           : 0)
-      : busy && last && !activeSession(state)
-        ? state.balance - (pack ? packTotal(pack, "payout") : last.payout)
-        : state.balance;
+      : pendingClassicSpin(state) && pack
+        ? state.balance - packTotal(pack, "payout")
+        : pendingScratch(state) && pack
+          ? state.balance -
+            sum(
+              pack.rounds
+                .filter((_, i) => !scratchRevealed(state).includes(i))
+                .map((r) => r.payout),
+            )
+          : busy && last && !state.table && !state.hand
+            ? state.balance - (pack ? packTotal(pack, "payout") : last.payout)
+            : state.balance;
   const meta = game ? titles(game) : null;
   return (
     <CasinoFeedback.Provider value={feedback.play}>
@@ -1041,11 +1297,17 @@ export function CasinoExperience() {
                     <span>
                       {pendingSlot(state)
                         ? "FEATURE SAVED"
-                        : activeSession(state)
-                          ? "HAND IN PLAY"
-                          : busy
-                            ? "RESOLVING"
-                            : "PRACTICE TABLE"}
+                        : pendingScratch(state)
+                          ? "TICKETS SAVED"
+                          : pendingClassicSpin(state)
+                            ? "SPIN SAVED"
+                            : pendingSpinRun(state)
+                              ? "SPIN RUN"
+                              : activeSession(state)
+                                ? "HAND IN PLAY"
+                                : busy
+                                  ? "RESOLVING"
+                                  : "PRACTICE TABLE"}
                     </span>
                   </div>
                   <GameSurface
@@ -1057,6 +1319,8 @@ export function CasinoExperience() {
                     selectedProfile={options.profile ?? "Low"}
                     slotRun={slotRun}
                     onNextSlot={() => nextSlot()}
+                    tableRun={tableRun}
+                    onScratchReveal={uncoverScratch}
                   />
                   <div
                     className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}
@@ -1077,7 +1341,11 @@ export function CasinoExperience() {
                       <span>Your move · Hit, stand or double</span>
                     )}
                     {!busy &&
-                      !activeSession(state) &&
+                      !state.hand &&
+                      !state.table &&
+                      !pendingSlot(state) &&
+                      !pendingClassicSpin(state) &&
+                      !pendingScratch(state) &&
                       (result ? (
                         <CasinoRoundSummary
                           round={result}
@@ -1097,7 +1365,7 @@ export function CasinoExperience() {
                 <aside className="lounge-console">
                   <span className="lounge-eyebrow">PLAY MONEY</span>
                   <h3>Your controls</h3>
-                  {state.table && (
+                  {!busy && state.table && (
                     <p className="casino-active-summary">
                       Seat {state.table.hands[state.table.active].seat + 1} ·{" "}
                       <strong>
@@ -1211,11 +1479,67 @@ export function CasinoExperience() {
                   </fieldset>
                   {!activeSession(state) && (
                     <div className="casino-total-stake">
-                      <span>Total stake</span>
+                      <span>
+                        {isSlotGame(game) ? "Maximum run stake" : "Total stake"}
+                      </span>
                       <strong>{chipLabel(totalStake)} chips</strong>
                     </div>
                   )}
-                  {pendingSlot(state) ? (
+                  {isSlotGame(game) && spinRun && spinRun.planned > 1 && (
+                    <div className="casino-spin-run" aria-label="Slot run">
+                      <strong>
+                        {spinRun.shown} / {spinRun.planned} spins revealed
+                      </strong>
+                      <progress
+                        aria-label="Spin run progress"
+                        value={spinRun.shown}
+                        max={spinRun.planned}
+                      />
+                      <span>
+                        {chipLabel(spinRun.paid * spinRun.stake)} chips staked ·{" "}
+                        {chipLabel(runTotals.payout)} revealed payout
+                      </span>
+                      <small>
+                        {spinRun.stopped
+                          ? "Stopped · paid spin stays saved"
+                          : pendingSpinRun(state)
+                            ? autoRun
+                              ? "Running · charged per spin"
+                              : "Paused · no new spins charged"
+                            : spinRun.shown < spinRun.paid
+                              ? "Last paid spin in progress"
+                              : "Run complete"}
+                      </small>
+                      {pendingSpinRun(state) && (
+                        <div>
+                          {autoRun ? (
+                            <button onClick={pauseRun}>Pause run</button>
+                          ) : (
+                            <button
+                              disabled={
+                                busy ||
+                                pendingSlot(state) ||
+                                pendingClassicSpin(state)
+                              }
+                              onClick={resumeRun}
+                            >
+                              Resume run
+                            </button>
+                          )}
+                          <button onClick={stopRun}>Stop future spins</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {pendingClassicSpin(state) ? (
+                    <button
+                      className="lounge-primary"
+                      disabled={busy}
+                      onClick={revealSavedClassic}
+                    >
+                      {busy ? "Revealing…" : "Reveal saved spin"}
+                    </button>
+                  ) : pendingSlot(state) ? (
                     <div className="fleet-reveal-controls">
                       <button
                         className="lounge-primary"
@@ -1241,6 +1565,14 @@ export function CasinoExperience() {
                       </button>
                       <small>Already paid · no additional stake</small>
                     </div>
+                  ) : pendingScratch(state) ? (
+                    <small>
+                      Scratch the tickets or choose Reveal all. Already paid.
+                    </small>
+                  ) : pendingSpinRun(state) ? (
+                    <small>
+                      Bonuses, hiding the tab and reloading pause the run.
+                    </small>
                   ) : game === "blackjack" && state.table ? (
                     <div className="lounge-hand-actions">
                       {(["hit", "stand", "double", "split"] as const).map(
@@ -1297,7 +1629,9 @@ export function CasinoExperience() {
                             game === "slots" ||
                             game === "roulette" ||
                             game === "wheel"
-                          ? "Spin"
+                          ? isSlotGame(game) && (options.count ?? 1) > 1
+                            ? `Start ${options.count} spins`
+                            : "Spin"
                           : game === "blackjack" || game === "war"
                             ? "Deal"
                             : game === "coinflip"

@@ -62,12 +62,25 @@ export type Pack = {
   tickets?: Ticket[];
   table?: BlackjackTable;
   slot?: SlotReceipt;
+  /** Cosmetic reveal indices; absent in legacy packs means all revealed. */
+  revealed?: number[];
 };
+export type SpinRun = {
+  game: PracticeGame;
+  stake: number;
+  planned: number;
+  paid: number;
+  shown: number;
+  startSequence: number;
+  stopped: boolean;
+};
+export const isSlotGame = (game: string) => game === "slots" || isFleet(game);
 export type Session = Omit<PracticeState, "version"> & {
   version: 2;
   table: BlackjackTable | null;
   pack: Pack | null;
   notice?: string;
+  spinRun?: SpinRun;
 };
 export type Options = {
   count?: number;
@@ -96,8 +109,24 @@ const wrap = (s: PracticeState): Session => ({
 export const initialSession = () => wrap(initialPractice());
 export const pendingSlot = (s: Session) =>
   !!s.pack?.slot && s.pack.slot.cursor < s.pack.slot.frames.length;
+export const pendingSpinRun = (s: Session) =>
+  !!s.spinRun && !s.spinRun.stopped && s.spinRun.paid < s.spinRun.planned;
+export const pendingClassicSpin = (s: Session) =>
+  s.spinRun?.game === "slots" && s.spinRun.shown < s.spinRun.paid;
+export const scratchRevealed = (s: Session): number[] =>
+  s.pack?.game === "scratch_cards"
+    ? (s.pack.revealed ?? s.pack.rounds.map((_, i) => i))
+    : [];
+export const pendingScratch = (s: Session) =>
+  s.pack?.game === "scratch_cards" &&
+  scratchRevealed(s).length < s.pack.rounds.length;
 export const activeSession = (s: Session) =>
-  !!s.hand || !!s.table || pendingSlot(s);
+  !!s.hand ||
+  !!s.table ||
+  pendingSlot(s) ||
+  pendingClassicSpin(s) ||
+  pendingScratch(s) ||
+  pendingSpinRun(s);
 export const packTotal = (p: Pack, key: "stake" | "payout") =>
   sum(p.rounds.map((r) => r[key]));
 export function rouletteBps(w: Wager, n: number): number {
@@ -195,6 +224,7 @@ function settle(s: Session, p: Pack): Session {
   return {
     ...s,
     notice: undefined,
+    spinRun: undefined,
     balance,
     sequence: s.sequence + rounds.length,
     hand: null,
@@ -243,6 +273,7 @@ export function playSession(
   rng: RandomInt = randomInt,
 ): Session {
   ensureFree(s);
+  s = { ...s, spinRun: undefined };
   const source = rng;
   rng = (bound) => {
     const n = source(bound);
@@ -366,7 +397,11 @@ export function playSession(
     temporary = playPractice(temporary, game, stake, choice, rng);
     rounds.push(temporary.history[0]);
   }
-  return settle(s, { game, rounds });
+  return settle(s, {
+    game,
+    rounds,
+    ...(game === "scratch_cards" ? { revealed: [] } : {}),
+  });
 }
 export function actSession(s: Session, action: TableAction): Session {
   if (s.table) {
@@ -379,8 +414,12 @@ export function actSession(s: Session, action: TableAction): Session {
 export function revealSlot(s: Session, all = false): Session {
   if (!pendingSlot(s) || !s.pack?.slot)
     throw Error("No saved slot feature to reveal.");
+  const complete = all || s.pack.slot.cursor + 1 === s.pack.slot.frames.length;
   return {
     ...s,
+    ...(complete && s.spinRun
+      ? { spinRun: { ...s.spinRun, shown: s.spinRun.paid } }
+      : {}),
     pack: {
       ...s.pack,
       slot: {
@@ -389,6 +428,108 @@ export function revealSlot(s: Session, all = false): Session {
       },
     },
   };
+}
+/** Future spins are neither generated nor debited until this explicit step. */
+export function startSpinRun(
+  s: Session,
+  game: PracticeGame,
+  stake: number,
+  count: number,
+  rng: RandomInt = randomInt,
+): Session {
+  if (!isSlotGame(game) || ![1, 3, 5, 10].includes(count))
+    throw Error("Choose 1, 3, 5 or 10 slot spins.");
+  if (!validStake(stake) || s.balance < stake * count)
+    throw Error("Not enough chips for the maximum run stake.");
+  const next = playSession(s, game, stake, {}, {}, rng);
+  return {
+    ...next,
+    spinRun: {
+      game,
+      stake,
+      planned: count,
+      paid: 1,
+      shown: 0,
+      startSequence: s.sequence,
+      stopped: false,
+    },
+  };
+}
+export function advanceSpinRun(
+  s: Session,
+  rng: RandomInt = randomInt,
+): Session {
+  if (!pendingSpinRun(s) || pendingSlot(s) || pendingClassicSpin(s))
+    throw Error("Finish the paid spin before continuing the run.");
+  const run = s.spinRun!;
+  const next = playSession(
+    { ...s, spinRun: undefined },
+    run.game,
+    run.stake,
+    {},
+    {},
+    rng,
+  );
+  return { ...next, spinRun: { ...run, paid: run.paid + 1 } };
+}
+export function revealClassicSpin(s: Session): Session {
+  if (!pendingClassicSpin(s)) throw Error("No saved classic spin to reveal.");
+  return { ...s, spinRun: { ...s.spinRun!, shown: s.spinRun!.paid } };
+}
+export function stopSpinRun(s: Session): Session {
+  if (!s.spinRun) return s;
+  return { ...s, spinRun: { ...s.spinRun, stopped: true } };
+}
+export function spinRunTotals(s: Session) {
+  const rs = s.spinRun
+    ? s.history.filter(
+        (r) =>
+          r.id > s.spinRun!.startSequence &&
+          r.id <= s.spinRun!.startSequence + s.spinRun!.shown,
+      )
+    : [];
+  return {
+    stake: sum(rs.map((r) => r.stake)),
+    payout: sum(rs.map((r) => r.payout)),
+  };
+}
+export function revealScratch(s: Session, index?: number): Session {
+  if (s.pack?.game !== "scratch_cards" || !pendingScratch(s))
+    throw Error("No covered tickets.");
+  if (index !== undefined && !integer(index, 0, s.pack.rounds.length - 1))
+    throw Error("Invalid ticket.");
+  const revealed =
+    index === undefined
+      ? s.pack.rounds.map((_, i) => i)
+      : [...new Set([...scratchRevealed(s), index])].sort((a, b) => a - b);
+  return { ...s, pack: { ...s.pack, revealed } };
+}
+function validSpinRun(s: Session): boolean {
+  const r = s.spinRun;
+  if (!r) return r === undefined;
+  if (
+    !isSlotGame(r.game) ||
+    !validStake(r.stake) ||
+    ![1, 3, 5, 10].includes(r.planned) ||
+    !integer(r.paid, 1, r.planned) ||
+    !integer(r.shown, 0, r.paid) ||
+    r.paid - r.shown > 1 ||
+    !integer(r.startSequence) ||
+    typeof r.stopped !== "boolean" ||
+    s.sequence !== r.startSequence + r.paid ||
+    s.hand ||
+    s.table ||
+    s.pack?.game !== r.game ||
+    s.history.length < r.paid
+  )
+    return false;
+  if (isFleet(r.game) && pendingSlot(s) !== r.shown < r.paid) return false;
+  return s.history
+    .slice(0, r.paid)
+    .every(
+      (h, i) =>
+        h.game === r.game && h.stake === r.stake && h.id === s.sequence - i,
+    );
 }
 function validPack(p: Pack, s: Session): boolean {
   if (
@@ -418,6 +559,14 @@ function validPack(p: Pack, s: Session): boolean {
   if (
     JSON.stringify(s.history.slice(0, Math.min(20, p.rounds.length))) !==
     JSON.stringify([...p.rounds].reverse().slice(0, 20))
+  )
+    return false;
+  if (
+    p.revealed !== undefined &&
+    (p.game !== "scratch_cards" ||
+      !Array.isArray(p.revealed) ||
+      new Set(p.revealed).size !== p.revealed.length ||
+      !p.revealed.every((i) => integer(i, 0, p.rounds.length - 1)))
   )
     return false;
   if (isFleet(p.game))
@@ -542,7 +691,13 @@ export function restoreSession(
       throw Error();
     if (s.pack !== null && (s.hand || s.table || !validPack(s.pack, s)))
       throw Error();
-    return { ...wrap(checked), table: s.table, pack: s.pack };
+    if (!validSpinRun(s)) throw Error();
+    return {
+      ...wrap(checked),
+      table: s.table,
+      pack: s.pack,
+      ...(s.spinRun ? { spinRun: s.spinRun } : {}),
+    };
   } catch {
     return {
       ...initialSession(),

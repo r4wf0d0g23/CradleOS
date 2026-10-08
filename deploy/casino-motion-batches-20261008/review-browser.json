@@ -1,0 +1,12 @@
+{
+  "url": "http://127.0.0.1:5196/#/casino",
+  "errors": [],
+  "checks": [
+    "classic restored pending grid/history masked and run paused",
+    "explicit Resume pays once; Stop during animation prevents third spin; exact second payout",
+    "stopped run reload exact",
+    "scratch index durable across reload/media reversal, default aggregate hidden, failed write atomic, retry exact",
+    "three-seat split keeps both unaffected seat cards visible at progress1"
+  ],
+  "PASS": true
+}

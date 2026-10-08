@@ -1,6 +1,12 @@
 /** Original, bounded voices. Presentation only; never controls game state. */
 import type { FleetKey } from "./casinoSlotFleet";
 export type CasinoCue =
+  | "tap"
+  | "card"
+  | "scan"
+  | "land"
+  | "engine"
+  | "scratch"
   | "select"
   | "deal"
   | "spin"
@@ -22,6 +28,12 @@ export type SoundNote = {
   wave: OscillatorType;
 };
 const NOTES: Record<CasinoCue, number[]> = {
+  tap: [920],
+  card: [330],
+  scan: [1244.5],
+  land: [146.83],
+  engine: [73.42],
+  scratch: [440],
   payout: [659.25, 880],
   bonus_spin: [293.66, 440, 587.33],
   bonus: [293.66, 440, 587.33, 880],
@@ -133,6 +145,21 @@ export function casinoSoundNotes(cue: CasinoCue, game?: FleetKey): SoundNote[] {
     sweep: 0.8,
     gain: 0.045,
   };
+  if (["tap", "card", "scan", "land", "engine", "scratch"].includes(cue)) {
+    const hz = NOTES[cue][0],
+      duration = cue === "engine" ? 0.22 : cue === "scan" ? 0.09 : 0.055;
+    return [
+      {
+        hz,
+        endHz: hz * (cue === "scan" ? 1.12 : 0.55),
+        at: 0,
+        duration,
+        attack: 0.004,
+        gain: cue === "tap" ? 0.012 : 0.019,
+        wave: cue === "card" ? "triangle" : "sine",
+      },
+    ];
+  }
   // A brief transfer/hit cue, distinct from the full win or earned bonus fanfare.
   if (cue === "payout")
     return NOTES.payout.map((hz, i) => ({

@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useCasinoTimeline, useTableCues } from "./useCasinoTimeline";
+import { STILL_RUN, type TableRun } from "../lib/casinoTableMotion";
 import { PLINKO_BPS, type Round } from "../lib/casinoPractice";
 import {
   buildPlinkoRoute,
@@ -18,6 +20,7 @@ export function CasinoPlinko({
   profile = "Low",
   busy,
   reducedMotion,
+  run = STILL_RUN,
 }: {
   round: Round | null;
   rounds?: Round[];
@@ -25,6 +28,7 @@ export function CasinoPlinko({
   profile?: string;
   busy: boolean;
   reducedMotion: boolean;
+  run?: TableRun;
 }) {
   const rounds = useMemo(
     () => packRounds ?? (round ? [round] : []),
@@ -35,26 +39,19 @@ export function CasinoPlinko({
     [rounds],
   );
   const duration = PLINKO_MOTION_MS + Math.max(0, rounds.length - 1) * 120;
-  const [tick, setTick] = useState({ rounds, elapsed: 0 });
-  useEffect(() => {
-    if (!rounds.length || !busy || reducedMotion) return;
-    const start = performance.now();
-    let frame = 0;
-    const advance = (now: number) => {
-      const elapsed = Math.min(duration, now - start);
-      setTick({ rounds, elapsed });
-      if (elapsed < duration) frame = requestAnimationFrame(advance);
-    };
-    setTick({ rounds, elapsed: 0 });
-    frame = requestAnimationFrame(advance);
-    return () => cancelAnimationFrame(frame);
-  }, [rounds, busy, reducedMotion, duration]);
+  const { t, animated } = useCasinoTimeline(run, busy, reducedMotion);
   const elapsed =
-    !busy || reducedMotion
-      ? duration
-      : tick.rounds === rounds
-        ? tick.elapsed
-        : 0;
+    t === 1 ? duration : Math.min(duration, t * (run.duration - 100));
+  useTableCues(run, t, animated, [
+    ...Array.from({ length: 12 }, (_, i) => ({
+      at: 180 + i * 170,
+      cue: "tap" as const,
+    })),
+    ...rounds.map((_, i) => ({
+      at: PLINKO_MOTION_MS + i * 120,
+      cue: "land" as const,
+    })),
+  ]);
   const landed = routes.length > 0 && elapsed >= duration;
   const balls = routes.map((route, i) => ({
     route,
@@ -112,7 +109,9 @@ export function CasinoPlinko({
           <g
             key={i}
             data-bucket={i}
-            data-hit={landed && routes.some((r) => r.bucket === i)}
+            data-hit={balls.some(
+              (b) => b.time >= PLINKO_MOTION_MS && b.route.bucket === i,
+            )}
           >
             <rect
               x={plinkoBucketX(i) - 8.5}
@@ -121,7 +120,9 @@ export function CasinoPlinko({
               height="19"
               rx="3"
               fill={
-                landed && routes.some((r) => r.bucket === i)
+                balls.some(
+                  (b) => b.time >= PLINKO_MOTION_MS && b.route.bucket === i,
+                )
                   ? "#a2311b"
                   : "#25261f"
               }
@@ -137,11 +138,28 @@ export function CasinoPlinko({
             </text>
           </g>
         ))}
+        {payouts.map((_, i) => {
+          const n = balls.filter(
+            (b) => b.time >= PLINKO_MOTION_MS && b.route.bucket === i,
+          ).length;
+          return n > 0 ? (
+            <text
+              key={`count${i}`}
+              x={plinkoBucketX(i)}
+              y="211"
+              textAnchor="middle"
+              fill="#fff4c9"
+              fontSize="9"
+            >
+              {n}
+            </text>
+          ) : null;
+        })}
         {balls.map(
           (b, i) =>
             b.time >= 0 && (
               <g key={rounds[i].id}>
-                {busy && !reducedMotion && (
+                {animated && (
                   <polyline
                     className="plinko-trail"
                     points={Array.from({ length: 7 }, (_, n) =>
@@ -153,6 +171,9 @@ export function CasinoPlinko({
                 )}
                 <circle
                   className="plinko-ball"
+                  style={{
+                    fill: ["#fafae5", "#8fd5de", "#e8b46c", "#b7d89a"][i % 4],
+                  }}
                   data-ball={i}
                   cx={b.point.x}
                   cy={b.point.y}
@@ -162,6 +183,12 @@ export function CasinoPlinko({
             ),
         )}
       </svg>
+      {rounds.length > 0 && (
+        <div className="motion-caption">
+          {balls.filter((b) => b.time >= PLINKO_MOTION_MS).length} /{" "}
+          {rounds.length} landed · {profile}
+        </div>
+      )}
     </div>
   );
 }

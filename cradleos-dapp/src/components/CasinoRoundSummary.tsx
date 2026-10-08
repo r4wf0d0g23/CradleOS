@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { chipLabel, type Round } from "../lib/casinoPractice";
-import { packTotal, pendingSlot, type Session } from "../lib/casinoSessions";
+import {
+  packTotal,
+  pendingSlot,
+  pendingClassicSpin,
+  pendingScratch,
+  scratchRevealed,
+  type Session,
+} from "../lib/casinoSessions";
 import {
   payoutFlashRemaining,
   type PayoutEvent,
@@ -151,10 +158,18 @@ export function CasinoRoundHistory({
   title: (game: string) => string;
 }) {
   if (busy) return null;
-  const pending = pendingSlot(state);
-  const rounds = state.history
-    .filter((r) => !pending || r.id !== state.pack?.rounds[0].id)
-    .slice(0, 6);
+  const pending =
+    pendingSlot(state) || pendingClassicSpin(state) || pendingScratch(state);
+  const hidden = new Set(
+    pendingScratch(state)
+      ? state
+          .pack!.rounds.filter((_, i) => !scratchRevealed(state).includes(i))
+          .map((r) => r.id)
+      : pending
+        ? [state.pack?.rounds[0].id]
+        : [],
+  );
+  const rounds = state.history.filter((r) => !hidden.has(r.id)).slice(0, 6);
   if (!rounds.length) return null;
   const pack = !pending ? state.pack : null;
   return (

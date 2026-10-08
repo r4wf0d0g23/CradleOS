@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { chipLabel, type Round } from "../lib/casinoPractice";
 import { CASINO_SYMBOLS } from "../lib/casinoLounge";
 import { ItemIcon } from "./GameIcon";
@@ -6,15 +6,19 @@ function ScratchTicket({
   round,
   index,
   reveal,
+  onReveal,
+  busy,
 }: {
   round: Round;
   index: number;
   reveal: boolean;
+  onReveal: () => boolean;
+  busy: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null),
     cells = useRef(new Set<string>()),
     last = useRef<{ x: number; y: number } | null>(null);
-  const [open, setOpen] = useState(reveal);
+
   useEffect(() => {
     const c = canvas.current,
       ctx = c?.getContext("2d");
@@ -29,14 +33,26 @@ function ScratchTicket({
     ctx.font = "15px monospace";
     ctx.fillText("SCRATCH TO SALVAGE", 150, 115);
   }, []);
-  const uncovered = open || reveal;
+  const uncovered = reveal;
   return (
-    <article className="casino-scratch-ticket" data-revealed={uncovered}>
+    <article
+      className={`casino-scratch-ticket ${uncovered ? "scratch-ticket-open" : ""}`}
+      data-revealed={uncovered}
+    >
       <h4>Ticket {index + 1}</h4>
       <div className="casino-scratch-area">
         <div className="casino-scratch-symbols" aria-hidden={!uncovered}>
           {round.values.map((n, i) => (
-            <ItemIcon key={i} typeId={CASINO_SYMBOLS[n].id} size={48} />
+            <span
+              key={i}
+              className={
+                uncovered && round.values.filter((x) => x === n).length >= 3
+                  ? "scratch-matches"
+                  : ""
+              }
+            >
+              <ItemIcon typeId={CASINO_SYMBOLS[n].id} size={48} />
+            </span>
           ))}
         </div>
         {!uncovered && (
@@ -46,6 +62,7 @@ function ScratchTicket({
             height={230}
             aria-label={`Scratch ticket ${index + 1} or use the Reveal ticket button`}
             onPointerDown={(e) => {
+              if (busy) return;
               e.currentTarget.setPointerCapture(e.pointerId);
               last.current = null;
             }}
@@ -65,7 +82,7 @@ function ScratchTicket({
               ctx.stroke();
               last.current = { x, y };
               cells.current.add(`${Math.floor(x / 25)}:${Math.floor(y / 25)}`);
-              if (cells.current.size > 42) setOpen(true);
+              if (cells.current.size > 42 && !onReveal()) cells.current.clear();
             }}
             onPointerUp={(e) => {
               e.currentTarget.releasePointerCapture(e.pointerId);
@@ -77,7 +94,7 @@ function ScratchTicket({
           />
         )}
       </div>
-      <button disabled={uncovered} onClick={() => setOpen(true)}>
+      <button disabled={uncovered || busy} onClick={onReveal}>
         {uncovered
           ? `Return ${chipLabel(round.payout)} chips`
           : "Reveal ticket"}
@@ -87,15 +104,21 @@ function ScratchTicket({
 }
 export function CasinoScratchPack({
   rounds,
-  reduced,
+  revealed,
+  busy,
+  onReveal,
 }: {
   rounds: Round[];
-  reduced: boolean;
+  revealed: number[];
+  busy: boolean;
+  onReveal: (index?: number) => boolean;
 }) {
-  const [all, setAll] = useState(false);
   return (
     <div className="casino-scratch-pack">
-      <button onClick={() => setAll(true)} disabled={all || reduced}>
+      <button
+        onClick={() => onReveal()}
+        disabled={busy || revealed.length === rounds.length}
+      >
         Reveal all tickets
       </button>
       <div className="casino-ticket-grid">
@@ -104,7 +127,9 @@ export function CasinoScratchPack({
             key={r.id}
             round={r}
             index={i}
-            reveal={all || reduced}
+            reveal={revealed.includes(i)}
+            busy={busy}
+            onReveal={() => onReveal(i)}
           />
         ))}
       </div>

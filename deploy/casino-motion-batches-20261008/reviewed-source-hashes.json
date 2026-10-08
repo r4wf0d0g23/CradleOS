@@ -1,0 +1,21 @@
+{
+  "reviewedAt": "2026-10-08T19:15:33.605977+00:00",
+  "baseHead": "36c12260e6c21ebe5058e7b363e789a873eeeef4",
+  "scope": "Uncommitted implementation candidate; not a deployment attestation",
+  "files": {
+    "src/components/CasinoExperience.tsx": "c55f1c5de939941936da7497f2d09d8763aae9b97cc173f524bbe67b0d35f931",
+    "src/components/CasinoPackControls.tsx": "e584406d2eae13103d33d8862668529833391110f9c914e4e9071e77c9e3b9e5",
+    "src/components/CasinoPlinko.tsx": "2b074f75c2a26a61b73cc663814ed1e3bad19a683a4834ea2de3670b64162916",
+    "src/components/CasinoRoundStage.tsx": "37c490473ca7a456ce24280630fb3534d2106a573349a2eb1074992ce8c48466",
+    "src/components/CasinoRoundSummary.tsx": "67df3ee3bcac39adbc430f3a1a66c3823cd917f9ff26e5f3d0af26f4e89f85d3",
+    "src/components/CasinoScratchPack.tsx": "e6bbecd7ddad55df53578b88cf6148e1b58dc8c3cb115a86fdce2516be6f8312",
+    "src/components/CasinoBlackjackMotion.tsx": "7d15aaff4b9c9f66613b0adfa8528cf60bfb873fdaa785950fa9306a8df06844",
+    "src/components/useCasinoTimeline.ts": "adb4b15e817ff0422a2f7adb4f2bb7aeca6543148af2c0debe3286caf07d205d",
+    "src/lib/casinoSessions.ts": "1c5d6f0d88b9bcdfbde1ce5062987a8556535cf1d74ba12f70711780acf2d08c",
+    "src/lib/casinoSoundDesign.ts": "e7918e4ef1d420cb2397fd431548f2aee9cb6b6079f46aeb9a061e31a9681fda",
+    "src/lib/casinoTableMotion.ts": "022c03eeca8c4fa698f3e8a3c8b8832d6ca4c9c7d0dd4390a76fc1b21002a9f4",
+    "src/lib/casinoSpinRun.test.ts": "990518147b2464dd312ce0639da5a58597974b8b42b9ff440607994da27138ca",
+    "src/lib/casinoTableMotion.test.ts": "a25fc87d0970f3ee40c4550482bad86887214ac2024402a8c2be8e0e6ae455ef",
+    "src/styles/casino-table-motion.css": "40851fa091198033d7c4e62231b9cd86d7678bf376fd895f69ea1746bf62bf4d"
+  }
+}

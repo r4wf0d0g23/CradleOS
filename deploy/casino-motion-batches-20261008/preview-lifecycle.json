@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "Roulette reduced reversal stays landed, exact pocket center, ledger unchanged",
+    "10-ball Plinko interruption preserves exact paths/landings; no restarting trails",
+    "Scratch has no hidden-ticket aggregate or cue; opened ticket stays open on reload/reduced reversal",
+    "Scratch failed writes silent/atomic; final losing ticket never replays prior ticket win; restored total silent",
+    "Blackjack split animates only affected hands; unrelated seats stay fully visible",
+    "Hidden table settles silently; no comeback motion, sound or settlement replay"
+  ],
+  "errors": []
+}
