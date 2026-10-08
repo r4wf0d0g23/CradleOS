@@ -8,7 +8,7 @@ const state=p=>p.evaluate(k=>JSON.parse(sessionStorage.getItem(k)),KEY);
 const ready=async p=>{await p.waitForFunction(()=>!document.querySelector('.lounge-start')?.disabled&&!document.querySelector('.round-active'));};
 async function game(p,name){await p.getByRole('button',{name:'‹ Lobby',exact:true}).click().catch(()=>{});await p.locator('.lounge-game-tile').filter({hasText:new RegExp(name,'i')}).click();}
 try{
-for(const width of [320,390,844,1440]){
+for(const width of (process.env.QA_WIDTHS?JSON.parse(process.env.QA_WIDTHS):[320,390,844,1440])){
  const ctx=await browser.newContext({viewport:{width,height:width===844?390:1000},reducedMotion:'reduce',hasTouch:width<1000});const p=await ctx.newPage();p.on('pageerror',e=>report.errors.push(e.message));await p.goto(URL+'#/casino');
  await game(p,'Plinko');await p.getByRole('button',{name:'10',exact:true}).last().click();await p.getByRole('button',{name:'High',exact:true}).click();await p.locator('.lounge-start').evaluate(e=>{e.click();e.click();e.click()});await ready(p);
  let s=await state(p);assert.equal(s.pack.rounds.length,10);assert.equal(s.sequence,10);assert.equal(s.pack.profile,'High');assert.equal(await p.locator('.plinko-ball').count(),10);assert.equal(s.balance,1000000-s.pack.rounds.reduce((n,r)=>n+r.stake,0)+s.pack.rounds.reduce((n,r)=>n+r.payout,0));

@@ -1,0 +1,31 @@
+{
+  "source": "89ab2c23a778712da55e092fd09b425d553e775a",
+  "deployment": "9ccc3c8c",
+  "primary": "https://cradleos.io/#/casino",
+  "immutable": "https://9ccc3c8c.cradleos-d75.pages.dev",
+  "rollbackDeployment": "9909b62f",
+  "features": [
+    "Plinko1/3/5/10balls and4risk tables",
+    "Roulette49canonical multi-selection board",
+    "Keno1\u20134 shared-draw tickets",
+    "Blackjack1\u20133 seats plus exact-rank splits",
+    "Scratch1/3/5 ticket packs with pointer reveal"
+  ],
+  "sourceTests": 229,
+  "originsChecks": 8,
+  "review": "architecture, candidate source, production preview and independent public PASS",
+  "assetsUnchanged": 43,
+  "publicFileHashesVerified": 47,
+  "testnetWageringEnabled": false,
+  "donationsEnabled": true,
+  "financialTransactions": 0,
+  "contractsPublished": 0,
+  "preservedLegacyPracticeSnapshot": true,
+  "knownWarnings": [
+    "Existing large production bundle/mixed imports",
+    "Wrangler untracked cache directory warning; tracked source clean",
+    "Known pre-existing SDK missing object ID and Slush metadata CORS diagnostics"
+  ],
+  "liveGameplay": "390/1440 all five options plus normal-motion gestures/storage; independent320 touch",
+  "verifiedAt": "2026-10-08T13:49:00Z"
+}

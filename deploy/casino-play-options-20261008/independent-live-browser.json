@@ -1,0 +1,103 @@
+{
+  "time": "2026-10-08T13:48:14.934Z",
+  "checks": [
+    "Two Keno tickets: one shared draw, exact independent returns, active paytable, cosmetic receipt selection, identical reload",
+    "Three Scratch tickets: exact total debit/returns; touch Reveal ticket/all is cosmetic; reload same receipt",
+    "Donation disabled anonymously; practice25 restored; staged23 paused and Deal disabled; honest live Blackjack copy"
+  ],
+  "pageerrors": [],
+  "diagnostics": [
+    {
+      "type": "error",
+      "text": "(assets/index-c6tZclhs.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at cJ (https://cradleos.io/assets/index-c6tZclhs.js:61:25501)\n    at dJ (https://cradleos.io/assets/index-c6tZclhs.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-c6tZclhs.js:61:105035)\n    at https://cradleos.io/assets/index-c6tZclhs.js:61:105530\n    at Array.map (<anonymous>)\n    at cQ (https://cradleos.io/assets/index-c6tZclhs.js:61:105486)\n    at pQ (https://cradleos.io/assets/index-c6tZclhs.js:61:111535)\n    at https://cradleos.io/assets/index-c6tZclhs.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-c6tZclhs.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at cJ (https://cradleos.io/assets/index-c6tZclhs.js:61:25501)\n    at dJ (https://cradleos.io/assets/index-c6tZclhs.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-c6tZclhs.js:61:105035)\n    at https://cradleos.io/assets/index-c6tZclhs.js:61:105530\n    at Array.map (<anonymous>)\n    at cQ (https://cradleos.io/assets/index-c6tZclhs.js:61:105486)\n    at pQ (https://cradleos.io/assets/index-c6tZclhs.js:61:111535)\n    at https://cradleos.io/assets/index-c6tZclhs.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-c6tZclhs.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at cJ (https://cradleos.io/assets/index-c6tZclhs.js:61:25501)\n    at dJ (https://cradleos.io/assets/index-c6tZclhs.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-c6tZclhs.js:61:105035)\n    at https://cradleos.io/assets/index-c6tZclhs.js:61:105530\n    at Array.map (<anonymous>)\n    at cQ (https://cradleos.io/assets/index-c6tZclhs.js:61:105486)\n    at pQ (https://cradleos.io/assets/index-c6tZclhs.js:61:111535)\n    at https://cradleos.io/assets/index-c6tZclhs.js:64:7207"
+    }
+  ],
+  "rpcMethods": [
+    "suix_queryEvents",
+    "suix_queryEvents",
+    "sui_getObject"
+  ],
+  "script": "/assets/index-c6tZclhs.js",
+  "keno": {
+    "draw": [
+      31,
+      9,
+      34,
+      32,
+      35,
+      15,
+      1,
+      38,
+      14,
+      6
+    ],
+    "stakes": [
+      1234,
+      777
+    ],
+    "returns": [
+      0,
+      0
+    ],
+    "balance": 997989,
+    "reloadSame": true
+  },
+  "scratch": {
+    "count": 3,
+    "returns": [
+      0,
+      0,
+      184
+    ],
+    "balance": 997804,
+    "revealNoLedgerChange": true,
+    "reloadSame": true
+  },
+  "donation": "House bank\n0 $EVE\nWagering\nNot enabled\nYour wallet\nConnect to view",
+  "testnet": "$EVE Testnet · house paused\n\nBankroll: 0 $EVE · Sui Testnet · Cycle 7\n\nWagering is paused for contract security repairs and bankroll setup. Play Money is available now.\n\nRefresh status",
+  "ok": true
+}

@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "390px: all five games, aggregate stake, triple-click one pack, reload continuity, receipt profiles, shared draws, blackjack locks, donation and testnet boundaries",
+    "1440px: all five games, aggregate stake, triple-click one pack, reload continuity, receipt profiles, shared draws, blackjack locks, donation and testnet boundaries",
+    "Normal motion: staggered 10-ball duration, pointer scratch/reveal without ledger mutations, failed storage commit no debit"
+  ],
+  "errors": []
+}
