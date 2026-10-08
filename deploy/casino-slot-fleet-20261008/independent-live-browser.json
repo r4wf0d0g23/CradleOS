@@ -1,0 +1,27 @@
+{
+  "url": "https://cradleos.io/#/casino",
+  "viewport": "320\u00d7780 touch, normal motion",
+  "pageErrors": [],
+  "checks": [
+    "Fresh anonymous public floor has 33 practice games and no development toolbar.",
+    "Normal-motion native-RNG 1-chip spin commits one stake/return; actual AudioContext stays running; reload does not reroll.",
+    "Explicit isolated saved-feature fixture: original Gate board shown, bonus cursor restores after reload, Next/Reveal all do not re-credit payout.",
+    "Donate entry reachable; disconnected 1-EVE form cannot submit; irreversible-gift and wagering-not-enabled statements visible.",
+    "23 staged testnet previews, no new financial slot entries, explicit wagering HOLD remains."
+  ],
+  "noOverflow": true,
+  "noDevToolbar": true,
+  "postMethods": [
+    "read payload",
+    "read payload",
+    "read payload",
+    "read payload",
+    "GraphQL/read",
+    "GraphQL/read",
+    "suix_queryEvents",
+    "suix_queryEvents",
+    "sui_getObject"
+  ],
+  "pass": true,
+  "knownDiagnostics": "Existing DappKit missing-object notice and Slush metadata CORS warning; no page exceptions."
+}

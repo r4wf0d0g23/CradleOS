@@ -1,0 +1,44 @@
+[
+  {
+    "url": "https://cradleos.io/assets/index-CQg1qI7x.js",
+    "status": 200,
+    "bytes": 2244672,
+    "sha256": "963f44dd27a77cc44c104729c1290a312e98a906e1ca7cef3fd43a8299b83041",
+    "matches": true
+  },
+  {
+    "url": "https://cradleos.io/assets/index-DEF_5aFa.css",
+    "status": 200,
+    "bytes": 751478,
+    "sha256": "6509739f4ce73684551df461025f2666d78442ce55a73f2e6b8c2729595cc64c",
+    "matches": true
+  },
+  {
+    "url": "https://cradleos.io/casino/slot-fleet-math.json",
+    "status": 200,
+    "bytes": 35990,
+    "sha256": "14c443b49ba3bddc23490b37d69adb7bcbf48ec54efad92e13363d11e6ff70cf",
+    "matches": true
+  },
+  {
+    "url": "https://39eec190.cradleos-d75.pages.dev/assets/index-CQg1qI7x.js",
+    "status": 200,
+    "bytes": 2244672,
+    "sha256": "963f44dd27a77cc44c104729c1290a312e98a906e1ca7cef3fd43a8299b83041",
+    "matches": true
+  },
+  {
+    "url": "https://39eec190.cradleos-d75.pages.dev/assets/index-DEF_5aFa.css",
+    "status": 200,
+    "bytes": 751478,
+    "sha256": "6509739f4ce73684551df461025f2666d78442ce55a73f2e6b8c2729595cc64c",
+    "matches": true
+  },
+  {
+    "url": "https://39eec190.cradleos-d75.pages.dev/casino/slot-fleet-math.json",
+    "status": 200,
+    "bytes": 35990,
+    "sha256": "14c443b49ba3bddc23490b37d69adb7bcbf48ec54efad92e13363d11e6ff70cf",
+    "matches": true
+  }
+]

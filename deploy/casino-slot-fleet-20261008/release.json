@@ -1,0 +1,23 @@
+{
+  "source": "a6fcebde319d5e15f50d10007ca36e3f0bf34cb1",
+  "deployment": "39eec190",
+  "url": "https://cradleos.io/#/casino",
+  "immutable": "https://39eec190.cradleos-d75.pages.dev",
+  "rollback": "9ccc3c8c",
+  "bundle": {
+    "/assets/index-CQg1qI7x.js": "963f44dd27a77cc44c104729c1290a312e98a906e1ca7cef3fd43a8299b83041",
+    "/assets/index-DEF_5aFa.css": "6509739f4ce73684551df461025f2666d78442ce55a73f2e6b8c2729595cc64c"
+  },
+  "publicHashes": "49 passed",
+  "independentLiveReview": "PASS",
+  "practiceGames": 33,
+  "slots": 9,
+  "testnetPreviews": 23,
+  "tests": 252,
+  "financialActions": false,
+  "contractsChanged": false,
+  "wagerActivation": false,
+  "liveGameplay": "All8 fleet games at320/390/844/1440 plus normal-motion sound/storage and actual survivor fall checks",
+  "currentHouse": "Independently read paused, bank0",
+  "ownedPreviewServers": "stopped"
+}
