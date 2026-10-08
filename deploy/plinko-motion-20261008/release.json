@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-08",
+  "source": "96f3e8877da97de7c11ceb8412200e9703c441e0",
+  "primary": "https://cradleos.io/#/casino",
+  "deployment": "058ed040",
+  "immutable": "https://058ed040.cradleos-d75.pages.dev",
+  "rollback": "0558af33",
+  "bundle": {
+    "/assets/index-Dnhiq8q6.js": "98f7ab9a51103da289d6359de2654863badcd1ac7fc64be74c4bf51ff422a079",
+    "/assets/index-OfZ4fVfb.css": "043a57fa535f3aeec1c50af445049929aed54bdb2c448e187af0b889c77b51f4"
+  },
+  "verification": {
+    "unitTests": 163,
+    "allPossiblePaths": 4096,
+    "liveBrowserWidths": [
+      320,
+      390,
+      1440
+    ],
+    "livePegContactsPerDrop": 12,
+    "bucketsVerified": [
+      0,
+      12,
+      6
+    ],
+    "reducedMotion": "pass",
+    "reloadAndRefill": "pass",
+    "publicHashes": "pass",
+    "independentCandidateReview": "pass",
+    "independentLiveReview": "pass"
+  },
+  "unchanged": [
+    "RNG",
+    "payout tables",
+    "chip accounting",
+    "save schema",
+    "current contract IDs",
+    "casinoFunded=false",
+    "raw artwork",
+    "staged testnet PlinkoStage"
+  ],
+  "fundingOrWalletWrites": false
+}
