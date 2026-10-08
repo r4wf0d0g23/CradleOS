@@ -4,6 +4,8 @@
 // in the UI come from scripts/edge_sim.py (measured), never invented.
 
 import { Transaction } from "@mysten/sui/transactions";
+import { normalizeSuiObjectId } from "@mysten/sui/utils";
+import { donationLabel, MAX_DONATION_RAW } from "./casinoDonations";
 import {
   CASINO_PKG,
   CASINO_ORIGINAL,
@@ -175,21 +177,27 @@ async function rpcDirect(method: string, params: unknown[]): Promise<any> {
  *  list from the proxy (5s TTL) can hand back a spent coin id → the wallet
  *  builds a tx on a dead object → "Object ... not found". Observed live on
  *  back-to-back slots spins, 2026-07-06. */
-export async function fetchEveCoins(owner: string): Promise<{ ids: string[]; totalRaw: bigint }> {
+export async function fetchEveCoins(owner: string): Promise<{ ids: string[]; totalRaw: bigint; coins: { id: string; balance: bigint }[] }> {
   const ids: string[] = [];
+  const coins: { id: string; balance: bigint }[] = [];
+  const seenCoins = new Set<string>(), seenCursors = new Set<string>();
   let totalRaw = 0n;
   let cursor: string | null = null;
-  // paginate — suix_getCoins caps at 50 (see MEMORY.md pagination rule)
   for (let guard = 0; guard < 25; guard++) {
     const result = await rpcDirect("suix_getCoins", [owner, EVE_COIN_TYPE, cursor, 50]);
-    for (const c of result.data ?? []) {
-      ids.push(c.coinObjectId);
-      totalRaw += BigInt(c.balance);
+    if (!Array.isArray(result?.data) || typeof result.hasNextPage !== "boolean") throw Error("Wallet coin response is incomplete.");
+    for (const c of result.data) {
+      if (typeof c.coinObjectId !== "string" || !/^0x[0-9a-fA-F]{1,64}$/.test(c.coinObjectId) || seenCoins.has(normalizeSuiObjectId(c.coinObjectId))
+        || typeof c.balance !== "string" || !/^\d+$/.test(c.balance) || BigInt(c.balance) > MAX_DONATION_RAW || c.coinType !== EVE_COIN_TYPE)
+        throw Error("Wallet coin response could not be verified.");
+      const id = normalizeSuiObjectId(c.coinObjectId), balance = BigInt(c.balance);
+      seenCoins.add(id); ids.push(id); totalRaw += balance; coins.push({ id, balance });
     }
-    if (!result.hasNextPage) break;
-    cursor = result.nextCursor;
+    if (!result.hasNextPage) return { ids, totalRaw, coins };
+    if (typeof result.nextCursor !== "string" || !result.nextCursor || seenCursors.has(result.nextCursor)) throw Error("Wallet coin pagination stalled.");
+    seenCursors.add(result.nextCursor); cursor = result.nextCursor;
   }
-  return { ids, totalRaw };
+  throw Error("Wallet coin limit reached; balance is incomplete.");
 }
 
 /**
@@ -379,24 +387,39 @@ export function buildFundHouseTx(
  * Distinct from `buildFundHouseTx` (admin `house::deposit`): this hits
  * `house::donate`, which anyone may call. `label` is an optional donor tag
  * shown on the leaderboard; pass an empty string to donate anonymously.
- * Contract caps the label at 64 bytes, so it is truncated here to match.
+ * Contract caps the label at 64 UTF-8 bytes; reject rather than truncate it.
  */
 export function buildDonateTx(
   houseId: string,
-  eveCoinIds: string[],
+  eveCoins: { id: string; balance: bigint }[],
   amountRaw: bigint,
   label = "",
 ): Transaction {
-  const tx = new Transaction();
-  const primary = tx.object(eveCoinIds[0]);
-  if (eveCoinIds.length > 1) {
-    tx.mergeCoins(primary, eveCoinIds.slice(1).map((id) => tx.object(id)));
+  if (houseId !== CASINO_HOUSE) throw Error("Only the current testnet house can receive donations.");
+  if (amountRaw <= 0n || amountRaw > MAX_DONATION_RAW) throw Error("Invalid donation amount.");
+  const labelBytes = Array.from(new TextEncoder().encode(donationLabel(label)));
+  const seen = new Set<string>();
+  const coins = eveCoins.map(c => {
+    if (!/^0x[0-9a-fA-F]{1,64}$/.test(c.id) || c.balance < 0n || c.balance > MAX_DONATION_RAW) throw Error("Invalid donation coin.");
+    const id = normalizeSuiObjectId(c.id);
+    if (seen.has(id)) throw Error("Donation coins are duplicated.");
+    seen.add(id); return { id, balance: c.balance };
+  }).filter(c => c.balance > 0n).sort((a,b) => a.balance === b.balance ? 0 : a.balance > b.balance ? -1 : 1);
+  let needed = amountRaw;
+  const selected: { id: string; amount: bigint }[] = [];
+  for (const coin of coins) {
+    if (needed === 0n) break;
+    const amount = coin.balance < needed ? coin.balance : needed;
+    selected.push({ id: coin.id, amount }); needed -= amount;
   }
-  const [funds] = tx.splitCoins(primary, [tx.pure.u64(amountRaw)]);
-  // Enforce the on-chain 64-BYTE limit (not 64 chars — multibyte labels count
-  // per byte, so slicing by character could still abort ELabelTooLong).
-  const bytes = new TextEncoder().encode(label);
-  const labelBytes = bytes.length > 64 ? Array.from(bytes.slice(0, 64)) : Array.from(bytes);
+  if (needed > 0n) throw Error("Insufficient $EVE in this wallet.");
+  if (selected.length > 64) throw Error("This donation needs more than 64 coin objects. Use a smaller amount or consolidate coins first.");
+  const tx = new Transaction();
+  // Split only required amounts BEFORE merging; the exact gift sum fits u64
+  // even when the donor's total holdings exceed one coin's capacity.
+  const pieces = selected.map(c => tx.splitCoins(tx.object(c.id), [tx.pure.u64(c.amount)])[0]);
+  const funds = pieces[0];
+  if (pieces.length > 1) tx.mergeCoins(funds, pieces.slice(1));
   tx.moveCall({
     target: `${CASINO_PKG}::house::donate`,
     typeArguments: [EVE_COIN_TYPE],

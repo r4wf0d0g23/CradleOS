@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "320px: discoverable donation, disconnected disabled, no overflow, practice restored, testnet disabled",
+    "390px: discoverable donation, disconnected disabled, no overflow, practice restored, testnet disabled",
+    "1440px: discoverable donation, disconnected disabled, no overflow, practice restored, testnet disabled",
+    "Default practice has no chain reads",
+    "Mock wallet: exact-amount donation, pinned testnet/account/sender, triple click signs once; success receipt and retry guard cleared",
+    "Unknown wallet outcome persists across reload and blocks automatic repeat",
+    "Definite failed transaction never shows success and safely clears pending guard",
+    "Outstanding game blocks signing",
+    "Fresh unpaused status blocks signing",
+    "Foreign house blocks signing",
+    "Wallet switch during checks blocks signing",
+    "Wrong-network direct form submission blocks signing",
+    "Storage write failure prevents wallet request",
+    "Confirmed success with storage-removal failure keeps receipt and retry guard",
+    "Donation navigation cannot interrupt a practice deal"
+  ],
+  "errors": [],
+  "mockSignatures": 4
+}

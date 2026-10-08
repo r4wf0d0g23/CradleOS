@@ -1067,6 +1067,40 @@ module cradleos_casino::house {
         test_scenario::end(sc);
     }
 
+    /// Seeding is separate from wagering: gifts preserve pause, limits and stats.
+    #[test]
+    fun test_public_donation_while_paused_preserves_controls() {
+        let admin = @0xAD;
+        let donor = @0xD0;
+        let mut sc = test_scenario::begin(admin);
+        {
+            let ctx = test_scenario::ctx(&mut sc);
+            let seed = coin::mint_for_testing<SUI>(0, ctx);
+            let cap = create<SUI>(seed, 1, 1, ctx);
+            transfer::public_transfer(cap, admin);
+        };
+        test_scenario::next_tx(&mut sc, admin);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let cap = test_scenario::take_from_sender<HouseAdminCap>(&sc);
+            set_risk_params(&mut house, &cap, 1, 1, true);
+            test_scenario::return_shared(house);
+            test_scenario::return_to_sender(&sc, cap);
+        };
+        test_scenario::next_tx(&mut sc, donor);
+        {
+            let mut house = test_scenario::take_shared<House<SUI>>(&sc);
+            let ctx = test_scenario::ctx(&mut sc);
+            donate(&mut house, coin::mint_for_testing<SUI>(750, ctx), b"seed", ctx);
+            assert!(bank_balance(&house) == 750, 0);
+            assert!(house.paused, 1);
+            assert!(house.min_bet == 1 && house.max_bet == 1, 2);
+            assert!(total_wagered(&house) == 0 && total_paid_out(&house) == 0 && bets_settled(&house) == 0, 3);
+            test_scenario::return_shared(house);
+        };
+        test_scenario::end(sc);
+    }
+
     /// v29: anonymous wrapper works and also credits the bank.
     #[test]
     fun test_anonymous_donation() {

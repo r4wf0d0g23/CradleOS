@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "320px: discoverable donation, disconnected disabled, no overflow, practice restored, testnet disabled",
+    "390px: discoverable donation, disconnected disabled, no overflow, practice restored, testnet disabled",
+    "1440px: discoverable donation, disconnected disabled, no overflow, practice restored, testnet disabled"
+  ],
+  "errors": [],
+  "mockSignatures": 0
+}

@@ -446,7 +446,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
               <button
                 type="button"
                 onClick={openBankroll}
-                title={CASINO_READY ? "View current-cycle bankroll" : "Current-cycle bankroll — funding setup pending"}
+                title="Seed the paused testnet house"
                 style={{
                   background: `linear-gradient(180deg, ${GOLD}22, ${GOLD}11)`,
                   border: `1px solid ${GOLD}66`,
@@ -460,7 +460,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
                   font: "inherit",
                 }}
               >
-                {CASINO_READY ? "◈ DONATE" : "◈ CYCLE 7 BANKROLL"}
+                ◈ DONATE $EVE
               </button>
             </div>
           )}
@@ -473,7 +473,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
               label="HOUSE BANK"
               value={house ? `${fmtEve(house.bankBalance)} EVE` : "—"}
               onClick={openBankroll}
-              title={CASINO_READY ? "Bankroll the house — donate $EVE, raise max bets" : "Cycle 7 bankroll — new deposits paused"}
+              title="Donate to the testnet bank — wagering stays disabled"
             />
             <Stat label="HANDS" value={house ? String(house.betsSettled) : "—"} />
             <Stat label="YOUR $EVE" value={addr ? fmtEve(myEve) : "connect"} color={GOLD} />
@@ -490,7 +490,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
             <button type="button" onClick={backToLobby} style={chip}>← LOBBY</button>
             <span style={{ color: "#9a9a8a", fontSize: 11, letterSpacing: "0.08em" }}>CASINO / BANKROLL</span>
           </div>
-          <HouseDonatePanel />
+          <HouseDonatePanel onBusyChange={(value) => { setNestedBusy(value); onBusyChange?.(value); }} />
         </div>
 
       ) : casinoView.mode === "lobby" ? (
@@ -555,12 +555,12 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
             }}
           >
             <div style={{ color: GOLD, fontSize: 13, fontWeight: 800, letterSpacing: "0.1em" }}>
-              {CASINO_READY ? "◈ BANKROLL THE HOUSE" : "◈ CYCLE 7 BANKROLL"}
+              ◈ DONATE $EVE
             </div>
             <div style={{ color: "#9a9a8a", fontSize: 11, marginTop: 3 }}>
               {house
-                ? `Bank ${fmtEve(house.bankBalance)} ${CASINO_READY ? "EVE · donate to raise max bets" : "Cycle 7 EVE · house not yet ready"}`
-                : "Cycle 7 bankroll · new deposits paused"}
+                ? `Bank ${fmtEve(house.bankBalance)} EVE · seeding only`
+                : "Seed the testnet house · wagering stays disabled"}
             </div>
           </button>
         </div>

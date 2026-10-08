@@ -1,3 +1,5 @@
+> **2026-10-08 seeding update:** Explicitly authorized player donations may seed the paused current testnet House through the reviewed donation flow. This is an irreversible shared-bank gift, not protected escrow. Wager activation stays HOLD pending the security repairs below; a positive bank balance is not authorization to unpause. See `deploy/casino-donations-20261008/PLAN.md` at repository root.
+
 # October 8, 2026 security and deployment supersession
 
 The historical workflow below is retained as an archive, NOT an activation

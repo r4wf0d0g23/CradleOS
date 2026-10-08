@@ -1,3 +1,5 @@
+> **2026-10-08 seed-only authorization update:** Raw explicitly requested restoring voluntary player donations. Reviewed `house::donate` access may seed the paused current bank; it does not authorize wager activation, unpause or limit changes. See `../casino-donations-20261008/PLAN.md`. The older funding hold below remains historical evidence, not a block on this narrower authorization.
+
 > October 8 follow-up audit: **do not activate using the old checklist alone.**
 > See `../casino-expansion-20261008/DESIGN.md` and the independent audit.
 > Hi-Lo and Baccarat are player-positive in their current code; Scratch Cards

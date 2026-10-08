@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { HouseDonatePanel } from "./HouseDonatePanel";
 import { CasinoPanel } from "./CasinoPanel";
 import { CasinoRoundStage, casinoRoundMs } from "./CasinoRoundStage";
 import { ExpandedOptions } from "./CasinoExpandedOptions";
@@ -276,7 +277,9 @@ function TestnetStatus({ q }: { q: ReturnType<typeof useLoungeHouse> }) {
 export function CasinoExperience() {
   const [state, setState] = useState(initial),
     current = useRef<PracticeState>(state);
-  const [mode, setMode] = useState<"practice" | "testnet">("practice");
+  const [mode, setMode] = useState<"practice" | "testnet" | "donate">(
+    "practice",
+  );
   const [game, setGame] = useState<string | null>(() =>
     state.hand ? "blackjack" : null,
   );
@@ -424,7 +427,8 @@ export function CasinoExperience() {
             href="#/casino"
             onClick={(e) => {
               e.preventDefault();
-              navigate(null);
+              if (mode === "donate") changeMode("practice");
+              else navigate(null);
             }}
             aria-label="Casino lobby"
           >
@@ -467,11 +471,23 @@ export function CasinoExperience() {
           </button>
         </header>
         <div className="lounge-account">
+          <button
+            className="lounge-donate-link"
+            disabled={locked}
+            aria-pressed={mode === "donate"}
+            onClick={() =>
+              changeMode(mode === "donate" ? "practice" : "donate")
+            }
+          >
+            {mode === "donate" ? "← Back to casino" : "Donate $EVE"}
+          </button>
           <span className="lounge-mode-label">
             <i />{" "}
             {mode === "practice"
               ? "PLAY MONEY · FREE CHIPS"
-              : "$EVE · TESTNET ONLY"}
+              : mode === "donate"
+                ? "$EVE · SEED THE HOUSE"
+                : "$EVE · TESTNET ONLY"}
           </span>
           {mode === "practice" ? (
             <div>
@@ -506,7 +522,14 @@ export function CasinoExperience() {
           </p>
         )}
         {mode === "testnet" && <TestnetStatus q={houseQuery} />}
-        {!game ? (
+        {mode === "donate" ? (
+          <HouseDonatePanel
+            onBusyChange={(value) => {
+              busyRef.current = value;
+              setChainBusy(value);
+            }}
+          />
+        ) : !game ? (
           <>
             <div className="lounge-hero">
               <div>

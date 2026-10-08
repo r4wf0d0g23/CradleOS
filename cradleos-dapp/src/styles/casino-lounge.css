@@ -1832,3 +1832,22 @@
   ) !important;
   color: #e4c788;
 }
+
+/* Bank seeding is an explicit wallet surface, separate from the play floor. */
+.frontier-casino .casino-donate { max-width: 850px; margin: 22px auto; padding: clamp(16px, 4vw, 32px); background: #111518; border: 1px solid #ff470055; }
+.frontier-casino .casino-donate-heading { display: flex; align-items: center; gap: 16px; }
+.frontier-casino .casino-donate-heading h2 { margin: 5px 0; font-size: clamp(24px, 5vw, 38px); }
+.frontier-casino .casino-donate-heading p { margin-top: 6px; }
+.frontier-casino .casino-donate-status { display: flex; flex-wrap: wrap; gap: 22px; padding: 20px 0; border-bottom: 1px solid #ffffff20; }
+.frontier-casino .casino-donate-status div { display: grid; gap: 6px; min-width: 140px; overflow-wrap: anywhere; }
+.frontier-casino .casino-donate-status span { color: #adbbb9; font-size: 12px; }
+.frontier-casino .casino-donate fieldset { display: grid; gap: 14px; padding: 18px 0; margin: 0; border: none; min-width: 0; }
+.frontier-casino .casino-donate label { display: grid; gap: 7px; font-weight: 650; }
+.frontier-casino .casino-donate input { width: 100%; box-sizing: border-box; background: #080c0e; color: #fff; border: 1px solid #ffffff35; padding: 13px; font: inherit; }
+.frontier-casino .casino-donate p { line-height: 1.65; }
+.frontier-casino .casino-donate-id, .frontier-casino .casino-donate-pending, .frontier-casino .casino-donate-receipt { overflow-wrap: anywhere; }
+.frontier-casino .casino-donate-receipt { display: grid; gap: 10px; border-left: 3px solid #dfffad; padding: 16px; margin-top: 20px; }
+.frontier-casino .casino-donate-pending { display: block; }
+.frontier-casino .casino-donate button { min-height: 44px; white-space: normal; }
+.frontier-casino .lounge-donate-link { color: #ffb194; border-color: #ff470088; }
+@media (max-width: 420px) { .frontier-casino .casino-donate-heading > span, .frontier-casino .casino-donate-heading > img { display: none; } }
