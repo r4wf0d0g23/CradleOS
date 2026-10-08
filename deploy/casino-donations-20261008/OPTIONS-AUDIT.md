@@ -91,3 +91,7 @@ Ante/Play poker, Red Dog raises, War tie choices, safely redesigned Hi-Lo ladder
 - `deploy/casino-expansion-20261008/ARCHITECTURE-REVIEW.md`, `math-evidence.json`: prior exploit and exact probability findings. Funding HOLD from that historical review is narrowed by the new explicit **seed-only** request; its wager-activation restrictions remain intact.
 
 Confidence: high for listed implementation availability and identified source defects; proposed new variants are design recommendations, not probability-validated implementations or funded-game approvals.
+
+## Post-release audit note
+
+Independent live review also found inherited disabled-Blackjack footer copy in `CasinoPanel.tsx` describing a fixed pre-shuffled deck/full-deck publication. That does **not** describe the current fresh-draw live contract. Correct that footer and stale file-header comment in the next scoped copy pass; do not treat them as security evidence or activate based on those claims. Donation functionality is independent and verified.

@@ -1,0 +1,28 @@
+{
+  "readAt": "2026-10-08T13:10:16.661522+00:00",
+  "data": {
+    "object": {
+      "version": 939311498,
+      "owner": {
+        "__typename": "Shared"
+      },
+      "asMoveObject": {
+        "contents": {
+          "type": {
+            "repr": "0x9628fb3b5c589d627d2127581e0c3eb46c3af1f0c1171ce78d0992aebaedbec3::house::House<0xc663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE>"
+          },
+          "json": {
+            "id": "0x4a0386fc44328714d0d48bb38d99cda6397c089fd753e3abc4f40b1cb1d98370",
+            "bank": "0",
+            "max_bet": "1",
+            "min_bet": "1",
+            "paused": true,
+            "total_wagered": "0",
+            "total_paid_out": "0",
+            "bets_settled": "0"
+          }
+        }
+      }
+    }
+  }
+}
