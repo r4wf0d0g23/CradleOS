@@ -1,0 +1,96 @@
+{
+  "baccarat_current": {
+    "counts": [
+      6691512320,
+      6636013440,
+      1330608640
+    ],
+    "denominator": 14658134400,
+    "probabilities": [
+      0.45650504609918163,
+      0.45271882893910426,
+      0.0907761249617141
+    ],
+    "rtp": [
+      1.0037862171600773,
+      0.9735778413929674,
+      0.8169851246554268
+    ]
+  },
+  "baccarat_fixed_single_deck": {
+    "counts": [
+      6548674432,
+      6737232640,
+      1372227328
+    ],
+    "denominator": 14658134400,
+    "probabilities": [
+      0.44676043030414564,
+      0.4596241551721616,
+      0.09361541452369272
+    ],
+    "rtp": [
+      0.9871362751319841,
+      0.9898825171094079,
+      0.8425387307132346
+    ]
+  },
+  "three_card_current_comparator": {
+    "disjoint_hand_pairs": 407170400,
+    "current_rtp": 0.9698311886129247,
+    "old_2x_rtp": 1.0330039708190968,
+    "no_qual_win_probability": 0.25269112882468864,
+    "pair_twos_ace_beats_pair_kings_four": true,
+    "wheel_ace23_beats_KQJ": true
+  },
+  "table_rtps_before_payout_unit_flooring": {
+    "wheel:SEGMENTS": 0.96,
+    "money_wheel:SEGMENTS": 0.9666666666666667,
+    "risk_wheel:SEGMENTS_LOW": 0.97,
+    "risk_wheel:SEGMENTS_MED": 0.96,
+    "risk_wheel:SEGMENTS_HIGH": 0.96,
+    "plinko:BUCKET_BPS": 0.96001767578125,
+    "plinko:LOW_BPS": 0.96484375,
+    "plinko:MED_BPS": 0.959814453125,
+    "plinko:HIGH_BPS": 0.965185546875,
+    "slots": 0.959619140625,
+    "diamonds": 0.9654310703873387,
+    "keno:1": 0.9625,
+    "keno:2": 0.9615384615384616,
+    "keno:3": 0.9595141700404858,
+    "keno:4": 0.9630430025166867,
+    "keno:5": 0.9665991902834008,
+    "keno:6": 0.959678301783565,
+    "ore:1": 0.97,
+    "ore:2": 0.96998,
+    "ore:3": 0.97,
+    "ore:4": 0.96995,
+    "ore:5": 0.97007,
+    "andar": 0.9916530166612648,
+    "bahar": 0.9450499822752502,
+    "scratch": 0.8880615234375,
+    "coinflip": 0.98,
+    "dice_upper_bound": 0.98,
+    "roulette": 0.972972972972973,
+    "war": 0.9615384615384616,
+    "dragon_tiger_main": 0.9705882352941176,
+    "dragon_tiger_tie": 0.5294117647058824,
+    "chuck_a_luck": 0.9722222222222222,
+    "red_dog": 0.9776968593536641,
+    "sicbo_smallbig": 0.9722222222222222,
+    "sicbo_single": 0.9212962962962963,
+    "sicbo_triples": 0.8333333333333334,
+    "double_dice_under_over": 0.9583333333333334,
+    "double_dice_seven_double": 0.9166666666666666,
+    "double_dice_exact": 0.95,
+    "under_over7_main": 0.9666666666666667,
+    "under_over7_exact": 0.95
+  },
+  "hilo_before_floors": {
+    "feasible_live_rtp": 1.0569230769230769,
+    "blind_legacy_rtp": 0.9815384615384616,
+    "corrected_winner_numerator": 117400,
+    "live_max_multiplier": 11.74
+  },
+  "andar_no_match_52_probability": 0.015572935129947738
+}

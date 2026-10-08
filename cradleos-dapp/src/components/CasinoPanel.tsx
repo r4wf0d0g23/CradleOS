@@ -1,3 +1,4 @@
+import { TESTNET_QUARANTINE } from "../lib/casinoExpansionRules";
 import { CASINO_READY } from "../lib/cycleDeployment";
 /**
  * CasinoPanel — CradleOS Casino. Flagship: interactive on-chain Blackjack ($EVE).
@@ -423,7 +424,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
   const activeCategories = activeCategoriesFromCatalog();
   const gameEntry = CASINO_CATALOG.find((g) => g.key === casinoView.gameKey);
   // Guard: never open a disabled game even via direct link/stale nav state.
-  const gameDisabled = !!gameEntry?.disabled;
+  const gameDisabled = !!gameEntry?.disabled || TESTNET_QUARANTINE.has(game);
 
   return (
     <div className="casino-chain" data-embedded={embedded} style={{ maxWidth: 1080, margin: "0 auto" }}>

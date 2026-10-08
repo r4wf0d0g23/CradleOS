@@ -1,3 +1,31 @@
+# October 8, 2026 security and deployment supersession
+
+The historical workflow below is retained as an archive, NOT an activation
+checklist. Current requirements supersede conflicting legacy instructions:
+
+- `cradleos-dapp/PRIMARY_DEPLOY.md` is authoritative: cradleos.io only. Never
+  disable branch protection or redeploy the application to GitHub Pages.
+- Current Cycle 7 House is paused/unfunded. Do not fund or submit live wagers as
+  a routine UI-release check. Explicitly authorized activation must first close
+  the findings in `deploy/casino-expansion-20261008/DESIGN.md` and its review.
+- Owned/shared chain objects are readable. A pre-drawn solution is NOT hidden by
+  player ownership or by labelling it commit/reveal. Mines, Dragon Tower and
+  Video Poker start/deal aborts stay intact. Hi-Lo, Baccarat and Scratch Cards
+  are additionally quarantined in the current frontend.
+- An upgrade does not make old public entrypoints disappear. Enforce package/
+  version/game authorization or replace the vulnerable House/type origin.
+- Pending multi-step games need aggregate liability reservation, owner/house
+  binding and settle-once recovery; single-wager exposure is insufficient.
+- Recompute probabilities from code, including ties, caps, finite decks and
+  rounding. Use unbiased bounded randomness; no modulo-reduced arbitrary bytes.
+- Practice chips remain non-redeemable and isolated. Corrected practice rules do
+  not certify existing on-chain code. No animation controls payouts.
+- Review real normal-motion intermediate frames and final result alignment,
+  mobile interaction, reduced motion and audio opt-in. Do not fabricate near
+  misses or imply skill/timing alters an already-committed random result.
+
+---
+
 # CradleOS Casino — Game Development & Launch Protocol
 
 **Owner:** Reality Anchor (Captain)

@@ -1,3 +1,4 @@
+import { TESTNET_QUARANTINE } from "../lib/casinoExpansionRules";
 import { useContext } from "react";
 import { CasinoFeedback } from "../lib/casinoFeedback";
 import { CASINO_READY } from "../lib/cycleDeployment";
@@ -155,7 +156,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
   ore_refine: "Risk your stake through 5 refine intensities. BASIC (2x) → CRITICAL (20x). All tiers: 3% house edge.",
   risk_wheel: "Spin with your chosen volatility. LOW: frequent 1.4x/3x wins, 3% edge. MED: balanced 10x top, 4%. HIGH: rare 13.5x jackpot, 4%.",
   money_wheel: "54-segment wheel. The rare 18x jackpot glows on every spin. Edge 3.33% across all tiers.",
-  andar_bahar: "Indian classic. Joker card revealed first, then cards deal alternately to Andar / Bahar until rank matches. Bet which side gets the match. Andar 2.24% edge · Bahar 4.00% edge.",
+  andar_bahar: "Indian classic. Joker card revealed first, then cards deal alternately to Andar / Bahar until rank matches. Bet which side gets the match. 52-card limit defaults to Andar; actual edge ≈0.835% / 5.495%.",
   scratch_cards: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win — from 1.5x Veldspar to 100x Zydrine jackpot. 30% win rate, 3% edge.",
   chuck_a_luck: "Pick a number 1–6, roll three dice. Match 1 = 1.9×, Match 2 = 3.7×, Triple = 12×. Classic birdcage with near-miss magic. 2.78% house edge.",
   red_dog: "Two anchor cards dealt face-up. Bet on whether a third falls strictly between them. Spread 1 = 5:1 · Spread 5+ = 1:1 · Pair match = 11:1. 2.23% house edge.",
@@ -163,7 +164,7 @@ const GAME_BLURB: Record<InstantGameKey, string> = {
 
 export function InstantGamePanel({ game, wageringReady = false, onBusyChange }: { game: InstantGameKey; wageringReady?: boolean; onBusyChange?: (busy: boolean) => void }) {
   const feedback = useContext(CasinoFeedback);
-  const betsEnabled = CASINO_READY && wageringReady;
+  const betsEnabled = CASINO_READY && wageringReady && !TESTNET_QUARANTINE.has(game);
   const dAppKit = useDAppKit();
   const { account } = useVerifiedAccountContext();
   const addr = account?.address ?? "";
@@ -1159,7 +1160,7 @@ export function InstantGamePanel({ game, wageringReady = false, onBusyChange }: 
                     textAlign: "center",
                   }}>
                     <div>{label}</div>
-                    <div style={{ fontSize: 11, fontWeight: 900, opacity: 0.7 }}>{v === 0 ? "2.24% edge" : "4.00% edge"}</div>
+                    <div style={{ fontSize: 11, fontWeight: 900, opacity: 0.7 }}>{v === 0 ? "0.835% edge" : "5.495% edge"}</div>
                   </button>
                 ))}
               </div>

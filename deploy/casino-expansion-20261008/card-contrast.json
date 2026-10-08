@@ -1,0 +1,56 @@
+{
+  "baccarat": [
+    {
+      "background": "rgb(238, 238, 218)",
+      "color": "rgb(24, 37, 27)",
+      "ratio": 13.550935027099012
+    },
+    {
+      "background": "rgb(238, 238, 218)",
+      "color": "rgb(24, 37, 27)",
+      "ratio": 13.550935027099012
+    },
+    {
+      "background": "rgb(238, 238, 218)",
+      "color": "rgb(24, 37, 27)",
+      "ratio": 13.550935027099012
+    },
+    {
+      "background": "rgb(238, 238, 218)",
+      "color": "rgb(24, 37, 27)",
+      "ratio": 13.550935027099012
+    }
+  ],
+  "blackjack": [
+    {
+      "back": false,
+      "background": "rgb(238, 238, 218)",
+      "image": "none",
+      "color": "rgb(24, 37, 27)",
+      "corner": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "back": true,
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "repeating-linear-gradient(45deg, rgb(22, 35, 25), rgb(22, 35, 25) 5px, rgb(35, 50, 40) 6px)",
+      "color": "rgb(228, 199, 136)",
+      "corner": null
+    },
+    {
+      "back": false,
+      "background": "rgb(238, 238, 218)",
+      "image": "none",
+      "color": "rgb(24, 37, 27)",
+      "corner": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "back": false,
+      "background": "rgb(238, 238, 218)",
+      "image": "none",
+      "color": "rgb(24, 37, 27)",
+      "corner": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "ok": true,
+  "errors": []
+}

@@ -1,0 +1,12 @@
+{
+  "base": "http://127.0.0.1:5200/",
+  "actualWebAudio": {
+    "contexts": 1,
+    "closes": 1,
+    "plays": 1,
+    "oscillators": 1
+  },
+  "reducedMotionNoTableVideo": true,
+  "unfundedDealDisabled": true,
+  "ok": true
+}

@@ -1530,3 +1530,305 @@
   stroke: #fff1b2;
   stroke-width: 1;
 }
+/* Outcome-faithful expanded floor. Geometry stays inside the table on mobile. */
+.casino-orbit-stage {
+  width: min(100%, 340px);
+  margin: auto;
+}
+.casino-orbit-stage svg {
+  display: block;
+  width: 100%;
+}
+.casino-dice-stage {
+  display: flex;
+  justify-content: center;
+  gap: clamp(12px, 4vw, 28px);
+  padding: 60px 0;
+}
+.casino-pip-die {
+  width: clamp(54px, 14vw, 82px);
+  aspect-ratio: 1;
+  background: #fafae5;
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  padding: 11px;
+  box-shadow: 0 8px 20px #0009;
+}
+.casino-pip-die i {
+  border-radius: 50%;
+}
+.casino-pip-die .pip {
+  background: #131b17;
+}
+.casino-pip-die.rolling {
+  animation: casino-dice-tumble 0.2s linear infinite;
+}
+@keyframes casino-dice-tumble {
+  0% {
+    transform: rotate(-12deg) translateY(0);
+  }
+  50% {
+    transform: rotate(14deg) translateY(-18px);
+  }
+  100% {
+    transform: rotate(-12deg) translateY(0);
+  }
+}
+.casino-moving-reels > div {
+  overflow: hidden;
+  min-height: 170px;
+}
+.casino-moving-reels .reel-moving > div {
+  transform: translateY(var(--roll-y));
+  filter: blur(1px);
+}
+.casino-moving-reels .reel-stopped {
+  border-color: #e4c78870;
+}
+.casino-coin-stage {
+  perspective: 700px;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+}
+.casino-symbol-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: auto;
+  max-width: 470px;
+}
+.casino-symbol-grid.scratch-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 350px;
+}
+.casino-symbol-grid > div {
+  min-height: 94px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fafae52a;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #242e24, #0a0e0b);
+}
+.casino-symbol-grid .covered {
+  color: #e4c78880;
+  font-size: 28px;
+}
+.casino-symbol-grid .revealed {
+  border-color: #e4c78870;
+  animation: casino-card-reveal 0.25s ease-out;
+}
+.casino-symbol-grid small {
+  font-size: 9px;
+  text-align: center;
+  margin: 4px 0;
+}
+.casino-card-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+  padding: 16px 0;
+}
+.casino-card-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.casino-card-line > span {
+  width: 100%;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 12px;
+  color: #e4c788;
+  text-transform: uppercase;
+}
+.casino-dealt-card {
+  width: 68px;
+  min-height: 100px;
+  background: #eeeeda;
+  color: #18251b;
+  border: 1px solid #e4c788;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 6px 12px #0006;
+}
+.casino-dealt-card > b {
+  align-self: start;
+  font-size: 20px;
+}
+.casino-dealt-card small {
+  font-size: 9px;
+}
+.casino-dealt-card.covered {
+  background: repeating-linear-gradient(
+    45deg,
+    #162319,
+    #162319 5px,
+    #233228 6px
+  );
+  color: #e4c788;
+}
+.casino-dealt-card.revealed {
+  animation: casino-card-reveal 0.2s ease-out;
+}
+@keyframes casino-card-reveal {
+  from {
+    transform: translateY(-8px) rotateY(60deg);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.casino-keno-stage {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 7px;
+  max-width: 450px;
+  margin: auto;
+}
+.casino-keno-stage > span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: #19241b;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.casino-keno-stage .picked {
+  border-color: #e4c788;
+}
+.casino-keno-stage .drawn {
+  background: #833526;
+  color: #fff;
+}
+.casino-keno-stage .picked.drawn {
+  background: #dfc37f;
+  color: #111;
+}
+.casino-keno-stage small {
+  grid-column: 1/-1;
+  color: #b6b6a6;
+  font-size: 10px;
+  text-align: center;
+  padding: 8px;
+}
+.casino-keno-picks {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+}
+.frontier-casino .casino-keno-picks button {
+  padding: 4px;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 12px;
+}
+.casino-flight-stage {
+  position: relative;
+  width: min(100%, 430px);
+  margin: auto;
+  text-align: center;
+}
+.casino-flight-stage > strong {
+  font-size: 40px;
+  letter-spacing: 2px;
+}
+.casino-flight-stage svg {
+  display: block;
+  width: 100%;
+}
+.casino-flight-stage > span,
+.casino-card-stage > small {
+  font-size: 11px;
+  color: #b6b6a6;
+}
+.casino-refinery {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  padding: 25px;
+}
+.refinery-core {
+  border: 1px solid #e4c788;
+  border-radius: 50%;
+  padding: 20px;
+  box-shadow:
+    0 0 35px #edaa3b3a,
+    inset 0 0 25px #ff280035;
+}
+.casino-refinery progress {
+  accent-color: #e4c788;
+  width: min(230px, 100%);
+  height: 9px;
+}
+.casino-refinery.yield-3 .refinery-core {
+  box-shadow: 0 0 60px #e4c78890;
+}
+@media (max-width: 480px) {
+  .casino-symbol-grid:not(.scratch-grid) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .casino-keno-stage {
+    gap: 3px;
+  }
+  .casino-keno-stage > span {
+    font-size: 10px;
+  }
+  .casino-dealt-card {
+    width: 60px;
+  }
+  .casino-moving-reels > div {
+    min-height: 130px;
+  }
+  .casino-moving-reels img {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .casino-pip-die,
+  .casino-dealt-card,
+  .casino-symbol-grid .revealed {
+    animation: none !important;
+  }
+}
+
+/* Host theme has an !important [class*="card"] surface rule. Keep casino
+   card faces legible without changing that shared application selector. */
+.frontier-casino .casino-card-stage,
+.frontier-casino .casino-card-line,
+.frontier-casino .lounge-card-row,
+.frontier-casino .card-corner {
+  background: transparent !important;
+}
+.frontier-casino .casino-dealt-card,
+.frontier-casino .lounge-playing-card {
+  background: #eeeeda !important;
+  color: #18251b;
+}
+.frontier-casino .casino-dealt-card.covered,
+.frontier-casino .lounge-playing-card.card-back {
+  background: repeating-linear-gradient(
+    45deg,
+    #162319,
+    #162319 5px,
+    #233228 6px
+  ) !important;
+  color: #e4c788;
+}

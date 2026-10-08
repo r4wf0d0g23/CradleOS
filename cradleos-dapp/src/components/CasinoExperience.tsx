@@ -1,6 +1,13 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CasinoPanel } from "./CasinoPanel";
+import { CasinoRoundStage, casinoRoundMs } from "./CasinoRoundStage";
+import { ExpandedOptions } from "./CasinoExpandedOptions";
+import {
+  EXPANSION_RULES,
+  TESTNET_QUARANTINE,
+} from "../lib/casinoExpansionRules";
+import { KENO_TABLE } from "../lib/casinoExpanded";
 import { CasinoPlinko } from "./CasinoPlinko";
 import { PLINKO_REVEAL_MS } from "../lib/plinkoMotion";
 import { ItemIcon } from "./GameIcon";
@@ -22,9 +29,7 @@ import {
   playPractice,
   practiceBet,
   restorePractice,
-  RED,
   SLOT_BPS,
-  WHEEL_BPS,
   type PracticeGame,
   type PracticeState,
   type Round,
@@ -115,114 +120,6 @@ function CardRow({
     </div>
   );
 }
-const wheelOrder = [
-  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24,
-  16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
-];
-function OrbitWheel({
-  roulette,
-  result,
-  busy,
-}: {
-  roulette: boolean;
-  result: Round | null;
-  busy: boolean;
-}) {
-  const numbers = roulette
-      ? wheelOrder
-      : Array.from({ length: 20 }, (_, i) => i),
-    hit = result?.values[0];
-  return (
-    <div className={`lounge-wheel ${busy ? "is-spinning" : ""}`}>
-      <svg
-        viewBox="0 0 300 300"
-        role="img"
-        aria-label={
-          roulette ? "European roulette wheel" : "20-sector multiplier wheel"
-        }
-      >
-        <circle
-          cx="150"
-          cy="150"
-          r="143"
-          fill="#121510"
-          stroke="#71654b"
-          strokeWidth="3"
-        />
-        <circle cx="150" cy="150" r="111" fill="none" stroke="#fafae52a" />
-        {numbers.map((n, i) => {
-          const a = (((i / numbers.length) * 360 - 90) * Math.PI) / 180,
-            x = 150 + 125 * Math.cos(a),
-            y = 150 + 125 * Math.sin(a);
-          return (
-            <g key={i}>
-              <circle
-                cx={x}
-                cy={y}
-                r={roulette ? 10 : 15}
-                fill={
-                  roulette
-                    ? n === 0
-                      ? "#155f48"
-                      : RED.includes(n)
-                        ? "#bd240f"
-                        : "#222722"
-                    : WHEEL_BPS[n]
-                      ? "#61451f"
-                      : "#222722"
-                }
-                stroke={n === hit ? "#f3db91" : "none"}
-                strokeWidth="3"
-              />
-              <text
-                x={x}
-                y={y + 3}
-                textAnchor="middle"
-                fill="#fafae5"
-                fontSize={roulette ? 9 : 10}
-              >
-                {roulette ? n : WHEEL_BPS[n] / 10000 + "×"}
-              </text>
-            </g>
-          );
-        })}
-        <circle
-          cx="150"
-          cy="150"
-          r="77"
-          fill="#0a0c0b"
-          stroke="#ff28006a"
-          strokeWidth="2"
-        />
-        <text
-          x="150"
-          y="143"
-          textAnchor="middle"
-          fill="#a9aa9b"
-          fontSize="10"
-          letterSpacing="3"
-        >
-          {roulette ? "ORBITAL" : "REACTOR"}
-        </text>
-        <text x="150" y="181" textAnchor="middle" fill="#fafae5" fontSize="34">
-          {busy
-            ? "◇"
-            : hit === undefined
-              ? "◇"
-              : roulette
-                ? hit
-                : WHEEL_BPS[hit] / 10000 + "×"}
-        </text>
-        <polygon
-          className="wheel-indicator"
-          points="144,2 156,2 150,13"
-          fill="#f3db91"
-          transform={`rotate(${hit === undefined ? 0 : (numbers.indexOf(hit) * 360) / numbers.length} 150 150)`}
-        />
-      </svg>
-    </div>
-  );
-}
 function GameSurface({
   game,
   state,
@@ -236,26 +133,6 @@ function GameSurface({
   busy: boolean;
   reducedMotion: boolean;
 }) {
-  if (game === "slots")
-    return (
-      <div className={`lounge-reels ${busy ? "is-spinning" : ""}`}>
-        {[0, 1, 2].map((i) => {
-          const symbol = CASINO_SYMBOLS[result?.values[i] ?? [4, 3, 6][i]];
-          return (
-            <div key={i} style={{ "--reel": i } as CSSProperties}>
-              <div className="reel-ghost" aria-hidden="true">
-                <ItemIcon typeId={CASINO_SYMBOLS[(i + 1) % 7].id} size={68} />
-              </div>
-              <ItemIcon typeId={symbol.id} size={96} />
-              <span>{busy ? "SCANNING" : symbol.name}</span>
-              <div className="reel-ghost" aria-hidden="true">
-                <ItemIcon typeId={CASINO_SYMBOLS[(i + 5) % 7].id} size={68} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
   if (game === "blackjack") {
     const values = result?.values ?? [],
       separator = values.indexOf(-1),
@@ -278,10 +155,6 @@ function GameSurface({
       </div>
     );
   }
-  if (game === "roulette" || game === "wheel")
-    return (
-      <OrbitWheel roulette={game === "roulette"} result={result} busy={busy} />
-    );
   if (game === "plinko")
     return (
       <CasinoPlinko
@@ -290,31 +163,19 @@ function GameSurface({
         reducedMotion={reducedMotion}
       />
     );
-  if (game === "war")
-    return (
-      <div className="lounge-duel">
-        <CardRow label="You" cards={result ? [result.values[0]] : [11]} war />
-        <span>VS</span>
-        <CardRow label="House" cards={result ? [result.values[1]] : [12]} war />
-      </div>
-    );
-  if (game === "coinflip")
-    return (
-      <div className={`lounge-coin ${busy ? "is-spinning" : ""}`}>
-        <ItemIcon typeId={result?.values[0] === 1 ? 84180 : 72244} size={104} />
-        <b>{busy ? "◇" : (result?.label ?? "HEADS / TAILS")}</b>
-      </div>
-    );
   return (
-    <div className={`lounge-dice ${busy ? "is-spinning" : ""}`}>
-      <span>PROBABILITY DRIVE</span>
-      <strong>{busy ? "··" : (result?.values[0] ?? "50")}</strong>
-      <i>01 — 100</i>
-    </div>
+    <CasinoRoundStage
+      game={game}
+      round={state.history[0]?.game === game ? state.history[0] : null}
+      busy={busy}
+      reduced={reducedMotion}
+    />
   );
 }
-function Rules({ game }: { game: PracticeGame }) {
+
+function Rules({ game, picks }: { game: PracticeGame; picks: number[] }) {
   const text: Record<PracticeGame, string> = {
+    ...EXPANSION_RULES,
     slots:
       "Three independent 16-stop reels. Symbol weights: 4, 3, 3, 2, 2, 1, 1. Exactly two matching symbols return 1.8×. Triple returns are shown below.",
     blackjack:
@@ -336,6 +197,16 @@ function Rules({ game }: { game: PracticeGame }) {
         Rules &amp; payouts <span>＋</span>
       </summary>
       <p>{text[game]}</p>
+      {game === "keno" && (
+        <div className="lounge-paytable">
+          {KENO_TABLE[(picks.length || 1) - 1].map((bps, i) => (
+            <div key={i}>
+              <span>{i} matches</span>
+              <b>{bps / 10000}×</b>
+            </div>
+          ))}
+        </div>
+      )}
       {game === "slots" && (
         <div className="lounge-paytable">
           {CASINO_SYMBOLS.map((s, i) => (
@@ -391,7 +262,7 @@ function TestnetStatus({ q }: { q: ReturnType<typeof useLoungeHouse> }) {
         </p>
         {h && !ready && (
           <p>
-            Tables are connected; wagering awaits bankroll and operating limits.
+            Wagering is paused for contract security repairs and bankroll setup.
             Play Money is available now.
           </p>
         )}
@@ -415,6 +286,7 @@ export function CasinoExperience() {
     [side, setSide] = useState(0),
     [target, setTarget] = useState(50),
     [over, setOver] = useState(true);
+  const [picks, setPicks] = useState<number[]>([7, 17, 27]);
   const [busy, setBusy] = useState(false),
     busyRef = useRef(false),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -452,7 +324,10 @@ export function CasinoExperience() {
     if (locked || busyRef.current || current.current.hand) return;
     setGame(key);
     setSide(0);
-    setTarget(50);
+    setTarget(
+      key === "dice" ? 50 : key === "crash" || key === "limbo" ? 200 : 2,
+    );
+    setPicks([7, 17, 27]);
     setError("");
     feedback.play("select");
   }
@@ -477,6 +352,7 @@ export function CasinoExperience() {
             side,
             target,
             over,
+            picks,
           });
       commit(next);
       setBusy(true);
@@ -496,7 +372,7 @@ export function CasinoExperience() {
             ? 450
             : game === "plinko"
               ? PLINKO_REVEAL_MS
-              : 1100,
+              : casinoRoundMs(next.history[0] ?? null),
       );
     } catch (e) {
       busyRef.current = false;
@@ -522,7 +398,9 @@ export function CasinoExperience() {
   const games = CASINO_CATALOG.filter(
     (g) =>
       !g.disabled &&
-      (mode === "testnet" || PRACTICE_GAMES.includes(g.key as PracticeGame)),
+      (mode === "testnet"
+        ? !TESTNET_QUARANTINE.has(g.key)
+        : PRACTICE_GAMES.includes(g.key as PracticeGame)),
   );
   const filtered = games.filter(
     (g) =>
@@ -838,6 +716,15 @@ export function CasinoExperience() {
                     disabled={busy || !!state.hand}
                     className="lounge-options"
                   >
+                    <ExpandedOptions
+                      game={game}
+                      side={side}
+                      setSide={setSide}
+                      target={target}
+                      setTarget={setTarget}
+                      picks={picks}
+                      setPicks={setPicks}
+                    />
                     {game === "coinflip" && (
                       <>
                         <legend>Your call</legend>
@@ -967,14 +854,14 @@ export function CasinoExperience() {
                               ? "Flip"
                               : game === "plinko"
                                 ? "Drop"
-                                : "Roll"}{" "}
+                                : "Play"}{" "}
                       <span>↗</span>
                     </button>
                   )}
                   <p className="lounge-session-note">
                     Free chips · saved in this tab. No wallet or tokens used.
                   </p>
-                  <Rules game={game as PracticeGame} />
+                  <Rules game={game as PracticeGame} picks={picks} />
                 </aside>
               </div>
             )}

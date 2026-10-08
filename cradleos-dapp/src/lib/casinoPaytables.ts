@@ -74,7 +74,7 @@ export const PAYTABLES: Partial<Record<string, Paytable>> = {
       { label: "PLAYER bet — player wins", mult: "2x", prob: "44.6%" },
       { label: "BANKER bet — banker wins", mult: "1.95x", prob: "45.9%" },
     ],
-    rtp: "≈98.8%", edge: "Player 1.24% · Banker 1.06% · Tie 4.85%",
+    rtp: "QUARANTINED", edge: "Current contract draw rule needs repair",
     note: "Banker pays 1.95x (5% commission). On a tie, Player/Banker bets push (stake returned).",
   },
 
@@ -85,7 +85,7 @@ export const PAYTABLES: Partial<Record<string, Paytable>> = {
       { label: "3 of a kind", mult: "2.55x", prob: "15.0%" },
       { label: "2 or fewer (no pay)", mult: "0x", prob: "83.7%" },
     ],
-    rtp: "≈95.7%", edge: "≈4.3%",
+    rtp: "≈96.54%", edge: "≈3.46%",
     note: "Five gems drawn (7 gem types); paid on your best matching set.",
   },
 
@@ -193,11 +193,11 @@ export const VARIABLE_PAYTABLES: Partial<Record<string, Paytable>> = {
       { label: "win w/ THREE OF A KIND", mult: "5x", prob: "0.24%" },
       { label: "win w/ STRAIGHT", mult: "3x", prob: "3.3%" },
       { label: "win w/ high card / pair / flush", mult: "2x", prob: "—" },
-      { label: "win, dealer doesn't qualify (< Q-high)", mult: "1.75x", prob: "≈30%" },
+      { label: "win, dealer doesn't qualify (< Q-high)", mult: "1.75x", prob: "≈25.27%" },
       { label: "tie", mult: "1x (ante back)", prob: "—" },
     ],
-    rtp: "≈96.9%", edge: "≈3.1%",
-    note: "Ante only. Beat the dealer; dealer qualifies with Queen-high — unqualified-dealer wins pay 1.75x. In 3-card poker a STRAIGHT beats a FLUSH.",
+    rtp: "≈96.98%", edge: "≈3.02%",
+    note: "Ante only. Beat the dealer; dealer qualifies with Queen-high — unqualified-dealer wins pay 1.75x. STRAIGHT beats FLUSH. This variant compares same-category hands by highest card only (Ace high), not standard poker kickers.",
   },
   risk_wheel: {
     rows: [
@@ -238,7 +238,7 @@ export const VARIABLE_PAYTABLES: Partial<Record<string, Paytable>> = {
       { label: "Spread bet loss",                  mult: "0x",   prob: "32.61%" },
     ],
     rtp: "97.77%", edge: "2.23%",
-    note: "Infinite-deck model. Three cards drawn from Sui randomness. Two anchor cards face up reveal the spread; third falls to win or lose. Near-miss on spread 1 is the hook.",
+    note: "Infinite-deck model. Three cards drawn from Sui randomness. Two anchor cards face up reveal the spread; third falls to win or lose. Stake is fixed before all three ranks are drawn.",
   },
 };
 

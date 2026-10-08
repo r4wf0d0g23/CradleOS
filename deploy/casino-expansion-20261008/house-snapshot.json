@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-08T12:37:21.038418+00:00",
+  "house": "0x4a0386fc44328714d0d48bb38d99cda6397c089fd753e3abc4f40b1cb1d98370",
+  "version": 939311498,
+  "paused": true,
+  "bank": "0",
+  "minBet": "1",
+  "maxBet": "1",
+  "readOnly": true
+}

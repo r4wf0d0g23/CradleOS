@@ -1,3 +1,10 @@
+import {
+  EXPANDED_GAMES,
+  expandedOutcome,
+  validExpandedValues,
+  type ExpandedChoice,
+  type ExpandedGame,
+} from "./casinoExpanded";
 /** Local, non-redeemable practice chips. No chain, wallet or network imports. */
 export const PRACTICE_GAMES = [
   "slots",
@@ -8,6 +15,7 @@ export const PRACTICE_GAMES = [
   "wheel",
   "plinko",
   "war",
+  ...EXPANDED_GAMES,
 ] as const;
 export type PracticeGame = (typeof PRACTICE_GAMES)[number];
 export const PRACTICE_KEY = "cradleos:casino:practice:v1";
@@ -51,7 +59,7 @@ export type PracticeState = {
   history: Round[];
   hand: Hand | null;
 };
-export type Choice = { side?: number; target?: number; over?: boolean };
+export type Choice = ExpandedChoice;
 export type RandomInt = (bound: number) => number;
 const integer = (n: unknown, min = 0, max = 1e12): n is number =>
   typeof n === "number" && Number.isSafeInteger(n) && n >= min && n <= max;
@@ -153,6 +161,17 @@ export function playPractice(
   let values: number[] = [],
     bps = 0,
     label = "";
+  if ((EXPANDED_GAMES as readonly string[]).includes(game)) {
+    const outcome = expandedOutcome(game as ExpandedGame, choice, rng);
+    return settle(
+      next,
+      game,
+      stake,
+      money(stake, outcome.bps),
+      outcome.values,
+      outcome.label,
+    );
+  }
   switch (game) {
     case "blackjack": {
       const deck = shuffledDeck(rng);
@@ -327,7 +346,7 @@ function validValues(game: PracticeGame, values: unknown): values is number[] {
       );
     }
     default:
-      return false;
+      return validExpandedValues(game, values);
   }
 }
 /** Reject corrupt/foreign saves. Local chips have no redemption path. */

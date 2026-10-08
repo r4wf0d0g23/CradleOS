@@ -1,3 +1,12 @@
+> October 8 follow-up audit: **do not activate using the old checklist alone.**
+> See `../casino-expansion-20261008/DESIGN.md` and the independent audit.
+> Hi-Lo and Baccarat are player-positive in their current code; Scratch Cards
+> uses biased randomness. Old package entrypoints remain callable after upgrades,
+> and pending multi-step bets have no aggregate liability reservation. Repair
+> those enforceably on-chain (or deploy a reviewed replacement House/package),
+> test adversarial settlement/old-entry bypass, then obtain funding/limit policy.
+> Frontend quarantine is not an on-chain repair. House remains paused and empty.
+
 # Testnet activation remains a separate step
 
 The lounge is live; testnet wagers are not enabled by this release.

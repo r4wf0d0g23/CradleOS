@@ -54,7 +54,7 @@ export interface GameEntry {
 /** Games hidden from the lobby/floor and blocked from opening.
  *  dragon_tower: disabled 2026-07-12 — solution-leak exploit (pre-drawn dragon
  *  positions readable from the player-owned game object). Re-enable only after
- *  the v22 commit-reveal fix ships. */
+ *  a reviewed replacement removes readable future outcomes; v22 disabled entry. */
 export const CASINO_DISABLED_KEYS = new Set<string>(["dragon_tower", "mines", "video_poker"]);
 
 export const CASINO_CATALOG: GameEntry[] = [
@@ -65,7 +65,7 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "M-H",
     buildClass: "S",
     glyph: "\u2726",   // ✦  BLACK FOUR POINTED STAR
-    hook: "Beat the dealer to 21 — provably fair commit-reveal on-chain",
+    hook: "Beat the dealer to 21 — hit, stand or double",
     status: "live",
   },
   {
@@ -288,7 +288,7 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "H",
     buildClass: "I",
     glyph: "\u229E",   // ⊞  SQUARED PLUS
-    hook: "Risk your ore through 5 refine intensities. BASIC to CRITICAL — BONUS yields up to 20x.",
+    hook: "Five refinery intensities — bonus yield up to 20×.",
     status: "live",
   },
   {
@@ -318,7 +318,7 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "M",
     buildClass: "I",
     glyph: "\u25C6",   // ◆  BLACK DIAMOND
-    hook: "Joker revealed, then cards deal alternately to Andar / Bahar until the rank matches. Pick the side. Andar 2.24% \u00b7 Bahar 4.00% edge.",
+    hook: "Pick Andar or Bahar — cards alternate until a rank match or the 52-card limit.",
     status: "live",
   },
   {
@@ -328,7 +328,7 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "M",
     buildClass: "I",
     glyph: "\u25C8",   // ◈  WHITE DIAMOND WITH CENTRED DOT
-    hook: "Nine EVE ore tiles revealed one-by-one. Match three of a kind to win. From 1.5\xd7 Veldspar to 100\xd7 Zydrine jackpot. 3% house edge.",
+    hook: "Nine sealed signals. Reveal a matching triple for a return up to 100×.",
     status: "live",
   },
   {
@@ -348,7 +348,7 @@ export const CASINO_CATALOG: GameEntry[] = [
     variance: "M",
     buildClass: "I",
     glyph: "\u25C6",   // ◆  BLACK DIAMOND (card suit feel)
-    hook: "Two anchor cards deal face up — bet on whether the third falls between them. Spread 1 pays 5:1, spread 5+ pays 1:1, pair match pays 11:1. 2.23% edge.",
+    hook: "Stake before three cards are drawn — win when the third falls between the anchors. Spread 1 pays 5:1, spread 5+ pays 1:1, pair match pays 11:1. 2.23% edge.",
     status: "live",
   },
 ];

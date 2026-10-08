@@ -22,6 +22,31 @@ export const LOUNGE_NAMES: Record<
   wheel: { title: "Reactor Wheel", tag: "WHEEL", icon: 91209 },
   plinko: { title: "Debris Drop", tag: "PLINKO", icon: 78423 },
   war: { title: "Fleet Duel", tag: "WAR", icon: 87848 },
+  limbo: { title: "Jump Threshold", tag: "LIMBO", icon: 84955 },
+  crash: { title: "Warp Run", tag: "CRASH", icon: 82425 },
+  diamonds: { title: "Signal Clusters", tag: "DIAMONDS", icon: 72244 },
+  keno: { title: "Deep Scan", tag: "KENO", icon: 84180 },
+  sicbo: { title: "Reactor Dice", tag: "SIC BO", icon: 91209 },
+  double_dice: { title: "Twin Reactors", tag: "DOUBLE DICE", icon: 88335 },
+  baccarat: { title: "Command Baccarat", tag: "BACCARAT", icon: 81611 },
+  three_card_poker: {
+    title: "Three-Card Sortie",
+    tag: "THREE CARD",
+    icon: 87848,
+  },
+  dragon_tiger: { title: "Frigate Duel", tag: "DRAGON TIGER", icon: 82425 },
+  under_over_7: {
+    title: "Seven Threshold",
+    tag: "UNDER / OVER 7",
+    icon: 84180,
+  },
+  ore_refine: { title: "Volatile Refinery", tag: "ORE REFINE", icon: 78423 },
+  risk_wheel: { title: "Overdrive Wheel", tag: "RISK WHEEL", icon: 91209 },
+  money_wheel: { title: "Salvage Wheel", tag: "MONEY WHEEL", icon: 81611 },
+  andar_bahar: { title: "Signal Chase", tag: "ANDAR BAHAR", icon: 72244 },
+  scratch_cards: { title: "Sealed Salvage", tag: "SCRATCH CARDS", icon: 78423 },
+  chuck_a_luck: { title: "Triple Resonance", tag: "CHUCK-A-LUCK", icon: 88335 },
+  red_dog: { title: "Transit Window", tag: "RED DOG", icon: 84955 },
 };
 export type LoungeHouse = {
   bank: string;
