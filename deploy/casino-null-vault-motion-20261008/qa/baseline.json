@@ -1,0 +1,158 @@
+[
+  {
+    "elapsed": 116.30000007152557,
+    "cursor": "0",
+    "raw": "false",
+    "active": true,
+    "moving": 15,
+    "coins": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "3.6029× stake, collected at feature end",
+        "faceOpacity": "0"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "0"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "0"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "0"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "0"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.7206× stake, collected at feature end",
+        "faceOpacity": "0"
+      }
+    ]
+  },
+  {
+    "elapsed": 716.3000000715256,
+    "cursor": "0",
+    "raw": "false",
+    "active": true,
+    "moving": 12,
+    "coins": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "3.6029× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.7206× stake, collected at feature end",
+        "faceOpacity": "0.318862"
+      }
+    ]
+  },
+  {
+    "elapsed": 1265.5,
+    "cursor": "0",
+    "raw": "true",
+    "active": true,
+    "moving": 0,
+    "coins": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "3.6029× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.7206× stake, collected at feature end",
+        "faceOpacity": "1"
+      }
+    ]
+  },
+  {
+    "elapsed": 1615.8999999761581,
+    "cursor": "1",
+    "raw": "true",
+    "active": false,
+    "moving": 3,
+    "coins": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "3.6029× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.3603× stake, collected at feature end",
+        "faceOpacity": "1"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "title": "0.7206× stake, collected at feature end",
+        "faceOpacity": "1"
+      }
+    ]
+  }
+]

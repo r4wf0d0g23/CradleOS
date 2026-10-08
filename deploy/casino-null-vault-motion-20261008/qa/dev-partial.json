@@ -1,0 +1,2954 @@
+{
+  "checks": [
+    "320: retired station redirects to web casino",
+    "320: frame0 scan/stops/read pause, exact result and one cursor",
+    "320: frame1 scan/stops/read pause, exact result and one cursor",
+    "320: frame2 scan/stops/read pause, exact result and one cursor",
+    "320: full grid collection only",
+    "390: retired station redirects to web casino",
+    "390: frame0 scan/stops/read pause, exact result and one cursor",
+    "390: frame1 scan/stops/read pause, exact result and one cursor",
+    "390: frame2 scan/stops/read pause, exact result and one cursor",
+    "390: full grid collection only",
+    "1440: retired station redirects to web casino",
+    "1440: frame0 scan/stops/read pause, exact result and one cursor",
+    "1440: frame1 scan/stops/read pause, exact result and one cursor",
+    "1440: frame2 scan/stops/read pause, exact result and one cursor",
+    "1440: full grid collection only",
+    "reduce-back: one reveal, unchanged ledger",
+    "hidden: one reveal, unchanged ledger",
+    "resize: one reveal, unchanged ledger",
+    "reload: one reveal, unchanged ledger",
+    "rapid: one reveal, unchanged ledger",
+    "skip: one reveal, unchanged ledger"
+  ],
+  "phases": [
+    {
+      "label": "320-0-scan",
+      "elapsed": 218.40000009536743,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 15,
+      "coins": 0,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 35.8634)",
+        "matrix(1, 0, 0, 1, 0, 35.1173)",
+        "matrix(1, 0, 0, 1, 0, 33.2749)",
+        "matrix(1, 0, 0, 1, 0, 33.2749)",
+        "matrix(1, 0, 0, 1, 0, 30.7018)",
+        "matrix(1, 0, 0, 1, 0, 27.6437)",
+        "matrix(1, 0, 0, 1, 0, 27.6844)",
+        "matrix(1, 0, 0, 1, 0, 24.4006)",
+        "matrix(1, 0, 0, 1, 0, 20.9817)",
+        "matrix(1, 0, 0, 1, 0, 21.0055)",
+        "matrix(1, 0, 0, 1, 0, 17.5937)",
+        "matrix(1, 0, 0, 1, 0, 14.2985)",
+        "matrix(1, 0, 0, 1, 0, 14.2985)",
+        "matrix(1, 0, 0, 1, 0, 11.1012)",
+        "matrix(1, 0, 0, 1, 0, 8.06857)"
+      ]
+    },
+    {
+      "label": "320-0-scan-moving",
+      "elapsed": 666.7000000476837,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 15,
+      "coins": 0,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 21.8773)",
+        "matrix(1, 0, 0, 1, 0, 35.1737)",
+        "matrix(1, 0, 0, 1, 0, 33.2924)",
+        "matrix(1, 0, 0, 1, 0, 33.2924)",
+        "matrix(1, 0, 0, 1, 0, 21.2482)",
+        "matrix(1, 0, 0, 1, 0, 3.60956)",
+        "matrix(1, 0, 0, 1, 0, 3.65941)",
+        "matrix(1, 0, 0, 1, 0, -13.2602)",
+        "matrix(1, 0, 0, 1, 0, -25.5401)",
+        "matrix(1, 0, 0, 1, 0, -25.5003)",
+        "matrix(1, 0, 0, 1, 0, -32.5828)",
+        "matrix(1, 0, 0, 1, 0, -35.5348)",
+        "matrix(1, 0, 0, 1, 0, -35.5348)",
+        "matrix(1, 0, 0, 1, 0, -35.592)",
+        "matrix(1, 0, 0, 1, 0, -33.4687)"
+      ]
+    },
+    {
+      "label": "320-0-opening",
+      "elapsed": 1767,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 10,
+      "coins": 5,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -28.5144)",
+        "matrix(1, 0, 0, 1, 0, -26.9371)",
+        "matrix(1, 0, 0, 1, 0, 26.4621)",
+        "matrix(1, 0, 0, 1, 0, 32.2835)",
+        "matrix(1, 0, 0, 1, 0, 34.208)",
+        "matrix(1, 0, 0, 1, 0, -4.5397)",
+        "matrix(1, 0, 0, 1, 0, -33.7197)",
+        "matrix(1, 0, 0, 1, 0, -33.6916)",
+        "matrix(1, 0, 0, 1, 0, -30.9956)",
+        "matrix(1, 0, 0, 1, 0, -4.98831)",
+        "matrix(1, 0, 0, 1, 0, -4.98831)",
+        "matrix(1, 0, 0, 1, 0, 23.4345)",
+        "matrix(1, 0, 0, 1, 0, 35.3844)"
+      ]
+    },
+    {
+      "label": "320-0-read",
+      "elapsed": 3080.600000023842,
+      "cursor": 0,
+      "raw": "true",
+      "aria": "Null Vault VAULT OPEN \u00b7 3 RESPINS. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Empty, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Empty, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 15,
+      "visibleShutters": 0,
+      "coins": 6,
+      "masked": [],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -37.9805)",
+        "matrix(1, 0, 0, 1, 0, -35.8805)",
+        "matrix(1, 0, 0, 1, 0, -35.8805)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)"
+      ]
+    },
+    {
+      "label": "320-1-scan",
+      "elapsed": 218.60000002384186,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 9,
+      "coins": 6,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 32.7589)",
+        "matrix(1, 0, 0, 1, 0, 26.8381)",
+        "matrix(1, 0, 0, 1, 0, 23.5409)",
+        "matrix(1, 0, 0, 1, 0, 20.1001)",
+        "matrix(1, 0, 0, 1, 0, 20.1594)",
+        "matrix(1, 0, 0, 1, 0, 16.7533)",
+        "matrix(1, 0, 0, 1, 0, 13.4831)",
+        "matrix(1, 0, 0, 1, 0, 10.3589)",
+        "matrix(1, 0, 0, 1, 0, 7.3721)"
+      ]
+    },
+    {
+      "label": "320-1-scan-moving",
+      "elapsed": 670.2000000476837,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 9,
+      "coins": 6,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 32.7589)",
+        "matrix(1, 0, 0, 1, 0, 2.20776)",
+        "matrix(1, 0, 0, 1, 0, -14.4195)",
+        "matrix(1, 0, 0, 1, 0, -26.2873)",
+        "matrix(1, 0, 0, 1, 0, -26.2209)",
+        "matrix(1, 0, 0, 1, 0, -32.9443)",
+        "matrix(1, 0, 0, 1, 0, -35.6305)",
+        "matrix(1, 0, 0, 1, 0, -35.5029)",
+        "matrix(1, 0, 0, 1, 0, -33.2319)"
+      ]
+    },
+    {
+      "label": "320-1-opening",
+      "elapsed": 1767,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 8,
+      "coins": 7,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -25.949)",
+        "matrix(1, 0, 0, 1, 0, 31.7313)",
+        "matrix(1, 0, 0, 1, 0, -6.1467)",
+        "matrix(1, 0, 0, 1, 0, -34.0466)",
+        "matrix(1, 0, 0, 1, 0, -34.0078)",
+        "matrix(1, 0, 0, 1, 0, -30.5276)",
+        "matrix(1, 0, 0, 1, 0, -4.05459)",
+        "matrix(1, 0, 0, 1, 0, 24.013)",
+        "matrix(1, 0, 0, 1, 0, 35.4799)"
+      ]
+    },
+    {
+      "label": "320-1-read",
+      "elapsed": 3085.100000023842,
+      "cursor": 1,
+      "raw": "true",
+      "aria": "Null Vault NEW COIN \u00b7 RESPINS RESET. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Value token, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Value token, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 0,
+      "coins": 8,
+      "masked": [],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -37.9805)",
+        "matrix(1, 0, 0, 1, 0, -35.8805)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -37.9641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)"
+      ]
+    },
+    {
+      "label": "320-2-scan",
+      "elapsed": 217.20000004768372,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 7,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 33.2726)",
+        "matrix(1, 0, 0, 1, 0, 27.612)",
+        "matrix(1, 0, 0, 1, 0, 20.9439)",
+        "matrix(1, 0, 0, 1, 0, 20.9343)",
+        "matrix(1, 0, 0, 1, 0, 17.5198)",
+        "matrix(1, 0, 0, 1, 0, 10.9911)",
+        "matrix(1, 0, 0, 1, 0, 8.02938)"
+      ]
+    },
+    {
+      "label": "320-2-scan-moving",
+      "elapsed": 669.8000000715256,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 7,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 33.2726)",
+        "matrix(1, 0, 0, 1, 0, 3.50692)",
+        "matrix(1, 0, 0, 1, 0, -25.6)",
+        "matrix(1, 0, 0, 1, 0, -25.5883)",
+        "matrix(1, 0, 0, 1, 0, -32.6292)",
+        "matrix(1, 0, 0, 1, 0, -35.5762)",
+        "matrix(1, 0, 0, 1, 0, -33.4453)"
+      ]
+    },
+    {
+      "label": "320-2-opening",
+      "elapsed": 1770,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 6,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -26.9328)",
+        "matrix(1, 0, 0, 1, 0, 32.2628)",
+        "matrix(1, 0, 0, 1, 0, -33.7339)",
+        "matrix(1, 0, 0, 1, 0, -33.7185)",
+        "matrix(1, 0, 0, 1, 0, -30.9566)",
+        "matrix(1, 0, 0, 1, 0, 23.5175)",
+        "matrix(1, 0, 0, 1, 0, 35.3899)"
+      ]
+    },
+    {
+      "label": "320-2-read",
+      "elapsed": 3087,
+      "cursor": 2,
+      "raw": "true",
+      "aria": "Null Vault RESPIN. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Value token, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Value token, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 0,
+      "coins": 8,
+      "masked": [],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8805)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)",
+        "matrix(1, 0, 0, 1, 0, -35.8641)"
+      ]
+    },
+    {
+      "label": "320-collect",
+      "elapsed": 317.3000000715256,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT FULL",
+      "shutters": 0,
+      "visibleShutters": 0,
+      "coins": 15,
+      "masked": [],
+      "locks": [
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": []
+    },
+    {
+      "label": "390-0-scan",
+      "elapsed": 218,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 15,
+      "coins": 0,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 49.6763)",
+        "matrix(1, 0, 0, 1, 0, 48.6203)",
+        "matrix(1, 0, 0, 1, 0, 46.0502)",
+        "matrix(1, 0, 0, 1, 0, 46.0654)",
+        "matrix(1, 0, 0, 1, 0, 42.4532)",
+        "matrix(1, 0, 0, 1, 0, 38.1989)",
+        "matrix(1, 0, 0, 1, 0, 38.2379)",
+        "matrix(1, 0, 0, 1, 0, 33.6343)",
+        "matrix(1, 0, 0, 1, 0, 28.9809)",
+        "matrix(1, 0, 0, 1, 0, 28.9809)",
+        "matrix(1, 0, 0, 1, 0, 24.2487)",
+        "matrix(1, 0, 0, 1, 0, 19.6808)",
+        "matrix(1, 0, 0, 1, 0, 19.6808)",
+        "matrix(1, 0, 0, 1, 0, 15.2994)",
+        "matrix(1, 0, 0, 1, 0, 11.0984)"
+      ]
+    },
+    {
+      "label": "390-0-scan-moving",
+      "elapsed": 668.1999999284744,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 15,
+      "coins": 0,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 30.4156)",
+        "matrix(1, 0, 0, 1, 0, 48.7441)",
+        "matrix(1, 0, 0, 1, 0, 46.0746)",
+        "matrix(1, 0, 0, 1, 0, 46.0899)",
+        "matrix(1, 0, 0, 1, 0, 29.2948)",
+        "matrix(1, 0, 0, 1, 0, 4.82124)",
+        "matrix(1, 0, 0, 1, 0, 4.88803)",
+        "matrix(1, 0, 0, 1, 0, -18.579)",
+        "matrix(1, 0, 0, 1, 0, -35.4394)",
+        "matrix(1, 0, 0, 1, 0, -35.4394)",
+        "matrix(1, 0, 0, 1, 0, -45.2034)",
+        "matrix(1, 0, 0, 1, 0, -49.2543)",
+        "matrix(1, 0, 0, 1, 0, -49.2543)",
+        "matrix(1, 0, 0, 1, 0, -49.3086)",
+        "matrix(1, 0, 0, 1, 0, -46.3496)"
+      ]
+    },
+    {
+      "label": "390-0-opening",
+      "elapsed": 1768.3999999761581,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 10,
+      "coins": 5,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -51.7781)",
+        "matrix(1, 0, 0, 1, 0, -51.7781)",
+        "matrix(1, 0, 0, 1, 0, -38.8085)",
+        "matrix(1, 0, 0, 1, 0, -37.2468)",
+        "matrix(1, 0, 0, 1, 0, 36.2356)",
+        "matrix(1, 0, 0, 1, 0, 44.6644)",
+        "matrix(1, 0, 0, 1, 0, 46.5785)",
+        "matrix(1, 0, 0, 1, 0, -6.5198)",
+        "matrix(1, 0, 0, 1, 0, -46.7315)",
+        "matrix(1, 0, 0, 1, 0, -46.7315)",
+        "matrix(1, 0, 0, 1, 0, -42.8801)",
+        "matrix(1, 0, 0, 1, 0, -6.76689)",
+        "matrix(1, 0, 0, 1, 0, -6.76689)",
+        "matrix(1, 0, 0, 1, 0, 32.5342)",
+        "matrix(1, 0, 0, 1, 0, 49.0412)"
+      ]
+    },
+    {
+      "label": "390-0-read",
+      "elapsed": 3085.399999976158,
+      "cursor": 0,
+      "raw": "true",
+      "aria": "Null Vault VAULT OPEN \u00b7 3 RESPINS. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Empty, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Empty, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 15,
+      "visibleShutters": 0,
+      "coins": 6,
+      "masked": [],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -51.7781)",
+        "matrix(1, 0, 0, 1, 0, -51.7781)",
+        "matrix(1, 0, 0, 1, 0, -51.7781)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -51.7945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -51.7945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -51.7945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)"
+      ]
+    },
+    {
+      "label": "390-1-scan",
+      "elapsed": 218.89999997615814,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 9,
+      "coins": 6,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 41.2194)",
+        "matrix(1, 0, 0, 1, 0, 31.3858)",
+        "matrix(1, 0, 0, 1, 0, 26.2173)",
+        "matrix(1, 0, 0, 1, 0, 21.1905)",
+        "matrix(1, 0, 0, 1, 0, 21.2435)",
+        "matrix(1, 0, 0, 1, 0, 16.3607)",
+        "matrix(1, 0, 0, 1, 0, 11.7385)",
+        "matrix(1, 0, 0, 1, 0, 7.41221)",
+        "matrix(1, 0, 0, 1, 0, 3.44501)"
+      ]
+    },
+    {
+      "label": "390-1-scan-moving",
+      "elapsed": 669.3999999761581,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 9,
+      "coins": 6,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 41.1815)",
+        "matrix(1, 0, 0, 1, 0, -5.66721)",
+        "matrix(1, 0, 0, 1, 0, -27.1473)",
+        "matrix(1, 0, 0, 1, 0, -40.9384)",
+        "matrix(1, 0, 0, 1, 0, -40.9079)",
+        "matrix(1, 0, 0, 1, 0, -47.8339)",
+        "matrix(1, 0, 0, 1, 0, -49.6934)",
+        "matrix(1, 0, 0, 1, 0, -47.9963)",
+        "matrix(1, 0, 0, 1, 0, -43.468)"
+      ]
+    },
+    {
+      "label": "390-1-opening",
+      "elapsed": 1767.3999999761581,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 8,
+      "coins": 7,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -28.971)",
+        "matrix(1, 0, 0, 1, 0, 39.8366)",
+        "matrix(1, 0, 0, 1, 0, -16.8356)",
+        "matrix(1, 0, 0, 1, 0, -48.8311)",
+        "matrix(1, 0, 0, 1, 0, -48.8219)",
+        "matrix(1, 0, 0, 1, 0, -38.2701)",
+        "matrix(1, 0, 0, 1, 0, 1.82568)",
+        "matrix(1, 0, 0, 1, 0, 37.906)",
+        "matrix(1, 0, 0, 1, 0, 49.666)"
+      ]
+    },
+    {
+      "label": "390-1-read",
+      "elapsed": 3084.7999999523163,
+      "cursor": 1,
+      "raw": "true",
+      "aria": "Null Vault NEW COIN \u00b7 RESPINS RESET. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Value token, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Value token, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 0,
+      "coins": 8,
+      "masked": [],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -51.7945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -51.7945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)"
+      ]
+    },
+    {
+      "label": "390-2-scan",
+      "elapsed": 217.20000004768372,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 7,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 46.1883)",
+        "matrix(1, 0, 0, 1, 0, 38.4348)",
+        "matrix(1, 0, 0, 1, 0, 29.123)",
+        "matrix(1, 0, 0, 1, 0, 29.123)",
+        "matrix(1, 0, 0, 1, 0, 24.4442)",
+        "matrix(1, 0, 0, 1, 0, 15.4489)",
+        "matrix(1, 0, 0, 1, 0, 11.2459)"
+      ]
+    },
+    {
+      "label": "390-2-scan-moving",
+      "elapsed": 670.3999999761581,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 7,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 46.1643)",
+        "matrix(1, 0, 0, 1, 0, 5.09299)",
+        "matrix(1, 0, 0, 1, 0, -35.3977)",
+        "matrix(1, 0, 0, 1, 0, -35.3977)",
+        "matrix(1, 0, 0, 1, 0, -45.1609)",
+        "matrix(1, 0, 0, 1, 0, -49.3142)",
+        "matrix(1, 0, 0, 1, 0, -46.3659)"
+      ]
+    },
+    {
+      "label": "390-2-opening",
+      "elapsed": 1768.5,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 6,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -37.3879)",
+        "matrix(1, 0, 0, 1, 0, 44.7679)",
+        "matrix(1, 0, 0, 1, 0, -46.7128)",
+        "matrix(1, 0, 0, 1, 0, -46.7128)",
+        "matrix(1, 0, 0, 1, 0, -42.9326)",
+        "matrix(1, 0, 0, 1, 0, 32.4948)",
+        "matrix(1, 0, 0, 1, 0, 49.0341)"
+      ]
+    },
+    {
+      "label": "390-2-read",
+      "elapsed": 3082.2999999523163,
+      "cursor": 2,
+      "raw": "true",
+      "aria": "Null Vault RESPIN. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Value token, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Value token, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 0,
+      "coins": 8,
+      "masked": [],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)",
+        "matrix(1, 0, 0, 1, 0, -49.6945)"
+      ]
+    },
+    {
+      "label": "390-collect",
+      "elapsed": 318.10000002384186,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT FULL",
+      "shutters": 0,
+      "visibleShutters": 0,
+      "coins": 15,
+      "masked": [],
+      "locks": [
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": []
+    },
+    {
+      "label": "1440-0-scan",
+      "elapsed": 213.60000002384186,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 15,
+      "coins": 0,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 116.794)",
+        "matrix(1, 0, 0, 1, 0, 109.213)",
+        "matrix(1, 0, 0, 1, 0, 98.9393)",
+        "matrix(1, 0, 0, 1, 0, 98.9527)",
+        "matrix(1, 0, 0, 1, 0, 87.2873)",
+        "matrix(1, 0, 0, 1, 0, 74.8225)",
+        "matrix(1, 0, 0, 1, 0, 74.8225)",
+        "matrix(1, 0, 0, 1, 0, 62.4738)",
+        "matrix(1, 0, 0, 1, 0, 50.1301)",
+        "matrix(1, 0, 0, 1, 0, 50.1301)",
+        "matrix(1, 0, 0, 1, 0, 38.2866)",
+        "matrix(1, 0, 0, 1, 0, 27.2241)",
+        "matrix(1, 0, 0, 1, 0, 27.3479)",
+        "matrix(1, 0, 0, 1, 0, 16.8859)",
+        "matrix(1, 0, 0, 1, 0, 7.18282)"
+      ]
+    },
+    {
+      "label": "1440-0-scan-moving",
+      "elapsed": 666,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 15,
+      "coins": 0,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 96.6987)",
+        "matrix(1, 0, 0, 1, 0, 120.445)",
+        "matrix(1, 0, 0, 1, 0, 98.9393)",
+        "matrix(1, 0, 0, 1, 0, 98.9527)",
+        "matrix(1, 0, 0, 1, 0, 46.9549)",
+        "matrix(1, 0, 0, 1, 0, -15.3147)",
+        "matrix(1, 0, 0, 1, 0, -15.3147)",
+        "matrix(1, 0, 0, 1, 0, -66.7795)",
+        "matrix(1, 0, 0, 1, 0, -99.9114)",
+        "matrix(1, 0, 0, 1, 0, -99.9114)",
+        "matrix(1, 0, 0, 1, 0, -116.293)",
+        "matrix(1, 0, 0, 1, 0, -120.492)",
+        "matrix(1, 0, 0, 1, 0, -120.477)",
+        "matrix(1, 0, 0, 1, 0, -116.156)",
+        "matrix(1, 0, 0, 1, 0, -104.94)"
+      ]
+    },
+    {
+      "label": "1440-0-opening",
+      "elapsed": 1771.1000000238419,
+      "cursor": 0,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "6 SEALS TO BREACH",
+      "shutters": 15,
+      "visibleShutters": 10,
+      "coins": 5,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -68.8458)",
+        "matrix(1, 0, 0, 1, 0, -68.8551)",
+        "matrix(1, 0, 0, 1, 0, 100.849)",
+        "matrix(1, 0, 0, 1, 0, 95.7379)",
+        "matrix(1, 0, 0, 1, 0, 95.7379)",
+        "matrix(1, 0, 0, 1, 0, -40.2763)",
+        "matrix(1, 0, 0, 1, 0, -118.601)",
+        "matrix(1, 0, 0, 1, 0, -118.601)",
+        "matrix(1, 0, 0, 1, 0, -92.0134)",
+        "matrix(1, 0, 0, 1, 0, 5.57874)",
+        "matrix(1, 0, 0, 1, 0, 5.44626)",
+        "matrix(1, 0, 0, 1, 0, 92.4763)",
+        "matrix(1, 0, 0, 1, 0, 120.444)"
+      ]
+    },
+    {
+      "label": "1440-0-read",
+      "elapsed": 3082.7000000476837,
+      "cursor": 0,
+      "raw": "true",
+      "aria": "Null Vault VAULT OPEN \u00b7 3 RESPINS. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Empty, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Empty, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 15,
+      "visibleShutters": 0,
+      "coins": 6,
+      "masked": [],
+      "locks": [],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)"
+      ]
+    },
+    {
+      "label": "1440-1-scan",
+      "elapsed": 215.39999997615814,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 9,
+      "coins": 6,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 61.0935)",
+        "matrix(1, 0, 0, 1, 0, 32.478)",
+        "matrix(1, 0, 0, 1, 0, 19.6655)",
+        "matrix(1, 0, 0, 1, 0, 7.79621)",
+        "matrix(1, 0, 0, 1, 0, 7.94161)",
+        "matrix(1, 0, 0, 1, 0, -2.83635)",
+        "matrix(1, 0, 0, 1, 0, -12.433)",
+        "matrix(1, 0, 0, 1, 0, -21.1951)",
+        "matrix(1, 0, 0, 1, 0, -28.9534)"
+      ]
+    },
+    {
+      "label": "1440-1-scan-moving",
+      "elapsed": 667.7999999523163,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 9,
+      "coins": 6,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 61.0935)",
+        "matrix(1, 0, 0, 1, 0, -60.9705)",
+        "matrix(1, 0, 0, 1, 0, -97.827)",
+        "matrix(1, 0, 0, 1, 0, -115.968)",
+        "matrix(1, 0, 0, 1, 0, -115.935)",
+        "matrix(1, 0, 0, 1, 0, -120.483)",
+        "matrix(1, 0, 0, 1, 0, -115.596)",
+        "matrix(1, 0, 0, 1, 0, -103.214)",
+        "matrix(1, 0, 0, 1, 0, -85.085)"
+      ]
+    },
+    {
+      "label": "1440-1-opening",
+      "elapsed": 1767.3999999761581,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 8,
+      "coins": 7,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -18.47)",
+        "matrix(1, 0, 0, 1, 0, 61.516)",
+        "matrix(1, 0, 0, 1, 0, -78.9442)",
+        "matrix(1, 0, 0, 1, 0, -119.647)",
+        "matrix(1, 0, 0, 1, 0, -119.661)",
+        "matrix(1, 0, 0, 1, 0, -62.2179)",
+        "matrix(1, 0, 0, 1, 0, 44.2076)",
+        "matrix(1, 0, 0, 1, 0, 110.28)",
+        "matrix(1, 0, 0, 1, 0, 117.613)"
+      ]
+    },
+    {
+      "label": "1440-1-read",
+      "elapsed": 3088.399999976158,
+      "cursor": 1,
+      "raw": "true",
+      "aria": "Null Vault NEW COIN \u00b7 RESPINS RESET. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Value token, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Value token, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 9,
+      "visibleShutters": 0,
+      "coins": 8,
+      "masked": [],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)"
+      ]
+    },
+    {
+      "label": "1440-2-scan",
+      "elapsed": 218.79999995231628,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 7,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 81.3913)",
+        "matrix(1, 0, 0, 1, 0, 53.8541)",
+        "matrix(1, 0, 0, 1, 0, 28.5282)",
+        "matrix(1, 0, 0, 1, 0, 28.5282)",
+        "matrix(1, 0, 0, 1, 0, 17.1116)",
+        "matrix(1, 0, 0, 1, 0, -3.26285)",
+        "matrix(1, 0, 0, 1, 0, -12.127)"
+      ]
+    },
+    {
+      "label": "1440-2-scan-moving",
+      "elapsed": 670.2999999523163,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 7,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, 81.3913)",
+        "matrix(1, 0, 0, 1, 0, -40.3542)",
+        "matrix(1, 0, 0, 1, 0, -109.838)",
+        "matrix(1, 0, 0, 1, 0, -109.838)",
+        "matrix(1, 0, 0, 1, 0, -119.71)",
+        "matrix(1, 0, 0, 1, 0, -110.437)",
+        "matrix(1, 0, 0, 1, 0, -95.4388)"
+      ]
+    },
+    {
+      "label": "1440-2-opening",
+      "elapsed": 1771.5999999046326,
+      "cursor": 2,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 6,
+      "coins": 8,
+      "masked": [
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        },
+        {
+          "coin": false,
+          "text": "\u25c7",
+          "hidden": "true"
+        }
+      ],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -43.9286)",
+        "matrix(1, 0, 0, 1, 0, 79.4501)",
+        "matrix(1, 0, 0, 1, 0, -120.476)",
+        "matrix(1, 0, 0, 1, 0, -120.476)",
+        "matrix(1, 0, 0, 1, 0, -77.6612)",
+        "matrix(1, 0, 0, 1, 0, 103.007)",
+        "matrix(1, 0, 0, 1, 0, 119.861)"
+      ]
+    },
+    {
+      "label": "1440-2-read",
+      "elapsed": 3088.0999999046326,
+      "cursor": 2,
+      "raw": "true",
+      "aria": "Null Vault RESPIN. Reel 1: Value token, Value token, Value token. Reel 2: Empty, Value token, Empty. Reel 3: Value token, Value token, Empty. Reel 4: Empty, Empty, Value token. Reel 5: Value token, Empty, Empty",
+      "instrument": "VAULT BREACHED",
+      "shutters": 7,
+      "visibleShutters": 0,
+      "coins": 8,
+      "masked": [],
+      "locks": [
+        {
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": [
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.504)",
+        "matrix(1, 0, 0, 1, 0, -120.488)",
+        "matrix(1, 0, 0, 1, 0, -120.488)"
+      ]
+    },
+    {
+      "label": "1440-collect",
+      "elapsed": 317.60000002384186,
+      "cursor": 1,
+      "raw": "false",
+      "aria": "Symbols moving; saved result revealing",
+      "instrument": "VAULT FULL",
+      "shutters": 0,
+      "visibleShutters": 0,
+      "coins": 15,
+      "masked": [],
+      "locks": [
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        },
+        {
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "moving": 0
+        }
+      ],
+      "scanner": []
+    }
+  ],
+  "errors": [],
+  "harnessIssue": "Obsolete final Reveal all click after earlier explicit skip had already completed the saved feature; corrected in verify.mjs. All preceding assertions passed."
+}

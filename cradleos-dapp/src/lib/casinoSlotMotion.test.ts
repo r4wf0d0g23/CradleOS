@@ -10,6 +10,8 @@ import {
   slotRevealMs,
   REEL_STOPS,
   socketLanding,
+  VAULT_SOCKET_MS,
+  VAULT_LAST_STOP,
 } from "./casinoSlotMotion";
 const rng =
   (seed = 71829) =>
@@ -114,10 +116,33 @@ describe("presentation motion contracts", () => {
             expect(p.expand - 120 + 520).toBeLessThanOrEqual(p.finish);
           }
           if (p.kind === "hold")
-            expect(socketLanding(4, 2) + 460).toBeLessThan(p.rawStop);
+            expect(VAULT_LAST_STOP).toBeLessThan(p.rawStop);
         });
         expect(JSON.stringify(receipt)).toBe(snapshot);
       }
+  });
+  it("gives every Vault socket a visible scan, orderly opening and readable end state", () => {
+    const receipt = spinFleet("slot_vault", 2500, rng());
+    const plan = slotMotionPlan("slot_vault", receipt.frames[0]);
+    for (let c = 0; c < 5; c++)
+      for (let r = 0; r < 3; r++) {
+        const open = socketLanding(c, r);
+        expect(open).toBeGreaterThanOrEqual(800);
+        expect(VAULT_SOCKET_MS).toBeGreaterThanOrEqual(600);
+        expect(open + VAULT_SOCKET_MS).toBeLessThan(plan.rawStop);
+        if (r > 0) expect(open).toBeGreaterThan(socketLanding(c, r - 1));
+      }
+    expect(plan.reveal - VAULT_LAST_STOP).toBeGreaterThanOrEqual(600);
+    expect(plan.reveal).toBeLessThanOrEqual(4000);
+    const full = spinFleet("slot_vault", 2500, () => 0);
+    const collect = slotMotionPlan(
+      "slot_vault",
+      full.frames[1],
+      full.frames[0],
+    );
+    expect(collect.kind).toBe("collect");
+    expect(collect.reveal).toBeGreaterThanOrEqual(1500);
+    expect(collect.reveal).toBeLessThan(plan.reveal);
   });
   it("treats a full initial Vault as collection, and transforms only genuine Gate wild columns", () => {
     const r = spinFleet("slot_vault", 2500, rng()),

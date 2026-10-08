@@ -15,11 +15,13 @@ import {
   cascadePlacement,
   fallKeyframes,
   socketLanding,
+  VAULT_SOCKET_MS,
   type SlotMotionRun,
 } from "../lib/casinoSlotMotion";
 import {
   WILD,
   SCATTER,
+  COIN,
   type FleetKey,
   type SlotFrame,
 } from "../lib/casinoSlotFleet";
@@ -57,6 +59,7 @@ export function useSlotMotion(
   const [state, setState] = useState({
     id: -1,
     stops: 0,
+    sockets: 0,
     expanded: false,
     snapped: false,
     raw: false,
@@ -65,7 +68,14 @@ export function useSlotMotion(
     current =
       state.id === run.id
         ? state
-        : { id: run.id, stops: 0, expanded: false, snapped: false, raw: false };
+        : {
+            id: run.id,
+            stops: 0,
+            sockets: 0,
+            expanded: false,
+            snapped: false,
+            raw: false,
+          };
   const active =
     busy && !reduced && !current.snapped && cancelledRun.current !== run.id;
   useLayoutEffect(() => {
@@ -76,6 +86,7 @@ export function useSlotMotion(
     setState({
       id: run.id,
       stops: 0,
+      sockets: 0,
       expanded: reduced || cancelledRun.current === run.id,
       snapped: reduced || cancelledRun.current === run.id,
       raw: reduced || cancelledRun.current === run.id,
@@ -103,6 +114,7 @@ export function useSlotMotion(
       setState({
         id: run.id,
         stops: 31,
+        sockets: 32767,
         expanded: true,
         snapped: true,
         raw: true,
@@ -123,7 +135,28 @@ export function useSlotMotion(
           if (performance.now() - run.started < at + 160) play("stop", game);
         }),
       );
-    else
+    else if (plan.kind === "hold") {
+      for (let c = 0; c < 5; c++) {
+        let lastStop = 0;
+        for (let r = 0; r < 3; r++) {
+          if (previous?.grid[c]?.[r] === COIN) continue;
+          const at = socketLanding(c, r);
+          lastStop = at + VAULT_SOCKET_MS;
+          later(at, () =>
+            setState((s) =>
+              s.id === run.id
+                ? { ...s, sockets: s.sockets | (1 << (c * 3 + r)) }
+                : s,
+            ),
+          );
+        }
+        if (lastStop)
+          later(lastStop, () => {
+            if (performance.now() - run.started < lastStop + 160)
+              play("stop", game);
+          });
+      }
+    } else
       later(plan.rawStop, () => {
         if (performance.now() - run.started < plan.rawStop + 160)
           play(
@@ -175,6 +208,7 @@ export function useSlotMotion(
     plan.kind,
     plan.rawStop,
     plan.expand,
+    previous,
     play,
   ]);
   return {
@@ -184,6 +218,8 @@ export function useSlotMotion(
     rawStopped: !busy || reduced || current.snapped || current.raw,
     expanded: !busy || reduced || current.snapped || current.expanded,
     stopped: (column: number) => !active || !!(current.stops & (1 << column)),
+    socketOpen: (column: number, row: number) =>
+      !active || !!(current.sockets & (1 << (column * 3 + row))),
   };
 }
 function MotionSymbol({ game, n }: { game: FleetKey; n: number }) {
@@ -382,39 +418,90 @@ export function MotionSocket({
   row: number;
   run: SlotMotionRun;
 }) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    const face = ref.current?.parentElement?.querySelector(".slot-symbol-face");
-    if (!face) return;
-    const a = animateAt(
-      face,
-      coin
-        ? [
-            {
-              opacity: 0,
-              transform: "perspective(300px) rotateX(-85deg) scale(.82)",
-              offset: 0,
-            },
-            {
-              opacity: 1,
-              transform: "perspective(300px) rotateX(8deg) scale(1.035)",
-              offset: 0.72,
-            },
-            {
-              opacity: 1,
-              transform: "perspective(300px) rotateX(0deg) scale(1)",
-              offset: 1,
-            },
-          ]
-        : [{ opacity: 0.1 }, { opacity: 0.25, offset: 0.6 }, { opacity: 1 }],
-      460,
-      run,
-      socketLanding(column, row),
-    );
-    return () => a.cancel();
+    const shutter = ref.current;
+    const face = shutter?.parentElement?.querySelector(".slot-symbol-face");
+    const scan = shutter?.firstElementChild;
+    if (!face || !shutter || !scan) return;
+    const delay = socketLanding(column, row);
+    const animations = [
+      animateAt(
+        face,
+        [
+          {
+            opacity: 0,
+            transform: "perspective(300px) rotateX(-85deg) scale(.82)",
+            offset: 0,
+          },
+          {
+            opacity: 0,
+            transform: "perspective(300px) rotateX(-85deg) scale(.82)",
+            offset: 0.35,
+          },
+          {
+            opacity: 1,
+            transform: "perspective(300px) rotateX(8deg) scale(1.035)",
+            offset: 0.8,
+          },
+          {
+            opacity: 1,
+            transform: "perspective(300px) rotateX(0deg) scale(1)",
+            offset: 1,
+          },
+        ],
+        VAULT_SOCKET_MS,
+        run,
+        delay,
+      ),
+      animateAt(
+        shutter,
+        [
+          {
+            opacity: 1,
+            transform: "perspective(300px) rotateX(0deg)",
+            offset: 0,
+          },
+          {
+            opacity: 1,
+            transform: "perspective(300px) rotateX(0deg)",
+            offset: 0.2,
+          },
+          {
+            opacity: 0,
+            transform: "perspective(300px) rotateX(90deg)",
+            offset: 0.65,
+          },
+          {
+            opacity: 0,
+            transform: "perspective(300px) rotateX(90deg)",
+            offset: 1,
+          },
+        ],
+        VAULT_SOCKET_MS,
+        run,
+        delay,
+      ),
+      animateAt(
+        scan,
+        Array.from({ length: 9 }, (_, i) => ({
+          transform: `translateY(${i % 2 ? 105 : -105}%)`,
+          offset: i / 8,
+          easing: "ease-in-out",
+        })),
+        delay + VAULT_SOCKET_MS,
+        run,
+      ),
+    ];
+    return () => animations.forEach((animation) => animation.cancel());
   }, [coin, column, row, run.id, run.started]);
-  return <i ref={ref} className="motion-marker" aria-hidden="true" />;
+  return (
+    <div ref={ref} className="vault-socket-shutter" aria-hidden="true">
+      <i />
+    </div>
+  );
 }
+
 export function GateSweep({
   origin,
   run,

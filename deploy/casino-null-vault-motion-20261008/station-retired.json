@@ -1,0 +1,22 @@
+{
+  "cradle-station-render.service": [
+    "Result=success",
+    "ActiveState=inactive",
+    "UnitFileState=disabled"
+  ],
+  "cradle-station-gateway.service": [
+    "Result=success",
+    "ActiveState=inactive",
+    "UnitFileState=disabled"
+  ],
+  "remainingPorts": [
+    "4174",
+    "443",
+    "8443"
+  ],
+  "publicFunnel": {},
+  "privateRoutesPreserved": true,
+  "nativeWineCleanup": true,
+  "activeSentinel": false,
+  "cleanupGate": false
+}

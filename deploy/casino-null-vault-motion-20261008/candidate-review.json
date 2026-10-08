@@ -1,0 +1,1007 @@
+{
+  "verdict": "PASS: bounded source/candidate gate",
+  "source_sha256": {
+    "cradleos-dapp/src/App.tsx": "dfa40b7298c7238c54e155aec52569fb8675db203c86a1fa0626172a3e15f0dd",
+    "cradleos-dapp/src/components/CasinoExperience.tsx": "1134bd8e778a20a3741806952ae3d093fac17aea0dc350d367d235a326490f41",
+    "cradleos-dapp/src/components/CasinoSlotFleet.tsx": "6f19ab9b2721e092366c4445fa4c953c84b26e6c0570d85c54aa6293a9cc3e01",
+    "cradleos-dapp/src/components/SlotMotion.tsx": "ec7f267b3de1b0731960088ed1cec7857773936c1719512171e1cda64aeea5bb",
+    "cradleos-dapp/src/components/StructurePanel.tsx": "9d5511ef72cf2b7a20a35a23b3bfa0b198fe1593752da79cf8edbb661c0b6ba7",
+    "cradleos-dapp/src/lib/casinoSlotMotion.ts": "fbd09e97efaf3edef7195f062978463f9c99d3797459de62dbf783f7edda6177",
+    "cradleos-dapp/src/lib/casinoSlotMotion.test.ts": "f01f043cc1144a68955fe1afef2059776b0f7d3e8454e2a23a946debb1ab3f36",
+    "cradleos-dapp/src/styles/casino-slot-motion.css": "4b8938233799c58599e3e972697b7874efbb744a7b093fe52af34f80a6a14699"
+  },
+  "independent_browser": {
+    "checks": [
+      "retired route enters web casino without native request or station button",
+      "initial scan / stagger / readable pause / exact endpoint / one cursor and unchanged ledger",
+      "six known locks stationary; nine unresolved sockets masked; prior breach preserved",
+      "reduced\u2192normal stays cancelled and advances once",
+      "mid-reveal reload retains cursor and does not autoplay"
+    ],
+    "phases": [
+      {
+        "label": "restored-covered",
+        "elapsed": 360.6999999284744,
+        "cursor": 0,
+        "raw": "true",
+        "shutters": 0,
+        "instrument": "6 SEALS TO BREACH",
+        "cells": [
+          {
+            "id": 0,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 1,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 2,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 5,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 6,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 7,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 10,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 11,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 12,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 15,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 16,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 17,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 20,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 21,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 22,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          }
+        ],
+        "overflow": false
+      },
+      {
+        "label": "initial-scan-600",
+        "elapsed": 624.9000000953674,
+        "cursor": 0,
+        "raw": "false",
+        "shutters": 15,
+        "instrument": "6 SEALS TO BREACH",
+        "cells": [
+          {
+            "id": 0,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 1,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 2,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 5,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 6,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 7,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 10,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 11,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 12,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 15,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 16,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 17,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 20,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 21,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 22,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          }
+        ],
+        "overflow": false
+      },
+      {
+        "label": "initial-opening-1600",
+        "elapsed": 1618.8000000715256,
+        "cursor": 0,
+        "raw": "false",
+        "shutters": 15,
+        "instrument": "6 SEALS TO BREACH",
+        "cells": [
+          {
+            "id": 0,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "3.6029\u00d7 stake, collected at feature end",
+            "text": "3.6029\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 1,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 2,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 0.790054,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 5,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 0.790727,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 6,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 0.387024,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 7,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 10,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 11,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 12,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 15,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 16,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 17,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 20,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 21,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 22,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          }
+        ],
+        "overflow": false
+      },
+      {
+        "label": "initial-readable-2900",
+        "elapsed": 2919.100000023842,
+        "cursor": 0,
+        "raw": "true",
+        "shutters": 15,
+        "instrument": "VAULT BREACHED",
+        "cells": [
+          {
+            "id": 0,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "3.6029\u00d7 stake, collected at feature end",
+            "text": "3.6029\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 1,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 2,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 5,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 6,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 7,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 10,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 11,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 12,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 15,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 16,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 17,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.7206\u00d7 stake, collected at feature end",
+            "text": "0.7206\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 20,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 21,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 22,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          }
+        ],
+        "overflow": false
+      },
+      {
+        "label": "initial-complete",
+        "elapsed": 3433.4000000953674,
+        "cursor": 1,
+        "raw": "true",
+        "shutters": 0,
+        "instrument": "VAULT BREACHED",
+        "cells": [
+          {
+            "id": 0,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "3.6029\u00d7 stake, collected at feature end",
+            "text": "3.6029\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 1,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 2,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 5,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 6,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 7,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 10,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 11,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 12,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 15,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 16,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 17,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   ",
+            "title": "0.7206\u00d7 stake, collected at feature end",
+            "text": "0.7206\u00d7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 20,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 21,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          },
+          {
+            "id": 22,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Empty",
+            "text": "\u00b7",
+            "faceOpacity": 1,
+            "locked": false,
+            "moving": 0
+          }
+        ],
+        "overflow": false
+      },
+      {
+        "label": "respin-scan-600",
+        "elapsed": 620.8999999761581,
+        "cursor": 1,
+        "raw": "false",
+        "shutters": 9,
+        "instrument": "VAULT BREACHED",
+        "cells": [
+          {
+            "id": 0,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   fleet-locked",
+            "title": "3.6029\u00d7 stake, collected at feature end",
+            "text": "3.6029\u00d7\u25c6",
+            "faceOpacity": 1,
+            "locked": true,
+            "moving": 0
+          },
+          {
+            "id": 1,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   fleet-locked",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7\u25c6",
+            "faceOpacity": 1,
+            "locked": true,
+            "moving": 0
+          },
+          {
+            "id": 2,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   fleet-locked",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7\u25c6",
+            "faceOpacity": 1,
+            "locked": true,
+            "moving": 0
+          },
+          {
+            "id": 5,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 6,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   fleet-locked",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7\u25c6",
+            "faceOpacity": 1,
+            "locked": true,
+            "moving": 0
+          },
+          {
+            "id": 7,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 10,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   fleet-locked",
+            "title": "0.3603\u00d7 stake, collected at feature end",
+            "text": "0.3603\u00d7\u25c6",
+            "faceOpacity": 1,
+            "locked": true,
+            "moving": 0
+          },
+          {
+            "id": 11,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 12,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 15,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 16,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 17,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-coin   fleet-locked",
+            "title": "0.7206\u00d7 stake, collected at feature end",
+            "text": "0.7206\u00d7\u25c6",
+            "faceOpacity": 1,
+            "locked": true,
+            "moving": 0
+          },
+          {
+            "id": 20,
+            "symbol": 9,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 21,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          },
+          {
+            "id": 22,
+            "symbol": 10,
+            "classes": "fleet-cell fleet-empty   ",
+            "title": "Unrevealed",
+            "text": "\u25c7",
+            "faceOpacity": 0,
+            "locked": false,
+            "moving": 3
+          }
+        ],
+        "overflow": false
+      }
+    ],
+    "errors": [],
+    "stationRequests": [],
+    "closedCoinClasses": 0,
+    "pass": true
+  },
+  "focused_motion_tests": 6,
+  "station_retirement": {
+    "native_units": "both inactive and disabled",
+    "tailscaleCanonicalSHA256": "766c7d9d901951f0be7a3875142b5713cac52bac358a3134d7f12dc5b610d02b",
+    "matchesPrePilotBaseline": true,
+    "private_ports_retained": [
+      4174,
+      443,
+      8443
+    ],
+    "funnel10000": false
+  },
+  "runtime_edits_by_reviewer": false
+}

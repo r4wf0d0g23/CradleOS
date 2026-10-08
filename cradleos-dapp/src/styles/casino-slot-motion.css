@@ -117,7 +117,7 @@
   min-height: 270px;
 }
 .slot-motion-collect .ring-inner {
-  animation: vault-collect 0.65s ease-out both;
+  animation: vault-collect 1.35s ease-out both;
 }
 @keyframes vault-collect {
   0% {
@@ -151,5 +151,30 @@
   .slot-motion-collect .ring-inner,
   .slot-identity:not(.fleet-spinning) .fleet-cell-win > .slot-symbol-face {
     animation: none !important;
+  }
+}
+
+/* Neutral closed sockets conceal both coin and empty outcomes until opening.
+   The finite scan has no reward symbols, invented values or near misses. */
+.vault-socket-shutter {
+  position: absolute;
+  inset: -2px;
+  z-index: 3;
+  border: 2px inset #716344;
+  border-radius: inherit;
+  background: repeating-linear-gradient(0deg, #15141b 0 6px, #24202b 7px 8px);
+  box-shadow: inset 0 3px 8px #000;
+  overflow: hidden;
+  pointer-events: none;
+  backface-visibility: hidden;
+}
+.vault-socket-shutter > i {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 38%, #c497d088 50%, transparent 62%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .vault-socket-shutter {
+    display: none !important;
   }
 }

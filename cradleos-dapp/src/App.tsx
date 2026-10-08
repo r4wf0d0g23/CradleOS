@@ -37,7 +37,6 @@ import { DashboardPanel } from "./components/DashboardPanel";
 import { IndustryPanel } from "./components/IndustryPanel";
 import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
-import { CasinoStation } from "./components/CasinoStation";
 import { CasinoExperience as CasinoPanel } from "./components/CasinoExperience";
 import { ComicsPanel } from "./components/ComicsPanel";
 import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
@@ -427,7 +426,7 @@ function haNodes(status: PrivateNodeStatusValue): HaNode[] {
   }];
 }
 
-type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "casino-station" | "origins";
+type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "origins";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -437,7 +436,7 @@ type Tab = "structures" | "inventory" | "tribe" | "defense" | "registry" | "map"
 // removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
   // Cycle 7: keep service and exploration-status deep-links reachable.
-  "casino-station": "casino-station", "casino": "casino", "map": "map", "efmap": "efmap", "fitting": "fitting",
+  "casino-station": "casino", "casino": "casino", "map": "map", "efmap": "efmap", "fitting": "fitting",
   "defense":       "defense",
   "turrets":       "defense",
   "structures":    "structures",
@@ -847,7 +846,6 @@ function AppInner() {
         "Sources: snapshot provenance, official GitHub checks and explicit coverage gaps",
       ],
     },
-    "casino-station": {title:"Cradle Casino Station",steps:[]},
     casino: {
       title: "Cradle Casino — fresh house; wagering paused",
       steps: [
@@ -887,7 +885,7 @@ function AppInner() {
       succession: "succession", wiki: "wiki", fitting: "fitting",
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
-      calendar: "calendar", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino", "casino-station": "casino-station",
+      calendar: "calendar", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
       voting: "voting", origins: "origins",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
@@ -929,7 +927,6 @@ function AppInner() {
     }
   };
 
-  if(activeTab === "casino-station") return <CasinoStation />;
 
   return (
     <main className="app-shell">

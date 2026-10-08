@@ -1,3 +1,8 @@
+> **RETIRED 2026-10-08 by Raw.** The walk-in station was rejected and shut down.
+> Both units are disabled; public media port 10000 is removed. This source is
+> retained only as an archive. Do not restart or redeploy without a new request.
+> The supported interface is https://cradleos.io/#/casino.
+
 # Native Carbon station — two-visitor pilot
 
 This service renders an authored interior using the host's qualified native

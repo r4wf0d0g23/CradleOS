@@ -155,8 +155,14 @@ export function FleetBoard({
         )}
         <SlotFeatureInstrument
           game={game}
-          frame={frame ? { ...frame, grid: shown } : undefined}
-          covered={covered || !motion.rawStopped}
+          frame={
+            game === "slot_vault" && !motion.rawStopped
+              ? previous
+              : frame
+                ? { ...frame, grid: shown }
+                : undefined
+          }
+          covered={covered || (game !== "slot_vault" && !motion.rawStopped)}
         />
         <div className="identity-playfield">
           <div
@@ -187,6 +193,15 @@ export function FleetBoard({
                       previous?.kind === "free" &&
                       symbol === WILD &&
                       before === WILD);
+                  const socketCovered =
+                    motion.active &&
+                    motion.plan.kind === "hold" &&
+                    !locked &&
+                    !motion.socketOpen(c, r);
+                  const visibleSymbol =
+                    socketCovered || (g.mode === "hold" && covered)
+                      ? EMPTY
+                      : symbol;
                   const pending =
                     motion.active &&
                     motion.plan.kind === "reels" &&
@@ -196,11 +211,11 @@ export function FleetBoard({
                     <div
                       key={r}
                       style={{ "--row": r } as CSSProperties}
-                      className={`fleet-cell ${symbol === WILD ? "fleet-wild" : symbol === SCATTER ? "fleet-scatter" : symbol === COIN ? "fleet-coin" : symbol === EMPTY ? "fleet-empty" : ""} ${won.has(id) ? "fleet-cell-win" : ""} ${pending ? "motion-pending" : ""} ${locked ? "fleet-locked" : ""}`}
+                      className={`fleet-cell ${visibleSymbol === WILD ? "fleet-wild" : visibleSymbol === SCATTER ? "fleet-scatter" : visibleSymbol === COIN ? "fleet-coin" : visibleSymbol === EMPTY ? "fleet-empty" : ""} ${won.has(id) ? "fleet-cell-win" : ""} ${pending ? "motion-pending" : ""} ${locked ? "fleet-locked" : ""}`}
                       data-symbol={symbol}
                       data-cell={id}
                       title={
-                        covered
+                        covered || socketCovered
                           ? "Unrevealed"
                           : symbol === WILD
                             ? "Wild"
@@ -213,8 +228,11 @@ export function FleetBoard({
                                   : slotSymbol(game, symbol)?.name
                       }
                     >
-                      <div className="slot-symbol-face">
-                        {covered ? (
+                      <div
+                        className="slot-symbol-face"
+                        aria-hidden={socketCovered || undefined}
+                      >
+                        {covered || socketCovered ? (
                           <span>◇</span>
                         ) : symbol < 7 ? (
                           <SlotSymbolArt

@@ -9,6 +9,12 @@ import {
 export type SlotMotionRun = { id: number; started: number };
 export const REEL_STOPS = [1160, 1305, 1450, 1595, 1740] as const;
 export const CLEAR_MS = 260;
+// One timing contract for every vault shutter and the parent's reveal deadline.
+export const VAULT_SOCKET_MS = 660;
+export const socketLanding = (column: number, row: number) =>
+  900 + column * 240 + row * 120;
+export const VAULT_LAST_STOP = socketLanding(4, 2) + VAULT_SOCKET_MS;
+export const VAULT_COLLECT_MS = 1350;
 export type SlotMotionPlan = {
   kind: "reels" | "cascade" | "hold" | "collect";
   rawStop: number;
@@ -33,17 +39,17 @@ export function slotMotionPlan(
     if (previous?.coins.length === 15 && previous.coins.every((n) => n > 0))
       return {
         kind: "collect",
-        rawStop: 0,
-        expand: 0,
-        finish: 650,
-        reveal: 850,
+        rawStop: 1000,
+        expand: 1000,
+        finish: VAULT_COLLECT_MS,
+        reveal: 1750,
       };
     return {
       kind: "hold",
-      rawStop: 1220,
-      expand: 1220,
-      finish: 1280,
-      reveal: 1500,
+      rawStop: VAULT_LAST_STOP + 20,
+      expand: VAULT_LAST_STOP + 20,
+      finish: VAULT_LAST_STOP + 240,
+      reveal: VAULT_LAST_STOP + 640,
     };
   }
   const gate =
@@ -154,5 +160,3 @@ export function fallKeyframes(distance: number): Keyframe[] {
     { transform: "translate3d(0,0,0)", opacity: 1, offset: 1 },
   ];
 }
-export const socketLanding = (column: number, row: number) =>
-  120 + column * 110 + row * 70;
