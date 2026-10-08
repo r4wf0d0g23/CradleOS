@@ -1,0 +1,112 @@
+{
+  "origins": [
+    "https://cradleos.io",
+    "https://4900a6d9.cradleos-d75.pages.dev"
+  ],
+  "hashes": [
+    {
+      "origin": "https://cradleos.io",
+      "path": "assets/index-B8DkMLsr.js",
+      "sha256": "417435f9db9c45e19f882c9bfd16385b984a972218778432122f31306b64aae5",
+      "bytes": 2294533,
+      "match": true
+    },
+    {
+      "origin": "https://cradleos.io",
+      "path": "assets/index-Y1UkcxVh.css",
+      "sha256": "d071e545cf69ff99c97ace50d328b6369b169890819f0e44514e8fccfd088289",
+      "bytes": 801065,
+      "match": true
+    },
+    {
+      "origin": "https://4900a6d9.cradleos-d75.pages.dev",
+      "path": "assets/index-B8DkMLsr.js",
+      "sha256": "417435f9db9c45e19f882c9bfd16385b984a972218778432122f31306b64aae5",
+      "bytes": 2294533,
+      "match": true
+    },
+    {
+      "origin": "https://4900a6d9.cradleos-d75.pages.dev",
+      "path": "assets/index-Y1UkcxVh.css",
+      "sha256": "d071e545cf69ff99c97ace50d328b6369b169890819f0e44514e8fccfd088289",
+      "bytes": 801065,
+      "match": true
+    }
+  ],
+  "checks": [
+    "Fresh real-RNG classic 3-run: one paid spin, Stop before later debit, masked paused reload, explicit exact reveal, no restart",
+    "Isolated valid saved Scratch pack: per-ticket reveal durable, unopened totals hidden, Reveal all no new debit",
+    "Donation entry discoverable; disconnected submit disabled; wagering Not enabled; no connect/sign action",
+    "Testnet catalogue remains 23 staged tables; paused/no-wagers status, no slot-run controls"
+  ],
+  "pageErrors": [],
+  "consoleDiagnostics": [
+    {
+      "type": "error",
+      "text": "(assets/index-B8DkMLsr.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at lX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25501)\n    at cX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-B8DkMLsr.js:61:105031)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:61:105526\n    at Array.map (<anonymous>)\n    at lZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:105482)\n    at uZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:111531)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-B8DkMLsr.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at lX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25501)\n    at cX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-B8DkMLsr.js:61:105031)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:61:105526\n    at Array.map (<anonymous>)\n    at lZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:105482)\n    at uZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:111531)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-B8DkMLsr.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at lX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25501)\n    at cX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-B8DkMLsr.js:61:105031)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:61:105526\n    at Array.map (<anonymous>)\n    at lZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:105482)\n    at uZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:111531)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:64:7207"
+    },
+    {
+      "type": "error",
+      "text": "(assets/index-B8DkMLsr.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+    },
+    {
+      "type": "error",
+      "text": "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "type": "error",
+      "text": "Error fetching metadata TypeError: Failed to fetch\n    at lX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25501)\n    at cX (https://cradleos.io/assets/index-B8DkMLsr.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-B8DkMLsr.js:61:105031)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:61:105526\n    at Array.map (<anonymous>)\n    at lZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:105482)\n    at uZ (https://cradleos.io/assets/index-B8DkMLsr.js:61:111531)\n    at https://cradleos.io/assets/index-B8DkMLsr.js:64:7207"
+    }
+  ],
+  "financialRequests": [],
+  "testnetText": "Wagering is paused for contract security repairs and bankroll setup. Play Money is available now.",
+  "PASS": true
+}

@@ -13,4 +13,4 @@
 
 Independent final candidate gate PASS: 844×390 touch and 320×568 normal/reduced. Full-width saved-spin CTA and 44px run controls visually verified after CSS-only adjustment. Exact final JS/CSS hashes match dist.
 
-Publication and live gate pending.
+Published `4900a6d9` from source `5414488269da7db9a03d109f3e05e6146e7cf840`. All 98 delivered file hashes, primary/immutable HTML references and public icon API pass. Live nine-slot runs/boundaries (13 checks) and motion/scratch/dealing lifecycle (6 checks) pass. Independent 320px touch live gate PASS: exact primary/immutable bundles, real run/Stop/covered reload, persistent Scratch and unchanged seed-only/testnet controls. Known wallet-SDK metadata diagnostics remain; no page exceptions or financial requests.

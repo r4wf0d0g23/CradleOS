@@ -1,0 +1,14 @@
+{
+  "source": "5414488269da7db9a03d109f3e05e6146e7cf840",
+  "featureSource": "4036acef32ffc6519380489755b3b1e18ac47fdd",
+  "deployment": "4900a6d9",
+  "site": "https://cradleos.io/#/casino",
+  "immutable": "https://4900a6d9.cradleos-d75.pages.dev",
+  "rollback": "4c8cbbda",
+  "unitTests": 292,
+  "parentLiveChecks": 19,
+  "publicFileHashMatches": 98,
+  "independentLive": "PASS",
+  "testnetWagerActivation": false,
+  "artworkPreserved": 92
+}
