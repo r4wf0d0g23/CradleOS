@@ -1,0 +1,619 @@
+{
+  "release": "ace82e52",
+  "source": "1eafa70",
+  "viewport": "320x700 touch normal motion",
+  "scope": "Real public app; valid frozen-engine saved Vault fixture in isolated tab storage; no app/network mocks",
+  "phases": [
+    {
+      "label": "saved-ready",
+      "elapsed": 304.89999997615814,
+      "cursor": 0,
+      "raw": "true",
+      "shutters": 0,
+      "cells": [
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 1
+        }
+      ]
+    },
+    {
+      "label": "closed-scan-600",
+      "elapsed": 623.2000000476837,
+      "cursor": 0,
+      "raw": "false",
+      "shutters": 15,
+      "cells": [
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        }
+      ]
+    },
+    {
+      "label": "staggered-open-1700",
+      "elapsed": 1722.5,
+      "cursor": 0,
+      "raw": "false",
+      "shutters": 15,
+      "cells": [
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "text": "3.6029\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 0.716808
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 0.313104
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 0.313104
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 9,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Unrevealed",
+          "text": "\u25c7",
+          "opacity": 0
+        }
+      ]
+    },
+    {
+      "label": "readable-pause-2900",
+      "elapsed": 2922.7000000476837,
+      "cursor": 0,
+      "raw": "true",
+      "shutters": 15,
+      "cells": [
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "text": "3.6029\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "text": "0.7206\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        }
+      ]
+    },
+    {
+      "label": "completed",
+      "elapsed": 3424.399999976158,
+      "cursor": 1,
+      "raw": "true",
+      "shutters": 0,
+      "cells": [
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "3.6029\u00d7 stake, collected at feature end",
+          "text": "3.6029\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.3603\u00d7 stake, collected at feature end",
+          "text": "0.3603\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 9,
+          "coin": true,
+          "title": "0.7206\u00d7 stake, collected at feature end",
+          "text": "0.7206\u00d7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        },
+        {
+          "symbol": 10,
+          "coin": false,
+          "title": "Empty",
+          "text": "\u00b7",
+          "opacity": 1
+        }
+      ]
+    }
+  ],
+  "stationRequests": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "(assets/index-B63HfErL.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at AX (https://cradleos.io/assets/index-B63HfErL.js:61:25501)\n    at OX (https://cradleos.io/assets/index-B63HfErL.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-B63HfErL.js:61:105031)\n    at https://cradleos.io/assets/index-B63HfErL.js:61:105526\n    at Array.map (<anonymous>)\n    at AZ (https://cradleos.io/assets/index-B63HfErL.js:61:105482)\n    at MZ (https://cradleos.io/assets/index-B63HfErL.js:61:111531)\n    at https://cradleos.io/assets/index-B63HfErL.js:64:7207",
+    "(assets/index-B63HfErL.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at AX (https://cradleos.io/assets/index-B63HfErL.js:61:25501)\n    at OX (https://cradleos.io/assets/index-B63HfErL.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-B63HfErL.js:61:105031)\n    at https://cradleos.io/assets/index-B63HfErL.js:61:105526\n    at Array.map (<anonymous>)\n    at AZ (https://cradleos.io/assets/index-B63HfErL.js:61:105482)\n    at MZ (https://cradleos.io/assets/index-B63HfErL.js:61:111531)\n    at https://cradleos.io/assets/index-B63HfErL.js:64:7207",
+    "(assets/index-B63HfErL.js:247) [DappKit] SmartObjectProvider: No object ID provided"
+  ],
+  "financialRequests": [],
+  "retiredRouteOpensWebCasino": true,
+  "bundleHashes": {
+    "/assets/index-B63HfErL.js": "8a80d13c361bdbc4af641ef77d7536faaefc5c010020df52752f6cab6d2f380e",
+    "/assets/index-C0IuYdr6.css": "c92836013629efc9303dda43350721867708c225e176d975f3e69837328bbfc5"
+  },
+  "unchangedBalanceAndSequence": true,
+  "exactEndpointAndOneCursor": true,
+  "reloadStatic": true,
+  "noOverflow": true,
+  "pass": true,
+  "retirement": {
+    "units": {
+      "cradle-station-render.service": {
+        "is-active": "inactive",
+        "is-enabled": "disabled"
+      },
+      "cradle-station-gateway.service": {
+        "is-active": "inactive",
+        "is-enabled": "disabled"
+      }
+    },
+    "tailscaleCanonicalSHA256": "766c7d9d901951f0be7a3875142b5713cac52bac358a3134d7f12dc5b610d02b",
+    "privateBaselineExact": true,
+    "public10000Absent": true,
+    "gatePresent": false,
+    "activeSentinelPresent": false
+  }
+}

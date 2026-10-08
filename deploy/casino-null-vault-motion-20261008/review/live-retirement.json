@@ -1,0 +1,17 @@
+{
+  "units": {
+    "cradle-station-render.service": {
+      "is-active": "inactive",
+      "is-enabled": "disabled"
+    },
+    "cradle-station-gateway.service": {
+      "is-active": "inactive",
+      "is-enabled": "disabled"
+    }
+  },
+  "tailscaleCanonicalSHA256": "766c7d9d901951f0be7a3875142b5713cac52bac358a3134d7f12dc5b610d02b",
+  "privateBaselineExact": true,
+  "public10000Absent": true,
+  "gatePresent": false,
+  "activeSentinelPresent": false
+}
