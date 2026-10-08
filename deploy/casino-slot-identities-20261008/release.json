@@ -1,0 +1,15 @@
+{
+  "source": "db23db8ebe831e815be7b0ea5fdc7385211817e3",
+  "deployment": "b9d836f4",
+  "url": "https://cradleos.io/#/casino",
+  "immutable": "https://b9d836f4.cradleos-d75.pages.dev",
+  "rollback": "39eec190",
+  "scope": "Distinct visual/sound identities for eight existing practice slots; no payout/RNG/session/contract/donation-policy changes",
+  "tests": 260,
+  "publicHashes": 98,
+  "parentLiveGameplay": "pass320/390/844/1440",
+  "independentPublicReview": "PASS; actual anonymous320/1440, exact bundles on both origins, full-Vault collection and seed/wager boundaries",
+  "timestamp": "2026-10-08T15:16:27.813536+00:00",
+  "audioAndAssetFailureLive": "pass320/390/1440",
+  "testServers": "owned5199/5200 stopped"
+}

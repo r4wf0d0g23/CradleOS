@@ -1,0 +1,24 @@
+{
+  "url": "https://cradleos.io/#/casino",
+  "checks": [
+    "320: 33 practice/9 slots; native art ready, actual normal-motion production-RNG spin settles exactly once, sound opt-in/running then mute closes context, reload unchanged; no development toolbar",
+    "320: donation discoverable/anonymous1EVE cannot submit;23 testnet previews/no new fleet; actualDEAL disabled and security HOLD text retained",
+    "1440: 33 practice/9 slots; native art ready, actual normal-motion production-RNG spin settles exactly once, sound opt-in/running then mute closes context, reload unchanged; no development toolbar",
+    "1440: explicit isolated valid full-Vault fixture shows all token digits, collection-ready/no nonexistent respins, Collect only advances cursor",
+    "1440: donation discoverable/anonymous1EVE cannot submit;23 testnet previews/no new fleet; actualDEAL disabled and security HOLD text retained"
+  ],
+  "pageErrors": [],
+  "consoleDiagnostics": [
+    "(assets/index-BJl6wzTC.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at FJ (https://cradleos.io/assets/index-BJl6wzTC.js:61:25501)\n    at zJ (https://cradleos.io/assets/index-BJl6wzTC.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-BJl6wzTC.js:61:105031)\n    at https://cradleos.io/assets/index-BJl6wzTC.js:61:105526\n    at Array.map (<anonymous>)\n    at FQ (https://cradleos.io/assets/index-BJl6wzTC.js:61:105482)\n    at PQ (https://cradleos.io/assets/index-BJl6wzTC.js:61:111531)\n    at https://cradleos.io/assets/index-BJl6wzTC.js:64:7207"
+  ],
+  "requestKinds": [
+    "Cloudflare analytics",
+    "GraphQL/read",
+    "suix_queryEvents",
+    "sui_getObject"
+  ],
+  "pass": true
+}
