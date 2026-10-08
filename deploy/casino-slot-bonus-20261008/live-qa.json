@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "390 slot_scrapyard: obvious earned entry, silent reload, persistent active rail, one CTA cursor step, honest completion",
+    "390 slot_wreckways: obvious earned entry, silent reload, persistent active rail, one CTA cursor step, honest completion",
+    "390 slot_gatecrash: obvious earned entry, silent reload, persistent active rail, one CTA cursor step, honest completion",
+    "390 slot_drones: obvious earned entry, silent reload, persistent active rail, one CTA cursor step, honest completion",
+    "390 slot_eclipse: obvious earned entry, silent reload, persistent active rail, one CTA cursor step, honest completion",
+    "390 slot_vault: obvious earned entry, silent reload, persistent active rail, one CTA cursor step, honest completion",
+    "390: correct fullVault/loss/cascade labels; reduced-motion clear bonus; mute/hidden closes fanfare"
+  ],
+  "errors": []
+}

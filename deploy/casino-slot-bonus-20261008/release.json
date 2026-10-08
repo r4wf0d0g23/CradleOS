@@ -1,0 +1,12 @@
+{
+  "source": "bd3156ca08c786d0f76ab6e709f26c1b3b7c5eac",
+  "deployment": "230071f3",
+  "primary": "https://cradleos.io/#/casino",
+  "immutable": "https://230071f3.cradleos-d75.pages.dev",
+  "rollback": "d589ed26",
+  "scope": "practice slot bonus presentation only",
+  "tests": 271,
+  "verification": "PASS:271tests,21previewbonuschecks,7livebonuschecks,98publichashes,independent source and LIVE review",
+  "wagering": "HOLD unchanged; seed-only donations unchanged",
+  "ownedTestServersStopped": true
+}

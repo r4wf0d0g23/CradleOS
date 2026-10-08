@@ -1,0 +1,46 @@
+{
+  "url": "https://cradleos.io/#/casino",
+  "fixture": "Explicit isolated valid precomputed Gate receipt, cursor0; no random outcome/ledger generation claim",
+  "pageErrors": [],
+  "consoleDiagnostics": [
+    "(assets/index-CUZlTIqU.js:247) [DappKit] SmartObjectProvider: No object ID provided",
+    "Access to fetch at 'https://api.slush.app/api/wallet/metadata' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Failed to load resource: net::ERR_FAILED",
+    "Error fetching metadata TypeError: Failed to fetch\n    at HJ (https://cradleos.io/assets/index-CUZlTIqU.js:61:25501)\n    at GJ (https://cradleos.io/assets/index-CUZlTIqU.js:61:25826)\n    at Object.initialize (https://cradleos.io/assets/index-CUZlTIqU.js:61:105031)\n    at https://cradleos.io/assets/index-CUZlTIqU.js:61:105526\n    at Array.map (<anonymous>)\n    at HQ (https://cradleos.io/assets/index-CUZlTIqU.js:61:105482)\n    at KQ (https://cradleos.io/assets/index-CUZlTIqU.js:61:111531)\n    at https://cradleos.io/assets/index-CUZlTIqU.js:64:7207",
+    "Access to fetch at 'https://keeper.reapers.shop/telemetry/combined' from origin 'https://cradleos.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+  ],
+  "postMethods": [
+    "Cloudflare analytics"
+  ],
+  "entry": {
+    "text": "GATE RUN\nBONUS UNLOCKED\n5\nFREE SPINS\n\n2× wins during free spins\n\nSTART FREE SPINS\n▶\nView reels",
+    "cursor": 1,
+    "reducedReversalRestarts": false,
+    "soundNotes": 18
+  },
+  "silentReadyReload": true,
+  "activeRail": {
+    "text": "GATE RUN\n2× WINS\nFREE SPINS\n1 / 5\nSPIN IN PROGRESS\n0 chips",
+    "done": 0,
+    "launch": true
+  },
+  "firstFree": {
+    "cursor": 2,
+    "rail": {
+      "text": "GATE RUN\n2× WINS\nFREE SPINS\n1 / 5\nBONUS RETURN\n92.14 chips",
+      "done": 1,
+      "launch": false
+    },
+    "balanceUnchanged": true
+  },
+  "complete": {
+    "cursor": 6,
+    "rail": {
+      "text": "GATE RUN\n2× WINS\nFREE SPINS COMPLETE\n5 / 5\nFEATURE TOTAL\n184.29 chips",
+      "done": 5,
+      "launch": false
+    },
+    "expectedFreeReturn": 18429
+  },
+  "PASS": true
+}

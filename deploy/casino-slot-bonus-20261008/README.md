@@ -18,4 +18,4 @@ An initial review found entry/rail celebration replay on reduced→normal. Corre
 Evidence scripts and screenshots: `/home/rawdata/.openclaw-captain/workspace/research/cradleos-casino-slot-bonus-20261008/`.
 
 ## Release
-Primary https://cradleos.io/#/casino only. Rollback Pagesd589ed26/runtime12886d2. Deployment/byte verification/live review are recorded in release.json once complete; GitHub Pages remains redirect-only. No financial actions.
+Primary https://cradleos.io/#/casino only. Rollback Pagesd589ed26/runtime12886d2. Live runtime`bd3156ca08c786d0f76ab6e709f26c1b3b7c5eac`, Pages`230071f3`. All98 public file hashes and exact HTML bundle references pass; public icon API healthy. Live390 all-six bonus checks and independent320touch entry/CTA/cancellation/silent-reload/return-accounting PASS. Owned5199/5200 servers stopped. Complete receipt in release.json; GitHub Pages remains redirect-only. No financial actions.
