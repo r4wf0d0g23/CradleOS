@@ -1,0 +1,7 @@
+{
+  "checks": [
+    "320: CRADLE inscription fully contained; actual hit flight and unchanged saved result; no overflow",
+    "1440: CRADLE inscription fully contained; actual hit flight and unchanged saved result; no overflow"
+  ],
+  "errors": []
+}
