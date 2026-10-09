@@ -335,7 +335,7 @@ export function QueryPanel() {
   const ENOUGH_MATCHES = 50;
   const [characters, setCharacters] = useState<CharacterResult[] | null>(() => loadCachedCharacters());
   const [charsLoading, setCharsLoading] = useState(false);
-  const [charsPagesDone, setCharsPagesDone] = useState(0);
+  const [, setCharsPagesDone] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_charsCompleted, setCharsCompleted] = useState<boolean>(() => loadCachedCharacters() !== null);
   const charsAbortRef = useRef<AbortController | null>(null);
@@ -362,7 +362,6 @@ export function QueryPanel() {
   // the in-browser streaming walk so the panel still works when the indexer
   // is unreachable. The cache from a prior session is shown immediately as a
   // placeholder while the indexer query is in flight, so the UI never blanks.
-  const [usedIndexer, setUsedIndexer] = useState<boolean>(false);
   useEffect(() => {
     if (mode !== "character") return;
     if (!showResults) return;
@@ -378,7 +377,6 @@ export function QueryPanel() {
       const indexed = await searchCharactersViaIndex(q, 200, ac.signal);
       if (ac.signal.aborted) return;
       if (indexed !== null) {
-        setUsedIndexer(true);
         setCharacters(indexed);
         setCharsCompleted(true);
         setCharsLoading(false);
@@ -386,7 +384,6 @@ export function QueryPanel() {
       }
 
       // Fallback path — streaming GraphQL walk in the browser.
-      setUsedIndexer(false);
       const stopWhen = isWildcard
         ? undefined
         : (merged: CharacterResult[]) => {
@@ -492,12 +489,10 @@ export function QueryPanel() {
         />
         {isLoading && (
           <span style={{ fontSize: 11, color: "#ffa032", alignSelf: "center" }}>
-            ● searching… {!usedIndexer && characters ? `(walking on-chain: ${characters.length.toLocaleString()} chars, ${charsPagesDone} pages)` : ""}
+            Searching…
           </span>
         )}
-        {!isLoading && usedIndexer && showResults && (
-          <span style={{ fontSize: 10, color: "rgba(100,200,255,0.6)", alignSelf: "center" }}>⚡ indexer</span>
-        )}
+
       </div>
 
       {/* Body — single scrollable region containing whichever sub-view is
@@ -513,9 +508,7 @@ export function QueryPanel() {
             filteredChars.length === 0
               ? charsLoading
                 ? <div style={{ color: "#aaa", fontSize: 12 }}>
-                    {usedIndexer
-                      ? "Searching…"
-                      : `Walking on-chain index… ${characters ? `${characters.length.toLocaleString()} characters scanned (${charsPagesDone} pages)` : ""}`}
+                    Searching…
                   </div>
                 : <div style={{ color: "rgba(175,175,155,0.55)", fontSize: 12 }}>
                     No characters found for "{query}"
@@ -538,7 +531,7 @@ export function QueryPanel() {
                 ))}
                 {charsLoading && (
                   <div style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", marginTop: 6, fontStyle: "italic" }}>
-                    … still scanning ({characters?.length.toLocaleString() ?? 0} chars, {charsPagesDone} pages) — results may grow.
+                    Loading more…
                   </div>
                 )}
                 </>
@@ -587,8 +580,8 @@ export function QueryPanel() {
       {!showResults && !selectedChar && !selectedTribe && (
         <div style={{ color: "rgba(175,175,155,0.4)", fontSize: 12, marginTop: 8 }}>
           Type a name to search, or <strong style={{ color: "#FF4700" }}>*</strong> to list all.
-          {tribes ? ` ${tribes.length.toLocaleString()} tribes indexed.` : ""}
-          {" "}<span style={{ color: "rgba(100,200,255,0.5)" }}>⚡ server-side character search</span>
+
+
         </div>
       )}
       </div>{/* end scrollable body */}

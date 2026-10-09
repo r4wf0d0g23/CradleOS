@@ -129,9 +129,7 @@ export function VotingPanel() {
           }}>
             <strong style={{ color: "#FF4700" }}>STILLNESS PREVIEW · RESETS {CRADLEOS_WIPE_DATE_ISO}</strong>
             <div style={{ marginTop: 4, color: "rgba(255,200,180,0.85)" }}>
-              This voting deployment is a {days}-day preview. The Stillness world package
-              wipes on {CRADLEOS_WIPE_DATE_ISO} and every election created here will become
-              unreachable. Use it for testing, demos, and feedback — not for binding tribe votes.
+              {days} days remaining · Non-binding
             </div>
           </div>
         );
@@ -262,8 +260,8 @@ function ElectionList({
         border: "1px dashed rgba(255,71,0,0.18)",
       }}>
         {mode === "my"
-          ? "You have not created any elections yet. Switch to 'Create election' to publish your first."
-          : "No active elections found. Be the first to create one."}
+          ? "No elections created."
+          : "No active elections."}
       </div>
     );
   }

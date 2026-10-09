@@ -19,9 +19,9 @@ export function IconGallery() {
   return <section className="icon-gallery" aria-label="Current-client icon pack">
     <h3>Current-client icon pack</h3>
     <p>{data.counts.resolved} of {data.counts.types} item references · {data.counts.ui} UI symbols · {data.counts.library} Frontier source-art entries · {data.counts.assets} unique PNGs.</p>
-    <p>Stillness build {data.build}. Search by name or ID, or download the complete pack.</p>
+    <p>Stillness · Build {data.build}</p>
     <p><a href={`${GAME_ICON_BASE}/cradleos-icons-cycle7-3573151.zip`} download>Download icon pack</a> · <a href={`${GAME_ICON_BASE}/manifest.json`} target="_blank" rel="noreferrer">ID index</a> · <a href={`${GAME_ICON_BASE}/provenance.json`} target="_blank" rel="noreferrer">Source hashes</a> · <a href={`${GAME_ICON_BASE}/NOTICE.txt`} target="_blank" rel="noreferrer">Artwork attribution</a></p>
-    <p>Use in another app: <a href="https://cradleos.io/api/icons?name=D1%20Fuel" target="_blank" rel="noreferrer">Name-search API</a> · <a href="https://cradleos.io/data/icon-api.md" target="_blank" rel="noreferrer">API documentation</a> · <a href="https://cradleos.io/data/icon-api-v1.json" target="_blank" rel="noreferrer">OpenAPI schema</a>. Public, read-only, no key required.</p>
+    <p> <a href="https://cradleos.io/api/icons?name=D1%20Fuel" target="_blank" rel="noreferrer">Name-search API</a> · <a href="https://cradleos.io/data/icon-api.md" target="_blank" rel="noreferrer">API documentation</a> · <a href="https://cradleos.io/data/icon-api-v1.json" target="_blank" rel="noreferrer">OpenAPI schema</a></p>
     <div className="icon-gallery-controls">
       <input aria-label="Search icons" placeholder="Item name, type ID, or resource name…" value={query} onChange={e => { setQuery(e.target.value); setLimit(48); }} />
       <select aria-label="Icon collection" value={group} onChange={e => { setGroup(e.target.value); setLimit(48); }}><option value="items">Items &amp; ships</option><option value="ui">UI symbols</option><option value="library">Frontier source art</option></select>

@@ -532,7 +532,7 @@ export function ElectionCreatorWizard({
         return (
           <>
             <div style={{ fontSize: 11, color: "rgba(180,160,140,0.7)", marginBottom: 14, lineHeight: 1.6 }}>
-              First decision: who gets to vote? Pick the gate that matches your election.
+              Voter eligibility
             </div>
             <Picker options={ELIGIBILITY_OPTIONS} value={eligibilityKind} onChange={setEligibilityKind} />
             {(eligibilityKind === ELIGIBILITY_KIND.TRIBE_INGAME ||
@@ -550,10 +550,7 @@ export function ElectionCreatorWizard({
             )}
             {eligibilityKind === ELIGIBILITY_KIND.ALLOWLIST && (
               <div style={{ marginTop: 14, padding: 10, background: "rgba(255,71,0,0.05)", border: "1px dashed rgba(255,71,0,0.25)", fontSize: 11, color: "rgba(220,210,190,0.7)" }}>
-                Allowlist character_ids must be added via the post-creation Draft editor.
-                Eligibility params for this source are populated as a BCS-encoded vector of u32
-                ids before publish. For this MVP, paste them as a comma-separated list below
-                (the dApp encodes them on submit).
+                Character IDs · Comma-separated
                 <textarea
                   style={{ ...inputStyle, marginTop: 8, minHeight: 60 }}
                   placeholder="12345, 67890, …"
@@ -684,7 +681,7 @@ export function ElectionCreatorWizard({
         return (
           <>
             <div style={{ fontSize: 11, color: "rgba(180,160,140,0.7)", marginBottom: 14, lineHeight: 1.6 }}>
-              When are ballots visible? Public is cheapest; commit-reveal hides in-flight choices.
+              Ballot visibility
             </div>
             <Picker options={PRIVACY_OPTIONS} value={privacyKind} onChange={setPrivacyKind} />
           </>
@@ -693,7 +690,7 @@ export function ElectionCreatorWizard({
         return (
           <>
             <div style={{ fontSize: 11, color: "rgba(180,160,140,0.7)", marginBottom: 14, lineHeight: 1.6 }}>
-              List the options voters choose between. You can add or remove options before publishing.
+              Ballot options
             </div>
             {options.map((o, i) => (
               <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
@@ -770,8 +767,7 @@ export function ElectionCreatorWizard({
                 onChange={(e) => setDisputeWindowHours(e.target.value.replace(/[^0-9]/g, ""))}
               />
               <div style={{ fontSize: 10, color: "rgba(180,160,140,0.55)", marginTop: 4 }}>
-                After the chain tallies, anyone can submit an alternative tally with a deterministic
-                re-run. The election finalizes once this window closes with no successful disputes.
+                Finalization follows the dispute window.
               </div>
             </div>
           </>
@@ -785,7 +781,7 @@ export function ElectionCreatorWizard({
                 <div>
                   <div style={{ fontWeight: 700 }}>Sponsored gas — unavailable</div>
                   <div style={{ fontSize: 11, color: "rgba(200,190,170,0.7)", marginTop: 4, lineHeight: 1.5 }}>
-                    Voters pay their own gas in this release. Gas sponsorship is not available yet.
+                    Voters pay gas.
                   </div>
                 </div>
               </label>
@@ -796,7 +792,7 @@ export function ElectionCreatorWizard({
                 <div>
                   <div style={{ fontWeight: 700 }}>Allow voters to recast their ballot</div>
                   <div style={{ fontSize: 11, color: "rgba(200,190,170,0.7)", marginTop: 4, lineHeight: 1.5 }}>
-                    Not available in this release. Each character can cast one ballot; the first ballot is final.
+                    One ballot per character · Final
                   </div>
                 </div>
               </label>
@@ -807,8 +803,7 @@ export function ElectionCreatorWizard({
         return (
           <div>
             <div style={{ fontSize: 11, color: "rgba(180,160,140,0.7)", marginBottom: 14, lineHeight: 1.6 }}>
-              Review the configuration. Hitting Publish runs a multi-step transaction sequence:
-              Create the election, add its options, save the schedule, then publish.
+              Review election
             </div>
             <ReviewRow label="Title" value={title} />
             <ReviewRow label="Description" value={description || "(none)"} multi />
@@ -925,15 +920,7 @@ export function ElectionCreatorWizard({
         title="Publish election?"
         body={
           <>
-            <p>This will submit up to 5 transactions:</p>
-            <ul style={{ paddingLeft: 16, margin: "8px 0" }}>
-              <li>1× create_election</li>
-              <li>{options.filter((o) => o.label.trim()).length}× add_option</li>
-              <li>1× set_schedule</li>
-              {sponsored && <li>1× set_sponsored</li>}
-              <li>1× publish</li>
-            </ul>
-            <p>Once published, the configuration is locked. Continue?</p>
+            <p>Published settings cannot be changed.</p>
           </>
         }
         confirmLabel="Publish"

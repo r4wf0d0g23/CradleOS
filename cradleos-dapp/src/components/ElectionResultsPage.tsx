@@ -233,8 +233,7 @@ export function ElectionResultsPage({
 
       {!tally ? (
         <div style={{ padding: 12, background: "rgba(255,71,0,0.05)", border: "1px solid rgba(255,71,0,0.2)", color: "rgba(220,210,190,0.8)", fontSize: 12 }}>
-          No tally has been computed yet. Anyone can call <code>tally::compute_tally</code> once the
-          election is in the CLOSED state.
+          Tally pending
         </div>
       ) : (
         <>
@@ -308,9 +307,7 @@ export function ElectionResultsPage({
           ▣ Reproducible tally
         </div>
         <div style={{ fontSize: 11, color: "rgba(200,190,170,0.7)", lineHeight: 1.6, marginBottom: 10 }}>
-          The chain is the source of truth. This panel fetches every raw ballot event
-          and re-runs the tally locally in your browser. The result must match the
-          on-chain Tally object — if it doesn't, the chain has a bug worth disputing.
+          Verify tally
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button

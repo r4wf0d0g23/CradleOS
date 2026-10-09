@@ -1117,7 +1117,7 @@ export function RecruitingPanel() {
     } catch (e) {
       const msg = normalizeChainError(e);
       setCreateErr(msg.includes("unable to find function") || msg.includes("MoveAbort")
-        ? "Module not yet deployed on-chain. Deploy recruiting_terminal via DGX first."
+        ? "Recruiting unavailable"
         : msg);
     }
     finally { setCreateBusy(false); }

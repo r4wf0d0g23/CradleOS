@@ -236,7 +236,7 @@ export function VoterBallotUI({
       election.weightKind !== WEIGHT_KIND.ONE
     ) {
       setError(
-        "v1 voter UI supports OPEN eligibility + 1c1v weight. Higher-tier configs (tribe-membership, asset-weight) need a more complex PTB — coming in a follow-up.",
+        "Voting unavailable for this configuration.",
       );
       return;
     }
@@ -310,13 +310,11 @@ export function VoterBallotUI({
       {/* Ballot form */}
       {!isOpen ? (
         <div style={{ padding: 12, background: "rgba(255,71,0,0.05)", border: "1px solid rgba(255,71,0,0.2)", color: "rgba(220,210,190,0.8)", fontSize: 12 }}>
-          Election state: <strong>{STATE_LABELS[election.state] ?? "?"}</strong>. Casting is only available during OPEN.
+          Voting unavailable · <strong>{STATE_LABELS[election.state] ?? "?"}</strong>
         </div>
       ) : !supportsCurrentMethod ? (
         <div style={{ padding: 12, background: "rgba(255,71,0,0.05)", border: "1px dashed rgba(255,71,0,0.3)", color: "rgba(220,210,190,0.8)", fontSize: 12 }}>
-          Method-specific ballot UI for this election is coming soon. The on-chain tally module
-          for this method (kind {election.methodKind}) is shipped — the dApp form lands in a follow-up.
-          Design is in <code>memory/projects/voting-infrastructure.md</code>.
+          Ballot method unavailable
         </div>
       ) : election.methodKind === METHOD_KIND.SINGLE_CHOICE ? (
         <SingleChoiceForm

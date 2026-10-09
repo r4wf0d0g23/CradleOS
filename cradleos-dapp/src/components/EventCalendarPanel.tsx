@@ -602,7 +602,7 @@ function PublicCalendarView({ loading, noVault }: { loading: boolean; noVault: b
         Event Calendar
       </div>
       <div style={{ color: "rgba(175,175,155,0.5)", fontSize: "11px", marginBottom: "12px" }}>
-        Connect your wallet and select a tribe vault to view and manage this browser’s events
+        Browser-local events
       </div>
 
       {/* Status hint */}
@@ -611,7 +611,7 @@ function PublicCalendarView({ loading, noVault }: { loading: boolean; noVault: b
       )}
       {noVault && (
         <div style={{ fontSize: 11, color: "rgba(255,71,0,0.6)", marginBottom: 12, border: "1px solid rgba(255,71,0,0.2)", padding: "6px 10px", background: "rgba(255,71,0,0.04)" }}>
-          No tribe vault found — create one in the Tribe Vault tab to unlock tribe events.
+          Tribe vault required
         </div>
       )}
 

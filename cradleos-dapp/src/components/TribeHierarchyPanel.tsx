@@ -788,7 +788,7 @@ function PublicTribeExplorer() {
       <div style={cardStyle}>
         <div style={headingStyle}>Tribe Explorer</div>
         <div style={{ fontSize: 12, color: "rgba(175,175,155,0.65)", marginBottom: 14 }}>
-          Browse any tribe's public on-chain data. Paste a vault object ID to view their roster, coin, and infrastructure.
+          Vault object ID
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <input

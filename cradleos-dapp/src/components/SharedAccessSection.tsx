@@ -99,7 +99,7 @@ export function SharedAccessSection({
         setPreview(null);
         setConfirmed(false);
         throw new Error(
-          "Storage changed since the preview. Review the updated stock before signing.",
+          "Storage changed. Review again.",
         );
       }
       const tx = buildDisableSsuSharingTx(
@@ -118,18 +118,18 @@ export function SharedAccessSection({
         response?.FailedTransaction ||
         response?.effects?.status?.status === "failure"
       )
-        throw new Error("The transaction failed. No revocation was applied.");
+        throw new Error("Transaction failed · Sharing unchanged");
       setPreview(null);
       setConfirmed(false);
       setStatus(
-        "Transaction submitted. Verifying revocation on-chain; refresh before taking another action.",
+        "Submitted · Verifying sharing status…",
       );
       const after = await fetchSsuSnapshot(ssuObjectId);
       if (currentIdentity.current !== identity) return;
       setStatus(
         after.extension === null
-          ? "Extension disabled on-chain. Refresh storage to view the result."
-          : "Transaction submitted. The chain read has not confirmed revocation yet; refresh before taking another action.",
+          ? "Sharing disabled"
+          : "Revocation unconfirmed · Refresh before retrying",
       );
       onRefresh();
     } catch (e) {
@@ -163,36 +163,30 @@ export function SharedAccessSection({
       </div>
       {unsafe ? (
         <div className="ssu-warning">
-          <strong>Current sharing rules are not secure</strong>The enabled
-          CradleOS extension can bypass tribe and pilot permissions, exposing
-          owner storage and the shared pool. New shared transfers are paused in
-          this app. This warning does not disable access on-chain.
+          <strong>Unsafe sharing active</strong>Owner storage and shared pool exposed.
           {snapshot?.frozen ? (
             <p>
-              This extension was permanently frozen. The owner cannot revoke it
-              here; a separately reviewed recovery is required.
+              Permanently frozen · Cannot disable
             </p>
           ) : isOwner ? (
             <p>
-              Review the shared stock and disable the affected extension with
-              your wallet. Changing the saved tribe rule is not a fix.
+              Owner action required
             </p>
           ) : (
             <p>
-              Ask the SSU owner to review and disable the affected extension.
-              You cannot change another pilot's storage access.
+              Owner action required
             </p>
           )}
         </div>
       ) : (
         <p className="ssu-help">
           {readError
-            ? "Access status could not be verified. Refresh before making changes."
+            ? "Access unverified · Refresh"
             : !snapshot
-              ? "Reading the active extension and freeze status…"
+              ? "Checking access…"
               : snapshot.extension
-                ? "A different extension controls this SSU. CradleOS will not replace or remove it."
-                : "Default storage is active. New CradleOS sharing is paused until a reviewed replacement is available."}
+                ? "External extension"
+                : "Default storage · Sharing paused"}
         </p>
       )}
       <details className="ssu-details">
@@ -200,12 +194,10 @@ export function SharedAccessSection({
           <ClientUIIcon name="action/settings_16px" />
           Manage access
         </summary>
-        <p className="ssu-help">
-          Saved rules are shown for reference, not as proof of enforced access.
-        </p>
+
         <ul className="ssu-policy-facts">
           <li>
-            Saved rule:{" "}
+            Saved rule {unsafe ? "(unenforced)" : ""}:{" "}
             {loadedPolicy?.policyId
               ? modeLabel(loadedPolicy.mode)
               : "No policy loaded"}
@@ -225,7 +217,7 @@ export function SharedAccessSection({
             {snapshot
               ? snapshot.frozen
                 ? "No — permanently frozen"
-                : "Yes, with the matching OwnerCap"
+                : "Yes"
               : "Not verified"}
           </li>
         </ul>
@@ -249,15 +241,11 @@ export function SharedAccessSection({
             <strong>Review before signing</strong>
             <p>
               {shared.length
-                ? `${shared.length} shared stack(s) will remain in the pool. Disabling the extension will make this stock inaccessible until a separately reviewed recovery is available.`
-                : "No shared stock was found. The transaction will disable the extension without moving items."}
+                ? `${shared.length} shared stack(s) remain · Inaccessible pending recovery`
+                : "Shared pool empty"}
             </p>
             <p>
-              No items will move. Owner and personal storage stay in place. New
-              stock arriving before confirmation can also remain in the shared
-              pool. No replacement extension will be enabled. Do not change the
-              extension in another session while signing; revocation clears the
-              extension active at execution.
+              No items move. Shared stock, including new arrivals, becomes inaccessible pending recovery. Do not change the extension elsewhere while signing.
             </p>
             {shared.length > 0 && (
               <ul className="ssu-policy-facts">
@@ -276,8 +264,7 @@ export function SharedAccessSection({
                 onChange={(e) => setConfirmed(e.target.checked)}
                 disabled={busy}
               />
-              I understand that no stock will move, sharing will stop, and any
-              shared stock will be inaccessible pending recovery.
+              Disable sharing · Leave shared stock inaccessible pending recovery
             </label>
             <button
               className="ssu-danger-button"

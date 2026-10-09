@@ -182,19 +182,17 @@ export function TurretSettingsCard({
           {settings.mode === 0
             ? "No targets selected."
             : settings.mode === 1
-              ? "Targets attacking anyone on grid; not only attacks against you."
+              ? "Targets attackers against anyone"
               : settings.mode === 2
-                ? "Engages candidates outside your protected pilots and tribes."
-                : "Only pilots or tribes on your hostile lists are eligible."}{" "}
+                ? "Targets non-friendlies"
+                : "Targets hostile lists only"}{" "}
           {settings.shipClass !== 0 &&
-            "Preferred class comes first, then target priority."}
+            "Class preference → Target priority"}
         </p>
         <details className="turret-advanced">
           <summary>Advanced · friends, hostiles &amp; targeting</summary>
           <p>
-            Your character is always protected. Your tribe and friendly tribes
-            are protected unless a pilot is explicitly marked hostile. Friendly
-            pilots remain protected.
+            Protected: you, friendly pilots, your tribe and friendly tribes. Hostile pilots override tribe protection.
           </p>
           <label className="turret-check">
             <input
@@ -208,8 +206,7 @@ export function TurretSettingsCard({
             settings.shipClass === 1 &&
             ![92402, 92403, 92484].includes(turret.typeId) && (
               <p role="status">
-                This weapon type has no documented class match. Strict matching
-                will hold fire.
+                No class match · Strict matching holds fire
               </p>
             )}
           <label className="turret-check">
@@ -237,8 +234,7 @@ export function TurretSettingsCard({
             ))}
           </div>
           <small>
-            Up to 16 numeric character or tribe IDs per list. Use Chain Query to
-            look up a pilot’s game ID. NPCs do not use pilot/tribe lists.
+            Up to 16 game IDs per list · Excludes NPCs
           </small>
         </details>
         {other && (
@@ -357,7 +353,7 @@ export function TurretPolicyPanel() {
       <header className="turret-page-header">
         <div>
           <h2>My Turrets</h2>
-          <p>Set targeting for the turrets owned by your character.</p>
+
         </div>
         {account && (
           <button disabled={query.isFetching} onClick={() => query.refetch()}>
@@ -367,7 +363,7 @@ export function TurretPolicyPanel() {
       </header>
       {!account ? (
         <p className="turret-empty">
-          Connect your wallet to manage your turrets. No tribe vault required.
+          Connect wallet
         </p>
       ) : (
         <>
@@ -385,8 +381,7 @@ export function TurretPolicyPanel() {
           )}
           {!query.isError && query.data?.length === 0 && (
             <p className="turret-empty">
-              No turrets found for your current character. Anchor a turret
-              in-game, then refresh.
+              No turrets found
             </p>
           )}
           {!query.isError && (
@@ -402,8 +397,7 @@ export function TurretPolicyPanel() {
             </div>
           )}
           <p className="turret-footnote">
-            <a href="#/structures">Manage turret power in Structures</a> ·
-            Settings are saved on-chain with your wallet.
+            <a href="#/structures">Structure power ↗</a>
           </p>
         </>
       )}

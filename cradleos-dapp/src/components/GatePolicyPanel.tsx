@@ -416,8 +416,7 @@ function GateFriendlyCharactersSection({ vault, policyId, isFounder }: {
         {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: 8, fontSize: 11 }}>read-only</span>}
       </div>
       <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
-        Mark specific in-game characters as <strong style={{ color: "#00c864" }}>FRIENDLY</strong> for gate transit.
-        Allowed regardless of their tribe or your default access level. Use this for cross-tribe allies who should always be able to use your gates.
+        Allowed · Hostile list takes priority
       </div>
 
       {(friendly ?? []).length === 0 ? (
@@ -540,8 +539,7 @@ function GateHostileCharactersSection({ vault, policyId, isFounder }: {
         {!isFounder && <span style={{ color: "rgba(175,175,155,0.55)", fontWeight: 400, marginLeft: 8, fontSize: 11 }}>read-only</span>}
       </div>
       <div style={{ color: "rgba(175,175,155,0.6)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
-        Mark specific in-game characters as <strong style={{ color: "#ff4444" }}>BLOCKED</strong> from gate transit.
-        Denied regardless of their tribe — overrides everything else, including same-tribe membership and friendly tribes. Use this for KOS targets that must never be allowed to transit.
+        Always denied · Overrides tribe access
       </div>
 
       {(hostile ?? []).length === 0 ? (
@@ -818,7 +816,7 @@ function OwnedGatesCard({ tribePolicyId }: { tribePolicyId: string | null }) {
         </button>
       </div>
       <div style={{ color: "rgba(175,175,155,0.65)", fontSize: 11, marginBottom: 12, lineHeight: 1.5 }}>
-        Click <strong>Authorize</strong> on any gate to enforce {tribePolicyId ? "this tribe's" : "a CradleOS"} policy on transits through it. Once authorized, default jumps are blocked and pilots must request transit through CradleOS (which checks the Friendly/Hostile/Tribe rules above before issuing a permit). To back out, <strong>Remove CradleOS</strong> restores default in-game jump for everyone — no rebuild required.
+        <strong>Authorize:</strong> permits required · <strong>Remove CradleOS:</strong> public jumps restored
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1393,25 +1391,15 @@ function TransitCard({ pilotTribeId }: { pilotTribeId: number }) {
         ⛨ Gate Transit (CradleOS-enforced gates)
       </div>
       <div style={{ ...cardSub, marginBottom: 8 }}>
-        These gates require a CradleOS-issued <strong>JumpPermit</strong> before you can transit.
-        Click <strong>Request Jump Permit</strong> to mint one — the contract checks the gate's
-        access policy before issuing. <strong>You must request a permit BEFORE jumping in-game</strong>;
-        without a valid permit your in-game jump command will be rejected by the gate.
+        Permit required before jumping
       </div>
       <div style={{ ...cardSub, color: "rgba(255,200,0,0.8)", marginBottom: 8 }}>
-        ⓘ Each minted permit covers one crossing of a (source ↔ destination) pair — the game
-        consumes it on use. Its lifetime is set by the gate policy's owner (24h default) and shown
-        per policy in the Gate Access Policy card. As long as the policy keeps you allowed you can
-        re-mint on demand every jump — no cost beyond gas. A long lifetime (≥7d) is a “bus pass”:
-        transit freely for the whole window; a short one (≤1h) means re-authorize each crossing.
+        Single-use permit · Gas required
       </div>
       <div style={{ background: "rgba(255,71,0,0.08)", border: "1px solid rgba(255,71,0,0.35)", borderRadius: 2, padding: "8px 10px", marginBottom: 14, fontSize: 11, lineHeight: 1.5 }}>
-        <span style={{ color: "#FF4700", fontWeight: 700 }}>⚠ SECURITY UPGRADE (v3, 2026-07-08):</span>{" "}
+        <span style={{ color: "#FF4700", fontWeight: 700 }}>Gate policy</span>{" "}
         <span style={{ color: "rgba(230,220,200,0.9)" }}>
-          Jump permits are now only issued against the policy the gate's owner explicitly bound to that gate.
-          <strong> Gate owners:</strong> your enforced gates will NOT issue permits until you press{" "}
-          <strong>Bind Policy</strong> in “Your Gates” below (one transaction, one time per gate).
-          Newly authorized gates are bound automatically.
+          Bound policy required
         </span>
       </div>
 

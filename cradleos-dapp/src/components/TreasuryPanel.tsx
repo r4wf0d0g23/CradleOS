@@ -146,7 +146,7 @@ function CorpSetupForm({ onSuccess }: { onSuccess: () => void }) {
     <div className="card" style={{ maxWidth: "440px" }}>
       <h3 style={{ color: "#FF4700", marginBottom: "8px" }}>FOUND CORPORATION</h3>
       <p style={{ color: "#888", fontSize: "13px", marginBottom: "16px" }}>
-        No tribe found. Initialize your tribe + treasury in one transaction.
+        Create tribe treasury
       </p>
 
       {tribeLoading ? (
@@ -169,7 +169,7 @@ function CorpSetupForm({ onSuccess }: { onSuccess: () => void }) {
           <div style={{ color: "#FF4700", fontSize: "16px", fontWeight: 700, fontFamily: "monospace" }}>
             {corpName}
           </div>
-          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", marginTop: "3px" }}>tribe_id {tribeId} · read from Character on-chain</div>
+          <div style={{ color: "rgba(175,175,155,0.55)", fontSize: "10px", marginTop: "3px" }}>Tribe {tribeId}</div>
         </div>
       )}
 
@@ -194,7 +194,7 @@ function TreasuryConnectForm({ corpId, onConnect }: { corpId: string; onConnect:
     <div className="card" style={{ maxWidth: "440px" }}>
       <h3 style={{ color: "#FF4700", marginBottom: "8px" }}>Connect Treasury</h3>
       <p style={{ color: "#888", fontSize: "13px", marginBottom: "12px" }}>
-        Tribe found. Enter the Treasury object ID (from init tx effects).
+        Treasury object ID
       </p>
       <input
         value={value}
@@ -556,8 +556,7 @@ function TokenTelemetricsRow({ corpName }: { corpName: string }) {
       <div style={teleSectionWrap}>
         <div style={teleHeader}>Tribe Token</div>
         <div style={teleSub}>
-          No token launched for this tribe yet. Initialize one in the <strong>Tribe Token</strong> tab to
-          unlock minting, infra-backed issuance, and EVE-collateralized supply.
+          No tribe token
         </div>
       </div>
     );

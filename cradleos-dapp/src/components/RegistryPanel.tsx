@@ -278,10 +278,10 @@ export function RegistryPanel() {
       {/* ── New Chain Launch Banner ── */}
       <div className="card" style={{ border: "1px solid rgba(0,255,150,0.25)", background: "rgba(0,255,150,0.03)" }}>
         <div style={{ color: "#00ff96", fontWeight: 700, fontSize: "15px", marginBottom: "6px" }}>
-          🚀 New CradleOS Chain — March 24, 2026
+          Create tribe
         </div>
         <p style={{ color: "rgba(200,220,200,0.75)", fontSize: "12px", marginBottom: "14px", lineHeight: 1.6 }}>
-          All tribes start fresh on the unified package. Founders: press <strong>Found My Tribe</strong> to create your tribe vault and defense policy on the new chain in a single flow.
+          Tribe vault &amp; defense policy
         </p>
 
         {launchStep === "policy_done" ? (
@@ -293,7 +293,7 @@ export function RegistryPanel() {
               </div>
             )}
             <div style={{ fontSize: "11px", fontWeight: 400, marginTop: 4 }}>
-              Head to the Tribe Vault tab to mint your EVE coin. Defense policy is ready in the Defense tab.
+              Tribe created
             </div>
           </div>
         ) : launchStep === "vault_done" ? (
@@ -403,7 +403,7 @@ export function RegistryPanel() {
           {!claimExists && tribeId != null && characterId && (
             <>
               <div style={{ color: "rgba(175,175,155,0.6)", fontSize: "12px", marginBottom: "10px" }}>
-                No claim registered for Tribe #{tribeId}. Stake your claim to prevent squatting.
+                No active claim · Tribe #{tribeId}
               </div>
               <button className="accent-button" onClick={handleRegisterClaim} disabled={claimBusy}
                 style={{ fontSize: "12px", padding: "7px 18px" }}>
@@ -414,12 +414,12 @@ export function RegistryPanel() {
           )}
           {myClaimActive && !vaultExists && (
             <div style={{ color: "#00ff96", fontSize: "12px", marginTop: "8px" }}>
-              ✓ Claim active — go to Tribe Vault tab to create your vault.
+              ✓ Claim active
             </div>
           )}
           {myClaimActive && vaultExists && (
             <div style={{ color: "#00ff96", fontSize: "12px", marginTop: "8px" }}>
-              ✓ Claim active — vault confirmed. Switch to Tribe Vault tab to manage it.
+              ✓ Claim active · Vault confirmed
             </div>
           )}
           {/* Conflict: someone else claimed, no vault yet — member can challenge */}

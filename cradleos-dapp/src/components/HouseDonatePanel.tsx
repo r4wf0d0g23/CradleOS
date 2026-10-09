@@ -180,7 +180,7 @@ export function HouseDonatePanel({
         <div>
           <span className="lounge-eyebrow">PLAYER-FUNDED · SUI TESTNET</span>
           <h2 id="casino-donate-title">Seed the house</h2>
-          <p>Contribute $EVE to the shared casino bankroll.</p>
+
         </div>
       </div>
       <div className="casino-donate-status">
@@ -206,9 +206,7 @@ export function HouseDonatePanel({
         </div>
       </div>
       <p className="lounge-muted">
-        Donations do not enable games. This is an irreversible gift to the
-        shared bank, not a deposit you can withdraw or a separate escrow. The
-        operator can withdraw it; future enabled games may pay it out.
+        Irreversible gift · Operator-controlled funds · No withdrawal or profit-sharing rights
       </p>
       {(house.isError ||
         (addr && coins.isError) ||
@@ -216,7 +214,7 @@ export function HouseDonatePanel({
         <p role="alert" className="lounge-error">
           {house.data?.paused === false
             ? "Seeding is closed while the house is unpaused."
-            : "Could not verify the current house or wallet balance. Refresh to retry."}
+            : "Balance unavailable. Refresh."}
         </p>
       )}
       {network !== "testnet" && (
@@ -261,9 +259,7 @@ export function HouseDonatePanel({
             />
           </label>
           <p className="lounge-muted">
-            Current-cycle $EVE only. SUI testnet gas is also required. Your
-            wallet confirms the amount and signs the gift; even an empty label
-            leaves your address public.
+            Current-cycle $EVE · SUI gas required · Public transaction
           </p>
           <button
             className="lounge-primary"
@@ -307,21 +303,16 @@ export function HouseDonatePanel({
         <div className="lounge-confirm casino-donate-pending">
           <p>A donation attempt needs review: {pending}</p>
           <p>
-            Check your wallet activity. If it succeeded, do not send it again.
+            Check wallet history before retrying.
           </p>
           <button type="button" onClick={clearPending}>
-            I checked wallet activity — clear retry guard
+            Checked wallet history · Clear
           </button>
         </div>
       )}
       <details className="lounge-rules">
-        <summary>Destination &amp; funding details</summary>
-        <p>
-          Funds go through the current house::donate contract, never a coin
-          transfer to the object address. A donation does not grant ownership,
-          profit sharing or withdrawal rights. Receiving funds is separate from
-          the contract fixes and approval needed to enable wagering.
-        </p>
+        <summary>Destination</summary>
+
         <p className="casino-donate-id">House: {CASINO_HOUSE}</p>
       </details>
     </section>

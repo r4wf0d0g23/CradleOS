@@ -778,7 +778,8 @@ function KillFeedTab({
             : `No kills match the current filter (${kills.length} loaded)`}
         </div>
       ) : (
-        <div>
+        <div style={{overflowX:"auto"}} role="region" aria-label="Kill feed" tabIndex={0}>
+        <div style={{minWidth:680}}>
           <div style={{ display: "grid", gridTemplateColumns: "48px 44px minmax(0,1fr) 40px minmax(0,1fr) 110px 24px", gap: "0 8px", padding: "3px 8px 5px", borderBottom: "1px solid rgba(255,255,255,0.12)", marginBottom: 2 }}>
             {["TIME", "TYPE", "KILLER", "", "VICTIM", "LOCATION", ""].map((h, i) => (
               <span key={i} style={{ color: "rgba(255,255,255,0.3)", fontSize: 9, letterSpacing: "0.12em", fontWeight: 700 }}>{h}</span>
@@ -853,6 +854,7 @@ function KillFeedTab({
               </div>
             );
           })}
+        </div>
         </div>
       )}
       {openKill && (
@@ -1280,7 +1282,7 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
             <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>
-              Structures that have revealed their location on-chain via LocationRevealedEvent
+              Public structure locations
             </div>
             <button
               onClick={async () => {
@@ -1390,7 +1392,7 @@ function InfraTab({ nodes, charMap, kills, sysMap, loading }: { nodes: any[]; ch
             );
           })()}
           {!exposedLoading && exposed.length === 0 && (
-            <div style={S.muted}>Click FETCH EXPOSED to load on-chain location data</div>
+            <div style={S.muted}>No locations loaded</div>
           )}
         </div>
       )}

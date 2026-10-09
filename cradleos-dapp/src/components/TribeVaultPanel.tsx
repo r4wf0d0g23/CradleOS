@@ -281,8 +281,7 @@ function LaunchCoinForm({ onSuccess }: { onSuccess: () => void }) {
     <div className="card" style={{ maxWidth: "460px" }}>
       <h3 style={{ color: "#FF4700", marginBottom: "4px" }}>LAUNCH TRIBE TOKEN</h3>
       <p style={{ color: "#888", fontSize: "13px", marginBottom: "18px" }}>
-        Create an on-chain cryptocurrency for your tribe. Your wallet's in-game character
-        determines your tribe — enter a name and symbol, then launch.
+        Name and symbol
       </p>
 
       {/* Tribe ID display */}
@@ -411,7 +410,7 @@ function ConnectVaultForm({ tribeId, onConnect }: { tribeId: number | null; onCo
     <div className="card" style={{ maxWidth: "460px" }}>
       <h3 style={{ color: "#FF4700", marginBottom: "8px" }}>Connect Tribe Vault</h3>
       <p style={{ color: "#888", fontSize: "13px", marginBottom: "12px" }}>
-        Vault launched. Enter the TribeVault object ID (from the launch tx in Sui explorer).
+        Vault object ID
       </p>
       <input
         value={value}
@@ -1686,7 +1685,7 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
   // No vault found yet — show launch form
   if (!vault) {
     if (!CYCLE_CONTRACTS_READY) return <div>
-      <p>Cycle 7 starts fresh. Tribe vault creation will open when the new contracts are deployed. Previous-cycle vaults are retired.</p>
+      <p>Vault creation unavailable</p>
     </div>;
     if (tribeId && getCachedVaultId(tribeId) && !manualVaultId) {
       // Cached ID exists but fetch failed — show connect form to re-enter
@@ -1727,9 +1726,7 @@ export function TribeVaultPanel({ onTxSuccess }: Props) {
         <div style={{ color: "#888", fontSize: "13px", marginBottom: "16px" }}>
           Your existing vault <span style={{ fontFamily: "monospace", color: "#aaa" }}>
             {vault.coinName} ({vault.coinSymbol})
-          </span> was created under an older package version and is not compatible with
-          the current on-chain functions (register infra, issue tokens, DEX).
-          Launch a new vault under the current package to unlock full functionality.
+          </span> · Incompatible vault version
         </div>
         <button
           className="accent-button"

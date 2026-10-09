@@ -79,11 +79,9 @@ export function PersonalGatePolicySection() {
   return (
     <section>
       <h3>My Gate Policy</h3>
-      <p>
-        Gate access is separate from <a href="#/defense">My Turrets</a>.
-      </p>
+
       {!account ? (
-        <p>Connect your wallet to manage gate access.</p>
+        <p>Connect wallet</p>
       ) : setup.isPending ? (
         <p>Loading personal gate setup…</p>
       ) : setup.isError ? (

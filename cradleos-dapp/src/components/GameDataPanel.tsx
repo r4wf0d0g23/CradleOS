@@ -56,8 +56,8 @@ function NativeItemDetails({ id, state }: { id: number; state: NativeState }) {
   return <details style={{ ...note, marginTop: 10 }} onToggle={e => setOpen(e.currentTarget.open)}>
     <summary style={{ cursor: "pointer", color: "#ffb58b" }}>Client attributes &amp; source comparison</summary>
     {open && (!data ? <Status error={state.error} retry={state.retry} /> : <>
-      {!item?.clientRecord ? <p>No matching native type record in this client snapshot. API data above remains available; no client statistics were substituted.</p> : <>
-        <p><strong>Raw base attributes</strong> · client {data.build}. Not effective fitted, skill-modified, or live-server values. Zero can be a base placeholder. Percentages, multipliers, and timing values are not converted.</p>
+      {!item?.clientRecord ? <p>Client attributes unavailable.</p> : <>
+        <p><strong>Raw base attributes</strong> · Build {data.build}</p>
         {item.clientName && item.clientName !== item.name && <p>Client name: {item.clientName}</p>}
         <div style={{ display: "grid", gap: 6 }}>{item.attributes.map(a => {
           const def = data.attributes[a.id];
@@ -67,10 +67,10 @@ function NativeItemDetails({ id, state }: { id: number; state: NativeState }) {
             <div style={{ fontSize: 10 }}>{def.name} · attribute {a.id}{unit && <> · unit label: {unit.label || "not localized"} (internal: {unit.name})</>}</div>
           </div>;
         })}</div>
-        {!item.attributes.length && <p>No base-attribute row was found for this item; this does not imply zero statistics.</p>}
-        {item.graphicID && <p>Graphics reference #{item.graphicID}{graphic?.sofHullName && <> · hull <code>{graphic.sofHullName}</code></>}{graphic?.sofLayout?.length ? <> · layout {graphic.sofLayout.join(", ")}</> : null}. This is a data reference, not a complete model preview.</p>}
+        {!item.attributes.length && <p>Base attributes unavailable.</p>}
+        {item.graphicID && <p>Graphics reference #{item.graphicID}{graphic?.sofHullName && <> · hull <code>{graphic.sofHullName}</code></>}{graphic?.sofLayout?.length ? <> · layout {graphic.sofLayout.join(", ")}</> : null}</p>}
       </>}
-      {differences.length > 0 && <div><strong>API / client differences</strong>{differences.map(d => <p key={d.field}>{d.field}: API <code>{JSON.stringify(d.api)}</code> · client <code>{JSON.stringify(d.client)}</code></p>)}<p>Each source is retained separately; no silent replacement.</p></div>}
+      {differences.length > 0 && <div><strong>API / client differences</strong>{differences.map(d => <p key={d.field}>{d.field}: API <code>{JSON.stringify(d.api)}</code> · client <code>{JSON.stringify(d.client)}</code></p>)}</div>}
     </>)}
   </details>;
 }
@@ -82,7 +82,7 @@ function RecipesView({ state }: { state: NativeState }) {
   const recipes = useMemo(() => data ? filterNativeRecipes(data, query) : [], [data, query]);
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}><strong>{data.counts.recipes} client recipe definitions</strong> · build {data.build}. Input/output quantities from the current client. Open Recipes for batch planning and material lists.</p>
+    <p style={note}><strong>{data.counts.recipes} recipes</strong> · Build {data.build}</p>
     <input aria-label="Search client recipes" placeholder="Search input, output, type ID, or recipe ID…" value={query} onChange={e => { setQuery(e.target.value); setLimit(30); }} style={{ ...control, width: "100%", boxSizing: "border-box" }} />
     <p style={note}>{recipes.length} matching recipes · showing {Math.min(limit, recipes.length)}</p>
     <div style={grid}>{recipes.slice(0, limit).map(r => <article key={r.id} style={card}>
@@ -92,11 +92,11 @@ function RecipesView({ state }: { state: NativeState }) {
         <strong style={{ fontSize: 11 }}>{side === "inputs" ? "INPUTS" : "OUTPUTS"}</strong>
         <ul style={{ ...note, paddingLeft: 18, margin: "4px 0" }}>{r[side].map(line => <li key={line.typeID}>
           <strong className="icon-label" style={{ color: TEXT }}><ItemIcon typeId={line.typeID} size={28} /><span>{line.quantity.toLocaleString()} × {data.types[line.typeID].name}</span></strong>
-          <div>Type {line.typeID}{!data.types[line.typeID].apiPublished && " · client-only reference; not in API catalog"}</div>
+          <div>Type {line.typeID}{!data.types[line.typeID].apiPublished && " · Client-only"}</div>
         </li>)}</ul>
       </div>)}
       <details style={{ ...note, marginTop: 8 }}><summary style={{ cursor: "pointer" }}>Source details</summary>
-        <p>Native <code>runTime</code>: {r.runTime} (raw; timing unit unverified). Primary type ID: {r.primaryTypeID}.</p>
+        <p>Raw runtime: {r.runTime} · Unit unverified · Type {r.primaryTypeID}</p>
         {data.patchChecks.filter(c => c.recipeID === r.id).map(c => <p key={c.recipeID}><SourceLink href={c.url}>Official patch cross-check</SourceLink>: {c.fields}.</p>)}
       </details>
     </article>)}</div>
@@ -118,7 +118,7 @@ function ItemsView({ meta, native }: { meta: GameDataMeta; native: NativeState }
   }, [data, query, category]);
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}>{data.length} item types from the official Stillness API, checked {meta.officialApi.fetchedAt.slice(0, 10)}. This is the API-published catalog, not every item in the client. {meta.counts.unnamedItems} record has no published name.</p>
+    <p style={note}>{data.length} official item types · Updated {meta.officialApi.fetchedAt.slice(0, 10)}</p>
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
       <input aria-label="Search items" placeholder="Search item name, type ID, or description…" value={query} onChange={e => { setQuery(e.target.value); setLimit(48); }} style={{ ...control, flex: "1 1 200px" }} />
       <select aria-label="Item category" value={category} onChange={e => { setCategory(e.target.value); setLimit(48); }} style={control}>
@@ -153,7 +153,7 @@ function StringsView({ meta }: { meta: GameDataMeta }) {
     return found;
   }, [data, query, limit]);
   return <section>
-    <p style={note}>{meta.counts.strings.toLocaleString()} non-empty, non-numeric English strings from client build {meta.build}. These IDs are <strong>localization message IDs—not item type IDs</strong>. Text in the client does not prove a feature is live or obtainable.</p>
+    <p style={note}>{meta.counts.strings.toLocaleString()} localization strings · Build {meta.build}</p>
     {!data ? <Status error={error} retry={retry} /> : <>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         <input aria-label="Search client text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search text or localization message ID…" style={{ ...control, flex: "1 1 200px" }} />
@@ -161,7 +161,7 @@ function StringsView({ meta }: { meta: GameDataMeta }) {
       </div>
       <p style={note}>{query.trim().length === 1 ? "Enter at least two characters." : `Showing ${matches.length} results${matches.length === limit ? " (limit reached; narrow your search)" : ""}.`}</p>
       <div style={{ display: "grid", gap: 5 }}>{matches.map(([id,text]) => <details key={id} style={card}>
-        <summary style={{ cursor: "pointer", fontSize: 11, color: TEXT }}><span style={{ color: "#ffb58b" }}>Message {id}</span> · {text.slice(0,160)}{text.length > 160 ? "…" : ""}</summary>
+        <summary style={{ cursor: "pointer", fontSize: 11, color: TEXT }}><span style={{ color: "#ffb58b" }}>Message ID {id}</span> · {text.slice(0,160)}{text.length > 160 ? "…" : ""}</summary>
         <div style={{ ...note, whiteSpace: "pre-wrap", marginTop: 8 }}>{text}</div>
       </details>)}</div>
     </>}
@@ -172,7 +172,7 @@ function EventsView({ meta }: { meta: GameDataMeta }) {
   const { data, error, retry } = useSnapshot<Record<string, { eventTypeName: string }>>("events");
   if (!data) return <Status error={error} retry={retry} />;
   return <section>
-    <p style={note}>{Object.keys(data).length} internal client event definitions decoded from the hash-verified <code>eventtypes.static</code> in build {meta.build}. </p>
+    <p style={note}>{Object.keys(data).length} client event definitions · Build {meta.build} </p>
     <div style={grid}>{Object.entries(data).map(([id, event]) => <div key={id} style={{ ...card, fontSize: 12 }}><span style={{ color: "#ffb58b" }}>Event {id}</span> · {event.eventTypeName}</div>)}</div>
   </section>;
 }
@@ -192,21 +192,17 @@ function ChangesView() {
 
 function SourcesView({ meta }: { meta: GameDataMeta }) {
   const { data: changes, error, retry } = useSnapshot<GameDataChanges>("changes");
-  return <section style={{ display: "grid", gap: 12 }}>
-    <article style={card}><h3 style={{ color: TEXT, marginTop: 0 }}>Attribution</h3><p style={note}>EVE Frontier artwork © Fenris Creations. Game assets retain their original rights; CradleOS’s code license covers its code only.</p><p style={note}><SourceLink href="https://fenris.com/news/2026/studio-behind-eve-online-goes-independent-rebrands-as-fenris-creations-enters-research-partnership-with-google-deepmind">Studio name change · May 6, 2026</SourceLink></p></article>
-    <article style={card}><h3 style={{ color: TEXT, marginTop: 0 }}>Snapshot coverage</h3><ul style={{ ...note, paddingLeft: 18 }}>{meta.coverage.map(x => <li key={x} style={{ marginBottom: 6 }}>{x}</li>)}</ul>
-      <p style={note}>Physical item values are reported as published by the API. Missing names and placeholder descriptions are retained honestly. No old-cycle game state or balances are included.</p>
+  return <section style={{display:"grid",gap:12}}>
+    <article style={card}><h3 style={{color:TEXT,marginTop:0}}>Sources</h3>
+      <p style={note}>Stillness · Cycle {meta.cycle} · Build {meta.build}</p>
+      <p style={note}>Snapshot {meta.extractedAt.slice(0,10)}</p>
+      <p style={note}><SourceLink href={meta.officialApi.url}>Official item API ↗</SourceLink></p>
+      {meta.native && <p style={note}><SourceLink href={`${GAME_DATA_BASE}/${meta.native.file}`}>Recipes &amp; attributes ↓</SourceLink></p>}
+      <p style={note}><SourceLink href={`${GAME_DATA_BASE}/meta.json`}>Source records ↓</SourceLink></p>
+      <p style={note}>Artwork © Fenris Creations</p>
     </article>
-    <article style={card}><h3 style={{ color: TEXT, marginTop: 0 }}>Source records</h3>
-      <p style={note}><SourceLink href={meta.officialApi.url}>Official Stillness item API</SourceLink> · fetched {meta.officialApi.fetchedAt}</p>
-      <p style={note}>Client: Stillness / Cycle 7 / build {meta.build} · extracted {meta.extractedAt}. Resource sizes and MD5 hashes matched the launcher's manifest before decoding. Independent SHA-256 digests are recorded in the snapshot metadata.</p>
-      <p style={note}>{meta.native?.recipes ?? "Current"} native client recipe definitions and raw base attributes are now available. Facility availability, timing units, effective fitted statistics, and complete current 3D models remain unverified. Older localization IDs and illustrative model stand-ins are not presented as current items.</p>
-      {meta.native && <p style={note}><SourceLink href={`${GAME_DATA_BASE}/${meta.native.file}`}>Download native recipe / attribute data</SourceLink> · extracted {meta.native.extractedAt}<br />SHA-256 {meta.native.sha256}</p>}
-      <SourceLink href={`${GAME_DATA_BASE}/meta.json`}>Download provenance JSON</SourceLink>
-      <details style={{ ...note, marginTop: 10 }}><summary style={{ cursor: "pointer" }}>Verified client files</summary>{meta.clientFiles.map(file => <div key={file.resource} style={{ marginTop: 8 }}><code>{file.resource}</code><br />{file.bytes.toLocaleString()} bytes · {file.decodeStatus ?? "Decoded for this snapshot"}<br /><span style={{ fontSize: 9 }}>SHA-256 {file.sha256}</span></div>)}</details>
-    </article>
-    <article style={card}><h3 style={{ color: TEXT, marginTop: 0 }}>Official GitHub cross-check</h3>
-      {!changes ? <Status error={error} retry={retry} /> : <><p style={note}>Upstream heads checked {changes.checkedAt}. These support the current world/API configuration; they do not replace the client as a source of game statistics.</p>{changes.github.map(repo => <p key={repo.repo} style={note}><SourceLink href={repo.url}>{repo.repo} · {repo.sha.slice(0,8)}</SourceLink><br />{repo.note}</p>)}</>}
+    <article style={card}><h3 style={{color:TEXT,marginTop:0}}>Official repositories</h3>
+      {!changes ? <Status error={error} retry={retry} /> : changes.github.map(repo => <p key={repo.repo} style={note}><SourceLink href={repo.url}>{repo.repo} · {repo.sha.slice(0,8)}</SourceLink></p>)}
     </article>
   </section>;
 }

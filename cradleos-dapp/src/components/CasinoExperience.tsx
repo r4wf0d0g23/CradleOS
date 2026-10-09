@@ -352,9 +352,7 @@ function Rules({ game, picks }: { game: PracticeGame; picks: number[] }) {
         </div>
       )}
       <p>
-        All multipliers are total returns, including the stake. Practice uses
-        local random draws, rounded down to 0.01 chip—not on-chain randomness.
-        Free chips have no cash or $EVE value.
+        Multipliers include stake · Free chips · No cash value
       </p>
     </details>
   );
@@ -388,15 +386,14 @@ function TestnetStatus({ q }: { q: ReturnType<typeof useLoungeHouse> }) {
         </strong>
         <p>
           {q.isError
-            ? "Unable to verify the house. No wagers enabled."
+            ? "House unavailable · Wagering paused"
             : h
               ? `Bankroll: ${(Number(h.bank) / 1e9).toLocaleString()} $EVE · Sui Testnet · Cycle 7`
-              : "Reading the current-cycle house…"}
+              : "Loading house…"}
         </p>
         {h && !ready && (
           <p>
-            Wagering is paused for contract security repairs and bankroll setup.
-            Play Money is available now.
+            Testnet wagering paused
           </p>
         )}
       </div>
@@ -1109,40 +1106,6 @@ export function CasinoExperience({
           />
         ) : !game ? (
           <>
-            <div className="lounge-hero">
-              <div>
-                <span className="lounge-eyebrow">
-                  THE FRONTIER DOESN’T SLEEP
-                </span>
-                <h2>
-                  Find your
-                  <br />
-                  <em>next signal.</em>
-                </h2>
-                <p>
-                  Salvaged fortunes. Familiar games.
-                  <br />A lounge on the edge of the unknown.
-                </p>
-                <button
-                  className="lounge-primary"
-                  onClick={() =>
-                    mode === "practice"
-                      ? setCategory("slots")
-                      : navigate("slots")
-                  }
-                >
-                  {mode === "practice"
-                    ? "Explore 9 slot games"
-                    : "Play Salvage Reels"}{" "}
-                  <span>↗</span>
-                </button>
-              </div>
-              <div className="lounge-hero-art" aria-hidden="true">
-                <div className="lounge-orbit" />
-                <img src={`${base}casino/cards/slots.webp`} alt="" />
-                <span>CRADLE // SALVAGE REELS</span>
-              </div>
-            </div>
             {mode === "practice" &&
               state.craps &&
               (crapsEscrow(state.craps) > 0 || state.craps.point > 0) && (
@@ -1236,7 +1199,7 @@ export function CasinoExperience({
             </div>
             {!filtered.length && (
               <p className="lounge-empty">
-                No games found. Try another search or category.
+                No games found.
               </p>
             )}
           </>
@@ -1636,9 +1599,7 @@ export function CasinoExperience({
                       <span>↗</span>
                     </button>
                   )}
-                  <p className="lounge-session-note">
-                    Free chips · saved in this tab. No wallet or tokens used.
-                  </p>
+
                   <Rules game={game as PracticeGame} picks={picks} />
                 </aside>
               </div>
@@ -1656,8 +1617,8 @@ export function CasinoExperience({
           <span>◇ CRADLE CASINO</span>
           <span>
             {mode === "practice"
-              ? "Practice chips are free, tab-local and non-redeemable."
-              : "Sui Testnet · current-cycle $EVE · wallet confirmation required."}
+              ? "Play Money · No cash value"
+              : "Sui Testnet · $EVE"}
           </span>
           <a href="#/gamedata">Sources</a>
         </footer>

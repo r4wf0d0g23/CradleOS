@@ -349,7 +349,9 @@ select option:checked {
 
 
 /* Cycle compatibility status, readable in narrow embedded webviews. */
-.cycle-status{margin:8px 0 12px;border:1px solid #715634;background:#191712;color:#ddd7c8;font-size:13px;line-height:1.65;}
+.cycle-status{padding:8px 14px;margin:8px 0 12px;border:1px solid #715634;background:#191712;color:#ddd7c8;font-size:13px;line-height:1.65;}
 .cycle-status summary{padding:10px 14px;cursor:pointer;}
 .cycle-status-body{padding:18px 22px;max-width:1000px;color:#ddd7c8;line-height:1.7;}
 .cycle-status-body a{color:#efab68;text-decoration:underline;}
+
+.cycle-status a{color:#efab68;}

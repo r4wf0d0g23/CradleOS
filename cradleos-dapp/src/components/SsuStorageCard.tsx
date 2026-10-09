@@ -67,30 +67,26 @@ export function SsuStorageCard({
     personal: all.filter((i) => i.partition === "unknown").length,
     open: all.filter((i) => i.partition === "open").length,
   };
-  const tabs: { key: Filter; label: string; icon: string; help: string }[] = [
+  const tabs: { key: Filter; label: string; icon: string }[] = [
     {
       key: "all",
       label: "All stock",
       icon: "gameplay/inventory_32px",
-      help: "Storage areas are separate. A shared policy does not change ownership.",
     },
     {
       key: "owner_main",
       label: "Owner storage",
       icon: "window/locked_16px",
-      help: "The SSU owner's inventory. Use the in-game client for normal owner transfers.",
     },
     {
       key: "personal",
       label: "Personal storage",
       icon: "generic/person_16px",
-      help: "Separate inventories for individual pilots. Your personal storage stays separate from other pilots' stock.",
     },
     {
       key: "open",
       label: "Shared pool",
       icon: "folder/shared_folder_16px",
-      help: "Extension-controlled stock. Shared transfers are paused while the current access extension is unsafe.",
     },
   ];
   return (
@@ -173,14 +169,8 @@ export function SsuStorageCard({
               </button>
             ))}
           </div>
-          <p className="ssu-help">{tabs.find((t) => t.key === filter)?.help}</p>
-          {unsafe && (
-            <p className="ssu-risk-note">
-              The active extension can bypass the saved rules, including access
-              to owner storage and the shared pool. These area labels are not a
-              security guarantee while it remains enabled.
-            </p>
-          )}
+
+
           <div className="ssu-stock-toolbar">
             <label className="ssu-search">
               <ClientUIIcon name="action/search_16px" />
@@ -242,10 +232,7 @@ export function SsuStorageCard({
                 <ClientUIIcon name="editing/details_view_16px" />
                 Storage capacity & details
               </summary>
-              <p className="ssu-help">
-                Capacity is measured separately for each storage area, not as
-                one combined tank.
-              </p>
+
               {snapshot.slots.map((slot) => (
                 <div className="ssu-capacity" key={slot.key}>
                   <span>
@@ -269,10 +256,7 @@ export function SsuStorageCard({
                 </div>
               ))}
               <small className="ssu-object-id">SSU {ssu.objectId}</small>
-              <small className="ssu-help">
-                Inventory contents are public on-chain. No items have been moved
-                by viewing this page.
-              </small>
+
             </details>
           )}
         </div>

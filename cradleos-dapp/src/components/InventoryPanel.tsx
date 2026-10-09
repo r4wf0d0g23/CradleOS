@@ -481,13 +481,7 @@ function WalletStuckItemsSection({
               marginBottom: 10,
             }}
           >
-            Items that landed in your wallet from a shared SSU withdraw are
-            unusable in-game until redeposited to the SSU they came from.
-            <br />
-            <strong style={{ color: "#FF4700" }}>TO MY PARTITION</strong> drops the item
-            into your per-character partition on that SSU, where the in-game
-            inventory window can see it. <strong style={{ color: "rgba(255,255,255,0.7)" }}>RETURN TO SHARED</strong>{" "}
-            is paused while the sharing extension is unsafe.
+            Return wallet items to their source SSU · Shared returns paused
           </div>
 
           {txStatus && (
@@ -1621,13 +1615,8 @@ export function InventoryPanel() {
     <div style={{ padding: "0 0 24px" }}>
       <section className="ssu-overview">
         <h2><ClientUIIcon name="gameplay/inventory_32px" size={32} />Tribal storage</h2>
-        <p>Find your stock, see whose storage it is, and check sharing in one place.</p>
-        <div className="ssu-overview-areas">
-          <div><strong><ClientUIIcon name="window/locked_16px" />Owner storage</strong><span>The SSU owner's stock. Normal transfers stay in the game client.</span></div>
-          <div><strong><ClientUIIcon name="generic/person_16px" />Personal storage</strong><span>Each pilot has a separate storage area; it is not automatically shared with the tribe.</span></div>
-          <div><strong><ClientUIIcon name="folder/shared_folder_16px" />Shared pool</strong><span>Stock controlled by an extension. Check the actual access status before using it.</span></div>
-        </div>
-        <div className="ssu-warning"><strong>Shared transfers paused</strong>The current CradleOS sharing extension cannot enforce its saved access rules. New sharing and shared deposits are blocked here. Owners: open your SSU and choose Manage access to review the active extension. This web safeguard does not revoke anything on-chain.</div>
+
+        <div className="ssu-warning"><strong>Shared transfers paused</strong>Existing on-chain access remains active.</div>
       </section>
 
       {/* No wallet */}
@@ -1641,7 +1630,7 @@ export function InventoryPanel() {
             textAlign: "center",
           }}
         >
-          Wallet not connected — connect EVE Vault to view inventory.
+          Connect EVE Vault
         </div>
       )}
 
