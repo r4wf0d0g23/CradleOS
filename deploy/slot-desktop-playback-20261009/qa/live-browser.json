@@ -1,0 +1,664 @@
+{
+  "base": "https://cradleos.io",
+  "mode": "isolated browser Play Money; actual UI and engine-produced saved fixtures; no wallet signing",
+  "checks": [
+    "1440 slot_scrapyard: Animated visible travel under OS reduced, exact endpoint, one cursor, unchanged ledger",
+    "1440 slot_reactor: Animated visible travel under OS reduced, exact endpoint, one cursor, unchanged ledger",
+    "1440 slot_vault: Animated visible travel under OS reduced, exact endpoint, one cursor, unchanged ledger",
+    "1440 slot_gatecrash: Animated visible travel under OS reduced, exact endpoint, one cursor, unchanged ledger",
+    "1440 classic slots: moving timeline, preference survives reload, one debit/result unchanged",
+    "390 slot_scrapyard: Animated visible travel under normal motion, exact endpoint, one cursor, unchanged ledger",
+    "390 classic slots: moving timeline, preference survives reload, one debit/result unchanged"
+  ],
+  "frames": [
+    {
+      "width": 1440,
+      "key": "slot_scrapyard",
+      "early": {
+        "at": 119.70000004768372,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2287.89)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2489.71)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2690.44)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2891.06)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -3091.65)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 237.5,
+          "y": 613.171875,
+          "width": 666,
+          "height": 316,
+          "top": 613.171875,
+          "right": 903.5,
+          "bottom": 929.171875,
+          "left": 237.5
+        }
+      },
+      "later": {
+        "at": 568.3000000715256,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1035.68)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1307.76)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1569.35)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1823.23)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2071.83)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 237.5,
+          "y": 613.171875,
+          "width": 666,
+          "height": 316,
+          "top": 613.171875,
+          "right": 903.5,
+          "bottom": 929.171875,
+          "left": 237.5
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "key": "slot_reactor",
+      "early": {
+        "at": 118.29999995231628,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "cascade-ghost-layer",
+            "display": "block",
+            "transform": "none"
+          }
+        ],
+        "falls": [
+          "matrix(1, 0, 0, 1, 0, -252)",
+          "matrix(1, 0, 0, 1, 0, -252)",
+          "matrix(1, 0, 0, 1, 0, -168)",
+          "matrix(1, 0, 0, 1, 0, -168)",
+          "matrix(1, 0, 0, 1, 0, -168)",
+          "matrix(1, 0, 0, 1, 0, -84)",
+          "matrix(1, 0, 0, 1, 0, -84)",
+          "matrix(1, 0, 0, 1, 0, -84)",
+          "matrix(1, 0, 0, 1, 0, -336)",
+          "matrix(1, 0, 0, 1, 0, -336)",
+          "matrix(1, 0, 0, 1, 0, -336)",
+          "matrix(1, 0, 0, 1, 0, -168)",
+          "matrix(1, 0, 0, 1, 0, -168)",
+          "matrix(1, 0, 0, 1, 0, -84)",
+          "matrix(1, 0, 0, 1, 0, -252)",
+          "matrix(1, 0, 0, 1, 0, -252)",
+          "matrix(1, 0, 0, 1, 0, -84)"
+        ],
+        "grid": {
+          "x": 252.5,
+          "y": 427.1875,
+          "width": 636,
+          "height": 366,
+          "top": 427.1875,
+          "right": 888.5,
+          "bottom": 793.1875,
+          "left": 252.5
+        }
+      },
+      "later": {
+        "at": 570.3999999761581,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "cascade-ghost-layer",
+            "display": "block",
+            "transform": "none"
+          }
+        ],
+        "falls": [
+          "matrix(1, 0, 0, 1, 0, -181.133)",
+          "matrix(1, 0, 0, 1, 0, -180.889)",
+          "matrix(1, 0, 0, 1, 0, -102.157)",
+          "matrix(1, 0, 0, 1, 0, -101.924)",
+          "matrix(1, 0, 0, 1, 0, -112.71)",
+          "matrix(1, 0, 0, 1, 0, -36.7859)",
+          "matrix(1, 0, 0, 1, 0, -36.597)",
+          "matrix(1, 0, 0, 1, 0, -36.4076)",
+          "matrix(1, 0, 0, 1, 0, -282.661)",
+          "matrix(1, 0, 0, 1, 0, -282.398)",
+          "matrix(1, 0, 0, 1, 0, -282.188)",
+          "matrix(1, 0, 0, 1, 0, -121.208)",
+          "matrix(1, 0, 0, 1, 0, -129.913)",
+          "matrix(1, 0, 0, 1, 0, -52.0691)",
+          "matrix(1, 0, 0, 1, 0, -218.455)",
+          "matrix(1, 0, 0, 1, 0, -218.335)",
+          "matrix(1, 0, 0, 1, 0, -58.4265)"
+        ],
+        "grid": {
+          "x": 252.5,
+          "y": 427.1875,
+          "width": 636,
+          "height": 366,
+          "top": 427.1875,
+          "right": 888.5,
+          "bottom": 793.1875,
+          "left": 252.5
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "key": "slot_vault",
+      "early": {
+        "at": 110.69999992847443,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -69.683)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -81.0803)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -85.3239)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -89.011)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -88.9209)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -91.9939)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -94.6994)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -96.9839)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -99.037)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 255.59375,
+          "y": 545.578125,
+          "width": 629.8125,
+          "height": 382.296875,
+          "top": 545.578125,
+          "right": 885.40625,
+          "bottom": 927.875,
+          "left": 255.59375
+        }
+      },
+      "later": {
+        "at": 560.3999999761581,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -69.683)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -119.55)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -118.338)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -106.477)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -106.536)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -86.6417)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -61.2406)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -33.368)"
+          },
+          {
+            "cls": "vault-socket-shutter",
+            "display": "block",
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00333333, 0, 0, 0, 1)"
+          },
+          {
+            "cls": "",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 1, 0, -5.36275)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 255.59375,
+          "y": 545.578125,
+          "width": 629.8125,
+          "height": 382.296875,
+          "top": 545.578125,
+          "right": 885.40625,
+          "bottom": 927.875,
+          "left": 255.59375
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "key": "slot_gatecrash",
+      "early": {
+        "at": 117.40000009536743,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2127.71)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2315.49)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2502.16)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2688.8)"
+          },
+          {
+            "cls": "slot-gate-sweep",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 0.02, 0, 0)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -2875.26)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 220.5,
+          "y": 537.578125,
+          "width": 700,
+          "height": 308,
+          "top": 537.578125,
+          "right": 920.5,
+          "bottom": 845.578125,
+          "left": 220.5
+        }
+      },
+      "later": {
+        "at": 567,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -962.689)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1216.31)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1459.59)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1696.23)"
+          },
+          {
+            "cls": "slot-gate-sweep",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 0.02, 0, 0)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1926.66)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 220.5,
+          "y": 537.578125,
+          "width": 700,
+          "height": 308,
+          "top": 537.578125,
+          "right": 920.5,
+          "bottom": 845.578125,
+          "left": 220.5
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "key": "slot_gatecrash",
+      "sweep": {
+        "at": 2192,
+        "active": true,
+        "raw": "true",
+        "windows": [
+          {
+            "cls": "slot-gate-sweep",
+            "display": "block",
+            "transform": "matrix(1, 0, 0, 0.704175, 0, 0)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 220.5,
+          "y": 537.578125,
+          "width": 700,
+          "height": 308,
+          "top": 537.578125,
+          "right": 920.5,
+          "bottom": 845.578125,
+          "left": 220.5
+        }
+      }
+    },
+    {
+      "width": 1440,
+      "classic": {
+        "t1": 0.08391304348862688,
+        "t2": 0.272304347836453,
+        "x1": [
+          "matrix(1, 0, 0, 1, 0, -7.93987)",
+          "matrix(1, 0, 0, 1, 0, 16.6347)",
+          "matrix(1, 0, 0, 1, 0, -17.134)"
+        ],
+        "x2": [
+          "matrix(1, 0, 0, 1, 0, -17.701)",
+          "matrix(1, 0, 0, 1, 0, 14.2864)",
+          "matrix(1, 0, 0, 1, 0, -7.52978)"
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "key": "slot_scrapyard",
+      "early": {
+        "at": 118.69999992847443,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1023.57)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1116.7)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1209.13)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1301.02)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -1392.81)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 52,
+          "y": 103.078125,
+          "width": 282,
+          "height": 151.609375,
+          "top": 103.078125,
+          "right": 334,
+          "bottom": 254.6875,
+          "left": 52
+        }
+      },
+      "later": {
+        "at": 567.8999999761581,
+        "active": true,
+        "raw": "false",
+        "windows": [
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -432.098)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -555.877)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -675.711)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -793.126)"
+          },
+          {
+            "cls": "slot-reel-strip",
+            "display": "flex",
+            "transform": "matrix(1, 0, 0, 1, 0, -907.814)"
+          }
+        ],
+        "falls": [],
+        "grid": {
+          "x": 52,
+          "y": 103.078125,
+          "width": 282,
+          "height": 151.609375,
+          "top": 103.078125,
+          "right": 334,
+          "bottom": 254.6875,
+          "left": 52
+        }
+      }
+    },
+    {
+      "width": 390,
+      "classic": {
+        "t1": 0.08382608693578969,
+        "t2": 0.264999999979268,
+        "x1": [
+          "matrix(1, 0, 0, 1, 0, -7.68615)",
+          "matrix(1, 0, 0, 1, 0, 16.4928)",
+          "matrix(1, 0, 0, 1, 0, -17.2458)"
+        ],
+        "x2": [
+          "matrix(1, 0, 0, 1, 0, -17.5385)",
+          "matrix(1, 0, 0, 1, 0, 14.4498)",
+          "matrix(1, 0, 0, 1, 0, -7.36133)"
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

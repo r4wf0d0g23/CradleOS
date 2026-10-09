@@ -1,0 +1,13 @@
+import {chromium} from '/home/rawdata/.npm-global/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
+import {writeFile} from 'node:fs/promises';
+const out=new URL('./',import.meta.url).pathname, base=process.env.QA_BASE??'https://cradleos.io';
+const b=await chromium.launch({executablePath:'/home/rawdata/.cache/ms-playwright/chromium-1228/chrome-linux/chrome',ignoreDefaultArgs:['--hide-scrollbars'],args:['--no-sandbox','--no-proxy-server']});const report=[];
+try{for(const [width,height,reduce] of [[1440,900,'no-preference'],[1920,1080,'no-preference'],[390,844,'no-preference'],[1440,900,'reduce']]){
+ const c=await b.newContext({viewport:{width,height},reducedMotion:reduce});const p=await c.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.addInitScript(()=>{window.__size=[];const RO=window.ResizeObserver;window.ResizeObserver=class extends RO{constructor(fn){super((es,o)=>{for(const e of es)if(e.target.matches('.fleet-grid'))window.__size.push({at:performance.now(),width:e.target.getBoundingClientRect().width,height:e.target.getBoundingClientRect().height});fn(es,o)});}observe(e,...args){if(e.matches('.fleet-grid'))window.__size.push({initial:true,at:performance.now(),width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height});return super.observe(e,...args);}};});
+ await p.goto(base+'/#/casino');await p.locator('.lounge-game-tile').filter({hasText:'Scrapyard Circuit'}).click();await p.locator('.fleet-board').waitFor();
+ await p.evaluate(()=>{window.__frames=[];window.__done=false;let start=performance.now();const tick=()=>{const e=document.querySelector('.fleet-board');window.__frames.push({at:performance.now(),start:e?.dataset.motionStart,run:e?.dataset.motionRun,raw:e?.dataset.rawStopped,active:!!document.querySelector('.round-active'),windows:e?.querySelectorAll('.slot-reel-window').length,width:document.documentElement.clientWidth,grid:e?.querySelector('.fleet-grid')?.getBoundingClientRect().toJSON()});if(performance.now()-start<2700)requestAnimationFrame(tick);else window.__done=true;};requestAnimationFrame(tick);});
+ await p.locator('.lounge-start').click();await p.waitForFunction(()=>window.__done);
+ const r=await p.evaluate(()=>({size:window.__size,frames:window.__frames,reduce:matchMedia('(prefers-reduced-motion:reduce)').matches}));
+ const active=r.frames.filter(x=>x.active);const sample=active.filter((_,i)=>i%20===0);console.log({width,height,reduce,activeFrames:active.length,sample:sample.map(x=>({at:x.at-Number(x.start),windows:x.windows,raw:x.raw})),size:r.size});report.push({width,height,errors,...r});await c.close();
+}}finally{await writeFile(out+'reproduction.json',JSON.stringify(report,null,2));await b.close();}

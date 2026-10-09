@@ -1,0 +1,42 @@
+[
+  {
+    "progress": "0.0969130435093589",
+    "icons": [
+      {
+        "tag": "IMG",
+        "transform": "none",
+        "roll": "-20.370495597304494px"
+      },
+      {
+        "tag": "IMG",
+        "transform": "none",
+        "roll": "21.951819364555156px"
+      },
+      {
+        "tag": "IMG",
+        "transform": "none",
+        "roll": "-7.661792923099689px"
+      }
+    ]
+  },
+  {
+    "progress": "0.2563913043789242",
+    "icons": [
+      {
+        "tag": "IMG",
+        "transform": "none",
+        "roll": "21.326555316865313px"
+      },
+      {
+        "tag": "IMG",
+        "transform": "none",
+        "roll": "13.142295620550072px"
+      },
+      {
+        "tag": "IMG",
+        "transform": "none",
+        "roll": "19.988174221872608px"
+      }
+    ]
+  }
+]
