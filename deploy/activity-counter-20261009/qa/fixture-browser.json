@@ -1,0 +1,17 @@
+{
+  "mode": "Actual application; intercepted telemetry fixtures only",
+  "url": "http://127.0.0.1:5206/",
+  "checks": [
+    "320: ◉ 3 verified wallets · 30d, expand/collapse, keyboard, touch target, viewport bounds and honest coverage copy",
+    "390: ◉ 3 verified wallets · 30d, expand/collapse, keyboard, touch target, viewport bounds and honest coverage copy",
+    "1440: ◉ 3 verified wallets · 30d, expand/collapse, keyboard, touch target, viewport bounds and honest coverage copy",
+    "zero: 0 verified wallets · 30d",
+    "stale: Activity incomplete",
+    "unavailable: Activity incomplete",
+    "malformed: Activity unavailable",
+    "legacy: Activity unavailable",
+    "oldIndex: Activity unavailable",
+    "Refresh failure clears cached total; later success restores it"
+  ],
+  "errors": []
+}
