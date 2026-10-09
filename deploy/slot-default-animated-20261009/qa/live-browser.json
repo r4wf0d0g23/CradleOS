@@ -1,0 +1,47 @@
+{
+  "base": "https://cradleos.io",
+  "mode": "fresh isolated browser Play Money RNG spins, no wallet/chain actions",
+  "checks": [
+    {
+      "name": "fresh desktop",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, -2038.53)",
+          "matrix(1, 0, 0, 1, 0, -2276.96)",
+          "matrix(1, 0, 0, 1, 0, -2509)",
+          "matrix(1, 0, 0, 1, 0, -2735.35)",
+          "matrix(1, 0, 0, 1, 0, -2957.72)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, -1113.96)",
+          "matrix(1, 0, 0, 1, 0, -1385.77)",
+          "matrix(1, 0, 0, 1, 0, -1648.64)",
+          "matrix(1, 0, 0, 1, 0, -1904.88)",
+          "matrix(1, 0, 0, 1, 0, -2155.44)"
+        ]
+      ]
+    },
+    {
+      "name": "fresh mobile",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, 15.3459)",
+          "matrix(1, 0, 0, 1, 0, -1.09368)",
+          "matrix(1, 0, 0, 1, 0, -21.9387)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, 1.87826)",
+          "matrix(1, 0, 0, 1, 0, 4.99521)",
+          "matrix(1, 0, 0, 1, 0, -21.3462)"
+        ]
+      ]
+    }
+  ],
+  "errors": []
+}
