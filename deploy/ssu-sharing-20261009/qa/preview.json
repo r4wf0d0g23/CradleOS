@@ -1,0 +1,11 @@
+{
+  "url": "http://127.0.0.1:5202/",
+  "mode": "anonymous production build; no wallet connection or signing",
+  "checks": [
+    "320: actual inventory route resolves to storage, existing wallet gate preserved, no private storage loaded, no overflow",
+    "390: actual inventory route resolves to storage, existing wallet gate preserved, no private storage loaded, no overflow",
+    "1440: actual inventory route resolves to storage, existing wallet gate preserved, no private storage loaded, no overflow"
+  ],
+  "errors": [],
+  "assetFailures": []
+}

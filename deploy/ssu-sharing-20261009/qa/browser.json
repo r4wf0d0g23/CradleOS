@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "320: owner filters/search, explicit preview consent, cancel, separate capacities and collapse",
+    "320: nonowner has no revocation action",
+    "320: frozen has no revocation action",
+    "320: foreign has no revocation action",
+    "320: none has no revocation action",
+    "320: error has no revocation action",
+    "390: owner filters/search, explicit preview consent, cancel, separate capacities and collapse",
+    "390: nonowner has no revocation action",
+    "390: frozen has no revocation action",
+    "390: foreign has no revocation action",
+    "390: none has no revocation action",
+    "390: error has no revocation action",
+    "1440: owner filters/search, explicit preview consent, cancel, separate capacities and collapse",
+    "1440: nonowner has no revocation action",
+    "1440: frozen has no revocation action",
+    "1440: foreign has no revocation action",
+    "1440: none has no revocation action",
+    "1440: error has no revocation action"
+  ],
+  "errors": [],
+  "assetFailures": []
+}

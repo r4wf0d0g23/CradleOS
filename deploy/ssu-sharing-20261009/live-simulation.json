@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-09T13:56:54.489Z",
+  "mode": "unsigned devInspect only, no state committed",
+  "id": "0x63e80d174bdcb508dad45dc9883c235ff31cc49968b854bf02a0ede5eb6d71e7",
+  "characterId": "0x959562e0cbde19f9bc72e447346fbbe7e7b020993c3ba7fed444b87e1c8f8278",
+  "sender": "0xaf8254ccad0dbdc6dfd766c20d9408f23d272ba16c4164a007773981c9db8a86",
+  "abi": {
+    "visibility": "Public",
+    "isEntry": false,
+    "typeParameters": [],
+    "parameters": [
+      {
+        "MutableReference": {
+          "Struct": {
+            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+            "module": "storage_unit",
+            "name": "StorageUnit",
+            "typeArguments": []
+          }
+        }
+      },
+      {
+        "Reference": {
+          "Struct": {
+            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+            "module": "access",
+            "name": "OwnerCap",
+            "typeArguments": [
+              {
+                "Struct": {
+                  "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                  "module": "storage_unit",
+                  "name": "StorageUnit",
+                  "typeArguments": []
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "return": []
+  },
+  "ownerStatus": {
+    "status": "success"
+  },
+  "wrongSenderStatus": {
+    "status": "failure",
+    "error": "MoveAbort(MoveLocation { module: ModuleId { address: 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92, name: Identifier(\"character\") }, function: 11, instruction: 11, function_name: Some(\"borrow_owner_cap\") }, 13836466271979962379) in command 0"
+  },
+  "wrongSenderError": "ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: MoveAbort(MoveLocation { module: ModuleId { address: 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92, name: Identifier(\"character\") }, function: 11, instruction: 11, function_name: Some(\"borrow_owner_cap\") }, 13836466271979962379), source: Some(VMError { major_status: ABORTED, sub_status: Some(13836466271979962379), message: Some(\"0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::borrow_owner_cap at offset 11\"), exec_state: None, location: Module(ModuleId { address: 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92, name: Identifier(\"character\") }), indices: [], offsets: [(FunctionDefinitionIndex(11), 11)] }), command: Some(0) } }",
+  "stillAuthorized": true,
+  "methods": [
+    "sui_getObject",
+    "suix_getDynamicFieldObject",
+    "sui_getNormalizedMoveFunction",
+    "sui_multiGetObjects",
+    "sui_devInspectTransactionBlock"
+  ]
+}

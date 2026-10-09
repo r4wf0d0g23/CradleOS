@@ -1,35 +1,21 @@
 /**
- * cradleos::ssu_access — shared SSU access helpers + tx builders
- * ───────────────────────────────────────────────────────────────────────────
- * The CCP `world::storage_unit` module ships only two deposit paths:
- *   - deposit_to_owned (owner-only, single shared list)
- *   - deposit_to_open_inventory (per-accessor partition; capacity multiplies)
+ * SSU policy discovery and legacy transaction builders.
  *
- * Neither produces truly shared communal storage that tribes expect
- * (one inventory, owner + tribemates all read/write the same list, capacity
- * actually shared not multiplied). CradleOS published `cradleos::ssu_access`
- * (2026-04-26) to provide that primitive on top of CCP's contracts:
- *   - shared_deposit(ssu, policy, char, item, clock, ctx)
- *   - shared_withdraw_to_character(ssu, policy, char, type_id, qty, clock, ctx)
+ * October 2026 audit: the deployed extension exposes public new_auth(), so
+ * its saved tribe/allow/deny policy is NOT an enforced access boundary.
+ * Shared builders are quarantined by ssuSafety and the common wallet signer.
+ * Do not re-enable them without a separately reviewed replacement protocol.
  *
- * Access is gated by an SsuPolicy attached to the SSU, owned by the SSU
- * owner. Modes:
- *   - none           policy not initialized
- *   - tribe_alliance any character whose tribe_id is in tribeIds
- *   - allowlist      explicit per-character allow with optional expiry
- *   - hybrid         tribe ∪ allow, minus deny
- *   - public         anyone
- *
- * Discovery: SsuPolicyRegistry shared object holds a `Table<ID, ID>` mapping
- * ssu_id → policy_id. Resolve once per SSU; cache in caller.
- *
- * Owner self-deposits/withdrawals continue to use the CCP owner-only path
- * (deposit_by_owner / withdraw_by_owner). The shared path is for non-owners
- * AND for owners who want their items to land in the shared inventory rather
- * than the private owned partition.
+ * Current official storage has owner inventory, per-character inventory
+ * (deposit_to_owned), and one extension-controlled pool
+ * (deposit_to_open_inventory). Each partition has independent capacity.
+ * Policy discovery is retained for read-only visibility of affected SSUs.
+ * Manual recover_to_owned only returns an Item already in the caller's
+ * wallet to that caller's personal partition; it cannot drain shared stock.
  */
 
 import { Transaction } from "@mysten/sui/transactions";
+import { assertSharedSsuOperationsEnabled } from "./ssuSafety";
 import {
   SSU_ACCESS_PKG,
   SSU_POLICY_REGISTRY,
@@ -426,6 +412,7 @@ export function appendSharedDeposit(
   tx: Transaction,
   args: SharedDepositArgs,
 ): void {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -471,26 +458,15 @@ export type OwnerDepositToOpenArgs = {
  *
  * This helper bypasses `check_access` entirely by going around
  * `ssu_access::shared_deposit` and calling `world::storage_unit::
- * deposit_to_open_inventory<SsuAuth>` directly. The witness comes from
- * the public `ssu_access::new_auth()` constructor; `SsuAuth` only needs
- * `drop`, has no internal state, and the SSU has already authorized the
- * extension at policy-init time, so this is safe and equivalent to what
- * `shared_deposit` does on the inside, minus the policy check.
- *
- * Use this only when the caller is the SSU owner (verified upstream by
- * possession of `OwnerCap<StorageUnit>`). Non-owners must continue to use
- * the policy-gated `appendSharedDeposit` / `appendSharedDepositItemArg`.
- *
- * NOTE: no SharedDepositEvent is emitted by this path. The event chain
- * remains owned by `shared_deposit`. If we want owner deposits visible in
- * the activity feed, we should add a Move-side `owner_deposit_to_shared`
- * function later that emits the event explicitly. For now the deposit is
- * still observable through SSU inventory state.
+ * deposit_to_open_inventory<SsuAuth> directly. This exposed the public
+ * witness bypass and is quarantined before any commands are appended.
+ * Historical implementation below is not an authorization pattern to reuse.
  */
 export function appendOwnerDepositToOpen(
   tx: Transaction,
   args: OwnerDepositToOpenArgs,
 ): void {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -525,6 +501,7 @@ export function appendSharedDepositItemArg(
   tx: Transaction,
   args: SharedDepositItemArgArgs,
 ): void {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -559,6 +536,7 @@ export function appendSharedWithdrawToCharacter(
   tx: Transaction,
   args: SharedWithdrawToCharacterArgs,
 ): void {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -604,6 +582,7 @@ export function appendSharedWithdrawToOwned(
   tx: Transaction,
   args: SharedWithdrawToOwnedArgs,
 ): void {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -646,6 +625,7 @@ export function appendSharedWithdrawReturningItem(
   tx: Transaction,
   args: SharedWithdrawArgs,
 ): ReturnType<Transaction["moveCall"]> {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -729,6 +709,7 @@ export function appendRecoverToShared(
   tx: Transaction,
   args: RecoverToSharedArgs,
 ): void {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -1070,6 +1051,7 @@ export function buildPromoteToSharedTx(
   quantity: number,
   charOwnerCapId: string,
 ): Transaction {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }
@@ -1136,6 +1118,7 @@ export function buildPromoteAllToSharedTx(
   items: Array<{ typeId: number | bigint; quantity: number }>,
   charOwnerCapId: string,
 ): Transaction {
+  assertSharedSsuOperationsEnabled();
   if (!SSU_ACCESS_AVAILABLE) {
     throw new Error("ssu_access feature not available on this server.");
   }

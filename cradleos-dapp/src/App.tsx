@@ -637,11 +637,11 @@ function AppInner() {
       ],
     },
     inventory: {
-      title: "SSU inventory browser — view items across your storage units (withdraw disabled)",
+      title: "SSU storage — owner, personal and shared stock with access safety checks",
       steps: [
         "All your online and offline SSUs shown",
         "Items resolved to names via World API",
-        "Quantities summed across all inventory slots",
+        "Filter and search separate storage areas; capacity shown per area",
       ],
     },
     tribe: {
