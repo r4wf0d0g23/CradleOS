@@ -515,8 +515,8 @@ export function CasinoExperience({
   const [slotMotionPreference, setSlotMotionPreference] = useState<SlotMotionPreference>(() => {
     try {
       const saved = localStorage.getItem(SLOT_MOTION_KEY);
-      return saved === "animated" || saved === "instant" ? saved : "system";
-    } catch { return "system"; }
+      return saved === "system" || saved === "instant" ? saved : "animated";
+    } catch { return "animated"; }
   });
   const slotMotionEnabled = mode === "practice" && !!game && isSlotGame(game);
   const animateSlots = slotMotionEnabled && slotMotionPreference === "animated";
