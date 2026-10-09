@@ -1,0 +1,282 @@
+{
+  "url": "http://127.0.0.1:5203/",
+  "checks": [
+    "320: fresh deal curves from shoe, early faces masked, ledger unchanged, pause preference survives deal",
+    "320: reload hole masking, visible hover, hit-only flight, exact hit/double accounting",
+    "320: split preserves unrelated seats, all hands settle to exact shoe, reload preserves ledger",
+    "320: pause halts float, survives reload, 44px accessible control",
+    "390: fresh deal curves from shoe, early faces masked, ledger unchanged, pause preference survives deal",
+    "390: reload hole masking, visible hover, hit-only flight, exact hit/double accounting",
+    "390: split preserves unrelated seats, all hands settle to exact shoe, reload preserves ledger",
+    "390: pause halts float, survives reload, 44px accessible control",
+    "844: fresh deal curves from shoe, early faces masked, ledger unchanged, pause preference survives deal",
+    "844: reload hole masking, visible hover, hit-only flight, exact hit/double accounting",
+    "844: split preserves unrelated seats, all hands settle to exact shoe, reload preserves ledger",
+    "844: pause halts float, survives reload, 44px accessible control",
+    "1440: fresh deal curves from shoe, early faces masked, ledger unchanged, pause preference survives deal",
+    "1440: reload hole masking, visible hover, hit-only flight, exact hit/double accounting",
+    "1440: split preserves unrelated seats, all hands settle to exact shoe, reload preserves ledger",
+    "1440: pause halts float, survives reload, 44px accessible control",
+    "reduce-back: paid hand preserved, no replay or duplicate settlement",
+    "hidden: paid hand preserved, no replay or duplicate settlement",
+    "reload: paid hand preserved, no replay or duplicate settlement",
+    "resize: paid hand preserved, no replay or duplicate settlement",
+    "reduced motion: exact outcome, no ongoing animation"
+  ],
+  "errors": [],
+  "assetFailures": [],
+  "frames": [
+    {
+      "width": 320,
+      "first": [
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(33.5px, -143px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-33.5px, -143px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.1381111110051474,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(11.3589px, -243.945px, 27.3262px) rotateZ(-15.3662deg) scale(0.711885)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-33.5px, -360px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ],
+      "second": [
+        {
+          "p": 0.12333333322736963,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(31.639px, -108.438px, 24.5597px) rotateZ(16.1702deg) scale(0.696809)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-33.5px, -143px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.3788888887829252,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-14.2567px, -115.972px, 60.3516px) rotateZ(-5.75068deg) scale(0.892175)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-33.5px, -360px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "first": [
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(36px, -143px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-36px, -143px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.1189999999999999,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(15.8519px, -257.854px, 23.7381px) rotateZ(-16.4111deg) scale(0.692291)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-36px, -360px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ],
+      "second": [
+        {
+          "p": 0.10422222222222217,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(33.5949px, -113.078px, 20.9043px) rotateZ(17.2509deg) scale(0.676545)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-36px, -143px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.35977777777777775,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-12.2617px, -123.415px, 58.7944px) rotateZ(-6.29801deg) scale(0.881912)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-36px, -360px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ]
+    },
+    {
+      "width": 844,
+      "first": [
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(43px, -153px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -153px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.10188888888888895,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(23.5983px, -293.317px, 20.4526px) rotateZ(-17.3861deg) scale(0.674011)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -391px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ],
+      "second": [
+        {
+          "p": 0.08711111111111121,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(39.1995px, -125.046px, 17.5672px) rotateZ(18.2585deg) scale(0.657653)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -153px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.3426666666666668,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-8.9144px, -139.224px, 57.2203px) rotateZ(-6.81661deg) scale(0.872189)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -391px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "first": [
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(43px, -153px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -153px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.12077777777777783,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(20.3362px, -277.602px, 24.0757px) rotateZ(-16.312deg) scale(0.69415)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -391px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ],
+      "second": [
+        {
+          "p": 0.1060000000000001,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(38.5695px, -119.782px, 21.2477px) rotateZ(17.1484deg) scale(0.678467)",
+          "hover": "matrix3d(0.999781, -0.0209137, -0.00109604, 0, 0.0209424, 0.998411, 0.0523245, 0, 0, -0.052336, 0.99863, 0, -1, 2, 0, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -153px, 0px) rotateZ(-24deg) scale(0.55)",
+          "hover": "matrix3d(0.999888, -0.014962, -0.000597654, 0, 0.0149739, 0.999091, 0.0399085, 0, 0, -0.0399129, 0.999203, 0, -0.71498, 1.14494, 0.85506, 1)"
+        },
+        {
+          "p": 0.36155555555555563,
+          "flying": "true",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-10.5753px, -130.773px, 58.9483px) rotateZ(-6.24569deg) scale(0.882893)",
+          "hover": "matrix3d(0.999943, 0.010695, -0.000145001, 0, -0.010696, 0.999851, -0.0135559, 0, 0, 0.0135566, 0.999908, 0, 0.510705, -2.53211, 4.53211, 1)"
+        },
+        {
+          "p": 0,
+          "flying": "false",
+          "aria": "Unrevealed card",
+          "flight": "translate3d(-43px, -391px, 0px) rotateZ(24deg) scale(0.55)",
+          "hover": "matrix3d(0.999826, 0.0186701, -0.000563813, 0, -0.0186787, 0.99937, -0.0301796, 0, 0, 0.0301849, 0.999544, 0, 0.891892, -3.67568, 5.67568, 1)"
+        }
+      ]
+    }
+  ]
+}

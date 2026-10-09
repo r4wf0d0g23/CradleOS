@@ -51,6 +51,8 @@ export function coinPose(t: number, face: number) {
     tilt: Math.sin(p * Math.PI * 2) * 14 * (1 - p),
   };
 }
+export const BLACKJACK_FLIGHT_MS = 900;
+export const BLACKJACK_FLIP_MS = 600;
 export type DealEvent = {
   row: number;
   index: number;
@@ -67,10 +69,10 @@ export function blackjackPlan(next: Session, previous?: Session) {
     for (let c = 0; c < 2; c++) {
       for (let h = 0; h < table.hands.length; h++) {
         events.push({ row: h, index: c, at: tick, kind: "deal" });
-        tick += 170;
+        tick += 230;
       }
       events.push({ row: -1, index: c, at: tick, kind: "deal" });
-      tick += 170;
+      tick += 230;
     }
   } else {
     table.hands.forEach((h, row) => {
@@ -82,18 +84,30 @@ export function blackjackPlan(next: Session, previous?: Session) {
       h.cards.forEach((card, index) => {
         if (prior?.cards[index] !== card) {
           events.push({ row, index, at: tick, kind: "deal" });
-          tick += 210;
+          tick += 260;
         }
       });
     });
   }
   if (table.complete && (!old || !old.complete)) {
-    events.push({ row: -1, index: 1, at: tick + 130, kind: "flip" });
-    tick += 380;
+    const lastArrival = events.length
+      ? events[events.length - 1].at + BLACKJACK_FLIGHT_MS
+      : 0;
+    const flipAt = Math.max(tick + 130, lastArrival + 120);
+    events.push({ row: -1, index: 1, at: flipAt, kind: "flip" });
+    tick = flipAt + BLACKJACK_FLIP_MS + 140;
     for (let c = 2; c < table.dealer.length; c++) {
       events.push({ row: -1, index: c, at: tick, kind: "deal" });
-      tick += 310;
+      tick += 420;
     }
   }
-  return { events, duration: Math.max(650, tick + 440) };
+  const end = events.reduce(
+    (last, e) =>
+      Math.max(
+        last,
+        e.at + (e.kind === "flip" ? BLACKJACK_FLIP_MS : BLACKJACK_FLIGHT_MS),
+      ),
+    0,
+  );
+  return { events, duration: Math.max(650, end + 220) };
 }

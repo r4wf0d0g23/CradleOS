@@ -1,0 +1,645 @@
+/* Blackjack only. Presentation never owns a draw, balance or action timer. */
+.astral-table {
+  --astral-ink: #fafae5;
+  --astral-ember: #ff8350;
+  --astral-frost: #a9c7ce;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  padding: 22px 20px 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #de89614d;
+  border-radius: 12px;
+  background: #060b10;
+  color: var(--astral-ink);
+}
+.astral-space {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 48% 30%, #30444b45, transparent 58%),
+    linear-gradient(148deg, #050b11, #0c1014 55%, #140b08);
+}
+.astral-nebula {
+  position: absolute;
+  inset: -15%;
+  background:
+    radial-gradient(ellipse at 22% 55%, #92513323, transparent 44%),
+    radial-gradient(ellipse at 70% 32%, #49748627, transparent 40%);
+  transform: rotate(-18deg);
+  animation: astral-nebula 28s ease-in-out infinite alternate;
+}
+.astral-stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: #ecebdc;
+  opacity: 0.85;
+  animation: astral-stars 34s ease-in-out infinite alternate;
+}
+.astral-eclipse {
+  position: absolute;
+  width: 190px;
+  aspect-ratio: 1;
+  top: 2%;
+  right: -106px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 64% 55%,
+    #070c13 56%,
+    #39444d 66%,
+    #d5926659 69%,
+    transparent 73%
+  );
+  opacity: 0.65;
+  box-shadow: -5px 1px 35px #cf7e3520;
+  transform: rotate(-28deg);
+}
+.astral-orbit {
+  position: absolute;
+  width: 90%;
+  height: 270px;
+  left: 5%;
+  top: 90px;
+  border: 1px solid #b1c9ce13;
+  border-radius: 50%;
+  transform: rotate(-19deg);
+}
+.astral-orbit-two {
+  width: 130%;
+  height: 390px;
+  left: -15%;
+  top: 150px;
+  transform: rotate(22deg);
+  border-style: dashed;
+  border-color: #e7a36c13;
+}
+.astral-heading {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  z-index: 4;
+}
+.astral-heading > div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.astral-heading span,
+.astral-heading small,
+.astral-coordinates {
+  font:
+    9px ui-monospace,
+    monospace;
+  letter-spacing: 0.16em;
+  color: #9faeaf;
+}
+.astral-heading strong {
+  font:
+    500 clamp(20px, 3vw, 30px) ui-monospace,
+    monospace;
+  letter-spacing: 0.16em;
+  color: #f5e8ce;
+}
+.astral-heading small {
+  font-size: 8px;
+  color: #e39570;
+  letter-spacing: 0.15em;
+}
+.astral-table .astral-drift-toggle {
+  font:
+    10px ui-monospace,
+    monospace;
+  color: #c3d0d0;
+  background: #10202985;
+  border: 1px solid #93b3bf40;
+  border-radius: 5px;
+  padding: 8px 10px;
+  min-height: 44px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.astral-drift-toggle:focus-visible {
+  outline: 2px solid #ff9258;
+  outline-offset: 3px;
+}
+.astral-drift-toggle:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.astral-shoe {
+  position: relative;
+  width: 100px;
+  height: 78px;
+  margin: 0 auto 6px;
+  perspective: 400px;
+  z-index: 2;
+}
+.astral-shoe > i {
+  position: absolute;
+  width: 39px;
+  height: 54px;
+  top: 4px;
+  left: 30px;
+  border: 1px solid #e69e7599;
+  border-radius: 4px;
+  background: linear-gradient(155deg, #31434be6, #111922);
+  box-shadow: 0 0 14px #ee7e3320;
+  transform: rotateX(48deg) rotateZ(35deg);
+}
+.astral-shoe > i:nth-child(2) {
+  top: 0;
+  left: 34px;
+}
+.astral-shoe > i:nth-child(3) {
+  top: -4px;
+  left: 38px;
+  background: radial-gradient(ellipse, #e3936533, transparent 55%), #101c24;
+}
+.astral-shoe > span {
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #99b4be;
+  font:
+    7px ui-monospace,
+    monospace;
+  letter-spacing: 0.15em;
+}
+.astral-hands {
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+}
+.astral-hand {
+  position: relative;
+  min-width: 0;
+  padding: 8px 0 2px;
+  text-align: center;
+}
+.astral-hand-label {
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+  color: #b6c6c8;
+  min-height: 22px;
+}
+.astral-hand-label > b {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 18px;
+  color: #ffe1c4;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+.astral-fan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 128px;
+  margin: 14px 0 12px;
+  perspective: 900px;
+  perspective-origin: 50% 25%;
+}
+.astral-slot {
+  position: relative;
+  width: 74px;
+  height: 110px;
+  flex-shrink: 0;
+  transform-style: preserve-3d;
+  z-index: 1;
+}
+.astral-slot[data-flying="true"] {
+  z-index: 8;
+}
+.astral-flight,
+.astral-hover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.astral-flight {
+  will-change: transform;
+}
+.astral-hover {
+  animation: astral-hover var(--float-time, 6s) ease-in-out
+    var(--float-delay, 0s) infinite;
+}
+.astral-token {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 1px solid #deb48c9c;
+  box-shadow:
+    0 0 0 1px #080d12,
+    inset 0 0 14px #85b4c31a,
+    0 10px 28px #000a,
+    0 0 16px #a7c5d016;
+  overflow: hidden;
+  color: #faf3dd;
+  backface-visibility: hidden;
+  background: linear-gradient(
+    145deg,
+    #34424b,
+    #17232e 44%,
+    #13191f 75%,
+    #3d2a20
+  );
+}
+.astral-token::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #b9d1da22;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.astral-token::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: #f9cf9a;
+  box-shadow: 0 0 8px #ff772f;
+}
+.astral-rank {
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  font:
+    600 18px/1 ui-monospace,
+    monospace;
+  color: #fff0d8;
+  text-shadow: 0 0 9px #e6b37942;
+  z-index: 2;
+}
+.astral-rank small {
+  display: block;
+  font-size: 10px;
+  color: #e99c72;
+  margin-top: 3px;
+}
+.astral-rank-bottom {
+  left: auto;
+  top: auto;
+  right: 7px;
+  bottom: 6px;
+  transform: rotate(180deg);
+}
+.astral-emblem {
+  position: absolute;
+  inset: 20px 4px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #a2c6d01c, transparent 64%);
+}
+.astral-emblem img {
+  max-width: 85%;
+  max-height: 72%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 5px #c1dce240);
+}
+.astral-suit {
+  position: absolute;
+  bottom: 7px;
+  left: 8px;
+  max-width: 45px;
+  color: #a5bdc1;
+  text-transform: uppercase;
+  font:
+    5px ui-monospace,
+    monospace;
+  letter-spacing: 0.05em;
+}
+.astral-back {
+  border-color: #ea916888;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 8px,
+      #accfdd04 9px
+    ),
+    radial-gradient(circle at 50% 43%, #743d2244, transparent 55%), #101a22;
+}
+.astral-seal {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  border: 1px solid #eda17080;
+  border-radius: 50%;
+  box-shadow:
+    0 0 15px #ff732528,
+    inset 0 0 10px #ed7e2420;
+  display: grid;
+  place-items: center;
+}
+.astral-seal > i {
+  position: absolute;
+  inset: 5px;
+  border: 1px dashed #e0a6786e;
+  border-radius: 50%;
+}
+.astral-seal > b {
+  font:
+    22px ui-monospace,
+    monospace;
+  color: #ebc1a0;
+}
+.astral-back-mark {
+  position: absolute;
+  bottom: 18px;
+  width: 100%;
+  text-align: center;
+  font:
+    7px ui-monospace,
+    monospace;
+  letter-spacing: 0.25em;
+  color: #c3af96;
+}
+.astral-wake {
+  position: absolute;
+  bottom: 55%;
+  left: 33%;
+  width: 34%;
+  height: 140px;
+  background: linear-gradient(
+    0deg,
+    #ffd6a1ab,
+    #e47c3540 18%,
+    #b6d6f416 65%,
+    transparent
+  );
+  filter: blur(4px);
+  transform-origin: 50% 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+.astral-rule {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 12px auto 18px;
+  justify-content: center;
+  color: #c6a487;
+  font:
+    8px ui-monospace,
+    monospace;
+  letter-spacing: 0.13em;
+}
+.astral-rule::before,
+.astral-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ccaa704d);
+}
+.astral-rule::after {
+  transform: rotate(180deg);
+}
+.frontier-casino .astral-table .casino-seat-grid {
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.frontier-casino .astral-table .casino-seat-grid section {
+  border: 1px solid #95b6c01d;
+  background: #09121a38;
+  border-radius: 9px;
+  padding: 12px 7px;
+  box-shadow: none;
+}
+.frontier-casino .astral-table .casino-seat-grid .active-seat {
+  border-color: #f0a36d70;
+  background: linear-gradient(160deg, #291d183b, #0a172080);
+  box-shadow: 0 0 18px #ff6a0010;
+}
+.astral-table .casino-seat-grid section > small {
+  display: block;
+  text-align: center;
+  font:
+    8px ui-monospace,
+    monospace;
+  letter-spacing: 0.16em;
+  color: #b9c4c4;
+  margin: 10px 0 2px;
+}
+.astral-table .casino-seat-grid .active-seat > small {
+  color: #ffb280;
+}
+.astral-coordinates {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  padding-top: 10px;
+  border-top: 1px solid #a4b9c019;
+  font-size: 7px;
+  opacity: 0.65;
+}
+.astral-ready {
+  text-align: center;
+  color: #bed0d1;
+  font:
+    11px ui-monospace,
+    monospace;
+  line-height: 1.8;
+  margin: 0 0 24px;
+}
+.astral-ready strong {
+  display: block;
+  color: #eadbc3;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+.astral-ready-fan {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 24px 0 28px;
+}
+.astral-ready-fan > .astral-slot:first-child {
+  transform: rotate(-12deg) translateY(9px);
+}
+.astral-ready-fan > .astral-slot:last-child {
+  transform: rotate(12deg) translateY(9px);
+}
+.astral-table[data-drift="off"] .astral-hover,
+.astral-table[data-drift="off"] .astral-stars,
+.astral-table[data-drift="off"] .astral-nebula {
+  animation-play-state: paused;
+}
+@keyframes astral-hover {
+  0%,
+  100% {
+    transform: translate3d(-1px, 2px, 0) rotateX(3deg) rotateZ(-1.2deg);
+  }
+  50% {
+    transform: translate3d(1px, -4px, 6px) rotateX(-2deg) rotateZ(1.2deg);
+  }
+}
+@keyframes astral-stars {
+  from {
+    transform: translate3d(-3px, -2px, 0) scale(1.02);
+  }
+  to {
+    transform: translate3d(5px, 5px, 0) scale(1.04);
+  }
+}
+@keyframes astral-nebula {
+  from {
+    transform: rotate(-18deg) translate3d(-1%, 0, 0);
+  }
+  to {
+    transform: rotate(-14deg) translate3d(2%, 2%, 0);
+  }
+}
+@media (max-width: 600px) {
+  .astral-table {
+    padding: 16px 12px 12px;
+  }
+  .astral-heading {
+    gap: 8px;
+  }
+  .astral-heading strong {
+    font-size: 20px;
+    letter-spacing: 0.1em;
+  }
+  .astral-heading span {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+  .astral-heading small {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+  }
+  .astral-table .astral-drift-toggle {
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  .astral-shoe {
+    margin-top: 8px;
+  }
+  .astral-slot {
+    width: 62px;
+    height: 94px;
+  }
+  .astral-fan {
+    min-height: 108px;
+    gap: 10px;
+  }
+  .astral-rank {
+    font-size: 16px;
+    left: 6px;
+    top: 5px;
+  }
+  .astral-rank-bottom {
+    left: auto;
+    top: auto;
+    right: 6px;
+    bottom: 5px;
+  }
+  .astral-seal {
+    width: 34px;
+    height: 34px;
+  }
+  .astral-back-mark {
+    bottom: 14px;
+    font-size: 6px;
+  }
+  .astral-rule {
+    font-size: 7px;
+    gap: 8px;
+  }
+  .astral-emblem {
+    inset: 18px 3px 15px;
+  }
+  .astral-suit {
+    font-size: 4px;
+  }
+  .astral-ready-fan {
+    gap: 14px;
+  }
+}
+@media (max-width: 360px) {
+  .astral-table {
+    padding: 14px 9px 10px;
+  }
+  .astral-heading strong {
+    font-size: 17px;
+  }
+  .astral-heading small {
+    font-size: 6px;
+  }
+  .astral-table .astral-drift-toggle {
+    font-size: 8px;
+    padding: 6px;
+  }
+  .astral-slot {
+    width: 57px;
+    height: 88px;
+  }
+  .astral-ready-fan {
+    gap: 12px;
+  }
+  .frontier-casino .astral-table .casino-seat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .astral-hover,
+  .astral-stars,
+  .astral-nebula {
+    animation: none !important;
+  }
+  .astral-flight {
+    will-change: auto;
+  }
+  .astral-wake {
+    display: none;
+  }
+}
+.frontier-casino .lounge-surface.astral-surface {
+  background: #060b10;
+  border-color: #a8b6c13b;
+  padding: 14px;
+}
+.frontier-casino .lounge-surface.astral-surface::before {
+  background: none;
+}
+.astral-surface .lounge-surface-label {
+  padding: 0 3px 14px;
+}
+@media (max-width: 600px) {
+  .frontier-casino .lounge-surface.astral-surface {
+    padding: 8px;
+  }
+  .astral-surface .lounge-surface-label {
+    font-size: 7px;
+    padding: 4px 3px 12px;
+    letter-spacing: 0.7px;
+  }
+}

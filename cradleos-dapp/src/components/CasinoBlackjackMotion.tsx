@@ -1,7 +1,13 @@
 import { cardTotal } from "../lib/casinoPractice";
-import { blackjackPlan, clamp, type TableRun } from "../lib/casinoTableMotion";
+import {
+  blackjackPlan,
+  clamp,
+  BLACKJACK_FLIGHT_MS,
+  BLACKJACK_FLIP_MS,
+  type TableRun,
+} from "../lib/casinoTableMotion";
 import type { Session } from "../lib/casinoSessions";
-import { MotionCard } from "./CasinoRoundStage";
+import { AstralCard, AstralTable } from "./CasinoAstralCards";
 import { useCasinoTimeline, useTableCues } from "./useCasinoTimeline";
 export function CasinoBlackjackMotion({
   state,
@@ -22,7 +28,7 @@ export function CasinoBlackjackMotion({
     run,
     t,
     animated,
-    plan.events.map((e) => ({ at: e.at + 120, cue: "card" })),
+    plan.events.map((e) => ({ at: e.at + 350, cue: "card" })),
   );
   if (!table) return null;
   const visual = (row: number, index: number) => {
@@ -35,41 +41,49 @@ export function CasinoBlackjackMotion({
       flip = events.find((e) => e.kind === "flip");
     if (flip && elapsed >= flip.at)
       return {
-        progress: clamp((elapsed - flip.at) / 300),
+        progress: clamp((elapsed - flip.at) / BLACKJACK_FLIP_MS),
         hidden: false,
         fly: false,
       };
     return {
-      progress: deal ? clamp((elapsed - deal.at) / 300) : 1,
+      progress: deal ? clamp((elapsed - deal.at) / BLACKJACK_FLIGHT_MS) : 1,
       hidden: covered || !!flip,
       fly: !!deal,
     };
   };
-  const row = (cards: number[], index: number, label: string) => {
+  const row = (
+    cards: number[],
+    index: number,
+    label: string,
+    phase = index,
+  ) => {
     const visible = cards.filter((_, i) => {
       const v = visual(index, i);
       return v.progress >= 0.5 && !v.hidden;
     });
     return (
-      <div className="blackjack-card-row">
-        <span>
+      <div className="astral-hand">
+        <div className="astral-hand-label">
           {label} <b>{visible.length ? cardTotal(visible) : "—"}</b>
-        </span>
-        <div>
+        </div>
+        <div className="astral-fan">
           {cards.map((c, i) => (
-            <MotionCard key={`${c}-${i}`} value={c} {...visual(index, i)} />
+            <AstralCard
+              key={`${c}-${i}`}
+              value={c}
+              index={i + (phase + 1) * 3}
+              runId={run.id}
+              {...visual(index, i)}
+            />
           ))}
         </div>
       </div>
     );
   };
   return (
-    <div className="lounge-blackjack animated-blackjack" data-progress={t}>
-      <div className="blackjack-shoe" aria-hidden="true">
-        ◇<span>COMMAND DECK</span>
-      </div>
+    <AstralTable reduced={reduced} dealing={busy && animated} progress={t}>
       {row(table.dealer, -1, "DEALER · STANDS ON 17")}
-      <div className="felt-line">
+      <div className="astral-rule">
         <span>BLACKJACK 3:2 · SPLIT 21 1:1</span>
       </div>
       <div className="casino-seat-grid">
@@ -79,7 +93,12 @@ export function CasinoBlackjackMotion({
             className={!busy && table.active === i ? "active-seat" : ""}
             aria-label={`Seat ${h.seat + 1}${h.split ? " split" : ""}${table.active === i ? " active" : ""}`}
           >
-            {row(h.cards, i, `SEAT ${h.seat + 1}${h.split ? " · SPLIT" : ""}`)}
+            {row(
+              h.cards,
+              i,
+              `SEAT ${h.seat + 1}${h.split ? " · SPLIT" : ""}`,
+              h.seat,
+            )}
             <small>
               {busy
                 ? "DEALING"
@@ -92,6 +111,6 @@ export function CasinoBlackjackMotion({
           </section>
         ))}
       </div>
-    </div>
+    </AstralTable>
   );
 }

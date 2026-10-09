@@ -1,0 +1,673 @@
+{
+  "fixtures": {
+    "three": {
+      "version": 2,
+      "balance": 999700,
+      "sequence": 0,
+      "history": [],
+      "hand": null,
+      "table": {
+        "deck": [
+          1,
+          2,
+          42,
+          51,
+          13,
+          7,
+          26,
+          33,
+          40,
+          22,
+          29,
+          17,
+          5,
+          45,
+          49,
+          24,
+          36,
+          50,
+          23,
+          31,
+          4,
+          27,
+          11,
+          35,
+          18,
+          8,
+          19,
+          43,
+          10,
+          28,
+          9,
+          47,
+          3,
+          14,
+          15,
+          39,
+          25,
+          30,
+          34,
+          0,
+          44,
+          32,
+          46,
+          48,
+          41,
+          6,
+          37,
+          16,
+          20,
+          38,
+          21,
+          12
+        ],
+        "seats": 3,
+        "baseStake": 100,
+        "actions": [],
+        "cursor": 8,
+        "dealer": [
+          51,
+          33
+        ],
+        "hands": [
+          {
+            "seat": 0,
+            "cards": [
+              1,
+              13
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 1,
+            "cards": [
+              2,
+              7
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 2,
+            "cards": [
+              42,
+              26
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          }
+        ],
+        "active": 0,
+        "complete": false
+      },
+      "pack": null
+    },
+    "one": {
+      "version": 2,
+      "balance": 999900,
+      "sequence": 0,
+      "history": [],
+      "hand": null,
+      "table": {
+        "deck": [
+          1,
+          2,
+          42,
+          51,
+          13,
+          7,
+          26,
+          33,
+          40,
+          22,
+          29,
+          17,
+          5,
+          45,
+          49,
+          24,
+          36,
+          50,
+          23,
+          31,
+          4,
+          27,
+          11,
+          35,
+          18,
+          8,
+          19,
+          43,
+          10,
+          28,
+          9,
+          47,
+          3,
+          14,
+          15,
+          39,
+          25,
+          30,
+          34,
+          0,
+          44,
+          32,
+          46,
+          48,
+          41,
+          6,
+          37,
+          16,
+          20,
+          38,
+          21,
+          12
+        ],
+        "seats": 1,
+        "baseStake": 100,
+        "actions": [],
+        "cursor": 4,
+        "dealer": [
+          2,
+          51
+        ],
+        "hands": [
+          {
+            "seat": 0,
+            "cards": [
+              1,
+              42
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          }
+        ],
+        "active": 0,
+        "complete": false
+      },
+      "pack": null
+    },
+    "split": {
+      "version": 2,
+      "balance": 999700,
+      "sequence": 0,
+      "history": [],
+      "hand": null,
+      "table": {
+        "deck": [
+          48,
+          24,
+          30,
+          46,
+          22,
+          12,
+          10,
+          11,
+          17,
+          1,
+          14,
+          43,
+          44,
+          5,
+          50,
+          23,
+          38,
+          42,
+          4,
+          25,
+          6,
+          9,
+          40,
+          47,
+          18,
+          3,
+          20,
+          7,
+          51,
+          41,
+          8,
+          39,
+          37,
+          33,
+          28,
+          36,
+          35,
+          21,
+          26,
+          15,
+          2,
+          49,
+          32,
+          27,
+          34,
+          29,
+          13,
+          31,
+          16,
+          45,
+          0,
+          19
+        ],
+        "seats": 3,
+        "baseStake": 100,
+        "actions": [],
+        "cursor": 8,
+        "dealer": [
+          46,
+          11
+        ],
+        "hands": [
+          {
+            "seat": 0,
+            "cards": [
+              48,
+              22
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 1,
+            "cards": [
+              24,
+              12
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 2,
+            "cards": [
+              30,
+              10
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          }
+        ],
+        "active": 0,
+        "complete": false
+      },
+      "pack": null
+    },
+    "splitNext": {
+      "version": 2,
+      "balance": 999600,
+      "sequence": 0,
+      "history": [],
+      "hand": null,
+      "table": {
+        "deck": [
+          48,
+          24,
+          30,
+          46,
+          22,
+          12,
+          10,
+          11,
+          17,
+          1,
+          14,
+          43,
+          44,
+          5,
+          50,
+          23,
+          38,
+          42,
+          4,
+          25,
+          6,
+          9,
+          40,
+          47,
+          18,
+          3,
+          20,
+          7,
+          51,
+          41,
+          8,
+          39,
+          37,
+          33,
+          28,
+          36,
+          35,
+          21,
+          26,
+          15,
+          2,
+          49,
+          32,
+          27,
+          34,
+          29,
+          13,
+          31,
+          16,
+          45,
+          0,
+          19
+        ],
+        "seats": 3,
+        "baseStake": 100,
+        "actions": [
+          "split"
+        ],
+        "cursor": 10,
+        "dealer": [
+          46,
+          11
+        ],
+        "hands": [
+          {
+            "seat": 0,
+            "cards": [
+              48,
+              17
+            ],
+            "stake": 100,
+            "split": true,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 0,
+            "cards": [
+              22,
+              1
+            ],
+            "stake": 100,
+            "split": true,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 1,
+            "cards": [
+              24,
+              12
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          },
+          {
+            "seat": 2,
+            "cards": [
+              30,
+              10
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          }
+        ],
+        "active": 0,
+        "complete": false
+      },
+      "pack": null
+    },
+    "hit": {
+      "version": 2,
+      "balance": 999900,
+      "sequence": 0,
+      "history": [],
+      "hand": null,
+      "table": {
+        "deck": [
+          1,
+          2,
+          42,
+          51,
+          13,
+          7,
+          26,
+          33,
+          40,
+          22,
+          29,
+          17,
+          5,
+          45,
+          49,
+          24,
+          36,
+          50,
+          23,
+          31,
+          4,
+          27,
+          11,
+          35,
+          18,
+          8,
+          19,
+          43,
+          10,
+          28,
+          9,
+          47,
+          3,
+          14,
+          15,
+          39,
+          25,
+          30,
+          34,
+          0,
+          44,
+          32,
+          46,
+          48,
+          41,
+          6,
+          37,
+          16,
+          20,
+          38,
+          21,
+          12
+        ],
+        "seats": 1,
+        "baseStake": 100,
+        "actions": [
+          "hit"
+        ],
+        "cursor": 5,
+        "dealer": [
+          2,
+          51
+        ],
+        "hands": [
+          {
+            "seat": 0,
+            "cards": [
+              1,
+              42,
+              13
+            ],
+            "stake": 100,
+            "split": false,
+            "splitAce": false,
+            "done": false
+          }
+        ],
+        "active": 0,
+        "complete": false
+      },
+      "pack": null
+    },
+    "double": {
+      "version": 2,
+      "balance": 999800,
+      "sequence": 1,
+      "history": [
+        {
+          "id": 1,
+          "game": "blackjack",
+          "stake": 200,
+          "payout": 0,
+          "values": [
+            1,
+            42,
+            13,
+            -1,
+            2,
+            51,
+            7
+          ],
+          "label": "Seat 1 · Loss"
+        }
+      ],
+      "hand": null,
+      "table": null,
+      "pack": {
+        "game": "blackjack",
+        "rounds": [
+          {
+            "id": 1,
+            "game": "blackjack",
+            "stake": 200,
+            "payout": 0,
+            "values": [
+              1,
+              42,
+              13,
+              -1,
+              2,
+              51,
+              7
+            ],
+            "label": "Seat 1 · Loss"
+          }
+        ],
+        "table": {
+          "deck": [
+            1,
+            2,
+            42,
+            51,
+            13,
+            7,
+            26,
+            33,
+            40,
+            22,
+            29,
+            17,
+            5,
+            45,
+            49,
+            24,
+            36,
+            50,
+            23,
+            31,
+            4,
+            27,
+            11,
+            35,
+            18,
+            8,
+            19,
+            43,
+            10,
+            28,
+            9,
+            47,
+            3,
+            14,
+            15,
+            39,
+            25,
+            30,
+            34,
+            0,
+            44,
+            32,
+            46,
+            48,
+            41,
+            6,
+            37,
+            16,
+            20,
+            38,
+            21,
+            12
+          ],
+          "seats": 1,
+          "baseStake": 100,
+          "actions": [
+            "double"
+          ],
+          "cursor": 6,
+          "dealer": [
+            2,
+            51,
+            7
+          ],
+          "hands": [
+            {
+              "seat": 0,
+              "cards": [
+                1,
+                42,
+                13
+              ],
+              "stake": 200,
+              "split": false,
+              "splitAce": false,
+              "done": true
+            }
+          ],
+          "active": -1,
+          "complete": true
+        }
+      }
+    }
+  },
+  "splitPlan": {
+    "events": [
+      {
+        "row": 0,
+        "index": 1,
+        "at": 100,
+        "kind": "deal"
+      },
+      {
+        "row": 1,
+        "index": 0,
+        "at": 360,
+        "kind": "deal"
+      },
+      {
+        "row": 1,
+        "index": 1,
+        "at": 620,
+        "kind": "deal"
+      }
+    ],
+    "duration": 1740
+  }
+}

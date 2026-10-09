@@ -12,7 +12,7 @@ import { CASINO_READY } from "../lib/cycleDeployment";
  * casinoView drives "lobby" vs "game" mode; game panels are lazy-mounted.
  */
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import { TableVideoBackdrop } from "./TableVideoBackdrop";
+import { AstralCard, AstralTable } from "./CasinoAstralCards";
 import { useQuery } from "@tanstack/react-query";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "../lib/cycleSigner";
@@ -25,11 +25,10 @@ import {
   buildSplitTx, buildSplitHitTx, buildSplitStandTx,
   fetchLiveHand, resolveDealByDigest, resolveSettleByDigest, fetchRecentLiveHands,
   fetchLiveSplitHand, resolveSplitByDigest, resolveSplitSettleByDigest,
-  decodeCard, outcomeLabel, handTotal,
+  outcomeLabel, handTotal,
   OUT_WIN, OUT_BLACKJACK, OUT_PUSH,
   type LiveHand, type LiveSettlement, type LiveSplitHand, type SplitSettlement,
 } from "../lib/casino";
-import { SUIT_THEME, RANK_LABEL, RANK_SHIP, CARD_BACK, isFace } from "../lib/casinoTheme";
 import { InstantGamePanel } from "./InstantGamePanel";
 import { MinesPanel } from "./MinesPanel";
 import { DragonTowerPanel } from "./DragonTowerPanel";
@@ -67,64 +66,13 @@ function txDigestOf(result: any): string {
 function shortAddr(a: string): string { return a ? `${a.slice(0, 6)}…${a.slice(-4)}` : "—"; }
 function fmtEve(n: number): string { return n.toLocaleString(undefined, { maximumFractionDigits: 3 }); }
 
-// ── Playing card with real EVE Frontier art ───────────────────────────────────
-function CardView({ index, hidden, dealDelay = 0 }: { index?: number; hidden?: boolean; dealDelay?: number }) {
-  const [shown, setShown] = useState(dealDelay === 0);
-  useEffect(() => { if (dealDelay > 0) { const t = setTimeout(() => setShown(true), dealDelay); return () => clearTimeout(t); } }, [dealDelay]);
-
-  if (hidden || index === undefined) {
-    return (
-      <div style={{ ...cardShell(false), transform: shown ? "rotateY(0deg) translateY(0px)" : "rotateY(90deg) translateY(-14px)", transition: "transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.15)" }}>
-        <img src={CARD_BACK} alt="" style={{ width: "68%", height: "68%", objectFit: "contain", opacity: 0.55, filter: "drop-shadow(0 0 4px rgba(255,71,0,0.5))" }} />
-      </div>
-    );
-  }
-  const card = decodeCard(index);
-  const suit = SUIT_THEME[card.suit];
-  const face = isFace(card.rank);
-  return (
-    <div style={{ ...cardShell(true), transform: shown ? "rotateY(0deg) translateY(0px) scale(1)" : "rotateY(90deg) translateY(-14px) scale(0.92)", transition: "transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.15)" }}>
-      {/* corner rank + suit */}
-      <div style={{ position: "absolute", top: 4, left: 5, color: suit.color, fontSize: 14, fontWeight: 900, lineHeight: 1, textAlign: "center" }}>
-        {RANK_LABEL[card.rank]}
-        <div style={{ fontSize: 10 }}>{suit.glyph}</div>
-      </div>
-      {/* center art */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-        {face
-          ? <img src={RANK_SHIP[card.rank]} alt="" style={{ width: "70%", height: "70%", objectFit: "contain", filter: card.suit < 2 ? "hue-rotate(0deg) drop-shadow(0 0 3px rgba(255,71,0,0.4))" : "hue-rotate(160deg) drop-shadow(0 0 3px rgba(127,200,255,0.4))" }} />
-          : <img src={suit.icon} alt="" style={{ width: "52%", height: "52%", objectFit: "contain", opacity: 0.9 }} />}
-      </div>
-      <div style={{ position: "absolute", bottom: 4, right: 5, color: suit.color, fontSize: 14, fontWeight: 900, transform: "rotate(180deg)", lineHeight: 1, textAlign: "center" }}>
-        {RANK_LABEL[card.rank]}
-        <div style={{ fontSize: 10 }}>{suit.glyph}</div>
-      </div>
-    </div>
-  );
-}
-function cardShell(face: boolean): React.CSSProperties {
-  return {
-    position: "relative", width: 62, height: 88,
-    background: face ? "linear-gradient(160deg,#1c1712,#0d0b08)" : "linear-gradient(160deg,#241009,#120906)",
-    borderRadius: 6, border: `1px solid ${face ? ACCENT + "55" : ACCENT + "33"}`,
-    boxShadow: "0 4px 10px rgba(0,0,0,0.6)", flexShrink: 0,
-    display: "flex", alignItems: "center", justifyContent: "center",
-  };
-}
-
+// The same astral artwork wraps the staged chain view; wagering gates are unchanged.
 function HandRow({ label, cards, total, hideHole }: { label: string; cards: number[]; total: number; hideHole?: boolean }) {
   const shownTotal = hideHole && cards.length >= 1 ? handTotal([cards[0]]) : total;
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{ color: "#999", fontSize: 11, letterSpacing: "0.08em", marginBottom: 6, textAlign: "center" }}>
-        {label}{cards.length > 0 && <span style={{ color: GOLD, marginLeft: 8 }}>{hideHole ? `${shownTotal} +?` : shownTotal}</span>}
-      </div>
-      <div style={{ display: "flex", gap: 8, minHeight: 88, justifyContent: "center", flexWrap: "wrap" }}>
-        {cards.length === 0 && <div style={{ color: "#555", fontSize: 12, alignSelf: "center" }}>—</div>}
-        {cards.map((idx, i) => <CardView key={`${idx}-${i}`} index={idx} hidden={hideHole && i === 1} dealDelay={60 + i * 150} />)}
-      </div>
-    </div>
-  );
+  return <div className="astral-hand">
+    <div className="astral-hand-label">{label}<b>{cards.length ? shownTotal : "—"}{hideHole && cards.length > 1 ? " + ?" : ""}</b></div>
+    <div className="astral-fan">{cards.map((value, i) => <AstralCard key={`${value}-${i}`} value={value} hidden={hideHole && i === 1} index={i} />)}</div>
+  </div>;
 }
 
 type Phase = "idle" | "dealing" | "player" | "resolving" | "settled";
@@ -612,8 +560,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
               {/* Table */}
               <div style={{ flex: "1 1 440px", minWidth: 0 }}>
-                <div style={{ background: `radial-gradient(ellipse at 50% 15%, #14351f 0%, #0c1c12 55%, #060a08 100%)`, border: `2px solid ${ACCENT}44`, borderRadius: 12, padding: "22px 24px", boxShadow: "inset 0 0 70px rgba(0,0,0,0.65)", position: "relative", isolation: "isolate", overflow: "hidden" }}>
-                  <TableVideoBackdrop tint="radial-gradient(ellipse at 50% 15%, rgba(20,53,31,0.32) 0%, rgba(12,28,18,0.48) 55%, rgba(6,10,8,0.70) 100%)" />
+                <AstralTable>
                   {inSplit ? (
                     <>
                       <HandRow label="DEALER" cards={splitDealer} total={splitSettlement?.dealerTotal ?? 0} hideHole={!!splitHand} />
@@ -641,7 +588,7 @@ export function CasinoPanel({ initialGame = "blackjack", embedded = false, wager
                   {phase === "resolving" && <Center text="◇ dealer playing…" color={GOLD} />}
                   {phase === "settled" && settlement && <OutcomeBadge s={settlement} />}
                   {phase === "settled" && splitSettlement && <SplitOutcomeBadge s={splitSettlement} />}
-                </div>
+                </AstralTable>
 
                 {/* Controls */}
                 <div style={{ marginTop: 16, background: "#111", border: `1px solid ${ACCENT}22`, padding: 18 }}>

@@ -78,6 +78,7 @@ import {
 import "../styles/casino-lounge.css";
 import "../styles/casino-table-motion.css";
 import { useCasinoTimeline } from "./useCasinoTimeline";
+import { AstralTable, AstralHand, AstralCard } from "./CasinoAstralCards";
 import { CasinoBlackjackMotion } from "./CasinoBlackjackMotion";
 import {
   tableDuration,
@@ -103,77 +104,6 @@ function initial() {
   } catch {
     return initialSession();
   }
-}
-function PlayingCard({
-  value,
-  hidden = false,
-  war = false,
-}: {
-  value: number;
-  hidden?: boolean;
-  war?: boolean;
-}) {
-  const rank = war
-    ? ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"][value]
-    : ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"][
-        value % 13
-      ];
-  const suit = war ? 0 : Math.floor(value / 13),
-    ship = war ? 87848 : [82425, 87848, 81611, 84955][suit];
-  return (
-    <div
-      className={`lounge-playing-card ${hidden ? "card-back" : ""}`}
-      aria-label={
-        hidden
-          ? "Hidden dealer card"
-          : `${rank} ${["Frigates", "Raiders", "Freighters", "Gates"][suit]}`
-      }
-    >
-      {hidden ? (
-        <>
-          <span>CRADLE</span>
-          <ItemIcon typeId={72244} size={62} />
-          <span>◇</span>
-        </>
-      ) : (
-        <>
-          <b>
-            {rank}
-            <small>{["◇", "✦", "◉", "▣"][suit]}</small>
-          </b>
-          <ItemIcon typeId={ship} size={74} />
-          <b className="card-corner">{rank}</b>
-        </>
-      )}
-    </div>
-  );
-}
-function CardRow({
-  label,
-  cards,
-  hidden = false,
-  war = false,
-}: {
-  label: string;
-  cards: number[];
-  hidden?: boolean;
-  war?: boolean;
-}) {
-  return (
-    <div className="lounge-card-row">
-      <span className="lounge-eyebrow">
-        {label}{" "}
-        {!war && cards.length > 0 && (
-          <strong>{hidden ? "?" : cardTotal(cards)}</strong>
-        )}
-      </span>
-      <div>
-        {cards.map((c, i) => (
-          <PlayingCard key={i} value={c} hidden={hidden && i === 1} war={war} />
-        ))}
-      </div>
-    </div>
-  );
 }
 function GameSurface({
   game,
@@ -290,19 +220,17 @@ function GameSurface({
     const player = state.hand?.player ?? values.slice(0, cut),
       dealer = state.hand?.dealer ?? values.slice(separator < 0 ? 2 : cut + 1);
     return (
-      <div className="lounge-blackjack">
-        <CardRow label="Dealer" cards={dealer} hidden={activeSession(state)} />
-        <div className="felt-line">
-          <span>BLACKJACK PAYS 3:2</span>
-        </div>
-        <CardRow label="Your hand" cards={player} />
-        {!player.length && (
-          <div className="table-ready">
-            <ItemIcon typeId={82425} size={110} />
-            <span>Take a seat at the command deck.</span>
-          </div>
-        )}
-      </div>
+      <AstralTable reduced={reducedMotion}>
+        {player.length > 0 ? <>
+          <AstralHand label="DEALER · STANDS ON 17" cards={dealer} hidden={activeSession(state)} />
+          <div className="astral-rule"><span>BLACKJACK PAYS 3:2</span></div>
+          <AstralHand label="YOUR HAND" cards={player} />
+        </> : <>
+          <div className="astral-ready-fan" aria-hidden="true">{[0, 1, 2].map(i => <AstralCard key={i} value={0} hidden index={i} />)}</div>
+          <div className="astral-ready"><strong>YOUR ORBIT AWAITS</strong>Choose your stake. Deal into the void.</div>
+          <div className="astral-rule"><span>BLACKJACK 3:2 · DEALER STANDS ON 17</span></div>
+        </>}
+      </AstralTable>
     );
   }
   if (game === "roulette" && pack)
@@ -1356,7 +1284,7 @@ export function CasinoExperience({
             ) : (
               <div className="lounge-play-layout">
                 <div
-                  className={`lounge-surface ${busy ? "round-active" : ""} ${result && result.payout > result.stake ? "round-won" : ""}`}
+                  className={`lounge-surface ${game === "blackjack" ? "astral-surface" : ""} ${busy ? "round-active" : ""} ${result && result.payout > result.stake ? "round-won" : ""}`}
                 >
                   <div className="lounge-surface-label">
                     <span>CRADLE / {meta!.tag}</span>
