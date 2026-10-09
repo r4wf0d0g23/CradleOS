@@ -1,0 +1,30 @@
+{
+  "mode": "anonymous production; no wallet",
+  "base": "https://cradleos.io",
+  "checks": [
+    {
+      "width": 320,
+      "check": "casino hero removed; compact label/value activity; keyboard collapse; cycle strip",
+      "activity": "◉ 4 verified wallets · 30d",
+      "popup": {
+        "x": 116.296875,
+        "y": 731.5,
+        "width": 191.703125,
+        "height": 156.5
+      }
+    },
+    {
+      "width": 1440,
+      "check": "casino hero removed; compact label/value activity; keyboard collapse; cycle strip",
+      "activity": "◉ 4 verified wallets · 30d",
+      "popup": {
+        "x": 1225.796875,
+        "y": 731.5,
+        "width": 202.203125,
+        "height": 156.5
+      }
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

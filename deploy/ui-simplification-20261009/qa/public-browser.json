@@ -1,0 +1,134 @@
+{
+  "mode": "production preview; no wallet",
+  "base": "http://127.0.0.1:5207",
+  "checks": [
+    {
+      "width": 320,
+      "check": "casino hero removed; compact label/value activity; keyboard collapse; cycle strip",
+      "activity": "◉ 4 verified wallets · 30d",
+      "popup": {
+        "x": 116.296875,
+        "y": 731.5,
+        "width": 191.703125,
+        "height": 156.5
+      }
+    },
+    {
+      "width": 320,
+      "check": "donation concise consequences; connect-wallet gate"
+    },
+    {
+      "width": 320,
+      "check": "all seven Game Data sections; source downloads preserved"
+    },
+    {
+      "width": 320,
+      "check": "item search and content retained"
+    },
+    {
+      "width": 320,
+      "check": "recipe selection, quantity and supply-chain outputs"
+    },
+    {
+      "width": 320,
+      "check": "query route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "intel route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "defense route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "storage route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "voting route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "tribe route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "gates route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "origins route renders without overflow"
+    },
+    {
+      "width": 320,
+      "check": "dapps route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "casino hero removed; compact label/value activity; keyboard collapse; cycle strip",
+      "activity": "◉ 4 verified wallets · 30d",
+      "popup": {
+        "x": 1225.796875,
+        "y": 731.5,
+        "width": 202.203125,
+        "height": 156.5
+      }
+    },
+    {
+      "width": 1440,
+      "check": "donation concise consequences; connect-wallet gate"
+    },
+    {
+      "width": 1440,
+      "check": "all seven Game Data sections; source downloads preserved"
+    },
+    {
+      "width": 1440,
+      "check": "item search and content retained"
+    },
+    {
+      "width": 1440,
+      "check": "recipe selection, quantity and supply-chain outputs"
+    },
+    {
+      "width": 1440,
+      "check": "query route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "intel route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "defense route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "storage route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "voting route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "tribe route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "gates route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "origins route renders without overflow"
+    },
+    {
+      "width": 1440,
+      "check": "dapps route renders without overflow"
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

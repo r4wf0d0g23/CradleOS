@@ -1,0 +1,10 @@
+{
+  "mode": "anonymous production-build preview",
+  "width": 320,
+  "keyboard": "ArrowRight",
+  "regionClientWidth": 272,
+  "regionScrollWidth": 680,
+  "scrollLeftAfter": 40,
+  "documentWidth": 320,
+  "noPageOverflow": true
+}
