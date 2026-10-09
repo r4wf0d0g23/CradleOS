@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-09T15:17:24.464760+00:00",
+  "url": "https://cradleos.io/",
+  "source": "1462bd0d0d04ec764d1493653d356f179d9f81a7",
+  "files": [
+    {
+      "path": "/assets/index-DGFUbUEd.js",
+      "bytes": 2275814,
+      "sha256": "e3e5cd616671abe2958ba58d959e4bf8d7a8755268c647e68339bd54b8dd71c1",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/index-jYaQmalH.css",
+      "bytes": 826382,
+      "sha256": "cfb74d211f78f436c426699e87faadc81e59ee62248115ed4e21c29c80f13a0d",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/manifest.json",
+      "bytes": 291463,
+      "sha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png",
+      "bytes": 23377,
+      "sha256": "fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png",
+      "bytes": 23903,
+      "sha256": "d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png",
+      "bytes": 23184,
+      "sha256": "35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png",
+      "bytes": 21218,
+      "sha256": "f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862",
+      "exactMatch": true
+    }
+  ]
+}
