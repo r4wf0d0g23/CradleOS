@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-09T14:00:34.321271+00:00",
+  "url": "https://cradleos.io/",
+  "source": "ff14b6ffeab70a08cd6d1a9967d9b5b05f61f17b",
+  "deployment": "70d7eed4",
+  "files": [
+    {
+      "path": "/assets/index-qW0qe1v0.js",
+      "bytes": 2274937,
+      "sha256": "730e01d8948637966692213650632773a70e4b9324100a6045591f54ead1e5a2",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/index-BTp7no0d.css",
+      "bytes": 816181,
+      "sha256": "c899b2f1293e82c64e875e4c367e183cbdde412a5c73cb248862cc5edc2eb3e9",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/manifest.json",
+      "bytes": 291463,
+      "sha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/e8f9699fd3b80f221a6e0c6936524e6f6b3734e08375e08b392f16f91a174c81.png",
+      "bytes": 271,
+      "sha256": "e8f9699fd3b80f221a6e0c6936524e6f6b3734e08375e08b392f16f91a174c81",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/4eb79f83d9296701381bb49502f8789139fbccb76edd219ec104b81dc734969d.png",
+      "bytes": 259,
+      "sha256": "4eb79f83d9296701381bb49502f8789139fbccb76edd219ec104b81dc734969d",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/404e0fb6ebfe0b4fe64dc89bed61041e26226b8949c2b2213f76ef2e40bc35e6.png",
+      "bytes": 414,
+      "sha256": "404e0fb6ebfe0b4fe64dc89bed61041e26226b8949c2b2213f76ef2e40bc35e6",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/d8e1d8079f74db08fdf0a0527201126f66610006f9cbd7e9a60e7e2c1f39c71c.png",
+      "bytes": 166,
+      "sha256": "d8e1d8079f74db08fdf0a0527201126f66610006f9cbd7e9a60e7e2c1f39c71c",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/f7362e61ee6f4fad6e692441569b50ec4112e8b32751c038e79c078ed6a8b633.png",
+      "bytes": 240,
+      "sha256": "f7362e61ee6f4fad6e692441569b50ec4112e8b32751c038e79c078ed6a8b633",
+      "exactMatch": true
+    },
+    {
+      "path": "/data/icons-cycle7-3573151/assets/e80a56e608a6278f5927ef0ffb30ce8184ff9ec3e0cd31217a2ea21543d33c06.png",
+      "bytes": 214,
+      "sha256": "e80a56e608a6278f5927ef0ffb30ce8184ff9ec3e0cd31217a2ea21543d33c06",
+      "exactMatch": true
+    }
+  ]
+}
