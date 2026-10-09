@@ -1648,7 +1648,7 @@
   overflow: hidden;
   min-height: 170px;
 }
-.casino-moving-reels .reel-moving > div {
+.casino-moving-reels .reel-moving > .game-icon {
   transform: translateY(var(--roll-y));
   filter: blur(1px);
 }

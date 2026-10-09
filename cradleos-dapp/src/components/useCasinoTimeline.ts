@@ -12,6 +12,7 @@ export function useCasinoTimeline(
   run: TableRun,
   busy: boolean,
   reduced: boolean,
+  overrideSystemReduction = false,
 ) {
   const cancelled = useRef(-1),
     [frame, setFrame] = useState({ id: -1, t: 1 });
@@ -26,7 +27,7 @@ export function useCasinoTimeline(
       if (alive) setFrame({ id: run.id, t: 1 });
     };
     const preference = () => {
-        if (media.matches) snap();
+        if (media.matches && !overrideSystemReduction) snap();
       },
       visibility = () => {
         if (document.hidden) snap();
@@ -41,7 +42,7 @@ export function useCasinoTimeline(
     document.addEventListener("visibilitychange", visibility);
     if (
       reduced ||
-      media.matches ||
+      (media.matches && !overrideSystemReduction) ||
       document.hidden ||
       cancelled.current === run.id
     )
@@ -55,7 +56,7 @@ export function useCasinoTimeline(
       media.removeEventListener("change", preference);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [run, busy, reduced]);
+  }, [run, busy, reduced, overrideSystemReduction]);
   const snapped = reduced || cancelled.current === run.id;
   return {
     t: !busy || snapped ? 1 : frame.id === run.id ? frame.t : 0,

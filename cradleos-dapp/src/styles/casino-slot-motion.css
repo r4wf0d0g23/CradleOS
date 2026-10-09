@@ -178,3 +178,28 @@
     display: none !important;
   }
 }
+
+/* Explicit slot-only opt-in. Other games and ambient reduced-motion rules remain unchanged. */
+.frontier-casino[data-slot-motion="animated"] :is(.slot-reel-window, .cascade-ghost-layer, .slot-gate-sweep, .vault-socket-shutter) {
+  display: block !important;
+}
+.slot-motion-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: #d5d1bf;
+}
+.slot-motion-control select {
+  min-height: 44px;
+  min-width: 0;
+  max-width: 75%;
+  border: 1px solid #7b77614d;
+  border-radius: 8px;
+  padding: 8px;
+  background: #0b0c09;
+  color: #fafae5;
+  font: inherit;
+}

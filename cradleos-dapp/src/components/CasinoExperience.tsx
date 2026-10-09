@@ -87,6 +87,8 @@ import {
   type TableRun,
 } from "../lib/casinoTableMotion";
 const base = import.meta.env.BASE_URL;
+const SLOT_MOTION_KEY = "cradleos:casino:slot-motion:v1";
+type SlotMotionPreference = "system" | "animated" | "instant";
 const titles = (key: string) =>
   (isFleet(key)
     ? { title: FLEET[key].name, tag: "SLOT FLEET", icon: FLEET[key].icon }
@@ -113,6 +115,7 @@ function GameSurface({
   reducedMotion,
   selectedProfile,
   slotRun,
+  animateSlots,
   onNextSlot,
   tableRun,
   onScratchReveal,
@@ -124,6 +127,7 @@ function GameSurface({
   reducedMotion: boolean;
   selectedProfile: keyof typeof PROFILES;
   slotRun: SlotMotionRun;
+  animateSlots: boolean;
   onNextSlot: () => void;
   tableRun: TableRun;
   onScratchReveal: (index?: number) => boolean;
@@ -301,6 +305,7 @@ function GameSurface({
       reduced={reducedMotion}
       run={tableRun}
       choice={tableRun.choice}
+      animateSlots={animateSlots}
     />
   );
 }
@@ -504,9 +509,24 @@ export function CasinoExperience({
   const [chainBusy, setChainBusy] = useState(false),
     [error, setError] = useState(state.notice ?? ""),
     [resetConfirm, setResetConfirm] = useState(false);
-  const [reduce, setReduce] = useState(
+  const [systemReduced, setSystemReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  const [slotMotionPreference, setSlotMotionPreference] = useState<SlotMotionPreference>(() => {
+    try {
+      const saved = localStorage.getItem(SLOT_MOTION_KEY);
+      return saved === "animated" || saved === "instant" ? saved : "system";
+    } catch { return "system"; }
+  });
+  const slotMotionEnabled = mode === "practice" && !!game && isSlotGame(game);
+  const animateSlots = slotMotionEnabled && slotMotionPreference === "animated";
+  const reduce = slotMotionEnabled && slotMotionPreference !== "system"
+    ? slotMotionPreference === "instant" : systemReduced;
+  function chooseSlotMotion(value: string) {
+    if (busyRef.current || autoRef.current || !["system", "animated", "instant"].includes(value)) return;
+    setSlotMotionPreference(value as SlotMotionPreference);
+    try { localStorage.setItem(SLOT_MOTION_KEY, value); } catch { /* Cosmetic only. */ }
+  }
   const feedback = useCasinoFeedback();
   const houseQuery = useLoungeHouse(mode === "testnet");
   const wageringReady =
@@ -516,7 +536,7 @@ export function CasinoExperience({
     !houseQuery.isFetching;
   useEffect(() => {
     const mq = matchMedia("(prefers-reduced-motion: reduce)"),
-      change = () => setReduce(mq.matches);
+      change = () => setSystemReduced(mq.matches);
     mq.addEventListener("change", change);
     return () => {
       mq.removeEventListener("change", change);
@@ -971,7 +991,7 @@ export function CasinoExperience({
   const meta = game ? titles(game) : null;
   return (
     <CasinoFeedback.Provider value={feedback.play}>
-      <section className="frontier-casino" data-mode={mode}>
+      <section className="frontier-casino" data-mode={mode} data-slot-motion={animateSlots ? "animated" : undefined}>
         <header className="lounge-header">
           {onReturnToStation && (
             <button
@@ -1275,6 +1295,7 @@ export function CasinoExperience({
                     reducedMotion={reduce}
                     selectedProfile={options.profile ?? "Low"}
                     slotRun={slotRun}
+                    animateSlots={animateSlots}
                     onNextSlot={() => nextSlot()}
                     tableRun={tableRun}
                     onScratchReveal={uncoverScratch}
@@ -1332,6 +1353,15 @@ export function CasinoExperience({
                       <strong>{cardTotal([state.table.dealer[0]])}</strong>
                     </p>
                   )}
+                  {isSlotGame(game) && <label className="slot-motion-control">
+                    Reels
+                    <select aria-label="Reel animation" value={slotMotionPreference} disabled={busy || autoRun}
+                      onChange={(e) => chooseSlotMotion(e.target.value)}>
+                      <option value="system">System · {systemReduced ? "Reduced" : "Animated"}</option>
+                      <option value="animated">Animated</option>
+                      <option value="instant">Instant</option>
+                    </select>
+                  </label>}
                   <label className="stake-label">
                     {game === "roulette"
                       ? "Chip value"

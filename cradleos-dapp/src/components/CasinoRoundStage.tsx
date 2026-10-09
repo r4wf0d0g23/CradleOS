@@ -168,6 +168,7 @@ export function CasinoRoundStage({
   reduced,
   run = STILL_RUN,
   choice = {},
+  animateSlots = false,
 }: {
   game: string;
   round: Round | null;
@@ -175,8 +176,9 @@ export function CasinoRoundStage({
   reduced: boolean;
   run?: TableRun;
   choice?: Choice;
+  animateSlots?: boolean;
 }) {
-  const { t, animated } = useCasinoTimeline(run, busy, reduced),
+  const { t, animated } = useCasinoTimeline(run, busy, reduced, game === "slots" && animateSlots),
     v = round?.values ?? [],
     has = !!round,
     done = has && t === 1;

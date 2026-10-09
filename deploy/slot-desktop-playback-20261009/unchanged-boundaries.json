@@ -1,0 +1,32 @@
+[
+  {
+    "file": "cradleos-dapp/src/lib/casinoSlotFleet.ts",
+    "sha256": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8",
+    "unchangedFrom": "076710ced742da3aa516b17d5d4cbcb6ccb44140"
+  },
+  {
+    "file": "cradleos-dapp/src/lib/casinoSessions.ts",
+    "sha256": "80d1576592748fd26ae9132fdaf5623a33c06d8b3b3e89857094bba18f46fe0a",
+    "unchangedFrom": "076710ced742da3aa516b17d5d4cbcb6ccb44140"
+  },
+  {
+    "file": "cradleos-dapp/src/lib/casinoPractice.ts",
+    "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+    "unchangedFrom": "076710ced742da3aa516b17d5d4cbcb6ccb44140"
+  },
+  {
+    "file": "cradleos-dapp/src/lib/casinoSlotMotion.ts",
+    "sha256": "fbd09e97efaf3edef7195f062978463f9c99d3797459de62dbf783f7edda6177",
+    "unchangedFrom": "076710ced742da3aa516b17d5d4cbcb6ccb44140"
+  },
+  {
+    "file": "cradleos-dapp/src/lib/casinoExpanded.ts",
+    "sha256": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226",
+    "unchangedFrom": "076710ced742da3aa516b17d5d4cbcb6ccb44140"
+  },
+  {
+    "file": "cradleos-dapp/src/lib/casinoBlackjackTable.ts",
+    "sha256": "a2406def69d4c7b99ad17841a2f00a29951382f80aeb58d5d7f788955d09dfcc",
+    "unchangedFrom": "076710ced742da3aa516b17d5d4cbcb6ccb44140"
+  }
+]
