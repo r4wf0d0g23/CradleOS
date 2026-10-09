@@ -1,0 +1,14 @@
+{
+  "installed_at": "20261009T154437Z",
+  "backup": "/home/rawdata/cradleos-agent-proxy/backups/activity-counter-20261009T154437Z",
+  "legacy_row_counts_before": {
+    "wallet_pings": 150,
+    "onchain_pings": 189,
+    "onchain_cursor": 22
+  },
+  "files": {
+    "activity.mjs": "b0129231d2ccf3ce7f432362d884b42adda8e86fc4eec678f1ec9048a06f12a9",
+    "telemetry-config.json": "18d3884d645ac822bec12c77eb18021c9643ab76456c56adf7c14f88e0a688fe",
+    "telemetry.js": "647d12917d90018031bdb8f739c2506d66188f3d5a870c55fd8e88028a571fcb"
+  }
+}

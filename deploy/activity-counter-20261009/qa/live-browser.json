@@ -1,0 +1,10 @@
+{
+  "mode": "Actual public API and production UI; no mocked activity or wallet signing",
+  "url": "https://cradleos.io/",
+  "checks": [
+    "320: ◉ 4 verified wallets · 30d, expand/collapse, keyboard, touch target, viewport bounds and honest coverage copy",
+    "390: ◉ 4 verified wallets · 30d, expand/collapse, keyboard, touch target, viewport bounds and honest coverage copy",
+    "1440: ◉ 4 verified wallets · 30d, expand/collapse, keyboard, touch target, viewport bounds and honest coverage copy"
+  ],
+  "errors": []
+}

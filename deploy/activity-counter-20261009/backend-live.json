@@ -1,0 +1,71 @@
+{
+  "public": {
+    "status": 200,
+    "cors": "*",
+    "cache": "no-store",
+    "data": {
+      "schema_version": 2,
+      "metric": "verified_wallets",
+      "cycle": 7,
+      "chain_id": "4c78adac",
+      "window_days": 30,
+      "since": "2026-09-09T15:45:56.199Z",
+      "generated_at": "2026-10-09T15:45:56.199Z",
+      "wallet_mau": 0,
+      "wallet_dau": 0,
+      "onchain_mau": 4,
+      "combined_mau": 4,
+      "wallet_coverage_since": "2026-10-09T15:44:38.271Z",
+      "onchain_status": "current",
+      "onchain_indexed_at": "2026-10-09T15:44:35.994Z",
+      "onchain_checked_at": "2026-10-09T15:44:39.482Z",
+      "packages": [
+        "0x2581b5d820e604306efa2604970387055e20830f9e3b424b7fed3f78e68361a6",
+        "0x58fec9cb6c4026d6951d6df86442c281dfd69b6c7a2225d7016c08674e1b3e35",
+        "0x9628fb3b5c589d627d2127581e0c3eb46c3af1f0c1171ce78d0992aebaedbec3",
+        "0xd73c02463c1c679c94a5d7a133a944798870a2da302a6f4f52f626aa0010721e",
+        "0xf1166f0e22b5c1407ee16d2ff5ce0a3a1d101827b82747df53ff636883b5abec"
+      ],
+      "note": "Unique verified wallet addresses, not people, visits or game rounds. Successful calls to current-cycle app packages plus fresh identity proofs; repeat wallets count once. Legacy unverified pings excluded. Wallet proofs were not reliably verified before wallet_coverage_since; a full month of site use cannot be reconstructed."
+    }
+  },
+  "health": {
+    "status": 200,
+    "cors": "*",
+    "cache": null,
+    "data": {
+      "status": "ok",
+      "keeper": "retired",
+      "services": [
+        "telemetry",
+        "images",
+        "war"
+      ]
+    }
+  },
+  "invalid_proof": {
+    "status": 401,
+    "cors": "*",
+    "cache": "no-store",
+    "data": {
+      "error": "proof_not_verified",
+      "verified": false
+    }
+  },
+  "retired_route": {
+    "status": 410,
+    "cors": "*",
+    "cache": "no-store",
+    "data": {
+      "error": "Keeper has been retired.",
+      "code": "KEEPER_RETIRED"
+    }
+  },
+  "legacy_row_counts_after": {
+    "wallet_pings": 150,
+    "onchain_pings": 189,
+    "onchain_cursor": 22
+  },
+  "db_distinct_chain_wallets": 4,
+  "new_verified_proof_rows": 0
+}

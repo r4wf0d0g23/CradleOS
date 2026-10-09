@@ -1,0 +1,19 @@
+{
+  "source": "990bab7a4e316ea33759bf37dae2c48a85859c33",
+  "pages": "4235ec55",
+  "checked_at": "2026-10-09T15:46:09.366669+00:00",
+  "files": [
+    {
+      "path": "/assets/index-pLwWGISo.js",
+      "sha256": "52d3c6ba599bdf3b338d20d7ac068faf06aa5d4582ed25775a02c8b184fcefe4",
+      "bytes": 2278092,
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/index-zO7umNL4.css",
+      "sha256": "5142ca71c345172a136c374f370ded27aa091a96964dc8030a32023cb88cd5ca",
+      "bytes": 826389,
+      "exactMatch": true
+    }
+  ]
+}
