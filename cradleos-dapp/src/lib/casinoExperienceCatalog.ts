@@ -1,3 +1,8 @@
+import {
+  FRONTIER_KEYS,
+  FRONTIER_NAMES,
+  isFrontierGame,
+} from "./casinoFrontier";
 /** Shared presentation catalog. No RNG, wallet, or balance operations. */
 import { CASINO_CATALOG, type GameEntry } from "./casinoCatalog";
 import { FLEET, FLEET_KEYS } from "./casinoSlotFleet";
@@ -23,14 +28,33 @@ export const CRAPS_CATALOG: GameEntry = {
   status: "live",
 };
 
-export const PRACTICE_CATALOG: GameEntry[] = [
+export const FRONTIER_CATALOG: GameEntry[] = FRONTIER_KEYS.map((key) => ({
+  key,
+  name: FRONTIER_NAMES[key],
+  category:
+    key === "frontier_holdem" || key === "frontier_wing"
+      ? "cards"
+      : "eve-native",
+  variance: "M-H",
+  buildClass: "S",
+  glyph: "◇",
+  hook: "",
+  status: "live",
+}));
+export const STATION_CATALOG: GameEntry[] = [
   ...CASINO_CATALOG,
   ...FLEET_CATALOG,
   CRAPS_CATALOG,
 ].filter(
   (g) =>
     !g.disabled &&
-    (g.key === "craps" || PRACTICE_GAMES.includes(g.key as PracticeGame)),
+    (isFrontierGame(g.key) ||
+      g.key === "craps" ||
+      PRACTICE_GAMES.includes(g.key as PracticeGame)),
 );
+export const PRACTICE_CATALOG: GameEntry[] = [
+  ...STATION_CATALOG,
+  ...FRONTIER_CATALOG,
+];
 export const isPracticeTerminal = (key: unknown): key is string =>
   typeof key === "string" && PRACTICE_CATALOG.some((g) => g.key === key);

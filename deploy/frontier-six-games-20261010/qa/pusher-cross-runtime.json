@@ -1,0 +1,68 @@
+{
+  "mode": "Node versus Chromium full tray/collection equality",
+  "checks": [
+    {
+      "x": 36,
+      "phase": 0,
+      "exact": true,
+      "collected": 4,
+      "missed": 0
+    },
+    {
+      "x": 36,
+      "phase": 0.3,
+      "exact": true,
+      "collected": 4,
+      "missed": 0
+    },
+    {
+      "x": 36,
+      "phase": 0.999,
+      "exact": true,
+      "collected": 3,
+      "missed": 0
+    },
+    {
+      "x": 180,
+      "phase": 0,
+      "exact": true,
+      "collected": 4,
+      "missed": 0
+    },
+    {
+      "x": 180,
+      "phase": 0.3,
+      "exact": true,
+      "collected": 2,
+      "missed": 0
+    },
+    {
+      "x": 180,
+      "phase": 0.999,
+      "exact": true,
+      "collected": 8,
+      "missed": 0
+    },
+    {
+      "x": 324,
+      "phase": 0,
+      "exact": true,
+      "collected": 5,
+      "missed": 0
+    },
+    {
+      "x": 324,
+      "phase": 0.3,
+      "exact": true,
+      "collected": 5,
+      "missed": 0
+    },
+    {
+      "x": 324,
+      "phase": 0.999,
+      "exact": true,
+      "collected": 3,
+      "missed": 0
+    }
+  ]
+}

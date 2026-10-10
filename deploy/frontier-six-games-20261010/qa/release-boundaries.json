@@ -1,0 +1,85 @@
+{
+  "base": "http://127.0.0.1:5230",
+  "mode": "Engine-generated tab-local fixtures; lifecycle, controls and concealment",
+  "checks": [
+    {
+      "name": "holdem_royal",
+      "payout": 1277500,
+      "ok": true
+    },
+    {
+      "name": "holdem_tie",
+      "payout": 12500,
+      "ok": true
+    },
+    {
+      "name": "holdem_fold",
+      "payout": 0,
+      "ok": true
+    },
+    {
+      "name": "wing_done",
+      "payout": 0,
+      "ok": true
+    },
+    {
+      "name": "Keep cargo",
+      "payout": 0,
+      "ok": true
+    },
+    {
+      "name": "Swap cargo",
+      "payout": 10050,
+      "ok": true
+    },
+    {
+      "name": "instant",
+      "duration": 57,
+      "ok": true
+    },
+    {
+      "name": "system",
+      "duration": 80,
+      "ok": true
+    },
+    {
+      "name": "hidden-resume",
+      "ok": true
+    },
+    {
+      "name": "resize-no-recharge",
+      "ok": true
+    },
+    {
+      "name": "storage-failure-does-not-charge",
+      "ok": true
+    },
+    {
+      "name": "keyboard-cargo-and-double-submit",
+      "ok": true
+    },
+    {
+      "name": "wing-drag-and-click-alternative",
+      "ok": true
+    },
+    {
+      "name": "pusher-chute-320",
+      "x": 260,
+      "ok": true
+    },
+    {
+      "name": "pusher-chute-1440",
+      "x": 260,
+      "ok": true
+    },
+    {
+      "name": "wing-tap-assignment",
+      "ok": true
+    },
+    {
+      "name": "legacy-blackjack-preserves-frontier",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,118 @@
+{
+  "base": "http://127.0.0.1:5230",
+  "mode": "Fresh tab-local Play Money; pointer/viewport emulation, no wallet",
+  "checks": [
+    {
+      "width": 320,
+      "game": "frontier_wing",
+      "frames": [
+        "0.014500000143051126",
+        "0.3312000001430512"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_wing",
+        "wager": 2500,
+        "payout": 2500,
+        "label": "Split · Push"
+      },
+      "overflow": 0,
+      "status": "Split · Push\n25 returned",
+      "ok": true
+    },
+    {
+      "width": 320,
+      "game": "frontier_pusher",
+      "frames": [
+        "0.002069444437821709",
+        "0.046055555548932814"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_pusher",
+        "wager": 2500,
+        "payout": 5000,
+        "label": "2 collected · 0 lost"
+      },
+      "overflow": 0,
+      "status": "2 collected · 0 lost\n50 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_wing",
+      "frames": [
+        "0.016000000095367454",
+        "0.3327000000953674"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_wing",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Both hands lost"
+      },
+      "overflow": 0,
+      "status": "Both hands lost\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_pusher",
+      "frames": [
+        "0.000444444437821703",
+        "0.04443055554893282"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_pusher",
+        "wager": 2500,
+        "payout": 5000,
+        "label": "2 collected · 0 lost"
+      },
+      "overflow": 0,
+      "status": "2 collected · 0 lost\n50 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_wing",
+      "frames": [
+        "0.017200000000000045",
+        "0.31710000000000005"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_wing",
+        "wager": 2500,
+        "payout": 4875,
+        "label": "Both hands won"
+      },
+      "overflow": 0,
+      "status": "Both hands won\n48.75 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_pusher",
+      "frames": [
+        "0.002333333326710595",
+        "0.04631944443782171"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_pusher",
+        "wager": 2500,
+        "payout": 5000,
+        "label": "2 collected · 0 lost"
+      },
+      "overflow": 0,
+      "status": "2 collected · 0 lost\n50 returned",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

@@ -1,3 +1,5 @@
+import { CasinoFrontier, FrontierTile } from "./CasinoFrontier";
+import { isFrontierGame } from "../lib/casinoFrontier";
 import { PRACTICE_CATALOG } from "../lib/casinoExperienceCatalog";
 import { casinoLaunchGame } from "../lib/casinoStationSession";
 import { CasinoCraps, CrapsTile } from "./CasinoCraps";
@@ -579,7 +581,14 @@ export function CasinoExperience({
   }
   const stageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!busy || !game || isSlotGame(game) || game === "craps") return;
+    if (
+      !busy ||
+      !game ||
+      isSlotGame(game) ||
+      isFrontierGame(game) ||
+      game === "craps"
+    )
+      return;
     const frame = requestAnimationFrame(() => {
       const stage = stageRef.current;
       if (!stage) return;
@@ -990,7 +999,9 @@ export function CasinoExperience({
       !g.disabled &&
       (mode === "testnet"
         ? !TESTNET_QUARANTINE.has(g.key)
-        : g.key === "craps" || PRACTICE_GAMES.includes(g.key as PracticeGame)),
+        : isFrontierGame(g.key) ||
+          g.key === "craps" ||
+          PRACTICE_GAMES.includes(g.key as PracticeGame)),
   );
   const filtered = games.filter(
     (g) =>
@@ -1277,7 +1288,9 @@ export function CasinoExperience({
                       onClick={() => navigate(entry.key)}
                     >
                       <div className="tile-art">
-                        {entry.key === "craps" ? (
+                        {isFrontierGame(entry.key) ? (
+                          <FrontierTile game={entry.key} />
+                        ) : entry.key === "craps" ? (
                           <CrapsTile />
                         ) : isFleet(entry.key) ? (
                           <FleetTile game={entry.key} />
@@ -1344,6 +1357,20 @@ export function CasinoExperience({
                     onLobby={() => navigate(null)}
                   />
                 </div>
+              ) : isFrontierGame(game) ? (
+                <CasinoFrontier
+                  key={game}
+                  game={game}
+                  state={state}
+                  commit={commit}
+                  busy={busy}
+                  setBusy={(value) => {
+                    busyRef.current = value;
+                    setBusy(value);
+                  }}
+                  reduced={reduce}
+                  onError={setError}
+                />
               ) : game === "craps" ? (
                 <CasinoCraps
                   state={state}

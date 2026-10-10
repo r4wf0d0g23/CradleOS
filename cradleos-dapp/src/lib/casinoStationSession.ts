@@ -1,3 +1,4 @@
+import { frontierPending } from "./casinoFrontier";
 import { activeSession, type Session } from "./casinoSessions";
 import { crapsEscrow } from "./casinoCraps";
 import { isPracticeTerminal } from "./casinoExperienceCatalog";
@@ -12,6 +13,7 @@ export function casinoLaunchGame(
 ): string | null {
   if (s.craps?.pending) return "craps";
   if (s.hand || s.table) return "blackjack";
+  if (frontierPending(s.frontier)) return s.frontier!.current.game;
   if (activeSession(s)) return s.pack?.game ?? null;
   if (isPracticeTerminal(requested)) return requested;
   if (crapsEscrow(s.craps) || s.craps?.point) return "craps";

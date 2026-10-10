@@ -14,6 +14,24 @@ export const LOUNGE_NAMES: Record<
   string,
   { title: string; tag: string; icon: number }
 > = {
+  frontier_remainder: {
+    title: "Reactor Remainder",
+    tag: "ORE SORTER",
+    icon: 78423,
+  },
+  frontier_broker: {
+    title: "Derelict Broker",
+    tag: "CARGO OFFERS",
+    icon: 72244,
+  },
+  frontier_holdem: { title: "Command Hold’em", tag: "HOLD’EM", icon: 82425 },
+  frontier_wing: { title: "Wing Command", tag: "PAI GOW", icon: 87848 },
+  frontier_race: { title: "Gate Runner", tag: "LAI CLASS", icon: 82425 },
+  frontier_pusher: {
+    title: "Salvage Pusher",
+    tag: "RECOVERY RIG",
+    icon: 84180,
+  },
   craps: { title: "Frontier Craps", tag: "DICE DECK", icon: 87848 },
   slots: { title: "Salvage Reels", tag: "SLOTS", icon: 72244 },
   blackjack: { title: "Command Deck", tag: "BLACKJACK", icon: 82425 },

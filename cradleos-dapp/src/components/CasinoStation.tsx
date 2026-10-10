@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CasinoExperience } from "./CasinoExperience";
-import { PRACTICE_CATALOG } from "../lib/casinoExperienceCatalog";
+import { STATION_CATALOG as PRACTICE_CATALOG } from "../lib/casinoExperienceCatalog";
 import {
   StationStream,
   stationary,

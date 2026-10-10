@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
-import { PRACTICE_CATALOG } from "./casinoExperienceCatalog";
+import { STATION_CATALOG as PRACTICE_CATALOG } from "./casinoExperienceCatalog";
 import { CASINO_DISABLED_KEYS } from "./casinoCatalog";
 describe("native station terminal identity", () => {
   it("maps every physical terminal to exactly one reviewed practice entry", () => {

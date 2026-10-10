@@ -1,4 +1,10 @@
 import {
+  frontierPending,
+  validFrontierState,
+  frontierView,
+  type FrontierState,
+} from "./casinoFrontier";
+import {
   validCraps,
   crapsReserve,
   evaluateCraps,
@@ -88,6 +94,7 @@ export type Session = Omit<PracticeState, "version"> & {
   notice?: string;
   spinRun?: SpinRun;
   craps?: CrapsTable;
+  frontier?: FrontierState;
 };
 export type Options = {
   count?: number;
@@ -128,6 +135,7 @@ export const pendingScratch = (s: Session) =>
   s.pack?.game === "scratch_cards" &&
   scratchRevealed(s).length < s.pack.rounds.length;
 export const activeSession = (s: Session) =>
+  frontierPending(s.frontier) ||
   !!s.craps?.pending ||
   !!s.hand ||
   !!s.table ||
@@ -423,7 +431,11 @@ export function actSession(s: Session, action: TableAction): Session {
     const next = wrap(actPractice(base(s), action));
     if (!integer(next.balance + crapsReserve(s.craps)))
       throw Error("Practice balance limit reached.");
-    return { ...next, ...(s.craps ? { craps: s.craps } : {}) };
+    return {
+      ...next,
+      ...(s.craps ? { craps: s.craps } : {}),
+      ...(s.frontier ? { frontier: s.frontier } : {}),
+    };
   }
   throw Error("There is no active hand.");
 }
@@ -708,6 +720,36 @@ export function restoreSession(
     if (s.pack !== null && (s.hand || s.table || !validPack(s.pack, s)))
       throw Error();
     if (!validSpinRun(s)) throw Error();
+    if (s.frontier !== undefined) {
+      if (!validFrontierState(s.frontier)) throw Error();
+      if (frontierPending(s.frontier)) {
+        if (
+          s.hand ||
+          s.table ||
+          s.craps?.pending ||
+          pendingSlot(s) ||
+          pendingSpinRun(s) ||
+          pendingClassicSpin(s) ||
+          pendingScratch(s)
+        )
+          throw Error();
+        const r = s.frontier.current,
+          v = frontierView(r);
+        const reserve =
+          r.game === "frontier_holdem" && v.phase !== "done"
+            ? (v.phase === "preflop" ? 4 : v.phase === "flop" ? 2 : 1) * r.stake
+            : 0;
+        const payout =
+          v.phase === "done"
+            ? v.payout
+            : r.stake * (r.game === "frontier_holdem" ? 511 : 5);
+        if (
+          s.balance < reserve ||
+          !integer(s.balance + crapsReserve(s.craps) + payout)
+        )
+          throw Error();
+      }
+    }
     if (
       s.craps !== undefined &&
       (!validCraps(s.craps) ||
@@ -729,6 +771,7 @@ export function restoreSession(
       pack: s.pack,
       ...(s.spinRun ? { spinRun: s.spinRun } : {}),
       ...(s.craps ? { craps: s.craps } : {}),
+      ...(s.frontier ? { frontier: s.frontier } : {}),
     };
   } catch {
     return {

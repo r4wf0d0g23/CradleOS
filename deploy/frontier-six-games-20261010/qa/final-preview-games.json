@@ -1,0 +1,338 @@
+{
+  "base": "http://127.0.0.1:5230",
+  "mode": "Fresh tab-local Play Money; pointer/viewport emulation, no wallet",
+  "checks": [
+    {
+      "width": 320,
+      "game": "frontier_remainder",
+      "frames": [
+        "0.0021958823248919277",
+        "0.10023529408959783"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_remainder",
+        "wager": 2500,
+        "payout": 9500,
+        "label": "Remainder 1"
+      },
+      "overflow": 0,
+      "status": "Remainder 1\n95 returned",
+      "ok": true
+    },
+    {
+      "width": 320,
+      "game": "frontier_broker",
+      "frames": [
+        "0.007266000047683747",
+        "0.32400000004768365"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_broker",
+        "wager": 2500,
+        "payout": 1015,
+        "label": "Offer accepted"
+      },
+      "overflow": 0,
+      "status": "Offer accepted\n10.15 returned",
+      "ok": true
+    },
+    {
+      "width": 320,
+      "game": "frontier_holdem",
+      "frames": [
+        "0.00790000004768376",
+        "0.32450000004768365"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_holdem",
+        "wager": 7500,
+        "payout": 12500,
+        "label": "Two pair · Win"
+      },
+      "overflow": 0,
+      "status": "Two pair · Win\n125 returned",
+      "ok": true
+    },
+    {
+      "width": 320,
+      "game": "frontier_wing",
+      "frames": [
+        "0.0185999998569489",
+        "0.3185999998569489"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_wing",
+        "wager": 2500,
+        "payout": 2500,
+        "label": "Split · Push"
+      },
+      "overflow": 0,
+      "status": "Split · Push\n25 returned",
+      "ok": true
+    },
+    {
+      "width": 320,
+      "game": "frontier_race",
+      "frames": [
+        "0.003707692322364227",
+        "0.049876923091594985"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_race",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Runner 1 · #4"
+      },
+      "overflow": 0,
+      "status": "Runner 1 · #4\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 320,
+      "game": "frontier_pusher",
+      "frames": [
+        "0.0014722222155994775",
+        "0.04544444443782172"
+      ],
+      "pendingReload": true,
+      "receipt": {
+        "id": 1,
+        "game": "frontier_pusher",
+        "wager": 2500,
+        "payout": 5000,
+        "label": "2 collected · 0 lost"
+      },
+      "overflow": 0,
+      "status": "2 collected · 0 lost\n50 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_remainder",
+      "frames": [
+        "0.0066764706162845255",
+        "0.09979411767510807"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_remainder",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Remainder 2"
+      },
+      "overflow": 0,
+      "status": "Remainder 2\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_broker",
+      "frames": [
+        "0.008266000143051202",
+        "0.3249000001430511"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_broker",
+        "wager": 2500,
+        "payout": 2469,
+        "label": "Offer accepted"
+      },
+      "overflow": 0,
+      "status": "Offer accepted\n24.69 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_holdem",
+      "frames": [
+        "0.004499999952316329",
+        "0.32109999995231625"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_holdem",
+        "wager": 7500,
+        "payout": 12500,
+        "label": "Pair · Win"
+      },
+      "overflow": 0,
+      "status": "Pair · Win\n125 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_wing",
+      "frames": [
+        "0.017",
+        "0.31689999999999996"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_wing",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Both hands lost"
+      },
+      "overflow": 0,
+      "status": "Both hands lost\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_race",
+      "frames": [
+        "0.0013178461831899733",
+        "0.05003076926011305"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_race",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Runner 1 · #2"
+      },
+      "overflow": 0,
+      "status": "Runner 1 · #2\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 390,
+      "game": "frontier_pusher",
+      "frames": [
+        "0.002333333320087863",
+        "0.04631944443119897"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_pusher",
+        "wager": 2500,
+        "payout": 5000,
+        "label": "2 collected · 0 lost"
+      },
+      "overflow": 0,
+      "status": "2 collected · 0 lost\n50 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_remainder",
+      "frames": [
+        "0.007205882366965785",
+        "0.1003529411904952"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_remainder",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Remainder 4"
+      },
+      "overflow": 0,
+      "status": "Remainder 4\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_broker",
+      "frames": [
+        "0.009299999904632613",
+        "0.32589999990463253"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_broker",
+        "wager": 2500,
+        "payout": 1593,
+        "label": "Offer accepted"
+      },
+      "overflow": 0,
+      "status": "Offer accepted\n15.93 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_holdem",
+      "frames": [
+        "0.015799999999999953",
+        "0.3324"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_holdem",
+        "wager": 7500,
+        "payout": 0,
+        "label": "Two pair · Dealer"
+      },
+      "overflow": 0,
+      "status": "Two pair · Dealer\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_wing",
+      "frames": [
+        "0.014800000095367409",
+        "0.3314000000953674"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_wing",
+        "wager": 2500,
+        "payout": 4875,
+        "label": "Both hands won"
+      },
+      "overflow": 0,
+      "status": "Both hands won\n48.75 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_race",
+      "frames": [
+        "0.0034153845933767397",
+        "0.05213846151645367"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_race",
+        "wager": 2500,
+        "payout": 0,
+        "label": "Runner 1 · #4"
+      },
+      "overflow": 0,
+      "status": "Runner 1 · #4\n0 returned",
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "game": "frontier_pusher",
+      "frames": [
+        "0.002624999986754517",
+        "0.04659722220897674"
+      ],
+      "receipt": {
+        "id": 1,
+        "game": "frontier_pusher",
+        "wager": 2500,
+        "payout": 5000,
+        "label": "2 collected · 0 lost"
+      },
+      "overflow": 0,
+      "status": "2 collected · 0 lost\n50 returned",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}
