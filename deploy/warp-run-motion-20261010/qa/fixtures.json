@@ -1,0 +1,218 @@
+{
+  "subOne": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "crash",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          9800,
+          20000
+        ],
+        "label": "0.98× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "crash",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "crash",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            9800,
+            20000
+          ],
+          "label": "0.98× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "one": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "crash",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          10000,
+          20000
+        ],
+        "label": "1.00× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "crash",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "crash",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            10000,
+            20000
+          ],
+          "label": "1.00× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "nearMiss": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "crash",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          19999,
+          20000
+        ],
+        "label": "2.00× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "crash",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "crash",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            19999,
+            20000
+          ],
+          "label": "2.00× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "equal": {
+    "version": 2,
+    "balance": 1002500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "crash",
+        "stake": 2500,
+        "payout": 5000,
+        "values": [
+          20000,
+          20000
+        ],
+        "label": "2.00× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "crash",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "crash",
+          "stake": 2500,
+          "payout": 5000,
+          "values": [
+            20000,
+            20000
+          ],
+          "label": "2.00× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "above": {
+    "version": 2,
+    "balance": 1002500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "crash",
+        "stake": 2500,
+        "payout": 5000,
+        "values": [
+          20001,
+          20000
+        ],
+        "label": "2.00× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "crash",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "crash",
+          "stake": 2500,
+          "payout": 5000,
+          "values": [
+            20001,
+            20000
+          ],
+          "label": "2.00× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "max": {
+    "version": 2,
+    "balance": 3497500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "crash",
+        "stake": 2500,
+        "payout": 2500000,
+        "values": [
+          10000000,
+          10000000
+        ],
+        "label": "1000.00× limit · 1000.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "crash",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "crash",
+          "stake": 2500,
+          "payout": 2500000,
+          "values": [
+            10000000,
+            10000000
+          ],
+          "label": "1000.00× limit · 1000.00× target"
+        }
+      ]
+    }
+  }
+}

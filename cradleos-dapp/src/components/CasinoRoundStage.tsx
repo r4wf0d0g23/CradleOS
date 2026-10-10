@@ -1,3 +1,4 @@
+import { CasinoWarpRun } from "./CasinoWarpRun";
 import { CasinoLaiJump } from "./CasinoLaiJump";
 import { MotionCard, TableShoe } from "./CasinoTableCard";
 export { MotionCard } from "./CasinoTableCard";
@@ -390,99 +391,16 @@ export function CasinoRoundStage({
         previewTarget={choice.target}
       />
     );
-  if (game === "crash") {
-    const end = (v[0] ?? 10000) / 10000,
-      target = (v[1] ?? 20000) / 10000,
-      current = has ? Math.exp(Math.log(Math.max(0.98, end)) * t) : 1,
-      hit = has && end >= target && (done || current >= target),
-      cross =
-        end >= target ? Math.log(target) / Math.log(Math.max(1.00001, end)) : 2;
-    const x = 30 + t * 270,
-      y =
-        180 -
-        Math.min(140, (Math.log(Math.max(1, current)) / Math.log(target)) * 75),
-      cx = 30 + clamp(cross) * 270,
-      cy = 105;
+  if (game === "crash")
     return (
-      <div className="casino-flight-stage warp-flight" data-progress={t}>
-        <strong>{current.toFixed(2)}×</strong>
-        <svg viewBox="0 0 340 225" aria-label="Precommitted auto-stop flight">
-          <g className="warp-depth" opacity=".3">
-            {Array.from({ length: 12 }, (_, i) => (
-              <path
-                key={i}
-                d={`M${170 + ((i % 4) - 1.5) * 16} ${100 + Math.floor(i / 4) * 8}l${((i % 4) - 1.5) * (25 + t * 35)} ${(Math.floor(i / 4) - 1) * (20 + t * 45)}`}
-                stroke="#8cb5ad"
-                strokeWidth="1"
-              />
-            ))}
-          </g>
-          <path d="M30 15V190H325" stroke="#fafae52a" fill="none" />
-          {
-            <g>
-              <path
-                d={`M30 ${cy}H325`}
-                stroke="#7bc6ad66"
-                strokeDasharray="4 5"
-              />
-              <text x="35" y={cy - 6} fill="#7bc6ad" fontSize="10">
-                AUTO-STOP {target.toFixed(2)}×
-              </text>
-            </g>
-          }
-          <path
-            d={`M30 180 Q${x} 180 ${x} ${y}`}
-            stroke={hit ? "#75c8af" : "#dec18a"}
-            strokeWidth="3"
-            fill="none"
-          />
-          {has && (
-            <g
-              className="warp-ship"
-              transform={`translate(${x} ${y}) rotate(-28)`}
-            >
-              <ellipse
-                cx="0"
-                cy="10"
-                rx="20"
-                ry="5"
-                fill="#000"
-                opacity=".35"
-              />
-              <path
-                d="M-18-9-5-6 8-12 5-3 22 0 5 3 8 12-5 6-18 9-12 0Z"
-                fill="#718e89"
-                stroke="#bed1b7"
-                strokeWidth=".7"
-              />
-              <path d="M-10 0 4-4 22 0 4 4Z" fill="#c2c9b0" />
-              <path d="M-8 0 1-2 7 0 1 2Z" fill="#568c94" />
-              <path
-                d="M-18-4L-28 0L-18 4"
-                fill="#ff7044"
-                opacity={done ? 0.3 : 1}
-              />
-            </g>
-          )}
-          {hit && (
-            <circle cx={cx} cy={cy} r="7" stroke="#7bc6ad" fill="#0e211f" />
-          )}
-          {done && (
-            <g transform={`translate(${x} ${y})`} stroke="#ff784f">
-              <path d="M-13-13L13 13M13-13L-13 13" />
-            </g>
-          )}
-        </svg>
-        <span>
-          {done
-            ? hit
-              ? `Auto-stop paid at ${target.toFixed(2)}× · Flight ended ${end.toFixed(2)}×`
-              : `Flight ended before ${target.toFixed(2)}×`
-            : "Target locked before launch"}
-        </span>
-      </div>
+      <CasinoWarpRun
+        round={round}
+        t={t}
+        animated={animated}
+        run={run}
+        previewTarget={choice.target}
+      />
     );
-  }
   if (game === "keno") {
     const n = v[0] ?? 0,
       picks = v.slice(1, n + 1),

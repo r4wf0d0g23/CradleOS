@@ -1,0 +1,21 @@
+{
+  "tests": {
+    "passed": 374,
+    "files": 40,
+    "newPhysicsTests": 6
+  },
+  "preview": {
+    "freshNaturalFlightCases": 6,
+    "engineProducedSavedBoundaryCases": 6,
+    "lifecycleCases": 5,
+    "errors": 0,
+    "assetFailures": 0
+  },
+  "origins": 8,
+  "ioc": "CLEAN",
+  "build": "PASS",
+  "nativeArchitectureReview": "PASS",
+  "nativeSourceReview": "PASS",
+  "nativeFinalVisualReview": "PASS",
+  "live": "pending"
+}

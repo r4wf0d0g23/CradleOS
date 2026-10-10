@@ -32,9 +32,11 @@ export function roundOutcome({
 
 function RoundBreakdown({ round }: { round: Amounts }) {
   const change = round.payout - round.stake;
-  const label = round.game === "limbo" && round.values?.length === 2
-    ? `${laiSpeedLabel(round.values[0], round.values[1])} limit · ${(round.values[1] / 10000).toFixed(2)}× target`
-    : round.label;
+  const label =
+    (round.game === "limbo" || round.game === "crash") &&
+    round.values?.length === 2
+      ? `${laiSpeedLabel(round.values[0], round.values[1])} limit · ${(round.values[1] / 10000).toFixed(2)}× target`
+      : round.label;
   return (
     <div className="casino-round-breakdown">
       <p>{label}</p>

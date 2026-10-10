@@ -328,7 +328,7 @@ function GameSurface({
       choice={
         game === "risk_wheel"
           ? { ...tableRun.choice, side: selectedSide }
-          : game === "limbo"
+          : game === "limbo" || game === "crash"
             ? { ...tableRun.choice, target: selectedTarget }
             : tableRun.choice
       }
@@ -450,13 +450,14 @@ export function CasinoExperience({
       String((state.spinRun?.stake ?? 2500) / 100),
     ),
     [side, setSide] = useState(0),
-    [target, setTarget] = useState(() =>
-      casinoLaunchGame(state, initialGame) === "limbo"
-        ? state.history[0]?.game === "limbo"
+    [target, setTarget] = useState(() => {
+      const launch = casinoLaunchGame(state, initialGame);
+      return launch === "limbo" || launch === "crash"
+        ? state.history[0]?.game === launch
           ? state.history[0].values[1] / 100
           : 200
-        : 50,
-    ),
+        : 50;
+    }),
     [over, setOver] = useState(true);
   const [options, setOptions] = useState<Options>(() => {
     try {

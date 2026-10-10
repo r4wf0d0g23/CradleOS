@@ -1,0 +1,4 @@
+qa/*.png
+qa/*.log
+qa/*-video/
+qa/preview-browser.json
