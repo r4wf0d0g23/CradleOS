@@ -1,3 +1,4 @@
+import { CasinoSalvageWheel } from "./CasinoSalvageWheel";
 import {
   PhysicalDie,
   DiceHardware,
@@ -48,6 +49,8 @@ export function CasinoRoundStage({
   run = STILL_RUN,
   choice = {},
   animateSlots = false,
+  onWheelSpin,
+  wheelStake,
 }: {
   game: string;
   round: Round | null;
@@ -56,6 +59,8 @@ export function CasinoRoundStage({
   run?: TableRun;
   choice?: Choice;
   animateSlots?: boolean;
+  onWheelSpin?: () => void;
+  wheelStake?: string;
 }) {
   const { t, animated } = useCasinoTimeline(
       run,
@@ -102,7 +107,19 @@ export function CasinoRoundStage({
     return (
       <CasinoFleetDuel round={round} t={t} animated={animated} run={run} />
     );
-  if (["roulette", "wheel", "risk_wheel", "money_wheel"].includes(game))
+  if (game === "money_wheel")
+    return (
+      <CasinoSalvageWheel
+        round={round}
+        t={t}
+        animated={animated}
+        run={run}
+        busy={busy}
+        onSpin={onWheelSpin}
+        stake={wheelStake}
+      />
+    );
+  if (["roulette", "wheel", "risk_wheel"].includes(game))
     return (
       <CasinoWheelMechanism
         game={game}

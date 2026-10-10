@@ -1,0 +1,129 @@
+{
+  "baseline": "688af2571502171ec51623a48120b0de975e4d99",
+  "files": [
+    {
+      "path": "cradleos-dapp/src/lib/casinoPractice.ts",
+      "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoExpanded.ts",
+      "sha256": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoSessions.ts",
+      "sha256": "80d1576592748fd26ae9132fdaf5623a33c06d8b3b3e89857094bba18f46fe0a",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoCraps.ts",
+      "sha256": "85b67791722e86e15d9db2a26276f724ac7c4224cd09b4694d17b663959939b1",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoCrapsSession.ts",
+      "sha256": "60b398794c1695ee236fd325d82d7fce8d0dd1463ed045dc1cae3a6b35977897",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/useCasinoTimeline.ts",
+      "sha256": "c5be91c58b4e2f5723a983c3c89769ff27f8ecc179d01a2d8569db9be7985898",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoProbabilityMotion.ts",
+      "sha256": "864da4258838a4c934ff13a48ed6d153114c9ae79d937083afa6ab4e2cfc7f01",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoFrigateDuel.tsx",
+      "sha256": "1f1334097ed7d0f28e04786ac18124c9808765d1e65166c0bef1d0cc9242cb64",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoFleetDuel.tsx",
+      "sha256": "8977e1c9c88ce1c3b1da12cfd74757be740b11822388a83ed0f979bf93e7ff23",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoWarpRun.tsx",
+      "sha256": "57dc8d8b67289dd5577950cad8ab57b442ac169ee04d6c81144aaad7e7d7d0a4",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoTableCard.tsx",
+      "sha256": "54dc072030b52c4d9a580f9193bc4e803672cfa4b7b9d9da0c9d1ea95e7c5bb0",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/transactionCompatibility.ts",
+      "sha256": "50a3eb2ca04b65f1860206271df21546872d28a4ad6b4667efd1295f07450442",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/ssuSafety.ts",
+      "sha256": "cbbd0fc37b12e9904d8dff3765d73af99cae9d8fd229c227d242c86f15bada02",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoSlotFleet.ts",
+      "sha256": "19a272d92bb202cf8905646deacdc24affff56b3362f3e05874df0a4b3425fa8",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoBlackjackTable.ts",
+      "sha256": "a2406def69d4c7b99ad17841a2f00a29951382f80aeb58d5d7f788955d09dfcc",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoVideoPoker.ts",
+      "sha256": "d74b2658e738f5ac087e54c5d8e313dbf717a6d7bf3d5d436ecba67450bfc01b",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casino.ts",
+      "sha256": "ab012768e1a6493e9637d6f4159710f4e8f8006c1173a511209c3a62ba887576",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoGames.ts",
+      "sha256": "e138f0a6b35a01bcb8c67cb0f865b23e1aedd37e4f5bf4cd9051d4b2461bbc58",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoFeedback.ts",
+      "sha256": "59598a90540c99411ad1a3a47b21620a5b27631d80a355623c3d0dda5496537d",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoWheelMechanism.tsx",
+      "sha256": "f0918d3076708fc6b96bf14fc5cd88b5ec130977b4f86a137a81d16543a24723",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoObjectMotion.ts",
+      "sha256": "d97e255a70de6f38a8f0fbf773cfc5a33f2e33a2f7aff5450d3c250c73735134",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoIndustrialDice.tsx",
+      "sha256": "4866e929652509b077de12fb4305d0da369b292f4d75e5b7b6dfdbdbab4aab3c",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoCraps.tsx",
+      "sha256": "2804cc1e2aeb9967410c2ffb5a45de96f2135ffeebeb5e9ec7d04401a081c63c",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/styles/casino-industrial-dice.css",
+      "sha256": "65e06b00dd2ef4473dc7f6f2491930222788068e88f5928a02d5f48ef8ad4e2d",
+      "byteIdentical": true
+    }
+  ],
+  "partialBoundaries": {
+    "ownerExactlyUnchangedExceptPropWiring": true,
+    "durationOnlyMoneyWheel2800to4500": true
+  }
+}

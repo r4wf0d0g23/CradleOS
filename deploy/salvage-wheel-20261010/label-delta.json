@@ -1,0 +1,11 @@
+{
+  "before": {
+    "/assets/index-9QIS0Sd9.js": "738e53599529bc720983ed6ef9ce14d1f8c06588a2c20b63aafeba0de7fef341",
+    "/assets/index-ku7dZry0.css": "39d1da993325483cbe3b6a9f49c424b4f42e560cbed0e58a7d7dcf8b21f70e24"
+  },
+  "after": {
+    "/assets/index-D7am5hk1.js": "738e53599529bc720983ed6ef9ce14d1f8c06588a2c20b63aafeba0de7fef341",
+    "/assets/index-BMFznalb.css": "4e89074d61756ab5a05116af9b927b3eb9e0f4759b06f03d484c351f73114e6f"
+  },
+  "runtimeJSByteIdentical": true
+}

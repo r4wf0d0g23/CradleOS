@@ -1,0 +1,22 @@
+{
+  "scope": "Chromium mobile/touch emulation, synthetic secondary pointer; no physical device or wallet",
+  "checks": [
+    {
+      "name": "invalid-stake-no-debit",
+      "ok": true
+    },
+    {
+      "name": "secondary-pointer-ignored",
+      "ok": true
+    },
+    {
+      "name": "touch-pull-current-stake-single-spin",
+      "ok": true
+    },
+    {
+      "name": "keyboard-hub-enter",
+      "ok": true,
+      "sequence": 2
+    }
+  ]
+}

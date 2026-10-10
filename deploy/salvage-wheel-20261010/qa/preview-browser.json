@@ -1,0 +1,104 @@
+{
+  "base": "http://127.0.0.1:5228",
+  "group": "wheels",
+  "mode": "Isolated fresh local Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "money_wheel",
+      "name": "Salvage Wheel",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.541503, 0.840699, -0.840699, 0.541503, 233.855, -68.7964)",
+            "svg": "rotate(57.21395429207932 180 180)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.051045454502105736"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(-0.543796, -0.839218, 0.839218, -0.543796, 126.824, 428.942)",
+            "svg": "rotate(237.05760636967884 180 180)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.11165909086574205"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / MONEY WHEEL\nPRACTICE TABLE\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.6\n1.6\n1.6\n18\nCRDL / WINCH\nSPIN\n25 chips\nPULL\nRECOVERED\n1.2×\n50 / 54\n0×\n1.1×\n1.2×\n1.6×\n18×\nPAYOUT\n30 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "money_wheel",
+      "name": "Salvage Wheel",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.525793, 0.850613, -0.850613, 0.525793, 238.468, -67.753)",
+            "svg": "rotate(58.278386877484586 180 180)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.04765909093076531"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(-0.13782, -0.990457, 0.990457, -0.13782, 26.5252, 383.09)",
+            "svg": "rotate(262.07830456802606 180 180)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.10827272729440168"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / MONEY WHEEL\nPRACTICE TABLE\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.6\n1.6\n1.6\n18\nCRDL / WINCH\nSPIN\n25 chips\nPULL\nRECOVERED\n0×\n14 / 54\n0×\n1.1×\n1.2×\n1.6×\n18×\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "money_wheel",
+      "name": "Salvage Wheel",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.412935, 0.91076, -0.91076, 0.412935, 269.609, -58.2652)",
+            "svg": "rotate(65.61064637999074 180 180)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.05109090909090908"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(-0.233825, -0.972279, 0.972279, -0.233825, 47.0783, 397.099)",
+            "svg": "rotate(256.4776198022083 180 180)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.10788636363636364"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / MONEY WHEEL\nPRACTICE TABLE\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.1\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.2\n1.6\n1.6\n1.6\n18\nCRDL / WINCH\nSPIN\n25 chips\nPULL\nRECOVERED\n0×\n18 / 54\n0×\n1.1×\n1.2×\n1.6×\n18×\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

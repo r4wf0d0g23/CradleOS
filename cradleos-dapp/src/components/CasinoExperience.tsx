@@ -122,6 +122,8 @@ function GameSurface({
   onNextSlot,
   tableRun,
   onScratchReveal,
+  onWheelSpin,
+  wheelStake,
 }: {
   game: PracticeGame;
   state: Session;
@@ -136,6 +138,8 @@ function GameSurface({
   onNextSlot: () => void;
   tableRun: TableRun;
   onScratchReveal: (index?: number) => boolean;
+  onWheelSpin: () => void;
+  wheelStake: string;
 }) {
   const pack = state.pack?.game === game ? state.pack : null;
   const [receiptTicket, setReceiptTicket] = useState(0);
@@ -333,6 +337,8 @@ function GameSurface({
             : tableRun.choice
       }
       animateSlots={animateSlots}
+      onWheelSpin={game === "money_wheel" ? onWheelSpin : undefined}
+      wheelStake={wheelStake}
     />
   );
 }
@@ -1390,6 +1396,8 @@ export function CasinoExperience({
                       onNextSlot={() => nextSlot()}
                       tableRun={tableRun}
                       onScratchReveal={uncoverScratch}
+                      onWheelSpin={() => act()}
+                      wheelStake={stake}
                     />
                     <div
                       className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}

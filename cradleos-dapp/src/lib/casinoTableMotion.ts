@@ -17,7 +17,8 @@ export function tableDuration(round: Round | null) {
   if (game === "andar_bahar")
     return Math.max(1600, (round!.values.length - 1) * 210 + 650);
   if (game === "roulette") return 3300;
-  if (["wheel", "risk_wheel", "money_wheel"].includes(game ?? "")) return 2800;
+  if (game === "money_wheel") return 4500;
+  if (["wheel", "risk_wheel"].includes(game ?? "")) return 2800;
   if (game === "coinflip") return 1800;
   if (game === "war") return 4100;
   if (game === "dragon_tiger") return 4300;

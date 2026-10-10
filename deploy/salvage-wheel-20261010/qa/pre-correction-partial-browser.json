@@ -1,0 +1,117 @@
+{
+  "base": "http://127.0.0.1:5228",
+  "scope": "Natural Play Money and unchanged-engine saved fixtures; actual browser controls plus explicitly synthetic cancel/visibility/release probes; viewport emulation; no wallet",
+  "checks": [
+    {
+      "name": "hub",
+      "width": 320,
+      "index": 24,
+      "angle": 1640,
+      "payout": 2750,
+      "stake": 2500,
+      "frames": 271,
+      "samples": [
+        {
+          "t": 0.0019695454328710455,
+          "angle": 0.09841411756371352,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.07395454543287103,
+          "angle": 128.26078323492328,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.149704545432871,
+          "angle": 411.2934293804739,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.22545454543287105,
+          "angle": 701.8326465616033,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.301204545432871,
+          "angle": 951.0466733899307,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.37695454543287105,
+          "angle": 1151.6864412986142,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.4527045454328711,
+          "angle": 1309.0174397654619,
+          "pointer": -21.856522778008642,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.5284772727055983,
+          "angle": 1428.3357662264561,
+          "pointer": -16.669962063739305,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6042272727055983,
+          "angle": 1514.836650061882,
+          "pointer": -11.763678641530195,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6799772727055984,
+          "angle": 1573.8268126937191,
+          "pointer": -8.732164465706077,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.7557272727055984,
+          "angle": 1610.571743599774,
+          "pointer": -3.3692520418277723,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.8314772727055982,
+          "angle": 1630.3369322578546,
+          "pointer": -4.717639006545512,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9072272727055982,
+          "angle": 1638.3878681457686,
+          "pointer": 2.63245241749568,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9829999999783257,
+          "angle": 1639.9900805783113,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "errors": []
+}

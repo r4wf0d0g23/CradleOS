@@ -1,0 +1,208 @@
+.frontier-casino .salvage-wheel-stage {
+  --lever-travel: 25px;
+  width: min(100%, 470px);
+  max-width: 470px;
+  margin: 18px auto;
+  padding: 12px 12px 15px;
+  box-sizing: border-box;
+  border: 6px ridge #59645b;
+  border-radius: 22px 22px 12px 12px;
+  background:
+    repeating-linear-gradient(
+      113deg,
+      transparent 0 37px,
+      #d2d7bc07 38px,
+      transparent 39px 83px
+    ),
+    linear-gradient(145deg, #354640, #111d20 65%, #29352f);
+  box-shadow:
+    inset 0 1px #dce3c944,
+    inset 0 -6px 15px #0009,
+    0 10px 20px #0005;
+}
+.salvage-faceplate {
+  position: relative;
+  width: 100%;
+}
+.frontier-casino .salvage-wheel-stage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  overflow: visible;
+  filter: none;
+}
+.frontier-casino .salvage-wheel-stage .salvage-hub {
+  position: absolute;
+  left: 50%;
+  top: 40.9091%;
+  transform: translate(-50%, -50%);
+  width: 27%;
+  min-width: 52px;
+  aspect-ratio: 1;
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid #b0ac8055;
+  background: radial-gradient(ellipse at 35% 20%, #465348, #162322 73%);
+  color: #e3d7ad;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px #f4f5c32c,
+    inset 0 -4px #050c0e66,
+    0 2px 6px #0008;
+}
+.salvage-hub span {
+  font: 700 11px monospace;
+  letter-spacing: 0.12em;
+}
+.salvage-hub small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 9px monospace;
+  color: #b7c0ad;
+}
+.frontier-casino .salvage-hub:not(:disabled):hover {
+  background: radial-gradient(ellipse at 35% 20%, #60725d, #25352d 73%);
+  border-color: #d7b37e;
+}
+.frontier-casino .salvage-hub:not(:disabled):active {
+  box-shadow: inset 0 3px 8px #000b;
+}
+.frontier-casino .salvage-wheel-stage .salvage-lever {
+  padding: 0;
+  display: grid;
+  place-items: center;
+  position: absolute;
+  right: 16.6667%;
+  top: 76.8182%;
+  width: 46px;
+  height: 44px;
+  margin-right: -23px;
+  min-height: 44px;
+  border: 2px ridge #afad85;
+  border-radius: 8px;
+  color: #dbd4ab;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  background: repeating-linear-gradient(
+    0deg,
+    #172425 0 3px,
+    #4b594c 4px,
+    #273630 5px 8px
+  );
+  box-shadow:
+    0 4px 0 #060e10,
+    0 6px 7px #0009;
+}
+.salvage-lever span {
+  white-space: nowrap;
+  line-height: normal;
+  font: 8px monospace;
+  letter-spacing: 0.1em;
+  padding: 2px;
+  background: #1d2c27;
+}
+.frontier-casino .salvage-lever:not(:disabled):active {
+  cursor: grabbing;
+}
+.frontier-casino .salvage-hub:disabled,
+.frontier-casino .salvage-lever:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.frontier-casino .salvage-readout {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 8px;
+  margin-top: 4px;
+  border: 1px solid #7b92794d;
+  border-radius: 4px;
+  background: #091416;
+  color: #b6c2ad;
+  font: 9px monospace;
+  letter-spacing: 0.08em;
+}
+.salvage-readout b {
+  font-size: 24px;
+  line-height: 1.2;
+  color: #ead9ae;
+}
+.salvage-readout small {
+  text-align: right;
+  font-size: 8px;
+}
+.salvage-inspector {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-top: 9px;
+}
+.frontier-casino .salvage-inspector button {
+  position: relative;
+  min-width: 0;
+  min-height: 44px;
+  padding: 5px 1px;
+  border: 1px solid #7c8b734d;
+  border-radius: 4px;
+  background: #172523;
+  color: #e0dbbc;
+  font: 11px monospace;
+  cursor: pointer;
+}
+.salvage-inspector button:before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 3px;
+  height: 2px;
+  background: var(--sector-color);
+}
+.frontier-casino .salvage-inspector button[aria-pressed="true"] {
+  border-color: #e4c087;
+  background: #46503a;
+}
+.frontier-casino .salvage-wheel-stage button:focus-visible {
+  outline: 2px solid #f0d29c;
+  outline-offset: 3px;
+}
+@media (max-width: 400px) {
+  .frontier-casino .salvage-wheel-stage {
+    --lever-travel: 12px;
+    padding: 7px 5px 10px;
+    border-width: 4px;
+  }
+  .salvage-hub span {
+    font-size: 8px;
+    letter-spacing: 0.04em;
+  }
+  .salvage-hub small {
+    font-size: 7px;
+  }
+  .frontier-casino .salvage-readout {
+    gap: 3px;
+    padding-inline: 5px;
+    font-size: 8px;
+  }
+  .salvage-readout b {
+    font-size: 20px;
+  }
+  .salvage-readout small {
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 360px) {
+  .salvage-inspector {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

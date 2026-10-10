@@ -1,0 +1,63 @@
+{
+  "scope": "Fresh final CSS label geometry and natural pull-spin at320/390/1440; viewport emulation",
+  "checks": [
+    {
+      "width": 320,
+      "geometry": {
+        "w": 46,
+        "h": 44,
+        "labelw": 26.46875,
+        "labelh": 13,
+        "contained": true,
+        "nowrap": "nowrap"
+      },
+      "framing": {
+        "height": 457.109375,
+        "visible": 457.109375
+      },
+      "faces": [
+        33
+      ],
+      "ok": true
+    },
+    {
+      "width": 390,
+      "geometry": {
+        "w": 46,
+        "h": 44,
+        "labelw": 26.46875,
+        "labelh": 13,
+        "contained": true,
+        "nowrap": "nowrap"
+      },
+      "framing": {
+        "height": 494.65625,
+        "visible": 494.65625
+      },
+      "faces": [
+        14
+      ],
+      "ok": true
+    },
+    {
+      "width": 1440,
+      "geometry": {
+        "w": 46,
+        "h": 44,
+        "labelw": 26.46875,
+        "labelh": 13,
+        "contained": true,
+        "nowrap": "nowrap"
+      },
+      "framing": {
+        "height": 677.234375,
+        "visible": 677.234375
+      },
+      "faces": [
+        29
+      ],
+      "ok": true
+    }
+  ],
+  "errors": []
+}
