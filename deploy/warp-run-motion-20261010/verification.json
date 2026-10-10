@@ -17,5 +17,20 @@
   "nativeArchitectureReview": "PASS",
   "nativeSourceReview": "PASS",
   "nativeFinalVisualReview": "PASS",
-  "live": "pending"
+  "live": {
+    "freshNaturalFlightCases": 4,
+    "widths": [
+      390,
+      1440
+    ],
+    "outcomes": [
+      "paid",
+      "missed"
+    ],
+    "exactFiles": 3,
+    "errors": 0,
+    "assetFailures": 0
+  },
+  "previewPort5221": "stopped; closed",
+  "nativeFinalDeliveryReview": "PASS after receipt-only live scope wording correction; no runtime change"
 }

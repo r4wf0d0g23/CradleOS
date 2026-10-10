@@ -30,4 +30,13 @@ Existing 2,700 ms owner deadline (2,600 ms visual clock), RNG, odds, paytables, 
 
 ## Publication
 
-Pending. Rollback: Pages `99895f55` / runtime `8f71c67f37a9a1eecfda55cc4f0ca1b9fab2cde9`. Primary https://cradleos.io only; GitHub Pages redirect-only. Preserve canonical worktree/live index and unrelated Wrangler directories. Stop preview5221 after live proof.
+- Runtime `e357cda8b6b888f5b6497855bdc6cfad63796621`, committed and pushed.
+- Pages `a585128e`, immutable https://a585128e.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino → Warp Run.
+- Three live files exactly match reviewed dist: JS, CSS and native Lai WebP. Full hashes in `live-build.json`.
+- JS `index-n1rCb6ze.js`: `339fa542221435bfaa0336100b4d0b57094b99b96ab2cf7d2e02dc3750850553`.
+- CSS `index-B7YTkTKA.css`: `fb066c4e37438bdf5ea35452e6f0817b91305476ed73a6903ca543608b8d648d`.
+- Four fresh live natural-RNG flights PASS: paid/missed at 390/1440, actual continuous movement and breakup, correct auto-stop status, unchanged committed ledger, no page errors or failed ship assets. Preview boundary/lifecycle cases are not presented as fresh live tests.
+- Preview5221 stopped; port verified closed. Canonical worktree/live index and unrelated Wrangler directories preserved.
+- Rollback Pages `99895f55` / runtime `8f71c67f37a9a1eecfda55cc4f0ca1b9fab2cde9`. Primary origin only; GitHub Pages redirect-only. No wallet/chain/backend/gate changes.
+
+Final native delivery review reconciled source/deployment/rollback, 374 tests/40 files, 17 preview versus four live cases, three exact files, nine unchanged boundaries and closed preview port. One receipt-only scope string incorrectly mentioned saved boundary cases in the live report; corrected the live string and helper selection. No runtime change or rerun required. Delivery gate PASS.
