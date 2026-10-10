@@ -28,4 +28,13 @@ Browser scope: viewport-emulated Chromium, browser-local free Play Money. Previe
 
 ## Publication
 
-Pending. Rollback Pages28ae3ec8 / runtime0c1f790f40329e67122b1c291ecd7961ac8be7c2. Primary cradleos.io only; GitHub Pages remains redirect-only. Preserve canonical service-hosting worktree and unrelated Wrangler directories.
+- Runtime `8198298fc6563a88c4d193921d772e1ebaab6d82`, committed/pushed.
+- Cloudflare Pages `a4bf4e75`; immutable https://a4bf4e75.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino.
+- Eight production files exactly match dist: JS, CSS, native Lai WebP, current icon manifest and four card icon PNGs. `live-build.json`.
+- JS `index-B4cyo4RK.js`: `4c780c9457814d5df5474a475a6b8f8dd8077fc6c2dfbbaee91324853c561c8c`.
+- CSS `index-DvQebkZc.css`: `b49de555bf4bb65609c935141e25183a90f52038af79ddcfc1ffe4975fa01ed2`.
+- Twelve fresh natural-RNG live rounds PASS: all six games at390 and1440. Real transforms, face concealment, rank/suit/artwork checks, stable committed ledger and no overflow. Zero page errors or failed card assets. `qa/live-browser.json`. Saved-hand/action/lifecycle fixtures remain preview-only, not claimed as fresh live cases.
+- Task-owned preview5225 stopped; port verified closed. Canonical service-hosting worktree and unrelated Wrangler directories preserved.
+- Rollback Pages `28ae3ec8` / runtime `0c1f790f40329e67122b1c291ecd7961ac8be7c2`. Primary origin only; GitHub Pages remains redirect-only.
+
+Final independent native delivery gate PASS: runtime,8exacthashes,18protectedfiles,384tests42files,18+13+3+3 scoped preview groups and12fresh live rounds reconcile. Live mobile/desktop screenshots readable; preview5225 closed. Reviewer's additional immutable Pages URL fetch returned HTTP403 in its environment; primary-origin live evidence remains valid, and no independent immutable-URL availability claim is made. Evidence-only receipt; no runtime changes.
