@@ -517,22 +517,14 @@ export function CasinoRoundStage({
               strokeWidth="2"
               opacity=".35"
             />
-            {shown
-              .filter((n) => picks.includes(n))
-              .map((n) => (
-                <circle
-                  key={n}
-                  cx={((n - 1) % 8) * 100 + 50}
-                  cy={Math.floor((n - 1) / 8) * 100 + 50}
-                  r={latest === n ? 39 : 31}
-                  fill="none"
-                  stroke="#bbd9ae"
-                  strokeWidth="2"
-                />
-              ))}
           </svg>
           {Array.from({ length: 40 }, (_, i) => {
-            const value = i + 1;
+            const value = i + 1,
+              revealedIndex = shown.indexOf(value),
+              // The same clock reveals the number, sounds its cue and expands
+              // its return. Finish before the next draw, including the last one.
+              ping = (t * 11 - (revealedIndex + 1)) / 0.92,
+              pinging = animated && revealedIndex >= 0 && ping >= 0 && ping < 1;
             return (
               <span
                 key={value}
@@ -541,16 +533,39 @@ export function CasinoRoundStage({
                 data-drawn={shown.includes(value)}
               >
                 {value}
+                {pinging && (
+                  <svg
+                    className="scan-result-ping"
+                    data-scan-ping={value}
+                    data-phase={ping}
+                    viewBox="0 0 100 100"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r={12 + 34 * ease(ping)}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      vectorEffect="non-scaling-stroke"
+                      opacity={0.95 * (1 - ping)}
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r={9 + 23 * ease(ping)}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                      vectorEffect="non-scaling-stroke"
+                      opacity={0.6 * (1 - ping)}
+                    />
+                  </svg>
+                )}
               </span>
             );
           })}
-          <div
-            className="scanner-sweep"
-            style={{
-              top: `${((t * 4) % 1) * 100}%`,
-              opacity: animated ? 0.25 : 0,
-            }}
-          />
         </div>
         <div className="keno-draw-strip" aria-label="Draw order">
           {Array.from({ length: 10 }, (_, i) => (
