@@ -1,0 +1,224 @@
+{
+  "base": "http://127.0.0.1:5229",
+  "group": "foundation",
+  "mode": "Isolated fresh local Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.058302, 0.851269, -0.52148, 0, -0.0588923, 0.518526, 0.853031, 0, 0.99656, 0.0804446, 0.0199021, 0, -2.84643, -73.9837, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.721983, 0.427559, -0.543999, 0, 0.0833376, -0.834238, -0.545071, 0, -0.686874, 0.348196, -0.637937, 0, -2.44119, -53.9757, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.968311, 0.249473, 0.0117326, 0, 0.00436983, -0.0300466, 0.999539, 0, 0.24971, 0.967916, 0.0280042, 0, 0, -65.2803, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.2962951660156,
+        "bottom": 602.861083984375,
+        "height": 305.5647888183594,
+        "visible": 305.5647888183594
+      },
+      "faces": [
+        1,
+        4
+      ],
+      "geometry": [
+        {
+          "size": 44.092063903808594,
+          "half": 22,
+          "padDelta": -0.04608154296875,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44.09205627441406,
+          "half": 22,
+          "padDelta": -0.0460968017578125,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRDL / ORBITAL DECK\nⅡ\nDrift on\nDICE DECK / 01\nHOLD THE LINE\n5\nPOINT\nCRDL / SALVAGE\n01\n02\n5 · POINT 5 ESTABLISHED\nBets held\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · WORKING\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n5\n+5 / tap\nLAY ODDS\nLIMIT 0\n+6 / tap\nTAKE ODDS\nLIMIT 20\n+6 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS\nOn the table\n5\n1\n5\n25\n100\nPlace chips\nTake down\n\nSelect bet · +shown amount\n\nRoll dice\n↗\nNo auto-rebet · Unresolved bets saved\nROLL 1\n1 + 4\n\nNo bets resolved.\n\nTable rules & payouts\nRecent rolls",
+      "ok": true
+    },
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.100376, 0.720897, -0.685735, 0, -0.0647979, 0.692489, 0.718512, 0, 0.992837, -0.0276873, 0.116222, 0, -2.87951, -74.5207, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.990871, 0.0220995, 0.132988, 0, 0.0877873, -0.854426, -0.512103, 0, 0.102311, 0.519103, -0.848566, 0, -2.44703, -49.7885, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.990178, -0.139805, 0.00158167, 0, 0.0320729, -0.216119, 0.97584, 0, -0.136085, 0.966306, 0.21848, 0, 0, -67.1847, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.2229919433594,
+        "bottom": 602.9343872070312,
+        "height": 305.7113952636719,
+        "visible": 305.7113952636719
+      },
+      "faces": [
+        6,
+        6
+      ],
+      "geometry": [
+        {
+          "size": 44.09205627441406,
+          "half": 22,
+          "padDelta": -0.0460662841796875,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44.092041015625,
+          "half": 22,
+          "padDelta": -0.04608154296875,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRDL / ORBITAL DECK\nⅡ\nDrift on\nDICE DECK / 01\nHOLD THE LINE\nOFF\nCOME OUT\nCRDL / SALVAGE\n01\n02\n12 · CRAPS\n0 returned · 5 resolved\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · OFF ON COME-OUT\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n+5 / tap\nLAY ODDS\nAFTER POINT\n+6 / tap\nTAKE ODDS\nAFTER POINT\n+5 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS\nOn the table\n0\n1\n5\n25\n100\nPlace chips\nTake down\n\nSelect bet · +shown amount\n\nRoll dice\n↗\nNo auto-rebet · Unresolved bets saved\nROLL 1\n6 + 6\nPass line\n5 staked\n0\nreturned\nTable rules & payouts\nRecent rolls",
+      "ok": true
+    },
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.550637, 0.518201, -0.654421, 0, -0.0611706, 0.806918, 0.587487, 0, 0.8325, -0.283461, 0.476018, 0, -2.90562, -82.9231, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.481017, 0.361532, -0.798697, 0, 0.106762, -0.92839, -0.35594, 0, -0.870187, 0.0859423, -0.485169, 0, -2.47314, -54.2819, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.848058, 0.520057, -0.101681, 0, -0.0246106, 0.153023, 0.987916, 0, 0.529332, 0.840312, -0.116974, 0, 0, -76.0738, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 296.3558349609375,
+        "bottom": 603.0202026367188,
+        "height": 306.66436767578125,
+        "visible": 306.66436767578125
+      },
+      "faces": [
+        1,
+        4
+      ],
+      "geometry": [
+        {
+          "size": 58.121337890625,
+          "half": 29,
+          "padDelta": -0.06072998046875,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58.121337890625,
+          "half": 29,
+          "padDelta": -0.0607452392578125,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRDL / ORBITAL DECK\nⅡ\nDrift on\nDICE DECK / 01\nHOLD THE LINE\n5\nPOINT\nCRDL / SALVAGE\n01\n02\n5 · POINT 5 ESTABLISHED\nBets held\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · WORKING\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n5\n+5 / tap\nLAY ODDS\nLIMIT 0\n+6 / tap\nTAKE ODDS\nLIMIT 20\n+6 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS\nPLAY MONEY / LIVE TABLE\nYour chips\nOn the table\n5\n1\n5\n25\n100\nPlace chips\nTake down\n\nSelect bet · +shown amount\n\nRoll dice\n↗\nNo auto-rebet · Unresolved bets saved\nROLL 1\n1 + 4\n\nNo bets resolved.\n\nTable rules & payouts\nRecent rolls",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

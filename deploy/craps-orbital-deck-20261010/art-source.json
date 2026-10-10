@@ -1,0 +1,15 @@
+{
+  "build": "3573151",
+  "typeId": 88086,
+  "name": "Mini Gate",
+  "graphicId": 28064,
+  "source": "res:/dx9/model/spaceobjectfactory/icons/dep_stargate_s_01v01/28064_512_no_background.jpg",
+  "sourceMd5": "37862f004e91a554cd3995d10e22e259",
+  "sourceSha256": "7d51f5406f1d6faf82ddbef732337a0bf602b21b1ca42b9502b99cefd217524a",
+  "derivation": "Border-connected near-black background removed (maxRGB<=12), 0.35px alpha edge, brightness1.7 and WebP encode. Native hull silhouette and geometry unchanged; no generated replacement.",
+  "output": "cradleos-dapp/public/casino/craps-orbit/mini-gate.webp",
+  "sha256": "afda5a097615e41fcd492c5d71e05ba4102df075afedf531a144866cfb9a3f06",
+  "bytes": 23518,
+  "reusedNativeArt": "casino/lai-jump/lai-hull.webp; provenance deploy/lai-jump-20261010/art-source.json",
+  "originalArt": "CSS starfield, planetary limb and hull/table assembly are original UI; existing floor_plate.jpg reused as a surface texture, not claimed as verified native art."
+}

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { ItemIcon } from "./GameIcon";
+import { CasinoOrbitalCraps } from "./CasinoOrbitalCraps";
 import {
   PhysicalDie,
   DiceHardware,
@@ -181,259 +182,258 @@ export function CasinoCraps({
     );
   }
   return (
-    <div className="craps-layout">
-      <section className="craps-table" aria-label="Frontier craps table">
-        <div className="craps-toprail">
-          <div>
-            <span>DICE DECK / 01</span>
-            <h3>HOLD THE LINE</h3>
+    <CasinoOrbitalCraps reduced={reduced} busy={busy}>
+      <div className="craps-layout">
+        <section className="craps-table" aria-label="Frontier craps table">
+          <div className="craps-toprail">
+            <div>
+              <span>DICE DECK / 01</span>
+              <h3>HOLD THE LINE</h3>
+            </div>
+            <div
+              className={`craps-puck ${shown.point ? "on" : ""}`}
+              aria-label={`Point ${shown.point || "off"}`}
+            >
+              <b>{shown.point || "OFF"}</b>
+              <small>{shown.point ? "POINT" : "COME OUT"}</small>
+            </div>
           </div>
-          <div
-            className={`craps-puck ${shown.point ? "on" : ""}`}
-            aria-label={`Point ${shown.point || "off"}`}
-          >
-            <b>{shown.point || "OFF"}</b>
-            <small>{shown.point ? "POINT" : "COME OUT"}</small>
-          </div>
-        </div>
-        <div className="craps-throw-zone industrial-craps-tray" ref={tray}>
-          <DiceHardware kind="craps" count={2} t={busy ? t : 1} />
-          <div className="craps-ghost-art">
-            <ItemIcon typeId={87848} size={112} />
-          </div>
-          <div
-            className="craps-dice"
-            aria-label={
-              pending && !busy ? "Saved dice unrevealed" : "Dice tray"
-            }
-          >
-            {(!pending || busy) && receipt ? (
-              receipt.dice.map((face, index) => (
-                <PhysicalDie
-                  key={index}
-                  face={face}
-                  index={index}
-                  t={busy ? t : 1}
-                  has
-                  matched={!!outcome && outcome.payout > outcome.stake}
-                />
-              ))
-            ) : (
-              <>
-                <span className="craps-idle-die">◇</span>
-                <span className="craps-idle-die">◇</span>
-              </>
-            )}
-          </div>
-          <div className="craps-call" role="status">
-            <b>
-              {busy
-                ? "DICE IN FLIGHT"
-                : pending
-                  ? "ROLL SAVED"
+          <div className="craps-throw-zone industrial-craps-tray" ref={tray}>
+            <DiceHardware kind="craps" count={2} t={busy ? t : 1} />
+            <div className="craps-ghost-art">
+              <ItemIcon typeId={87848} size={112} />
+            </div>
+            <div
+              className="craps-dice"
+              aria-label={
+                pending && !busy ? "Saved dice unrevealed" : "Dice tray"
+              }
+            >
+              {(!pending || busy) && receipt ? (
+                receipt.dice.map((face, index) => (
+                  <PhysicalDie
+                    key={index}
+                    face={face}
+                    index={index}
+                    t={busy ? t : 1}
+                    has
+                    matched={!!outcome && outcome.payout > outcome.stake}
+                  />
+                ))
+              ) : (
+                <>
+                  <span className="craps-idle-die">◇</span>
+                  <span className="craps-idle-die">◇</span>
+                </>
+              )}
+            </div>
+            <div className="craps-call" role="status">
+              <b>
+                {busy
+                  ? "DICE IN FLIGHT"
+                  : pending
+                    ? "ROLL SAVED"
+                    : outcome
+                      ? `${outcome.total} · ${outcome.label}`
+                      : shown.point
+                        ? `MAKE ${shown.point} BEFORE 7`
+                        : "SET YOUR CHIPS"}
+              </b>
+              <span>
+                {pending
+                  ? "Bets saved"
                   : outcome
-                    ? `${outcome.total} · ${outcome.label}`
+                    ? outcome.settled.length
+                      ? `${chipLabel(outcome.payout)} returned · ${chipLabel(outcome.stake)} resolved`
+                      : "Bets held"
                     : shown.point
-                      ? `MAKE ${shown.point} BEFORE 7`
-                      : "SET YOUR CHIPS"}
-            </b>
-            <span>
-              {pending
-                ? "Your bets are saved."
-                : outcome
-                  ? outcome.settled.length
-                    ? `${chipLabel(outcome.payout)} returned · ${chipLabel(outcome.stake)} resolved`
-                    : "Bets stay on the table"
-                  : shown.point
-                    ? "The line is set."
-                    : "7 or 11 wins the Pass line."}
-            </span>
+                      ? "Point on"
+                      : "Pass wins · 7 / 11"}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="craps-numbers">
-          {POINTS.map((n) =>
-            spot(
-              `place${n}`,
-              String(n),
-              n === 6 || n === 8 ? "7:6" : n === 5 || n === 9 ? "7:5" : "9:5",
-              "number",
-            ),
-          )}
-        </div>
-        <div className="craps-working">
-          PLACE & HARDWAYS · {shown.point ? "WORKING" : "OFF ON COME-OUT"}
-        </div>
-        <div className="craps-field">
-          {spot("field", "FIELD", "2 · 3 · 4 · 9 · 10 · 11 · 12")}
-          <span>2 PAYS DOUBLE · 12 PAYS TRIPLE</span>
-        </div>
-        <div className="craps-lines">
-          {spot("dont", "DON’T PASS", "BAR 12")}
-          {spot("pass", "PASS LINE", "EVEN MONEY", "pass-line")}
-        </div>
-        <div className="craps-odds">
-          {spot(
-            "dontOdds",
-            "LAY ODDS",
-            shown.point
-              ? `LIMIT ${chipLabel(oddsLimit("dontOdds", shown.point, shown.bets))}`
-              : "AFTER POINT",
-          )}
-          {spot(
-            "passOdds",
-            "TAKE ODDS",
-            shown.point
-              ? `LIMIT ${chipLabel(oddsLimit("passOdds", shown.point, shown.bets))}`
-              : "AFTER POINT",
-          )}
-        </div>
-        <div className="craps-hardways">
-          <span>HARDWAYS</span>
-          <div>
-            {HARD.map((n) =>
+          <div className="craps-numbers">
+            {POINTS.map((n) =>
               spot(
-                `hard${n}`,
-                `${n / 2} + ${n / 2}`,
-                n === 6 || n === 8 ? "9:1" : "7:1",
+                `place${n}`,
+                String(n),
+                n === 6 || n === 8 ? "7:6" : n === 5 || n === 9 ? "7:5" : "9:5",
+                "number",
               ),
             )}
           </div>
-        </div>
-        <div className="craps-footrail">
-          ◇ CRADLE CASINO <span>FRONTIER CRAPS</span>
-        </div>
-      </section>
-      <aside className="craps-controls">
-        <span className="lounge-eyebrow">PLAY MONEY / LIVE TABLE</span>
-        <h3>Your chips</h3>
-        <div className="craps-bank">
-          <span>On the table</span>
-          <strong>{chipLabel(crapsEscrow(shown))}</strong>
-        </div>
-        <div
-          className="craps-chip-rack"
-          role="group"
-          aria-label="Chip denomination"
-        >
-          {[100, 500, 2500, 10000].map((n) => (
-            <button
-              key={n}
-              disabled={busy || pending}
-              aria-pressed={chip === n && !remove}
-              onClick={() => {
-                setChip(n);
-                setRemove(false);
-              }}
-            >
-              {chipLabel(n)}
-            </button>
-          ))}
-        </div>
-        <div className="craps-edit" role="group" aria-label="Bet editing">
-          <button
-            disabled={busy || pending}
-            aria-pressed={!remove}
-            onClick={() => setRemove(false)}
-          >
-            Place chips
-          </button>
-          <button
-            disabled={busy || pending}
-            aria-pressed={remove}
-            onClick={() => setRemove(true)}
-          >
-            Take down
-          </button>
-        </div>
-        <p className="craps-hint">
-          {remove
-            ? "Tap a bet to return its chips. Pass locks after the point."
-            : "Tap a table area to add chips. Each spot shows its exact increment."}
-        </p>
-        <button
-          className="lounge-primary craps-roll"
-          disabled={busy || (!pending && !crapsEscrow(table) && !table.point)}
-          onClick={roll}
-        >
-          {busy ? "Rolling…" : pending ? "Reveal saved roll" : "Roll dice"}{" "}
-          <span>↗</span>
-        </button>
-        <small className="craps-hint">
-          No auto-rebet. Winning bets return with their winnings. Unresolved
-          bets stay saved when you leave.
-        </small>
-        {outcome && (
-          <section className="craps-receipt" aria-label="Latest roll receipt">
-            <h4>
-              ROLL {receipt.id} <span>{receipt.dice.join(" + ")}</span>
-            </h4>
-            {outcome.settled.length ? (
-              outcome.settled.map((b) => (
-                <div key={b.key}>
-                  <span>
-                    {crapsName(b.key)}
-                    <small>{chipLabel(b.stake)} staked</small>
-                  </span>
-                  <b>
-                    {chipLabel(b.payout)}
-                    <small>returned</small>
-                  </b>
-                </div>
-              ))
-            ) : (
-              <p>No bets resolved.</p>
+          <div className="craps-working">
+            PLACE & HARDWAYS · {shown.point ? "WORKING" : "OFF ON COME-OUT"}
+          </div>
+          <div className="craps-field">
+            {spot("field", "FIELD", "2 · 3 · 4 · 9 · 10 · 11 · 12")}
+            <span>2 PAYS DOUBLE · 12 PAYS TRIPLE</span>
+          </div>
+          <div className="craps-lines">
+            {spot("dont", "DON’T PASS", "BAR 12")}
+            {spot("pass", "PASS LINE", "EVEN MONEY", "pass-line")}
+          </div>
+          <div className="craps-odds">
+            {spot(
+              "dontOdds",
+              "LAY ODDS",
+              shown.point
+                ? `LIMIT ${chipLabel(oddsLimit("dontOdds", shown.point, shown.bets))}`
+                : "AFTER POINT",
             )}
-          </section>
-        )}
-        <details className="craps-rules">
-          <summary>Table rules & payouts</summary>
-          <p>
-            Two fair six-sided dice. Ratios on the table are profit odds, plus
-            your returned stake. Limit: 1,000 chips total on the table.
+            {spot(
+              "passOdds",
+              "TAKE ODDS",
+              shown.point
+                ? `LIMIT ${chipLabel(oddsLimit("passOdds", shown.point, shown.bets))}`
+                : "AFTER POINT",
+            )}
+          </div>
+          <div className="craps-hardways">
+            <span>HARDWAYS</span>
+            <div>
+              {HARD.map((n) =>
+                spot(
+                  `hard${n}`,
+                  `${n / 2} + ${n / 2}`,
+                  n === 6 || n === 8 ? "9:1" : "7:1",
+                ),
+              )}
+            </div>
+          </div>
+          <div className="craps-footrail">
+            ◇ CRADLE CASINO <span>FRONTIER CRAPS</span>
+          </div>
+        </section>
+        <aside className="craps-controls">
+          <span className="lounge-eyebrow">PLAY MONEY / LIVE TABLE</span>
+          <h3>Your chips</h3>
+          <div className="craps-bank">
+            <span>On the table</span>
+            <strong>{chipLabel(crapsEscrow(shown))}</strong>
+          </div>
+          <div
+            className="craps-chip-rack"
+            role="group"
+            aria-label="Chip denomination"
+          >
+            {[100, 500, 2500, 10000].map((n) => (
+              <button
+                key={n}
+                disabled={busy || pending}
+                aria-pressed={chip === n && !remove}
+                onClick={() => {
+                  setChip(n);
+                  setRemove(false);
+                }}
+              >
+                {chipLabel(n)}
+              </button>
+            ))}
+          </div>
+          <div className="craps-edit" role="group" aria-label="Bet editing">
+            <button
+              disabled={busy || pending}
+              aria-pressed={!remove}
+              onClick={() => setRemove(false)}
+            >
+              Place chips
+            </button>
+            <button
+              disabled={busy || pending}
+              aria-pressed={remove}
+              onClick={() => setRemove(true)}
+            >
+              Take down
+            </button>
+          </div>
+          <p className="craps-hint">
+            {remove ? "Pass locked after point" : "Select bet · +shown amount"}
           </p>
-          <p>
-            Pass: come-out 7/11 wins; 2/3/12 loses. Other totals establish the
-            point. Make that point before 7 to win. Don’t Pass reverses this,
-            with a push on come-out 12. No new line bets after the point.
-          </p>
-          <p>
-            Pass odds: 3× on 4/10, 4× on 5/9, 5× on 6/8. Pay 2:1, 3:2, 6:5
-            respectively. Lay odds: risk up to 6× Don’t Pass. Pay 1:2, 2:3, 5:6.
-            Odds can come down; removing Don’t also returns its odds.
-          </p>
-          <p>
-            Field resolves every roll. 3/4/9/10/11 pay 1:1; 2 pays 2:1; 12 pays
-            3:1. Other totals lose.
-          </p>
-          <p>
-            Place and Hardways are OFF on every come-out. Place wins its number
-            before 7. Hardways win the displayed double before a soft same total
-            or 7. No automatic rebet.
-          </p>
-          <p>
-            Amounts use exact payout increments. Come/Don’t Come, Buy/Lay and
-            proposition bets are not offered here.
-          </p>
-        </details>
-        <details className="craps-history">
-          <summary>Recent rolls</summary>
-          {table.rolls
-            .filter((_, i) => !pending || i !== 0)
-            .map((r) => {
-              const e = evaluateCraps(r);
-              return (
-                <div key={r.id}>
-                  <b>{r.dice.join(" + ")}</b>
-                  <span>{e.label}</span>
-                  <small>
-                    {chipLabel(e.payout)} returned / {chipLabel(e.stake)}{" "}
-                    resolved
-                  </small>
-                </div>
-              );
-            })}
-        </details>
-      </aside>
-    </div>
+          <button
+            className="lounge-primary craps-roll"
+            disabled={busy || (!pending && !crapsEscrow(table) && !table.point)}
+            onClick={roll}
+          >
+            {busy ? "Rolling…" : pending ? "Reveal saved roll" : "Roll dice"}{" "}
+            <span>↗</span>
+          </button>
+          <small className="craps-hint">
+            No auto-rebet · Unresolved bets saved
+          </small>
+          {outcome && (
+            <section className="craps-receipt" aria-label="Latest roll receipt">
+              <h4>
+                ROLL {receipt.id} <span>{receipt.dice.join(" + ")}</span>
+              </h4>
+              {outcome.settled.length ? (
+                outcome.settled.map((b) => (
+                  <div key={b.key}>
+                    <span>
+                      {crapsName(b.key)}
+                      <small>{chipLabel(b.stake)} staked</small>
+                    </span>
+                    <b>
+                      {chipLabel(b.payout)}
+                      <small>returned</small>
+                    </b>
+                  </div>
+                ))
+              ) : (
+                <p>No bets resolved.</p>
+              )}
+            </section>
+          )}
+          <details className="craps-rules">
+            <summary>Table rules & payouts</summary>
+            <p>
+              Two fair six-sided dice. Ratios on the table are profit odds, plus
+              your returned stake. Limit: 1,000 chips total on the table.
+            </p>
+            <p>
+              Pass: come-out 7/11 wins; 2/3/12 loses. Other totals establish the
+              point. Make that point before 7 to win. Don’t Pass reverses this,
+              with a push on come-out 12. No new line bets after the point.
+            </p>
+            <p>
+              Pass odds: 3× on 4/10, 4× on 5/9, 5× on 6/8. Pay 2:1, 3:2, 6:5
+              respectively. Lay odds: risk up to 6× Don’t Pass. Pay 1:2, 2:3,
+              5:6. Odds can come down; removing Don’t also returns its odds.
+            </p>
+            <p>
+              Field resolves every roll. 3/4/9/10/11 pay 1:1; 2 pays 2:1; 12
+              pays 3:1. Other totals lose.
+            </p>
+            <p>
+              Place and Hardways are OFF on every come-out. Place wins its
+              number before 7. Hardways win the displayed double before a soft
+              same total or 7. No automatic rebet.
+            </p>
+            <p>
+              Amounts use exact payout increments. Come/Don’t Come, Buy/Lay and
+              proposition bets are not offered here.
+            </p>
+          </details>
+          <details className="craps-history">
+            <summary>Recent rolls</summary>
+            {table.rolls
+              .filter((_, i) => !pending || i !== 0)
+              .map((r) => {
+                const e = evaluateCraps(r);
+                return (
+                  <div key={r.id}>
+                    <b>{r.dice.join(" + ")}</b>
+                    <span>{e.label}</span>
+                    <small>
+                      {chipLabel(e.payout)} returned / {chipLabel(e.stake)}{" "}
+                      resolved
+                    </small>
+                  </div>
+                );
+              })}
+          </details>
+        </aside>
+      </div>
+    </CasinoOrbitalCraps>
   );
 }

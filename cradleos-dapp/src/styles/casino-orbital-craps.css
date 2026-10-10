@@ -1,0 +1,325 @@
+/* Original orbital deck UI, with verified native Mini Gate and Lai scenery.
+   Keep the two cosmetic animations installed: owner preference/pause rules
+   supersede the legacy OS-reduce blanket without snapping their current pose. */
+.orbital-craps {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid #46545a77;
+  border-radius: 14px;
+  background: #03070c;
+  padding: 0 30px 48px;
+}
+.craps-orbit-space {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+.craps-orbit-haze {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 12%, #54707b24, transparent 35%),
+    radial-gradient(ellipse at 95% 60%, #a4562420, transparent 40%);
+}
+.orbital-craps .craps-orbit-stars {
+  width: 100%;
+  height: 100%;
+  animation: craps-orbit-stars 60s ease-in-out infinite alternate !important;
+}
+.craps-orbit-world {
+  position: absolute;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  right: -340px;
+  top: 120px;
+  background: radial-gradient(
+    circle at 32% 35%,
+    #111b21 0,
+    #090d13 50%,
+    #020409 67%
+  );
+  box-shadow:
+    -5px -4px 3px #77918c50,
+    -13px -9px 25px #3b6d7440;
+}
+.craps-orbit-gate {
+  position: absolute;
+  top: 24px;
+  left: 4%;
+  width: 210px;
+  height: 210px;
+  object-fit: contain;
+  opacity: 0.76;
+  transform: rotate(-12deg);
+}
+.craps-orbit-lai {
+  position: absolute;
+  top: 82px;
+  right: 9%;
+  width: 115px;
+  height: auto;
+  opacity: 0.8;
+  transform: rotate(-14deg);
+}
+.craps-orbit-orbit {
+  position: absolute;
+  left: -25%;
+  top: 180px;
+  width: 150%;
+  height: 68%;
+  border: 1px solid #8fa7a013;
+  border-radius: 50%;
+  transform: rotate(-24deg);
+}
+.craps-orbit-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  height: 146px;
+  gap: 12px;
+  align-items: flex-start;
+  padding-top: 12px;
+}
+.craps-orbit-toolbar > span {
+  font: 9px monospace;
+  letter-spacing: 2px;
+  color: #a3b5af;
+  margin-top: 17px;
+  text-shadow: 0 1px 4px #000;
+}
+.frontier-casino .craps-orbit-drift {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #6c818266;
+  border-radius: 5px;
+  color: #c8d4cc;
+  background: #091016dc;
+  font: 11px monospace;
+}
+.craps-orbit-drift:focus-visible {
+  outline: 2px solid #f7e1ba;
+  outline-offset: 2px;
+}
+.craps-orbit-drift:disabled {
+  opacity: 0.55;
+}
+.orbital-craps .craps-layout {
+  position: relative;
+  gap: 22px;
+}
+.orbital-craps .craps-table {
+  --line: #a8bab050;
+  overflow: visible;
+  border: 9px ridge #535e5c;
+  border-radius: 44px 44px 28px 28px;
+  background:
+    linear-gradient(150deg, #172224ed, #101918f5),
+    url("/casino/textures/floor_plate.jpg") center/440px;
+  box-shadow:
+    inset 0 0 0 2px #131b1c,
+    inset 0 0 45px #050a0bb3,
+    0 10px 0 #303b3c,
+    0 13px 0 #65716a,
+    0 25px 0 -5px #182123,
+    0 30px 0 -5px #05090b,
+    0 40px 35px #0009;
+  animation: craps-orbit-drift 16s ease-in-out infinite !important;
+}
+.orbital-craps .craps-table:before,
+.orbital-craps .craps-table:after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 7px;
+  top: 90px;
+  bottom: 80px;
+  background: repeating-linear-gradient(
+    0deg,
+    #7a8d7e 0 14px,
+    #141b1d 14px 65px
+  );
+  border: 1px solid #778b7c;
+  box-shadow: 0 0 0 3px #1c2a2c;
+}
+.orbital-craps .craps-table:before {
+  left: -14px;
+}
+.orbital-craps .craps-table:after {
+  right: -14px;
+}
+.orbital-craps .craps-toprail {
+  margin-bottom: 14px;
+  padding: 5px 4px 10px;
+  border-bottom: 1px solid #93a49733;
+}
+.orbital-craps .craps-toprail h3 {
+  color: #dfdfce;
+  font-size: 19px;
+}
+.orbital-craps .craps-toprail span {
+  color: #a2b4a7;
+}
+.orbital-craps .craps-puck {
+  border-color: #98a79c;
+  box-shadow:
+    0 3px 0 #57635d,
+    0 8px 8px #0008;
+}
+.orbital-craps .industrial-craps-tray {
+  border-radius: 16px 16px 8px 8px;
+  border-color: #69776f;
+  box-shadow:
+    inset 0 8px 14px #0009,
+    0 1px 0 #8d9d8266;
+}
+.frontier-casino .orbital-craps .craps-spot {
+  scroll-margin-block: 110px;
+  border-color: #91a89966;
+  border-radius: 2px;
+  background: linear-gradient(150deg, #31413960, #0c1618b0);
+  box-shadow: inset 0 1px #a5b39b12;
+}
+.orbital-craps .craps-spot.has-chips {
+  background: linear-gradient(140deg, #6f552b55, #172320);
+}
+.orbital-craps .craps-chip {
+  background: #bac3ae;
+  color: #11191c;
+  border-color: #edf1dd;
+  box-shadow:
+    0 3px 0 #46534b,
+    1px 5px 5px #0009;
+}
+.orbital-craps .craps-footrail {
+  padding-top: 8px;
+  border-top: 1px solid #93a49733;
+  color: #a1b2a7;
+}
+.orbital-craps .craps-controls {
+  border: 3px ridge #52625e;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1d292be8, #0a1116f8);
+  box-shadow:
+    inset 0 0 0 2px #10181a,
+    0 7px 0 #1b272c,
+    0 13px 24px #0008;
+}
+.orbital-craps[data-drift="off"] .craps-table,
+.orbital-craps[data-drift="off"] .craps-orbit-stars,
+.orbital-craps[data-rolling="true"] .craps-table,
+.orbital-craps[data-holding="true"] .craps-table,
+.orbital-craps .craps-table:active,
+.orbital-craps .craps-table:focus-within {
+  animation-play-state: paused !important;
+}
+@media (hover: hover) {
+  .orbital-craps .craps-table:hover {
+    animation-play-state: paused !important;
+  }
+}
+@keyframes craps-orbit-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.12deg);
+  }
+  50% {
+    transform: translate3d(0, -5px, 0) rotate(0.12deg);
+  }
+}
+@keyframes craps-orbit-stars {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-8px, 10px, 0);
+  }
+}
+@media (max-width: 900px) {
+  .orbital-craps {
+    padding: 0 20px 30px;
+  }
+  .orbital-craps .craps-layout {
+    gap: 48px;
+  }
+  .craps-orbit-lai {
+    right: 12%;
+  }
+}
+@media (max-width: 480px) {
+  .orbital-craps {
+    padding: 0 11px 22px;
+    margin-inline: -8px;
+  }
+  .craps-orbit-toolbar {
+    height: 126px;
+    gap: 4px;
+  }
+  .craps-orbit-toolbar > span {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .frontier-casino .craps-orbit-drift {
+    padding-inline: 9px;
+    font-size: 10px;
+  }
+  .craps-orbit-gate {
+    width: 154px;
+    height: 154px;
+    top: 28px;
+    left: 1%;
+  }
+  .craps-orbit-lai {
+    width: 77px;
+    right: 4%;
+    top: 85px;
+  }
+  .craps-orbit-world {
+    right: -440px;
+    top: 130px;
+  }
+  .orbital-craps .craps-table {
+    border-width: 5px;
+    border-radius: 24px 24px 18px 18px;
+    padding: 10px 7px;
+  }
+  .orbital-craps .craps-table:before,
+  .orbital-craps .craps-table:after {
+    width: 3px;
+  }
+  .orbital-craps .craps-table:before {
+    left: -8px;
+  }
+  .orbital-craps .craps-table:after {
+    right: -8px;
+  }
+  .orbital-craps .craps-toprail {
+    gap: 6px;
+  }
+  .orbital-craps .craps-toprail h3 {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .orbital-craps .craps-controls {
+    padding: 12px 8px;
+  }
+  .orbital-craps .craps-lines .craps-spot strong {
+    font-size: 13px;
+  }
+  .orbital-craps .craps-spot small {
+    font-size: 9px;
+  }
+  .orbital-craps .craps-field .craps-spot > small {
+    word-spacing: 1px;
+    font-size: 11px;
+  }
+}

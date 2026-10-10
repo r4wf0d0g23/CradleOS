@@ -1,0 +1,457 @@
+{
+  "base": "http://127.0.0.1:5229",
+  "scope": "Actual component/controls and native artwork; viewport emulation, synthetic lifecycle probes and engine-produced saved fixture; no wallet",
+  "checks": [
+    {
+      "name": "drift-art-controls",
+      "width": 320,
+      "art": [
+        {
+          "src": "/casino/craps-orbit/mini-gate.webp",
+          "ok": true,
+          "width": 512
+        },
+        {
+          "src": "/casino/lai-jump/lai-hull.webp",
+          "ok": true,
+          "width": 474
+        }
+      ],
+      "samples": [
+        "matrix(0.999998, -0.00208656, 0.00208656, 0.999998, 0, -0.00935344)",
+        "matrix(0.999998, -0.00200824, 0.00200824, 0.999998, 0, -0.102834)"
+      ],
+      "boxes": [
+        {
+          "label": "Table drift",
+          "w": 81.09375,
+          "h": 44
+        },
+        {
+          "label": "Add Place 4 5 chips",
+          "w": 88.18411254882812,
+          "h": 88.18411254882812
+        },
+        {
+          "label": "Add Place 5 5 chips",
+          "w": 88.18411254882812,
+          "h": 88.18411254882812
+        },
+        {
+          "label": "Add Place 6 6 chips",
+          "w": 88.18409729003906,
+          "h": 88.18411254882812
+        },
+        {
+          "label": "Add Place 8 6 chips",
+          "w": 88.18411254882812,
+          "h": 88.18411254882812
+        },
+        {
+          "label": "Add Place 9 5 chips",
+          "w": 88.1841049194336,
+          "h": 88.18408203125
+        },
+        {
+          "label": "Add Place 10 5 chips",
+          "w": 88.18412780761719,
+          "h": 88.18414306640625
+        },
+        {
+          "label": "Add Field 5 chips",
+          "w": 270.21929931640625,
+          "h": 105.56524658203125
+        },
+        {
+          "label": "Add Don't pass 5 chips",
+          "w": 132.1567840576172,
+          "h": 75.27630615234375
+        },
+        {
+          "label": "Add Pass line 5 chips",
+          "w": 132.15679931640625,
+          "h": 75.27630615234375
+        },
+        {
+          "label": "Add Don't odds 6 chips",
+          "w": 132.1463165283203,
+          "h": 70.27630615234375
+        },
+        {
+          "label": "Add Pass odds 5 chips",
+          "w": 132.14630126953125,
+          "h": 70.27630615234375
+        },
+        {
+          "label": "Add Hard 4 5 chips",
+          "w": 63.90693664550781,
+          "h": 75.13336181640625
+        },
+        {
+          "label": "Add Hard 6 5 chips",
+          "w": 63.90693664550781,
+          "h": 75.13336181640625
+        },
+        {
+          "label": "Add Hard 8 5 chips",
+          "w": 63.90693664550781,
+          "h": 75.13336181640625
+        },
+        {
+          "label": "Add Hard 10 5 chips",
+          "w": 63.906951904296875,
+          "h": 75.13336181640625
+        },
+        {
+          "label": "1",
+          "w": 46,
+          "h": 46
+        },
+        {
+          "label": "5",
+          "w": 46,
+          "h": 46
+        },
+        {
+          "label": "25",
+          "w": 52.859375,
+          "h": 46
+        },
+        {
+          "label": "100",
+          "w": 61.296875,
+          "h": 46
+        },
+        {
+          "label": "Place chips",
+          "w": 62.5,
+          "h": 85
+        },
+        {
+          "label": "Take down",
+          "w": 62.5,
+          "h": 85
+        },
+        {
+          "label": "Roll dice\n↗",
+          "w": 131,
+          "h": 73
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "drift-art-controls",
+      "width": 390,
+      "art": [
+        {
+          "src": "/casino/craps-orbit/mini-gate.webp",
+          "ok": true,
+          "width": 512
+        },
+        {
+          "src": "/casino/lai-jump/lai-hull.webp",
+          "ok": true,
+          "width": 474
+        }
+      ],
+      "samples": [
+        "matrix(0.999998, -0.00208546, 0.00208546, 0.999998, 0, -0.0106614)",
+        "matrix(0.999998, -0.00200822, 0.00200822, 0.999998, 0, -0.102862)"
+      ],
+      "boxes": [
+        {
+          "label": "Table drift",
+          "w": 81.09375,
+          "h": 44
+        },
+        {
+          "label": "Add Place 4 5 chips",
+          "w": 111.51217651367188,
+          "h": 88.23297119140625
+        },
+        {
+          "label": "Add Place 5 5 chips",
+          "w": 111.51217651367188,
+          "h": 88.23297119140625
+        },
+        {
+          "label": "Add Place 6 6 chips",
+          "w": 111.52781677246094,
+          "h": 88.23300170898438
+        },
+        {
+          "label": "Add Place 8 6 chips",
+          "w": 111.5121841430664,
+          "h": 88.23297119140625
+        },
+        {
+          "label": "Add Place 9 5 chips",
+          "w": 111.51219177246094,
+          "h": 88.23297119140625
+        },
+        {
+          "label": "Add Place 10 5 chips",
+          "w": 111.52780151367188,
+          "h": 88.2330322265625
+        },
+        {
+          "label": "Add Field 5 chips",
+          "w": 340.21917724609375,
+          "h": 105.71185302734375
+        },
+        {
+          "label": "Add Don't pass 5 chips",
+          "w": 167.15670776367188,
+          "h": 75.349609375
+        },
+        {
+          "label": "Add Pass line 5 chips",
+          "w": 167.15672302246094,
+          "h": 75.349609375
+        },
+        {
+          "label": "Add Don't odds 6 chips",
+          "w": 167.146240234375,
+          "h": 70.349609375
+        },
+        {
+          "label": "Add Pass odds 5 chips",
+          "w": 167.14622497558594,
+          "h": 70.349609375
+        },
+        {
+          "label": "Add Hard 4 5 chips",
+          "w": 81.40690612792969,
+          "h": 75.16998291015625
+        },
+        {
+          "label": "Add Hard 6 5 chips",
+          "w": 81.40690612792969,
+          "h": 75.1700439453125
+        },
+        {
+          "label": "Add Hard 8 5 chips",
+          "w": 81.40690612792969,
+          "h": 75.16998291015625
+        },
+        {
+          "label": "Add Hard 10 5 chips",
+          "w": 81.40692138671875,
+          "h": 75.16998291015625
+        },
+        {
+          "label": "1",
+          "w": 46,
+          "h": 46
+        },
+        {
+          "label": "5",
+          "w": 46,
+          "h": 46
+        },
+        {
+          "label": "25",
+          "w": 52.859375,
+          "h": 46
+        },
+        {
+          "label": "100",
+          "w": 61.296875,
+          "h": 46
+        },
+        {
+          "label": "Place chips",
+          "w": 80,
+          "h": 60
+        },
+        {
+          "label": "Take down",
+          "w": 80,
+          "h": 60
+        },
+        {
+          "label": "Roll dice\n↗",
+          "w": 166,
+          "h": 48
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "drift-art-controls",
+      "width": 1440,
+      "art": [
+        {
+          "src": "/casino/craps-orbit/mini-gate.webp",
+          "ok": true,
+          "width": 512
+        },
+        {
+          "src": "/casino/lai-jump/lai-hull.webp",
+          "ok": true,
+          "width": 474
+        }
+      ],
+      "samples": [
+        "matrix(0.999998, -0.00209019, 0.00209019, 0.999998, 0, -0.00501394)",
+        "matrix(0.999998, -0.00202198, 0.00202198, 0.999998, 0, -0.0864431)"
+      ],
+      "boxes": [
+        {
+          "label": "Table drift",
+          "w": 92.421875,
+          "h": 44
+        },
+        {
+          "label": "Add Place 4 5 chips",
+          "w": 129.32980346679688,
+          "h": 83.2703857421875
+        },
+        {
+          "label": "Add Place 5 5 chips",
+          "w": 129.34542846679688,
+          "h": 83.2703857421875
+        },
+        {
+          "label": "Add Place 6 6 chips",
+          "w": 129.34539794921875,
+          "h": 83.2703857421875
+        },
+        {
+          "label": "Add Place 8 6 chips",
+          "w": 129.329833984375,
+          "h": 83.270263671875
+        },
+        {
+          "label": "Add Place 9 5 chips",
+          "w": 129.345458984375,
+          "h": 83.270263671875
+        },
+        {
+          "label": "Add Place 10 5 chips",
+          "w": 129.34539794921875,
+          "h": 83.2703857421875
+        },
+        {
+          "label": "Add Field 5 chips",
+          "w": 795.2181396484375,
+          "h": 106.664794921875
+        },
+        {
+          "label": "Add Don't pass 5 chips",
+          "w": 394.66668701171875,
+          "h": 80.826171875
+        },
+        {
+          "label": "Add Pass line 5 chips",
+          "w": 394.66668701171875,
+          "h": 80.8260498046875
+        },
+        {
+          "label": "Add Don't odds 6 chips",
+          "w": 394.6510009765625,
+          "h": 73.3260498046875
+        },
+        {
+          "label": "Add Pass odds 5 chips",
+          "w": 394.65093994140625,
+          "h": 73.325927734375
+        },
+        {
+          "label": "Add Hard 4 5 chips",
+          "w": 195.15664672851562,
+          "h": 75.408203125
+        },
+        {
+          "label": "Add Hard 6 5 chips",
+          "w": 195.15667724609375,
+          "h": 75.408203125
+        },
+        {
+          "label": "Add Hard 8 5 chips",
+          "w": 195.15667724609375,
+          "h": 75.408203125
+        },
+        {
+          "label": "Add Hard 10 5 chips",
+          "w": 195.15667724609375,
+          "h": 75.408203125
+        },
+        {
+          "label": "1",
+          "w": 46,
+          "h": 46
+        },
+        {
+          "label": "5",
+          "w": 46,
+          "h": 46
+        },
+        {
+          "label": "25",
+          "w": 52.859375,
+          "h": 46
+        },
+        {
+          "label": "100",
+          "w": 61.296875,
+          "h": 46
+        },
+        {
+          "label": "Place chips",
+          "w": 116.5,
+          "h": 44
+        },
+        {
+          "label": "Take down",
+          "w": 116.5,
+          "h": 44
+        },
+        {
+          "label": "Roll dice\n↗",
+          "w": 239,
+          "h": 48
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "instant",
+      "width": 390,
+      "ok": true
+    },
+    {
+      "name": "system",
+      "width": 390,
+      "ok": true
+    },
+    {
+      "name": "hidden",
+      "width": 390,
+      "ok": true
+    },
+    {
+      "name": "offscreen",
+      "width": 390,
+      "ok": true
+    },
+    {
+      "name": "touch",
+      "width": 390,
+      "ok": true
+    },
+    {
+      "name": "cancel",
+      "width": 390,
+      "ok": true
+    },
+    {
+      "name": "saved",
+      "width": 390,
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

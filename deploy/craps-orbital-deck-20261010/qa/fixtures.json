@@ -1,0 +1,30 @@
+{
+  "pending": {
+    "version": 2,
+    "balance": 1000500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "craps": {
+      "point": 0,
+      "bets": {},
+      "rolls": [
+        {
+          "id": 1,
+          "point": 0,
+          "bets": {
+            "pass": 500
+          },
+          "dice": [
+            3,
+            4
+          ]
+        }
+      ],
+      "sequence": 1,
+      "pending": true
+    }
+  }
+}

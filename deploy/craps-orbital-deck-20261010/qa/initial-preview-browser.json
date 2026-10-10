@@ -1,0 +1,156 @@
+{
+  "base": "http://127.0.0.1:5229",
+  "group": "foundation",
+  "mode": "Isolated fresh local Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 320,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Add Pass line /i })\u001b[22m\n\u001b[2m    - locator resolved to <button class=\"craps-spot pass-line  \" aria-label=\"Add Pass line 5 chips\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div>…</div> intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    56 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not stable\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    },
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.0882564, 0.725633, -0.682399, 0, -0.0647925, 0.687803, 0.723, 0, 0.993988, -0.019595, 0.107719, 0, -2.87854, -74.3246, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.976145, 0.165867, -0.140103, 0, 0.106874, -0.928763, -0.354932, 0, -0.188994, 0.331492, -0.924335, 0, -2.4733, -52.7704, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.845317, 0.509423, 0.161022, 0, 0.0389183, -0.241876, 0.969526, 0, 0.532846, 0.825824, 0.184636, 0, 0, -73.8885, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.2230224609375,
+        "bottom": 602.9344482421875,
+        "height": 305.71142578125,
+        "visible": 305.71142578125
+      },
+      "faces": [
+        6,
+        3
+      ],
+      "geometry": [
+        {
+          "size": 44.09205627441406,
+          "half": 22,
+          "padDelta": -0.0460662841796875,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44.092071533203125,
+          "half": 22,
+          "padDelta": -0.0460968017578125,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 44.09205627441406\n- 44\n"
+    },
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.0821911, 0.727955, -0.680681, 0, -0.0647859, 0.68545, 0.725232, 0, 0.994509, -0.0155091, 0.103499, 0, -2.87805, -77.2268, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.977527, 0.163645, -0.132898, 0, 0.106429, -0.927264, -0.358963, 0, -0.181974, 0.336752, -0.923842, 0, -2.47265, -55.7422, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.989255, 0.145428, 0.014972, 0, 0.00789214, -0.0491381, 0.998761, 0, 0.145984, 0.988148, 0.0474624, 0, 0, -66.4648, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.1875,
+        "bottom": 602.1875,
+        "height": 305,
+        "visible": 305
+      },
+      "faces": [
+        6,
+        6
+      ],
+      "geometry": [
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "DICE DECK / 01\nHOLD THE LINE\nOFF\nCOME OUT\nCRDL / SALVAGE\n01\n02\n12 · CRAPS\n0 returned · 5 resolved\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · OFF ON COME-OUT\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n+5 / tap\nLAY ODDS\nAFTER POINT\n+6 / tap\nTAKE ODDS\nAFTER POINT\n+5 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

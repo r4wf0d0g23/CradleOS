@@ -1,0 +1,7 @@
+{
+  "base": "http://127.0.0.1:5229",
+  "scope": "Actual component/controls and native artwork; viewport emulation, synthetic lifecycle probes and engine-produced saved fixture; no wallet",
+  "checks": [],
+  "errors": [],
+  "assetFailures": []
+}
