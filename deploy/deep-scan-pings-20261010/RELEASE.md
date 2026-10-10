@@ -20,4 +20,13 @@ Engine, RNG, odds, paytables, balances, persistence, wallet/chain and financial/
 
 ## Publication
 
-Pending. Rollback is Pages `0d725d71` / runtime `d2d6885d8173674446177f3d41672d62ab4e3478`. Publish the primary https://cradleos.io only; GitHub Pages remains redirect-only. Retain canonical worktree and unrelated Wrangler directories.
+- Runtime source `8f71c67f37a9a1eecfda55cc4f0ca1b9fab2cde9`, committed and pushed.
+- Pages `99895f55`, immutable https://99895f55.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino → Deep Scan.
+- Two live bundle hashes exactly match reviewed dist (live-build.json).
+- JS `index-DU7i-1FF.js`: `012d13a8dfe3f53c1c9461edaa619339e462cbc5abbc100db0cd78e8e33bf9d9`.
+- CSS `index-DwgPBx6M.css`: `677550b0cb41a4d0816dfa34cf5822fbf7b24ac5a6e3338f8fdd862403cb8ae6`.
+- Two fresh live natural-draw checks at 390/1440 PASS, individually checking all ten chronological pings for exact centers, actual expansion/fade and completion. Zero page errors, no overflow or extra ledger mutations. Preview lifecycle cases are not presented as fresh live tests.
+- Task preview 5220 stopped and port verified closed. Canonical worktree and unrelated Wrangler directories preserved.
+- Rollback Pages `0d725d71` / runtime `d2d6885d8173674446177f3d41672d62ab4e3478`. Only the primary app origin changed; GitHub Pages remains redirect-only.
+
+Final independent native delivery review PASS: source/Pages/rollback, nine preview versus two live groups, two exact bundle hashes, unchanged protected files, honest scope and closed preview port reconcile. Live motion screenshot confirms centered ping. No blockers.

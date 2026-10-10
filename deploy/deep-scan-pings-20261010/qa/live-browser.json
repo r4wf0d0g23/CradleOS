@@ -1,0 +1,595 @@
+{
+  "base": "https://cradleos.io",
+  "scope": "Actual app, natural RNG, isolated browser-local Play Money; viewport-emulated Chromium; no wallet",
+  "checks": [
+    {
+      "width": 390,
+      "drawn": [
+        2,
+        8,
+        33,
+        23,
+        35,
+        40,
+        27,
+        26,
+        10,
+        29
+      ],
+      "picks": [
+        7,
+        17,
+        27
+      ],
+      "pings": [
+        {
+          "value": 2,
+          "index": 0,
+          "samples": 16,
+          "first": {
+            "value": 2,
+            "phase": 0.03502805067479623,
+            "r": 15.449172064495038,
+            "opacity": 0.9167233518589436,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.09383870969280114
+          },
+          "last": {
+            "value": 2,
+            "phase": 0.9992636747982184,
+            "r": 45.99999998642662,
+            "opacity": 0.0006995089416924949,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.17448387098312373
+          }
+        },
+        {
+          "value": 8,
+          "index": 1,
+          "samples": 15,
+          "first": {
+            "value": 8,
+            "phase": 0.041129032441977256,
+            "r": 16.024983891362414,
+            "opacity": 0.9109274191801215,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.18525806453151084
+          },
+          "last": {
+            "value": 8,
+            "phase": 0.9409537168739558,
+            "r": 45.993000667726,
+            "opacity": 0.056093968969741996,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.26051612904763993
+          }
+        },
+        {
+          "value": 33,
+          "index": 2,
+          "samples": 15,
+          "first": {
+            "value": 33,
+            "phase": 0.0468443199595096,
+            "r": 16.5577878445432,
+            "opacity": 0.9054978960384659,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.27664516130570443
+          },
+          "last": {
+            "value": 33,
+            "phase": 0.9466690043914866,
+            "r": 45.994842752296236,
+            "opacity": 0.050664445828087726,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.3519032258218334
+          }
+        },
+        {
+          "value": 23,
+          "index": 3,
+          "samples": 15,
+          "first": {
+            "value": 23,
+            "phase": 0.052173913227391094,
+            "r": 17.048911991867083,
+            "opacity": 0.9004347824339785,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.3680000000153818
+          },
+          "last": {
+            "value": 23,
+            "phase": 0.9523842919090185,
+            "r": 45.99632946255993,
+            "opacity": 0.0452349226864324,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.443290322596027
+          }
+        },
+        {
+          "value": 35,
+          "index": 4,
+          "samples": 15,
+          "first": {
+            "value": 35,
+            "phase": 0.05827489499457284,
+            "r": 17.604379603942203,
+            "opacity": 0.8946388497551557,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.4594193548540915
+          },
+          "last": {
+            "value": 35,
+            "phase": 0.9584852736761973,
+            "r": 45.99756731736596,
+            "opacity": 0.03943899000761257,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.5347096774347365
+          }
+        },
+        {
+          "value": 40,
+          "index": 5,
+          "samples": 15,
+          "first": {
+            "value": 40,
+            "phase": 0.06399018251210518,
+            "r": 18.118243578486865,
+            "opacity": 0.8892093266135,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.5508064516282851
+          },
+          "last": {
+            "value": 40,
+            "phase": 0.9642005611937307,
+            "r": 45.998440061154184,
+            "opacity": 0.03400946686595588,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.6260967742089302
+          }
+        },
+        {
+          "value": 27,
+          "index": 6,
+          "samples": 16,
+          "first": {
+            "value": 27,
+            "phase": 0.00568022458784029,
+            "r": 12.57609811417393,
+            "opacity": 0.9446037866415516,
+            "color": "rgb(123, 52, 21)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": true,
+            "t": 0.6368387096928012
+          },
+          "last": {
+            "value": 27,
+            "phase": 0.969915848711263,
+            "r": 45.999074253222226,
+            "opacity": 0.02857994372430013,
+            "color": "rgb(123, 52, 21)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": true,
+            "t": 0.7174838709831238
+          }
+        },
+        {
+          "value": 26,
+          "index": 7,
+          "samples": 16,
+          "first": {
+            "value": 26,
+            "phase": 0.011781206355020108,
+            "r": 13.187581368844256,
+            "opacity": 0.9388078539627308,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.7282580645315108
+          },
+          "last": {
+            "value": 26,
+            "phase": 0.9756311362287944,
+            "r": 45.999507977733266,
+            "opacity": 0.023150420582645336,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.8088709677573174
+          }
+        },
+        {
+          "value": 10,
+          "index": 8,
+          "samples": 16,
+          "first": {
+            "value": 10,
+            "phase": 0.017496493872553417,
+            "r": 13.753599499870836,
+            "opacity": 0.9333783308210742,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.8196451613057044
+          },
+          "last": {
+            "value": 10,
+            "phase": 0.9813464237463276,
+            "r": 45.99977931885047,
+            "opacity": 0.01772089744098875,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.900258064531511
+          }
+        },
+        {
+          "value": 29,
+          "index": 9,
+          "samples": 16,
+          "first": {
+            "value": 29,
+            "phase": 0.022826087140433462,
+            "r": 14.27552016718911,
+            "opacity": 0.9283152172165882,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.9110000000153817
+          },
+          "last": {
+            "value": 29,
+            "phase": 0.9870617112638571,
+            "r": 45.99992636073698,
+            "opacity": 0.012291374299335744,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.9916451613057043
+          }
+        }
+      ],
+      "ledgerUnchanged": true,
+      "finalPingComplete": true
+    },
+    {
+      "width": 1440,
+      "drawn": [
+        5,
+        37,
+        29,
+        27,
+        10,
+        26,
+        40,
+        36,
+        31,
+        22
+      ],
+      "picks": [
+        7,
+        17,
+        27
+      ],
+      "pings": [
+        {
+          "value": 5,
+          "index": 0,
+          "samples": 15,
+          "first": {
+            "value": 5,
+            "phase": 0.03579943899018201,
+            "r": 15.522379533003228,
+            "opacity": 0.9159905329593271,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.09390322580645158
+          },
+          "last": {
+            "value": 5,
+            "phase": 0.9356241234221603,
+            "r": 45.99092914167048,
+            "opacity": 0.06115708274894773,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.16916129032258068
+          }
+        },
+        {
+          "value": 37,
+          "index": 1,
+          "samples": 15,
+          "first": {
+            "value": 37,
+            "phase": 0.04151472650771387,
+            "r": 16.06114058971813,
+            "opacity": 0.9105610098176719,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.18529032258064518
+          },
+          "last": {
+            "value": 37,
+            "phase": 0.9413394109396909,
+            "r": 45.99313693398416,
+            "opacity": 0.05572755960729367,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.26054838709677414
+          }
+        },
+        {
+          "value": 29,
+          "index": 2,
+          "samples": 15,
+          "first": {
+            "value": 29,
+            "phase": 0.04684431977559585,
+            "r": 16.557787827500363,
+            "opacity": 0.9054978962131839,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.27664516129032257
+          },
+          "last": {
+            "value": 29,
+            "phase": 0.9470546984572228,
+            "r": 45.99495383792381,
+            "opacity": 0.05029803646563835,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.35193548387096774
+          }
+        },
+        {
+          "value": 27,
+          "index": 3,
+          "samples": 15,
+          "first": {
+            "value": 27,
+            "phase": 0.052945301542777115,
+            "r": 17.11954001398299,
+            "opacity": 0.8997019635343617,
+            "color": "rgb(123, 52, 21)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": true,
+            "t": 0.36806451612903224
+          },
+          "last": {
+            "value": 27,
+            "phase": 0.9531556802244046,
+            "r": 45.99650497949611,
+            "opacity": 0.04450210378681567,
+            "color": "rgb(123, 52, 21)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": true,
+            "t": 0.44335483870967746
+          }
+        },
+        {
+          "value": 10,
+          "index": 4,
+          "samples": 15,
+          "first": {
+            "value": 10,
+            "phase": 0.05866058906030946,
+            "r": 17.639254549859352,
+            "opacity": 0.8942724403927059,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.4594516129032259
+          },
+          "last": {
+            "value": 10,
+            "phase": 0.9588709677419349,
+            "r": 45.997634492170455,
+            "opacity": 0.03907258064516182,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.534741935483871
+          }
+        },
+        {
+          "value": 26,
+          "index": 5,
+          "samples": 16,
+          "first": {
+            "value": 26,
+            "phase": 0.0003506311360455273,
+            "r": 12.035751837238548,
+            "opacity": 0.9496669004207567,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.545483870967742
+          },
+          "last": {
+            "value": 26,
+            "phase": 0.9645862552594663,
+            "r": 45.998489939057144,
+            "opacity": 0.033643057503507025,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.6261290322580645
+          }
+        },
+        {
+          "value": 40,
+          "index": 6,
+          "samples": 16,
+          "first": {
+            "value": 40,
+            "phase": 0.006065918653576906,
+            "r": 12.614978163737772,
+            "opacity": 0.944237377279102,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.6368709677419355
+          },
+          "last": {
+            "value": 40,
+            "phase": 0.9703015427769996,
+            "r": 45.99910940431934,
+            "opacity": 0.028213534361850333,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.7175161290322581
+          }
+        },
+        {
+          "value": 36,
+          "index": 7,
+          "samples": 16,
+          "first": {
+            "value": 36,
+            "phase": 0.01178120617110732,
+            "r": 13.187581350524558,
+            "opacity": 0.9388078541374479,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.728258064516129
+          },
+          "last": {
+            "value": 36,
+            "phase": 0.976016830294529,
+            "r": 45.999530972120205,
+            "opacity": 0.022784011220197437,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.8089032258064516
+          }
+        },
+        {
+          "value": 31,
+          "index": 8,
+          "samples": 16,
+          "first": {
+            "value": 31,
+            "phase": 0.017882187938290033,
+            "r": 13.791560779843111,
+            "opacity": 0.9330119214586244,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.8196774193548387
+          },
+          "last": {
+            "value": 31,
+            "phase": 0.9821178120617099,
+            "r": 45.999805580025516,
+            "opacity": 0.0169880785413756,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.9003225806451612
+          }
+        },
+        {
+          "value": 22,
+          "index": 9,
+          "samples": 16,
+          "first": {
+            "value": 22,
+            "phase": 0.023211781206170075,
+            "r": 14.313070641613887,
+            "opacity": 0.9279488078541384,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.911032258064516
+          },
+          "last": {
+            "value": 22,
+            "phase": 0.9878330995792431,
+            "r": 45.99993876231311,
+            "opacity": 0.011558555399719011,
+            "color": "rgb(165, 241, 214)",
+            "centerError": 0,
+            "drawn": true,
+            "matched": false,
+            "t": 0.9917096774193549
+          }
+        }
+      ],
+      "ledgerUnchanged": true,
+      "finalPingComplete": true
+    }
+  ],
+  "errors": []
+}
