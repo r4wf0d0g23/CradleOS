@@ -1,0 +1,87 @@
+{
+  "base": "http://127.0.0.1:5227",
+  "scope": "Isolated engine-produced saved Play Money and lifecycle browser checks. Viewport emulation, no wallet.",
+  "checks": [
+    {
+      "name": "saved-low",
+      "width": 320,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   NaN,\n+   NaN,\n+   NaN\n-   1,\n-   2,\n-   3\n  ]\n"
+    },
+    {
+      "name": "saved-high",
+      "width": 320,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   NaN,\n+   NaN,\n+   NaN\n-   4,\n-   5,\n-   6\n  ]\n"
+    },
+    {
+      "name": "saved-pending",
+      "width": 320,
+      "error": "Expected values to be strictly equal:\n\n0 !== 1\n"
+    },
+    {
+      "name": "saved-low",
+      "width": 1440,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   NaN,\n+   NaN,\n+   NaN\n-   1,\n-   2,\n-   3\n  ]\n"
+    },
+    {
+      "name": "saved-high",
+      "width": 1440,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   NaN,\n+   NaN,\n+   NaN\n-   4,\n-   5,\n-   6\n  ]\n"
+    },
+    {
+      "name": "saved-pending",
+      "width": 1440,
+      "error": "Expected values to be strictly equal:\n\n0 !== 1\n"
+    },
+    {
+      "name": "instant",
+      "width": 390,
+      "faces": [
+        5,
+        3,
+        6
+      ],
+      "ok": true
+    },
+    {
+      "name": "system",
+      "width": 390,
+      "faces": [
+        4,
+        3,
+        2
+      ],
+      "ok": true
+    },
+    {
+      "name": "hidden",
+      "width": 390,
+      "faces": [
+        4,
+        4,
+        5
+      ],
+      "ok": true
+    },
+    {
+      "name": "resize",
+      "width": 390,
+      "faces": [
+        5,
+        6,
+        6
+      ],
+      "ok": true
+    },
+    {
+      "name": "reload",
+      "width": 390,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.lounge-game-tile').filter({ hasText: 'Triple Resonance' })\u001b[22m\n"
+    },
+    {
+      "name": "craps-midroll-reload",
+      "width": 390,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.lounge-game-tile').filter({ hasText: 'Frontier Craps' })\u001b[22m\n"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,440 @@
+/* Geometry is shared by the cube, all six face depths, support correction and lanes. */
+.frontier-casino .industrial-dice-stage,
+.frontier-casino .industrial-craps-tray {
+  --die-size: 58px;
+  --die-half: 29px;
+  --die-gap: 46px;
+  position: relative;
+  isolation: isolate;
+  background:
+    repeating-linear-gradient(
+      112deg,
+      transparent 0 41px,
+      #d0dde005 42px,
+      transparent 43px 80px
+    ),
+    radial-gradient(ellipse at 50% 0, #414d50 0, #1c2528 44%, #0b1012 100%);
+  box-shadow:
+    inset 0 2px #cbdad82a,
+    inset 0 -5px 15px #000a,
+    0 9px 20px #0006;
+}
+.frontier-casino .industrial-dice-stage {
+  width: min(100%, 540px);
+  border: 7px ridge #485052;
+  border-radius: 12px;
+  padding: 10px 12px 16px;
+}
+.frontier-casino .industrial-dice-stage .dice-machine-rail {
+  display: none;
+}
+.frontier-casino .industrial-dice-stage .dice-throw {
+  min-height: 255px;
+  padding-top: 143px;
+  gap: var(--die-gap);
+  z-index: 2;
+  perspective: 900px;
+}
+.frontier-casino .industrial-dice-stage .dice-throw:before {
+  display: none;
+}
+.frontier-casino .industrial-dice-stage .dice-readout {
+  position: relative;
+  z-index: 3;
+  color: #e4dfcd;
+  letter-spacing: 0.12em;
+  margin-top: 8px;
+  font-size: 11px;
+}
+.frontier-casino .industrial-dice-stage .seven-scale,
+.frontier-casino .industrial-dice-stage .reactor-coupler {
+  position: relative;
+  z-index: 3;
+}
+.frontier-casino .industrial-dice-stage:after {
+  display: none;
+}
+.frontier-casino .industrial-die-floor,
+.frontier-casino .physical-die.industrial-die {
+  width: var(--die-size);
+  height: var(--die-size);
+  flex: 0 0 var(--die-size);
+}
+.frontier-casino .industrial-die-floor {
+  position: relative;
+}
+.frontier-casino .industrial-die-floor:after {
+  inset: calc(var(--die-size) - 5px) -6px -9px;
+  background: #000;
+}
+.frontier-casino .industrial-die-floor:before {
+  display: none;
+}
+.frontier-casino .physical-die.industrial-die {
+  transform-style: preserve-3d;
+}
+.frontier-casino .physical-die.industrial-die .die-face {
+  border: 2px solid #75817f;
+  border-radius: 4px;
+  padding: 10px;
+  gap: 4px;
+  background: linear-gradient(
+    145deg,
+    #697474,
+    #252d31 30%,
+    #89938e 49%,
+    #313a3c 55%,
+    #131a1c
+  );
+  box-shadow:
+    inset 0 1px #d7e3d394,
+    inset 0 -2px 2px #000c,
+    0 0 0 1px #080e10;
+  backface-visibility: hidden;
+}
+.frontier-casino .physical-die.industrial-die .die-face:before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #080d0f;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(
+      118deg,
+      transparent 0 16px,
+      #d3e1d20a 17px,
+      transparent 18px 29px
+    ),
+    linear-gradient(150deg, #464a43, #202a28 72%, #353c34);
+  box-shadow:
+    inset 0 1px 2px #000c,
+    0 1px #c4cec73b;
+}
+.frontier-casino .physical-die.industrial-die .die-face:after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 2px 2px, #071013 1px, transparent 1.8px),
+    radial-gradient(
+      circle at calc(100% - 2px) calc(100% - 2px),
+      #071013 1px,
+      transparent 1.8px
+    );
+  pointer-events: none;
+}
+.frontier-casino .physical-die.industrial-die .die-face i {
+  position: relative;
+  z-index: 1;
+}
+.frontier-casino .physical-die.industrial-die .pip {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 48% 64%,
+    #e8e5cf 0 44%,
+    #b0b6a3 63%,
+    #424943 68%,
+    #090f11 78%
+  );
+  box-shadow:
+    inset 0 2px 2px #0009,
+    0 1px #f0f5dc26;
+}
+.frontier-casino .physical-die.industrial-die .face-1 {
+  transform: translateZ(var(--die-half));
+}
+.frontier-casino .physical-die.industrial-die .face-2 {
+  transform: rotateY(90deg) translateZ(var(--die-half));
+}
+.frontier-casino .physical-die.industrial-die .face-3 {
+  transform: rotateX(-90deg) translateZ(var(--die-half));
+}
+.frontier-casino .physical-die.industrial-die .face-4 {
+  transform: rotateX(90deg) translateZ(var(--die-half));
+}
+.frontier-casino .physical-die.industrial-die .face-5 {
+  transform: rotateY(-90deg) translateZ(var(--die-half));
+}
+.frontier-casino .physical-die.industrial-die .face-6 {
+  transform: rotateY(180deg) translateZ(var(--die-half));
+}
+.frontier-casino .industrial-die-floor.die-matched .physical-die .die-face {
+  border-color: #d79353;
+  box-shadow:
+    inset 0 1px #e9c59a66,
+    0 0 7px #ef75292e;
+}
+.industrial-dice-hardware {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.dice-rig-header {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.dice-rig-header b {
+  color: #a9b3ab;
+  font: 9px monospace;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+.dice-rig-header span {
+  height: 3px;
+  flex: 1;
+  background: #dcddbc;
+  box-shadow: 0 3px 8px #b0ccc450;
+  border-inline: 8px solid #303b3e;
+}
+.dice-rig-lanes {
+  position: absolute;
+  top: 57px;
+  left: 0;
+  right: 0;
+  height: 205px;
+  display: flex;
+  justify-content: center;
+  gap: var(--die-gap);
+}
+.dice-rig-lane {
+  position: relative;
+  width: var(--die-size);
+}
+.dice-rig-lane:before {
+  content: "";
+  position: absolute;
+  inset: 0 -6px 22px;
+  border-inline: 2px solid #96a9a020;
+  background: linear-gradient(90deg, #050b0d88, transparent 22% 78%, #050b0d88);
+}
+.dice-feed-gate {
+  position: absolute;
+  top: 0;
+  left: -7px;
+  right: -7px;
+  height: 17px;
+  border: 2px ridge #535e5c;
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    #263033 0 5px,
+    #71796a 6px,
+    #171e20 7px 11px
+  );
+  box-shadow: 0 5px 5px #0008;
+}
+.dice-impact-pad {
+  position: absolute;
+  bottom: 21px;
+  left: -12px;
+  right: -12px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #53635e;
+  background: repeating-radial-gradient(
+    ellipse,
+    #172023 0 4px,
+    #333e3c 5px 6px
+  );
+  box-shadow:
+    0 3px 0 #080d0f,
+    0 6px 5px #000a;
+}
+.dice-rig-lane small {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #88938d;
+  font: 9px monospace;
+}
+.dice-rig-fasteners i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(
+    130deg,
+    #9ca6a1 42%,
+    #090f10 43% 58%,
+    #505a57 59%
+  );
+  box-shadow: 0 1px 2px #000;
+}
+.dice-rig-fasteners i:nth-child(1) {
+  top: 7px;
+  left: 7px;
+}
+.dice-rig-fasteners i:nth-child(2) {
+  top: 7px;
+  right: 7px;
+}
+.dice-rig-fasteners i:nth-child(3) {
+  bottom: 7px;
+  left: 7px;
+}
+.dice-rig-fasteners i:nth-child(4) {
+  bottom: 7px;
+  right: 7px;
+}
+.dice-containment-glass {
+  position: absolute;
+  inset: 40px 12px 50px;
+  border: 1px solid #99c0b52c;
+  border-radius: 14px 14px 7px 7px;
+  background: linear-gradient(
+    116deg,
+    transparent 20%,
+    #cce8df10 20.5%,
+    transparent 22%,
+    transparent 75%,
+    #cce8df09 76%,
+    transparent 88%
+  );
+  box-shadow: inset 0 0 20px #aac4b10b;
+}
+.dice-containment-glass i {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  background: linear-gradient(90deg, #8a9b9155, #162121);
+}
+.dice-containment-glass i:first-child {
+  left: 0;
+}
+.dice-containment-glass i:last-child {
+  right: 0;
+}
+.dice-cage-bearing {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 88px;
+  height: 152px;
+  perspective: 700px;
+}
+.industrial-resonance-cage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.industrial-resonance-cage i {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #939e8050;
+  border-radius: 50%;
+  box-shadow: inset 0 1px #d9d9b530;
+}
+.dice-cage-bearing > b {
+  position: absolute;
+  top: 65px;
+  width: 11px;
+  height: 23px;
+  border: 2px ridge #68756f;
+  background: #242d2c;
+}
+.dice-cage-bearing > b:first-of-type {
+  left: -9px;
+}
+.dice-cage-bearing > b:last-of-type {
+  right: -9px;
+}
+.hardware-chuck_a_luck .dice-rig-lane:before,
+.hardware-chuck_a_luck .dice-feed-gate {
+  display: none;
+}
+.frontier-casino .industrial-craps-tray {
+  min-height: 290px;
+  padding-top: 105px;
+  border-inline: 7px ridge #4c5756;
+  border-top: 4px solid #242e30;
+}
+.frontier-casino .industrial-craps-tray .craps-dice {
+  position: relative;
+  z-index: 2;
+  gap: var(--die-gap);
+  height: 115px;
+  perspective: 900px;
+}
+.frontier-casino .industrial-craps-tray .craps-call {
+  position: relative;
+  z-index: 2;
+  margin: 15px 8px 12px;
+}
+.frontier-casino .industrial-craps-tray .craps-ghost-art {
+  opacity: 0.055;
+}
+.hardware-craps .dice-rig-lanes {
+  top: 64px;
+  height: 150px;
+}
+.hardware-craps .dice-rig-lane:before,
+.hardware-craps .dice-feed-gate {
+  display: none;
+}
+.frontier-casino .industrial-craps-tray .craps-idle-die {
+  width: var(--die-size);
+  height: var(--die-size);
+  border: 3px ridge #849185;
+  border-radius: 4px;
+  color: #b3b5a4;
+  background: linear-gradient(140deg, #46524b, #1b2323);
+}
+@media (max-width: 600px) {
+  .frontier-casino .industrial-dice-stage,
+  .frontier-casino .industrial-craps-tray {
+    --die-size: 48px;
+    --die-half: 24px;
+    --die-gap: 39px;
+  }
+  .frontier-casino .industrial-dice-stage {
+    padding-inline: 5px;
+    border-width: 5px;
+  }
+  .frontier-casino .physical-die.industrial-die .die-face {
+    padding: 8px;
+    gap: 3px;
+  }
+}
+@media (max-width: 400px) {
+  .frontier-casino .industrial-dice-stage,
+  .frontier-casino .industrial-craps-tray {
+    --die-size: 44px;
+    --die-half: 22px;
+    --die-gap: 36px;
+  }
+  .frontier-casino .physical-die.industrial-die .die-face {
+    padding: 7px;
+    gap: 3px;
+  }
+  .dice-rig-header {
+    left: 12px;
+    right: 12px;
+    gap: 8px;
+  }
+  .dice-rig-header b {
+    font-size: 8px;
+  }
+  .dice-impact-pad {
+    left: -8px;
+    right: -8px;
+  }
+}
+
+/* Pads share the actual die's grounded baseline, not a parallel rig coordinate. */
+.frontier-casino .industrial-die-floor > .dice-impact-pad {
+  top: calc(var(--die-size) - 20px);
+  bottom: auto;
+  z-index: -1;
+}
+.frontier-casino .industrial-craps-tray .craps-dice {
+  padding-top: 0;
+}

@@ -13,42 +13,71 @@ const FACES = [
   [0, 180],
 ];
 export const DIE_CONTACTS = [0.3, 0.59, 0.83] as const;
+/** Authored tray motion: ballistic clearance arcs plus a support-height correction.
+ * This is not a rigid-body COM simulation; the correction prevents floor penetration. */
+export function dieSupport(rx: number, ry: number, rz: number) {
+  const x = (rx * Math.PI) / 180,
+    y = (ry * Math.PI) / 180,
+    z = (rz * Math.PI) / 180;
+  const sx = Math.sin(x),
+    cx = Math.cos(x),
+    sy = Math.sin(y),
+    cy = Math.cos(y),
+    sz = Math.sin(z),
+    cz = Math.cos(z);
+  // CSS Rz * Rx * Ry, projected half-extents in units of the cube half-size.
+  return {
+    vertical:
+      Math.abs(sz * cy + cz * sx * sy) +
+      Math.abs(cz * cx) +
+      Math.abs(sz * sy - cz * sx * cy),
+    horizontal:
+      Math.abs(cz * cy - sz * sx * sy) +
+      Math.abs(sz * cx) +
+      Math.abs(cz * sy + sz * sx * cy),
+  };
+}
 export function diePose(progress: number, face: number, index: number) {
   const p = clamp(progress),
-    side = index % 2 ? 1 : -1;
-  const keys = [
-    [0, -side * 34, 95],
-    [0.3, side * 28, 0],
-    [0.46, side * 12, 26],
-    [0.59, -side * 10, 0],
-    [0.7, -side * 4, 8],
-    [0.83, 0, 0],
-    [1, 0, 0],
-  ];
-  const k = Math.max(
-    0,
-    keys.findIndex((_, i) => i < keys.length - 1 && p <= keys[i + 1][0]),
-  );
-  const a = keys[k],
-    b = keys[k + 1],
-    u = clamp((p - a[0]) / (b[0] - a[0]));
+    g = (2 * 66) / (0.3 * 0.3);
   const height =
-    a[2] + (b[2] - a[2]) * (b[2] > a[2] ? 1 - (1 - u) ** 2 : u ** 2);
-  const turn = 1 - (1 - clamp(p / 0.88)) ** 2;
-  const [rx, ry] = FACES[face - 1] ?? FACES[0];
-  const settle =
-    p > 0.83 ? Math.sin((p - 0.83) * Math.PI * 24) * (1 - p) ** 2 * 170 : 0;
+    p <= 0.3
+      ? Math.max(0, 66 - (g * p * p) / 2)
+      : p <= 0.59
+        ? (g / 2) * (p - 0.3) * (0.59 - p)
+        : p <= 0.83
+          ? (g / 2) * (p - 0.59) * (0.83 - p)
+          : 0;
+  // Integrated angular speed loses energy at each impact, then eases to rest.
+  const tail = clamp((p - 0.83) / 0.17);
+  const integral =
+    Math.min(p, 0.3) * 1.7 +
+    Math.max(0, Math.min(p - 0.3, 0.29)) * 1.25 +
+    Math.max(0, Math.min(p - 0.59, 0.24)) * 0.7 +
+    0.35 * 0.17 * (tail - (tail * tail) / 2);
+  const turn =
+    p === 1
+      ? 1
+      : integral / (0.3 * 1.7 + 0.29 * 1.25 + 0.24 * 0.7 + (0.35 * 0.17) / 2);
+  const [targetX, targetY] = FACES[face - 1] ?? FACES[0];
+  const rock = Math.sin(tail * Math.PI * 2) * (1 - tail) ** 2 * 2;
+  const rx = turn * (720 + targetX) + rock,
+    ry = turn * (1080 + targetY),
+    rz = Math.sin(p * Math.PI * 4 + index) * (1 - p) ** 2 * 12;
+  const support = dieSupport(rx, ry, rz);
   return {
-    x: a[1] + (b[1] - a[1]) * smooth(u),
+    x: p === 1 ? 0 : (index - 1) * 3 * (1 - p),
     height,
-    rx: turn * (720 + rx) + settle,
-    ry: turn * (1080 + ry),
-    rz: Math.sin(p * Math.PI * 4 + index) * (1 - p) * 17,
-    shadow: 0.65 - Math.min(1, height / 100) * 0.47,
+    rx,
+    ry,
+    rz,
+    support: Math.max(1, support.vertical),
+    width: support.horizontal,
+    shadow: 0.68 - Math.min(1, height / 66) * 0.48,
     shadowScale: 1 - height / 190,
   };
 }
-export function dieLight(faceIndex: number, rx: number, ry: number) {
+export function dieLight(faceIndex: number, rx: number, ry: number, rz = 0) {
   const normals = [
     [0, 0, 1],
     [1, 0, 0],
@@ -65,7 +94,10 @@ export function dieLight(faceIndex: number, rx: number, ry: number) {
     zz = -x * Math.sin(ay) + z * Math.cos(ay);
   const yy = y * Math.cos(ax) - zz * Math.sin(ax),
     z2 = y * Math.sin(ax) + zz * Math.cos(ax);
-  return 0.63 + Math.max(0, -xx * 0.3 - yy * 0.45 + z2 * 0.75) * 0.42;
+  const az = (rz * Math.PI) / 180,
+    worldX = xx * Math.cos(az) - yy * Math.sin(az),
+    worldY = xx * Math.sin(az) + yy * Math.cos(az);
+  return 0.63 + Math.max(0, -worldX * 0.3 - worldY * 0.45 + z2 * 0.75) * 0.42;
 }
 export function tokenPose(progress: number, face: number) {
   const p = clamp(progress),

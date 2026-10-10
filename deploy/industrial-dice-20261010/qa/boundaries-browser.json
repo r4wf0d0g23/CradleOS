@@ -1,0 +1,124 @@
+{
+  "base": "http://127.0.0.1:5227",
+  "scope": "Isolated engine-produced saved Play Money and lifecycle browser checks. Viewport emulation, no wallet.",
+  "checks": [
+    {
+      "name": "saved-low",
+      "width": 320,
+      "faces": [
+        1,
+        2,
+        3
+      ],
+      "ok": true
+    },
+    {
+      "name": "saved-high",
+      "width": 320,
+      "faces": [
+        4,
+        5,
+        6
+      ],
+      "ok": true
+    },
+    {
+      "name": "saved-pending",
+      "width": 320,
+      "faces": [
+        3,
+        4
+      ],
+      "ok": true
+    },
+    {
+      "name": "saved-low",
+      "width": 1440,
+      "faces": [
+        1,
+        2,
+        3
+      ],
+      "ok": true
+    },
+    {
+      "name": "saved-high",
+      "width": 1440,
+      "faces": [
+        4,
+        5,
+        6
+      ],
+      "ok": true
+    },
+    {
+      "name": "saved-pending",
+      "width": 1440,
+      "faces": [
+        3,
+        4
+      ],
+      "ok": true
+    },
+    {
+      "name": "instant",
+      "width": 390,
+      "faces": [
+        5,
+        5,
+        1
+      ],
+      "ok": true
+    },
+    {
+      "name": "system",
+      "width": 390,
+      "faces": [
+        5,
+        3,
+        5
+      ],
+      "ok": true
+    },
+    {
+      "name": "hidden",
+      "width": 390,
+      "faces": [
+        6,
+        5,
+        5
+      ],
+      "ok": true
+    },
+    {
+      "name": "resize",
+      "width": 390,
+      "faces": [
+        1,
+        5,
+        6
+      ],
+      "ok": true
+    },
+    {
+      "name": "reload",
+      "width": 390,
+      "faces": [
+        2,
+        5,
+        6
+      ],
+      "ok": true
+    },
+    {
+      "name": "craps-midroll-reload",
+      "width": 390,
+      "faces": [
+        5,
+        6
+      ],
+      "ok": true
+    }
+  ],
+  "errors": []
+}

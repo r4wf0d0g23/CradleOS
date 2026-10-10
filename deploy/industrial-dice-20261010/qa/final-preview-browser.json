@@ -1,0 +1,1220 @@
+{
+  "base": "http://127.0.0.1:5227",
+  "group": "foundation",
+  "mode": "Isolated fresh local Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.0882564, 0.725633, -0.682399, 0, -0.0647925, 0.687803, 0.723, 0, 0.993988, -0.019595, 0.107719, 0, -2.87854, -74.3246, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.976495, 0.165318, -0.1383, 0, 0.106762, -0.92839, -0.35594, 0, -0.18724, 0.332809, -0.924218, 0, -2.47314, -52.7652, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.849204, 0.527182, 0.0305291, 0, 0.0073892, -0.0459444, 0.998917, 0, 0.528014, 0.848509, 0.0351207, 0, 0, -70.4614, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.578125,
+        "bottom": 602.578125,
+        "height": 305,
+        "visible": 305
+      },
+      "faces": [
+        6,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "DICE DECK / 01\nHOLD THE LINE\nOFF\nCOME OUT\nCRDL / SALVAGE\n01\n02\n7 · NATURAL\n10 returned · 5 resolved\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · OFF ON COME-OUT\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n+5 / tap\nLAY ODDS\nAFTER POINT\n+6 / tap\nTAKE ODDS\nAFTER POINT\n+5 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS",
+      "ok": true
+    },
+    {
+      "id": "sicbo",
+      "name": "Reactor Dice",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.320251, 0.803015, -0.502599, 0, -0.0585275, 0.512756, 0.856537, 0, 0.945523, 0.303723, -0.117212, 0, -2.84542, -77.6818, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09813043480334074"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09813043480334074"
+          },
+          {
+            "transform": "matrix(0.981921, 0.189294, -0.189294, 0.981921, 3, -69.7667)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09813043480334074"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.830659, -0.374433, 0.412074, 0, 0.0554402, -0.680799, -0.730369, 0, 0.554014, 0.629533, -0.544753, 0, -2.40476, -52.195, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2068260869772538"
+          },
+          {
+            "transform": "matrix3d(-0.995672, -0.0925903, 0.00795931, 0, 0.0299127, -0.238218, 0.970751, 0, -0.0879861, 0.966788, 0.239957, 0, 0, -64.643, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2068260869772538"
+          },
+          {
+            "transform": "matrix3d(0.945181, 0.214469, -0.246243, 0, -0.171935, 0.967945, 0.183087, 0, 0.277616, -0.130712, 0.951758, 0, 2.97233, -72.8264, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2068260869772538"
+          }
+        ]
+      ],
+      "faces": [
+        6,
+        4,
+        2
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / SIC BO\nPRACTICE TABLE\nR / III\n01\n02\n03\nTOTAL 12\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "double_dice",
+      "name": "Twin Reactors",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.0572269, 0.858917, -0.508908, 0, -0.0584631, 0.511752, 0.857142, 0, 0.996648, -0.0192992, 0.0795009, 0, -2.84524, -72.6278, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09817391300201418"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09817391300201418"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.811924, 0.510674, -0.282826, 0, 0.0345953, -0.525728, -0.849949, 0, -0.582737, 0.68031, -0.444519, 0, -2.37515, -49.9539, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.21413043474114463"
+          },
+          {
+            "transform": "matrix3d(-0.944722, -0.246901, -0.21573, 0, 0.0893254, -0.826901, 0.555207, 0, -0.315469, 0.505247, 0.803247, 0, 0, -69.2605, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.21413043474114463"
+          }
+        ]
+      ],
+      "faces": [
+        2,
+        3
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DOUBLE DICE\nPRACTICE TABLE\nR / DUAL\n01\n02\nTOTAL 5\nPAYOUT\n57.5 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "under_over_7",
+      "name": "Seven Threshold",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.0400087, 0.743213, -0.667857, 0, -0.0646697, 0.668917, 0.740519, 0, 0.997104, 0.0135629, 0.0748259, 0, -2.87468, -74.0855, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09091304349899292"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09091304349899292"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.829526, -0.376283, 0.412672, 0, 0.0553087, -0.67995, -0.73117, 0, 0.555723, 0.629348, -0.543224, 0, -2.40458, -52.1958, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2068695652381233"
+          },
+          {
+            "transform": "matrix3d(-0.995525, -0.0941995, 0.00756844, 0, 0.0300129, -0.23921, 0.970504, 0, -0.0896105, 0.966388, 0.240966, 0, 0, -64.6824, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2068695652381233"
+          }
+        ]
+      ],
+      "faces": [
+        6,
+        4
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / UNDER / OVER 7\nPRACTICE TABLE\nR / DUAL\n01\n02\nUNDER\n7\nOVER\n10 · OVER SEVEN\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "chuck_a_luck",
+      "name": "Triple Resonance",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.0806831, 0.856401, -0.509968, 0, -0.0581363, 0.506721, 0.860147, 0, 0.995043, 0.099047, 0.00890411, 0, -2.84436, -74.1939, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09839130441002225"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09839130441002225"
+          },
+          {
+            "transform": "matrix(0.981921, 0.189294, -0.189294, 0.981921, 3, -69.7667)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09839130441002225"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.923017, 0.315016, -0.220917, 0, 0.0546521, -0.67569, -0.735157, 0, -0.380858, 0.666489, -0.64089, 0, -2.4037, -51.4858, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2070869565839353"
+          },
+          {
+            "transform": "matrix3d(-0.994477, -0.104376, 0.0110041, 0, 0.0603731, -0.483137, 0.873461, 0, -0.0858521, 0.869301, 0.48677, 0, 0, -68.092, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2070869565839353"
+          },
+          {
+            "transform": "matrix3d(0.935121, 0.2201, -0.277678, 0, -0.171127, 0.966755, 0.19, 0, 0.310265, -0.130155, 0.941698, 0, 2.97127, -72.907, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2070869565839353"
+          }
+        ]
+      ],
+      "faces": [
+        1,
+        1,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / CHUCK-A-LUCK\nPRACTICE TABLE\nR / RESONANCE\n01\n02\n03\n0 × 2 MATCHES\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.369111, 0.584441, -0.722624, 0, -0.062165, 0.791313, 0.608242, 0, 0.927304, -0.179587, 0.328414, 0, -2.90173, -77.4306, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.983957, 0.150816, -0.0953091, 0, 0.104066, -0.919107, -0.380017, 0, -0.144912, 0.364002, -0.920056, 0, -2.46924, -52.5928, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.868068, 0.494372, 0.0453296, 0, 0.011371, -0.0714843, 0.997377, 0, 0.496316, 0.866306, 0.0564317, 0, 0, -70.5376, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.578125,
+        "bottom": 602.578125,
+        "height": 305,
+        "visible": 305
+      },
+      "faces": [
+        6,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "DICE DECK / 01\nHOLD THE LINE\nOFF\nCOME OUT\nCRDL / SALVAGE\n01\n02\n7 · NATURAL\n10 returned · 5 resolved\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · OFF ON COME-OUT\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n+5 / tap\nLAY ODDS\nAFTER POINT\n+6 / tap\nTAKE ODDS\nAFTER POINT\n+5 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS",
+      "ok": true
+    },
+    {
+      "id": "sicbo",
+      "name": "Reactor Dice",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.19235, 0.834916, -0.515671, 0, -0.0586554, 0.514762, 0.855324, 0, 0.979572, 0.194769, -0.0500424, 0, -2.84577, -76.0396, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09804347819867343"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09804347819867343"
+          },
+          {
+            "transform": "matrix(0.981921, 0.189294, -0.189294, 0.981921, 3, -69.7667)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09804347819867343"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.994302, -0.0287946, 0.10264, 0, 0.0555718, -0.681647, -0.729567, 0, 0.090972, 0.731114, -0.676163, 0, -2.40494, -46.8615, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20678260863345604"
+          },
+          {
+            "transform": "matrix3d(-0.995818, -0.09098, 0.00834664, 0, 0.0298121, -0.237227, 0.970997, 0, -0.0863613, 0.967185, 0.238947, 0, 0, -64.6034, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20678260863345604"
+          },
+          {
+            "transform": "matrix3d(0.932053, 0.219786, -0.288049, 0, -0.172069, 0.968139, 0.181934, 0, 0.318858, -0.120007, 0.940174, 0, 2.9725, -72.7129, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20678260863345604"
+          }
+        ]
+      ],
+      "faces": [
+        5,
+        4,
+        5
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / SIC BO\nPRACTICE TABLE\nR / III\n01\n02\n03\nTOTAL 14\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "double_dice",
+      "name": "Twin Reactors",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.19235, 0.834916, -0.515671, 0, -0.0586554, 0.514762, 0.855324, 0, 0.979572, 0.194769, -0.0500424, 0, -2.84577, -76.0396, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09804347828160159"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09804347828160159"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.994627, -0.0255924, 0.100312, 0, 0.0558352, -0.683341, -0.727961, 0, 0.0871777, 0.729651, -0.67824, 0, -2.40529, -46.8303, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2066956521946451"
+          },
+          {
+            "transform": "matrix3d(-0.830074, -0.512405, -0.220041, 0, 0.0596515, -0.473908, 0.878551, 0, -0.554453, 0.716137, 0.423945, 0, 0, -73.5766, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2066956521946451"
+          }
+        ]
+      ],
+      "faces": [
+        5,
+        6
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DOUBLE DICE\nPRACTICE TABLE\nR / DUAL\n01\n02\nTOTAL 11\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "under_over_7",
+      "name": "Seven Threshold",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.0286458, 0.772681, -0.634148, 0, -0.0709899, 0.631234, 0.772337, 0, 0.997066, 0.0671423, 0.0367704, 0, -2.84841, -74.4909, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0973913044307543"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0973913044307543"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.919851, 0.186228, -0.345243, 0, 0.0787433, -0.949869, -0.302569, 0, -0.384282, 0.251133, -0.888403, 0, -2.40758, -45.9221, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20613043486553687"
+          },
+          {
+            "transform": "matrix3d(-0.996992, -0.072096, 0.0284395, 0, 0.0585653, -0.460489, 0.885731, 0, -0.0507617, 0.884733, 0.463326, 0, 0, -67.4193, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20613043486553687"
+          }
+        ]
+      ],
+      "faces": [
+        4,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / UNDER / OVER 7\nPRACTICE TABLE\nR / DUAL\n01\n02\nUNDER\n7\nOVER\n5 · UNDER SEVEN\nPAYOUT\n58 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "chuck_a_luck",
+      "name": "Triple Resonance",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.0474151, 0.90655, -0.419428, 0, -0.0470258, 0.417409, 0.907501, 0, 0.997768, 0.0627532, 0.0228397, 0, -2.84806, -72.6266, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09747826089029726"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -69.5164)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09747826089029726"
+          },
+          {
+            "transform": "matrix(0.981921, 0.189294, -0.189294, 0.981921, 3, -69.7667)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09747826089029726"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.90171, 0.421184, -0.0975893, 0, 0.0224125, -0.270957, -0.96233, 0, -0.431761, 0.865555, -0.253764, 0, -2.40723, -49.6384, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20621739132507982"
+          },
+          {
+            "transform": "matrix3d(-0.950366, -0.297138, -0.092268, 0, 0.0587358, -0.46256, 0.88464, 0, -0.30554, 0.835312, 0.457054, 0, 0, -71.3108, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20621739132507982"
+          },
+          {
+            "transform": "matrix3d(0.946039, 0.211608, -0.245423, 0, -0.173783, 0.970534, 0.166922, 0, 0.273513, -0.115264, 0.954937, 0, 2.97479, -72.4912, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20621739132507982"
+          }
+        ]
+      ],
+      "faces": [
+        3,
+        5,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        },
+        {
+          "size": 44,
+          "half": 22,
+          "padDelta": 0,
+          "depth": 22,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / CHUCK-A-LUCK\nPRACTICE TABLE\nR / RESONANCE\n01\n02\n03\n0 × 2 MATCHES\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "craps",
+      "name": "Frontier Craps",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.201052, 0.713593, -0.671091, 0, -0.0647978, 0.693268, 0.717761, 0, 0.977435, -0.100822, 0.185622, 0, -2.87968, -79.5431, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.797873, 0.290171, -0.528393, 0, 0.107538, -0.93098, -0.348872, 0, -0.593156, 0.221534, -0.774009, 0, -2.47427, -56.317, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          },
+          {
+            "transform": "matrix3d(-0.843467, 0.536556, 0.0259104, 0, 0.00621003, -0.0384913, 0.99924, 0, 0.537146, 0.842986, 0.0291341, 0, 0, -73.3532, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 297.1875,
+        "bottom": 602.1875,
+        "height": 305,
+        "visible": 305
+      },
+      "faces": [
+        5,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "DICE DECK / 01\nHOLD THE LINE\n6\nPOINT\nCRDL / SALVAGE\n01\n02\n6 · POINT 6 ESTABLISHED\nBets stay on the table\n4\n9:5\n+5 / tap\n5\n7:5\n+5 / tap\n6\n7:6\n+6 / tap\n8\n7:6\n+6 / tap\n9\n7:5\n+5 / tap\n10\n9:5\n+5 / tap\nPLACE & HARDWAYS · WORKING\nFIELD\n2 · 3 · 4 · 9 · 10 · 11 · 12\n+5 / tap\n2 PAYS DOUBLE · 12 PAYS TRIPLE\nDON’T PASS\nBAR 12\n+5 / tap\nPASS LINE\nEVEN MONEY\n5\n+5 / tap\nLAY ODDS\nLIMIT 0\n+6 / tap\nTAKE ODDS\nLIMIT 25\n+5 / tap\nHARDWAYS\n2 + 2\n7:1\n+5 / tap\n3 + 3\n9:1\n+5 / tap\n4 + 4\n9:1\n+5 / tap\n5 + 5\n7:1\n+5 / tap\n◇ CRADLE CASINO\nFRONTIER CRAPS",
+      "ok": true
+    },
+    {
+      "id": "sicbo",
+      "name": "Reactor Dice",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.0521283, 0.849756, -0.524593, 0, -0.0590928, 0.521762, 0.851042, 0, 0.996891, 0.075363, 0.0230159, 0, -2.847, -77.0522, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09773913039331852"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09773913039331852"
+          },
+          {
+            "transform": "matrix(0.981921, 0.189294, -0.189294, 0.981921, 3, -70.9652)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09773913039331852"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.992077, 0.120766, -0.0346294, 0, 0.0357488, -0.535605, -0.843711, 0, -0.120439, 0.835789, -0.535679, 0, -2.37691, -48.6381, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.21369565213244898"
+          },
+          {
+            "transform": "matrix3d(-0.817049, -0.480355, -0.318889, 0, 0.0687657, -0.63032, 0.773284, 0, -0.572453, 0.609882, 0.548034, 0, 0, -77.5153, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.21369565213244898"
+          },
+          {
+            "transform": "matrix3d(0.834859, 0.311891, -0.453579, 0, -0.147804, 0.920748, 0.361078, 0, 0.530249, -0.234409, 0.814794, 0, 2.94448, -79.2932, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.21369565213244898"
+          }
+        ]
+      ],
+      "faces": [
+        1,
+        5,
+        2
+      ],
+      "geometry": [
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / SIC BO\nPRACTICE TABLE\nR / III\n01\n02\n03\nTOTAL 8\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "double_dice",
+      "name": "Twin Reactors",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.22877, 0.738989, -0.633688, 0, -0.0645724, 0.661036, 0.74757, 0, 0.971337, -0.130103, 0.198943, 0, -2.87309, -80.0614, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09130434782608696"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09130434782608696"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.778229, 0.419837, -0.467008, 0, 0.0765997, -0.801576, -0.592966, 0, -0.623291, 0.42569, -0.655969, 0, -2.43243, -58.5181, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2"
+          },
+          {
+            "transform": "matrix3d(-0.997272, -0.070191, 0.0228619, 0, 0.0435291, -0.309017, 0.95006, 0, -0.0596209, 0.948463, 0.311229, 0, 0, -68.9405, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2"
+          }
+        ]
+      ],
+      "faces": [
+        1,
+        5
+      ],
+      "geometry": [
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DOUBLE DICE\nPRACTICE TABLE\nR / DUAL\n01\n02\nTOTAL 6\nPAYOUT\n57.5 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "under_over_7",
+      "name": "Seven Threshold",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.0642581, 0.856371, -0.512348, 0, -0.0587188, 0.515764, 0.854716, 0, 0.996204, -0.024838, 0.0834271, 0, -2.84595, -75.5784, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09799999997926796"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09799999997926796"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.617955, 0.595779, -0.51301, 0, 0.055967, -0.684186, -0.727157, 0, -0.784219, 0.420639, -0.456141, 0, -2.40546, -57.516, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20665217389231144"
+          },
+          {
+            "transform": "matrix3d(-0.995772, -0.089835, 0.0191521, 0, 0.0595698, -0.47288, 0.879111, 0, -0.0699183, 0.876535, 0.476232, 0, 0, -70.8699, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20665217389231144"
+          }
+        ]
+      ],
+      "faces": [
+        2,
+        1
+      ],
+      "geometry": [
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / UNDER / OVER 7\nPRACTICE TABLE\nR / DUAL\n01\n02\nUNDER\n7\nOVER\n3 · UNDER SEVEN\nPAYOUT\n58 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "chuck_a_luck",
+      "name": "Triple Resonance",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(-0.648209, 0.713771, -0.265247, 0, -0.0444346, 0.312288, 0.948948, 0, 0.760165, 0.626902, -0.170712, 0, -2.78531, -81.1803, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11295652182205863"
+          },
+          {
+            "transform": "matrix(0.98451, 0.175326, -0.175326, 0.98451, 0, -70.6353)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11295652182205863"
+          },
+          {
+            "transform": "matrix(0.981921, 0.189294, -0.189294, 0.981921, 3, -70.9652)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11295652182205863"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.973725, -0.110857, 0.198921, 0, 0.0385932, -0.780546, -0.623906, 0, 0.224432, 0.61519, -0.755759, 0, -2.34465, -45.6966, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.22165217399597167"
+          },
+          {
+            "transform": "matrix3d(-0.949146, -0.243271, -0.199852, 0, 0.0695491, -0.781112, 0.620505, 0, -0.307058, 0.575051, 0.758309, 0, 0, -72.1343, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.22165217399597167"
+          },
+          {
+            "transform": "matrix3d(0.569581, 0.552788, -0.608279, 0, -0.108877, 0.784278, 0.610781, 0, 0.814692, -0.281661, 0.506896, 0, 2.91222, -83.3153, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.22165217399597167"
+          }
+        ]
+      ],
+      "faces": [
+        4,
+        2,
+        3
+      ],
+      "geometry": [
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        },
+        {
+          "size": 58,
+          "half": 29,
+          "padDelta": 0,
+          "depth": 29,
+          "pipCount": 21
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / CHUCK-A-LUCK\nPRACTICE TABLE\nR / RESONANCE\n01\n02\n03\n1 × 2 MATCHES\nPAYOUT\n47.5 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

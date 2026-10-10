@@ -1,0 +1,106 @@
+{
+  "low": {
+    "version": 2,
+    "balance": 1002500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "sicbo",
+        "stake": 2500,
+        "payout": 5000,
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "label": "1 + 2 + 3 = 6"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "sicbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "sicbo",
+          "stake": 2500,
+          "payout": 5000,
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "label": "1 + 2 + 3 = 6"
+        }
+      ]
+    }
+  },
+  "high": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "sicbo",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          4,
+          5,
+          6
+        ],
+        "label": "4 + 5 + 6 = 15"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "sicbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "sicbo",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            4,
+            5,
+            6
+          ],
+          "label": "4 + 5 + 6 = 15"
+        }
+      ]
+    }
+  },
+  "pending": {
+    "version": 2,
+    "balance": 1000500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "craps": {
+      "point": 0,
+      "bets": {},
+      "rolls": [
+        {
+          "id": 1,
+          "point": 0,
+          "bets": {
+            "pass": 500
+          },
+          "dice": [
+            3,
+            4
+          ]
+        }
+      ],
+      "sequence": 1,
+      "pending": true
+    }
+  }
+}

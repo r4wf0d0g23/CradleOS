@@ -1,7 +1,10 @@
-import { DIE_CONTACTS } from "../lib/casinoObjectMotion";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ItemIcon } from "./GameIcon";
-import { PhysicalDie } from "./CasinoRoundStage";
+import {
+  PhysicalDie,
+  DiceHardware,
+  diceImpactCues,
+} from "./CasinoIndustrialDice";
 import { useCasinoTimeline, useTableCues } from "./useCasinoTimeline";
 import { STILL_RUN, type TableRun } from "../lib/casinoTableMotion";
 import { CasinoFeedback } from "../lib/casinoFeedback";
@@ -87,17 +90,7 @@ export function CasinoCraps({
     );
     return () => cancelAnimationFrame(frame);
   }, [busy, run.id]);
-  useTableCues(
-    run,
-    t,
-    animated,
-    [0, 1].flatMap((i) =>
-      DIE_CONTACTS.map((contact, j) => ({
-        at: (0.06 + i * 0.07 + contact * 0.74) * (run.duration - 100),
-        cue: (j === 0 ? "land" : "tap") as "land" | "tap",
-      })),
-    ),
-  );
+  useTableCues(run, t, animated, diceImpactCues(2, run.duration));
   function put(key: CrapsKey) {
     if (guard.current || ledger.current.craps?.pending) return;
     try {
@@ -203,7 +196,8 @@ export function CasinoCraps({
             <small>{shown.point ? "POINT" : "COME OUT"}</small>
           </div>
         </div>
-        <div className="craps-throw-zone" ref={tray}>
+        <div className="craps-throw-zone industrial-craps-tray" ref={tray}>
+          <DiceHardware kind="craps" count={2} t={busy ? t : 1} />
           <div className="craps-ghost-art">
             <ItemIcon typeId={87848} size={112} />
           </div>
@@ -221,6 +215,7 @@ export function CasinoCraps({
                   index={index}
                   t={busy ? t : 1}
                   has
+                  matched={!!outcome && outcome.payout > outcome.stake}
                 />
               ))
             ) : (

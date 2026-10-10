@@ -1,3 +1,9 @@
+import {
+  PhysicalDie,
+  DiceHardware,
+  diceImpactCues,
+} from "./CasinoIndustrialDice";
+export { PhysicalDie } from "./CasinoIndustrialDice";
 import { CasinoFrigateDuel } from "./CasinoFrigateDuel";
 import { CasinoFleetDuel } from "./CasinoFleetDuel";
 import {
@@ -28,79 +34,12 @@ import {
   type MotionCue,
 } from "./useCasinoTimeline";
 import "../styles/casino-table-motion.css";
-import {
-  diePose,
-  dieLight,
-  tokenPose,
-  DIE_CONTACTS,
-} from "../lib/casinoObjectMotion";
+import { tokenPose } from "../lib/casinoObjectMotion";
 export const CASINO_ROUND_MS = 2400;
 export const casinoRoundMs = tableDuration;
 const DICE = ["sicbo", "double_dice", "under_over_7", "chuck_a_luck"];
 const CARDS = ["baccarat", "three_card_poker", "red_dog", "andar_bahar"];
 const HIGH = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-const PIPS = [
-  [4],
-  [0, 8],
-  [0, 4, 8],
-  [0, 2, 6, 8],
-  [0, 2, 4, 6, 8],
-  [0, 2, 3, 5, 6, 8],
-];
-export function PhysicalDie({
-  face,
-  index,
-  t,
-  has,
-  matched = false,
-}: {
-  matched?: boolean;
-  face: number;
-  index: number;
-  t: number;
-  has: boolean;
-}) {
-  const p = has ? clamp((t - 0.06 - index * 0.07) / 0.74) : 1,
-    done = has && p === 1;
-  const pose = diePose(has ? p : 1, face, index);
-  return (
-    <div
-      className={`physical-die-floor ${done && matched ? "die-matched" : ""}`}
-      style={
-        {
-          "--shadow": pose.shadow,
-          "--shadow-x": `${pose.x}px`,
-          "--shadow-scale": pose.shadowScale,
-          "--shadow-blur": `${3 + pose.height / 14}px`,
-        } as CSSProperties
-      }
-    >
-      <div
-        className="physical-die"
-        data-face={done ? face : undefined}
-        aria-label={done ? `Die ${face}` : "Rolling die"}
-        style={{
-          transform: `translate3d(${pose.x}px,${-pose.height}px,0) rotateZ(${pose.rz}deg) rotateX(${pose.rx}deg) rotateY(${pose.ry}deg)`,
-        }}
-      >
-        {[1, 2, 3, 4, 5, 6].map((n) => (
-          <div
-            key={n}
-            className={`die-face face-${n}`}
-            aria-hidden="true"
-            style={{
-              filter: `brightness(${dieLight(n - 1, pose.rx, pose.ry)})`,
-            }}
-          >
-            {Array.from({ length: 9 }, (_, i) => (
-              <i key={i} className={PIPS[n - 1].includes(i) ? "pip" : ""} />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 export function CasinoRoundStage({
   game,
   round,
@@ -142,17 +81,10 @@ export function CasinoRoundStage({
             cue: "card",
           }))
         : DICE.includes(game)
-          ? Array.from(
-              {
-                length:
-                  game === "double_dice" || game === "under_over_7" ? 2 : 3,
-              },
-              (_, i) =>
-                DIE_CONTACTS.map((contact, j) => ({
-                  at: (0.06 + i * 0.07 + contact * 0.74) * (run.duration - 100),
-                  cue: (j === 0 ? "land" : "tap") as "land" | "tap",
-                })),
-            ).flat()
+          ? diceImpactCues(
+              game === "double_dice" || game === "under_over_7" ? 2 : 3,
+              run.duration,
+            )
           : game === "coinflip"
             ? [{ at: (run.duration - 100) * 0.76, cue: "land" }]
             : game === "ore_refine"
@@ -331,7 +263,7 @@ export function CasinoRoundStage({
       target = choice.target;
     return (
       <div
-        className={`physical-dice-stage dice-machine-${game} ${game === "chuck_a_luck" ? "dice-cage" : ""}`}
+        className={`physical-dice-stage industrial-dice-stage dice-machine-${game} ${game === "chuck_a_luck" ? "dice-cage" : ""}`}
         data-progress={t}
       >
         <div className="dice-machine-rail" aria-hidden="true">
@@ -347,18 +279,8 @@ export function CasinoRoundStage({
           </span>
           <i />
         </div>
+        <DiceHardware kind={game} t={has ? t : 1} count={n} />
         <div className="dice-throw">
-          {game === "chuck_a_luck" && (
-            <div
-              className="resonance-cage"
-              aria-hidden="true"
-              style={{ transform: `rotateX(${has ? ease(t) * 720 : 0}deg)` }}
-            >
-              {Array.from({ length: 8 }, (_, i) => (
-                <i key={i} style={{ transform: `rotateX(${i * 45}deg)` }} />
-              ))}
-            </div>
-          )}
           {Array.from({ length: n }, (_, i) => (
             <PhysicalDie
               key={i}
@@ -366,7 +288,12 @@ export function CasinoRoundStage({
               index={i}
               t={t}
               has={has}
-              matched={game === "chuck_a_luck" && v[i] === target}
+              matched={
+                done &&
+                (game === "chuck_a_luck"
+                  ? v[i] === target
+                  : round!.payout > round!.stake)
+              }
             />
           ))}
         </div>

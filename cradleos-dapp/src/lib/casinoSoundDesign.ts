@@ -1,6 +1,9 @@
 /** Original, bounded voices. Presentation only; never controls game state. */
 import type { FleetKey } from "./casinoSlotFleet";
 export type CasinoCue =
+  | "dice_impact"
+  | "dice_tick"
+  | "dice_settle"
   | "plinko_tick"
   | "plinko_strike"
   | "plinko_catch"
@@ -31,6 +34,9 @@ export type SoundNote = {
   wave: OscillatorType;
 };
 const NOTES: Record<CasinoCue, number[]> = {
+  dice_impact: [105, 571, 1373],
+  dice_tick: [164, 853],
+  dice_settle: [217, 1139],
   plinko_tick: [1260, 2870],
   plinko_strike: [720, 1730],
   plinko_catch: [190, 437],
@@ -141,6 +147,19 @@ const VOICES: Record<FleetKey, Voice> = {
   },
 };
 export function casinoSoundNotes(cue: CasinoCue, game?: FleetKey): SoundNote[] {
+  if (cue === "dice_impact" || cue === "dice_tick" || cue === "dice_settle") {
+    const strength =
+      cue === "dice_impact" ? 1 : cue === "dice_tick" ? 0.6 : 0.35;
+    return NOTES[cue].map((hz, i) => ({
+      hz,
+      endHz: hz * (i ? 0.96 : 0.52),
+      at: i * 0.009,
+      duration: i ? 0.032 : 0.095,
+      attack: 0.002,
+      gain: strength * (i ? 0.009 : 0.027),
+      wave: i ? "triangle" : "sine",
+    }));
+  }
   if (
     cue === "plinko_tick" ||
     cue === "plinko_strike" ||
