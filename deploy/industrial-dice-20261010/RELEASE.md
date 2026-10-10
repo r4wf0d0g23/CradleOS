@@ -27,8 +27,16 @@ Twenty-one protected files are byte-identical to receipt baseline29e299d (`bound
 
 ## Publication
 
-Pending reviewed source publication and fresh production proof.
+- Runtime `e746f9e452b1ff470265104e178b446d2c95c3f9`, committed/pushed to `cycle7-vestiges-20261002`.
+- Cloudflare Pages production `68a3ab00`; immutable https://68a3ab00.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino.
+- JS `index-CMRjoQme.js`: `217f460da51915877158282f7466f313679437a7ea86c20d85d88dd96a847dc9`.
+- CSS `index-D7aUvR7G.css`: `e59bdd8cb2a0c8d17c871aa58647ddb7d158d735f3d16c284513d15f466efdc1`.
+- Both production bundles exactly match reviewed dist (`live-build.json`). First immediate post-deploy bundle check did not match during propagation; subsequent plain and cache-busted primary/immutable requests matched exactly, followed by a successful fresh full hash receipt. No runtime change or redeployment needed.
+- Ten fresh natural production rounds PASS:all five games at390/1440 (`qa/live-browser.json`). Actual moving transforms, exact committed faces, responsive44/58cube depths, grounded pads, standard pips and stable balances/receipts; no page errors or horizontal overflow. Desktop Animated default verified despite emulated OS reduction. No chain or wallet mutations. Saved/reload/Instant/System/synthetic-hidden and audio proofs remain preview-only, not claimed freshly exercised in production.
+- Parent inspected fresh live390px resonance result and its settled match indicator. Task-owned preview5227 stopped; port verified closed. Unrelated Wrangler files preserved (their presence caused Wrangler's dirty-directory warning; tracked runtime source was clean).
 
 Rollback:Pages f16bacd3 / runtime78686dc92c59c15503ce710a2218a3f1e2711a8b. Primary cradleos.io only; GitHub Pages is redirect-only. Canonical service-hosting worktree and unrelated Wrangler directories preserved.
 
 Independent native submission-ready gate PASS:15natural+12saved/lifecycle groups reconcile; corrected pads/readable faces inspected;21protected files and coin/roulette functions unchanged;394tests44files plus focused rerun accurate; audio scheduling/mute separately scoped. No blockers or unsupported wallet/device/physics claims.
+
+Final independent native delivery gate PASS:runtime/Pages/rollback,2bundle hashes,21protected files and10freshlive rounds reconcile. Inspected live faces readable and pads aligned; preview/lifecycle/audio and propagation history correctly scoped; port5227 closed. No blockers. This final receipt update changes evidence only, not runtime.
