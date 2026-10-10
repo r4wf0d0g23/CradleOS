@@ -1,0 +1,48 @@
+{
+  "base": "http://127.0.0.1:5226",
+  "scope": "Actual app; isolated browser-local free Play Money; natural draws plus explicitly fixture-seeded browser crypto for2physical-card draws, engine-produced saved rounds and lifecycle. No app/production RNG edits; viewport emulation; no wallet",
+  "checks": [
+    {
+      "saved": "dragon",
+      "outcome": "dragon",
+      "ledgerUnchanged": true
+    },
+    {
+      "saved": "tiger",
+      "outcome": "tiger",
+      "ledgerUnchanged": true
+    },
+    {
+      "saved": "tie",
+      "outcome": "tie",
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "instant",
+      "outcome": "dragon",
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "system",
+      "outcome": "dragon",
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "hidden",
+      "outcome": "dragon",
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "resize",
+      "outcome": "dragon",
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "reload",
+      "outcome": "dragon",
+      "ledgerUnchanged": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

@@ -1,0 +1,119 @@
+.frigate-duel-stage {
+  width: min(100%, 620px);
+  padding: 16px 16px 11px;
+  box-sizing: border-box;
+  border: 1px solid #7f999158;
+  border-radius: 17px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 45%, #1b3037, #080f16 78%);
+  box-shadow:
+    inset 0 0 0 4px #17252e,
+    0 16px 26px #0007;
+}
+.frigate-duel-stage > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #adc1bc;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 1.3px;
+  margin-bottom: 14px;
+}
+.frigate-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  position: relative;
+  max-width: 390px;
+  margin: 0 auto 19px;
+}
+.frigate-cards > section {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  min-width: 0;
+  perspective: 900px;
+}
+.frigate-cards h4 {
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  margin: 0;
+  color: #a9e4db;
+}
+.frigate-cards .frigate-side-1 h4 {
+  color: #edb185;
+}
+.frontier-casino .frigate-cards .table-card-slot {
+  width: clamp(76px, 23vw, 112px);
+  height: clamp(104px, 31vw, 152px);
+  min-height: 0;
+}
+.frigate-cards .command-ship.ship-1,
+.frigate-cards .command-ship.ship-2 {
+  display: none;
+}
+.frigate-cards .command-ship.ship-0 {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+.frigate-cards .frigate-side-1 .command-wing {
+  transform: rotate(180deg);
+}
+.frigate-vs {
+  position: absolute;
+  left: 50%;
+  top: 51%;
+  transform: translate(-50%, -50%);
+  color: #91a6a0;
+  font:
+    10px ui-monospace,
+    monospace;
+}
+.frigate-engagement {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 9px;
+  border: 1px solid #618b7b55;
+  background: radial-gradient(ellipse, #10242e, #060c13);
+}
+.frigate-duel-stage > footer {
+  min-height: 12px;
+  margin-top: 11px;
+  text-align: center;
+  color: #c9d9cc;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 1.5px;
+}
+@media (max-width: 400px) {
+  .frigate-duel-stage {
+    padding: 13px 9px 10px;
+  }
+  .frigate-duel-stage > header {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .frigate-cards {
+    gap: 30px;
+    margin-bottom: 14px;
+  }
+  .frigate-cards h4 {
+    font-size: 9px;
+  }
+}
+
+.frontier-casino .frigate-cards .casino-dealt-card.motion-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}

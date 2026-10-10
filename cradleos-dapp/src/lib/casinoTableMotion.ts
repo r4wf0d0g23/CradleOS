@@ -20,7 +20,8 @@ export function tableDuration(round: Round | null) {
   if (["wheel", "risk_wheel", "money_wheel"].includes(game ?? "")) return 2800;
   if (game === "coinflip") return 1800;
   if (game === "war") return 4100;
-  if (["dragon_tiger", "red_dog"].includes(game ?? "")) return 2000;
+  if (game === "dragon_tiger") return 4300;
+  if (game === "red_dog") return 2000;
   if (["baccarat", "three_card_poker"].includes(game ?? "")) return 2900;
   if (game === "scratch_cards") return 300;
   if (game === "keno") return 3200;

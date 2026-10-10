@@ -1,3 +1,4 @@
+import { CasinoFrigateDuel } from "./CasinoFrigateDuel";
 import { CasinoFleetDuel } from "./CasinoFleetDuel";
 import {
   probabilityRollPose,
@@ -36,13 +37,7 @@ import {
 export const CASINO_ROUND_MS = 2400;
 export const casinoRoundMs = tableDuration;
 const DICE = ["sicbo", "double_dice", "under_over_7", "chuck_a_luck"];
-const CARDS = [
-  "baccarat",
-  "three_card_poker",
-  "dragon_tiger",
-  "red_dog",
-  "andar_bahar",
-];
+const CARDS = ["baccarat", "three_card_poker", "red_dog", "andar_bahar"];
 const HIGH = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 const PIPS = [
   [4],
@@ -167,6 +162,10 @@ export function CasinoRoundStage({
                 ]
               : [];
   useTableCues(run, t, animated, cues);
+  if (game === "dragon_tiger")
+    return (
+      <CasinoFrigateDuel round={round} t={t} animated={animated} run={run} />
+    );
   if (game === "war")
     return (
       <CasinoFleetDuel round={round} t={t} animated={animated} run={run} />
