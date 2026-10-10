@@ -1,6 +1,6 @@
 # Six Frontier games — October 10, 2026
 
-Status: prepublish source, visual and evidence gate PASS; production deployment pending.
+Status: published and verified. Independent final delivery receipt gate PASS.
 
 ## Delivered scope
 Six new **Play Money** games on the existing casino floor:
@@ -33,4 +33,18 @@ Original industrial panels/machinery, existing verified native Frontier item ico
 ## Deployment
 Primary application origin only: https://cradleos.io/#/casino
 Previous rollback: source e8f4a26c98120e26f7d33d111867a95817f32985 / Cloudflare Pages2b5f5744.
-Source commit, deployment ID and live hashes pending.
+Runtime source: **d72035c719c9e2b9bba96d93feed08440d13b65b** (pushed).
+Cloudflare Pages production: **7384c7df**, https://7384c7df.cradleos-d75.pages.dev.
+`live-build.json`:12 exact production artifacts: JS/CSS, icon manifest, native Lai top/Mini Gate and seven referenced item/card icons.
+- JS `index-DjuyPs4q.js`: `eb1ad25d09670dbc83d42a6d2dc7e849d0cd0c2d62249297ba464334c6133021`
+- CSS `index-CHKwYhjZ.css`: `b21a18693c231232babe3802132824fa73da7d6f63e1705b6382d6a848207e49`
+
+Rollback note: the previous runtime predates the Frontier transcript extension. Prefer a forward fix; do not discard unfinished new-game practice rounds by reverting to a reader that does not understand them.
+
+## Fresh production verification
+- `qa/live-games.json`:12 actual public-app groups (six games ×320/1440), fresh practice random deals and actual pusher drops. Full legal play, pending reloads, committed-draw equality, exactly-once chip settlement, animations and responsive bounds PASS. No page errors or failed casino/icon assets.
+- `qa/live-boundaries.json`:17 fresh production fixture/lifecycle groups PASS, matching the candidate cases above. Exact expected payouts for royal/tie/fold, final cargo decisions, dealer concealment, saved-round recovery, physical chute mapping, keyboard/touch/drag and existing blackjack interoperability. No page errors.
+- Fixtures modify only their isolated browser tab’s Play Money save. No wallet signing, chain transactions, financial wagering, shared database/global-state mutation or real customer-funds testing.
+- All12live file hashes remain the reviewed build. Final delta fixed comments only after verification; no untested runtime changes.
+
+Final delivery gate PASS: source/Pages identity,12exactartifacts,12freshlivegamegroups,17freshliveboundarygroups and all prior verification scopes reconciled. Task-owned preview5230 stopped. No runtime changes after deployment; this receipt commit does not require redeployment.
