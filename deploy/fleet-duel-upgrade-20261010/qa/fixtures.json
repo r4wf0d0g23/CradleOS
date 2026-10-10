@@ -1,0 +1,110 @@
+{
+  "win": {
+    "version": 2,
+    "balance": 1002500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "war",
+        "stake": 2500,
+        "payout": 5000,
+        "values": [
+          12,
+          0
+        ],
+        "label": "Your card wins"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "war",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "war",
+          "stake": 2500,
+          "payout": 5000,
+          "values": [
+            12,
+            0
+          ],
+          "label": "Your card wins"
+        }
+      ]
+    }
+  },
+  "loss": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "war",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          0,
+          12
+        ],
+        "label": "Dealer wins"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "war",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "war",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            0,
+            12
+          ],
+          "label": "Dealer wins"
+        }
+      ]
+    }
+  },
+  "tie": {
+    "version": 2,
+    "balance": 998750,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "war",
+        "stake": 2500,
+        "payout": 1250,
+        "values": [
+          7,
+          7
+        ],
+        "label": "Tie · half returned"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "war",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "war",
+          "stake": 2500,
+          "payout": 1250,
+          "values": [
+            7,
+            7
+          ],
+          "label": "Tie · half returned"
+        }
+      ]
+    }
+  }
+}

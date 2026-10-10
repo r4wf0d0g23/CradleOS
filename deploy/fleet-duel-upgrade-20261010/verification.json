@@ -1,0 +1,24 @@
+{
+  "tests": {
+    "passed": 384,
+    "files": 42
+  },
+  "build": "PASS",
+  "origins": {
+    "checks": 8,
+    "status": "PASS"
+  },
+  "ioc": "CLEAN",
+  "sourceReview": "native PASS; final delta/mobile visual PASS",
+  "previewBrowser": {
+    "groups": 20,
+    "errors": 0,
+    "assetFailures": 0,
+    "naturalRounds": 3,
+    "fixturePlayback": 9,
+    "savedRounds": 3,
+    "lifecycleCases": 5,
+    "report": "qa/preview-browser.json"
+  },
+  "scope": "Fleet Duel presentation and War-only duration; engine/financial/chain unchanged"
+}

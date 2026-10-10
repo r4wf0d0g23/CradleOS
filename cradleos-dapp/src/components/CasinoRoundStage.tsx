@@ -1,3 +1,4 @@
+import { CasinoFleetDuel } from "./CasinoFleetDuel";
 import {
   probabilityRollPose,
   probabilityPercent,
@@ -36,7 +37,6 @@ export const CASINO_ROUND_MS = 2400;
 export const casinoRoundMs = tableDuration;
 const DICE = ["sicbo", "double_dice", "under_over_7", "chuck_a_luck"];
 const CARDS = [
-  "war",
   "baccarat",
   "three_card_poker",
   "dragon_tiger",
@@ -167,6 +167,10 @@ export function CasinoRoundStage({
                 ]
               : [];
   useTableCues(run, t, animated, cues);
+  if (game === "war")
+    return (
+      <CasinoFleetDuel round={round} t={t} animated={animated} run={run} />
+    );
   if (["roulette", "wheel", "risk_wheel", "money_wheel"].includes(game))
     return (
       <CasinoWheelMechanism

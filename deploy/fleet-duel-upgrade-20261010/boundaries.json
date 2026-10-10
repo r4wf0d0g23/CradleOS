@@ -1,0 +1,71 @@
+{
+  "baseline": "2ef0d1c",
+  "files": [
+    {
+      "path": "cradleos-dapp/src/lib/casinoPractice.ts",
+      "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoExpanded.ts",
+      "sha256": "968b00f14d3bb0c112f79b200fd7e55d384c5d4983b3f42ccf32da1d6c767226",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoSessions.ts",
+      "sha256": "80d1576592748fd26ae9132fdaf5623a33c06d8b3b3e89857094bba18f46fe0a",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoLounge.ts",
+      "sha256": "30c5221689e29f1f146f53a388c7bee8ac15065f9165d09c85693dd7cda50200",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoProbabilityMotion.ts",
+      "sha256": "864da4258838a4c934ff13a48ed6d153114c9ae79d937083afa6ab4e2cfc7f01",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoWarpMotion.ts",
+      "sha256": "b88093b14f9925fc6c6a6dc709a33043a08b5b4faffb191a3ed91b35def1fdd4",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoLaiMotion.ts",
+      "sha256": "a02dcfceca560bbdb67ddf19562d277d7a140d00c81c9c9eec875d63f0632996",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoLaiHull.json",
+      "sha256": "741b1c27338ad6f371b28608addc77a8ec8e9c16c06da34bd414600600666aca",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoSoundDesign.ts",
+      "sha256": "a383793784348f096e5b04f5e2cfc6fd5b79bacd057129aa815e16f310595004",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/useCasinoTimeline.ts",
+      "sha256": "c5be91c58b4e2f5723a983c3c89769ff27f8ecc179d01a2d8569db9be7985898",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoWarpRun.tsx",
+      "sha256": "57dc8d8b67289dd5577950cad8ab57b442ac169ee04d6c81144aaad7e7d7d0a4",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoLaiJump.tsx",
+      "sha256": "df7e67a03b2761141e3fc3b4f003d2d607eacab2eeab83ab34a90b92a09d2632",
+      "byteIdentical": true
+    },
+    {
+      "path": "cradleos-dapp/public/casino/lai-jump/lai-top.webp",
+      "sha256": "c22e4179a4bf01385a5b7a11101e63953418543b5d6c0548ceb866e9ff792d8e",
+      "byteIdentical": true
+    }
+  ],
+  "tableDuration": "Only War changes2000\u21924100; reverse-delta exact baseline match"
+}
