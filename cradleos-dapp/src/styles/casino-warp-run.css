@@ -30,6 +30,10 @@
 .warp-run-stage[data-phase="ended"] > header > b {
   color: #d79572;
 }
+.warp-run-stage[data-phase="warping"] > header > b,
+.warp-run-stage[data-phase="warped"] > header > b {
+  color: #a7dfbf;
+}
 .warp-space {
   width: 100%;
   display: block;

@@ -4,7 +4,7 @@ import type { TableRun } from "../lib/casinoTableMotion";
 import { LAI_HULL, LAI_FRAGMENTS } from "../lib/casinoLaiMotion";
 import {
   warpPose,
-  warpTravel,
+  warpShipTravel,
   warpFragmentPose,
   warpMultiplierLabel,
   WARP_FAILURE_AT,
@@ -50,7 +50,15 @@ export function CasinoWarpRun({
         : 20000),
     p = warpPose(t, limit, target, has),
     status =
-      p.phase === "ready" ? "READY" : p.failed ? "DRIVE LOST" : "IN FLIGHT",
+      p.phase === "ready"
+        ? "READY"
+        : p.failed
+          ? "DRIVE LOST"
+          : p.escaped
+            ? "WARP COMPLETE"
+            : p.paid
+              ? "WARPING"
+              : "IN FLIGHT",
     imageProps = {
       href: SHIP,
       x: -LAI_HULL.width / 2,
@@ -58,12 +66,13 @@ export function CasinoWarpRun({
       width: LAI_HULL.width,
       height: LAI_HULL.height,
     },
-    wakeEnd = Math.min(p.seconds, WARP_FAILURE_SECONDS),
+    wakeEnd = p.paid ? p.seconds : Math.min(p.seconds, WARP_FAILURE_SECONDS),
     from =
       WARP_START_X +
-      warpTravel(Math.max(0, wakeEnd - 0.14)).distance -
+      warpShipTravel(Math.max(0, wakeEnd - 0.14), p.departure).distance -
       p.cameraX,
-    to = WARP_START_X + warpTravel(wakeEnd).distance - p.cameraX;
+    to =
+      WARP_START_X + warpShipTravel(wakeEnd, p.departure).distance - p.cameraX;
   useTableCues(
     run,
     t,
@@ -78,7 +87,9 @@ export function CasinoWarpRun({
             },
           ]
         : []),
-      { at: WARP_FAILURE_AT * (run.duration - 100), cue: "land" as const },
+      ...(limit < target
+        ? [{ at: WARP_FAILURE_AT * (run.duration - 100), cue: "land" as const }]
+        : []),
     ].sort((a, b) => a.at - b.at),
   );
   return (
@@ -155,7 +166,7 @@ export function CasinoWarpRun({
                 key={i}
                 d={`M${from + e.x * WARP_HULL_SCALE} ${p.y + e.y * WARP_HULL_SCALE}H${to + e.x * WARP_HULL_SCALE}`}
                 stroke="#8bbbd8"
-                strokeWidth="1.6"
+                strokeWidth={p.paid ? 3 : 1.6}
               />
             ))}
           </g>
@@ -163,7 +174,7 @@ export function CasinoWarpRun({
         <g
           className="warp-hull"
           transform={`translate(${p.x} ${p.y})`}
-          opacity={p.failed ? 0 : 1}
+          opacity={p.hullOpacity}
           data-world-x={p.worldX}
           data-camera-x={p.cameraX}
           data-velocity={p.velocity}

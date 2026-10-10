@@ -1,0 +1,20 @@
+{
+  "tests": {
+    "passed": 379,
+    "files": 41
+  },
+  "build": "PASS",
+  "origins": {
+    "checks": 8,
+    "status": "PASS"
+  },
+  "ioc": "CLEAN",
+  "sourceReview": "native PASS after wake continuity correction",
+  "previewBrowser": {
+    "groups": 17,
+    "errors": 0,
+    "assetFailures": 0,
+    "report": "qa/preview-browser.json"
+  },
+  "scope": "Warp Run presentation only; no financial or chain changes"
+}

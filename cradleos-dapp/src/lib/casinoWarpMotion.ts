@@ -1,5 +1,5 @@
 import { clamp } from "./casinoTableMotion";
-import { LAI_FRAGMENTS } from "./casinoLaiMotion";
+import { LAI_HULL, LAI_FRAGMENTS } from "./casinoLaiMotion";
 // Authored scene units, not game m/s. Warp fiction uses consistent inertial motion.
 export const WARP_SECONDS = 2.6;
 export const WARP_FAILURE_AT = 0.74;
@@ -9,6 +9,8 @@ export const WARP_ACCELERATION = 300;
 export const WARP_START_X = 168;
 export const WARP_CAMERA_FRACTION = 0.78;
 export const WARP_HULL_SCALE = 0.64;
+export const WARP_JERK = 12000;
+export const WARP_CLEAR_X = 520 + (LAI_HULL.width / 2 + 70) * WARP_HULL_SCALE;
 const smooth = (x: number) => {
   const p = clamp(x);
   return p * p * (3 - 2 * p);
@@ -33,6 +35,15 @@ export function warpTravel(seconds: number) {
     acceleration: s >= WARP_FAILURE_SECONDS ? 0 : jerk * ramp,
   };
 }
+/** Successful auto-stop adds forward jerk from zero; camera keeps its inertial track. */
+export function warpShipTravel(seconds: number, departure: number) {
+  const base = warpTravel(seconds),
+    u = Math.max(0, seconds - departure);
+  return {
+    distance: base.distance + (WARP_JERK * u ** 3) / 6,
+    velocity: base.velocity + (WARP_JERK * u ** 2) / 2,
+  };
+}
 export function warpPose(
   t: number,
   limit: number,
@@ -42,43 +53,72 @@ export function warpPose(
   const seconds = has ? clamp(t) * WARP_SECONDS : 0,
     travel = warpTravel(seconds),
     elapsed = Math.max(0, seconds - WARP_FAILURE_SECONDS),
-    failed = has && seconds >= WARP_FAILURE_SECONDS,
+    reachedLimit = has && seconds >= WARP_FAILURE_SECONDS,
+    win = limit >= target,
+    failed = reachedLimit && !win,
     progress = Math.min(1, seconds / WARP_FAILURE_SECONDS),
     cross =
-      limit >= target && limit > 10000
+      win && limit > 10000
         ? Math.log(target / 10000) / Math.log(limit / 10000)
         : Infinity,
-    paid = has && limit >= target && (failed || progress >= cross),
+    departure = win ? cross * WARP_FAILURE_SECONDS : Infinity,
+    paid = has && win && (reachedLimit || seconds >= departure),
+    ship = warpShipTravel(seconds, has ? departure : Infinity),
     multiplier = !has
       ? 10000
-      : failed
+      : reachedLimit
         ? limit
         : limit <= 10000
           ? 10000
           : 10000 * Math.exp(Math.log(limit / 10000) * progress),
     cameraX = travel.distance * WARP_CAMERA_FRACTION,
-    worldX = WARP_START_X + travel.distance;
+    worldX = WARP_START_X + ship.distance,
+    x = worldX - cameraX,
+    escaped = paid && x > WARP_CLEAR_X,
+    wakeCleared =
+      paid &&
+      WARP_START_X +
+        warpShipTravel(Math.max(0, seconds - 0.14), departure).distance -
+        cameraX +
+        Math.min(...LAI_HULL.engines.map((e) => e.x)) * WARP_HULL_SCALE >
+        520;
   return {
     seconds,
     elapsed,
     failed,
     paid,
+    departure,
+    escaped,
     multiplier,
     cross,
-    phase: !has ? "ready" : failed ? "ended" : "flight",
+    phase: !has
+      ? "ready"
+      : failed
+        ? "ended"
+        : escaped
+          ? "warped"
+          : paid
+            ? "warping"
+            : "flight",
     worldX,
     cameraX,
-    x: worldX - cameraX,
+    x,
     y: 155,
-    velocity: travel.velocity,
+    velocity: ship.velocity,
     cameraVelocity: travel.velocity * WARP_CAMERA_FRACTION,
-    thrust: has && !failed ? travel.acceleration / WARP_ACCELERATION : 0,
+    hullOpacity: failed || escaped ? 0 : 1,
+    thrust:
+      has && !failed && !escaped
+        ? paid
+          ? 1
+          : travel.acceleration / WARP_ACCELERATION
+        : 0,
     flash: failed
       ? (1 - Math.exp(-elapsed / 0.009)) *
         Math.exp(-elapsed / 0.075) *
         (1 - smooth((elapsed - 0.14) / 0.16))
       : 0,
-    wake: has ? 1 - smooth(elapsed / 0.16) : 0,
+    wake: !has || wakeCleared ? 0 : paid ? 1 : 1 - smooth(elapsed / 0.16),
   };
 }
 export function warpFragmentPose(t: number, index: number) {
