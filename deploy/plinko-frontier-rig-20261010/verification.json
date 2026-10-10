@@ -12,5 +12,20 @@
   "origins": 8,
   "ioc": "CLEAN",
   "build": "PASS",
-  "live": "pending"
+  "live": {
+    "status": "PASS",
+    "playbackCases": 4,
+    "labelAssetCases": 4,
+    "exactFiles": 5,
+    "pageErrors": 0,
+    "assetFailures": 0,
+    "viewportOnly": true,
+    "walletExecution": false,
+    "audioListening": false
+  },
+  "taskServices": {
+    "5218": "stopped; port closed",
+    "5219": "stopped; port closed"
+  },
+  "finalDeliveryReview": "PASS"
 }
