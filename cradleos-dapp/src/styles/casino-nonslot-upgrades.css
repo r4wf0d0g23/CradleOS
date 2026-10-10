@@ -1,0 +1,1323 @@
+/* Worn shipboard mechanisms. Presentation only; outcome clocks stay authoritative. */
+.frontier-casino .casino-motion-setting {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 28px 14px;
+  font:
+    12px ui-monospace,
+    monospace;
+  color: #bfc8c7;
+}
+.casino-motion-setting select {
+  min-height: 44px;
+  padding: 7px 12px;
+  background: #12191b;
+  color: #efeadd;
+  border: 1px solid #6d777166;
+  border-radius: 8px;
+  font: inherit;
+}
+.frontier-casino .nonslot-layout {
+  align-items: start;
+}
+.nonslot-layout > .lounge-surface {
+  width: 100%;
+  box-sizing: border-box;
+  gap: 24px;
+  min-height: 440px;
+  scroll-margin-top: 64px;
+  overflow-anchor: none;
+}
+.nonslot-layout .lounge-console {
+  min-width: 0;
+}
+.nonslot-layout .lounge-surface-label {
+  width: 100%;
+}
+.nonslot-layout .lounge-result {
+  width: 100%;
+  box-sizing: border-box;
+}
+.nonslot-layout .lounge-surface > :nth-child(2) {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.frontier-casino[data-game="roulette"] .casino-roulette-grid {
+  grid-template-columns: repeat(3, minmax(44px, 1fr));
+  grid-column: 1/-1;
+  width: 100%;
+}
+.frontier-casino[data-game="roulette"] .casino-roulette-grid button {
+  min-width: 44px;
+  min-height: 46px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.frontier-casino[data-game="roulette"] .casino-option-row {
+  grid-column: 1/-1;
+}
+.frontier-casino[data-game="roulette"] .casino-option-row button {
+  min-height: 46px;
+  position: relative;
+}
+.roulette-chip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  min-height: 20px;
+  border: 2px dashed #e8c698;
+  border-radius: 50%;
+  background: #5a351d;
+  color: #fff0d1;
+  padding: 2px;
+  font:
+    9px ui-monospace,
+    monospace;
+  box-shadow: 0 2px 0 #050708;
+}
+.frontier-casino[data-game="roulette"] .lounge-options {
+  display: block;
+}
+@media (max-width: 700px) {
+  .frontier-casino .casino-motion-setting {
+    padding: 0 18px 10px;
+  }
+  .nonslot-layout > .lounge-surface {
+    min-height: 360px;
+    gap: 18px;
+  }
+  .frontier-casino[data-game="roulette"] .casino-roulette-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .frontier-casino[data-game="roulette"] .casino-roulette-grid button {
+    min-width: 0;
+    min-height: 48px;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .frontier-casino[data-game="roulette"] .lounge-console {
+    padding: 12px;
+  }
+  .frontier-casino[data-game="roulette"] .casino-option-row {
+    display: flex;
+  }
+}
+@media (max-width: 380px) {
+  .frontier-casino[data-game="roulette"] .casino-roulette-grid {
+    grid-template-columns: repeat(4, minmax(44px, 1fr));
+  }
+}
+/* Physical dice: a shared contact plane, independent trajectories and world-lit faces. */
+.physical-dice-stage {
+  width: min(100%, 520px);
+  position: relative;
+  margin: 20px auto;
+  padding: 16px 12px 20px;
+  border: 8px solid #353c3d;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 50% 20%, #384747, #111a1e 75%);
+  box-shadow:
+    inset 0 0 0 2px #697774,
+    inset 0 -10px 22px #000b,
+    0 16px 25px #0006;
+}
+.dice-machine-rail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #9daba8;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 5px;
+}
+.dice-machine-rail i {
+  height: 4px;
+  flex: 1;
+  background: repeating-linear-gradient(90deg, #9ba59b 0 3px, #182628 3px 8px);
+  opacity: 0.45;
+}
+.physical-dice-stage .dice-throw {
+  position: relative;
+  min-height: 230px;
+  padding-top: 125px;
+  box-sizing: border-box;
+  gap: clamp(24px, 6vw, 45px);
+  isolation: isolate;
+}
+.physical-dice-stage .dice-throw:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  height: 100px;
+  transform: rotateX(38deg);
+  border: 1px solid #93a2a233;
+  border-bottom: 7px solid #505d5f;
+  border-radius: 45%;
+  background: radial-gradient(ellipse, #46606244, #131a1d);
+  z-index: -1;
+}
+.physical-die-floor:after {
+  transform: translateX(var(--shadow-x, 0px)) scale(var(--shadow-scale, 1));
+  filter: blur(var(--shadow-blur, 4px));
+  inset: 48px -9px -8px;
+}
+.physical-die .die-face {
+  background: linear-gradient(135deg, #fff9e1, #d6ceb6);
+  border: 2px solid #eee6ce;
+  border-radius: 11px;
+  box-shadow:
+    inset 1px 1px 3px #fff,
+    inset -2px -2px 4px #635b4844;
+}
+.physical-die .pip {
+  box-shadow:
+    inset 0 2px 2px #0009,
+    0 1px 0 #fff9;
+  background: radial-gradient(circle at 60% 70%, #364348, #10181b);
+}
+.dice-machine-sicbo {
+  background: linear-gradient(140deg, #243839e6, #121b21);
+  border-color: #445052;
+}
+.dice-machine-sicbo:after {
+  content: "";
+  position: absolute;
+  inset: 27px 10px 60px;
+  pointer-events: none;
+  border: 1px solid #afcbd333;
+  border-radius: 50% 50% 16px 16px;
+  background: linear-gradient(
+    120deg,
+    transparent 35%,
+    #c3e7ef0d 37%,
+    transparent 45%
+  );
+  box-shadow: inset 0 0 25px #9dbdbe0a;
+}
+.dice-machine-double_dice .physical-die-floor:before {
+  content: "";
+  position: absolute;
+  inset: -100px -20px -27px;
+  border: 1px solid #92afb33d;
+  border-radius: 35px 35px 12px 12px;
+  background: linear-gradient(90deg, #56707615, transparent, #56707622);
+  z-index: -1;
+}
+.reactor-coupler {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 15px;
+  margin: -13px 0 12px;
+}
+.reactor-coupler i {
+  width: 18px;
+  height: 4px;
+  background: #344247;
+  border: 1px solid #5d7275;
+}
+.reactor-coupler.coupled i {
+  background: #cba66d;
+  box-shadow: 0 0 6px #b0834144;
+}
+.seven-scale {
+  display: flex;
+  position: relative;
+  margin: 0 12px 16px;
+  padding-bottom: 12px;
+  justify-content: space-between;
+  border-bottom: 2px solid #7e8c8555;
+  font: 10px monospace;
+  color: #899794;
+}
+.seven-scale .selected {
+  color: #ffcd92;
+}
+.seven-scale i {
+  position: absolute;
+  bottom: -6px;
+  width: 8px;
+  height: 8px;
+  background: #f1d49e;
+  border: 2px solid #192127;
+  transform: translateX(-50%) rotate(45deg);
+}
+.dice-cage .dice-throw {
+  border: 0;
+  background: none;
+  margin: 0;
+  transform-style: preserve-3d;
+}
+.resonance-cage {
+  position: absolute;
+  inset: 75px -2px 8px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: 3;
+}
+.resonance-cage i {
+  position: absolute;
+  inset: 0;
+  border: 3px solid #8a9d9f99;
+  border-radius: 45%;
+  box-shadow: inset 0 0 0 1px #192326;
+}
+.resonance-cage:before,
+.resonance-cage:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-left: 8px solid #515f63;
+  border-right: 8px solid #515f63;
+  border-radius: 45%;
+  transform: rotateX(90deg);
+}
+.craps-throw-zone {
+  margin-top: 12px;
+  min-height: 245px;
+  border: 3px solid #5b666288;
+  border-radius: 20px;
+  background:
+    repeating-linear-gradient(0deg, #5a665b08 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse, #233332, #101c20);
+  box-shadow:
+    inset 0 12px 16px #0008,
+    inset 0 -6px 0 #354641;
+  overflow: hidden;
+}
+.craps-throw-zone:before {
+  content: "";
+  position: absolute;
+  inset: 6px 6px auto;
+  height: 35px;
+  background: repeating-linear-gradient(
+    45deg,
+    #62706b33 0 3px,
+    #182829 3px 10px
+  );
+  border-bottom: 3px solid #6e7d72;
+  border-radius: 12px 12px 3px 3px;
+}
+.craps-dice {
+  height: 177px;
+  padding-top: 65px;
+  box-sizing: border-box;
+  gap: 60px;
+}
+.craps-call {
+  position: relative;
+}
+.craps-ghost-art {
+  top: 40px;
+  opacity: 0.07;
+}
+.craps-chip {
+  box-shadow:
+    0 2px 0 #634524,
+    0 4px 0 #c19665,
+    0 6px 0 #39291e,
+    2px 9px 7px #0009;
+}
+/* A real rim: front/back engravings and 32 thin edge segments. */
+.physical-coin-stage {
+  width: 100%;
+  min-height: 340px;
+  isolation: isolate;
+  perspective: 750px;
+}
+.physical-coin {
+  margin-top: 100px;
+  margin-bottom: 15px;
+}
+.physical-coin .coin-face {
+  transform: translateZ(4px);
+  border: 5px ridge #aa8b58;
+  background: radial-gradient(
+    ellipse at 28% 18%,
+    #c9b380,
+    #8e754a 28%,
+    #4a3e2a 60%,
+    #ad955e
+  );
+  box-shadow:
+    inset 0 0 0 2px #e5c681,
+    inset 0 0 0 7px #6f5d3d,
+    inset 0 -8px 17px #15191699;
+  gap: 0;
+}
+.physical-coin .coin-face-1 {
+  transform: rotateY(180deg) translateZ(4px);
+  background: radial-gradient(
+    ellipse at 28% 18%,
+    #9badac,
+    #506865 50%,
+    #1d3032 80%,
+    #9bafaa
+  );
+}
+.token-engraving {
+  width: 110px;
+  height: 110px;
+  fill: none;
+  stroke: #eee0b0;
+  stroke-width: 2.3;
+  filter: drop-shadow(1px 1px 0 #30291c);
+  opacity: 0.85;
+}
+.coin-face-1 .token-engraving {
+  stroke: #c8ddd5;
+}
+.physical-coin .coin-face b {
+  color: #f4e2ad;
+  font-size: 9px;
+  text-shadow: 0 1px #181b1c;
+  letter-spacing: 3px;
+  margin-top: -6px;
+}
+.token-edge {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.token-edge i {
+  position: absolute;
+  left: calc(50% - 4px);
+  top: calc(50% - 7.5px);
+  width: 8px;
+  height: 15px;
+  background: repeating-linear-gradient(0deg, #564629 0 1px, #ceb583 1px 3px);
+  backface-visibility: visible;
+}
+.token-landing-pad {
+  position: absolute;
+  bottom: 43px;
+  width: 250px;
+  height: 63px;
+  border: 5px ridge #53605c;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #293936, #101e22);
+  box-shadow:
+    0 9px 0 #1a2426,
+    0 17px 18px #0009;
+  z-index: -1;
+}
+.token-landing-pad i {
+  position: absolute;
+  inset: 10px;
+  border: 1px dashed #b69b5d77;
+  border-radius: 50%;
+}
+.token-landing-pad i + i {
+  inset: 17px;
+  opacity: 0.4;
+}
+.token-landing-pad i + i + i {
+  inset: 24px;
+  opacity: 0.3;
+}
+.physical-coin-stage .coin-shadow {
+  bottom: 66px;
+  z-index: 0;
+}
+@media (max-width: 400px) {
+  .physical-dice-stage {
+    padding: 12px 6px;
+    border-width: 5px;
+  }
+  .physical-dice-stage .dice-throw {
+    gap: 23px;
+  }
+  .physical-die-floor,
+  .physical-die {
+    width: 48px;
+    height: 48px;
+  }
+  .physical-die .die-face {
+    padding: 7px;
+    gap: 4px;
+  }
+  .physical-die .face-1 {
+    transform: translateZ(24px);
+  }
+  .physical-die .face-2 {
+    transform: rotateY(90deg) translateZ(24px);
+  }
+  .physical-die .face-3 {
+    transform: rotateX(-90deg) translateZ(24px);
+  }
+  .physical-die .face-4 {
+    transform: rotateX(90deg) translateZ(24px);
+  }
+  .physical-die .face-5 {
+    transform: rotateY(-90deg) translateZ(24px);
+  }
+  .physical-die .face-6 {
+    transform: rotateY(180deg) translateZ(24px);
+  }
+  .physical-die-floor:after {
+    inset: 43px -5px -9px;
+  }
+  .craps-dice {
+    gap: 48px;
+  }
+  .resonance-cage {
+    inset: 82px -3px 15px;
+  }
+}
+/* Four distinct mechanisms share exact pocket geometry, not an identical skin. */
+.wheel-mechanism {
+  width: min(100%, 430px);
+  max-width: 430px;
+  padding: 12px 16px 16px;
+  box-sizing: border-box;
+  border: 1px solid #8b998e55;
+  border-radius: 28px;
+  background: linear-gradient(140deg, #3e4a49, #15232b 40%, #111b20);
+  box-shadow:
+    inset 0 0 0 5px #222f33,
+    0 16px 24px #0007;
+}
+.wheel-mechanism svg {
+  display: block;
+  width: 100%;
+  max-width: none;
+  filter: drop-shadow(0 3px 0 #060b0d);
+}
+.wheel-mechanism .wheel-kicker {
+  font-size: 7px;
+  letter-spacing: 1.4px;
+}
+.wheel-mechanism .wheel-value {
+  font-size: 25px;
+  fill: #ffe8b2;
+}
+.wheel-mechanism .roulette-ball {
+  stroke: #e8dabc;
+  stroke-width: 0.4;
+  filter: none;
+}
+.wheel-mechanism .wheel-pocket-label {
+  padding: 7px 18px;
+  min-width: 72px;
+  max-width: 180px;
+  width: max-content;
+  border: 1px solid #7e90794d;
+  box-shadow: inset 0 3px 6px #0006;
+  color: #eed6a7;
+  font-size: 13px;
+}
+.wheel-wheel {
+  border-radius: 30% 30% 18px 18px;
+  background: linear-gradient(145deg, #586662, #283b3c 35%, #152329);
+}
+.wheel-risk_wheel {
+  border-width: 5px;
+  border-color: #63553f;
+  border-radius: 18px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 35px, #a57b4133 36px 38px),
+    linear-gradient(#302e29, #151e24);
+}
+.wheel-money_wheel {
+  border: 8px ridge #62624d;
+  border-radius: 45px;
+  background:
+    repeating-linear-gradient(40deg, #7f765411 0 2px, transparent 2px 11px),
+    linear-gradient(135deg, #3b4b46, #172829);
+}
+@media (max-width: 400px) {
+  .wheel-mechanism {
+    padding: 8px 8px 12px;
+    border-radius: 20px;
+  }
+  .wheel-money_wheel {
+    border-width: 5px;
+  }
+}
+.lounge-plinko {
+  width: min(100%, 540px);
+  padding: 14px;
+  border: 8px ridge #4a5d5b;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #4a5852, #1c3035 40%, #111d25);
+  box-shadow:
+    inset 0 0 24px #0009,
+    0 16px 24px #0006;
+  box-sizing: border-box;
+}
+.lounge-plinko svg {
+  width: 100%;
+  max-height: 460px;
+  display: block;
+  filter: drop-shadow(0 4px 0 #0008);
+}
+.lounge-plinko .plinko-ball {
+  stroke: #f8e9c577;
+  stroke-width: 0.5;
+  filter: none;
+}
+.lounge-plinko .plinko-trail {
+  opacity: 0.24;
+  stroke-width: 2;
+}
+.lounge-plinko .plinko-route {
+  opacity: 0.2;
+}
+.lounge-plinko .motion-caption {
+  padding-top: 10px;
+  font-size: 10px;
+}
+@media (max-width: 400px) {
+  .lounge-plinko {
+    padding: 7px;
+    border-width: 5px;
+    border-radius: 16px;
+  }
+}
+/* Instrument panels: physical housings, calibrated scales and honest readouts. */
+.die-matched .die-face {
+  border-color: #cfb575;
+  box-shadow:
+    inset 0 0 0 2px #c5a761,
+    0 0 9px #c8a05544;
+}
+.refinery-workshop {
+  width: min(100%, 550px);
+  padding: 12px 6px;
+  border: 2px solid #6c827166;
+  border-radius: 22px;
+  background: radial-gradient(ellipse at 50% 40%, #344647, #14252c 70%);
+  box-shadow:
+    inset 0 0 0 5px #1a2d34,
+    0 14px 24px #0007;
+}
+.refinery-workshop svg {
+  width: 100%;
+  display: block;
+}
+.refinery-workshop .refinery-blades {
+  position: static;
+  inset: auto;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.frontier-casino .casino-scratch-area {
+  overflow: hidden;
+  border: 3px ridge #748578;
+  border-radius: 12px;
+  box-shadow:
+    0 5px 0 #111e24,
+    0 10px 16px #0008;
+}
+.scratch-tool {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  left: var(--tool-x);
+  top: var(--tool-y);
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e1c89d;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    10px -5px 0 -5px #a6bba3,
+    -11px 8px 0 -5px #d6ca99,
+    6px 13px 0 -6px #e8d3a8;
+  z-index: 3;
+}
+.casino-scratch-area[data-scratching="true"] .scratch-tool {
+  display: block;
+}
+.probability-stage {
+  width: min(100%, 420px);
+  padding: 28px 22px 22px;
+  border: 8px ridge #566963;
+  box-shadow:
+    inset 0 0 22px #000c,
+    0 10px 0 #162429,
+    0 18px 20px #0006;
+  position: relative;
+}
+.probability-stage:before,
+.probability-stage:after {
+  content: "＋";
+  position: absolute;
+  top: 5px;
+  color: #9caf9a;
+  font-size: 14px;
+}
+.probability-stage:before {
+  left: 7px;
+}
+.probability-stage:after {
+  right: 7px;
+}
+.probability-stage > strong {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 2px, #a8bfa509 2px 3px),
+    #0a191d;
+  border: 1px solid #72968555;
+  box-shadow: inset 0 4px 8px #0008;
+  border-radius: 8px;
+  margin: 18px 0 26px;
+  text-shadow: 0 0 12px #a3cebd33;
+  font-size: 76px;
+}
+.probability-calibration {
+  display: flex;
+  justify-content: space-between;
+  font: 8px monospace;
+  color: #a2b3a1;
+}
+.probability-calibration span {
+  position: relative;
+}
+.probability-calibration i {
+  display: block;
+  height: 9px;
+  width: 1px;
+  background: #829480;
+  margin: 0 auto 3px;
+}
+.probability-rail {
+  margin: 8px 3px 25px;
+  background: linear-gradient(90deg, #354d4f, #899b7c);
+  box-shadow: inset 0 2px 3px #000a;
+}
+.probability-rail b {
+  height: 18px;
+  width: 7px;
+  top: -5px;
+  border: 1px solid #fce5b4;
+  border-radius: 2px;
+  background: #b68f55;
+  box-shadow: 0 3px 4px #0009;
+}
+.probability-rail i {
+  border-left: 2px solid #90d1c4;
+  top: -9px;
+  height: 25px;
+}
+.limbo-gate {
+  width: 100%;
+}
+.gate-rings {
+  width: min(260px, 90%);
+  height: auto;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 9px ridge #4a605f;
+  background: #08191f;
+  overflow: hidden;
+  box-shadow:
+    0 12px 0 #13232b,
+    0 22px 24px #0009,
+    inset 0 0 45px #000;
+}
+.gate-rings:before {
+  display: none;
+}
+.gate-tunnel,
+.gate-iris {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.gate-tunnel i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  border: 4px double #a0c6b4;
+  clip-path: polygon(
+    30% 0,
+    70% 0,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0 70%,
+    0 30%
+  );
+  box-sizing: border-box;
+  box-shadow: inset 0 0 20px #63a4a43b;
+}
+.gate-rings > strong {
+  font-size: 29px;
+  text-shadow:
+    0 2px 4px #000,
+    0 0 10px #00171c;
+  z-index: 2;
+}
+.warp-flight {
+  width: min(100%, 500px);
+  padding: 20px 14px;
+  border: 7px ridge #4b625f;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 50% 50%, #273b43, #091a25);
+  box-shadow:
+    inset 0 0 45px #0007,
+    0 15px 20px #0007;
+}
+.warp-flight svg {
+  display: block;
+  width: 100%;
+  max-width: none;
+}
+.warp-flight > span {
+  font-size: 11px;
+}
+.keno-scanner {
+  width: 100%;
+  padding: 12px;
+  border: 6px ridge #526b60;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 35%, #233f41, #0d222a);
+  box-shadow:
+    inset 0 0 28px #0009,
+    0 12px 20px #0008;
+  box-sizing: border-box;
+}
+.keno-scanner .casino-keno-stage {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  padding: 0;
+  gap: 3px;
+  border: 1px solid #6f9a7e44;
+  border-radius: 6px;
+  background: #081d23;
+}
+.scan-constellation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.keno-scanner .casino-keno-stage > span {
+  position: relative;
+  z-index: 1;
+  padding: 11px 0;
+  border-radius: 5px;
+  background: #203c3544;
+  box-shadow: inset 0 1px 1px #aec6a40d;
+}
+.keno-scanner .casino-keno-stage .picked {
+  border-color: #d8bb88aa;
+}
+.keno-scanner .casino-keno-stage .picked.drawn {
+  background: #ccbd88;
+  color: #101c21;
+  box-shadow:
+    inset 0 2px 3px #fff5,
+    0 0 10px #dcc28144;
+}
+.keno-scanner .latest-signal {
+  box-shadow:
+    inset 0 0 0 2px #e3e9b4,
+    0 0 10px #a6d8be66;
+}
+.keno-incoming {
+  gap: 9px;
+}
+.keno-incoming > span,
+.keno-incoming > b {
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.signal-capsules {
+  width: min(100%, 560px);
+  max-width: 560px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  padding: 20px 10px 16px;
+  border: 6px ridge #4c625c;
+  border-radius: 18px;
+  background: linear-gradient(#293d40, #101f29);
+  position: relative;
+  box-shadow:
+    inset 0 -12px 16px #0009,
+    0 12px 20px #0008;
+}
+.signal-capsule {
+  width: auto;
+  min-width: 0;
+  min-height: 135px;
+  padding: 16px 2px 14px;
+  border: 2px solid #6f8379;
+  border-radius: 8px;
+  background: linear-gradient(
+    105deg,
+    #708176,
+    #1b3036 17%,
+    #162931 78%,
+    #4e665e
+  );
+  box-shadow:
+    inset 0 0 0 3px #13232a,
+    0 5px 0 #0b171e,
+    3px 8px 6px #0007;
+}
+.signal-capsule:before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 15%;
+  right: 15%;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, #a0a885 0 3px, #283b38 3px 7px);
+}
+.signal-capsule:after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 25%;
+  right: 25%;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, #c1a764 0 3px, #1d2d32 3px 6px);
+}
+.signal-capsule > img {
+  width: 100%;
+  height: auto;
+  max-width: 64px;
+  filter: drop-shadow(0 2px 2px #000);
+}
+.signal-capsule > small {
+  font-size: 8px;
+  color: #c9cfb9;
+}
+.signal-capsules > .motion-caption {
+  grid-column: 1/-1;
+  position: relative;
+  font-size: 10px;
+}
+.signal-bus {
+  position: absolute;
+  inset: 20px 10px auto;
+  width: calc(100% - 20px);
+  height: 172px;
+}
+.signal-capsule.matched-capsule {
+  border-color: #d6be81;
+  box-shadow:
+    0 5px 0 #524735,
+    inset 0 0 16px #dbc48b22;
+}
+@media (max-width: 400px) {
+  .signal-capsules {
+    gap: 4px;
+    padding: 16px 5px 10px;
+    border-width: 4px;
+  }
+  .signal-capsule {
+    min-height: 108px;
+  }
+  .signal-capsule > small {
+    font-size: 7px;
+  }
+  .signal-bus {
+    inset: 16px 5px auto;
+    width: calc(100% - 10px);
+    height: 145px;
+  }
+  .keno-scanner {
+    padding: 7px;
+    border-width: 4px;
+  }
+  .keno-scanner .casino-keno-stage > span {
+    padding: 9px 0;
+    font-size: 11px;
+  }
+  .probability-stage {
+    padding: 24px 12px 20px;
+    border-width: 5px;
+  }
+  .probability-stage > strong {
+    font-size: 66px;
+  }
+}
+/* Grounded card tables, measured shoe-to-seat flights and readable real suits. */
+.frontier-casino .casino-card-stage,
+.frontier-casino .andar-table {
+  position: relative;
+  padding: 86px 16px 20px;
+  width: min(100%, 560px);
+  border: 7px ridge #4a615d;
+  border-radius: 30px;
+  background: radial-gradient(
+    ellipse at 50% 25%,
+    #28454c,
+    #12272e 80%
+  ) !important;
+  box-shadow:
+    inset 0 0 40px #07131bb3,
+    0 14px 24px #0008;
+  box-sizing: border-box;
+  perspective: 1000px;
+}
+.table-shoe {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 52px;
+  height: 42px;
+  transform: rotate(-12deg);
+  border: 3px ridge #7e8b77;
+  border-radius: 5px;
+  background: linear-gradient(120deg, #314c51, #142831);
+  box-shadow:
+    4px 7px 0 #0b1820,
+    6px 12px 10px #0007;
+  display: grid;
+  place-items: center;
+  color: #d1c399;
+}
+.table-shoe i {
+  position: absolute;
+  bottom: -4px;
+  width: 39px;
+  height: 5px;
+  border-bottom: 1px solid #d8d8b2;
+  background: #748077;
+}
+.table-shoe i + i {
+  bottom: -7px;
+}
+.table-shoe i + i + i {
+  bottom: -10px;
+}
+.table-shoe b {
+  font: 22px serif;
+}
+.frontier-casino .casino-card-line {
+  padding: 14px 6px 20px;
+  border: 1px solid #91b4a033;
+  border-radius: 15px;
+  background: linear-gradient(120deg, #9ac0ac0c, #091d2544) !important;
+  box-sizing: border-box;
+  gap: 12px;
+}
+.casino-card-line > span {
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.frontier-casino .table-card-slot {
+  width: 70px;
+  height: 108px;
+  position: relative;
+  flex: 0 0 auto;
+  background: transparent !important;
+  perspective: 800px;
+}
+.frontier-casino .casino-dealt-card.motion-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #dbcba2;
+  border-radius: 7px;
+  background: linear-gradient(125deg, #fffce8, #d4d2b8 70%, #f9f3d6) !important;
+  color: #142c30;
+  box-shadow:
+    0 1px 0 #9b9b81,
+    0 3px 0 #455c59,
+    2px var(--card-lift, 3px) 9px #0008,
+    inset 0 0 0 3px #526a6215;
+  justify-content: center;
+  overflow: hidden;
+}
+.frontier-casino .casino-dealt-card.motion-card.covered {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 5px, #b4c2a815 5px 6px),
+    linear-gradient(125deg, #4c6668, #193039 70%) !important;
+  border: 3px double #b4bb9e;
+  color: #d6caa0;
+  box-shadow:
+    0 3px 0 #61776d,
+    2px var(--card-lift, 3px) 10px #0008,
+    inset 0 0 0 3px #142b32;
+  gap: 10px;
+}
+.motion-card .table-card-seal {
+  font: 34px serif;
+  border: 1px solid #9bb4a377;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+}
+.motion-card.covered > small {
+  font: 7px monospace;
+  letter-spacing: 2px;
+  color: #cbd0b8;
+}
+.casino-dealt-card.motion-card > img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 1px #22392b33);
+}
+.frontier-casino .casino-dealt-card.motion-card > .table-card-rank {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font:
+    bold 17px/1 ui-monospace,
+    monospace;
+  color: #142c30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+.table-card-rank em {
+  font-style: normal;
+  font-size: 12px;
+  margin-top: 1px;
+}
+.frontier-casino .casino-dealt-card.motion-card > .table-card-bottom {
+  top: auto;
+  left: auto;
+  right: 5px;
+  bottom: 4px;
+  transform: rotate(180deg);
+}
+.frontier-casino .motion-card[data-suit="1"] > .table-card-rank,
+.frontier-casino .motion-card[data-suit="3"] > .table-card-rank {
+  color: #943f2d;
+}
+.motion-card > small {
+  position: absolute;
+  bottom: 4px;
+  font-size: 8px;
+}
+.motion-card.covered > small {
+  position: static;
+}
+.frontier-casino .casino-dealt-card.motion-card.card-winner {
+  outline: 2px solid #cdbb77;
+  outline-offset: 2px;
+  box-shadow:
+    0 3px 0 #455c59,
+    0 8px 13px #0008,
+    0 0 15px #cebf6833;
+}
+.frontier-casino .card-table-baccarat {
+  border-radius: 45px 45px 20px 20px;
+}
+.card-table-baccarat .casino-card-line:nth-of-type(2) {
+  border-color: #91c5c244;
+}
+.card-table-baccarat .casino-card-line:nth-of-type(3) {
+  border-color: #d6ba8555;
+}
+.card-table-three_card_poker .casino-card-line {
+  gap: 4px;
+  padding-bottom: 25px;
+}
+.card-table-three_card_poker .table-card-slot:first-of-type {
+  margin-right: -3px;
+}
+.card-table-three_card_poker .table-card-slot:last-child {
+  margin-left: -3px;
+}
+.frontier-casino .card-table-war,
+.frontier-casino .card-table-dragon_tiger {
+  column-gap: 12px;
+}
+.card-table-war .casino-card-line,
+.card-table-dragon_tiger .casino-card-line {
+  width: calc(50% - 6px);
+  min-height: 170px;
+  border-top: 4px solid #7ca6a2;
+  border-bottom: 7px ridge #445b5c;
+  background: linear-gradient(135deg, #638c8822, transparent) !important;
+}
+.card-table-war .casino-card-line:nth-of-type(3),
+.card-table-dragon_tiger .casino-card-line:nth-of-type(3) {
+  border-top-color: #bb966a;
+}
+.card-table-dragon_tiger .casino-card-line:after {
+  content: "";
+  width: 44px;
+  height: 10px;
+  background: #91b4a233;
+  clip-path: polygon(0 50%, 40% 0, 100% 50%, 40% 100%);
+}
+.frontier-casino .andar-table {
+  padding-top: 80px;
+}
+.andar-joker {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #b8bf9255;
+}
+.andar-lanes {
+  gap: 8px;
+}
+.andar-lanes > section {
+  border: 3px ridge #4d6f67;
+  padding: 10px 5px;
+  box-shadow: inset 0 0 15px #0007;
+}
+.andar-stack {
+  height: 106px;
+}
+.andar-stack .table-card-slot {
+  width: 53px;
+  height: 95px;
+}
+.andar-stack .motion-card {
+  width: 100%;
+  min-height: 0;
+}
+.andar-stack .motion-card > img {
+  width: 32px;
+  height: 32px;
+}
+.andar-stack .motion-card > .table-card-rank {
+  font-size: 14px;
+  left: 3px;
+}
+.andar-stack .motion-card > .table-card-bottom {
+  right: 3px;
+}
+.andar-stack .motion-card small {
+  font-size: 7px;
+}
+.andar-table > span {
+  font: 10px monospace;
+  color: #bfceb5;
+}
+.rank-window {
+  padding: 10px 3px;
+  background: #081b23;
+  border: 4px ridge #536b64;
+  border-radius: 8px;
+  box-sizing: border-box;
+  gap: 2px;
+}
+.rank-window > span {
+  flex: 1;
+  padding: 8px 1px;
+  text-align: center;
+  font-size: 10px;
+  min-width: 0;
+}
+.rank-window .inside-window {
+  background: #557360;
+  color: #eff1d7;
+}
+.rank-window .post-rank {
+  outline-offset: -2px;
+  background: #d6c28b;
+  color: #18282d;
+}
+.frontier-casino .astral-token {
+  border-top-color: #eed3ad;
+  border-left-color: #b6c8c2;
+  box-shadow:
+    1px 2px 0 #465962,
+    0 3px 0 #0a1319,
+    inset 1px 1px 0 #edf1d82b,
+    inset 0 0 14px #85b4c31a,
+    0 10px 25px #000a;
+}
+.astral-rank {
+  font-weight: 700;
+  color: #fff6df;
+  text-shadow: 0 1px 2px #000;
+}
+.astral-hand {
+  border: 1px solid #9abdc524;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #a3c3bf07, transparent);
+  padding: 10px 4px 6px;
+}
+.astral-hand-label > b {
+  padding: 2px 7px;
+  background: #101e29aa;
+  border: 1px solid #8eafb233;
+  border-radius: 5px;
+}
+@media (max-width: 400px) {
+  .frontier-casino .casino-card-stage,
+  .frontier-casino .andar-table {
+    padding: 77px 8px 14px;
+    border-width: 4px;
+    border-radius: 20px;
+  }
+  .frontier-casino .table-card-slot {
+    width: 61px;
+    height: 99px;
+  }
+  .frontier-casino .casino-card-line {
+    gap: 7px;
+    padding: 12px 3px 16px;
+  }
+  .card-table-three_card_poker .casino-card-line {
+    gap: 2px;
+  }
+  .card-table-baccarat .casino-card-line {
+    gap: 4px;
+  }
+  .casino-card-line > span {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  .frontier-casino .casino-dealt-card.motion-card > .table-card-rank {
+    font-size: 16px;
+  }
+  .andar-stack .table-card-slot {
+    width: 44px;
+    height: 92px;
+  }
+  .andar-stack .motion-card > .table-card-rank {
+    font-size: 14px !important;
+  }
+  .andar-stack .motion-card > img {
+    width: 29px;
+    height: 29px;
+  }
+  .andar-stack .motion-card > .table-card-bottom {
+    display: none;
+  }
+  .rank-window {
+    gap: 1px;
+    padding: 8px 1px;
+    border-width: 2px;
+  }
+  .rank-window > span {
+    font-size: 9px;
+    padding: 7px 0;
+  }
+  .card-table-war .casino-card-line,
+  .card-table-dragon_tiger .casino-card-line {
+    min-height: 155px;
+  }
+}
+.casino-scratch-area[data-scratching="true"] .scratch-tool {
+  display: block;
+}
+.scratch-ticket-open .casino-scratch-area .scratch-tool {
+  display: none;
+}

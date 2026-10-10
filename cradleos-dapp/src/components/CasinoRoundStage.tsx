@@ -1,19 +1,15 @@
+import { MotionCard, TableShoe } from "./CasinoTableCard";
+export { MotionCard } from "./CasinoTableCard";
 import { type CSSProperties } from "react";
+import { CasinoRefinery } from "./CasinoRefinery";
+import { CasinoWheelMechanism } from "./CasinoWheelMechanism";
 import { ItemIcon } from "./GameIcon";
 import { CASINO_SYMBOLS } from "../lib/casinoLounge";
-import { RED, WHEEL_BPS, type Round, type Choice } from "../lib/casinoPractice";
-import {
-  MONEY_TABLE,
-  RISK_TABLES,
-  baccaratScore,
-  threeRank,
-} from "../lib/casinoExpanded";
+import { type Round, type Choice } from "../lib/casinoPractice";
+import { baccaratScore, threeRank } from "../lib/casinoExpanded";
 import {
   clamp,
   ease,
-  coinPose,
-  wheelAngle,
-  rouletteBall,
   tableDuration,
   STILL_RUN,
   type TableRun,
@@ -24,12 +20,14 @@ import {
   type MotionCue,
 } from "./useCasinoTimeline";
 import "../styles/casino-table-motion.css";
+import {
+  diePose,
+  dieLight,
+  tokenPose,
+  DIE_CONTACTS,
+} from "../lib/casinoObjectMotion";
 export const CASINO_ROUND_MS = 2400;
 export const casinoRoundMs = tableDuration;
-const ORDER = [
-  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24,
-  16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
-];
 const DICE = ["sicbo", "double_dice", "under_over_7", "chuck_a_luck"];
 const CARDS = [
   "war",
@@ -39,63 +37,7 @@ const CARDS = [
   "red_dog",
   "andar_bahar",
 ];
-const RANKS = [
-  "A",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-];
 const HIGH = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-export function MotionCard({
-  value,
-  progress = 1,
-  hidden = false,
-  rankOnly = false,
-  label = "",
-  winner = false,
-  fly = false,
-}: {
-  value: number;
-  progress?: number;
-  hidden?: boolean;
-  rankOnly?: boolean;
-  label?: string;
-  winner?: boolean;
-  fly?: boolean;
-}) {
-  const p = clamp(progress),
-    shown = !hidden && p >= 0.5,
-    rank = rankOnly ? HIGH[value] : RANKS[value % 13],
-    suit = rankOnly ? 0 : Math.floor(value / 13);
-  const transform = fly
-    ? `translate3d(${(1 - ease(p)) * 90}px,${-(1 - ease(p)) * 90}px,0) rotate(${(1 - p) * -18}deg) rotateY(${p < 0.5 ? p * 180 : (1 - p) * 180}deg)`
-    : `rotateY(${p < 0.5 ? p * 180 : (1 - p) * 180}deg)`;
-  return (
-    <div
-      className={`casino-dealt-card motion-card ${shown ? "revealed" : "covered"} ${winner && p === 1 ? "card-winner" : ""}`}
-      data-value={shown ? value : undefined}
-      data-card-progress={p}
-      aria-label={shown ? `${label || "Card"}: ${rank}` : "Unrevealed card"}
-      style={{ transform, opacity: p === 0 && fly ? 0 : 1 }}
-    >
-      <b>{shown ? rank : "◇"}</b>
-      <ItemIcon
-        typeId={shown ? [82425, 87848, 81611, 84955][suit] : 72244}
-        size={50}
-      />
-      <small>{label}</small>
-    </div>
-  );
-}
 const PIPS = [
   [4],
   [0, 8],
@@ -109,7 +51,9 @@ export function PhysicalDie({
   index,
   t,
   has,
+  matched = false,
 }: {
+  matched?: boolean;
   face: number;
   index: number;
   t: number;
@@ -117,31 +61,36 @@ export function PhysicalDie({
 }) {
   const p = has ? clamp((t - 0.06 - index * 0.07) / 0.74) : 1,
     done = has && p === 1;
-  const [rx, ry] = [
-    [0, 0],
-    [0, -90],
-    [90, 0],
-    [-90, 0],
-    [0, 90],
-    [0, 180],
-  ][face - 1];
-  const lift =
-    has && p < 1 ? Math.abs(Math.sin(p * Math.PI * 2.5)) * 45 * (1 - p) : 0;
+  const pose = diePose(has ? p : 1, face, index);
   return (
     <div
-      className="physical-die-floor"
-      style={{ "--shadow": 0.18 + 0.5 * p } as CSSProperties}
+      className={`physical-die-floor ${done && matched ? "die-matched" : ""}`}
+      style={
+        {
+          "--shadow": pose.shadow,
+          "--shadow-x": `${pose.x}px`,
+          "--shadow-scale": pose.shadowScale,
+          "--shadow-blur": `${3 + pose.height / 14}px`,
+        } as CSSProperties
+      }
     >
       <div
         className="physical-die"
         data-face={done ? face : undefined}
         aria-label={done ? `Die ${face}` : "Rolling die"}
         style={{
-          transform: `translate3d(${has ? Math.sin(p * Math.PI * 2 + index) * 20 * (1 - p) : 0}px,${-lift}px,0) rotateX(${ease(p) * (1080 + rx)}deg) rotateY(${ease(p) * (720 + ry)}deg)`,
+          transform: `translate3d(${pose.x}px,${-pose.height}px,0) rotateZ(${pose.rz}deg) rotateX(${pose.rx}deg) rotateY(${pose.ry}deg)`,
         }}
       >
         {[1, 2, 3, 4, 5, 6].map((n) => (
-          <div key={n} className={`die-face face-${n}`} aria-hidden="true">
+          <div
+            key={n}
+            className={`die-face face-${n}`}
+            aria-hidden="true"
+            style={{
+              filter: `brightness(${dieLight(n - 1, pose.rx, pose.ry)})`,
+            }}
+          >
             {Array.from({ length: 9 }, (_, i) => (
               <i key={i} className={PIPS[n - 1].includes(i) ? "pip" : ""} />
             ))}
@@ -150,16 +99,6 @@ export function PhysicalDie({
       </div>
     </div>
   );
-}
-const at = (cx: number, cy: number, r: number, a: number) => [
-  cx + r * Math.cos((a * Math.PI) / 180),
-  cy + r * Math.sin((a * Math.PI) / 180),
-];
-function wedge(i: number, n: number) {
-  const step = 360 / n,
-    a = at(160, 160, 146, i * step - 90 - step / 2),
-    b = at(160, 160, 146, (i + 1) * step - 90 - step / 2);
-  return `M160 160 L${a.join(" ")} A146 146 0 0 1 ${b.join(" ")}Z`;
 }
 export function CasinoRoundStage({
   game,
@@ -178,7 +117,12 @@ export function CasinoRoundStage({
   choice?: Choice;
   animateSlots?: boolean;
 }) {
-  const { t, animated } = useCasinoTimeline(run, busy, reduced, game === "slots" && animateSlots),
+  const { t, animated } = useCasinoTimeline(
+      run,
+      busy,
+      reduced,
+      game === "slots" && animateSlots,
+    ),
     v = round?.values ?? [],
     has = !!round,
     done = has && t === 1;
@@ -197,142 +141,38 @@ export function CasinoRoundStage({
             cue: "card",
           }))
         : DICE.includes(game)
-          ? (game === "double_dice" || game === "under_over_7"
-              ? [0.8, 0.87]
-              : [0.8, 0.87, 0.94]
-            ).map((n) => ({
-              at: n * (run.duration - 100),
-              cue: "land",
-            }))
-          : ["roulette", "wheel", "risk_wheel", "money_wheel"].includes(game)
-            ? [0.12, 0.21, 0.3, 0.39, 0.48, 0.59, 0.71, 0.84, 0.95].map(
-                (n) => ({ at: n * (run.duration - 100), cue: "tap" }),
-              )
-            : game === "coinflip"
-              ? [{ at: (run.duration - 100) * 0.94, cue: "land" }]
-              : game === "ore_refine"
-                ? [
-                    { at: 350, cue: "engine" },
-                    { at: (run.duration - 100) * 0.86, cue: "land" },
-                  ]
-                : [];
+          ? Array.from(
+              {
+                length:
+                  game === "double_dice" || game === "under_over_7" ? 2 : 3,
+              },
+              (_, i) =>
+                DIE_CONTACTS.map((contact, j) => ({
+                  at: (0.06 + i * 0.07 + contact * 0.74) * (run.duration - 100),
+                  cue: (j === 0 ? "land" : "tap") as "land" | "tap",
+                })),
+            ).flat()
+          : game === "coinflip"
+            ? [{ at: (run.duration - 100) * 0.76, cue: "land" }]
+            : game === "ore_refine"
+              ? [
+                  { at: 350, cue: "engine" },
+                  { at: (run.duration - 100) * 0.86, cue: "land" },
+                ]
+              : [];
   useTableCues(run, t, animated, cues);
-  if (["roulette", "wheel", "risk_wheel", "money_wheel"].includes(game)) {
-    const table =
-      game === "roulette"
-        ? ORDER
-        : game === "money_wheel"
-          ? MONEY_TABLE
-          : game === "risk_wheel"
-            ? RISK_TABLES[v[1] ?? 0]
-            : WHEEL_BPS;
-    const index = game === "roulette" ? ORDER.indexOf(v[0] ?? 0) : (v[0] ?? 0),
-      step = 360 / table.length,
-      angle = has ? wheelAngle(t, index, table.length) : 0,
-      ball = rouletteBall(t, angle);
+  if (["roulette", "wheel", "risk_wheel", "money_wheel"].includes(game))
     return (
-      <div
-        className={`casino-orbit-stage table-wheel wheel-${game}`}
-        data-progress={t}
-        data-landed={done ? index : undefined}
-      >
-        <svg
-          viewBox="0 0 320 320"
-          role="img"
-          aria-label={`${game.replace(/_/g, " ")} wheel${done ? `: ${round!.label}` : ""}`}
-        >
-          <defs>
-            <radialGradient id={`rim-${game}`}>
-              <stop stopColor="#574b32" />
-              <stop offset=".85" stopColor="#171b18" />
-              <stop offset="1" stopColor="#d0ba82" />
-            </radialGradient>
-          </defs>
-          <circle cx="160" cy="160" r="156" fill={`url(#rim-${game})`} />
-          <g className="wheel-rotor" transform={`rotate(${angle} 160 160)`}>
-            {table.map((n, i) => {
-              const [x, y] = at(160, 160, 127, i * step - 90);
-              return (
-                <g key={i}>
-                  <path
-                    d={wedge(i, table.length)}
-                    fill={
-                      game === "roulette"
-                        ? n === 0
-                          ? "#245a42"
-                          : RED.includes(n)
-                            ? "#9e281f"
-                            : "#151c1b"
-                        : n === 0
-                          ? "#1b2525"
-                          : i % 2
-                            ? "#6b5230"
-                            : "#3b514b"
-                    }
-                    stroke={done && i === index ? "#fafae5" : "#ad9e664d"}
-                    strokeWidth={done && i === index ? 2 : 1}
-                  />
-                  <text
-                    x={x}
-                    y={y + 3}
-                    textAnchor="middle"
-                    fill="#fafae5"
-                    fontSize={table.length > 40 ? 7 : 10}
-                    transform={`rotate(${i * step} ${x} ${y})`}
-                  >
-                    {game === "roulette" ? n : `${n / 10000}×`}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-          <circle cx="160" cy="160" r="96" fill="#0a1112" stroke="#c9bb7855" />
-          <circle cx="160" cy="160" r="85" fill="none" stroke="#c9bb7825" />
-          <text x="160" y="141" textAnchor="middle" className="wheel-kicker">
-            {game === "roulette"
-              ? "ORBITAL"
-              : game === "money_wheel"
-                ? "SALVAGE"
-                : game === "risk_wheel"
-                  ? "OVERDRIVE"
-                  : "REACTOR"}
-          </text>
-          <text x="160" y="181" textAnchor="middle" className="wheel-value">
-            {done
-              ? game === "roulette"
-                ? v[0]
-                : `${table[index] / 10000}×`
-              : "◇"}
-          </text>
-          <path
-            className="wheel-pointer"
-            d="M150 2 L170 2 L160 26Z"
-            fill="#fafae5"
-            style={{
-              transformOrigin: "160px 2px",
-              transform: `rotate(${animated ? Math.sin(t * 120) * 8 * (1 - t) : 0}deg)`,
-            }}
-          />
-          {game === "roulette" && has && (
-            <circle
-              className="roulette-ball"
-              data-ball-x={ball.x}
-              data-ball-y={ball.y}
-              cx={ball.x}
-              cy={ball.y}
-              r="4.5"
-              fill="#fff9d9"
-            />
-          )}
-        </svg>
-        <div className="wheel-pocket-label">
-          {done
-            ? `Landed · ${game === "roulette" ? v[0] : `${table[index] / 10000}×`}`
-            : "Awaiting pocket"}
-        </div>
-      </div>
+      <CasinoWheelMechanism
+        game={game}
+        round={round}
+        t={t}
+        animated={animated}
+        run={run}
+        selectedRisk={choice.side ?? 0}
+        busy={busy}
+      />
     );
-  }
   if (game === "slots")
     return (
       <div className="lounge-reels casino-moving-reels" data-progress={t}>
@@ -363,9 +203,14 @@ export function CasinoRoundStage({
       </div>
     );
   if (game === "coinflip") {
-    const pose = coinPose(has ? t : 0, v[0] ?? 0);
+    const pose = tokenPose(has ? t : 0, v[0] ?? 0);
     return (
       <div className="casino-coin-stage physical-coin-stage" data-progress={t}>
+        <div className="token-landing-pad" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
         <div
           className="coin-shadow"
           style={{
@@ -376,12 +221,39 @@ export function CasinoRoundStage({
         <div
           className="physical-coin"
           style={{
-            transform: `translateY(${-pose.lift}px) rotateZ(${pose.tilt}deg) rotateY(${pose.angle}deg)`,
+            transform: `translateY(${pose.floorShift - pose.lift}px) rotateZ(${pose.tilt}deg) rotateX(${pose.depthTilt}deg) rotateY(${pose.angle}deg)`,
           }}
         >
+          <div className="token-edge" aria-hidden="true">
+            {Array.from({ length: 32 }, (_, i) => (
+              <i
+                key={i}
+                style={{
+                  transform: `rotateZ(${i * 11.25}deg) translateX(72px) rotateY(90deg)`,
+                }}
+              />
+            ))}
+          </div>
           {[0, 1].map((face) => (
             <div key={face} className={`coin-face coin-face-${face}`}>
-              <ItemIcon typeId={face ? 84180 : 72244} size={90} />
+              <svg
+                viewBox="0 0 100 100"
+                className="token-engraving"
+                aria-hidden="true"
+              >
+                <circle cx="50" cy="50" r="40" />
+                <circle cx="50" cy="50" r="33" strokeDasharray="1 5" />
+                {face ? (
+                  <g>
+                    <path d="M28 35h35l10 15-10 15H28M38 26v48M50 30v40M61 36v28" />
+                    <circle cx="73" cy="50" r="4" />
+                  </g>
+                ) : (
+                  <g>
+                    <path d="M50 19 72 60 50 79 28 60ZM50 19v60M28 60h44M38 43h24" />
+                  </g>
+                )}
+              </svg>
               <b>{face ? "TAILS" : "HEADS"}</b>
             </div>
           ))}
@@ -409,6 +281,14 @@ export function CasinoRoundStage({
       <div className="probability-stage" data-progress={t}>
         <small>PROBABILITY DRIVE</small>
         <strong>{has ? String(number).padStart(2, "0") : "—"}</strong>
+        <div className="probability-calibration" aria-hidden="true">
+          {Array.from({ length: 11 }, (_, i) => (
+            <span key={i}>
+              <i />
+              {i * 10}
+            </span>
+          ))}
+        </div>
         <div className="probability-rail">
           {threshold !== undefined && <i style={{ left: `${threshold}%` }} />}
           <b style={{ left: `${number}%` }} />
@@ -428,10 +308,34 @@ export function CasinoRoundStage({
       target = choice.target;
     return (
       <div
-        className={`physical-dice-stage ${game === "chuck_a_luck" ? "dice-cage" : ""}`}
+        className={`physical-dice-stage dice-machine-${game} ${game === "chuck_a_luck" ? "dice-cage" : ""}`}
         data-progress={t}
       >
+        <div className="dice-machine-rail" aria-hidden="true">
+          <i />
+          <span>
+            {game === "sicbo"
+              ? "III"
+              : game === "double_dice"
+                ? "II / II"
+                : game === "chuck_a_luck"
+                  ? "III / CAGE"
+                  : "VII"}
+          </span>
+          <i />
+        </div>
         <div className="dice-throw">
+          {game === "chuck_a_luck" && (
+            <div
+              className="resonance-cage"
+              aria-hidden="true"
+              style={{ transform: `rotateX(${has ? ease(t) * 720 : 0}deg)` }}
+            >
+              {Array.from({ length: 8 }, (_, i) => (
+                <i key={i} style={{ transform: `rotateX(${i * 45}deg)` }} />
+              ))}
+            </div>
+          )}
           {Array.from({ length: n }, (_, i) => (
             <PhysicalDie
               key={i}
@@ -439,9 +343,28 @@ export function CasinoRoundStage({
               index={i}
               t={t}
               has={has}
+              matched={game === "chuck_a_luck" && v[i] === target}
             />
           ))}
         </div>
+        {game === "double_dice" && (
+          <div
+            className={`reactor-coupler ${done ? "coupled" : ""}`}
+            aria-hidden="true"
+          >
+            <i />
+            <i />
+            <i />
+          </div>
+        )}
+        {game === "under_over_7" && (
+          <div className="seven-scale">
+            <span className={done && total < 7 ? "selected" : ""}>UNDER</span>
+            <span className={done && total === 7 ? "selected" : ""}>7</span>
+            <span className={done && total > 7 ? "selected" : ""}>OVER</span>
+            {done && <i style={{ left: `${8 + ((total - 2) / 10) * 84}%` }} />}
+          </div>
+        )}
         <div className="dice-readout">
           {done
             ? game === "chuck_a_luck"
@@ -473,7 +396,31 @@ export function CasinoRoundStage({
             className="gate-rings"
             style={{ "--charge": `${has ? t * 360 : 0}deg` } as CSSProperties}
           >
-            <ItemIcon typeId={84955} size={130} />
+            <div className="gate-tunnel" aria-hidden="true">
+              {Array.from({ length: 5 }, (_, i) => (
+                <i
+                  key={i}
+                  style={{
+                    transform: `translate(-50%,-50%) scale(${0.2 + i * 0.16}) rotate(${(i % 2 ? 1 : -1) * t * 40}deg)`,
+                    opacity: 0.15 + i * 0.15,
+                  }}
+                />
+              ))}
+            </div>
+            <svg className="gate-iris" viewBox="0 0 240 240" aria-hidden="true">
+              <g transform={`rotate(${has ? t * 55 : 0} 120 120)`}>
+                {Array.from({ length: 8 }, (_, i) => (
+                  <path
+                    key={i}
+                    d="M52 20 160 20 210 68 149 79 94 52Z"
+                    transform={`rotate(${i * 45} 120 120) translate(0 ${-(has ? Math.sin(t * Math.PI) * 12 : 0)})`}
+                    fill={i % 2 ? "#657a74" : "#344c51"}
+                    stroke="#9eb6a2"
+                    strokeWidth=".7"
+                  />
+                ))}
+              </g>
+            </svg>
             <strong>{current.toFixed(2)}×</strong>
           </div>
           <span>JUMP THRESHOLD {target.toFixed(2)}×</span>
@@ -496,6 +443,16 @@ export function CasinoRoundStage({
       <div className="casino-flight-stage warp-flight" data-progress={t}>
         <strong>{current.toFixed(2)}×</strong>
         <svg viewBox="0 0 340 225" aria-label="Precommitted auto-stop flight">
+          <g className="warp-depth" opacity=".3">
+            {Array.from({ length: 12 }, (_, i) => (
+              <path
+                key={i}
+                d={`M${170 + ((i % 4) - 1.5) * 16} ${100 + Math.floor(i / 4) * 8}l${((i % 4) - 1.5) * (25 + t * 35)} ${(Math.floor(i / 4) - 1) * (20 + t * 45)}`}
+                stroke="#8cb5ad"
+                strokeWidth="1"
+              />
+            ))}
+          </g>
           <path d="M30 15V190H325" stroke="#fafae52a" fill="none" />
           {
             <g>
@@ -516,8 +473,26 @@ export function CasinoRoundStage({
             fill="none"
           />
           {has && (
-            <g transform={`translate(${x} ${y}) rotate(-28)`}>
-              <path d="M-16 0L10-6L18 0L10 6Z" fill="#fafae5" />
+            <g
+              className="warp-ship"
+              transform={`translate(${x} ${y}) rotate(-28)`}
+            >
+              <ellipse
+                cx="0"
+                cy="10"
+                rx="20"
+                ry="5"
+                fill="#000"
+                opacity=".35"
+              />
+              <path
+                d="M-18-9-5-6 8-12 5-3 22 0 5 3 8 12-5 6-18 9-12 0Z"
+                fill="#718e89"
+                stroke="#bed1b7"
+                strokeWidth=".7"
+              />
+              <path d="M-10 0 4-4 22 0 4 4Z" fill="#c2c9b0" />
+              <path d="M-8 0 1-2 7 0 1 2Z" fill="#568c94" />
               <path
                 d="M-18-4L-28 0L-18 4"
                 fill="#ff7044"
@@ -560,6 +535,38 @@ export function CasinoRoundStage({
           </b>
         </div>
         <div className="casino-keno-stage">
+          <svg
+            className="scan-constellation"
+            viewBox="0 0 800 500"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <polyline
+              points={picks
+                .map(
+                  (n) =>
+                    `${((n - 1) % 8) * 100 + 50},${Math.floor((n - 1) / 8) * 100 + 50}`,
+                )
+                .join(" ")}
+              fill="none"
+              stroke="#e9c58c"
+              strokeWidth="2"
+              opacity=".35"
+            />
+            {shown
+              .filter((n) => picks.includes(n))
+              .map((n) => (
+                <circle
+                  key={n}
+                  cx={((n - 1) % 8) * 100 + 50}
+                  cy={Math.floor((n - 1) / 8) * 100 + 50}
+                  r={latest === n ? 39 : 31}
+                  fill="none"
+                  stroke="#bbd9ae"
+                  strokeWidth="2"
+                />
+              ))}
+          </svg>
           {Array.from({ length: 40 }, (_, i) => {
             const value = i + 1;
             return (
@@ -600,13 +607,38 @@ export function CasinoRoundStage({
       max = has ? 5 : 0;
     return (
       <div className="signal-capsules" data-progress={t}>
+        <svg
+          className="signal-bus"
+          viewBox="0 0 500 170"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {done &&
+            counts.flatMap((n, s) =>
+              n >= 2
+                ? [
+                    <polyline
+                      key={s}
+                      points={v
+                        .flatMap((x, i) =>
+                          x === s ? [`${50 + i * 100},125`] : [],
+                        )
+                        .join(" ")}
+                      stroke={s % 2 ? "#a7d2bd" : "#dbb377"}
+                      strokeWidth="3"
+                      fill="none"
+                    />,
+                  ]
+                : [],
+            )}
+        </svg>
         {Array.from({ length: 5 }, (_, i) => {
           const p = has ? clamp((t - i * 0.14) / 0.23) : 0,
             shown = p > 0.5,
             symbol = CASINO_SYMBOLS[v[i] ?? i];
           return (
             <div
-              className={`signal-capsule ${done && best >= 3 && counts[v[i]] === best ? "matched-capsule" : ""}`}
+              className={`signal-capsule ${done && counts[v[i]] >= 2 ? "matched-capsule" : ""}`}
               data-symbol={shown ? v[i] : undefined}
               style={{
                 transform: `translateY(${(1 - ease(p)) * -15}px) rotateY(${shown ? (1 - p) * 180 : p * 180}deg)`,
@@ -637,62 +669,7 @@ export function CasinoRoundStage({
     );
   }
   if (game === "ore_refine")
-    return (
-      <div
-        className={`casino-refinery refinery-machine ${done ? `yield-${v[0]}` : ""}`}
-        data-progress={t}
-      >
-        <div
-          className="refinery-feed"
-          style={{
-            transform: `translateX(${ease(clamp(t / 0.3)) * 50}px)`,
-            opacity: has ? 1 - clamp((t - 0.22) * 8) : 0.8,
-          }}
-        >
-          <ItemIcon typeId={78423} size={55} />
-        </div>
-        <div
-          className="refinery-core"
-          style={{ "--heat": has ? Math.sin(t * Math.PI) : 0 } as CSSProperties}
-        >
-          <div
-            className="refinery-blades"
-            style={{ transform: `rotate(${has ? ease(t) * 1080 : 0}deg)` }}
-          />
-          <ItemIcon
-            typeId={done ? [78423, 88335, 84180, 91209][v[0]] : 91209}
-            size={100}
-          />
-        </div>
-        <div
-          className="refinery-output"
-          style={{
-            opacity: clamp((t - 0.8) * 5),
-            transform: `translateX(${clamp((t - 0.8) * 5) * 20}px)`,
-          }}
-        >
-          {done ? (
-            <ItemIcon typeId={[78423, 88335, 84180, 91209][v[0]]} size={55} />
-          ) : null}
-        </div>
-        <progress
-          max="1"
-          value={has ? t : 0}
-          aria-label="Refinement progress"
-        />
-        <b>
-          {done
-            ? ["SLAG", "PARTIAL YIELD", "REFINED YIELD", "BONUS YIELD"][v[0]]
-            : has
-              ? t < 0.3
-                ? "FEEDING"
-                : t < 0.8
-                  ? "REFINING"
-                  : "EXTRACTING"
-              : "REFINERY READY"}
-        </b>
-      </div>
-    );
+    return <CasinoRefinery t={t} has={has} yieldKind={v[0] ?? 0} />;
   if (CARDS.includes(game)) {
     const pCard = (order: number, n: number) =>
       has ? clamp((t * (n + 1) - order - 0.35) * 1.65) : 0;
@@ -701,9 +678,10 @@ export function CasinoRoundStage({
         log = v.slice(1, 1 + dealt);
       return (
         <div className="andar-table" data-progress={t}>
+          <TableShoe />
           <div className="andar-joker">
             <small>MATCH THIS RANK</small>
-            <MotionCard value={v[0] ?? 0} hidden={!has} />
+            <MotionCard value={v[0] ?? 0} hidden={!has} rankOnly aceFirst />
           </div>
           <div className="andar-lanes">
             {[0, 1].map((side) => {
@@ -719,6 +697,10 @@ export function CasinoRoundStage({
                       <div key={i} style={{ left: `${j * 18}%`, zIndex: j }}>
                         <MotionCard
                           value={log[i]}
+                          rankOnly
+                          aceFirst
+                          index={1}
+                          runId={run.id}
                           progress={pCard(i + 1, v.length)}
                           fly
                           label={`${i + 1}`}
@@ -766,6 +748,7 @@ export function CasinoRoundStage({
     const rankOnly = ["war", "dragon_tiger", "red_dog"].includes(game);
     return (
       <div className={`casino-card-stage card-table-${game}`} data-progress={t}>
+        <TableShoe />
         {groups.map((cards, row) => (
           <div key={row} className="casino-card-line">
             <span>
@@ -789,11 +772,13 @@ export function CasinoRoundStage({
               return (
                 <MotionCard
                   key={i}
+                  runId={run.id}
                   value={game === "red_dog" ? card - 1 : card}
                   progress={pCard(order, sequence.length)}
                   hidden={!has}
                   fly
                   rankOnly={rankOnly}
+                  index={game === "three_card_poker" ? i : 1}
                   winner={
                     done &&
                     round!.payout > round!.stake &&

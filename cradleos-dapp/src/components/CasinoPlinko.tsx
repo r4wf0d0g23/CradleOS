@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useId } from "react";
 import { useCasinoTimeline, useTableCues } from "./useCasinoTimeline";
 import { STILL_RUN, type TableRun } from "../lib/casinoTableMotion";
 import { PLINKO_BPS, type Round } from "../lib/casinoPractice";
@@ -30,6 +30,7 @@ export function CasinoPlinko({
   reducedMotion: boolean;
   run?: TableRun;
 }) {
+  const materialId = useId().replace(/:/g, "");
   const rounds = useMemo(
     () => packRounds ?? (round ? [round] : []),
     [packRounds, round],
@@ -66,6 +67,53 @@ export function CasinoPlinko({
         aria-label={`Twelve-row Plinko board, ${profile} payouts, ${rounds.length || 1} balls`}
         data-landed={landed}
       >
+        <defs>
+          <radialGradient id={`${materialId}-peg`} cx="25%" cy="20%">
+            <stop stopColor="#e2e5ce" />
+            <stop offset=".4" stopColor="#99a9a3" />
+            <stop offset="1" stopColor="#263b40" />
+          </radialGradient>
+          {["#e8d8b2", "#8fd5de", "#e8b46c", "#b7d89a"].map((color, i) => (
+            <radialGradient
+              key={i}
+              id={`${materialId}-ball-${i}`}
+              cx="28%"
+              cy="23%"
+            >
+              <stop stopColor="#fffdec" />
+              <stop offset=".3" stopColor={color} />
+              <stop offset="1" stopColor="#344349" />
+            </radialGradient>
+          ))}
+        </defs>
+        <rect
+          x="2"
+          y="2"
+          width="296"
+          height="247"
+          rx="12"
+          fill="#15242a"
+          stroke="#76867c"
+          strokeWidth="3"
+        />
+        <rect
+          x="7"
+          y="7"
+          width="286"
+          height="216"
+          rx="8"
+          fill="#0a191f"
+          stroke="#50675f55"
+        />
+        {[15, 285].flatMap((x) =>
+          [16, 213].map((y) => (
+            <g key={`${x}-${y}`}>
+              <circle cx={x} cy={y} r="3" fill="#718178" />
+              <path d={`M${x - 1.5} ${y}h3`} stroke="#162c30" />
+            </g>
+          )),
+        )}
+        <path d="M142 7h16l-5 7h-6Z" fill="#bba479" stroke="#dbcfaa" />
         {!busy &&
           routes.map((r, i) => (
             <path key={i} d={r.svg} className="plinko-route" />
@@ -92,6 +140,14 @@ export function CasinoPlinko({
                     opacity={0.6}
                   />
                 )}
+                <ellipse
+                  cx={p.x + 1}
+                  cy={p.y + 2}
+                  rx={3.7}
+                  ry={3}
+                  fill="#000"
+                  opacity=".65"
+                />
                 <circle
                   className="plinko-peg"
                   data-row={row}
@@ -99,7 +155,7 @@ export function CasinoPlinko({
                   cx={p.x}
                   cy={p.y}
                   r={PLINKO_PEG_RADIUS}
-                  fill={hit ? "#fff1b2" : "#abb29f"}
+                  fill={hit ? "#fff1b2" : `url(#${materialId}-peg)`}
                 />
               </g>
             );
@@ -159,6 +215,14 @@ export function CasinoPlinko({
           (b, i) =>
             b.time >= 0 && (
               <g key={rounds[i].id}>
+                <ellipse
+                  cx={b.point.x + 1}
+                  cy={b.point.y + 4}
+                  rx="4.6"
+                  ry="2.4"
+                  fill="#000"
+                  opacity=".65"
+                />
                 {animated && (
                   <polyline
                     className="plinko-trail"
@@ -172,12 +236,19 @@ export function CasinoPlinko({
                 <circle
                   className="plinko-ball"
                   style={{
-                    fill: ["#fafae5", "#8fd5de", "#e8b46c", "#b7d89a"][i % 4],
+                    fill: `url(#${materialId}-ball-${i % 4})`,
                   }}
                   data-ball={i}
                   cx={b.point.x}
                   cy={b.point.y}
                   r={PLINKO_BALL_RADIUS}
+                />
+                <path
+                  d="M-2.4-1.8Q0-3 2.4-1.8"
+                  stroke="#fff5d988"
+                  strokeWidth=".8"
+                  fill="none"
+                  transform={`translate(${b.point.x} ${b.point.y}) rotate(${Math.min(PLINKO_MOTION_MS, b.time) * 0.35 * (i % 2 ? -1 : 1)})`}
                 />
               </g>
             ),

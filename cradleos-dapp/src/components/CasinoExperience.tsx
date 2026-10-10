@@ -77,7 +77,8 @@ import {
 } from "../lib/casinoPractice";
 import "../styles/casino-lounge.css";
 import "../styles/casino-table-motion.css";
-import { useCasinoTimeline } from "./useCasinoTimeline";
+import "../styles/casino-nonslot-upgrades.css";
+import { CasinoMotionOverride, useCasinoTimeline } from "./useCasinoTimeline";
 import { AstralTable, AstralHand, AstralCard } from "./CasinoAstralCards";
 import { CasinoBlackjackMotion } from "./CasinoBlackjackMotion";
 import {
@@ -114,6 +115,7 @@ function GameSurface({
   busy,
   reducedMotion,
   selectedProfile,
+  selectedSide,
   slotRun,
   animateSlots,
   onNextSlot,
@@ -126,6 +128,7 @@ function GameSurface({
   busy: boolean;
   reducedMotion: boolean;
   selectedProfile: keyof typeof PROFILES;
+  selectedSide: number;
   slotRun: SlotMotionRun;
   animateSlots: boolean;
   onNextSlot: () => void;
@@ -179,9 +182,7 @@ function GameSurface({
             </button>
           ))}
         </div>
-        <small className="casino-board-caption">
-          Ticket {ticket + 1} outlined · same shared draw
-        </small>
+        <small className="casino-board-caption">Shared draw</small>
         <CasinoRoundStage
           game="keno"
           round={round}
@@ -225,15 +226,33 @@ function GameSurface({
       dealer = state.hand?.dealer ?? values.slice(separator < 0 ? 2 : cut + 1);
     return (
       <AstralTable reduced={reducedMotion}>
-        {player.length > 0 ? <>
-          <AstralHand label="DEALER · STANDS ON 17" cards={dealer} hidden={activeSession(state)} />
-          <div className="astral-rule"><span>BLACKJACK PAYS 3:2</span></div>
-          <AstralHand label="YOUR HAND" cards={player} />
-        </> : <>
-          <div className="astral-ready-fan" aria-hidden="true">{[0, 1, 2].map(i => <AstralCard key={i} value={0} hidden index={i} />)}</div>
-          <div className="astral-ready"><strong>YOUR ORBIT AWAITS</strong>Choose your stake. Deal into the void.</div>
-          <div className="astral-rule"><span>BLACKJACK 3:2 · DEALER STANDS ON 17</span></div>
-        </>}
+        {player.length > 0 ? (
+          <>
+            <AstralHand
+              label="DEALER · STANDS ON 17"
+              cards={dealer}
+              hidden={activeSession(state)}
+            />
+            <div className="astral-rule">
+              <span>BLACKJACK PAYS 3:2</span>
+            </div>
+            <AstralHand label="YOUR HAND" cards={player} />
+          </>
+        ) : (
+          <>
+            <div className="astral-ready-fan" aria-hidden="true">
+              {[0, 1, 2].map((i) => (
+                <AstralCard key={i} value={0} hidden index={i} />
+              ))}
+            </div>
+            <div className="astral-ready">
+              <strong>READY TO DEAL</strong>
+            </div>
+            <div className="astral-rule">
+              <span>BLACKJACK 3:2 · DEALER STANDS ON 17</span>
+            </div>
+          </>
+        )}
       </AstralTable>
     );
   }
@@ -304,7 +323,11 @@ function GameSurface({
       busy={busy}
       reduced={reducedMotion}
       run={tableRun}
-      choice={tableRun.choice}
+      choice={
+        game === "risk_wheel"
+          ? { ...tableRun.choice, side: selectedSide }
+          : tableRun.choice
+      }
       animateSlots={animateSlots}
     />
   );
@@ -356,9 +379,7 @@ function Rules({ game, picks }: { game: PracticeGame; picks: number[] }) {
           ))}
         </div>
       )}
-      <p>
-        Multipliers include stake · Free chips · No cash value
-      </p>
+      <p>Multipliers include stake · Free chips · No cash value</p>
     </details>
   );
 }
@@ -396,11 +417,7 @@ function TestnetStatus({ q }: { q: ReturnType<typeof useLoungeHouse> }) {
               ? `Bankroll: ${(Number(h.bank) / 1e9).toLocaleString()} $EVE · Sui Testnet · Cycle 7`
               : "Loading house…"}
         </p>
-        {h && !ready && (
-          <p>
-            Testnet wagering paused
-          </p>
-        )}
+        {h && !ready && <p>Testnet wagering paused</p>}
       </div>
       <button onClick={() => void q.refetch()} disabled={q.isFetching}>
         Refresh status
@@ -512,21 +529,56 @@ export function CasinoExperience({
   const [systemReduced, setSystemReduced] = useState(
     () => matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
-  const [slotMotionPreference, setSlotMotionPreference] = useState<SlotMotionPreference>(() => {
-    try {
-      const saved = localStorage.getItem(SLOT_MOTION_KEY);
-      return saved === "system" || saved === "instant" ? saved : "animated";
-    } catch { return "animated"; }
-  });
-  const slotMotionEnabled = mode === "practice" && !!game && isSlotGame(game);
-  const animateSlots = slotMotionEnabled && slotMotionPreference === "animated";
-  const reduce = slotMotionEnabled && slotMotionPreference !== "system"
-    ? slotMotionPreference === "instant" : systemReduced;
+  const [slotMotionPreference, setSlotMotionPreference] =
+    useState<SlotMotionPreference>(() => {
+      try {
+        const saved = localStorage.getItem(SLOT_MOTION_KEY);
+        return saved === "system" || saved === "instant" ? saved : "animated";
+      } catch {
+        return "animated";
+      }
+    });
+  const slotMotionEnabled = mode === "practice";
+  const explicitAnimation =
+    slotMotionEnabled && slotMotionPreference === "animated";
+  const animateSlots = explicitAnimation && !!game && isSlotGame(game);
+  const reduce =
+    slotMotionEnabled && slotMotionPreference !== "system"
+      ? slotMotionPreference === "instant"
+      : systemReduced;
   function chooseSlotMotion(value: string) {
-    if (busyRef.current || autoRef.current || !["system", "animated", "instant"].includes(value)) return;
+    if (
+      busyRef.current ||
+      autoRef.current ||
+      !["system", "animated", "instant"].includes(value)
+    )
+      return;
     setSlotMotionPreference(value as SlotMotionPreference);
-    try { localStorage.setItem(SLOT_MOTION_KEY, value); } catch { /* Cosmetic only. */ }
+    try {
+      localStorage.setItem(SLOT_MOTION_KEY, value);
+    } catch {
+      /* Cosmetic only. */
+    }
   }
+  const stageRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!busy || !game || isSlotGame(game) || game === "craps") return;
+    const frame = requestAnimationFrame(() => {
+      const stage = stageRef.current;
+      if (!stage) return;
+      const r = stage.getBoundingClientRect();
+      const visible = Math.max(
+        0,
+        Math.min(innerHeight, r.bottom) - Math.max(64, r.top),
+      );
+      if (visible < Math.min(r.height, innerHeight - 100) * 0.95)
+        window.scrollTo({
+          top: Math.max(0, scrollY + r.top - 64),
+          behavior: "instant",
+        });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [busy, game, tableRun.id]);
   const feedback = useCasinoFeedback();
   const houseQuery = useLoungeHouse(mode === "testnet");
   const wageringReady =
@@ -991,668 +1043,692 @@ export function CasinoExperience({
   const meta = game ? titles(game) : null;
   return (
     <CasinoFeedback.Provider value={feedback.play}>
-      <section className="frontier-casino" data-mode={mode} data-slot-motion={animateSlots ? "animated" : undefined}>
-        <header className="lounge-header">
-          {onReturnToStation && (
-            <button
-              className="lounge-station-return"
-              disabled={chainBusy}
-              onClick={() => {
-                if (chainBusyRef.current) return;
-                pauseRun();
-                onReturnToStation();
+      <CasinoMotionOverride.Provider value={explicitAnimation}>
+        <section
+          className="frontier-casino"
+          data-mode={mode}
+          data-game={game ?? undefined}
+          data-motion={
+            explicitAnimation ? "animated" : reduce ? "instant" : "system"
+          }
+          data-slot-motion={animateSlots ? "animated" : undefined}
+        >
+          <header className="lounge-header">
+            {onReturnToStation && (
+              <button
+                className="lounge-station-return"
+                disabled={chainBusy}
+                onClick={() => {
+                  if (chainBusyRef.current) return;
+                  pauseRun();
+                  onReturnToStation();
+                }}
+              >
+                ← Station floor
+              </button>
+            )}
+            <a
+              className="lounge-brand"
+              href="#/casino"
+              onClick={(e) => {
+                e.preventDefault();
+                if (mode === "donate") changeMode("practice");
+                else navigate(null);
               }}
+              aria-label="Casino lobby"
             >
-              ← Station floor
-            </button>
-          )}
-          <a
-            className="lounge-brand"
-            href="#/casino"
-            onClick={(e) => {
-              e.preventDefault();
-              if (mode === "donate") changeMode("practice");
-              else navigate(null);
-            }}
-            aria-label="Casino lobby"
-          >
-            <span>◇</span>
-            <div>
-              CRADLE <b>CASINO</b>
-              <small>AFTER HOURS IN THE FRONTIER</small>
-            </div>
-          </a>
-          <div
-            className="lounge-mode"
-            role="group"
-            aria-label="Casino currency mode"
-          >
-            <button
-              aria-pressed={mode === "practice"}
-              disabled={locked}
-              onClick={() => changeMode("practice")}
+              <span>◇</span>
+              <div>
+                CRADLE <b>CASINO</b>
+                <small>AFTER HOURS IN THE FRONTIER</small>
+              </div>
+            </a>
+            <div
+              className="lounge-mode"
+              role="group"
+              aria-label="Casino currency mode"
             >
-              Play Money
-            </button>
-            <button
-              aria-pressed={mode === "testnet"}
-              disabled={locked}
-              onClick={() => changeMode("testnet")}
-            >
-              $EVE Testnet
-            </button>
-          </div>
-          <button
-            className="lounge-sound"
-            aria-pressed={feedback.enabled}
-            onClick={() => void feedback.toggle()}
-            aria-label={
-              feedback.enabled ? "Mute casino sound" : "Enable casino sound"
-            }
-          >
-            {feedback.enabled ? "♪" : "♩"}
-            <span>Sound {feedback.enabled ? "on" : "off"}</span>
-          </button>
-        </header>
-        <div className="lounge-account">
-          <button
-            className="lounge-donate-link"
-            disabled={locked}
-            aria-pressed={mode === "donate"}
-            onClick={() =>
-              changeMode(mode === "donate" ? "practice" : "donate")
-            }
-          >
-            {mode === "donate" ? "← Back to casino" : "Donate $EVE"}
-          </button>
-          <span className="lounge-mode-label">
-            <i />{" "}
-            {mode === "practice"
-              ? "PLAY MONEY · FREE CHIPS"
-              : mode === "donate"
-                ? "$EVE · SEED THE HOUSE"
-                : "$EVE · TESTNET ONLY"}
-          </span>
-          {mode === "practice" ? (
-            <div>
-              <span className="lounge-balance">
-                {chipLabel(displayedBalance)} <small>chips</small>
-              </span>
               <button
-                disabled={locked || !!crapsEscrow(state.craps)}
-                title={
-                  crapsEscrow(
-                    state.craps?.pending ? state.craps.rolls[0] : state.craps,
-                  )
-                    ? "Resolve or take down your craps bets before refilling"
-                    : undefined
-                }
-                onClick={() => setResetConfirm(!resetConfirm)}
+                aria-pressed={mode === "practice"}
+                disabled={locked}
+                onClick={() => changeMode("practice")}
               >
-                Refill
+                Play Money
+              </button>
+              <button
+                aria-pressed={mode === "testnet"}
+                disabled={locked}
+                onClick={() => changeMode("testnet")}
+              >
+                $EVE Testnet
               </button>
             </div>
-          ) : (
-            <span className="lounge-muted">
-              Wallet funds stay separate from play chips.
+            <button
+              className="lounge-sound"
+              aria-pressed={feedback.enabled}
+              onClick={() => void feedback.toggle()}
+              aria-label={
+                feedback.enabled ? "Mute casino sound" : "Enable casino sound"
+              }
+            >
+              {feedback.enabled ? "♪" : "♩"}
+              <span>Sound {feedback.enabled ? "on" : "off"}</span>
+            </button>
+          </header>
+          {mode === "practice" && (
+            <label className="casino-motion-setting">
+              Motion
+              <select
+                aria-label="Game animation"
+                value={slotMotionPreference}
+                disabled={busy || autoRun}
+                onChange={(e) => chooseSlotMotion(e.target.value)}
+              >
+                <option value="animated">Animated</option>
+                <option value="system">System</option>
+                <option value="instant">Instant</option>
+              </select>
+            </label>
+          )}
+          <div className="lounge-account">
+            <button
+              className="lounge-donate-link"
+              disabled={locked}
+              aria-pressed={mode === "donate"}
+              onClick={() =>
+                changeMode(mode === "donate" ? "practice" : "donate")
+              }
+            >
+              {mode === "donate" ? "← Back to casino" : "Donate $EVE"}
+            </button>
+            <span className="lounge-mode-label">
+              <i />{" "}
+              {mode === "practice"
+                ? "PLAY MONEY · FREE CHIPS"
+                : mode === "donate"
+                  ? "$EVE · SEED THE HOUSE"
+                  : "$EVE · TESTNET ONLY"}
             </span>
-          )}
-        </div>
-        {resetConfirm && mode === "practice" && (
-          <div className="lounge-confirm">
-            <span>Reset this tab to 10,000 chips and clear its history?</span>
-            <button
-              onClick={refill}
-              disabled={locked || !!crapsEscrow(state.craps)}
-            >
-              Reset chips
-            </button>
-            <button onClick={() => setResetConfirm(false)}>Cancel</button>
-          </div>
-        )}
-        {(error || feedback.error) && (
-          <p className="lounge-error" role="alert">
-            {error || feedback.error}
-          </p>
-        )}
-        {mode === "testnet" && <TestnetStatus q={houseQuery} />}
-        {mode === "donate" ? (
-          <HouseDonatePanel
-            onBusyChange={(value) => {
-              busyRef.current = value;
-              chainBusyRef.current = value;
-              setChainBusy(value);
-            }}
-          />
-        ) : !game ? (
-          <>
-            {mode === "practice" &&
-              state.craps &&
-              (crapsEscrow(state.craps) > 0 || state.craps.point > 0) && (
-                <div className="craps-resume">
-                  <span>
-                    Craps · {chipLabel(crapsEscrow(state.craps))} chips on the
-                    table
-                    {state.craps.point ? ` · Point ${state.craps.point}` : ""}
-                  </span>
-                  <button onClick={() => navigate("craps")}>
-                    Return to table
-                  </button>
-                </div>
-              )}
-            <div className="lounge-catalog-heading">
-              <h3>
-                {mode === "practice" ? "Practice floor" : "Testnet tables"}{" "}
-                <span>{games.length}</span>
-              </h3>
-              <label className="lounge-search">
-                <span>⌕</span>
-                <input
-                  type="search"
-                  aria-label="Search casino games"
-                  placeholder="Find your game"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </label>
-            </div>
-            <nav className="lounge-categories" aria-label="Game categories">
-              <button
-                aria-pressed={category === "all"}
-                onClick={() => setCategory("all")}
-              >
-                All games
-              </button>
-              {categories.map((c) => (
+            {mode === "practice" ? (
+              <div>
+                <span className="lounge-balance">
+                  {chipLabel(displayedBalance)} <small>chips</small>
+                </span>
                 <button
-                  key={c}
-                  aria-pressed={category === c}
-                  onClick={() => setCategory(c)}
+                  disabled={locked || !!crapsEscrow(state.craps)}
+                  title={
+                    crapsEscrow(
+                      state.craps?.pending ? state.craps.rolls[0] : state.craps,
+                    )
+                      ? "Resolve or take down your craps bets before refilling"
+                      : undefined
+                  }
+                  onClick={() => setResetConfirm(!resetConfirm)}
                 >
-                  {CATEGORY_LABELS[c]}
+                  Refill
                 </button>
-              ))}
-            </nav>
-            <div className="lounge-game-grid">
-              {filtered.map((entry) => {
-                const m = titles(entry.key);
-                return (
+              </div>
+            ) : (
+              <span className="lounge-muted">
+                Wallet funds stay separate from play chips.
+              </span>
+            )}
+          </div>
+          {resetConfirm && mode === "practice" && (
+            <div className="lounge-confirm">
+              <span>Reset this tab to 10,000 chips and clear its history?</span>
+              <button
+                onClick={refill}
+                disabled={locked || !!crapsEscrow(state.craps)}
+              >
+                Reset chips
+              </button>
+              <button onClick={() => setResetConfirm(false)}>Cancel</button>
+            </div>
+          )}
+          {(error || feedback.error) && (
+            <p className="lounge-error" role="alert">
+              {error || feedback.error}
+            </p>
+          )}
+          {mode === "testnet" && <TestnetStatus q={houseQuery} />}
+          {mode === "donate" ? (
+            <HouseDonatePanel
+              onBusyChange={(value) => {
+                busyRef.current = value;
+                chainBusyRef.current = value;
+                setChainBusy(value);
+              }}
+            />
+          ) : !game ? (
+            <>
+              {mode === "practice" &&
+                state.craps &&
+                (crapsEscrow(state.craps) > 0 || state.craps.point > 0) && (
+                  <div className="craps-resume">
+                    <span>
+                      Craps · {chipLabel(crapsEscrow(state.craps))} chips on the
+                      table
+                      {state.craps.point ? ` · Point ${state.craps.point}` : ""}
+                    </span>
+                    <button onClick={() => navigate("craps")}>
+                      Return to table
+                    </button>
+                  </div>
+                )}
+              <div className="lounge-catalog-heading">
+                <h3>
+                  {mode === "practice" ? "Practice floor" : "Testnet tables"}{" "}
+                  <span>{games.length}</span>
+                </h3>
+                <label className="lounge-search">
+                  <span>⌕</span>
+                  <input
+                    type="search"
+                    aria-label="Search casino games"
+                    placeholder="Find your game"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </label>
+              </div>
+              <nav className="lounge-categories" aria-label="Game categories">
+                <button
+                  aria-pressed={category === "all"}
+                  onClick={() => setCategory("all")}
+                >
+                  All games
+                </button>
+                {categories.map((c) => (
                   <button
-                    key={entry.key}
-                    className="lounge-game-tile"
-                    onClick={() => navigate(entry.key)}
+                    key={c}
+                    aria-pressed={category === c}
+                    onClick={() => setCategory(c)}
                   >
-                    <div className="tile-art">
-                      {entry.key === "craps" ? (
-                        <CrapsTile />
-                      ) : isFleet(entry.key) ? (
-                        <FleetTile game={entry.key} />
-                      ) : (
-                        <img
-                          src={`${base}casino/cards/${entry.key}.webp`}
-                          alt=""
-                          loading="lazy"
-                          onError={(e) => {
-                            e.currentTarget.style.visibility = "hidden";
-                          }}
+                    {CATEGORY_LABELS[c]}
+                  </button>
+                ))}
+              </nav>
+              <div className="lounge-game-grid">
+                {filtered.map((entry) => {
+                  const m = titles(entry.key);
+                  return (
+                    <button
+                      key={entry.key}
+                      className="lounge-game-tile"
+                      onClick={() => navigate(entry.key)}
+                    >
+                      <div className="tile-art">
+                        {entry.key === "craps" ? (
+                          <CrapsTile />
+                        ) : isFleet(entry.key) ? (
+                          <FleetTile game={entry.key} />
+                        ) : (
+                          <img
+                            src={`${base}casino/cards/${entry.key}.webp`}
+                            alt=""
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.visibility = "hidden";
+                            }}
+                          />
+                        )}
+                        <span className="tile-icon">
+                          <ItemIcon typeId={m.icon} size={42} />
+                        </span>
+                        <span className="tile-play">↗</span>
+                      </div>
+                      <div>
+                        <small>
+                          {isFleet(entry.key)
+                            ? FLEET[entry.key].mechanic
+                            : entry.name}{" "}
+                          <span>
+                            {mode === "practice" ? "FREE PLAY" : "TESTNET"}
+                          </span>
+                        </small>
+                        <h4>{m.title}</h4>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {!filtered.length && (
+                <p className="lounge-empty">No games found.</p>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="lounge-table-header">
+                <button disabled={locked} onClick={() => navigate(null)}>
+                  ‹ Lobby
+                </button>
+                <div>
+                  <small>
+                    {meta!.tag} /{" "}
+                    {mode === "practice" ? "PLAY MONEY" : "$EVE TESTNET"}
+                  </small>
+                  <h2>{meta!.title}</h2>
+                </div>
+                <ItemIcon typeId={meta!.icon} size={48} />
+              </div>
+              {mode === "testnet" ? (
+                <div className="lounge-chain-table">
+                  <CasinoPanel
+                    key={game}
+                    initialGame={game}
+                    wageringReady={wageringReady}
+                    embedded
+                    onBusyChange={(value) => {
+                      chainBusyRef.current = value;
+                      setChainBusy(value);
+                    }}
+                    onLobby={() => navigate(null)}
+                  />
+                </div>
+              ) : game === "craps" ? (
+                <CasinoCraps
+                  state={state}
+                  commit={commit}
+                  busy={busy}
+                  setBusy={(value) => {
+                    busyRef.current = value;
+                    setBusy(value);
+                  }}
+                  reduced={reduce}
+                  onError={setError}
+                />
+              ) : (
+                <div
+                  className={`lounge-play-layout ${!isSlotGame(game) ? "nonslot-layout" : ""}`}
+                >
+                  <div
+                    ref={stageRef}
+                    className={`lounge-surface ${game === "blackjack" ? "astral-surface" : ""} ${busy ? "round-active" : ""} ${result && result.payout > result.stake ? "round-won" : ""}`}
+                  >
+                    <div className="lounge-surface-label">
+                      <span>CRADLE / {meta!.tag}</span>
+                      <span>
+                        {pendingSlot(state)
+                          ? "FEATURE SAVED"
+                          : pendingScratch(state)
+                            ? "TICKETS SAVED"
+                            : pendingClassicSpin(state)
+                              ? "SPIN SAVED"
+                              : pendingSpinRun(state)
+                                ? "SPIN RUN"
+                                : activeSession(state)
+                                  ? "HAND IN PLAY"
+                                  : busy
+                                    ? "RESOLVING"
+                                    : "PRACTICE TABLE"}
+                      </span>
+                    </div>
+                    <GameSurface
+                      game={game as PracticeGame}
+                      state={state}
+                      result={result}
+                      busy={busy}
+                      reducedMotion={reduce}
+                      selectedProfile={options.profile ?? "Low"}
+                      selectedSide={side}
+                      slotRun={slotRun}
+                      animateSlots={animateSlots}
+                      onNextSlot={() => nextSlot()}
+                      tableRun={tableRun}
+                      onScratchReveal={uncoverScratch}
+                    />
+                    <div
+                      className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}
+                    >
+                      {busy ? (
+                        <span role="status">Resolving…</span>
+                      ) : state.table ? (
+                        <span role="status">
+                          Seat {state.table.hands[state.table.active].seat + 1}{" "}
+                          · Your move
+                        </span>
+                      ) : state.hand ? (
+                        <span role="status">
+                          Your total · {cardTotal(state.hand.player)}
+                        </span>
+                      ) : null}
+                      {!busy && state.hand && (
+                        <span>Your move · Hit, stand or double</span>
+                      )}
+                      {!busy &&
+                        !state.hand &&
+                        !state.table &&
+                        !pendingSlot(state) &&
+                        !pendingClassicSpin(state) &&
+                        !pendingScratch(state) &&
+                        (result ? (
+                          <CasinoRoundSummary
+                            round={result}
+                            reduced={reduce}
+                            event={
+                              payoutEvent?.roundId === result.id &&
+                              payoutEvent.game === game
+                                ? payoutEvent
+                                : undefined
+                            }
+                          />
+                        ) : (
+                          <span>Set your stake. Make your move.</span>
+                        ))}
+                    </div>
+                  </div>
+                  <aside className="lounge-console">
+                    <span className="lounge-eyebrow">PLAY MONEY</span>
+                    <h3>Your controls</h3>
+                    {!busy && state.table && (
+                      <p className="casino-active-summary">
+                        Seat {state.table.hands[state.table.active].seat + 1} ·{" "}
+                        <strong>
+                          {cardTotal(
+                            state.table.hands[state.table.active].cards,
+                          )}
+                        </strong>{" "}
+                        vs dealer{" "}
+                        <strong>{cardTotal([state.table.dealer[0]])}</strong>
+                      </p>
+                    )}
+                    <label className="stake-label">
+                      {game === "roulette"
+                        ? "Chip value"
+                        : game === "keno"
+                          ? "Ticket stake to apply"
+                          : "Stake per play"}{" "}
+                      <span>chips</span>
+                      <input
+                        aria-label="Stake in play chips"
+                        inputMode="decimal"
+                        value={stake}
+                        disabled={busy || activeSession(state)}
+                        onChange={(e) => setStake(e.target.value)}
+                      />
+                    </label>
+                    <div className="lounge-stakes">
+                      {[10, 25, 100, 500].map((n) => (
+                        <button
+                          key={n}
+                          disabled={busy || activeSession(state)}
+                          onClick={() => setStake(String(n))}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                    <fieldset
+                      disabled={busy || activeSession(state)}
+                      className="lounge-options"
+                    >
+                      <CasinoPackControls
+                        key={game}
+                        game={game}
+                        options={options}
+                        setOptions={setOptions}
+                        stake={stake}
+                        pack={pack}
+                        onError={setError}
+                        onActivePicks={setPicks}
+                      />
+                      {game !== "keno" && (
+                        <ExpandedOptions
+                          game={game}
+                          side={side}
+                          setSide={setSide}
+                          target={target}
+                          setTarget={setTarget}
+                          picks={picks}
+                          setPicks={setPicks}
                         />
                       )}
-                      <span className="tile-icon">
-                        <ItemIcon typeId={m.icon} size={42} />
-                      </span>
-                      <span className="tile-play">↗</span>
-                    </div>
-                    <div>
-                      <small>
-                        {isFleet(entry.key)
-                          ? FLEET[entry.key].mechanic
-                          : entry.name}{" "}
-                        <span>
-                          {mode === "practice" ? "FREE PLAY" : "TESTNET"}
-                        </span>
-                      </small>
-                      <h4>{m.title}</h4>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            {!filtered.length && (
-              <p className="lounge-empty">
-                No games found.
-              </p>
-            )}
-          </>
-        ) : (
-          <>
-            <div className="lounge-table-header">
-              <button disabled={locked} onClick={() => navigate(null)}>
-                ‹ Lobby
-              </button>
-              <div>
-                <small>
-                  {meta!.tag} /{" "}
-                  {mode === "practice" ? "PLAY MONEY" : "$EVE TESTNET"}
-                </small>
-                <h2>{meta!.title}</h2>
-              </div>
-              <ItemIcon typeId={meta!.icon} size={48} />
-            </div>
-            {mode === "testnet" ? (
-              <div className="lounge-chain-table">
-                <CasinoPanel
-                  key={game}
-                  initialGame={game}
-                  wageringReady={wageringReady}
-                  embedded
-                  onBusyChange={(value) => {
-                    chainBusyRef.current = value;
-                    setChainBusy(value);
-                  }}
-                  onLobby={() => navigate(null)}
-                />
-              </div>
-            ) : game === "craps" ? (
-              <CasinoCraps
-                state={state}
-                commit={commit}
-                busy={busy}
-                setBusy={(value) => {
-                  busyRef.current = value;
-                  setBusy(value);
-                }}
-                reduced={reduce}
-                onError={setError}
-              />
-            ) : (
-              <div className="lounge-play-layout">
-                <div
-                  className={`lounge-surface ${game === "blackjack" ? "astral-surface" : ""} ${busy ? "round-active" : ""} ${result && result.payout > result.stake ? "round-won" : ""}`}
-                >
-                  <div className="lounge-surface-label">
-                    <span>CRADLE / {meta!.tag}</span>
-                    <span>
-                      {pendingSlot(state)
-                        ? "FEATURE SAVED"
-                        : pendingScratch(state)
-                          ? "TICKETS SAVED"
-                          : pendingClassicSpin(state)
-                            ? "SPIN SAVED"
-                            : pendingSpinRun(state)
-                              ? "SPIN RUN"
-                              : activeSession(state)
-                                ? "HAND IN PLAY"
-                                : busy
-                                  ? "RESOLVING"
-                                  : "PRACTICE TABLE"}
-                    </span>
-                  </div>
-                  <GameSurface
-                    game={game as PracticeGame}
-                    state={state}
-                    result={result}
-                    busy={busy}
-                    reducedMotion={reduce}
-                    selectedProfile={options.profile ?? "Low"}
-                    slotRun={slotRun}
-                    animateSlots={animateSlots}
-                    onNextSlot={() => nextSlot()}
-                    tableRun={tableRun}
-                    onScratchReveal={uncoverScratch}
-                  />
-                  <div
-                    className={`lounge-result ${result ? (result.payout > result.stake ? "result-win" : result.payout === result.stake ? "result-push" : "result-loss") : ""}`}
-                  >
-                    {busy ? (
-                      <span role="status">Resolving…</span>
-                    ) : state.table ? (
-                      <span role="status">
-                        Seat {state.table.hands[state.table.active].seat + 1} ·
-                        Your move
-                      </span>
-                    ) : state.hand ? (
-                      <span role="status">
-                        Your total · {cardTotal(state.hand.player)}
-                      </span>
-                    ) : null}
-                    {!busy && state.hand && (
-                      <span>Your move · Hit, stand or double</span>
-                    )}
-                    {!busy &&
-                      !state.hand &&
-                      !state.table &&
-                      !pendingSlot(state) &&
-                      !pendingClassicSpin(state) &&
-                      !pendingScratch(state) &&
-                      (result ? (
-                        <CasinoRoundSummary
-                          round={result}
-                          reduced={reduce}
-                          event={
-                            payoutEvent?.roundId === result.id &&
-                            payoutEvent.game === game
-                              ? payoutEvent
-                              : undefined
-                          }
-                        />
-                      ) : (
-                        <span>Set your stake. Make your move.</span>
-                      ))}
-                  </div>
-                </div>
-                <aside className="lounge-console">
-                  <span className="lounge-eyebrow">PLAY MONEY</span>
-                  <h3>Your controls</h3>
-                  {!busy && state.table && (
-                    <p className="casino-active-summary">
-                      Seat {state.table.hands[state.table.active].seat + 1} ·{" "}
-                      <strong>
-                        {cardTotal(state.table.hands[state.table.active].cards)}
-                      </strong>{" "}
-                      vs dealer{" "}
-                      <strong>{cardTotal([state.table.dealer[0]])}</strong>
-                    </p>
-                  )}
-                  {isSlotGame(game) && <label className="slot-motion-control">
-                    Reels
-                    <select aria-label="Reel animation" value={slotMotionPreference} disabled={busy || autoRun}
-                      onChange={(e) => chooseSlotMotion(e.target.value)}>
-                      <option value="system">System · {systemReduced ? "Reduced" : "Animated"}</option>
-                      <option value="animated">Animated</option>
-                      <option value="instant">Instant</option>
-                    </select>
-                  </label>}
-                  <label className="stake-label">
-                    {game === "roulette"
-                      ? "Chip value"
-                      : game === "keno"
-                        ? "Ticket stake to apply"
-                        : "Stake per play"}{" "}
-                    <span>chips</span>
-                    <input
-                      aria-label="Stake in play chips"
-                      inputMode="decimal"
-                      value={stake}
-                      disabled={busy || activeSession(state)}
-                      onChange={(e) => setStake(e.target.value)}
-                    />
-                  </label>
-                  <div className="lounge-stakes">
-                    {[10, 25, 100, 500].map((n) => (
-                      <button
-                        key={n}
-                        disabled={busy || activeSession(state)}
-                        onClick={() => setStake(String(n))}
-                      >
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                  <fieldset
-                    disabled={busy || activeSession(state)}
-                    className="lounge-options"
-                  >
-                    <CasinoPackControls
-                      key={game}
-                      game={game}
-                      options={options}
-                      setOptions={setOptions}
-                      stake={stake}
-                      pack={pack}
-                      onError={setError}
-                      onActivePicks={setPicks}
-                    />
-                    {game !== "keno" && (
-                      <ExpandedOptions
-                        game={game}
-                        side={side}
-                        setSide={setSide}
-                        target={target}
-                        setTarget={setTarget}
-                        picks={picks}
-                        setPicks={setPicks}
-                      />
-                    )}
-                    {game === "coinflip" && (
-                      <>
-                        <legend>Your call</legend>
-                        {["Heads", "Tails"].map((s, i) => (
-                          <button
-                            key={s}
-                            aria-pressed={side === i}
-                            onClick={() => setSide(i)}
-                          >
-                            {s}
-                          </button>
-                        ))}
-                      </>
-                    )}
-                    {game === "dice" && (
-                      <>
-                        <legend>Target · {target}</legend>
-                        <input
-                          aria-label="Dice target"
-                          type="range"
-                          min={over ? 4 : 3}
-                          max={over ? 98 : 97}
-                          value={target}
-                          onChange={(e) => setTarget(Number(e.target.value))}
-                        />
-                        <button
-                          aria-pressed={over}
-                          onClick={() => {
-                            setOver(true);
-                            setTarget((t) => Math.max(4, Math.min(98, t)));
-                          }}
-                        >
-                          Over
-                        </button>
-                        <button
-                          aria-pressed={!over}
-                          onClick={() => {
-                            setOver(false);
-                            setTarget((t) => Math.max(3, Math.min(97, t)));
-                          }}
-                        >
-                          Under
-                        </button>
-                        <p>
-                          {over ? 100 - target : target - 1}% chance ·{" "}
-                          {(98 / (over ? 100 - target : target - 1)).toFixed(2)}
-                          × return
-                        </p>
-                      </>
-                    )}
-                  </fieldset>
-                  {!activeSession(state) && (
-                    <div className="casino-total-stake">
-                      <span>
-                        {isSlotGame(game) ? "Maximum run stake" : "Total stake"}
-                      </span>
-                      <strong>{chipLabel(totalStake)} chips</strong>
-                    </div>
-                  )}
-                  {isSlotGame(game) && spinRun && spinRun.planned > 1 && (
-                    <div className="casino-spin-run" aria-label="Slot run">
-                      <strong>
-                        {spinRun.shown} / {spinRun.planned} spins revealed
-                      </strong>
-                      <progress
-                        aria-label="Spin run progress"
-                        value={spinRun.shown}
-                        max={spinRun.planned}
-                      />
-                      <span>
-                        {chipLabel(spinRun.paid * spinRun.stake)} chips staked ·{" "}
-                        {chipLabel(runTotals.payout)} revealed payout
-                      </span>
-                      <small>
-                        {spinRun.stopped
-                          ? "Stopped · paid spin stays saved"
-                          : pendingSpinRun(state)
-                            ? autoRun
-                              ? "Running · charged per spin"
-                              : "Paused · no new spins charged"
-                            : spinRun.shown < spinRun.paid
-                              ? "Last paid spin in progress"
-                              : "Run complete"}
-                      </small>
-                      {pendingSpinRun(state) && (
-                        <div>
-                          {autoRun ? (
-                            <button onClick={pauseRun}>Pause run</button>
-                          ) : (
+                      {game === "coinflip" && (
+                        <>
+                          <legend>Your call</legend>
+                          {["Heads", "Tails"].map((s, i) => (
                             <button
+                              key={s}
+                              aria-pressed={side === i}
+                              onClick={() => setSide(i)}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                      {game === "dice" && (
+                        <>
+                          <legend>Target · {target}</legend>
+                          <input
+                            aria-label="Dice target"
+                            type="range"
+                            min={over ? 4 : 3}
+                            max={over ? 98 : 97}
+                            value={target}
+                            onChange={(e) => setTarget(Number(e.target.value))}
+                          />
+                          <button
+                            aria-pressed={over}
+                            onClick={() => {
+                              setOver(true);
+                              setTarget((t) => Math.max(4, Math.min(98, t)));
+                            }}
+                          >
+                            Over
+                          </button>
+                          <button
+                            aria-pressed={!over}
+                            onClick={() => {
+                              setOver(false);
+                              setTarget((t) => Math.max(3, Math.min(97, t)));
+                            }}
+                          >
+                            Under
+                          </button>
+                          <p>
+                            {over ? 100 - target : target - 1}% chance ·{" "}
+                            {(98 / (over ? 100 - target : target - 1)).toFixed(
+                              2,
+                            )}
+                            × return
+                          </p>
+                        </>
+                      )}
+                    </fieldset>
+                    {!activeSession(state) && (
+                      <div className="casino-total-stake">
+                        <span>
+                          {isSlotGame(game)
+                            ? "Maximum run stake"
+                            : "Total stake"}
+                        </span>
+                        <strong>{chipLabel(totalStake)} chips</strong>
+                      </div>
+                    )}
+                    {isSlotGame(game) && spinRun && spinRun.planned > 1 && (
+                      <div className="casino-spin-run" aria-label="Slot run">
+                        <strong>
+                          {spinRun.shown} / {spinRun.planned} spins revealed
+                        </strong>
+                        <progress
+                          aria-label="Spin run progress"
+                          value={spinRun.shown}
+                          max={spinRun.planned}
+                        />
+                        <span>
+                          {chipLabel(spinRun.paid * spinRun.stake)} chips staked
+                          · {chipLabel(runTotals.payout)} revealed payout
+                        </span>
+                        <small>
+                          {spinRun.stopped
+                            ? "Stopped · paid spin stays saved"
+                            : pendingSpinRun(state)
+                              ? autoRun
+                                ? "Running · charged per spin"
+                                : "Paused · no new spins charged"
+                              : spinRun.shown < spinRun.paid
+                                ? "Last paid spin in progress"
+                                : "Run complete"}
+                        </small>
+                        {pendingSpinRun(state) && (
+                          <div>
+                            {autoRun ? (
+                              <button onClick={pauseRun}>Pause run</button>
+                            ) : (
+                              <button
+                                disabled={
+                                  busy ||
+                                  pendingSlot(state) ||
+                                  pendingClassicSpin(state)
+                                }
+                                onClick={resumeRun}
+                              >
+                                Resume run
+                              </button>
+                            )}
+                            <button onClick={stopRun}>Stop future spins</button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {pendingClassicSpin(state) ? (
+                      <button
+                        className="lounge-primary"
+                        disabled={busy}
+                        onClick={revealSavedClassic}
+                      >
+                        {busy ? "Revealing…" : "Reveal saved spin"}
+                      </button>
+                    ) : pendingSlot(state) ? (
+                      <div className="fleet-reveal-controls">
+                        <button
+                          className="lounge-primary"
+                          disabled={busy}
+                          onClick={() => nextSlot()}
+                        >
+                          {busy
+                            ? "Revealing…"
+                            : pack?.slot?.cursor === 0
+                              ? "Reveal saved spin"
+                              : slotAwaitingCollection(pack?.slot)
+                                ? "Collect vault"
+                                : pack?.slot?.frames[pack.slot.cursor]?.kind ===
+                                    "free"
+                                  ? "Next free spin"
+                                  : pack?.slot?.frames[pack.slot.cursor]
+                                        ?.kind === "hold"
+                                    ? "Respin"
+                                    : "Next cascade"}
+                        </button>
+                        <button disabled={busy} onClick={() => nextSlot(true)}>
+                          Reveal all
+                        </button>
+                        <small>Already paid · no additional stake</small>
+                      </div>
+                    ) : pendingScratch(state) ? (
+                      <small>
+                        Scratch the tickets or choose Reveal all. Already paid.
+                      </small>
+                    ) : pendingSpinRun(state) ? (
+                      <small>
+                        Bonuses, hiding the tab and reloading pause the run.
+                      </small>
+                    ) : game === "blackjack" && state.table ? (
+                      <div className="lounge-hand-actions">
+                        {(["hit", "stand", "double", "split"] as const).map(
+                          (a) => (
+                            <button
+                              key={a}
                               disabled={
                                 busy ||
-                                pendingSlot(state) ||
-                                pendingClassicSpin(state)
+                                !tableActionAllowed(
+                                  state.table!,
+                                  a,
+                                  state.balance,
+                                )
                               }
-                              onClick={resumeRun}
+                              onClick={() => act(a)}
                             >
-                              Resume run
+                              {a[0].toUpperCase() + a.slice(1)}
                             </button>
-                          )}
-                          <button onClick={stopRun}>Stop future spins</button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {pendingClassicSpin(state) ? (
-                    <button
-                      className="lounge-primary"
-                      disabled={busy}
-                      onClick={revealSavedClassic}
-                    >
-                      {busy ? "Revealing…" : "Reveal saved spin"}
-                    </button>
-                  ) : pendingSlot(state) ? (
-                    <div className="fleet-reveal-controls">
+                          ),
+                        )}
+                      </div>
+                    ) : game === "blackjack" && state.hand ? (
+                      <div className="lounge-hand-actions">
+                        <button
+                          className="lounge-primary"
+                          disabled={busy}
+                          onClick={() => act("hit")}
+                        >
+                          Hit
+                        </button>
+                        <button disabled={busy} onClick={() => act("stand")}>
+                          Stand
+                        </button>
+                        <button
+                          disabled={
+                            busy ||
+                            state.hand.player.length !== 2 ||
+                            state.balance < state.hand.stake
+                          }
+                          onClick={() => act("double")}
+                        >
+                          Double
+                        </button>
+                      </div>
+                    ) : (
                       <button
-                        className="lounge-primary"
+                        className="lounge-primary lounge-start"
                         disabled={busy}
-                        onClick={() => nextSlot()}
+                        onClick={() => act()}
                       >
                         {busy
-                          ? "Revealing…"
-                          : pack?.slot?.cursor === 0
-                            ? "Reveal saved spin"
-                            : slotAwaitingCollection(pack?.slot)
-                              ? "Collect vault"
-                              : pack?.slot?.frames[pack.slot.cursor]?.kind ===
-                                  "free"
-                                ? "Next free spin"
-                                : pack?.slot?.frames[pack.slot.cursor]?.kind ===
-                                    "hold"
-                                  ? "Respin"
-                                  : "Next cascade"}
+                          ? "Resolving…"
+                          : isFleet(game) ||
+                              game === "slots" ||
+                              game === "roulette" ||
+                              game === "wheel"
+                            ? isSlotGame(game) && (options.count ?? 1) > 1
+                              ? `Start ${options.count} spins`
+                              : "Spin"
+                            : game === "blackjack" || game === "war"
+                              ? "Deal"
+                              : game === "coinflip"
+                                ? "Flip"
+                                : game === "plinko"
+                                  ? "Drop"
+                                  : "Play"}{" "}
+                        <span>↗</span>
                       </button>
-                      <button disabled={busy} onClick={() => nextSlot(true)}>
-                        Reveal all
-                      </button>
-                      <small>Already paid · no additional stake</small>
-                    </div>
-                  ) : pendingScratch(state) ? (
-                    <small>
-                      Scratch the tickets or choose Reveal all. Already paid.
-                    </small>
-                  ) : pendingSpinRun(state) ? (
-                    <small>
-                      Bonuses, hiding the tab and reloading pause the run.
-                    </small>
-                  ) : game === "blackjack" && state.table ? (
-                    <div className="lounge-hand-actions">
-                      {(["hit", "stand", "double", "split"] as const).map(
-                        (a) => (
-                          <button
-                            key={a}
-                            disabled={
-                              busy ||
-                              !tableActionAllowed(
-                                state.table!,
-                                a,
-                                state.balance,
-                              )
-                            }
-                            onClick={() => act(a)}
-                          >
-                            {a[0].toUpperCase() + a.slice(1)}
-                          </button>
-                        ),
-                      )}
-                    </div>
-                  ) : game === "blackjack" && state.hand ? (
-                    <div className="lounge-hand-actions">
-                      <button
-                        className="lounge-primary"
-                        disabled={busy}
-                        onClick={() => act("hit")}
-                      >
-                        Hit
-                      </button>
-                      <button disabled={busy} onClick={() => act("stand")}>
-                        Stand
-                      </button>
-                      <button
-                        disabled={
-                          busy ||
-                          state.hand.player.length !== 2 ||
-                          state.balance < state.hand.stake
-                        }
-                        onClick={() => act("double")}
-                      >
-                        Double
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      className="lounge-primary lounge-start"
-                      disabled={busy}
-                      onClick={() => act()}
-                    >
-                      {busy
-                        ? "Resolving…"
-                        : isFleet(game) ||
-                            game === "slots" ||
-                            game === "roulette" ||
-                            game === "wheel"
-                          ? isSlotGame(game) && (options.count ?? 1) > 1
-                            ? `Start ${options.count} spins`
-                            : "Spin"
-                          : game === "blackjack" || game === "war"
-                            ? "Deal"
-                            : game === "coinflip"
-                              ? "Flip"
-                              : game === "plinko"
-                                ? "Drop"
-                                : "Play"}{" "}
-                      <span>↗</span>
-                    </button>
-                  )}
+                    )}
 
-                  <Rules game={game as PracticeGame} picks={picks} />
-                </aside>
-              </div>
-            )}
-          </>
-        )}
-        {mode === "practice" && game !== "craps" && (
-          <CasinoRoundHistory
-            state={state}
-            busy={busy}
-            title={(key) => titles(key).title}
-          />
-        )}
-        <footer className="lounge-footer">
-          <span>◇ CRADLE CASINO</span>
-          <span>
-            {mode === "practice"
-              ? "Play Money · No cash value"
-              : "Sui Testnet · $EVE"}
-          </span>
-          <a href="#/gamedata">Sources</a>
-        </footer>
-      </section>
+                    <Rules game={game as PracticeGame} picks={picks} />
+                  </aside>
+                </div>
+              )}
+            </>
+          )}
+          {mode === "practice" && game !== "craps" && (
+            <CasinoRoundHistory
+              state={state}
+              busy={busy}
+              title={(key) => titles(key).title}
+            />
+          )}
+          <footer className="lounge-footer">
+            <span>◇ CRADLE CASINO</span>
+            <span>
+              {mode === "practice"
+                ? "Play Money · No cash value"
+                : "Sui Testnet · $EVE"}
+            </span>
+            <a href="#/gamedata">Sources</a>
+          </footer>
+        </section>
+      </CasinoMotionOverride.Provider>
     </CasinoFeedback.Provider>
   );
 }

@@ -1,4 +1,5 @@
 import {
+  createContext,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -7,6 +8,7 @@ import {
 } from "react";
 import { CasinoFeedback, type CasinoCue } from "../lib/casinoFeedback";
 import { clamp, type TableRun } from "../lib/casinoTableMotion";
+export const CasinoMotionOverride = createContext(false);
 /** One clock supplied by the action owner; cancellation is sticky for that generation. */
 export function useCasinoTimeline(
   run: TableRun,
@@ -14,6 +16,8 @@ export function useCasinoTimeline(
   reduced: boolean,
   overrideSystemReduction = false,
 ) {
+  const explicitMotion =
+    useContext(CasinoMotionOverride) || overrideSystemReduction;
   const cancelled = useRef(-1),
     [frame, setFrame] = useState({ id: -1, t: 1 });
   useLayoutEffect(() => {
@@ -27,7 +31,7 @@ export function useCasinoTimeline(
       if (alive) setFrame({ id: run.id, t: 1 });
     };
     const preference = () => {
-        if (media.matches && !overrideSystemReduction) snap();
+        if (media.matches && !explicitMotion) snap();
       },
       visibility = () => {
         if (document.hidden) snap();
@@ -42,7 +46,7 @@ export function useCasinoTimeline(
     document.addEventListener("visibilitychange", visibility);
     if (
       reduced ||
-      (media.matches && !overrideSystemReduction) ||
+      (media.matches && !explicitMotion) ||
       document.hidden ||
       cancelled.current === run.id
     )
@@ -56,7 +60,7 @@ export function useCasinoTimeline(
       media.removeEventListener("change", preference);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [run, busy, reduced, overrideSystemReduction]);
+  }, [run, busy, reduced, explicitMotion]);
   const snapped = reduced || cancelled.current === run.id;
   return {
     t: !busy || snapped ? 1 : frame.id === run.id ? frame.t : 0,

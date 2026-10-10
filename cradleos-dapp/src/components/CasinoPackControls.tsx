@@ -124,8 +124,7 @@ export function CasinoPackControls({
     ];
     return (
       <>
-        <legend>Add chips to the board</legend>
-        <p>Each tap adds the chip value above.</p>
+        <legend>Place chips</legend>
         <div className="casino-roulette-grid">
           {Array.from({ length: 37 }, (_, n) => (
             <button
@@ -138,6 +137,14 @@ export function CasinoPackControls({
               onClick={() => add("straight", n)}
             >
               {n}
+              {ws.some((w) => w.kind === "straight" && w.value === n) && (
+                <small className="roulette-chip">
+                  {chipLabel(
+                    ws.find((w) => w.kind === "straight" && w.value === n)!
+                      .stake,
+                  )}
+                </small>
+              )}
             </button>
           ))}
         </div>
@@ -154,6 +161,14 @@ export function CasinoPackControls({
                   onClick={() => add(kind, value)}
                 >
                   {wagerLabel({ kind, value, stake: 0 })}
+                  {ws.some((w) => w.kind === kind && w.value === value) && (
+                    <small className="roulette-chip">
+                      {chipLabel(
+                        ws.find((w) => w.kind === kind && w.value === value)!
+                          .stake,
+                      )}
+                    </small>
+                  )}
                 </button>
               ),
             )}

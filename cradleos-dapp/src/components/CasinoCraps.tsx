@@ -1,3 +1,4 @@
+import { DIE_CONTACTS } from "../lib/casinoObjectMotion";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ItemIcon } from "./GameIcon";
 import { PhysicalDie } from "./CasinoRoundStage";
@@ -78,7 +79,7 @@ export function CasinoCraps({
   const outcome = receipt && !pending ? evaluateCraps(receipt) : null;
   const { t, animated } = useCasinoTimeline(run, busy, reduced);
   useEffect(() => {
-    if (!busy || !run.id || !matchMedia("(max-width: 900px)").matches) return;
+    if (!busy || !run.id) return;
     // After button focus and the pending-state layout commit. A synchronous
     // smooth scroll can be undone by browser focus/scroll anchoring on phones.
     const frame = requestAnimationFrame(() =>
@@ -86,10 +87,17 @@ export function CasinoCraps({
     );
     return () => cancelAnimationFrame(frame);
   }, [busy, run.id]);
-  useTableCues(run, t, animated, [
-    { at: (run.duration - 100) * 0.8, cue: "tap" },
-    { at: (run.duration - 100) * 0.87, cue: "land" },
-  ]);
+  useTableCues(
+    run,
+    t,
+    animated,
+    [0, 1].flatMap((i) =>
+      DIE_CONTACTS.map((contact, j) => ({
+        at: (0.06 + i * 0.07 + contact * 0.74) * (run.duration - 100),
+        cue: (j === 0 ? "land" : "tap") as "land" | "tap",
+      })),
+    ),
+  );
   function put(key: CrapsKey) {
     if (guard.current || ledger.current.craps?.pending) return;
     try {
