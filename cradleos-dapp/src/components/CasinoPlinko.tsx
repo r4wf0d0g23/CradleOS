@@ -9,6 +9,8 @@ import {
   plinkoBucketX,
   PLINKO_ROWS,
   PLINKO_MOTION_MS,
+  PLINKO_LAUNCH_MS,
+  PLINKO_COLLECTION_MS,
   PLINKO_BALL_RADIUS,
   PLINKO_PEG_RADIUS,
 } from "../lib/plinkoMotion";
@@ -39,25 +41,28 @@ export function CasinoPlinko({
     () => rounds.map((r) => buildPlinkoRoute(r.values)),
     [rounds],
   );
-  const duration = PLINKO_MOTION_MS + Math.max(0, rounds.length - 1) * 120;
+  const duration =
+    PLINKO_MOTION_MS + Math.max(0, rounds.length - 1) * PLINKO_LAUNCH_MS;
   const { t, animated } = useCasinoTimeline(run, busy, reducedMotion);
   const elapsed =
     t === 1 ? duration : Math.min(duration, t * (run.duration - 100));
-  useTableCues(run, t, animated, [
-    ...Array.from({ length: 12 }, (_, i) => ({
-      at: 180 + i * 170,
-      cue: "tap" as const,
-    })),
-    ...rounds.map((_, i) => ({
-      at: PLINKO_MOTION_MS + i * 120,
-      cue: "land" as const,
-    })),
-  ]);
+  useTableCues(
+    run,
+    t,
+    animated,
+    routes.flatMap((route, i) => [
+      ...route.contacts.map((contact) => ({
+        at: contact.at + i * PLINKO_LAUNCH_MS,
+        cue: "tap" as const,
+      })),
+      { at: route.floorAt + i * PLINKO_LAUNCH_MS, cue: "land" as const },
+    ]),
+  );
   const landed = routes.length > 0 && elapsed >= duration;
   const balls = routes.map((route, i) => ({
     route,
-    time: elapsed - i * 120,
-    point: samplePlinko(route, Math.max(0, elapsed - i * 120)),
+    time: elapsed - i * PLINKO_LAUNCH_MS,
+    point: samplePlinko(route, Math.max(0, elapsed - i * PLINKO_LAUNCH_MS)),
   }));
   return (
     <div className="lounge-plinko">
@@ -66,6 +71,7 @@ export function CasinoPlinko({
         role="img"
         aria-label={`Twelve-row Plinko board, ${profile} payouts, ${rounds.length || 1} balls`}
         data-landed={landed}
+        data-elapsed={elapsed}
       >
         <defs>
           <radialGradient id={`${materialId}-peg`} cx="25%" cy="20%">
@@ -123,11 +129,14 @@ export function CasinoPlinko({
             const p = plinkoPeg(row, column),
               hit =
                 busy &&
-                balls.some(
-                  (b) =>
-                    b.time >= 0 &&
-                    b.time < PLINKO_MOTION_MS &&
-                    Math.hypot(b.point.x - p.x, b.point.y - p.y) < 12,
+                balls.some((b) =>
+                  b.route.contacts.some(
+                    (c) =>
+                      c.row === row &&
+                      c.peg.x === p.x &&
+                      b.time >= c.at &&
+                      b.time < c.at + 75,
+                  ),
                 );
             return (
               <g key={`${row}-${column}`}>
@@ -136,15 +145,15 @@ export function CasinoPlinko({
                     className="plinko-impact"
                     cx={p.x}
                     cy={p.y}
-                    r={8}
+                    r={4}
                     opacity={0.6}
                   />
                 )}
                 <ellipse
                   cx={p.x + 1}
                   cy={p.y + 2}
-                  rx={3.7}
-                  ry={3}
+                  rx={2.6}
+                  ry={2}
                   fill="#000"
                   opacity=".65"
                 />
@@ -161,12 +170,26 @@ export function CasinoPlinko({
             );
           }),
         )}
+        <path
+          d="M33 216v6h234v-6"
+          fill="none"
+          stroke="#7e8d7e"
+          strokeWidth="1"
+        />
+        {Array.from({ length: 12 }, (_, i) => (
+          <path
+            key={`divider-${i}`}
+            d={`M${51 + i * 18} 216v6`}
+            stroke="#7e8d7e"
+            strokeWidth="1"
+          />
+        ))}
         {payouts.map((bps, i) => (
           <g
             key={i}
             data-bucket={i}
             data-hit={balls.some(
-              (b) => b.time >= PLINKO_MOTION_MS && b.route.bucket === i,
+              (b) => b.time >= b.route.duration && b.route.bucket === i,
             )}
           >
             <rect
@@ -177,7 +200,7 @@ export function CasinoPlinko({
               rx="3"
               fill={
                 balls.some(
-                  (b) => b.time >= PLINKO_MOTION_MS && b.route.bucket === i,
+                  (b) => b.time >= b.route.duration && b.route.bucket === i,
                 )
                   ? "#a2311b"
                   : "#25261f"
@@ -196,7 +219,7 @@ export function CasinoPlinko({
         ))}
         {payouts.map((_, i) => {
           const n = balls.filter(
-            (b) => b.time >= PLINKO_MOTION_MS && b.route.bucket === i,
+            (b) => b.time >= b.route.duration && b.route.bucket === i,
           ).length;
           return n > 0 ? (
             <text
@@ -214,12 +237,28 @@ export function CasinoPlinko({
         {balls.map(
           (b, i) =>
             b.time >= 0 && (
-              <g key={rounds[i].id}>
+              <g
+                key={rounds[i].id}
+                data-flight={i}
+                data-settled={b.time >= b.route.duration}
+                opacity={
+                  rounds.length > 1
+                    ? Math.max(
+                        0,
+                        Math.min(
+                          1,
+                          1 -
+                            (b.time - b.route.duration) / PLINKO_COLLECTION_MS,
+                        ),
+                      )
+                    : 1
+                }
+              >
                 <ellipse
                   cx={b.point.x + 1}
-                  cy={b.point.y + 4}
-                  rx="4.6"
-                  ry="2.4"
+                  cy={b.point.y + 2}
+                  rx="3.3"
+                  ry="2"
                   fill="#000"
                   opacity=".65"
                 />
@@ -227,7 +266,7 @@ export function CasinoPlinko({
                   <polyline
                     className="plinko-trail"
                     points={Array.from({ length: 7 }, (_, n) =>
-                      samplePlinko(b.route, Math.max(0, b.time - (6 - n) * 20)),
+                      samplePlinko(b.route, Math.max(0, b.time - (6 - n) * 8)),
                     )
                       .map((p) => `${p.x},${p.y}`)
                       .join(" ")}
@@ -243,20 +282,13 @@ export function CasinoPlinko({
                   cy={b.point.y}
                   r={PLINKO_BALL_RADIUS}
                 />
-                <path
-                  d="M-2.4-1.8Q0-3 2.4-1.8"
-                  stroke="#fff5d988"
-                  strokeWidth=".8"
-                  fill="none"
-                  transform={`translate(${b.point.x} ${b.point.y}) rotate(${Math.min(PLINKO_MOTION_MS, b.time) * 0.35 * (i % 2 ? -1 : 1)})`}
-                />
               </g>
             ),
         )}
       </svg>
       {rounds.length > 0 && (
         <div className="motion-caption">
-          {balls.filter((b) => b.time >= PLINKO_MOTION_MS).length} /{" "}
+          {balls.filter((b) => b.time >= b.route.duration).length} /{" "}
           {rounds.length} landed · {profile}
         </div>
       )}

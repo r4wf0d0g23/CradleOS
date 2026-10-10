@@ -1,0 +1,5 @@
+qa/*.png
+qa/*.log
+qa/*-video/
+qa/development-browser.json
+research/prototype.py

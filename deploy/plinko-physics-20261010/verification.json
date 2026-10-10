@@ -1,0 +1,16 @@
+{
+  "tests": {
+    "passed": 368,
+    "files": 39,
+    "plinkoTestsIncluded": 5,
+    "allCommittedPaths": 4096
+  },
+  "componentFixtures": 8,
+  "productionPreview": 12,
+  "sourceReview": "PASS",
+  "fixtureVisualReview": "PASS",
+  "origins": 8,
+  "ioc": "CLEAN",
+  "build": "PASS",
+  "live": "pending"
+}

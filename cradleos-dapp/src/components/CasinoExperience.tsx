@@ -55,7 +55,7 @@ import {
 } from "../lib/casinoExpansionRules";
 import { KENO_TABLE } from "../lib/casinoExpanded";
 import { CasinoPlinko } from "./CasinoPlinko";
-import { PLINKO_REVEAL_MS } from "../lib/plinkoMotion";
+import { PLINKO_REVEAL_MS, PLINKO_LAUNCH_MS } from "../lib/plinkoMotion";
 import { ItemIcon } from "./GameIcon";
 import { CASINO_CATALOG, CATEGORY_LABELS } from "../lib/casinoCatalog";
 import { CasinoFeedback, useCasinoFeedback } from "../lib/casinoFeedback";
@@ -854,7 +854,8 @@ export function CasinoExperience({
         game === "blackjack"
           ? blackjackPlan(next, previous).duration
           : game === "plinko"
-            ? PLINKO_REVEAL_MS + ((next.pack?.rounds.length ?? 1) - 1) * 120
+            ? PLINKO_REVEAL_MS +
+              ((next.pack?.rounds.length ?? 1) - 1) * PLINKO_LAUNCH_MS
             : tableDuration(next.history[0] ?? null);
       const run: TableRun = {
         id: ++tableGeneration.current,
