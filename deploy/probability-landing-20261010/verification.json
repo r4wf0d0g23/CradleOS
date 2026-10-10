@@ -1,0 +1,19 @@
+{
+  "tests": {
+    "passed": 377,
+    "files": 41
+  },
+  "build": "PASS",
+  "origins": {
+    "checks": 8,
+    "status": "PASS"
+  },
+  "ioc": "CLEAN",
+  "sourceReview": "native PASS",
+  "previewBrowser": {
+    "groups": 14,
+    "errors": 0,
+    "report": "qa/preview-browser.json"
+  },
+  "scope": "presentation only; no financial or chain changes"
+}

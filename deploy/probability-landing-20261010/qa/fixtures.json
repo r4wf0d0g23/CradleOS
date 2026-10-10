@@ -1,0 +1,104 @@
+{
+  "1": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "dice",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          1
+        ],
+        "label": "Rolled 1"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "dice",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "dice",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            1
+          ],
+          "label": "Rolled 1"
+        }
+      ]
+    }
+  },
+  "50": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "dice",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          50
+        ],
+        "label": "Rolled 50"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "dice",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "dice",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            50
+          ],
+          "label": "Rolled 50"
+        }
+      ]
+    }
+  },
+  "100": {
+    "version": 2,
+    "balance": 1002400,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "dice",
+        "stake": 2500,
+        "payout": 4900,
+        "values": [
+          100
+        ],
+        "label": "Rolled 100"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "dice",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "dice",
+          "stake": 2500,
+          "payout": 4900,
+          "values": [
+            100
+          ],
+          "label": "Rolled 100"
+        }
+      ]
+    }
+  }
+}

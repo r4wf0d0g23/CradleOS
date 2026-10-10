@@ -1,3 +1,7 @@
+import {
+  probabilityRollPose,
+  probabilityPercent,
+} from "../lib/casinoProbabilityMotion";
 import { CasinoWarpRun } from "./CasinoWarpRun";
 import { CasinoLaiJump } from "./CasinoLaiJump";
 import { MotionCard, TableShoe } from "./CasinoTableCard";
@@ -273,33 +277,47 @@ export function CasinoRoundStage({
     );
   }
   if (game === "dice") {
-    const number = done
-        ? v[0]
-        : has
-          ? (Math.floor(ease(t) * 987) % 100) + 1
-          : 0,
-      threshold = choice.target;
+    const pose = probabilityRollPose(t, v[0] ?? 1),
+      threshold = choice.target,
+      landed = has && pose.landed;
     return (
-      <div className="probability-stage" data-progress={t}>
+      <div className="probability-stage" data-progress={t} data-landed={landed}>
         <small>PROBABILITY DRIVE</small>
-        <strong>{has ? String(number).padStart(2, "0") : "—"}</strong>
-        <div className="probability-calibration" aria-hidden="true">
-          {Array.from({ length: 11 }, (_, i) => (
-            <span key={i}>
-              <i />
-              {i * 10}
-            </span>
-          ))}
-        </div>
-        <div className="probability-rail">
-          {threshold !== undefined && <i style={{ left: `${threshold}%` }} />}
-          <b style={{ left: `${number}%` }} />
+        <strong>{has ? String(pose.number).padStart(2, "0") : "—"}</strong>
+        <div className="probability-track">
+          <div className="probability-calibration" aria-hidden="true">
+            {[1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
+              <span
+                key={value}
+                data-tick={value}
+                style={{ left: `${probabilityPercent(value)}%` }}
+              >
+                <i />
+                {value}
+              </span>
+            ))}
+          </div>
+          <div className="probability-rail">
+            {threshold !== undefined && (
+              <i
+                data-threshold={threshold}
+                style={{ left: `${probabilityPercent(threshold)}%` }}
+              />
+            )}
+            {has && (
+              <b
+                data-roll={pose.number}
+                data-position={pose.position}
+                style={{ left: `${pose.percent}%` }}
+              />
+            )}
+          </div>
         </div>
         <span>
           {threshold === undefined
             ? "ROLL"
             : `${choice.over ? "OVER" : "UNDER"} ${threshold}`}{" "}
-          {done ? "· RESOLVED" : ""}
+          {landed ? "· RESOLVED" : ""}
         </span>
       </div>
     );
