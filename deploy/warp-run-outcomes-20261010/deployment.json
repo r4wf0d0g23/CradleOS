@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-10T18:45:26.468618+00:00",
+  "source": "2ef0d1c26d89c63f3c61e3c9ecb79d1dcda96455",
+  "pagesDeployment": "d7e9b59a",
+  "immutableUrl": "https://d7e9b59a.cradleos-d75.pages.dev",
+  "primary": "https://cradleos.io/",
+  "rollback": {
+    "pagesDeployment": "937079b0",
+    "source": "68eb4f2893f53d7336923a9d8e3b674b77150c62"
+  },
+  "scope": "Warp Run presentation only; no wallet or chain changes"
+}

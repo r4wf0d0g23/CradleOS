@@ -16,5 +16,18 @@
     "assetFailures": 0,
     "report": "qa/preview-browser.json"
   },
-  "scope": "Warp Run presentation only; no financial or chain changes"
+  "scope": "Warp Run presentation only; no financial or chain changes",
+  "liveBrowser": {
+    "groups": 4,
+    "widths": [
+      390,
+      1440
+    ],
+    "errors": 0,
+    "assetFailures": 0,
+    "report": "qa/live-browser.json"
+  },
+  "exactLiveFiles": 3,
+  "preview5223": "stopped; port closed",
+  "deliveryReview": "native PASS; no blockers"
 }

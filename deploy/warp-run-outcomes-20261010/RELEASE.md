@@ -23,4 +23,13 @@ Raw reported that a successful run still exploded. The previous release delibera
 
 ## Publication
 
-Pending reviewed build publication and fresh live proof. Rollback Pages937079b0 / runtime68eb4f2893f53d7336923a9d8e3b674b77150c62. Primary cradleos.io only; GitHub Pages redirect-only.
+- Runtime `2ef0d1c26d89c63f3c61e3c9ecb79d1dcda96455`, committed/pushed.
+- Pages `d7e9b59a`; immutable https://d7e9b59a.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino → Warp Run.
+- Three live files exactly match reviewed dist: JS, CSS and native Lai WebP. Full hashes in `live-build.json`.
+- JS `index-eAWGow-G.js`: `89b8a92bda1bdcd1d3e404984534b112a5734438cdd64f5641d4434095164b0f`.
+- CSS `index-CIUwJ3pZ.css`: `1f4c602181e1ab0d996911f444c7bb1e64d216bf07807e30a6366ae4af0dc1d9`.
+- Four fresh live natural-RNG paid/missed rounds at390/1440 PASS: successful intact departure without any flash/debris/breakup, loss-only breakup, correct paid timing, unchanged committed ledger and no errors/failed hull assets. Saved boundary/lifecycle cases are preview-only, not fresh live tests.
+- Preview5223 stopped and port verified closed. Canonical worktree/index service and unrelated Wrangler dirs preserved.
+- Rollback Pages `937079b0` / runtime `68eb4f2893f53d7336923a9d8e3b674b77150c62`. Primary origin only; GitHub Pages redirect-only. No wallet/chain/backend/gate changes.
+
+Final independent native delivery gate PASS: contact sheets support intact successful warp/trailing wake and loss-only breakup; source/Pages/rollback,379tests/41files,17preview versus4freshlive,3exacthashes,12unchangedboundaries and closed5223 reconcile. No blockers or overclaim. Evidence-only receipt update, no runtime change.
