@@ -9,4 +9,4 @@ report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'ur
 for p in paths:
  data=get(p);assert data==(root/p.lstrip('/')).read_bytes(),p
  report['files'].append({'path':p,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'exactMatch':True})
-pathlib.Path('deploy/craps-orbital-20261010/live-build.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))
+pathlib.Path('deploy/craps-orbital-deck-20261010/live-build.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

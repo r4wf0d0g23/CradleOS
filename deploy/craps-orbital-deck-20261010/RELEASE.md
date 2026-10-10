@@ -25,6 +25,18 @@ Raw requested authentic EVE Frontier artwork and a craps table floating in space
 
 ## Publication
 
-Independent native submission gate PASS: three natural rounds plus ten final scene/lifecycle groups, unobstructed toolbar,26 protected files and native-art hashes reconcile. No remaining blockers. Publication pending.
+Independent native submission gate PASS: three natural rounds plus ten final scene/lifecycle groups, unobstructed toolbar,26 protected files and native-art hashes reconcile. No remaining blockers.
 
-Rollback: Pages697a44af / runtimee165ff1b867864f93cbd911d1fe3d6097a6dc2ae. Primary cradleos.io only; GitHub Pages redirect-only. Preserve canonical service-hosting worktree and unrelated Wrangler files. Task preview5229 will be stopped after live verification.
+Published primary https://cradleos.io/#/casino → Frontier Craps. Runtime `e8f4a26c98120e26f7d33d111867a95817f32985` pushed to `cycle7-vestiges-20261002`. Cloudflare Pages production `2b5f5744`: https://2b5f5744.cradleos-d75.pages.dev
+
+`live-build.json`: five production files exactly match the reviewed dist:
+
+- `/assets/index-D0ijjvls.js`: SHA256 `a155a1f409299534f365ce9425ccd8479bc24cc06a025f0fef297bb8ea7033a8`.
+- `/assets/index-B8MhwvdL.css`: SHA256 `e22430695b00015c93eb28d97c03feb911ff89f1d59e249083a5e2b26254e34d`.
+- `/casino/craps-orbit/mini-gate.webp`: SHA256 `afda5a097615e41fcd492c5d71e05ba4102df075afedf531a144866cfb9a3f06`.
+- `/casino/lai-jump/lai-hull.webp`: SHA256 `54d4d452e9b93b6e9306fa655f711db18a73e42e27fb71d3d0f4d01b45f01404`.
+- `/casino/textures/floor_plate.jpg`: SHA256 `78011df7f6079b1c2f3ed48c5f7983a4887e5f49fe756b3a3157662e3fb3a4c5`.
+
+Fresh primary-origin browser verification PASS: `qa/live-browser.json` has two natural free Play Money rounds at390/1440 with actual die motion, exact committed faces, unchanged roll history and active-tray framing. `qa/live-scene-browser.json` has two live scene/control groups at390/1440: native assets, default Animated under OS reduction, real drift/pause/preference reload and keyboard chip placement/removal. Four fresh live groups total; zero page errors, asset failures or page overflow. Touch/cancel, synthetic hidden/offscreen and saved-roll fixtures remain preview evidence, not claimed fresh live. No wallet/testnet/chain action. Independent native final delivery gate PASS: runtime/Pages/rollback and all five hashes reconcile;26 protected files and complete Craps owner logic unchanged. Four fresh live groups accurately separated from preview lifecycle/touch/fixture evidence. Live mobile artwork and toolbar correct; preview port closed. No blockers. Verification helper output-path typo corrected in this evidence-only delta; runtime source unchanged.
+
+Rollback: Pages697a44af / runtimee165ff1b867864f93cbd911d1fe3d6097a6dc2ae. Primary cradleos.io only; GitHub Pages redirect-only. Preserve canonical service-hosting worktree and unrelated Wrangler files. Task-owned preview5229 stopped and port closure verified.
