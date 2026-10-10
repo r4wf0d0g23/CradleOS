@@ -1,0 +1,5742 @@
+{
+  "base": "https://cradleos.io",
+  "scope": "Actual app; isolated browser-local free Play Money; fresh natural RNG rounds; viewport emulation; no wallet",
+  "checks": [
+    {
+      "width": 390,
+      "name": "natural-0",
+      "mode": "fresh natural RNG",
+      "outcome": "tiger",
+      "values": [
+        4,
+        7
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 383.75,
+        "visible": 383.75,
+        "cards": [
+          {
+            "left": 68.15625,
+            "right": 157.84375,
+            "width": 89.6875,
+            "inside": true
+          },
+          {
+            "left": 232.15625,
+            "right": 321.84375,
+            "width": 89.6875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 261,
+      "samples": [
+        {
+          "t": 0.0010714285714285715,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.13392857142857 189.96571428571428) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.86607142857144 130.03428571428572) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.05719047617912295,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.14880952239037 188.16990476226806) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.85119047760963 131.83009523773194) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11671428570293248,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.0659deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.58928571286656 186.26514285750616) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.41071428713343 133.73485714249384) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.176238095226742,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(-67.5165deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.02976190334275 184.36038095274426) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.9702380966572 135.63961904725574) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2357619047505515,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(70.2857deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.47023809381895 182.45561904798234) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.5297619061811 137.54438095201766) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.29528571427436107,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(-27.2967deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.91071428429512 180.55085714322044) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.0892857157049 139.44914285677956) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.35480952379817055,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.35119047477133 178.64609523845854) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.64880952522867 141.35390476154146) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L190.14423228224658 171.59247709098958"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.4143333333219801,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.7916666652475 176.74133333369664) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.20833333475247 143.25866666630336) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M340.10568765297865 156.51278709311296L358.0930007565797 154.7040349385911"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M310.5474611095293 158.41459505897913L292.8976480059282 160.136947213501"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.47383333332198013,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.22916666524753 174.83733333369665) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.77083333475247 145.16266666630335) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5333571428457896,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.6696428557237 172.93257142893472) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.33035714427626 147.06742857106528) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M283.192600470828 161.88262704759788L298.55491357442907 160.745874893076"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M358.938279384117 155.22645594483032L343.9134662805159 156.27680809935222"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5929047618934086,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.1130952366761 171.02704761941092) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.8869047633239 148.97295238058908) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M218.59446025393478 165.03758848809537L203.5696471503337 166.08794064261724"
+            }
+          ],
+          "shields": 1,
+          "flashes": 0
+        },
+        {
+          "t": 0.6524047618934087,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.5505952366761 169.12304761941093) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.4494047633239 150.87695238058907) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 1,
+          "flashes": 0
+        },
+        {
+          "t": 0.7119523809410276,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(198.99404761762844 167.21752380988713) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(401.00595238237156 152.78247619011287) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M307.1541027310084 159.0117878010794L295.0730396274073 159.30853995560128"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7714523809410277,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(206.43154761762847 165.3135238098871) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(393.56845238237156 154.6864761901129) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8309761904648373,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(213.87202380810464 163.4087619051252) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(386.12797619189536 156.5912380948748) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8904999999886468,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(221.31249999858085 161.5040000003633) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(378.68750000141915 158.4959999996367) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9500238095124564,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(228.75297618905705 159.5992380956014) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(371.24702381094295 160.4007619043986) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9976428571315039,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(234.705357141438 158.07542857179186) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(365.29464285856204 161.92457142820814) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-1",
+      "mode": "fresh natural RNG",
+      "outcome": "tiger",
+      "values": [
+        0,
+        7
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 383.75,
+        "visible": 383.75,
+        "cards": [
+          {
+            "left": 68.15625,
+            "right": 157.84375,
+            "width": 89.6875,
+            "inside": true
+          },
+          {
+            "left": 232.15625,
+            "right": 321.84375,
+            "width": 89.6875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 261,
+      "samples": [
+        {
+          "t": 0.001404761927468436,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.17559524093356 189.955047618321) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.82440475906645 130.044952381679) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.0575476190249126,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.19345237811407 188.1584761912028) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.8065476218859 131.8415238087972) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11707142854872213,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.5604deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.63392856859026 186.2537142864409) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.36607143140975 133.7462857135591) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17659523807253166,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(-67.022deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.07440475906645 184.348952381679) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.92559524093355 135.651047618321) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.23611904759634117,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(70.7802deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.51488094954266 182.44419047691707) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.48511905045734 137.55580952308293) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2956190475963411,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(-26.8352deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.95238094954263 180.54019047691708) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.04761905045734 139.45980952308292) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3551428571201506,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.39285714001883 178.63542857215518) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.6071428599812 141.36457142784482) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L191.0847453536691 171.49790181815737"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.4146666666439601,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.833333330495 176.73066666739328) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.166666669505 143.26933333260672) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M341.04620072440116 156.41821182028076L359.03351382800224 154.60945966575886"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M309.62459509632924 158.50465268490638L291.97478199272814 160.22700483942828"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.47419047616776966,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.2738095209712 174.82590476263138) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.7261904790288 145.17409523736862) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5337142856915792,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.71428571144742 172.92114285786946) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.2857142885526 147.07885714213054) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M284.05323423078573 161.81894345553147L299.4155473343868 160.6821913010096"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M358.0965531865834 155.28529920091617L343.0717400829823 156.33565135543805"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5932380952153887,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.1547619019236 171.01638095310756) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.8452380980764 148.98361904689244) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6527380952153886,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.59226190192356 169.11238095310756) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.40773809807644 150.88761904689244) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7122857142630078,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.03571428287597 167.20685714358376) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.964285717124 152.79314285641624) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M306.5224131784789 159.02730425307493L294.44135007487785 159.3240564075968"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7717857142630077,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(206.47321428287597 165.30285714358376) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(393.526785717124 154.69714285641624) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8313333333106268,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(213.91666666382832 163.39733333405994) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(386.0833333361717 156.60266666594006) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8908571428344363,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(221.35714285430453 161.49257142929804) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(378.6428571456955 158.50742857070196) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9503571428344363,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(228.79464285430453 159.58857142929804) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(371.2053571456955 160.41142857070196) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9979999999772935,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(234.7499999971617 158.0640000007266) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(365.2500000028383 161.9359999992734) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-2",
+      "mode": "fresh natural RNG",
+      "outcome": "tiger",
+      "values": [
+        5,
+        12
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 383.75,
+        "visible": 383.75,
+        "cards": [
+          {
+            "left": 68.15625,
+            "right": 157.84375,
+            "width": 89.6875,
+            "inside": true
+          },
+          {
+            "left": 232.15625,
+            "right": 321.84375,
+            "width": 89.6875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 262,
+      "samples": [
+        {
+          "t": 0.0012857142516544888,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.1607142814568 189.95885714394706) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.8392857185432 130.04114285605294) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.057714285680225914,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.21428571002824 188.15314285823277) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.78571428997174 131.84685714176723) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11726190472784505,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.8242deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.65773809098063 186.24761904870897) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.3422619090194 133.75238095129103) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17678571425165457,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(-66.7582deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.09821428145682 184.34285714394704) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.9017857185432 135.65714285605296) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.23628571425165448,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(71.011deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.53571428145682 182.43885714394705) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.4642857185432 137.56114285605295) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.295809523775464,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(-26.5714deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.976190471933 180.53409523918515) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.023809528067 139.46590476081485) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3553333332992735,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.4166666624092 178.62933333442325) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.58333333759083 141.37066666557675) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L191.6221813807533 171.4438588064909"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.41485714282308306,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.85714285288537 176.72457142966135) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.1428571471146 143.27542857033865) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M341.5836367514854 156.3641688086143L359.5709498550865 154.5554166540924"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M309.09724310225744 158.55611418412167L291.44742999865633 160.27846633864357"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.4743809523468926,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.29761904336158 174.81980952489943) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.7023809566384 145.18019047510057) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5339047618707021,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.73809523383778 172.91504762013753) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.2619047661622 147.08495237986247) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M284.5122388899958 161.7849788740408L299.87455199359687 160.64822671951893"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M357.6476325603857 155.31668226995566L342.6228194567846 156.36703442447754"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5934285713945117,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.17857142431396 171.01028571537563) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.821428575686 148.98971428462437) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6529523809183212,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.61904761479013 169.10552381061373) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.38095238520987 150.89447618938627) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7124761904421307,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.05952380526634 167.2007619058518) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.94047619473366 152.7992380941482) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M306.16144772911156 159.03617079684588L294.0803846255105 159.33292295136778"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7719761904421306,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(206.49702380526634 165.2967619058518) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(393.50297619473366 154.7032380941482) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8315238094897497,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(213.94047618621872 163.391238096328) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(386.0595238137813 156.608761903672) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8910238094897497,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(221.37797618621872 161.487238096328) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(378.6220238137813 158.512761903672) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9505476190135591,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(228.8184523766949 159.58247619156612) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(371.1815476233051 160.41752380843388) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9981666666326068,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Card: 7",
+              "text": "77",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(234.77083332907586 158.0586666677566) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(365.22916667092414 161.9413333322434) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-3",
+      "mode": "fresh natural RNG",
+      "outcome": "tiger",
+      "values": [
+        3,
+        7
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 383.75,
+        "visible": 383.75,
+        "cards": [
+          {
+            "left": 68.15625,
+            "right": 157.84375,
+            "width": 89.6875,
+            "inside": true
+          },
+          {
+            "left": 232.15625,
+            "right": 321.84375,
+            "width": 89.6875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 262,
+      "samples": [
+        {
+          "t": 0.0008809523923056466,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.1101190490382 189.9718095234462) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.8898809509618 130.0281904765538) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.05773809522674215,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.21726190334277 188.15238095274424) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.7827380966572 131.84761904725576) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11726190475055166,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.8242deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.65773809381896 186.24761904798234) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.342261906181 133.75238095201766) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17678571427436118,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(-66.7582deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.09821428429515 184.34285714322044) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.9017857157049 135.65714285677956) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.23630952379817072,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(71.044deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.53869047477133 182.43809523845854) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.46130952522867 137.56190476154146) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.29583333332198025,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(-26.5385deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.97916666524753 180.53333333369665) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.02083333475247 139.46666666630335) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3553571428457898,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.41964285572374 178.62857142893472) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.58035714427626 141.37142857106528) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L191.68936095221096 171.43710342318747"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.41488095236959927,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.8601190461999 176.72380952417282) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.1398809538001 143.27619047582718) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M341.6508163229429 156.35741342531085L359.63812942654397 154.54866127078898"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M309.0313240362037 158.56254687804173L291.3815109326026 160.2848990325636"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.47438095236959876,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.29761904619986 174.81980952417285) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.7023809538002 145.18019047582715) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5339285714172184,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.7410714271523 172.914285714649) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.2589285728477 147.085714285351) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M284.569614530535 161.78073329705248L299.93192763413606 160.6439811425306"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M357.5915174252503 155.3206051575606L342.5667043216492 156.3709573120825"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5934285714172178,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.17857142715224 171.01028571464903) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.82142857284776 148.98971428535097) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6529761904648373,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.62202380810467 169.1047619051252) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.3779761918953 150.8952380948748) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7124999999886469,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.06249999858085 167.2000000003633) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.93750000141915 152.7999999996367) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M306.1163270022206 159.0372791159403L294.0352638986195 159.33403127046216"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7720238095124564,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(206.50297618905705 165.2952380956014) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(393.49702381094295 154.7047619043986) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8315238095124559,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(213.940476189057 163.3912380956014) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(386.059523810943 156.6087619043986) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8910476190362654,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(221.38095237953317 161.4864761908395) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(378.61904762046686 158.5135238091605) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9505714285600749,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(228.82142857000935 159.5817142860776) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(371.17857142999065 160.4182857139224) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9981666666553134,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 3,
+              "aria": "Card: 5",
+              "text": "55",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 7,
+              "aria": "Card: 9",
+              "text": "99",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(234.77083333191416 158.05866666702997) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(365.22916666808584 161.94133333297003) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-4",
+      "mode": "fresh natural RNG",
+      "outcome": "tiger",
+      "values": [
+        2,
+        6
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 383.75,
+        "visible": 383.75,
+        "cards": [
+          {
+            "left": 68.15625,
+            "right": 157.84375,
+            "width": 89.6875,
+            "inside": true
+          },
+          {
+            "left": 232.15625,
+            "right": 321.84375,
+            "width": 89.6875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 261,
+      "samples": [
+        {
+          "t": 0.0011428571882702056,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.14285714853378 189.96342856997535) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.8571428514662 130.03657143002465) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.057309523809523984,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.1636904761905 188.16609523809524) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.8363095238095 131.83390476190476) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11683333333333351,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.2308deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.60416666666669 186.26133333333334) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.3958333333333 133.73866666666666) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17635714285714302,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(-67.3516deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.0446428571429 184.3565714285714) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.9553571428571 135.6434285714286) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.23588095238095255,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(70.4505deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.48511904761907 182.45180952380952) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.5148809523809 137.54819047619048) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.29540476190476206,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(-27.1319deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.92559523809524 180.54704761904762) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.07440476190476 139.45295238095238) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3549285714285716,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.36607142857144 178.64228571428572) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.63392857142856 141.35771428571428) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L190.48012985122938 171.55870020346353"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.4144523809523811,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.80654761904765 176.7375238095238) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.19345238095235 143.2624761904762) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M340.4415852219615 156.4790102055869L358.42889832556256 154.67025805106502"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M310.21786606215596 158.44675850097317L292.56805295855486 160.16911065549505"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.47397619047619066,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.24702380952382 174.8327619047619) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.75297619047615 145.1672380952381) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5335000000000002,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.68750000000003 172.928) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.3125 147.072) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M283.53685401311384 161.85715360793708L298.8991671167149 160.72040145341518"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M358.60158886764225 155.24999324988352L343.57677576404114 156.3003454044054"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5930238095238097,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.1279761904762 171.0232380952381) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.8720238095238 148.9767619047619) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6525238095238092,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.56547619047615 169.1192380952381) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.43452380952385 150.8807619047619) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 1,
+          "flashes": 0
+        },
+        {
+          "t": 0.7120476190476187,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.00595238095235 167.2144761904762) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.99404761904765 152.7855238095238) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M306.97361997405244 159.01622107375758L294.89255687045136 159.31297322827947"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7715714285714282,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(206.44642857142853 165.3097142857143) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(393.55357142857144 154.6902857142857) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8310952380952378,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(213.8869047619047 163.40495238095238) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(386.1130952380953 156.59504761904762) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8906190476190473,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(221.3273809523809 161.50019047619048) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(378.6726190476191 158.49980952380952) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9501428571428568,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(228.7678571428571 159.59542857142858) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(371.2321428571429 160.40457142857142) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9977619047619044,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(234.72023809523805 158.07161904761907) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(365.2797619047619 161.92838095238093) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-5",
+      "mode": "fresh natural RNG",
+      "outcome": "dragon",
+      "values": [
+        12,
+        6
+      ],
+      "payout": 5000,
+      "stake": 2500,
+      "geometry": {
+        "height": 383.75,
+        "visible": 383.75,
+        "cards": [
+          {
+            "left": 68.15625,
+            "right": 157.84375,
+            "width": 89.6875,
+            "inside": true
+          },
+          {
+            "left": 232.15625,
+            "right": 321.84375,
+            "width": 89.6875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 261,
+      "samples": [
+        {
+          "t": 0.001095238072531564,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.13690475906644 189.96495238167898) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.86309524093355 130.03504761832102) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.057714285691579006,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.21428571144737 188.15314285786948) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.78571428855264 131.84685714213052) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11721428569157935,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.7582deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.65178571144742 186.24914285786946) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.3482142885526 133.75085714213054) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17673809521538889,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(-66.8242deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.09226190192362 184.34438095310756) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.9077380980764 135.65561904689244) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2362619047391984,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(70.978deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.5327380923998 182.43961904834566) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.4672619076002 137.56038095165434) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2957857142630079,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(-26.6044deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.973214282876 180.53485714358374) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.026785717124 139.46514285641626) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.35530952378681746,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.41369047335218 178.63009523882184) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.5863095266478 141.36990476117816) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L191.5550019053978 171.4506141801306"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.41480952378681696,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.85119047335212 176.72609523882187) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.1488095266479 143.27390476117813) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M341.4492777687387 156.37767955911508L359.43659087233976 154.5689274045932"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M309.2290810772018 158.54324881161827L291.57926797360074 160.26560096614014"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.47433333331062644,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.2916666638283 174.82133333405994) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.7083333361717 145.17866666594006) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5338809523582461,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.73511904478076 172.91580952453612) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.26488095521927 147.08419047546388) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M284.45486333153394 161.78922444495572L299.817176435135 160.65247229043382"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M357.7037476152469 155.31275938796253L342.6789345116458 156.3631115424844"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5933809523582455,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.17261904478067 171.01180952453615) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.8273809552193 148.98819047546385) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.652904761882055,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.61309523525688 169.10704761977425) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.3869047647431 150.89295238022575) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7124285714058646,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.05357142573308 167.20228571501232) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.9464285742669 152.79771428498768) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M293.74831092468236 160.9660458387005L305.82937402828344 160.66929368417863"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7719761904534841,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(206.4970238066855 165.2967619054885) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(393.5029761933145 154.7032380945115) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8314761904534836,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(213.93452380668546 163.39276190548853) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(386.06547619331457 156.60723809451147) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8909999999772931,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(221.37499999716164 161.48800000072663) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(378.62500000283836 158.51199999927337) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9505238095011026,
+          "phase": "resolved",
+          "outcome": "dragon",
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(228.81547618763784 159.5832380959647) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(371.18452381236216 160.4167619040353) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9981428571201503,
+          "phase": "resolved",
+          "outcome": "dragon",
+          "cards": [
+            {
+              "rank": 12,
+              "aria": "Card: A",
+              "text": "AA",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Card: 8",
+              "text": "88",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(234.7678571400188 158.05942857215518) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(365.2321428599812 161.94057142784482) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 1440,
+      "name": "natural-0",
+      "mode": "fresh natural RNG",
+      "outcome": "tiger",
+      "values": [
+        0,
+        8
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 580.453125,
+        "visible": 580.453125,
+        "cards": [
+          {
+            "left": 409,
+            "right": 521,
+            "width": 112,
+            "inside": true
+          },
+          {
+            "left": 624,
+            "right": 736,
+            "width": 112,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 261,
+      "samples": [
+        {
+          "t": 0.0006190476531074161,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.07738095663842 189.98019047510056) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.9226190433616 130.01980952489944) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.0593809523809524,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.42261904761905 188.0998095238095) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.57738095238096 131.9001904761905) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11890476190476193,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(33.0989deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.86309523809524 186.1950476190476) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.13690476190476 133.8049523809524) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17842857142857144,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(-64.4835deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.30357142857144 184.29028571428572) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.69642857142856 135.70971428571428) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.23795238095238097,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(73.3187deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.74404761904762 182.38552380952382) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.2559523809524 137.61447619047618) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2974761904761905,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(-24.2637deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(147.1845238095238 180.4807619047619) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(452.8154761904762 139.5192380952381) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3569761904761905,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.6220238095238 178.5767619047619) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.3779761904762 141.4232380952381) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M178.27025438314496 172.78648994794293L196.25756748674604 170.97773779342106"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.41650000000000004,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(162.0625 176.672) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(437.9375 143.328) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M346.21902285747814 155.89804779554444L364.2063359610792 154.08929564102255"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M304.5488317879838 158.99996965051145L286.89901868438267 160.72232180503332"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.47604761904761905,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.50595238095238 174.7664761904762) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.4940476190476 145.2335238095238) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.535547619047619,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.94345238095238 172.8624761904762) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.0565476190476 147.1375238095238) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M288.47115439372845 161.4920343351495L303.8334674973296 160.35528218062763"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M353.77569184837216 155.58736126216687L338.75087874477106 156.63771341668874"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.5950714285714286,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.38392857142856 170.95771428571427) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.61607142857144 149.04228571428573) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6545952380952381,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.82440476190476 169.05295238095238) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.17559523809524 150.94704761904762) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7141190476190477,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.26488095238096 167.14819047619048) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.73511904761904 152.85180952380952) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M303.0481204782037 159.11264474301402L290.96705737460263 159.40939689753588"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7736428571428572,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(206.70535714285717 165.24342857142858) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(393.29464285714283 154.75657142857142) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8331904761904761,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(214.14880952380952 163.33790476190475) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(385.8511904761905 156.66209523809525) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8926904761904763,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(221.58630952380952 161.43390476190476) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(378.4136904761905 158.56609523809524) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9522142857142858,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(229.02678571428572 159.52914285714286) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(370.9732142857143 160.47085714285714) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9998333333333334,
+          "phase": "resolved",
+          "outcome": "tiger",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Card: 2",
+              "text": "22",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Card: 10",
+              "text": "1010",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": true,
+              "transform": "translate(234.97916666666669 158.00533333333334) rotate(-14.359336544244634)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(365.0208333333333 161.99466666666666) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 1440,
+      "name": "natural-1",
+      "mode": "fresh natural RNG",
+      "outcome": "dragon",
+      "values": [
+        4,
+        2
+      ],
+      "payout": 5000,
+      "stake": 2500,
+      "geometry": {
+        "height": 580.453125,
+        "visible": 580.453125,
+        "cards": [
+          {
+            "left": 409,
+            "right": 521,
+            "width": 112,
+            "inside": true
+          },
+          {
+            "left": 624,
+            "right": 736,
+            "width": 112,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 261,
+      "samples": [
+        {
+          "t": 0.0008095238322303409,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(110.10119047902879 189.97409523736863) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(489.8988095209712 130.02590476263137) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.05778571427436093,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(117.22321428429511 188.15085714322046) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(482.7767857157049 131.84914285677954) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.11730952379817046,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(30.8901deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(124.6636904747713 186.24609523845854) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(475.33630952522867 133.75390476154146) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.17683333332197998,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(-66.6923deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(132.1041666652475 184.34133333369664) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(467.8958333347525 135.65866666630336) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.23635714284578951,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(71.1099deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(139.54464285572368 182.43657142893474) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(460.4553571442763 137.56342857106526) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.29588095236959905,
+          "phase": "approach",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(-26.4725deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(146.98511904619988 180.53180952417284) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(453.0148809538001 139.46819047582716) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.35538095236959916,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(154.42261904619988 178.62780952417282) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(445.5773809538001 141.37219047582718) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M176.57397182155407 172.95706321368218L191.75654045960027 171.43034804632654"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.41492857141721806,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(161.86607142715226 176.72228571464902) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(438.13392857284776 143.27771428535098) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M341.7851753377216 156.343902671589L359.7724884413227 154.53515051706714"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M308.89948602982827 158.5754122536123L291.2496729262272 160.2977644081342"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.4744285714172182,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(169.3035714271523 174.81828571464902) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(430.6964285728477 145.18171428535098) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.5339523809410275,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(176.74404761762844 172.91352380988712) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(423.25595238237156 147.08647619011288) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M284.6269901163551 161.77648772411317L299.9893032199562 160.6397355695913"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M357.53540234363186 155.32452804142432L342.51058924003075 156.3748801959462"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.593476190464837,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(184.18452380810464 171.00876190512523) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(415.81547619189536 148.99123809487477) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6529999999886466,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(191.62499999858082 169.1040000003633) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(408.37500000141915 150.8959999996367) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7125238095124561,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(199.065476189057 167.1992380956014) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": false,
+              "transform": "translate(400.934523810943 152.8007619043986) rotate(165.64066345575537)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M293.92879368163915 160.9616125660223L306.00985678524023 160.6648604115004"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7720476190362656,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(206.5059523795332 165.2944761908395) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(393.4940476204668 154.7055238091605) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 1
+        },
+        {
+          "t": 0.8315714285600752,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(213.9464285700094 163.3897142860776) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(386.0535714299906 156.6102857139224) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.8910952380838847,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(221.3869047604856 161.48495238131568) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(378.6130952395144 158.51504761868432) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.950595238083885,
+          "phase": "resolved",
+          "outcome": "dragon",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(228.8244047604856 159.58095238131568) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(371.1755952395144 160.41904761868432) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9982380952267418,
+          "phase": "resolved",
+          "outcome": "dragon",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Card: 6",
+              "text": "66",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 2,
+              "aria": "Card: 4",
+              "text": "44",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "destroyed": false,
+              "transform": "translate(234.77976190334272 158.05638095274426) rotate(-14.359336544244634)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "destroyed": true,
+              "transform": "translate(365.2202380966573 161.94361904725574) rotate(165.64066345575537)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

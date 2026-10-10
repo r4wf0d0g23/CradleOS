@@ -27,6 +27,14 @@ Twenty-one protected engine, shared card, Fleet Duel, Warp, Probability, Lai, ti
 
 ## Publication
 
-Pending. Rollback Pagesa4bf4e75 / runtime8198298fc6563a88c4d193921d772e1ebaab6d82. Primary origin only; GitHub Pages redirect-only. Preview5226 remains open until live verification. Canonical service-hosting worktree and unrelated Wrangler directories preserved.
+- Runtime `78686dc92c59c15503ce710a2218a3f1e2711a8b`, committed/pushed.
+- Pages `f16bacd3`; immutable https://f16bacd3.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino → Frigate Duel.
+- JS `index-ljVWicg0.js`: `6e0a2514e6afe0e0ae34007708349563e73de756fa351f4fabbc41e7bc280be1`.
+- CSS `index-DdIlwGAp.css`: `37ec51f6910d975bfd517f7eb3695d8cc78d0c8e5888a3ef9b2298ebc0d4dd7d`.
+- Production JS, CSS and native Lai WebP exactly match reviewed dist;3files in `live-build.json`. Eight fresh natural-RNG live rounds PASS:6at390 and2at1440, both Dragon and Tiger wins at each width. Actual masked reveal, ship/bolt/shield motion, loser-only breakup, exact final ranks, responsive containment and stable committed ledger; zero page errors or failed hull assets. `qa/live-browser.json`. Ties, selected-bet fixtures and saved/lifecycle proofs remain preview-only, not claimed as fresh live cases.
+- Task-owned preview5226 stopped; port verified closed. Canonical service-hosting worktree and unrelated Wrangler directories preserved.
+- Rollback Pages `a4bf4e75` / runtime `8198298fc6563a88c4d193921d772e1ebaab6d82`. Primary cradleos.io only; GitHub Pages redirect-only.
 
 Independent native submission-ready gate PASS:22checks reconcile as14playback+8saved/lifecycle;389tests43files,21protectedfiles and exact duration-only reverse delta verified. Desktop Dragon/Tiger/tie captures and mobile sequences readable/unclipped, correct loser-only breakup. No blockers.
+
+Final independent native delivery gate PASS: runtime/Pages/rollback,3exacthashes,21protectedfiles,Dragon/Tiger-onlyduration,389tests43files,22scopedpreviewgroups and8freshlive rounds reconcile. Both winners covered at each live width; inspected captures readable/outcome-correct. Preview5226 closed. No blockers. Evidence-only receipt, no runtime changes.
