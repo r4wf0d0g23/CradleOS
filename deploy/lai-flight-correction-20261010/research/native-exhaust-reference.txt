@@ -1,0 +1,30 @@
+Local native source: EveBoosterUtilities.cpp
+SHA256 f45369300350c911cd9e7dd3b1ef156130a500e0f4fdda3363eef18fa10bfb55
+Lines107–133:
+						  const Matrix& transform,
+						  const EveBoosterFlareParams& params )
+{
+	// grab pos/dir/scale from the local transform matrix
+	Vector3 pos( transform._41, transform._42, transform._43 );
+	Vector3 dir( transform._31, transform._32, transform._33 );
+	float scale = std::max( Length( transform.GetX() ), Length( transform.GetY() ) );
+
+	dir = Normalize( dir );
+	if( scale < 3.f )
+	{
+		dir *= scale / 3.f;
+	}
+
+	float seed = float( rand() ) / float( RAND_MAX ) * 0.7f;
+
+	Vector3 spritePos = pos - 2.5f * dir;
+	glows.Add( spritePos, seed, seed, scale * params.glowScale, scale * params.glowScale, 0.0f, params.glowColor, params.warpGlowColor );
+
+	spritePos = pos - 3.0f * dir;
+	glows.Add( spritePos, seed, 1.0f + seed, scale * params.symHaloScale, scale * params.symHaloScale, 0.0f, params.haloColor, params.warpHaloColor );
+
+	spritePos = pos - 3.01f * dir;
+	glows.Add( spritePos, seed, 1.0f + seed, scale * params.haloScaleX, scale * params.haloScaleY, 0.0f, params.haloColor, params.warpHaloColor );
+}
+
+namespace

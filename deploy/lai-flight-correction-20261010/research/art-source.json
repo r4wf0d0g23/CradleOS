@@ -1,0 +1,36 @@
+{
+  "typeId": 95276,
+  "graphicId": 34663,
+  "dna": "data_lai_01_modular:dataist_ship_01:dataist:layout?strl_data_lai_01_modular_layout_01",
+  "render": "Native Trinity build3573151 booster-off top view, approximate materials",
+  "sourceSha256": "ae492664e7ce5bfd49f0c198cc7ab580c1aa1a2e28f19b4f8e9a660ed2f8fbb3",
+  "sourceBox": [
+    141,
+    332,
+    883,
+    692
+  ],
+  "rotation": "90 degrees clockwise; +Z bow to +screenX",
+  "boosterLocatorCount": 42,
+  "boosterDirection": "+Z",
+  "exhaustDirection": "-Z (native CreateBoosterFlares pos - direction)",
+  "enginesScreen": [
+    {
+      "x": -24.9851,
+      "y": 34.5885
+    },
+    {
+      "x": -22.5657,
+      "y": 0.0024
+    },
+    {
+      "x": -24.9853,
+      "y": -34.6
+    }
+  ],
+  "fragmentMass": "alpha-pixel proxy, not physical component masses",
+  "output": "/casino/lai-jump/lai-top.webp",
+  "sha256": "c22e4179a4bf01385a5b7a11101e63953418543b5d6c0548ceb866e9ff792d8e",
+  "bytes": 47192,
+  "limits": "Authored physically coherent 2D presentation; no runtime3D or literal warp physics claim"
+}

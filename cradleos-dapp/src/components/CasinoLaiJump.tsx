@@ -4,22 +4,30 @@ import { clamp, type TableRun } from "../lib/casinoTableMotion";
 import {
   laiJumpPose,
   laiSpeedLabel,
+  laiFragmentPose,
   LAI_ACCELERATION_END,
+  LAI_HULL,
+  LAI_FRAGMENTS,
+  LAI_TERMINAL_SPEED,
+  LAI_CAMERA_FRACTION,
 } from "../lib/casinoLaiMotion";
 import { useTableCues } from "./useCasinoTimeline";
 import "../styles/casino-lai-jump.css";
-const SHIP = `${import.meta.env.BASE_URL}casino/lai-jump/lai-hull.webp`;
-const STARS = Array.from({ length: 45 }, (_, i) => ({
-  x: (i * 97 + 31) % 580,
-  y: (i * i * 43 + 13) % 300,
-  r: i % 7 === 0 ? 1.2 : 0.55,
+const SHIP = `${import.meta.env.BASE_URL}casino/lai-jump/lai-top.webp`;
+const STARS = Array.from({ length: 60 }, (_, i) => ({
+  x: (i * 197 + 17) % 520,
+  y: (i * i * 61 + 19) % 320,
+  r: i % 9 === 0 ? 0.8 : 0.4,
 }));
-const FRAGMENTS = Array.from({ length: 12 }, (_, i) => ({
-  col: i % 4,
-  row: Math.floor(i / 4),
-  a: ((i * 137.5 + 27) * Math.PI) / 180,
-  range: 65 + (i % 5) * 23,
-  spin: (i % 2 ? -1 : 1) * (35 + i * 13),
+const DUST = Array.from({ length: 18 }, (_, i) => ({
+  x: (i * 173 + 27) % 720,
+  y: (i * i * 47 + 11) % 320,
+  depth: 0.35 + (i % 4) * 0.2,
+}));
+const SPARKS = Array.from({ length: 24 }, (_, i) => ({
+  a: i * 2.399963,
+  r: 95 + (i % 5) * 22,
+  life: 0.28 + (i % 7) * 0.065,
 }));
 export function CasinoLaiJump({
   round,
@@ -36,17 +44,15 @@ export function CasinoLaiJump({
 }) {
   const id = useId().replace(/:/g, ""),
     has = !!round,
-    limit = round?.values[0] ?? 0,
-    target =
-      round?.values[1] ??
-      (Number.isFinite(previewTarget) &&
-      previewTarget! >= 101 &&
-      previewTarget! <= 100000
-        ? previewTarget! * 100
-        : 20000);
+    limit = round?.values[0] ?? 0;
+  const target =
+    round?.values[1] ??
+    (Number.isFinite(previewTarget) &&
+    previewTarget! >= 101 &&
+    previewTarget! <= 100000
+      ? previewTarget! * 100
+      : 20000);
   const pose = laiJumpPose(t, limit, target, has),
-    u = pose.resolution,
-    resolving = u > 0,
     reached = has && t >= LAI_ACCELERATION_END;
   const label =
     pose.phase === "ready"
@@ -60,9 +66,14 @@ export function CasinoLaiJump({
           : pose.phase === "destroyed"
             ? "HULL LOST"
             : "HULL BREACH";
-  const thrust =
-    has && !reached ? 0.25 + pose.charge * 0.75 : pose.win && u < 0.65 ? 1 : 0;
-  const travel = has ? 150 * Math.pow(pose.charge, 2) : 0;
+  const imageProps = {
+    href: SHIP,
+    x: -LAI_HULL.width / 2,
+    y: -LAI_HULL.height / 2,
+    width: LAI_HULL.width,
+    height: LAI_HULL.height,
+  };
+  const carrierX = laiJumpPose(t, 0, target, has).x;
   useTableCues(run, t, animated, [
     { at: 120, cue: "engine" },
     {
@@ -83,178 +94,172 @@ export function CasinoLaiJump({
         aria-label={`Lai: ${label.toLowerCase()}`}
       >
         <defs>
-          <radialGradient id={`${id}-nebula`}>
-            <stop stopColor="#30454d" stopOpacity=".65" />
+          <radialGradient id={`${id}-light`}>
+            <stop stopColor="#253b48" stopOpacity=".32" />
             <stop offset="1" stopColor="#10202b" stopOpacity="0" />
           </radialGradient>
           <linearGradient id={`${id}-thrust`}>
-            <stop stopColor="#cf672b" stopOpacity="0" />
-            <stop offset=".6" stopColor="#ffb96e" stopOpacity=".8" />
-            <stop offset="1" stopColor="#e5f5ed" />
+            <stop stopColor="#86b5cf" stopOpacity="0" />
+            <stop offset=".65" stopColor="#94cada" stopOpacity=".3" />
+            <stop offset="1" stopColor="#efffff" stopOpacity=".85" />
           </linearGradient>
-          <radialGradient id={`${id}-fire`}>
-            <stop stopColor="#fff4c9" />
-            <stop offset=".25" stopColor="#ffd07a" />
-            <stop offset=".55" stopColor="#e3662b" stopOpacity=".85" />
-            <stop offset="1" stopColor="#762d1d" stopOpacity="0" />
+          <radialGradient id={`${id}-flash`}>
+            <stop stopColor="#fff1bd" />
+            <stop offset=".35" stopColor="#fff0ce" stopOpacity=".9" />
+            <stop offset=".7" stopColor="#c58b58" stopOpacity=".25" />
+            <stop offset="1" stopColor="#b36238" stopOpacity="0" />
           </radialGradient>
-          <radialGradient id={`${id}-warp`}>
-            <stop stopColor="#e0fff6" stopOpacity=".8" />
-            <stop offset=".25" stopColor="#9ccad6" stopOpacity=".35" />
-            <stop offset="1" stopColor="#507f9a" stopOpacity="0" />
-          </radialGradient>
-          {FRAGMENTS.map((f, i) => (
-            <clipPath id={`${id}-shard-${i}`} key={i}>
-              <rect
-                x={-104 + f.col * 52}
-                y={-62 + f.row * 42}
-                width="53"
-                height="43"
-              />
+          {LAI_FRAGMENTS.map((f, i) => (
+            <clipPath id={`${id}-fragment-${i}`} key={i}>
+              <polygon points={f.points} />
             </clipPath>
           ))}
         </defs>
         <ellipse
-          cx="340"
-          cy="92"
-          rx="300"
-          ry="160"
-          fill={`url(#${id}-nebula)`}
+          cx="350"
+          cy="80"
+          rx="270"
+          ry="180"
+          fill={`url(#${id}-light)`}
         />
         <g className="lai-starfield" aria-hidden="true">
-          {STARS.map((s, i) => {
+          {STARS.map((s, i) => (
+            <circle
+              key={i}
+              cx={s.x}
+              cy={s.y}
+              r={s.r}
+              fill="#bdcbd5"
+              opacity={0.15 + (i % 5) * 0.07}
+            />
+          ))}
+        </g>
+        <g className="lai-dust" aria-hidden="true">
+          {DUST.map((s, i) => {
             const x =
-              ((((s.x - travel * (0.3 + (i % 3) * 0.4)) % 580) + 580) % 580) -
+              ((((s.x - pose.cameraX * s.depth) % 720) + 720) % 720) - 100;
+            const tail =
+              (LAI_TERMINAL_SPEED *
+                pose.charge *
+                LAI_CAMERA_FRACTION *
+                s.depth) /
               30;
             return (
-              <g key={i}>
-                <circle
-                  cx={x}
-                  cy={s.y}
-                  r={s.r}
-                  fill="#c0d7d6"
-                  opacity={0.18 + (i % 4) * 0.12}
-                />
-                <path
-                  d={`M${x} ${s.y}h${has ? (-(4 + pose.charge * pose.charge * 45) * ((i % 3) + 1)) / 3 : 0}`}
-                  stroke="#91b7c3"
-                  strokeWidth=".65"
-                  opacity={has ? pose.charge * 0.33 : 0}
-                />
-              </g>
+              <path
+                key={i}
+                d={`M${x} ${s.y}h${has ? tail : 0.3}`}
+                stroke="#a1b4be"
+                strokeWidth=".8"
+                opacity={0.11 + (i % 3) * 0.04}
+              />
             );
           })}
         </g>
-        <path
-          d="M22 31h20M22 31v20M498 31h-20M498 31v20M22 282h20M22 282v-20M498 282h-20M498 282v-20"
-          stroke="#728d8955"
-          fill="none"
-        />
-        {resolving && pose.win && (
-          <g className="lai-warp-wake">
-            <ellipse
-              cx="410"
-              cy="161"
-              rx={14 + pose.shock * 82}
-              ry={30 + pose.shock * 65}
-              fill={`url(#${id}-warp)`}
-              opacity={1 - u * 0.8}
-            />
-            {[0, 1, 2, 3].map((i) => (
-              <ellipse
-                key={i}
-                cx={300 + i * 38 + u * 30}
-                cy={169 - i * 3}
-                rx={5 + u * 12}
-                ry={22 + i * 9 + u * 20}
-                fill="none"
-                stroke="#b5e9e8"
-                strokeWidth={1.6 - i * 0.3}
-                opacity={(1 - u) * (0.75 - i * 0.13)}
-              />
-            ))}
-            <path
-              d="M245 173 504 152"
-              stroke="#e4fff4"
-              strokeWidth={1 + pose.flash * 5}
-              opacity={pose.flash * 0.8}
-            />
+        {reached && pose.win && (
+          <g className="lai-warp-wake" aria-hidden="true">
+            {LAI_HULL.engines.map((e, i) => {
+              const past = laiJumpPose(
+                Math.max(LAI_ACCELERATION_END, t - 0.045),
+                limit,
+                target,
+                has,
+              );
+              const from = past.worldX - pose.cameraX + e.x;
+              return (
+                <path
+                  key={i}
+                  d={`M${from} ${160 + e.y}H${pose.x + e.x}`}
+                  stroke="#b2d9ed"
+                  strokeWidth={2.5}
+                  opacity={Math.min(1, pose.elapsed * 8) * 0.35}
+                />
+              );
+            })}
           </g>
         )}
         <g
           className="lai-hull"
-          transform={`translate(${pose.x} ${pose.y}) rotate(${pose.bank}) scale(${pose.stretch} ${1 - (pose.stretch - 1) * 0.09})`}
+          transform={`translate(${pose.x} ${pose.y})`}
           opacity={pose.hullOpacity}
+          data-world-x={pose.worldX}
+          data-camera-x={pose.cameraX}
+          data-forward="1,0"
         >
-          <g className="lai-exhaust" opacity={thrust}>
-            <path
-              d={`M-44-4Q${-110 - thrust * 90} -20 ${-90 - thrust * 150} -2Q${-110 - thrust * 90} 15-44 4Z`}
-              fill={`url(#${id}-thrust)`}
-            />
-            <path
-              d={`M-42 16Q${-105 - thrust * 85} 2 ${-85 - thrust * 130} 20Q${-105 - thrust * 85} 35-42 25Z`}
-              fill={`url(#${id}-thrust)`}
-            />
-          </g>
-          <image href={SHIP} x="-104" y="-62" width="208" height="124" />
-        </g>
-        {reached && !pose.win && (
-          <g className="lai-explosion">
-            <ellipse
-              cx="248"
-              cy="172"
-              rx={15 + pose.shock * 155}
-              ry={5 + pose.shock * 65}
-              fill="none"
-              stroke="#da8b5f"
-              strokeWidth={3 * (1 - u) + 0.5}
-              opacity={(1 - u) * 0.6}
-            />
-            {FRAGMENTS.map((f, i) => {
-              const d = pose.shock * f.range,
-                dx = Math.cos(f.a) * d,
-                dy = Math.sin(f.a) * d * 0.6;
+          <g
+            className="lai-exhaust"
+            opacity={pose.thrust}
+            data-direction="-1,0"
+          >
+            {LAI_HULL.engines.map((e, i) => {
+              const length =
+                16 +
+                pose.thrust * 24 +
+                (reached && pose.win ? Math.min(36, pose.elapsed * 80) : 0);
               return (
-                <g
-                  className="lai-fragment"
-                  key={i}
-                  transform={`translate(${248 + dx} ${172 + dy}) rotate(${u * f.spin})`}
-                  opacity={0.95 - u * 0.55}
-                >
-                  <image
-                    href={SHIP}
-                    x="-104"
-                    y="-62"
-                    width="208"
-                    height="124"
-                    clipPath={`url(#${id}-shard-${i})`}
-                  />
+                <g key={i} transform={`translate(${e.x} ${e.y})`}>
                   <path
-                    d={`M${-75 + f.col * 50} ${-43 + f.row * 42}l${-dx * 0.35} ${-dy * 0.35}`}
-                    stroke="#f5ad68"
-                    strokeWidth="1.5"
-                    opacity={1 - u}
+                    d={`M0 -3.2L${-length} -6Q${-length - 5} 0 ${-length} 6L0 3.2Z`}
+                    fill={`url(#${id}-thrust)`}
+                  />
+                  <ellipse
+                    cx="-1"
+                    cy="0"
+                    rx="2.5"
+                    ry="3.7"
+                    fill="#d7f3fa"
+                    opacity=".8"
                   />
                 </g>
               );
             })}
+          </g>
+          <image {...imageProps} />
+        </g>
+        {reached && !pose.win && (
+          <g className="lai-explosion">
+            {LAI_FRAGMENTS.map((f, i) => {
+              const q = laiFragmentPose(t, i);
+              return (
+                <g
+                  className="lai-fragment"
+                  key={i}
+                  data-index={i}
+                  transform={`translate(${q.x} ${q.y}) rotate(${q.angle}) translate(${-f.cx} ${-f.cy})`}
+                >
+                  <image
+                    {...imageProps}
+                    clipPath={`url(#${id}-fragment-${i})`}
+                  />
+                </g>
+              );
+            })}
+            <g className="lai-ejecta" aria-hidden="true">
+              {SPARKS.map((s, i) => {
+                const u = pose.elapsed,
+                  dx = Math.cos(s.a) * s.r,
+                  dy = Math.sin(s.a) * s.r;
+                const vx = LAI_TERMINAL_SPEED * (1 - LAI_CAMERA_FRACTION) + dx;
+                const x = carrierX + dx * u,
+                  y = 160 + dy * u;
+                return (
+                  <path
+                    key={i}
+                    d={`M${x - vx * 0.025} ${y - dy * 0.025}L${x} ${y}`}
+                    stroke={u < 0.15 ? "#e1d9bc" : "#906e4e"}
+                    strokeWidth={i % 4 === 0 ? 1.5 : 0.8}
+                    opacity={clamp(1 - u / s.life)}
+                  />
+                );
+              })}
+            </g>
             <circle
-              cx="248"
-              cy="172"
-              r={18 + pose.flash * 83}
-              fill={`url(#${id}-fire)`}
+              className="lai-plasma-flash"
+              cx={carrierX}
+              cy="160"
+              r={30 + pose.elapsed * 140}
+              fill={`url(#${id}-flash)`}
               opacity={pose.flash}
             />
-            {[0, 1, 2, 3, 4, 5].map((i) => (
-              <circle
-                key={i}
-                cx={248 + Math.cos(i * 2.4) * pose.shock * 60}
-                cy={172 + Math.sin(i * 2.4) * pose.shock * 40}
-                r={9 + pose.shock * 24}
-                fill="#5f4b3c"
-                opacity={Math.sin(u * Math.PI) * 0.16}
-              />
-            ))}
           </g>
         )}
       </svg>

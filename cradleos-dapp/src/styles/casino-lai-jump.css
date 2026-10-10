@@ -4,7 +4,7 @@
   overflow: hidden;
   border: 1px solid #849b9055;
   border-radius: 22px;
-  background: radial-gradient(ellipse at 70% 20%, #233744, #0a1721 68%);
+  background: radial-gradient(ellipse at 70% 20%, #17252f, #070f17 68%);
   box-shadow:
     inset 0 0 0 5px #192b32,
     0 15px 25px #0008;
@@ -36,7 +36,7 @@
   isolation: isolate;
 }
 .lai-hull {
-  filter: drop-shadow(0 7px 5px #0007);
+  isolation: isolate;
 }
 .lai-speed {
   display: flex;

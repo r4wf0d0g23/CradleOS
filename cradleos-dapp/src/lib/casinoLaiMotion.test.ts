@@ -52,3 +52,95 @@ describe("Lai committed jump presentation", () => {
     }
   });
 });
+
+import {
+  laiFragmentPose,
+  LAI_FRAGMENTS,
+  LAI_HULL,
+  LAI_SECONDS,
+  LAI_TERMINAL_SPEED,
+} from "./casinoLaiMotion";
+describe("Lai inertial flight", () => {
+  it("integrates velocity and preserves position/velocity through both cutoff branches", () => {
+    const e = 1e-6,
+      cut = LAI_ACCELERATION_END;
+    for (const limit of [19999, 20000]) {
+      for (const t of [0.2, 0.5, cut - 0.001, cut + 0.001, 0.85]) {
+        const a = laiJumpPose(t - e, limit, 20000, true),
+          b = laiJumpPose(t + e, limit, 20000, true),
+          p = laiJumpPose(t, limit, 20000, true);
+        expect((b.worldX - a.worldX) / (2 * e * LAI_SECONDS)).toBeCloseTo(
+          p.velocity,
+          4,
+        );
+      }
+      const before = laiJumpPose(cut - e, limit, 20000, true),
+        after = laiJumpPose(cut + e, limit, 20000, true);
+      expect(Math.abs(after.worldX - before.worldX)).toBeLessThan(0.002);
+      expect(Math.abs(after.velocity - before.velocity)).toBeLessThan(0.001);
+      expect(Math.abs(after.cameraX - before.cameraX)).toBeLessThan(0.002);
+    }
+  });
+  it("never stretches, banks, reverses, or dissolves an in-frame winning hull", () => {
+    let previous = 0;
+    for (let i = 0; i <= 1000; i++) {
+      const p = laiJumpPose(i / 1000, 30000, 20000, true);
+      expect(p.stretch).toBe(1);
+      expect(p.bank).toBe(0);
+      expect(p.y).toBe(160);
+      expect(p.x).toBeGreaterThanOrEqual(previous);
+      previous = p.x;
+      if (p.x < 580) expect(p.hullOpacity).toBe(1);
+    }
+  });
+  it("fractures in place and preserves mass-weighted linear and angular momentum", () => {
+    const cut = laiJumpPose(LAI_ACCELERATION_END, 10000, 20000, true);
+    const mass = LAI_FRAGMENTS.reduce((s, f) => s + f.mass, 0),
+      inertia = LAI_FRAGMENTS.reduce((s, f) => s + f.inertia, 0);
+    for (let i = 0; i < LAI_FRAGMENTS.length; i++) {
+      const f = LAI_FRAGMENTS[i],
+        p = laiFragmentPose(LAI_ACCELERATION_END, i);
+      expect(p.x - f.cx).toBeCloseTo(cut.x, 8);
+      expect(p.y - f.cy).toBe(160);
+      expect(p.angle).toBeCloseTo(0, 10);
+    }
+    expect(
+      LAI_FRAGMENTS.reduce((s, f) => s + f.mass * f.vx, 0) / mass,
+    ).toBeCloseTo(0, 10);
+    expect(
+      LAI_FRAGMENTS.reduce((s, f) => s + f.mass * f.vy, 0) / mass,
+    ).toBeCloseTo(0, 10);
+    expect(
+      LAI_FRAGMENTS.reduce((s, f) => s + f.inertia * f.spin, 0) / inertia,
+    ).toBeCloseTo(0, 10);
+    const cx = LAI_FRAGMENTS.reduce((s, f) => s + f.mass * f.cx, 0) / mass;
+    const cy = LAI_FRAGMENTS.reduce((s, f) => s + f.mass * f.cy, 0) / mass;
+    expect(
+      LAI_FRAGMENTS.reduce(
+        (s, f) => s + f.mass * ((f.cx - cx) * f.vy - (f.cy - cy) * f.vx),
+        0,
+      ) / mass,
+    ).toBeCloseTo(0, 8);
+  });
+  it("keeps debris velocity constant after separation, with no drag or gravity", () => {
+    for (let i = 0; i < LAI_FRAGMENTS.length; i++) {
+      const a = laiFragmentPose(0.8, i),
+        b = laiFragmentPose(0.9, i),
+        c = laiFragmentPose(1, i);
+      expect(b.worldX - a.worldX).toBeCloseTo(c.worldX - b.worldX, 8);
+      expect(b.y - a.y).toBeCloseTo(c.y - b.y, 8);
+      expect((b.worldX - a.worldX) / (0.1 * LAI_SECONDS)).toBeCloseTo(
+        LAI_TERMINAL_SPEED + LAI_FRAGMENTS[i].vx,
+        8,
+      );
+      expect(b.angle - a.angle).toBeCloseTo(c.angle - b.angle, 8);
+    }
+  });
+  it("uses aft projected engine attachment points and cuts thrust immediately on failure", () => {
+    expect(LAI_HULL.engines).toHaveLength(3);
+    expect(LAI_HULL.engines.every((e) => e.x < 0)).toBe(true);
+    expect(laiJumpPose(0.71, 10000, 20000, true).thrust).toBe(1);
+    expect(laiJumpPose(0.72, 10000, 20000, true).thrust).toBe(0);
+    expect(laiJumpPose(0, 0, 20000, false).thrust).toBe(0);
+  });
+});

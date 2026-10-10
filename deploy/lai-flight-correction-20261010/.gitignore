@@ -1,0 +1,5 @@
+qa/*.png
+qa/*.log
+qa/*-video/
+research/*.log
+research/run_native.py

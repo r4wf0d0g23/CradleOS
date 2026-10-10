@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-10T15:56:51.364820+00:00",
+  "tests": {
+    "passed": 368,
+    "files": 39,
+    "additionalPhysicsAssertions": "8targeted tests rerun after adding orbital-angular-momentum assertion"
+  },
+  "previewGroups": 12,
+  "finalBoundaryGroups": 4,
+  "originsChecks": 8,
+  "iocScan": "PASS exact canonical dApp",
+  "build": "PASS TypeScript/Vite VITE_BASE=/",
+  "nativeReview": "PASS architecture/source/provenance/final visual including pulse",
+  "files": [
+    {
+      "path": "/assets/index-ufWDhLWg.js",
+      "sha256": "dcd0d43a27ce13bfb1c52b91aa3d7f8f0126096b77c9dca0b8927c6636f8a6d1"
+    },
+    {
+      "path": "/assets/index-C20R54o5.css",
+      "sha256": "356511ac2b281dde07c06932467a6017055d561d514969b45f9e457ba573ead0"
+    },
+    {
+      "path": "/casino/lai-jump/lai-top.webp",
+      "sha256": "c22e4179a4bf01385a5b7a11101e63953418543b5d6c0548ceb866e9ff792d8e"
+    }
+  ]
+}

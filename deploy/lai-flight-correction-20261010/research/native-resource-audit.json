@@ -1,0 +1,513 @@
+{
+  "resourceAudit": "Exact native engine opening diagnostics, not an exhaustive dependency trace",
+  "verified": [
+    {
+      "source": "res:/Texture/Global/noise32cube_volume.dds",
+      "bytes": 98432,
+      "sha256": "e9749e31c3ba7e5b8a89100e6b7a4902ed22a45b3bdc577de10118fdce790345"
+    },
+    {
+      "source": "res:/Texture/Particle/whitesharp.dds",
+      "bytes": 349652,
+      "sha256": "9913eb2d78008f9174a0094bcfc15c40fd4161fba5e937f717b07c03e32433ba"
+    },
+    {
+      "source": "res:/Texture/global/noise.dds",
+      "bytes": 87508,
+      "sha256": "224bd575fe0950394c27cc29afc17d01c20ecbcac368c240352d88d793c75c8f"
+    },
+    {
+      "source": "res:/dx9/model/booster/gradient01.dds",
+      "bytes": 3072,
+      "sha256": "f653f5543a3a718c24494f240e266a9523860f226fbf4a2a22261f15f8c3c1d6"
+    },
+    {
+      "source": "res:/dx9/model/booster/gradient02.dds",
+      "bytes": 3072,
+      "sha256": "3059ff8439e3c69dedff9da8158931dcf8093473c8a856cda7bf54e0873c9329"
+    },
+    {
+      "source": "res:/dx9/model/booster/shape01.dds",
+      "bytes": 5568,
+      "sha256": "a17a84b9394d7c6b9b522ad333ae8080efb4873d8d9f9a452e69c7cda877f5ce"
+    },
+    {
+      "source": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_curvature.dds",
+      "bytes": 2796328,
+      "sha256": "03ed52d305f80edfba4d03be610522bcb6a4775e27d0c405c739dfe3a8f2a796"
+    },
+    {
+      "source": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_dirt1.dds",
+      "bytes": 2796328,
+      "sha256": "e0b9afec06972600bc3228a516c35dce0d46ace57b7636d6c56a898ba0d240ad"
+    },
+    {
+      "source": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_dirt2.dds",
+      "bytes": 2796328,
+      "sha256": "5d67d3d56696c722c20b346449760152ab839c97ed9cc4c2616c04d463bd9bf9"
+    },
+    {
+      "source": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_thick.dds",
+      "bytes": 2796328,
+      "sha256": "faf1d4ca63743037a5ba13489e281e6f94390fc4d47bf90c3a295c1c8f457e69"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_cargo_01.cmf",
+      "bytes": 1420053,
+      "sha256": "e2701afaec715ec0592b120269c1fe90c5fd88264278cfa353e61f215c173d91"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_chassis_01.cmf",
+      "bytes": 1710663,
+      "sha256": "9d8cc2be7f83b09f5f63afbe6cd757928f3c2562a4fe41bef13a4bc135e04eda"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_chassis_02.cmf",
+      "bytes": 1323975,
+      "sha256": "62ddc2d2dc0ada956fc4fe350bad4449a5c9478f2bd8e042cac85d65c76afdd5"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_engine_left_01.cmf",
+      "bytes": 1502195,
+      "sha256": "1454f2157c21ec0e998384fd35ef7484de0cedeb59763d1a5926e3675cc5f4a0"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_engine_right_01.cmf",
+      "bytes": 1468052,
+      "sha256": "8376a109b123bad9cd9b09ede6dc76f0265d81b93ce998dfee4635922ece6591"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_struct_left_01.cmf",
+      "bytes": 704019,
+      "sha256": "db73a68400083b90c253160604be6330581883272763a2fc3be3f844334a017b"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_struct_right_01.cmf",
+      "bytes": 671796,
+      "sha256": "abb4d8241ebbd4460a25081f8116f9a1a01fda3a04655e39a77c2218e4ef30a1"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_wing_left_01.cmf",
+      "bytes": 1129409,
+      "sha256": "3cdad166b8280541089a98ad9e0c4e2a6450f6693494be4658ac61b59a43c4bb"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_wing_right_01.cmf",
+      "bytes": 1108754,
+      "sha256": "6e9cbce9bcf13f905763137e877b69c265c4539d2e44e735d86f172de5e00864"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_wing_small_left_01.cmf",
+      "bytes": 298671,
+      "sha256": "0e2eb083ec321ccc5ab106cdb94c70ace234601399c466844f02ee91b1ae6558"
+    },
+    {
+      "source": "res:/dx9/model/ship/rnd/modular/data_lai_01/data_lai_wing_small_right_01.cmf",
+      "bytes": 300744,
+      "sha256": "7b2582735cae8434b61e2701612d99468365b4af3fa78479647788cf1f52087f"
+    },
+    {
+      "source": "res:/dx9/model/spaceobjectfactory/data.black",
+      "bytes": 7192678,
+      "sha256": "867863c08d62d1e231af3629c6d1e30565da1768026cc397f6a5035b6803d39b"
+    },
+    {
+      "source": "res:/dx9/texture/fx/caustics/packed_caustics_128x128.dds",
+      "bytes": 22000,
+      "sha256": "9e237250d3ba67022ecb7d737c839b0f43b645eb020ddb003bdf5ef296316f00"
+    },
+    {
+      "source": "res:/dx9/texture/fx/gradients/verticalshield_gradient_01.dds",
+      "bytes": 1172,
+      "sha256": "0759551ec6b2b386075af41017598dd84718927311c35063ccfb9b4b5f681391"
+    },
+    {
+      "source": "res:/dx9/texture/shared/grunge/packed_02_grunge.dds",
+      "bytes": 2796328,
+      "sha256": "2369fa2becf0a8dd78a06337419bd3fcbced86dcfc89d713bac30780434296aa"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_ao.dds",
+      "bytes": 11184936,
+      "sha256": "6393c389b42a69076b77e08cbaf6be72e353546966b3a8f26a3dd6b70d9b5c5d"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_c.dds",
+      "bytes": 11184936,
+      "sha256": "844459be408da34258879bfa4ddbcee2816ecf901a9d6abb7e316f81707b119c"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_n.dds",
+      "bytes": 22369776,
+      "sha256": "1e1323d5534ff9d66ee0c949af25a089c515631c2cf18f4c5e601a1978ab4722"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_p.dds",
+      "bytes": 11184936,
+      "sha256": "5b119ce0db3a0025aabc3ef08327253be88555f65d831344347a3413dd275398"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/roughness/rough_ship_data_01.dds",
+      "bytes": 11184936,
+      "sha256": "5d5ff2d95cce2916dbee3241984bc773d8c34d71598021d75304f0f33e72043a"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/roughness/rough_ship_data_03.dds",
+      "bytes": 11184936,
+      "sha256": "9825408693ee2e367dbf703e44b35a9f8e4c8439c014085cead855cec389a99b"
+    },
+    {
+      "source": "res:/dx9/texture/shared/ship/roughness/rough_ship_data_04.dds",
+      "bytes": 11184936,
+      "sha256": "8c818bc421c6bed6ed44569adb5a212ce7954c1bea8e628c1eb07e186b0a714d"
+    },
+    {
+      "source": "res:/fisfx/impact/3dfx_cutoffsetmap_01a.dds",
+      "bytes": 2396912,
+      "sha256": "09966050d1e9160eb16f16a8b2f2e1741786e7acbcea06e95b3b5fe12146d949"
+    },
+    {
+      "source": "res:/fisfx/impact/3dfx_layerallmap_01a.dds",
+      "bytes": 2396912,
+      "sha256": "114c143fea4ecb5d63b03ff1ea3ee4e2fe6fc640a41e88cfa5df0b967c070180"
+    },
+    {
+      "source": "res:/fisfx/impact/gradientmap_01a.dds",
+      "bytes": 16511,
+      "sha256": "b56958aa144941bca10b7b8ca43adbcfdc5214cda0e38d5c3728a692a9b8a952"
+    },
+    {
+      "source": "res:/fisfx/impact/insidemap_03a.dds",
+      "bytes": 1398256,
+      "sha256": "5cd19b5ff911a2f509ff9dd9f2f5337971932baa0c9d12ae94728f7b55ab59eb"
+    },
+    {
+      "source": "res:/fisfx/impact/insidemap_03a_nrm.dds",
+      "bytes": 699176,
+      "sha256": "99fb660c77d45d8d58a02f33fd8558d38b3f743b76177a5ce1a896f21bdac4d6"
+    },
+    {
+      "source": "res:/fisfx/impact/temporalfadeout_01a.dds",
+      "bytes": 11388,
+      "sha256": "f04b0f412d7b2985af200818de797eb87d45402076e07d80e9648141e62ecb6a"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/booster/boosterglowanimated.sm_hi",
+      "bytes": 5860,
+      "sha256": "95f5d75ddca83d45120d04e8474878ed05a99ab6b59292350cfcf15228ac6214"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/booster/boostervolumetric.sm_hi",
+      "bytes": 52902,
+      "sha256": "981d41358dd35e04a2440d2524a44b2a585fc5a63d8eaf6dfe19f5f2b09247ce"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/booster/volumetrictrails.sm_hi",
+      "bytes": 17817,
+      "sha256": "33c5282c61adfdc2837163de2940a2cab252b4f811c9e22aaf5c62456beeeddb"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/bokeh.sm_hi",
+      "bytes": 12589,
+      "sha256": "45117a32a23376bf954550bbd410ef7259b821d1396902fe17b86b3a3b5db5d7"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/bokehtaa.sm_hi",
+      "bytes": 16743,
+      "sha256": "e2f740bfc2ab43de86f99c6e8ab0fdc679200538ffa12b2e2e7ea4aa8d82d8c2"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/cas.sm_hi",
+      "bytes": 955,
+      "sha256": "811d159483b7bfbc938739447f72406f9112617f87fb9c57760228946c2d50ed"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/circleofconfusion.sm_hi",
+      "bytes": 3185,
+      "sha256": "a646b356691915ab771bfc24b0608da289b1e2830759ec07a0f7d6b5d97622a7"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/createhistograms.sm_hi",
+      "bytes": 1781,
+      "sha256": "ff80c8f29867d52f7ffffff8694cda135498c4cf38dff38b6b86df69c860e78c"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/distortion.sm_hi",
+      "bytes": 1992,
+      "sha256": "08f1a2a0391c256fa5893a28e551413d3160b2bfc1ee1b665ea288758ce6fe5a"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/downsample.sm_hi",
+      "bytes": 12459,
+      "sha256": "4148651b98945abb09247120e832b8d5d416362c7619bfc06b79917f96525d96"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/downsampledepth.sm_hi",
+      "bytes": 1373,
+      "sha256": "7a1baac5b1fe0c33371f75672f7993bd83afb561cad7219d0910f18879938ed8"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/environmentfogcolor.sm_hi",
+      "bytes": 2977,
+      "sha256": "07694334af41e2d4eff72b6857b969457f1c22ec0187a7ff86789d9619a8edc2"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/environmentfogcomposit.sm_hi",
+      "bytes": 1628,
+      "sha256": "3d2f5b5134d90812179f5983119dcf067d24c7d49d72c35ddc0e2a67529867ca"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/exposuretotexture.sm_hi",
+      "bytes": 700,
+      "sha256": "f24de8cba6162b5932574c9aa2d22cfdd81f46889411369dce0d50b4b6ebcb6f"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/filmgrain.sm_hi",
+      "bytes": 4774,
+      "sha256": "49d7cedc87e51e071fd57dbeef43589b7680bd1c109db86f68dc2ac7cbd2f236"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/godrays.sm_hi",
+      "bytes": 1267,
+      "sha256": "31fe4cdee0514452e3533e94527828780c3fce19f06d478f2724b52576c635f3"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/highpassfilter.sm_hi",
+      "bytes": 2151,
+      "sha256": "108a7f223f0b603e3aeb186e5146a8348038ad5cc88def13913067e82bf3a4cc"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/measureexposure.sm_hi",
+      "bytes": 4671,
+      "sha256": "de7e16fff4b59e79bd15f1649757c0f89ea117ae0195bb5d88f067b2a21033b7"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/mergehistograms.sm_hi",
+      "bytes": 1392,
+      "sha256": "8eb4fdc2975bad5c968627c9f93db923ed84207d47b6c7953bed139a473d0add"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/reactivemask.sm_hi",
+      "bytes": 1154,
+      "sha256": "b0365fe0a7a2ddd36a3930443b1cb7e94b94c2678492f7149168c1e77c1fbb04"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/signalloss.sm_hi",
+      "bytes": 2056,
+      "sha256": "06f0a7b6536766151dad6fd43d9d8507dcec146785d167a27db1698c42f065ed"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/taa.sm_hi",
+      "bytes": 213642,
+      "sha256": "2113d8f1732e3fcb993e6d41e105e497cc75ef612e99ba7d9b36373b8ecabb85"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/taacopy.sm_hi",
+      "bytes": 2620,
+      "sha256": "ba09d6d676f628bb20e5eec9e55a5ba5a63c5dc504c369ee7cad90f7fbbb2b59"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/tonemapping.sm_hi",
+      "bytes": 2509328,
+      "sha256": "2bd75fded9896e19eff12367d91979929a10c64219262a50caf277607b044e98"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/transparencymask.sm_hi",
+      "bytes": 1226,
+      "sha256": "ce4208ee4277530f5ebcb5f41a9566fee79aec1144309e2484bdf8a2ea5ac215"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/postprocess/upsample.sm_hi",
+      "bytes": 3095,
+      "sha256": "61c6294f46884a49e50022fa3e6a0a26d01c4202159d0da956f2be3417682615"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool.sm_hi",
+      "bytes": 5971,
+      "sha256": "e19a3b6acf021ac5b1ea0c799e2ac6842c4f2b1ea2773e5100ccedf124711f5f"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/fx/hazehalfspherical.sm_hi",
+      "bytes": 4733,
+      "sha256": "a37fe08a0398ef7bd8f968354a7ffdf68e1c1410cf1c244c9a8a6b0c4b045678"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/fx/hazespherical.sm_hi",
+      "bytes": 8071,
+      "sha256": "0a57a14f9ec01693bd444a13dcd86a74ba5b08274d127f06fde311192e7eceac"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/fx/skinned_hazespherical.sm_hi",
+      "bytes": 8270,
+      "sha256": "71b77723ad50fbd5a9c0d961d4e85301936bb87e0c435bca75412c1c0b2f8a0f"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/v5/fx/impact/fxarmorimpactv5.sm_hi",
+      "bytes": 25660,
+      "sha256": "5c8179db1e8c6f440284cd2d92d26c4998e2ae1617fcf913c7660ca42fa40f3e"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/v5/fx/impact/fxshieldimpactv5.sm_hi",
+      "bytes": 10270,
+      "sha256": "1b8aafe084426d306169adf5c093b8204c6cbc318e533e03ac6c6f2eb1e90038"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/v5/pbr/shipquadmaterial/ship.sm_hi",
+      "bytes": 707744,
+      "sha256": "695933643d7be916598dfd9b2c6ebf053e5bd3925d85a72950947a9d00d8bb85"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/spaceobject/v5/pbr/simplepbr/simplepbr.sm_hi",
+      "bytes": 648602,
+      "sha256": "f61526cbfd2356cd230eb99596d1e81c0ba70099741cbfb85845f1f1c2f8962f"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/lensflares/occludermanagement.sm_hi",
+      "bytes": 1615,
+      "sha256": "46d1e2a17ca206ab501a1128af7cb664ed0efd4ce7ea3787d15d7a963027a254"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/blurvolumetric.sm_hi",
+      "bytes": 6333,
+      "sha256": "8ae1df965d6f9376ed17d39a26a1b51abca5cf207177b8ed7414584baa12ccf5"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/downsampledepth.sm_hi",
+      "bytes": 898,
+      "sha256": "d0bb8334757ff8ec0337a85e3fab677841ae78af14d664dec9d6821e8e00bf17"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/fog/applyfroxels.sm_hi",
+      "bytes": 9313,
+      "sha256": "791f5b861d8ea778601d40286aed3ae40fd385037be2ef0635388bba9d034f64"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/fog/calculatefroxels.sm_hi",
+      "bytes": 83426,
+      "sha256": "2d08dea5acd80ec982f8b0edaab0722c64a1e03c806a3cd104e0478f4f719bc4"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/fog/filterfroxels.sm_hi",
+      "bytes": 3452,
+      "sha256": "1bc0ee8f46e4d89b452f96c8b130c2bf60d00b7560f7ffb73e22e1b6b0326d97"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/fog/raymarchfroxels.sm_hi",
+      "bytes": 2751,
+      "sha256": "4024150cd39e317f2f665609216ea5d30d4d2f2c52e9b8d60094731a40cd74c9"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/fog/rtcalculatefroxels.sm_hi",
+      "bytes": 702,
+      "sha256": "c54eb0cebf7868f0eebfd91938bf0e380fb96eb403ced26c713f27548810fb88"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/fog/updatemieenvironmentmap.sm_hi",
+      "bytes": 3276,
+      "sha256": "6b1565eb96fc753f097e870537eb3e0c5f6d3473972cd26ef592a531672c0008"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/specialfx/volumetric/volumeblit.sm_hi",
+      "bytes": 3327,
+      "sha256": "923586a0c01eace818115b19d695b1974ca563eb96ae0088581227714f6f5ef4"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/blit.sm_hi",
+      "bytes": 923,
+      "sha256": "d1ab12fffbbe92567341b4ed4a85fe2dd75e61c5a092d3d1884df49f715ef740"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/blitfiltered.sm_hi",
+      "bytes": 915,
+      "sha256": "4b1c22b6fe92df68b20d1e4cb0d05d2db5b8fb2357a5935b9e347ca52b659d06"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/denoise1d.sm_hi",
+      "bytes": 2564,
+      "sha256": "5b93c55e20cc5a48da1ec94ff1c26790aa0563bc5b96738dff88f9f01ae64ff4"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/denoiseestimate.sm_hi",
+      "bytes": 1294,
+      "sha256": "6c14948c98758cf71b4cae34082e387e41f0233aaf521f93eec5df7e24aa77e7"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/estimatenoise.sm_hi",
+      "bytes": 1824,
+      "sha256": "8a8f107bae9b0643e93696f5c4297418baa4b5052902c7bdc2c8244a0035a802"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/raytracing/rtshadows.sm_hi",
+      "bytes": 521,
+      "sha256": "d0f59f09113f49ec0fa81aa10ff202a7e79472ca628671e066eb4d82481173c1"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/raytracing/skinvertices.sm_hi",
+      "bytes": 3787,
+      "sha256": "f2425a1f0feb67e74d5d5adad917ea08091ad9e1e4df8c03f27cee9584d408e2"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/reflection/copycube.sm_hi",
+      "bytes": 1016,
+      "sha256": "96c28987c1ce0e5609f9ffb1ddb629da36a073c45d15fe969e45e83fd4514d77"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/reflection/reflectionfilteractivision128.sm_hi",
+      "bytes": 46869,
+      "sha256": "7d30918462ec6fe79d08c883d25221a5cf0afcfef3c54c80b3a52160e3ec0d17"
+    },
+    {
+      "source": "res:/graphics/effect.dx11/managed/space/system/reflection/reflectionfilteractivisionpre.sm_hi",
+      "bytes": 2844,
+      "sha256": "c2aa895463ed4489394258382cf2b15a22b2acb179920a22d5df4a5cc14ae417"
+    },
+    {
+      "source": "res:/graphics/generic/unitsphere/unitsphere_shieldgeo_01a.cmf",
+      "bytes": 64380,
+      "sha256": "bbb86953fc401a483808d37e3b6ea30761cd2e1a669ff388391ebdd811894c0e"
+    },
+    {
+      "source": "res:/texture/fx/3d/3dfx_shield_concord.dds",
+      "bytes": 2396912,
+      "sha256": "e05ac963ca5703f71287de0497e833254d707b24fe49289fa1e47f3278e70d38"
+    },
+    {
+      "source": "res:/texture/fx/3d/3dfx_voronoi_01a.dds",
+      "bytes": 2396912,
+      "sha256": "9063d0be03985b70e8fac04bb479dec0afd2dc788dbc8e039afb7d1ea661bbca"
+    },
+    {
+      "source": "res:/texture/fx/gradients/gradientbeat_02d.dds",
+      "bytes": 87536,
+      "sha256": "1b7d9559d3051bce83ffc3b8b6d0d68732de6f4fe01bcc36ce2e076e7abc346a"
+    },
+    {
+      "source": "res:/texture/global/black.dds",
+      "bytes": 184,
+      "sha256": "adb5e85d66ec139f866f54d3776a4d90c813271bcaa5e94064189a2a33ab6d88"
+    },
+    {
+      "source": "res:/texture/global/film_grain_noise.png",
+      "bytes": 787540,
+      "sha256": "2dcfa433208ed3b4021432073460ee22bc2b461e95057cae8397fa36233efe51"
+    },
+    {
+      "source": "res:/texture/reflectioncorrection/128x128.dds",
+      "bytes": 32916,
+      "sha256": "f624d38e5f639236fab2a216f862571742d666e93c7dc5e22b05e3702b94ee30"
+    }
+  ],
+  "unresolved": [
+    "res:/dx9/audio_controllers/frontier_audio_modular_ship_shared.red",
+    "res:/dx9/fx/controllers/shared/ctrl_deployable.red",
+    "res:/dx9/fx/controllers/shared/ctrl_status_effects.red",
+    "res:/dx9/texture/shared/color/tile_col_black_g.tga",
+    "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_a.tga",
+    "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_m.tga",
+    "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_mat.tga",
+    "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_n.tga",
+    "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_o.tga",
+    "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_r.tga"
+  ],
+  "renderer": "Source-built native Trinity DX11; current build3573151 data/resources. Not full client materials/effects fidelity."
+}

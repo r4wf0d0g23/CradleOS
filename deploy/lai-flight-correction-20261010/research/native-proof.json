@@ -1,0 +1,50 @@
+{
+  "exit": 0,
+  "wine_cleanup": true,
+  "result": {
+    "modules_loaded": true,
+    "scene_rendered": true,
+    "trinity_loaded": true,
+    "classes": [
+      "TriDevice",
+      "Tr2PrimitiveScene"
+    ],
+    "objects": [
+      {
+        "name": "lai",
+        "typeID": 95276,
+        "graphicID": 34663,
+        "dna": "data_lai_01_modular:dataist_ship_01:dataist:layout?strl_data_lai_01_modular_layout_01",
+        "center": [
+          -0.01600000075995922,
+          0.5156999826431274,
+          1.2007999420166016
+        ],
+        "radius": 84.63259887695312,
+        "projection": "10 degree perspective top view",
+        "captures": [
+          {
+            "file": "lai-0.png",
+            "eye": [
+              -0.01600000075995922,
+              1100.7394853830338,
+              1.2007999420166016
+            ],
+            "sha256": "ac1026e3f4b4f361cb8f25129599be6617f7da2562d067b23a4f4015cee894b2"
+          },
+          {
+            "file": "lai-1.png",
+            "eye": [
+              592.4121921379119,
+              762.2090898752213,
+              508.99639320373535
+            ],
+            "sha256": "ba5312585cf1ab5eaa3e0675584daaba113399ecef020ac61e3ca8b737b4c36a"
+          }
+        ]
+      }
+    ],
+    "ship_rendered": true
+  },
+  "note": "Booster-on diagnostic loads42locators; visual booster brightness is not relied upon for orientation. Native locator vectors and source exhaust offset establish +Z bow/-Z exhaust."
+}
