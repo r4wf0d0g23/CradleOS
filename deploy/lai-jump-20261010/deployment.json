@@ -1,0 +1,10 @@
+{
+  "source": "fe7ac41fa920440d6d4f7d94089215c4ba9dea79",
+  "deployment": "adbad865",
+  "immutableUrl": "https://adbad865.cradleos-d75.pages.dev",
+  "project": "cradleos",
+  "branch": "main",
+  "base": "/",
+  "rollback": "80bd1dcd",
+  "recordedAt": "2026-10-10T15:40:27.224658+00:00"
+}
