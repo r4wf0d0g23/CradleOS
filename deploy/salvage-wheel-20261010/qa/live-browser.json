@@ -1,0 +1,531 @@
+{
+  "base": "https://cradleos.io",
+  "scope": "Fresh natural browser-local free Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "name": "hub",
+      "width": 390,
+      "index": 34,
+      "angle": 1573.3333333333333,
+      "payout": 2750,
+      "stake": 2500,
+      "frames": 271,
+      "samples": [
+        {
+          "t": 0.001613636363636343,
+          "angle": 0.0633755212938017,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.07356818181818178,
+          "angle": 121.86532700345762,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.14931818181818182,
+          "angle": 393.13732601211893,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.22509090909090912,
+          "angle": 672.0346204753132,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.30084090909090905,
+          "angle": 911.3538795864295,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.3765909090909091,
+          "angle": 1104.0491937882164,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.4523409090909091,
+          "angle": 1255.1720082707652,
+          "pointer": -21.330079072393378,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.5280909090909092,
+          "angle": 1369.7737682241677,
+          "pointer": -14.679738094404211,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6038636363636364,
+          "angle": 1452.9266440704282,
+          "pointer": -12.331286440688316,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6796136363636364,
+          "angle": 1509.6334623138637,
+          "pointer": -5.037239181258095,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.7553636363636365,
+          "angle": 1544.9750771835443,
+          "pointer": -7.0746712384588175,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.8311136363636363,
+          "angle": 1564.002933869562,
+          "pointer": -8.810500579771553,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9068636363636363,
+          "angle": 1571.7684775620078,
+          "pointer": 2.359576103382251,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9826136363636364,
+          "angle": 1573.3231534509748,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "pull",
+      "width": 390,
+      "index": 23,
+      "angle": 1646.6666666666665,
+      "payout": 0,
+      "stake": 2500,
+      "frames": 272,
+      "samples": [
+        {
+          "t": 0.00125,
+          "angle": 133.36991390919357,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.0707954545346175,
+          "angle": 242.51374207778198,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.14654545453461734,
+          "angle": 501.5598003621455,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.22229545453461716,
+          "angle": 770.3234097536572,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.2980681818073448,
+          "angle": 1002.3266188275609,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.3738181818073446,
+          "angle": 1189.2292374414658,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.4495681818073444,
+          "angle": 1335.966898213757,
+          "pointer": -20.327114776675778,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.5253181818073447,
+          "angle": 1447.3984064755834,
+          "pointer": -15.902893953959602,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6010909090800719,
+          "angle": 1528.4027824547843,
+          "pointer": -10.88063258469883,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6768409090800717,
+          "angle": 1583.7914534712127,
+          "pointer": -5.588509504827074,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.752590909080072,
+          "angle": 1618.4518457579966,
+          "pointer": -7.31499477792023,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.8283409090800719,
+          "angle": 1637.2427646462836,
+          "pointer": -8.139342527071742,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9040909090800721,
+          "angle": 1645.0230154672213,
+          "pointer": 2.6199737998725636,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9798409090800719,
+          "angle": 1646.6514035519572,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "inspection-targets",
+      "width": 390,
+      "boxes": [
+        {
+          "label": "Spin Salvage Wheel",
+          "w": 81,
+          "h": 81
+        },
+        {
+          "label": "Pull Salvage Wheel handle",
+          "w": 46,
+          "h": 44
+        },
+        {
+          "label": "Inspect 0× sectors",
+          "w": 56.796875,
+          "h": 44
+        },
+        {
+          "label": "Inspect 1.1× sectors",
+          "w": 56.796875,
+          "h": 44
+        },
+        {
+          "label": "Inspect 1.2× sectors",
+          "w": 56.796875,
+          "h": 44
+        },
+        {
+          "label": "Inspect 1.6× sectors",
+          "w": 56.796875,
+          "h": 44
+        },
+        {
+          "label": "Inspect 18× sectors",
+          "w": 56.796875,
+          "h": 44
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "hub",
+      "width": 1440,
+      "index": 13,
+      "angle": 1713.3333333333333,
+      "payout": 0,
+      "stake": 2500,
+      "frames": 271,
+      "samples": [
+        {
+          "t": 0.001704545465382704,
+          "angle": 0.0770099123724218,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.07365909091992803,
+          "angle": 133.01163404998795,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.14940909091992807,
+          "angle": 428.4880528188147,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.22518181819265548,
+          "angle": 732.1797068686034,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.3009318181926553,
+          "angle": 992.7300935265297,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.37668181819265534,
+          "angle": 1202.5143962013497,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.4524545454653827,
+          "angle": 1367.07667167869,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.5282045454653825,
+          "angle": 1491.8205159856998,
+          "pointer": -17.703622066367156,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6039545454653829,
+          "angle": 1582.3027413389907,
+          "pointer": -11.641309171217845,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6797045454653826,
+          "angle": 1644.024285932857,
+          "pointer": -7.236983856045608,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.7554545454653825,
+          "angle": 1682.4860879615942,
+          "pointer": -1.7291370362335738,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.8312272727381101,
+          "angle": 1703.193182650027,
+          "pointer": 1.3410851914513966,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9069545454653826,
+          "angle": 1711.6342171008607,
+          "pointer": 2.7884928085807217,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9827045454653828,
+          "angle": 1713.3224205999798,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "pull",
+      "width": 1440,
+      "index": 37,
+      "angle": 1913.3333333333333,
+      "payout": 2750,
+      "stake": 2500,
+      "frames": 272,
+      "samples": [
+        {
+          "t": 0.0009318182143298062,
+          "angle": 273.355362925526,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.07093181821432981,
+          "angle": 392.0751799202127,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.146704545487057,
+          "angle": 672.9972354033152,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.22245454548705723,
+          "angle": 964.2224620916743,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.2982045454870571,
+          "angle": 1215.4686184189418,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.3739545454870569,
+          "angle": 1417.9319815935876,
+          "pointer": -23,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.4497045454870572,
+          "angle": 1576.878041093419,
+          "pointer": -21.626565851931435,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.5254772727597844,
+          "angle": 1697.6032850620102,
+          "pointer": -16.490780736228132,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6012272727597842,
+          "angle": 1785.3020988979367,
+          "pointer": -12.513427198411396,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.6769772727597845,
+          "angle": 1845.2816572972965,
+          "pointer": -8.925498536914688,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.7527272727597842,
+          "angle": 1882.8074497378955,
+          "pointer": -0.8392100218083275,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.8285000000325115,
+          "angle": 1903.1490151281935,
+          "pointer": 1.2942416023830536,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9042500000325117,
+          "angle": 1911.5609570302813,
+          "pointer": 2.709418897544846,
+          "highlights": 0,
+          "locked": true
+        },
+        {
+          "t": 0.9800000000325115,
+          "angle": 1913.3171812118558,
+          "pointer": 0,
+          "highlights": 0,
+          "locked": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "inspection-targets",
+      "width": 1440,
+      "boxes": [
+        {
+          "label": "Spin Salvage Wheel",
+          "w": 117.171875,
+          "h": 117.171875
+        },
+        {
+          "label": "Pull Salvage Wheel handle",
+          "w": 46,
+          "h": 44
+        },
+        {
+          "label": "Inspect 0× sectors",
+          "w": 83.59375,
+          "h": 44
+        },
+        {
+          "label": "Inspect 1.1× sectors",
+          "w": 83.59375,
+          "h": 44
+        },
+        {
+          "label": "Inspect 1.2× sectors",
+          "w": 83.609375,
+          "h": 44
+        },
+        {
+          "label": "Inspect 1.6× sectors",
+          "w": 83.59375,
+          "h": 44
+        },
+        {
+          "label": "Inspect 18× sectors",
+          "w": 83.59375,
+          "h": 44
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "errors": []
+}

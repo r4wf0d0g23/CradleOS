@@ -25,7 +25,19 @@ Raw requested a more interactive and realistic Salvage Wheel.
 
 ## Publication
 
-Pending final visual submission review and publication.
+Published to primary https://cradleos.io/#/casino (Salvage Wheel).
+
+- Runtime/source `e165ff1b867864f93cbd911d1fe3d6097a6dc2ae`, pushed to `cycle7-vestiges-20261002`.
+- Cloudflare Pages production `697a44af`: https://697a44af.cradleos-d75.pages.dev
+- `live-build.json`: both production bundles match the reviewed local build byte-for-byte.
+  - JS `index-D7am5hk1.js`: SHA256 `738e53599529bc720983ed6ef9ce14d1f8c06588a2c20b63aafeba0de7fef341`.
+  - CSS `index-BMFznalb.css`: SHA256 `4e89074d61756ab5a05116af9b927b3eb9e0f4759b06f03d484c351f73114e6f`.
+
+`qa/live-browser.json`: six fresh primary-origin groups PASS at 390/1440: four natural free Play Money rounds (hub and deliberate pull at each width), plus two inspection/44px-target groups. Actual forward rotation and reactive pointer, previous-pose continuity, concealed committed highlight while active, exact result-sector/payout landing and unchanged committed ledger verified. Zero page errors or overflow. No RNG overrides, saved-result injection, wallet, testnet or global-state changes in this live pass. Lifecycle, emulated touch, keyboard and audio proofs above remain preview-only; not presented as fresh live tests.
+
+Task-owned preview port 5228 stopped and port closure verified. Unrelated Wrangler files and the canonical index-service worktree preserved.
+
+Independent native final delivery gate PASS: runtime, Pages, rollback and both production bundle hashes reconcile; all 24 protected files unchanged; preview port closed. Four live natural rounds and two inspection groups are accurately scoped separately from preview lifecycle/touch/audio checks. Live screenshots confirm corrected handle and exact landing. No remaining blockers.
 
 Rollback:Pages68a3ab00 / runtimee746f9e452b1ff470265104e178b446d2c95c3f9. Canonical source worktree hosts live index service and is preserved; unrelated Wrangler files preserved. Primary cradleos.io only; GitHub Pages redirect-only.
 
