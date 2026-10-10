@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { ItemIcon } from "./GameIcon";
+import { CommandCardFace, CommandCardBack } from "./CasinoCommandCard";
 import { clamp } from "../lib/casinoTableMotion";
 const RANKS = [
   "A",
@@ -17,8 +17,7 @@ const RANKS = [
   "K",
 ];
 const HIGH = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-const SUITS = ["♠", "♥", "♣", "♦"],
-  SUIT_NAMES = ["Spades", "Hearts", "Clubs", "Diamonds"];
+const SUIT_NAMES = ["Spades", "Hearts", "Clubs", "Diamonds"];
 export function TableShoe() {
   return (
     <div className="table-shoe" aria-hidden="true">
@@ -94,7 +93,7 @@ export function MotionCard({
       style={{ "--card-lift": `${3 + lift * 18}px` } as CSSProperties}
     >
       <div
-        className={`casino-dealt-card motion-card ${shown ? "revealed" : "covered"} ${winner && p === 1 ? "card-winner" : ""}`}
+        className={`casino-dealt-card motion-card command-card-shell ${shown ? "revealed" : "covered"} ${winner && p === 1 ? "card-winner" : ""}`}
         role="img"
         data-value={shown ? value : undefined}
         data-suit={shown && !rankOnly ? suit : undefined}
@@ -107,23 +106,13 @@ export function MotionCard({
         style={{ transform, opacity: p === 0 && fly ? 0 : 1 }}
       >
         {shown ? (
-          <>
-            <b className="table-card-rank">
-              {rank}
-              {!rankOnly && <em>{SUITS[suit]}</em>}
-            </b>
-            <ItemIcon typeId={[82425, 87848, 81611, 84955][suit]} size={46} />
-            <b className="table-card-rank table-card-bottom">
-              {rank}
-              {!rankOnly && <em>{SUITS[suit]}</em>}
-            </b>
-            {label && <small>{label}</small>}
-          </>
+          <CommandCardFace
+            rank={rank}
+            suit={rankOnly ? undefined : suit}
+            label={label}
+          />
         ) : (
-          <>
-            <span className="table-card-seal">◇</span>
-            <small>CRADLE</small>
-          </>
+          <CommandCardBack />
         )}
       </div>
     </div>

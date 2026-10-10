@@ -1,0 +1,2841 @@
+{
+  "base": "http://127.0.0.1:5225",
+  "group": "cards",
+  "mode": "Fresh natural Play Money rounds, browser-local ledger; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "blackjack",
+      "name": "Command Deck",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, 33.5, -151)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12441988947641788"
+          },
+          {
+            "transform": "matrix(0.50245, -0.223705, 0.223705, 0.50245, -33.5, -151)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12441988947641788"
+          },
+          {
+            "transform": "matrix3d(0.687578, -0.188264, 0, 0, 0.188264, 0.687578, 0, 0, 0, 0, 1, 0, 11.216, -256.634, 27.5113, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12441988947641788"
+          },
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, -33.5, -381)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12441988947641788"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.712241, 0.17966, 0, 0, -0.17966, 0.712241, 0, 0, 0, 0, 1, 0, 31.4113, -104.606, 31.5523, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.26254143643774386"
+          },
+          {
+            "transform": "matrix(0.50245, -0.223705, 0.223705, 0.50245, -33.5, -151)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.26254143643774386"
+          },
+          {
+            "transform": "matrix3d(0.90764, -0.0755538, 0, 0, 0.0755538, 0.90764, 0, 0, 0, 0, 1, 0, -16.5446, -106.456, 62.7969, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.26254143643774386"
+          },
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, -33.5, -381)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.26254143643774386"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 273.078125,
+        "bottom": 716.078125,
+        "height": 443,
+        "visible": 443
+      },
+      "deck": [
+        {
+          "aria": "8 · Diamonds",
+          "value": "46",
+          "rank": "8",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Unrevealed card",
+          "back": true,
+          "face": false,
+          "images": []
+        },
+        {
+          "aria": "9 · Spades",
+          "value": "8",
+          "rank": "9",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "7 · Hearts",
+          "value": "19",
+          "rank": "7",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / BLACKJACK\nHAND IN PLAY\nCRADLE / DEEP FIELD\nASTRAL DECK\nBLACKJACK · ZERO GRAVITY\nPause drift\nORBITAL SHOE\nDEALER · STANDS ON 17 8\n8\n♦\n8\n♦\n◇\nCRADLE\nBLACKJACK 3:2 · SPLIT 21 1:1\nSEAT 1 16\n9\n♠\n9\n♠\n7\n♥\n7\n♥\nYOUR MOVE\nSTILLNESS / OUTER ORBIT\n∴\nSeat 1 · Your move",
+      "ok": true
+    },
+    {
+      "id": "baccarat",
+      "name": "Command Baccarat",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.952339, -0.184599, -0.242844, 0, 0.190295, 0.981727, 0, 0, 0.238407, -0.0462121, 0.970065, 0, 80.3162, -94.9289, 6.0711, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07946428571428571"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 37.5, -116.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07946428571428571"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 102.5, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07946428571428571"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 37.5, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07946428571428571"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.91035, -0.000557228, 0.413839, 0, 0.000612103, 1, 0, 0, -0.413839, 0.000253312, 0.91035, 0, 0.256769, -6.49943, 10.346, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17475"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 37.5, -116.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17475"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 102.5, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17475"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 37.5, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17475"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: K of Clubs",
+          "value": "38",
+          "suit": "2",
+          "rank": "K",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J of Hearts",
+          "value": "23",
+          "suit": "1",
+          "rank": "J",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 3 of Hearts",
+          "value": "15",
+          "suit": "1",
+          "rank": "3",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 6 of Clubs",
+          "value": "31",
+          "suit": "2",
+          "rank": "6",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / BACCARAT\nPRACTICE TABLE\n◇\nPLAYER · 0\nK\n♣\nK\n♣\nJ\n♥\nJ\n♥\nBANKER · 9\n3\n♥\n3\n♥\n6\n♣\n6\n♣\nPlayer 0 · Banker 9\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "three_card_poker",
+      "name": "Three-Card Sortie",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.604627, -0.0872375, -0.791717, 0, 0.142804, 0.989751, 0, 0, 0.783603, -0.113061, 0.610888, 0, 46.3689, -52.716, 19.7929, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07517857141154155"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07517857141154155"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 9.99999, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07517857141154155"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 130, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07517857141154155"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07517857141154155"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 9.99999, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07517857141154155"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.996195, -0.0871557, 0, 0, 0.0871557, 0.996195, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16446428569725582"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16446428569725582"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 9.99999, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16446428569725582"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 130, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16446428569725582"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16446428569725582"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 9.99999, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16446428569725582"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 9 of Spades",
+          "value": "8",
+          "suit": "0",
+          "rank": "9",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 9 of Diamonds",
+          "value": "47",
+          "suit": "3",
+          "rank": "9",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 8 of Diamonds",
+          "value": "46",
+          "suit": "3",
+          "rank": "8",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: K of Diamonds",
+          "value": "51",
+          "suit": "3",
+          "rank": "K",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J of Spades",
+          "value": "10",
+          "suit": "0",
+          "rank": "J",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 3 of Hearts",
+          "value": "15",
+          "suit": "1",
+          "rank": "3",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / THREE CARD\nPRACTICE TABLE\n◇\nYOUR HAND\n9\n♠\n9\n♠\n9\n♦\n9\n♦\n8\n♦\n8\n♦\nDEALER\nK\n♦\nK\n♦\nJ\n♠\nJ\n♠\n3\n♥\n3\n♥\nPAIR · Pair · wins\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "dragon_tiger",
+      "name": "Frigate Duel",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.97112, -0.237952, -0.0174598, 0, 0.237989, 0.971268, 0, 0, 0.0169581, -0.00415522, 0.999848, 0, 68.8393, -120.731, 0.436494, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1177894736842105"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -318.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1177894736842105"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.473101, -0.0046702, 0.880996, 0, 0.00987098, 0.999951, 0, 0, -0.880953, 0.0086963, 0.473124, 0, 2.82787, -18.1637, 22.0249, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24936842105263154"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -318.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24936842105263154"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 3",
+          "value": "1",
+          "rank": "3",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: K",
+          "value": "11",
+          "rank": "K",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DRAGON TIGER\nPRACTICE TABLE\n◇\nDRAGON\n3\n3\nTIGER\nK\nK\nTiger wins\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "andar_bahar",
+      "name": "Signal Chase",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11502762438842606"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2623756906867686"
+          },
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2623756906867686"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 5",
+          "value": "4",
+          "rank": "5",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "1: 2",
+          "value": "1",
+          "rank": "2",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "3: K",
+          "value": "12",
+          "rank": "K",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "5: K",
+          "value": "12",
+          "rank": "K",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "2: 8",
+          "value": "7",
+          "rank": "8",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "4: J",
+          "value": "10",
+          "rank": "J",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "6: 5",
+          "value": "4",
+          "rank": "5",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ANDAR BAHAR\nPRACTICE TABLE\n◇\nMATCH THIS RANK\n5\n5\nANDAR\n2\n1\nK\n3\nK\n5\nBAHAR\n8\n2\nJ\n4\n5\n6\n6 cards dealt\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "red_dog",
+      "name": "Transit Window",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.876911, -0.131158, -0.462412, 0, 0.147923, 0.988999, 0, 0, 0.457325, -0.0684012, 0.886665, 0, 63.1916, -79.5457, 11.5603, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1106842106016059"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 36, -119.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1106842106016059"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -289.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1106842106016059"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.25100000007529005"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 36, -119.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.25100000007529005"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 70, -289.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.25100000007529005"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 10",
+          "value": "8",
+          "rank": "10",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 7",
+          "value": "5",
+          "rank": "7",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 7",
+          "value": "5",
+          "rank": "7",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / RED DOG\nPRACTICE TABLE\n◇\nANCHORS\n10\n10\n7\n7\nINSIDE CARD\n7\n7\n2\n3\n4\n5\n6\n7\n8\n9\n10\nJ\nQ\nK\nA\nOutside the spread\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "blackjack",
+      "name": "Command Deck",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, 36, -151)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12436464091032248"
+          },
+          {
+            "transform": "matrix(0.50245, -0.223705, 0.223705, 0.50245, -36, -151)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12436464091032248"
+          },
+          {
+            "transform": "matrix3d(0.687451, -0.188306, 0, 0, 0.188306, 0.687451, 0, 0, 0, 0, 1, 0, 12.8276, -256.718, 27.4907, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12436464091032248"
+          },
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, -36, -381)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12436464091032248"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.731692, 0.172204, 0, 0, -0.172204, 0.731692, 0, 0, 0, 0, 1, 0, 32.7111, -100.452, 34.7904, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.27171270720866497"
+          },
+          {
+            "transform": "matrix(0.50245, -0.223705, 0.223705, 0.50245, -36, -151)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.27171270720866497"
+          },
+          {
+            "transform": "matrix3d(0.916368, -0.0692404, 0, 0, 0.0692404, 0.916368, 0, 0, 0, 0, 1, 0, -17.0249, -99.9383, 63.6632, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.27171270720866497"
+          },
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, -36, -381)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.27171270720866497"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 280.078125,
+        "bottom": 723.078125,
+        "height": 443,
+        "visible": 443
+      },
+      "deck": [
+        {
+          "aria": "5 · Clubs",
+          "value": "30",
+          "rank": "5",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Unrevealed card",
+          "back": true,
+          "face": false,
+          "images": []
+        },
+        {
+          "aria": "7 · Spades",
+          "value": "6",
+          "rank": "7",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "K · Diamonds",
+          "value": "51",
+          "rank": "K",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / BLACKJACK\nHAND IN PLAY\nCRADLE / DEEP FIELD\nASTRAL DECK\nBLACKJACK · ZERO GRAVITY\nPause drift\nORBITAL SHOE\nDEALER · STANDS ON 17 5\n5\n♣\n5\n♣\n◇\nCRADLE\nBLACKJACK 3:2 · SPLIT 21 1:1\nSEAT 1 17\n7\n♠\n7\n♠\nK\n♦\nK\n♦\nYOUR MOVE\nSTILLNESS / OUTER ORBIT\n∴\nSeat 1 · Your move",
+      "ok": true
+    },
+    {
+      "id": "baccarat",
+      "name": "Command Baccarat",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.448928, -0.0299679, -0.893065, 0, 0.0666061, 0.997779, 0, 0, 0.891082, -0.0594836, 0.449927, 0, 46.3745, -45.1762, 22.3266, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08042857137748172"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -116.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08042857137748172"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 40, -116.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08042857137748172"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 170, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08042857137748172"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08042857137748172"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 40, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08042857137748172"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.169714285663196"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -116.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.169714285663196"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 40, -116.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.169714285663196"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 170, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.169714285663196"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.169714285663196"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 40, -283.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.169714285663196"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: Q of Diamonds",
+          "value": "50",
+          "suit": "3",
+          "rank": "Q",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: A of Spades",
+          "value": "0",
+          "suit": "0",
+          "rank": "A",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 4 of Hearts",
+          "value": "16",
+          "suit": "1",
+          "rank": "4",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: K of Spades",
+          "value": "12",
+          "suit": "0",
+          "rank": "K",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J of Clubs",
+          "value": "36",
+          "suit": "2",
+          "rank": "J",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 2 of Hearts",
+          "value": "14",
+          "suit": "1",
+          "rank": "2",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / BACCARAT\nPRACTICE TABLE\n◇\nPLAYER · 5\nQ\n♦\nQ\n♦\nA\n♠\nA\n♠\n4\n♥\n4\n♥\nBANKER · 2\nK\n♠\nK\n♠\nJ\n♣\nJ\n♣\n2\n♥\n2\n♥\nPlayer 5 · Banker 2\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "three_card_poker",
+      "name": "Three-Card Sortie",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.607643, -0.0878549, -0.789336, 0, 0.143095, 0.989709, 0, 0, 0.781213, -0.11295, 0.613962, 0, 59.1614, -52.8945, 19.7334, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0750714285714286"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0750714285714286"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 45, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0750714285714286"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 165, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0750714285714286"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0750714285714286"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 45, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0750714285714286"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.996195, -0.0871557, 0, 0, 0.0871557, 0.996195, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16435714285714287"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16435714285714287"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 45, -114.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16435714285714287"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 165, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16435714285714287"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16435714285714287"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 45, -279.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16435714285714287"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 4 of Clubs",
+          "value": "29",
+          "suit": "2",
+          "rank": "4",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J of Spades",
+          "value": "10",
+          "suit": "0",
+          "rank": "J",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 7 of Clubs",
+          "value": "32",
+          "suit": "2",
+          "rank": "7",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 4 of Spades",
+          "value": "3",
+          "suit": "0",
+          "rank": "4",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 3 of Clubs",
+          "value": "28",
+          "suit": "2",
+          "rank": "3",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 2 of Diamonds",
+          "value": "40",
+          "suit": "3",
+          "rank": "2",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / THREE CARD\nPRACTICE TABLE\n◇\nYOUR HAND\n4\n♣\n4\n♣\nJ\n♠\nJ\n♠\n7\n♣\n7\n♣\nDEALER\n4\n♠\n4\n♠\n3\n♣\n3\n♣\n2\n♦\n2\n♦\nHIGH CARD · High card · dealer wins\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "dragon_tiger",
+      "name": "Frigate Duel",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.971545, -0.234767, -0.0313694, 0, 0.234883, 0.972024, 0, 0, 0.0304918, -0.00736815, 0.999508, 0, 126.629, -119.337, 0.784236, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11868421050121912"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 130.5, -301.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11868421050121912"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.484598, -0.00461145, 0.874725, 0, 0.0095156, 0.999955, 0, 0, -0.874685, 0.00832353, 0.48462, 0, 5.08215, -17.8915, 21.8681, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.25021052629069274"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 130.5, -301.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.25021052629069274"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 10",
+          "value": "8",
+          "rank": "10",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 2",
+          "value": "0",
+          "rank": "2",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DRAGON TIGER\nPRACTICE TABLE\n◇\nDRAGON\n10\n10\nTIGER\n2\n2\nDragon wins\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "andar_bahar",
+      "name": "Signal Chase",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.0683231707317073"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1445121951219512"
+          },
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.1445121951219512"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 5",
+          "value": "4",
+          "rank": "5",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "7: Q",
+          "value": "11",
+          "rank": "Q",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "9: 3",
+          "value": "2",
+          "rank": "3",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "11: 4",
+          "value": "3",
+          "rank": "4",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "13: 5",
+          "value": "4",
+          "rank": "5",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "6: 2",
+          "value": "1",
+          "rank": "2",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "8: 7",
+          "value": "6",
+          "rank": "7",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "10: 10",
+          "value": "9",
+          "rank": "10",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "12: 7",
+          "value": "6",
+          "rank": "7",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ANDAR BAHAR\nPRACTICE TABLE\n◇\nMATCH THIS RANK\n5\n5\nANDAR\nQ\n7\n3\n9\n4\n11\n5\n13\nBAHAR\n2\n6\n7\n8\n10\n10\n7\n12\n13 cards dealt\nPAYOUT\n47 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "red_dog",
+      "name": "Transit Window",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.891976, -0.138988, -0.430188, 0, 0.153963, 0.988077, 0, 0, 0.425058, -0.0662329, 0.902739, 0, 87.9338, -82.0506, 10.7547, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.10894736849634269"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 71, -119.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.10894736849634269"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -289.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.10894736849634269"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24926315797002693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 71, -119.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24926315797002693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 105, -289.5)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24926315797002693"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 6",
+          "value": "4",
+          "rank": "6",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 10",
+          "value": "8",
+          "rank": "10",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 8",
+          "value": "6",
+          "rank": "8",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / RED DOG\nPRACTICE TABLE\n◇\nANCHORS\n6\n6\n10\n10\nINSIDE CARD\n8\n8\n2\n3\n4\n5\n6\n7\n8\n9\n10\nJ\nQ\nK\nA\nInside the spread\nPAYOUT\n100 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "blackjack",
+      "name": "Command Deck",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, 43, -161)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12546961328601317"
+          },
+          {
+            "transform": "matrix(0.50245, -0.223705, 0.223705, 0.50245, -43, -161)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12546961328601317"
+          },
+          {
+            "transform": "matrix3d(0.689979, -0.187468, 0, 0, 0.187468, 0.689979, 0, 0, 0, 0, 1, 0, 16.932, -274.675, 27.9013, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12546961328601317"
+          },
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, -43, -412)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.12546961328601317"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.733859, 0.171336, 0, 0, -0.171336, 0.733859, 0, 0, 0, 0, 1, 0, 36.5252, -105.465, 35.1538, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2727624309655711"
+          },
+          {
+            "transform": "matrix(0.50245, -0.223705, 0.223705, 0.50245, -43, -161)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2727624309655711"
+          },
+          {
+            "transform": "matrix3d(0.917329, -0.0685356, 0, 0, 0.0685356, 0.917329, 0, 0, 0, 0, 1, 0, -15.8827, -104.733, 63.7488, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2727624309655711"
+          },
+          {
+            "transform": "matrix(0.50245, 0.223705, -0.223705, 0.50245, -43, -412)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.2727624309655711"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 304.1875,
+        "bottom": 788.1875,
+        "height": 484,
+        "visible": 484
+      },
+      "deck": [
+        {
+          "aria": "A · Diamonds",
+          "value": "39",
+          "rank": "A",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Unrevealed card",
+          "back": true,
+          "face": false,
+          "images": []
+        },
+        {
+          "aria": "2 · Clubs",
+          "value": "27",
+          "rank": "2",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "4 · Spades",
+          "value": "3",
+          "rank": "4",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / BLACKJACK\nHAND IN PLAY\nCRADLE / DEEP FIELD\nASTRAL DECK\nBLACKJACK · ZERO GRAVITY\nReduced motion\nORBITAL SHOE\nDEALER · STANDS ON 17 11\nA\n♦\nA\n♦\n◇\nCRADLE\nBLACKJACK 3:2 · SPLIT 21 1:1\nSEAT 1 6\n2\n♣\n2\n♣\n4\n♠\n4\n♠\nYOUR MOVE\nSTILLNESS / OUTER ORBIT\n∴\nSeat 1 · Your move",
+      "ok": true
+    },
+    {
+      "id": "baccarat",
+      "name": "Command Baccarat",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.858285, -0.122451, -0.49835, 0, 0.141239, 0.989976, 0, 0, 0.493355, -0.0703864, 0.866976, 0, 176.89, -89.2506, 12.4588, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07510714285714284"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -141)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07510714285714284"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 141, -141)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07510714285714284"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 264, -332)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07510714285714284"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 182, -332)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.07510714285714284"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17035714285714285"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -141)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17035714285714285"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 141, -141)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17035714285714285"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 264, -332)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17035714285714285"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 182, -332)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.17035714285714285"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 4 of Spades",
+          "value": "3",
+          "suit": "0",
+          "rank": "4",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 9 of Clubs",
+          "value": "34",
+          "suit": "2",
+          "rank": "9",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J of Clubs",
+          "value": "36",
+          "suit": "2",
+          "rank": "J",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 4 of Diamonds",
+          "value": "42",
+          "suit": "3",
+          "rank": "4",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 10 of Spades",
+          "value": "9",
+          "suit": "0",
+          "rank": "10",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / BACCARAT\nPRACTICE TABLE\n◇\nPLAYER · 3\n4\n♠\n4\n♠\n9\n♣\n9\n♣\nJ\n♣\nJ\n♣\nBANKER · 4\n4\n♦\n4\n♦\n10\n♠\n10\n♠\nPlayer 3 · Banker 4\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "three_card_poker",
+      "name": "Three-Card Sortie",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.4404, -0.0574463, -0.895962, 0, 0.129345, 0.9916, 0, 0, 0.888435, -0.115889, 0.444131, 0, 79.4379, -49.3756, 22.399, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08060714289120263"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -133)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08060714289120263"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 152, -133)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08060714289120263"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 294, -321)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08060714289120263"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -321)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08060714289120263"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 152, -321)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.08060714289120263"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.996195, -0.0871557, 0, 0, 0.0871557, 0.996195, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16989285717691693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -133)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16989285717691693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 152, -133)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16989285717691693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 294, -321)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16989285717691693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -321)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16989285717691693"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 152, -321)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.16989285717691693"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 7 of Clubs",
+          "value": "32",
+          "suit": "2",
+          "rank": "7",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 4 of Clubs",
+          "value": "29",
+          "suit": "2",
+          "rank": "4",
+          "glyph": "♣",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/35f04d82da92358be531d44d585f55af6e7d661c35b59c96444c0e136da4a645.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 4 of Hearts",
+          "value": "16",
+          "suit": "1",
+          "rank": "4",
+          "glyph": "♥",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/d1f327dd6415de93cfa85355413a7ab04712edd6eb11713b4e7974d7ac30d274.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: A of Diamonds",
+          "value": "39",
+          "suit": "3",
+          "rank": "A",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 2 of Spades",
+          "value": "1",
+          "suit": "0",
+          "rank": "2",
+          "glyph": "♠",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/fb8f910216c44311827be0f0f7261309419be1eb96ab4150187d6d5bde5b84ca.png"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 9 of Diamonds",
+          "value": "47",
+          "suit": "3",
+          "rank": "9",
+          "glyph": "♦",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/data/icons-cycle7-3573151/assets/f87c0dbaf65f720bb231fb1229fe10682c8d282adde59f1fa765aea0f6896862.png"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / THREE CARD\nPRACTICE TABLE\n◇\nYOUR HAND\n7\n♣\n7\n♣\n4\n♣\n4\n♣\n4\n♥\n4\n♥\nDEALER\nA\n♦\nA\n♦\n2\n♠\n2\n♠\n9\n♦\n9\n♦\nPAIR · Pair · wins\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "dragon_tiger",
+      "name": "Frigate Duel",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 251, -144)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.10973684205506976"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 251, -344)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.10973684205506976"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.482449, -0.00462283, 0.875912, 0, 0.00958157, 0.999954, 0, 0, -0.875872, 0.00839262, 0.482471, 0, 9.84264, -18.7855, 21.8978, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.250052631528754"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 251, -344)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.250052631528754"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: A",
+          "value": "12",
+          "rank": "A",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J",
+          "value": "9",
+          "rank": "J",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DRAGON TIGER\nPRACTICE TABLE\n◇\nDRAGON\nA\nA\nTIGER\nJ\nJ\nDragon wins\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "andar_bahar",
+      "name": "Signal Chase",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.13886666673024495"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.3166666667302449"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: J",
+          "value": "10",
+          "rank": "J",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "1: 4",
+          "value": "3",
+          "rank": "4",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "3: J",
+          "value": "10",
+          "rank": "J",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "2: A",
+          "value": "0",
+          "rank": "A",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ANDAR BAHAR\nPRACTICE TABLE\n◇\nMATCH THIS RANK\nJ\nJ\nANDAR\n4\n1\nJ\n3\nBAHAR\nA\n2\n3 cards dealt\nPAYOUT\n47 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "red_dog",
+      "name": "Transit Window",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.869659, -0.127653, -0.476863, 0, 0.145229, 0.989398, 0, 0, 0.471808, -0.0692543, 0.878977, 0, 157.467, -91.2547, 11.9216, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11147368428581642"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 182, -141)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11147368428581642"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -332)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.11147368428581642"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24300000007529002"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 182, -141)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24300000007529002"
+          },
+          {
+            "transform": "matrix(0.970296, -0.241922, 0.241922, 0.970296, 223, -332)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.24300000007529002"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 9",
+          "value": "7",
+          "rank": "9",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: 6",
+          "value": "4",
+          "rank": "6",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "Card: J",
+          "value": "9",
+          "rank": "J",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / RED DOG\nPRACTICE TABLE\n◇\nANCHORS\n9\n9\n6\n6\nINSIDE CARD\nJ\nJ\n2\n3\n4\n5\n6\n7\n8\n9\n10\nJ\nQ\nK\nA\nOutside the spread\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

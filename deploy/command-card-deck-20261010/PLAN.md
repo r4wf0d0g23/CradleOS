@@ -1,0 +1,5 @@
+# Shared command deck
+
+Apply Fleet Duel's metallic deck furniture to all six other currently playable card games: Command Deck blackjack, Command Baccarat, Three-Card Sortie, Frigate Duel, Transit Window and Signal Chase. Both existing AstralCard and MotionCard wrappers consume one stateless face/back component. Preserve each wrapper's rank decoding (Ace-first vs high vs one-based red-dog conversion), hidden-state timing/ARIA/data, transforms, animation clock, gestures and outcomes. Standard suit glyph/name semantics remain explicit, including blackjack. No changes to Fleet Duel's approved scene, odds, balances, game gates or unactivated legacy-game gates. The shared AstralCard skin also reaches gated testnet blackjack; no activation or wallet execution is included.
+
+Verify all six at phone/desktop widths; card faces/suit marks, concealed backs, shoe-to-card flight, blackjack hole card/hit/split/reload, long Signal Chase overlap. Full tests/build/review; publish and verify affected live views and asset hashes.

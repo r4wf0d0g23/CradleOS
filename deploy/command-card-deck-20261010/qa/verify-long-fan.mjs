@@ -1,0 +1,12 @@
+import {chromium} from '/home/rawdata/.npm-global/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
+import fs from 'node:fs/promises';import assert from 'node:assert/strict';
+const OUT=new URL('./',import.meta.url).pathname,BASE='http://127.0.0.1:5225',KEY='cradleos:casino:practice:v2';
+const {longAndar}=JSON.parse(await fs.readFile(new URL('./fixtures.json',import.meta.url),'utf8'));
+const b=await chromium.launch({executablePath:'/home/rawdata/.cache/ms-playwright/chromium-1228/chrome-linux/chrome',args:['--no-sandbox','--no-proxy-server']});
+const report={mode:'Engine-produced saved long Signal Chase; preview only',checks:[],errors:[]};
+try{for(const width of [320,390,1440]){const c=await b.newContext({viewport:{width,height:1000}}),p=await c.newPage();p.on('pageerror',e=>report.errors.push(e.message));await p.goto(BASE+'/#/casino');await p.evaluate(([k,s])=>sessionStorage.setItem(k,JSON.stringify(s)),[KEY,longAndar]);await p.reload();await p.locator('.andar-table').waitFor();await p.locator('.andar-table').scrollIntoViewIfNeeded();await p.waitForTimeout(500);
+ const cards=await p.locator('.andar-stack .motion-card').evaluateAll(es=>es.map(e=>{const rank=e.querySelector('.command-top'),r=rank.getBoundingClientRect();return {hits:[.05,.5,.95].map(f=>{const hit=document.elementFromPoint(r.left+r.width*f,r.top+7);return {cls:hit?.className,tag:hit?.tagName,text:hit?.textContent?.slice(0,50)};}),y:r.y,x:r.x,w:r.width,cardx:e.getBoundingClientRect().x,value:e.dataset.value,rank:rank.childNodes[0].textContent,visible:[.05,.5,.95].every(f=>e.contains(document.elementFromPoint(r.left+r.width*f,r.top+7))),ships:[...e.querySelectorAll('.command-ship')].map(i=>({w:i.getBoundingClientRect().width,h:i.getBoundingClientRect().height}))};}));
+ console.log(JSON.stringify({width,cards}));await p.locator('.andar-table').screenshot({path:OUT+`long-fan-${width}.png`});assert.equal(cards.length,8);assert(cards.every(x=>x.visible),'all rank corners unobscured');assert(cards.every(x=>x.ships[0].w>x.ships[1].w),'formation size hierarchy');assert.deepEqual(await p.evaluate(k=>JSON.parse(sessionStorage.getItem(k)),KEY),longAndar);
+ await p.locator('.andar-table').screenshot({path:OUT+`long-fan-${width}.png`});report.checks.push({width,cards});await c.close();}
+}finally{await b.close();await fs.writeFile(OUT+'long-fan.json',JSON.stringify(report,null,2));}
+assert.deepEqual(report.errors,[]);console.log(JSON.stringify(report,null,2));

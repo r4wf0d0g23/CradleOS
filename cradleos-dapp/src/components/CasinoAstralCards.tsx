@@ -6,7 +6,11 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { ItemIcon } from "./GameIcon";
+import {
+  CommandCardFace,
+  CommandCardBack,
+  COMMAND_SUITS,
+} from "./CasinoCommandCard";
 import { clamp } from "../lib/casinoTableMotion";
 import { cardTotal } from "../lib/casinoPractice";
 import "../styles/casino-astral-blackjack.css";
@@ -26,8 +30,7 @@ const RANKS = [
   "Q",
   "K",
 ];
-const SUITS = ["Frigates", "Raiders", "Freighters", "Gates"];
-const GLYPHS = ["◇", "✦", "◉", "▣"];
+const SUITS = COMMAND_SUITS;
 // Deterministic scenery, unrelated to the shoe or game RNG.
 const STARS = Array.from({ length: 52 }, (_, i) => ({
   x: (i * 73 + 17) % 997,
@@ -137,7 +140,11 @@ export function AstralTable({
           disabled={motionReduced}
           onClick={toggleDrift}
         >
-          {motionReduced ? "Reduced motion" : drift ? "Pause drift" : "Resume drift"}
+          {motionReduced
+            ? "Reduced motion"
+            : drift
+              ? "Pause drift"
+              : "Resume drift"}
         </button>
       </header>
       <div className="astral-shoe" aria-hidden="true">
@@ -239,35 +246,13 @@ export function AstralCard({
         />
         <div className="astral-hover">
           <div
-            className={`astral-token ${shown ? "astral-face" : "astral-back"}`}
+            className={`astral-token command-card-shell ${shown ? "astral-face" : "astral-back"}`}
             style={{ transform: `rotateY(${flip}deg)` }}
           >
             {shown ? (
-              <>
-                <b className="astral-rank">
-                  {rank}
-                  <small>{GLYPHS[suit]}</small>
-                </b>
-                <div className="astral-emblem">
-                  <ItemIcon
-                    typeId={[82425, 87848, 81611, 84955][suit]}
-                    size={56}
-                  />
-                </div>
-                <span className="astral-suit">{SUITS[suit]}</span>
-                <b className="astral-rank astral-rank-bottom">
-                  {rank}
-                  <small>{GLYPHS[suit]}</small>
-                </b>
-              </>
+              <CommandCardFace rank={rank} suit={suit} />
             ) : (
-              <>
-                <span className="astral-seal">
-                  <i />
-                  <b>∴</b>
-                </span>
-                <span className="astral-back-mark">CRADLE</span>
-              </>
+              <CommandCardBack />
             )}
           </div>
         </div>

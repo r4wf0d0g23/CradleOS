@@ -1,0 +1,96 @@
+{
+  "longAndar": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "andar_bahar",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          7,
+          5,
+          6,
+          8,
+          0,
+          3,
+          4,
+          1,
+          8,
+          11,
+          9,
+          2,
+          3,
+          0,
+          6,
+          12,
+          1,
+          6,
+          12,
+          8,
+          4,
+          1,
+          9,
+          9,
+          12,
+          9,
+          0,
+          2,
+          0,
+          8,
+          7
+        ],
+        "label": "Bahar · 30 cards"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "andar_bahar",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "andar_bahar",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            7,
+            5,
+            6,
+            8,
+            0,
+            3,
+            4,
+            1,
+            8,
+            11,
+            9,
+            2,
+            3,
+            0,
+            6,
+            12,
+            1,
+            6,
+            12,
+            8,
+            4,
+            1,
+            9,
+            9,
+            12,
+            9,
+            0,
+            2,
+            0,
+            8,
+            7
+          ],
+          "label": "Bahar · 30 cards"
+        }
+      ]
+    }
+  }
+}

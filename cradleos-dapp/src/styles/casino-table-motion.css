@@ -576,7 +576,7 @@
   width: 55px;
   min-height: 96px;
 }
-.andar-stack .motion-card img {
+.andar-stack .motion-card > img {
   width: 38px;
   height: 38px;
   object-fit: contain;
@@ -692,7 +692,7 @@
   .andar-stack .motion-card {
     width: 45px;
   }
-  .andar-stack .motion-card img {
+  .andar-stack .motion-card > img {
     width: 30px;
     height: 30px;
   }

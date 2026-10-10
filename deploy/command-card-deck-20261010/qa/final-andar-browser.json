@@ -1,0 +1,414 @@
+{
+  "base": "http://127.0.0.1:5225",
+  "group": "cards",
+  "mode": "Fresh natural Play Money rounds, browser-local ledger; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "andar_bahar",
+      "name": "Signal Chase",
+      "width": 320,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.15026666673024494"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.316866666730245"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 3",
+          "value": "2",
+          "rank": "3",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "1: 6",
+          "value": "5",
+          "rank": "6",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "2: 3",
+          "value": "2",
+          "rank": "3",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ANDAR BAHAR\nPRACTICE TABLE\n◇\nMATCH THIS RANK\n3\n3\nANDAR\n6\n1\nBAHAR\n3\n2\n2 cards dealt\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "andar_bahar",
+      "name": "Signal Chase",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.14973333330154415"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.31633333330154423"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 10",
+          "value": "9",
+          "rank": "10",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "1: 10",
+          "value": "9",
+          "rank": "10",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ANDAR BAHAR\nPRACTICE TABLE\n◇\nMATCH THIS RANK\n10\n10\nANDAR\n10\n1\nBAHAR\n1 cards dealt\nPAYOUT\n47 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "andar_bahar",
+      "name": "Signal Chase",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.019651264159078686"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.04145597209281889"
+          },
+          {
+            "transform": "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1.83697e-15, 3.06162e-15, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.04145597209281889"
+          }
+        ]
+      ],
+      "deck": [
+        {
+          "aria": "Card: 8",
+          "value": "7",
+          "rank": "8",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "45: J",
+          "value": "10",
+          "rank": "J",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "47: Q",
+          "value": "11",
+          "rank": "Q",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "49: 5",
+          "value": "4",
+          "rank": "5",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "51: 7",
+          "value": "6",
+          "rank": "7",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "46: 9",
+          "value": "8",
+          "rank": "9",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "48: 6",
+          "value": "5",
+          "rank": "6",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "50: K",
+          "value": "12",
+          "rank": "K",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        },
+        {
+          "aria": "52: 6",
+          "value": "5",
+          "rank": "6",
+          "back": false,
+          "face": true,
+          "images": [
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            },
+            {
+              "loaded": true,
+              "url": "/casino/lai-jump/lai-top.webp"
+            }
+          ]
+        }
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ANDAR BAHAR\nPRACTICE TABLE\n◇\nMATCH THIS RANK\n8\n8\nANDAR\nJ\n45\nQ\n47\n5\n49\n7\n51\nBAHAR\n9\n46\n6\n48\nK\n50\n6\n52\n52 cards dealt\nPAYOUT\n47 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

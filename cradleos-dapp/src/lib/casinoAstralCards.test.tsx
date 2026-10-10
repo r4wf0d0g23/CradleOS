@@ -29,7 +29,7 @@ describe("astral presentation boundaries", () => {
       <AstralCard value={51} progress={0.51} fly />,
     );
     expect(face).toContain('data-value="51"');
-    expect(face).toContain('aria-label="K · Gates"');
+    expect(face).toContain('aria-label="K · Diamonds"');
   });
   it("reduced motion disables decorative drift without depending on a browser or game state", () => {
     const html = renderToStaticMarkup(

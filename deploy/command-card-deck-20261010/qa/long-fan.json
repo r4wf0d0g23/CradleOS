@@ -1,0 +1,981 @@
+{
+  "mode": "Engine-produced saved long Signal Chase; preview only",
+  "checks": [
+    {
+      "width": 320,
+      "cards": [
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            }
+          ],
+          "y": 807.078125,
+          "x": 59,
+          "w": 12.453125,
+          "cardx": 56,
+          "value": "9",
+          "rank": "10",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            }
+          ],
+          "y": 807.078125,
+          "x": 75.546875,
+          "w": 12.453125,
+          "cardx": 72.546875,
+          "value": "9",
+          "rank": "10",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            }
+          ],
+          "y": 807.078125,
+          "x": 92.109375,
+          "w": 6.234375,
+          "cardx": 89.109375,
+          "value": "2",
+          "rank": "3",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            }
+          ],
+          "y": 807.078125,
+          "x": 108.671875,
+          "w": 6.234375,
+          "cardx": 105.671875,
+          "value": "8",
+          "rank": "9",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            }
+          ],
+          "y": 807.078125,
+          "x": 175,
+          "w": 6.234375,
+          "cardx": 172,
+          "value": "12",
+          "rank": "K",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            }
+          ],
+          "y": 807.078125,
+          "x": 191.546875,
+          "w": 6.234375,
+          "cardx": 188.546875,
+          "value": "0",
+          "rank": "A",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            }
+          ],
+          "y": 807.078125,
+          "x": 208.109375,
+          "w": 6.234375,
+          "cardx": 205.109375,
+          "value": "0",
+          "rank": "A",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            }
+          ],
+          "y": 807.078125,
+          "x": 224.671875,
+          "w": 6.234375,
+          "cardx": 221.671875,
+          "value": "7",
+          "rank": "8",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "cards": [
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            }
+          ],
+          "y": 811.078125,
+          "x": 61,
+          "w": 15.65625,
+          "cardx": 56,
+          "value": "9",
+          "rank": "10",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            }
+          ],
+          "y": 811.078125,
+          "x": 83.859375,
+          "w": 15.65625,
+          "cardx": 78.859375,
+          "value": "9",
+          "rank": "10",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            }
+          ],
+          "y": 811.078125,
+          "x": 106.71875,
+          "w": 7.828125,
+          "cardx": 101.71875,
+          "value": "2",
+          "rank": "3",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            }
+          ],
+          "y": 811.078125,
+          "x": 129.578125,
+          "w": 7.828125,
+          "cardx": 124.578125,
+          "value": "8",
+          "rank": "9",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            }
+          ],
+          "y": 811.078125,
+          "x": 212,
+          "w": 7.828125,
+          "cardx": 207,
+          "value": "12",
+          "rank": "K",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            }
+          ],
+          "y": 811.078125,
+          "x": 234.859375,
+          "w": 7.828125,
+          "cardx": 229.859375,
+          "value": "0",
+          "rank": "A",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            }
+          ],
+          "y": 811.078125,
+          "x": 257.71875,
+          "w": 7.828125,
+          "cardx": 252.71875,
+          "value": "0",
+          "rank": "A",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            }
+          ],
+          "y": 811.078125,
+          "x": 280.578125,
+          "w": 7.828125,
+          "cardx": 275.578125,
+          "value": "7",
+          "rank": "8",
+          "visible": true,
+          "ships": [
+            {
+              "w": 16.15625,
+              "h": 34.578125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            },
+            {
+              "w": 9,
+              "h": 16.53125
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "cards": [
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            }
+          ],
+          "y": 814.1875,
+          "x": 328.5,
+          "w": 16.578125,
+          "cardx": 323.5,
+          "value": "9",
+          "rank": "10",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "10"
+            }
+          ],
+          "y": 814.1875,
+          "x": 371.15625,
+          "w": 16.578125,
+          "cardx": 366.15625,
+          "value": "9",
+          "rank": "10",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "3"
+            }
+          ],
+          "y": 814.1875,
+          "x": 413.8125,
+          "w": 8.296875,
+          "cardx": 408.8125,
+          "value": "2",
+          "rank": "3",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "9"
+            },
+            {
+              "cls": "command-card-face command-cool",
+              "tag": "DIV",
+              "text": "9929"
+            }
+          ],
+          "y": 814.1875,
+          "x": 456.46875,
+          "w": 8.296875,
+          "cardx": 451.46875,
+          "value": "8",
+          "rank": "9",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "K"
+            }
+          ],
+          "y": 814.1875,
+          "x": 589.5,
+          "w": 8.296875,
+          "cardx": 584.5,
+          "value": "12",
+          "rank": "K",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            }
+          ],
+          "y": 814.1875,
+          "x": 632.15625,
+          "w": 8.296875,
+          "cardx": 627.15625,
+          "value": "0",
+          "rank": "A",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "A"
+            }
+          ],
+          "y": 814.1875,
+          "x": 674.8125,
+          "w": 8.296875,
+          "cardx": 669.8125,
+          "value": "0",
+          "rank": "A",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            },
+            {
+              "cls": "command-rank command-top",
+              "tag": "B",
+              "text": "8"
+            },
+            {
+              "cls": "command-card-face command-cool",
+              "tag": "DIV",
+              "text": "8830"
+            }
+          ],
+          "y": 814.1875,
+          "x": 717.46875,
+          "w": 8.296875,
+          "cardx": 712.46875,
+          "value": "7",
+          "rank": "8",
+          "visible": true,
+          "ships": [
+            {
+              "w": 19.609375,
+              "h": 35.78125
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            },
+            {
+              "w": 10.9375,
+              "h": 17.109375
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
