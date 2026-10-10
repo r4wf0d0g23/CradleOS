@@ -15,5 +15,17 @@
     "errors": 0,
     "report": "qa/preview-browser.json"
   },
-  "scope": "presentation only; no financial or chain changes"
+  "scope": "presentation only; no financial or chain changes",
+  "liveBrowser": {
+    "groups": 2,
+    "widths": [
+      390,
+      1440
+    ],
+    "errors": 0,
+    "report": "qa/live-browser.json"
+  },
+  "exactLiveFiles": 2,
+  "preview5222": "stopped; port closed",
+  "deliveryReview": "native PASS; no discrepancies"
 }

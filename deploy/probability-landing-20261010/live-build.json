@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-10T18:25:15.918147+00:00",
+  "url": "https://cradleos.io/",
+  "source": "68eb4f2893f53d7336923a9d8e3b674b77150c62",
+  "files": [
+    {
+      "path": "/assets/index-1FLsWE5-.js",
+      "bytes": 2281624,
+      "sha256": "ef504dd4deee7e323005508f27de383b6095b8b6509c7e01613136bd93868791",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/index-dW_6h-aK.css",
+      "bytes": 854727,
+      "sha256": "60ee85050ffa10ef74947f56a099b5162b78588da621f9b7761c329d56acfbc4",
+      "exactMatch": true
+    }
+  ]
+}
