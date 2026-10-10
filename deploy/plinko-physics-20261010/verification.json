@@ -12,5 +12,20 @@
   "origins": 8,
   "ioc": "CLEAN",
   "build": "PASS",
-  "live": "pending"
+  "live": {
+    "cases": 4,
+    "widths": [
+      390,
+      1440
+    ],
+    "counts": [
+      1,
+      10
+    ],
+    "mode": "Fresh natural RNG in isolated browser-local Play Money",
+    "errors": 0,
+    "assetFailures": 0,
+    "exactHashes": 2
+  },
+  "deliveryReview": "PASS"
 }

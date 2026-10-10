@@ -19,12 +19,21 @@ Only CasinoPlinko, plinkoMotion and its tests, plus the reveal-duration import/c
 -368tests/39files PASS. Five Plinko tests cover every4096bit path against existing engine payouts/accounting, passive impulse/energy equations, continuous analytic peg clearance, tray tips, release from rest, ballistic acceleration, deterministic mirror symmetry, dissipative settling, full collection budget, invalid input, and4ms sampled all-path vertical envelopes for multi-ball spacing. The spacing test is sampled; continuous clearance claim applies to individual ballistic peg paths, not a continuous interacting multi-ball simulation.
 -8component-fixture cases PASS: extreme left/right, alternating and mixed paths at390/1440; extreme-left is a10ball pack. Captured intermediate frames and phone-sized video. These are actual rendered components with deterministic engine-generated rounds, not live RNG coverage.
 -TypeScript/Vite build, Origins8 and the approved IOC scanner at the exact canonical dApp directory PASS.
--12production-preview groups PASS: single/10ball natural RNG at320/390/1440; Instant, System+OSreduce, hidden, resize, reload and profile-preview boundaries. Animated default also verified under desktopOSreduce. Unchanged ledger and zero page/asset errors. Live verification pending. Browser scope is Chromium viewport emulation, free local Play Money; no physical-phone, listening or wallet/testnet execution claim.
+-12production-preview groups PASS: single/10ball natural RNG at320/390/1440; Instant, System+OSreduce, hidden, resize, reload and profile-preview boundaries. Animated default also verified under desktopOSreduce. Unchanged ledger and zero page/asset errors. Live verification PASS:4fresh natural-RNG cases, single and10ball packs at390/1440. Real intermediate motion/rebounds/contact flashes, separated balls, exact committed endpoints, complete collection and unchanged ledger; zero page/asset errors. Browser scope is Chromium viewport emulation, free local Play Money; no physical-phone, listening or wallet/testnet execution claim.
 
 ## Review
 
-Independent native architecture/source review identified an incomplete final pack fade at the initial3500ms budget. Fixed to3600ms with a shared collection duration and exhaustive guard/assertion. Source delta gate PASS; latest collection ends3524.70ms with75.30ms spare. Fixture visual gate PASS after actual intermediate image/video inspection; delivery gate pending. Native reviews are not Opus reviews.
+Independent native architecture/source review identified an incomplete final pack fade at the initial3500ms budget. Fixed to3600ms with a shared collection duration and exhaustive guard/assertion. Source delta gate PASS; latest collection ends3524.70ms with75.30ms spare. Fixture visual gate PASS after actual intermediate image/video inspection; final delivery gate PASS. Native reviews are not Opus reviews.
 
 ## Publication
 
-Pending. Previous live source a1ce882 / Pagesbad23f67 is rollback. Only https://cradleos.io/ is the app origin; GitHub Pages remains redirect-only. Preserve the canonical cycle7 worktree hosting live character-index and unrelated Wrangler directories.
+Published source `c717c0c3d4be7d47572b61a952589afb963da729`, Pages `37098633` (https://37098633.cradleos-d75.pages.dev). Live verification PASS:4fresh natural-RNG cases, single and10ball packs at390/1440. Real intermediate motion/rebounds/contact flashes, separated balls, exact committed endpoints, complete collection and unchanged ledger; zero page/asset errors. Previous live source a1ce882 / Pagesbad23f67 is rollback. Only https://cradleos.io/ is the app origin; GitHub Pages remains redirect-only. Preserve the canonical cycle7 worktree hosting live character-index and unrelated Wrangler directories.
+
+## Production files
+
+Two public bundles exactly match reviewed dist (live-build.json):
+
+- JS `/assets/index-B6P-hkJ5.js`: `6183cc0f4af29c74a06830b3cbe072b4158d10ab11ad1dbeb1a686f119fa8fc7`
+- CSS `/assets/index-C20R54o5.css`: `356511ac2b281dde07c06932467a6017055d561d514969b45f9e457ba573ead0` (unchanged bytes)
+
+No artwork/data files changed. Task-owned dev5216 and preview5217 are stopped and both ports verified closed. Component fixture source is archived under qa, not shipped in the dApp.
