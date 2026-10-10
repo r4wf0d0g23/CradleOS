@@ -20,5 +20,19 @@
     "lifecycleCases": 5,
     "report": "qa/preview-browser.json"
   },
-  "scope": "Fleet Duel presentation and War-only duration; engine/financial/chain unchanged"
+  "scope": "Fleet Duel presentation and War-only duration; engine/financial/chain unchanged",
+  "liveBrowser": {
+    "groups": 5,
+    "widths": [
+      390,
+      1440
+    ],
+    "mode": "fresh natural RNG only; win/loss at both widths",
+    "errors": 0,
+    "assetFailures": 0,
+    "report": "qa/live-browser.json"
+  },
+  "exactLiveFiles": 3,
+  "preview5224": "stopped; port closed",
+  "deliveryReview": "native PASS; no discrepancies"
 }

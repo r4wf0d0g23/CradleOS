@@ -1,0 +1,6203 @@
+{
+  "base": "https://cradleos.io",
+  "scope": "Actual app; isolated browser-local free Play Money; fresh natural RNG rounds; viewport emulation; no wallet",
+  "checks": [
+    {
+      "width": 390,
+      "name": "natural-0",
+      "mode": "fresh natural RNG",
+      "outcome": "win",
+      "values": [
+        5,
+        1
+      ],
+      "payout": 5000,
+      "stake": 2500,
+      "geometry": {
+        "height": 392.515625,
+        "visible": 392.515625,
+        "cards": [
+          {
+            "left": 62.84375,
+            "right": 168.140625,
+            "width": 105.296875,
+            "inside": true
+          },
+          {
+            "left": 221.84375,
+            "right": 327.140625,
+            "width": 105.296875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 250,
+      "samples": [
+        {
+          "t": 0.00075,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(90.07875 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(52.07875 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(52.07875 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(509.92125 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(547.92125 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(547.92125 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.06077500001192095,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(96.3813750012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(58.3813750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(58.3813750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(503.6186249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(541.6186249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(541.6186249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.12330000001192093,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(102.94650000125169 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(64.9465000012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(64.9465000012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(497.0534999987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(535.0534999987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(535.0534999987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.18577500001192096,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(55.775deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(109.5063750012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(71.5063750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(71.5063750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(490.4936249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(528.4936249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(528.4936249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.24827500001192096,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(-61.725deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(38.275deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(116.0688750012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(78.0688750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(78.0688750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(483.9311249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(521.9311249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(521.9311249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.31077500001192093,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(-79.225deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(122.6313750012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(84.6313750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(84.6313750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(477.3686249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(515.3686249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(515.3686249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.37327500001192093,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(-16.725deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(129.19387500125168 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(91.1938750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(91.1938750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(470.8061249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(508.8061249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(508.8061249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M225.7325866055444 124.0488461415584L269.6255866055444 116.0088461415584"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M120.46530199722795 80.16384617842164L168.98310199722795 96.24384617842163"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M459.25 140L441.0321826259952 136.62423075694304"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.43577500001192093,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(135.75637500125168 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(97.7563750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(97.7563750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(464.2436249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(502.2436249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(502.2436249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M402.19977122056576 151.36423075694304L445.85517122056575 143.32423075694305"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M216.04558261892709 167.77923079380622L168.03178261892708 183.8592307938062"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M309.8324595494354 171.97961537232766L266.68105954943536 163.93961537232767"
+            }
+          ],
+          "shields": 3,
+          "flashes": 0
+        },
+        {
+          "t": 0.49827500001192093,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(142.31887500125168 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(104.3188750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(104.3188750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(457.6811249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(495.6811249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(495.6811249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M310.8618558320769 108.58730768001999L351.9828558320769 100.54730768002"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M218.75303276222195 111.08692310149847L264.4988327622219 127.16692310149847"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M145.59846352402135 200.32576921848155L186.48186352402138 192.28576921848153"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M393.1534518610012 129.20269229540463L352.5364518610012 121.16269229540461"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M487.5 73L451.103551853933 85.9361538707292"
+            }
+          ],
+          "shields": 4,
+          "flashes": 0
+        },
+        {
+          "t": 0.5607750000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(148.88137500125168 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(110.8813750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(110.8813750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(451.1186249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(489.1186249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(489.1186249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M232.70395955367158 156.51807691078915L192.32455955367158 148.47807691078916"
+            }
+          ],
+          "shields": 5,
+          "flashes": 0
+        },
+        {
+          "t": 0.6232750000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(155.44387500125168 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(117.4438750012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(117.4438750012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(444.5561249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(482.5561249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(482.5561249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.685750000011921,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(162.00375000125172 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(124.0037500012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(124.0037500012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(437.9962499987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(475.9962499987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(475.9962499987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M345.6115962029837 140L377.7625962029837 140"
+            },
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M172.72997313921238 73L213.48617313921238 73"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.748250000011921,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(168.56625000125172 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(130.56625000125172 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(130.56625000125172 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(431.4337499987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(469.4337499987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(469.4337499987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M316.0881269840178 207L355.96232698401775 207"
+            }
+          ],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.810750000011921,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(175.12875000125172 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(137.12875000125172 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(137.12875000125172 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(424.8712499987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(462.8712499987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(462.8712499987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.873250000011921,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(181.69125000125172 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(143.69125000125172 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(143.69125000125172 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(418.3087499987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(456.3087499987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(456.3087499987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.935750000011921,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(188.25375000125172 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(150.25375000125172 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(150.25375000125172 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(411.7462499987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(449.7462499987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(449.7462499987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.998250000011921,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 5,
+              "aria": "Your fleet: 7",
+              "text": "7LAI / WING7",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(194.81625000125172 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(156.81625000125172 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(156.81625000125172 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(405.1837499987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(443.1837499987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(443.1837499987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-1",
+      "mode": "fresh natural RNG",
+      "outcome": "win",
+      "values": [
+        7,
+        1
+      ],
+      "payout": 5000,
+      "stake": 2500,
+      "geometry": {
+        "height": 392.515625,
+        "visible": 392.515625,
+        "cards": [
+          {
+            "left": 62.84375,
+            "right": 168.140625,
+            "width": 105.296875,
+            "inside": true
+          },
+          {
+            "left": 221.84375,
+            "right": 327.140625,
+            "width": 105.296875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 250,
+      "samples": [
+        {
+          "t": 0.001475000023841858,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(90.15487500250339 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(52.154875002503395 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(52.154875002503395 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(509.8451249974966 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(547.8451249974966 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(547.8451249974966 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.05997500001192088,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(96.2973750012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(58.297375001251694 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(58.297375001251694 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(503.7026249987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(541.7026249987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(541.7026249987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.12245000001192102,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(102.85725000125171 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(64.85725000125171 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(64.85725000125171 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(497.1427499987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(535.1427499987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(535.1427499987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.18495000001192102,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(54.95deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(109.41975000125171 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(71.41975000125171 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(71.41975000125171 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(490.5802499987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(528.5802499987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(528.5802499987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.24742500001192094,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(-62.575deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(37.425deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(115.97962500125169 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(77.97962500125169 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(77.97962500125169 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(484.0203749987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(522.0203749987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(522.0203749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.309950000011921,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(-0.05deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(-80.05deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(122.54475000125171 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(84.54475000125171 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(84.54475000125171 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(477.4552499987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(515.4552499987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(515.4552499987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3724250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(-17.575deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(129.1046250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(91.10462500125169 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(91.10462500125169 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(470.8953749987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(508.8953749987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(508.8953749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M220.94937506708277 124.92499998771227L264.8423750670828 116.88499998771226"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M115.17810584338169 78.41153848611391L163.6959058433817 94.49153848611391"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M459.25 140L445.76047108753374 137.5003846030969"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.434950000011921,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(135.6697500012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(97.66975000125171 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(97.66975000125171 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(464.3302499987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(502.3302499987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(502.3302499987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M397.58237314364317 152.21461537232756L441.23777314364315 144.17461537232757"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M141.3421345490716 81.09153844925063L97.95313454907159 73.05153844925063"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M221.1239653112342 166.07846156303717L173.1101653112342 182.15846156303718"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M314.39654993405026 172.8299999877122L271.24514993405023 164.78999998771218"
+            }
+          ],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.4974250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(142.2296250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(104.22962500125169 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(104.22962500125169 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(457.7703749987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(495.7703749987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(495.7703749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M306.38072121669217 109.46346152617384L347.5017212166922 101.42346152617385"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M213.76791353145262 109.33461540919075L259.5137135314526 125.41461540919074"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M141.14322121632895 201.2019230646354L182.02662121632898 193.1619230646354"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M397.57966339946285 130.07884614155847L356.9626633994628 122.03884614155848"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M487.5 73L456.0337480077793 84.18384617842148"
+            }
+          ],
+          "shields": 4,
+          "flashes": 0
+        },
+        {
+          "t": 0.5599250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(148.7921250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(110.79212500125169 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(110.79212500125169 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(451.2078749987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(489.2078749987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(489.2078749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M237.1042787844409 157.39423075694302L196.72487878444088 149.35423075694302"
+            }
+          ],
+          "shields": 5,
+          "flashes": 0
+        },
+        {
+          "t": 0.6224250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(155.3546250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(117.35462500125169 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(117.35462500125169 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(444.6453749987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(482.6453749987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(482.6453749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6849250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(161.9171250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(123.91712500125169 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(123.91712500125169 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(438.0828749987483 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(476.0828749987483 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(476.0828749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M342.21100966452184 140L374.3620096645218 140"
+            },
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M168.41922121613507 73L209.17542121613508 73"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7474250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(168.4796250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(130.4796250012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(130.4796250012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(431.5203749987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(469.5203749987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(469.5203749987483 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M311.87066352247894 207L351.7448635224789 207"
+            }
+          ],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8099250000119209,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(175.0421250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(137.0421250012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(137.0421250012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(424.9578749987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(462.9578749987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(462.9578749987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8724000000119209,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(181.6020000012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(143.6020000012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(143.6020000012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(418.39799999874833 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(456.39799999874833 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(456.39799999874833 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9349250000119209,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(188.1671250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(150.1671250012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(150.1671250012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(411.8328749987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(449.8328749987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(449.8328749987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9974250000119209,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 1,
+              "aria": "Opposing fleet: 3",
+              "text": "3LAI / WING3",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(194.7296250012517 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(156.7296250012517 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(156.7296250012517 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(405.2703749987483 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(443.2703749987483 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(443.2703749987483 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 390,
+      "name": "natural-2",
+      "mode": "fresh natural RNG",
+      "outcome": "loss",
+      "values": [
+        4,
+        12
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 392.515625,
+        "visible": 392.515625,
+        "cards": [
+          {
+            "left": 62.84375,
+            "right": 168.140625,
+            "width": 105.296875,
+            "inside": true
+          },
+          {
+            "left": 221.84375,
+            "right": 327.140625,
+            "width": 105.296875,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 250,
+      "samples": [
+        {
+          "t": 0.000875,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(90.091875 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(52.091875 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(52.091875 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(509.908125 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(547.908125 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(547.908125 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.0603500000357626,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(96.33675000375507 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(58.33675000375507 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(58.33675000375507 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(503.66324999624493 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(541.663249996245 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(541.663249996245 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.1228500000357626,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(102.89925000375507 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(64.89925000375507 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(64.89925000375507 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(497.10074999624493 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(535.100749996245 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(535.100749996245 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.18532500003576297,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(55.325deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(109.4591250037551 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(71.4591250037551 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(71.4591250037551 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(490.5408749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(528.5408749962448 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(528.5408749962448 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2478500000357626,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(-62.15deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(37.85deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(116.02425000375507 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(78.02425000375507 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(78.02425000375507 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(483.97574999624493 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(521.9757499962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(521.9757499962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.31035000003576263,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(-79.65deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(122.58675000375507 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(84.58675000375507 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(84.58675000375507 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(477.41324999624493 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(515.4132499962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(515.4132499962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.37282500003576297,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(-17.175deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(129.1466250037551 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(91.1466250037551 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(91.1466250037551 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(470.8533749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(508.8533749962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(508.8533749962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M223.20029827817243 124.51269227082892L267.0932982781724 116.47269227082892"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M117.66619829937704 79.23615391988059L166.18399829937704 95.3161539198806"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M459.25 140L443.53539403183083 137.08807688621354"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.43532500003576297,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(135.7091250037551 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(97.7091250037551 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(97.7091250037551 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(464.2908749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(502.2908749962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(502.2908749962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M399.68119058477515 151.82807688621355L443.33659058477514 143.78807688621356"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M218.8156093952416 166.85153853526518L170.8018093952416 182.9315385352652"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M312.32196326368955 172.4434615015982L269.1705632636896 164.4034615015982"
+            }
+          ],
+          "shields": 3,
+          "flashes": 0
+        },
+        {
+          "t": 0.49782500003576297,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(142.2716250037551 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(104.2716250037551 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(104.2716250037551 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(457.7283749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(495.7283749962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(495.7283749962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M308.48949057315485 109.0511538092905L349.61049057315483 101.0111538092905"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M216.11385213282105 110.15923084295744L261.85965213282105 126.23923084295743"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M143.23980595668075 200.78961534775206L184.12320595668075 192.74961534775207"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M395.4967401983869 129.66653842467514L354.87974019838686 121.62653842467513"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M487.5 73L453.7136555617976 85.00846161218817"
+            }
+          ],
+          "shields": 4,
+          "flashes": 0
+        },
+        {
+          "t": 0.560325000035763,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(148.8341250037551 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(110.83412500375512 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(110.83412500375512 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(451.1658749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(489.1658749962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(489.1658749962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M235.03354019947554 156.9819230400596L194.65414019947553 148.9419230400596"
+            }
+          ],
+          "shields": 5,
+          "flashes": 0
+        },
+        {
+          "t": 0.622825000035763,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(155.3966250037551 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(117.39662500375512 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(117.39662500375512 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(444.6033749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(482.6033749962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(482.6033749962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6853000000357629,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(161.95650000375508 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(123.9565000037551 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(123.9565000037551 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(438.0434999962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(476.0434999962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(476.0434999962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M256.24326908335735 140L224.09226908335734 140"
+            },
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M429.62134596697945 73L388.8651459669794 73"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7478000000357629,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(168.51900000375508 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(130.51900000375508 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(130.51900000375508 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(431.4809999962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(469.4809999962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(469.4809999962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M286.2123075094854 207L246.3381075094854 207"
+            }
+          ],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8103000000357629,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(175.08150000375508 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(137.08150000375508 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(137.08150000375508 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(424.9184999962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(462.9184999962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(462.9184999962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8728000000357629,
+          "phase": "resolved",
+          "outcome": "loss",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(181.64400000375508 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(143.64400000375508 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(143.64400000375508 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(418.3559999962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(456.3559999962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(456.3559999962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9353000000357629,
+          "phase": "resolved",
+          "outcome": "loss",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(188.20650000375508 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(150.20650000375508 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(150.20650000375508 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(411.7934999962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(449.7934999962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(449.7934999962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.997825000035763,
+          "phase": "resolved",
+          "outcome": "loss",
+          "cards": [
+            {
+              "rank": 4,
+              "aria": "Your fleet: 6",
+              "text": "6LAI / WING6",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 12,
+              "aria": "Opposing fleet: A",
+              "text": "ALAI / WINGA",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(194.7716250037551 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(156.7716250037551 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(156.7716250037551 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(405.2283749962449 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(443.2283749962449 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(443.2283749962449 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 1440,
+      "name": "natural-0",
+      "mode": "fresh natural RNG",
+      "outcome": "win",
+      "values": [
+        7,
+        6
+      ],
+      "payout": 5000,
+      "stake": 2500,
+      "geometry": {
+        "height": 589.65625,
+        "visible": 589.65625,
+        "cards": [
+          {
+            "left": 385,
+            "right": 529,
+            "width": 144,
+            "inside": true
+          },
+          {
+            "left": 616,
+            "right": 760,
+            "width": 144,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 249,
+      "samples": [
+        {
+          "t": 0.00075,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(90.07875 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(52.07875 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(52.07875 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(509.92125 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(547.92125 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(547.92125 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.0644249999642372,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(96.7646249962449 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(58.764624996244905 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(58.764624996244905 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(503.2353750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(541.235375003755 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(541.235375003755 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.1269249999642372,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(103.3271249962449 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(65.3271249962449 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(65.3271249962449 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(496.6728750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(534.672875003755 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(534.672875003755 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.1894249999642372,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(59.425deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(109.8896249962449 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(71.8896249962449 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(71.8896249962449 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(490.1103750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(528.110375003755 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(528.110375003755 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.2519249999642373,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(-58.075deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(41.925deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(116.45212499624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(78.45212499624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(78.45212499624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(483.5478750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(521.547875003755 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(521.547875003755 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3144249999642373,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(-75.575deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(123.01462499624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(85.01462499624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(85.01462499624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(476.9853750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(514.985375003755 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(514.985375003755 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.3769249999642373,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(-13.075deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(129.57712499624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(91.57712499624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(91.57712499624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(470.4228750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(508.4228750037551 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(508.4228750037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M246.27225941413693 120.28653849840154L290.1652594141369 112.24653849840155"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M143.16914400831695 87.68846146473535L191.68694400831697 103.76846146473535"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M100.11000000000001 207L116.4807747998416 203.9850000368631"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M459.25 140L420.72835596816776 132.8619231137862"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.4394249999642373,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(136.13962499624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(98.13962499624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(98.13962499624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(463.8603750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(501.8603750037551 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(501.8603750037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M193.5775867586031 175.3038460801199L145.5637867586031 191.38384608011992"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M289.63981750554 168.2173077291708L246.48841750554 160.17730772917082"
+            }
+          ],
+          "shields": 4,
+          "flashes": 0
+        },
+        {
+          "t": 0.5018999999642372,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(142.6994999962449 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(104.6994999962449 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(104.6994999962449 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(457.3005000037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(495.3005000037551 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(495.3005000037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M329.97257673453794 104.85076926763247L371.0935767345379 96.81076926763247"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M240.01309979025635 118.55999992627349L285.75889979025635 134.6399999262735"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M164.59876135101186 196.58923080609404L205.48216135101188 188.54923080609404"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M374.2769617246898 125.4661538830171L333.6599617246898 117.42615388301711"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M475.3195155920483 77.32923069550424L430.0777155920483 93.40923069550423"
+            }
+          ],
+          "shields": 4,
+          "flashes": 0
+        },
+        {
+          "t": 0.5644249999642372,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(149.26462499624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(111.26462499624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(111.26462499624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(450.7353750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(488.7353750037551 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(488.7353750037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M213.8084713389843 152.75576926763233L173.42907133898427 144.71576926763234"
+            }
+          ],
+          "shields": 5,
+          "flashes": 0
+        },
+        {
+          "t": 0.6268999999642372,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(155.82449999624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(117.82449999624491 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(117.82449999624491 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(444.1755000037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(482.1755000037551 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(482.1755000037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6894249999642372,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(162.3896249962449 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(124.3896249962449 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(124.3896249962449 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(437.6103750037551 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(475.6103750037551 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(475.6103750037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M360.75966331412724 140L392.9106633141272 140"
+            },
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M191.93241327467277 73L232.68861327467278 73"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7519249999642372,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(168.9521249962449 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(130.9521249962449 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(130.9521249962449 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(431.0478750037551 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(469.0478750037551 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(469.0478750037551 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": true,
+              "path": "M334.87500943256236 207L374.74920943256234 207"
+            }
+          ],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8143999999642372,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(175.51199999624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(137.51199999624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(137.51199999624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(424.4880000037551 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(462.4880000037551 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(462.4880000037551 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8768999999642372,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(182.07449999624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(144.07449999624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(144.07449999624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(417.9255000037551 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(455.9255000037551 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(455.9255000037551 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9393999999642372,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(188.63699999624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(150.63699999624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(150.63699999624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(411.3630000037551 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(449.3630000037551 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(449.3630000037551 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9977249999642372,
+          "phase": "resolved",
+          "outcome": "win",
+          "cards": [
+            {
+              "rank": 7,
+              "aria": "Your fleet: 9",
+              "text": "9LAI / WING9",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 6,
+              "aria": "Opposing fleet: 8",
+              "text": "8LAI / WING8",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(194.76112499624492 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(156.76112499624492 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(156.76112499624492 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(405.2388750037551 140) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(443.2388750037551 73) rotate(180)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(443.2388750037551 207) rotate(180)",
+              "fragments": 9
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "width": 1440,
+      "name": "natural-1",
+      "mode": "fresh natural RNG",
+      "outcome": "loss",
+      "values": [
+        0,
+        8
+      ],
+      "payout": 0,
+      "stake": 2500,
+      "geometry": {
+        "height": 589.65625,
+        "visible": 589.65625,
+        "cards": [
+          {
+            "left": 385,
+            "right": 529,
+            "width": 144,
+            "inside": true
+          },
+          {
+            "left": 616,
+            "right": 760,
+            "width": 144,
+            "inside": true
+          }
+        ]
+      },
+      "frames": 251,
+      "samples": [
+        {
+          "t": 0.0015249999761581421,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(90.16012499749661 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(52.1601249974966 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(52.1601249974966 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(509.8398750025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(547.8398750025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(547.8398750025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.059049999976158236,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(96.20024999749661 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(58.20024999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(58.20024999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(503.7997500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(541.7997500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(541.7997500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.1215749999761581,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(102.7653749974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(64.7653749974966 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(64.7653749974966 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(497.2346250025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(535.2346250025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(535.2346250025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.18404999997615823,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(54.05deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(109.32524999749661 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(71.32524999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(71.32524999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(490.6747500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(528.6747500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(528.6747500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.24654999997615823,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(-63.45deg)"
+            },
+            {
+              "rank": null,
+              "aria": "Unrevealed fleet card",
+              "text": "◇CRADLE",
+              "transform": "rotateY(36.55deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(115.88774999749661 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(77.88774999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(77.88774999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(484.1122500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(522.1122500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(522.1122500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.30904999997615823,
+          "phase": "deploying",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(-0.95deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(-80.95deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(122.45024999749661 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(84.45024999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(84.45024999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(477.5497500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(515.5497500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(515.5497500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.37154999997615823,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(-18.45deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(129.0127499974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(91.01274999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(91.01274999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(470.9872500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(508.9872500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(508.9872500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M216.02548063506592 125.82692310149842L259.9184806350659 117.78692310149842"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M109.73540369785259 76.6076922585416L158.2532036978526 92.6876922585416"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M459.25 140L450.62782705570135 138.40230771688306"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.43404999997615823,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(135.5752499974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(97.57524999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(97.57524999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(464.4247500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(502.4247500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(502.4247500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M392.5452114050228 153.14230771688307L436.2006114050228 145.10230771688305"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M146.34855782493213 82.01923079380613L102.95955782493212 73.97923079380614"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M226.66401937753005 164.22307687392617L178.65021937753005 180.3030768739262"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M319.37555782420594 173.75769233226768L276.2241578242059 165.7176923322677"
+            }
+          ],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.49654999997615823,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(142.1377499974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(104.13774999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(104.13774999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(457.8622500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(495.8622500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(495.8622500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M301.7677883358464 110.36538463996L342.88878833584636 102.32538463996"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M208.63617293709459 107.53076918161844L254.3819729370946 123.61076918161844"
+            },
+            {
+              "side": 0,
+              "lethal": false,
+              "path": "M136.55694218272637 202.10384617842155L177.4403421827264 194.06384617842156"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M402.13605781645936 130.98076925534463L361.5190578164594 122.94076925534463"
+            },
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M487.5 73L461.10895013828804 82.37999995084917"
+            }
+          ],
+          "shields": 5,
+          "flashes": 0
+        },
+        {
+          "t": 0.5590499999761582,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(148.7002499974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(110.70024999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(110.70024999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(451.2997500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(489.2997500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(489.2997500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": false,
+              "path": "M241.6340193541942 158.29615387072917L201.25461935419423 150.25615387072918"
+            }
+          ],
+          "shields": 5,
+          "flashes": 0
+        },
+        {
+          "t": 0.6215499999761582,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(155.2627499974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(117.26274999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(117.26274999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(444.7372500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(482.7372500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(482.7372500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 2,
+          "flashes": 0
+        },
+        {
+          "t": 0.6840499999761582,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(161.8252499974966 140) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(123.82524999749661 73) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(123.82524999749661 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(438.1747500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(476.1747500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(476.1747500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M261.39567317519686 140L229.24467317519688 140"
+            },
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M436.1527885861151 73L395.39658858611506 73"
+            }
+          ],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.7465499999761582,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(168.3877499974966 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(130.3877499974966 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(130.3877499974966 207) rotate(0)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(431.6122500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(469.6122500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(469.6122500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [
+            {
+              "side": 1,
+              "lethal": true,
+              "path": "M292.602403968035 207L252.72820396803502 207"
+            }
+          ],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8090499999761582,
+          "phase": "engaging",
+          "outcome": null,
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(174.9502499974966 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(136.9502499974966 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(136.9502499974966 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(425.0497500025034 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(463.0497500025034 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(463.0497500025034 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 2
+        },
+        {
+          "t": 0.8715249999761582,
+          "phase": "resolved",
+          "outcome": "loss",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(181.5101249974966 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(143.5101249974966 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(143.5101249974966 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(418.48987500250337 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(456.48987500250337 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(456.48987500250337 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9340249999761582,
+          "phase": "resolved",
+          "outcome": "loss",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(188.0726249974966 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(150.0726249974966 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(150.0726249974966 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(411.92737500250337 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(449.92737500250337 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(449.92737500250337 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        },
+        {
+          "t": 0.9965249999761582,
+          "phase": "resolved",
+          "outcome": "loss",
+          "cards": [
+            {
+              "rank": 0,
+              "aria": "Your fleet: 2",
+              "text": "2LAI / WING2",
+              "transform": "rotateY(0deg)"
+            },
+            {
+              "rank": 8,
+              "aria": "Opposing fleet: 10",
+              "text": "10LAI / WING10",
+              "transform": "rotateY(0deg)"
+            }
+          ],
+          "ships": [
+            {
+              "side": 0,
+              "index": 0,
+              "destroyed": true,
+              "transform": "translate(194.6351249974966 140) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 1,
+              "destroyed": true,
+              "transform": "translate(156.6351249974966 73) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 0,
+              "index": 2,
+              "destroyed": true,
+              "transform": "translate(156.6351249974966 207) rotate(0)",
+              "fragments": 9
+            },
+            {
+              "side": 1,
+              "index": 0,
+              "destroyed": false,
+              "transform": "translate(405.36487500250337 140) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 1,
+              "destroyed": false,
+              "transform": "translate(443.36487500250337 73) rotate(180)",
+              "fragments": 0
+            },
+            {
+              "side": 1,
+              "index": 2,
+              "destroyed": false,
+              "transform": "translate(443.36487500250337 207) rotate(180)",
+              "fragments": 0
+            }
+          ],
+          "bolts": [],
+          "shields": 0,
+          "flashes": 0
+        }
+      ],
+      "ledgerUnchanged": true
+    }
+  ],
+  "errors": [],
+  "assetFailures": []
+}

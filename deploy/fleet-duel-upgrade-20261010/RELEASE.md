@@ -24,4 +24,13 @@ RNG, rank odds, win2×/loss0/tiehalf-return settlement, session ledger/schema, o
 
 ## Publication
 
-Pending reviewed build publication and fresh live proof. Rollback Pagesd7e9b59a / runtime2ef0d1c26d89c63f3c61e3c9ecb79d1dcda96455. Primary cradleos.io only; GitHub Pages redirect-only.
+- Runtime `0c1f790f40329e67122b1c291ecd7961ac8be7c2`, committed/pushed.
+- Pages `28ae3ec8`; immutable https://28ae3ec8.cradleos-d75.pages.dev; primary https://cradleos.io/#/casino → Fleet Duel.
+- Initial primary HTML was briefly the prior build after upload; no success claimed from that attempt. Once propagation completed, production JS/CSS/native Lai WebP exactly matched dist. Three-file proof `live-build.json`.
+- JS `index-Q83VFN55.js`: `9c177a16648cd16ded3c3d4435ded063eb704155d8a04ce43e3e40e844213fa7`.
+- CSS `index-Brpyw03W.css`: `5e502c24e7d72748d46d610178c936a6b3a14fefd67ee36606c7f03632a6af91`.
+- Five fresh live natural-RNG rounds PASS:390 win/win/loss,1440 win/loss. Actual reveal concealment, volleys/shields, loss-only breakup, exact final ranks, framing and stable committed ledger; no errors/failed hull assets. Ties/seeded playback/saved/lifecycle remain preview-only, not claimed as fresh live cases.
+- Preview5224 stopped; port verified closed. Canonical live index worktree and unrelated Wrangler dirs preserved.
+- Rollback Pages `d7e9b59a` / runtime `2ef0d1c26d89c63f3c61e3c9ecb79d1dcda96455`. Primary origin only; GitHub Pages redirect-only. No wallet/chain/backend/gate changes.
+
+Final independent native delivery review PASS: runtime/Pages/rollback,384tests42files,20 correctly scoped previewgroups,5freshlive rounds,3exacthashes,13protectedfiles and War-only duration reconcile. Contact sheets support win/loss/tie presentation; preview5224 is closed. No discrepancies. Evidence-only receipt update; no runtime changes.

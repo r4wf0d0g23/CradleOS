@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-10T19:02:05.896596+00:00",
+  "source": "0c1f790f40329e67122b1c291ecd7961ac8be7c2",
+  "pagesDeployment": "28ae3ec8",
+  "immutableUrl": "https://28ae3ec8.cradleos-d75.pages.dev",
+  "primary": "https://cradleos.io/",
+  "rollback": {
+    "pagesDeployment": "d7e9b59a",
+    "source": "2ef0d1c26d89c63f3c61e3c9ecb79d1dcda96455"
+  },
+  "scope": "Fleet Duel presentation and War-only animation duration; no wallet or chain changes"
+}
