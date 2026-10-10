@@ -1,0 +1,8 @@
+{
+  "base": "https://cradleos.io",
+  "mode": "Isolated free Play Money RNG; viewport emulation, no wallet; actual temporal capture",
+  "checks": [],
+  "errors": [],
+  "assetFailures": [],
+  "failure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(frames[1].worldX>frames[0].worldX)\n"
+}

@@ -28,4 +28,16 @@ Committed outcome, RNG, payout/accounting/session schema, game controls, shared4
 
 ## Publication
 
-Pending. Source baseline1f4f182; runtime to replacefe7ac41, Pagesadbad865 (rollback). Only cradleos.io is the application origin; GitHub Pages stays redirect-only. Canonical worktree hosts live character-index and must be preserved.
+Published runtime`a1ce88249d67d515c50c22a249d694c664e356fd`, Pages`bad23f67` (https://bad23f67.cradleos-d75.pages.dev), primary https://cradleos.io/#/casino. Previousruntimefe7ac41 / Pagesadbad865 is rollback. Live verification PASS. Only cradleos.io is the application origin; GitHub Pages stays redirect-only. Canonical worktree hosts live character-index and must be preserved.
+
+## Live build and rollout
+
+Three production files exactly match reviewed dist (live-build.json):
+
+- `/assets/index-ufWDhLWg.js`: `dcd0d43a27ce13bfb1c52b91aa3d7f8f0126096b77c9dca0b8927c6636f8a6d1`
+- `/assets/index-C20R54o5.css`: `356511ac2b281dde07c06932467a6017055d561d514969b45f9e457ba573ead0`
+- `/casino/lai-jump/lai-top.webp`: `c22e4179a4bf01385a5b7a11101e63953418543b5d6c0548ceb866e9ff792d8e`
+
+The first check ran during rollout and received the old page (HTML mismatch; captured old angled-icon frame, missing new world-position attributes). That attempt is retained as qa/rollout-first-browser.json and is not counted as a passing run. After the primary and immutable URLs served the new bundle, exact hashes passed and a fresh isolated live browser run was started.
+
+Task-owned preview5215 and native private Wine/X109 are stopped; port/socket closure verified. Canonical live-index worktree and unrelated Wrangler directories preserved. Fresh live browser verification PASS: 4actual natural-outcome cases, win/loss at390/1440, rigid shape and forward motion, early/late effect frames, stationary distant stars, unchanged ledger and zero page/asset errors. Desktop OS-reduced setting still animates by default. Final independent native delivery gate PASS: source/Pages/rollback, counts, three hashes, artwork provenance, stale-rollout exclusion and closed task services reconcile. No remaining blockers.
