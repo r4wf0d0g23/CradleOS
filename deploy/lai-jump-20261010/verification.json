@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-10T15:39:39.088473+00:00",
+  "tests": {
+    "passed": 363,
+    "files": 39
+  },
+  "previewGroups": 12,
+  "finalBoundaryGroups": 4,
+  "originsChecks": 8,
+  "iocScan": "PASS exact canonical dApp",
+  "build": "PASS TypeScript/Vite VITE_BASE=/",
+  "nativeSourceReview": "PASS including summary precision and mobile HUD deltas",
+  "files": [
+    {
+      "path": "/assets/index-BvS-ahuv.js",
+      "sha256": "b787aab0729004702c88e8912944ec79e2aa7ed4cbbe149b97b35045c669698d"
+    },
+    {
+      "path": "/assets/index-CytlU_qT.css",
+      "sha256": "60d4cbab27d35a8af73a03a650bed2253312c355c34c4469b60829ae843b5af9"
+    },
+    {
+      "path": "/casino/lai-jump/lai-hull.webp",
+      "sha256": "54d4d452e9b93b6e9306fa655f711db18a73e42e27fb71d3d0f4d01b45f01404"
+    }
+  ]
+}

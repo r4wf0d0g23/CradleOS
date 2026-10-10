@@ -1,0 +1,8 @@
+from PIL import Image,ImageDraw,ImageFilter,ImageEnhance
+from pathlib import Path
+import hashlib,json
+root=Path(__file__).resolve().parents[2];source=root/'deploy/lai-jump-20261010/qa/lai-client-512.jpg';b=source.read_bytes();assert hashlib.md5(b).hexdigest()=='98d8dbad79a3e19d71c27a5160535016'
+im=Image.open(source).convert('RGBA');mask=Image.new('L',im.size);d=ImageDraw.Draw(mask)
+outline=[(24,246),(95,222),(130,219),(134,202),(141,201),(139,218),(164,208),(193,191),(202,189),(234,194),(272,193),(288,195),(306,199),(314,216),(331,223),(348,228),(352,215),(359,215),(356,230),(379,238),(484,269),(488,286),(486,320),(482,320),(483,287),(326,262),(309,266),(305,279),(278,275),(251,264),(242,273),(233,274),(227,266),(204,269),(196,264),(175,266),(165,270),(135,262),(134,250),(116,242),(86,246),(68,249),(29,252),(27,294),(22,294)]
+d.polygon(outline,fill=255);mask=mask.filter(ImageFilter.GaussianBlur(.45));im=ImageEnhance.Brightness(im).enhance(1.62);im.putalpha(mask);im=im.crop((18,184,492,325));out=root/'cradleos-dapp/public/casino/lai-jump/lai-hull.webp';im.save(out,quality=95,method=6)
+(root/'deploy/lai-jump-20261010/art-source.json').write_text(json.dumps({'typeId':82425,'name':'LAI','graphicId':27407,'source':'res:/dx9/model/spaceobjectfactory/icons/data_frig_light_01/27407_512.jpg','sourceMd5':hashlib.md5(b).hexdigest(),'sourceSha256':hashlib.sha256(b).hexdigest(),'derivation':'Manual silhouette mask, crop, brightness and WebP encode; no generated replacement geometry','output':str(out.relative_to(root)),'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'bytes':out.stat().st_size,'rejected':'Archived lai.glb has visibly broken triangle geometry; trial renders were rejected and are not used.'},indent=2)+'\n')

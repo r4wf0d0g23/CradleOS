@@ -1,3 +1,4 @@
+import { CasinoLaiJump } from "./CasinoLaiJump";
 import { MotionCard, TableShoe } from "./CasinoTableCard";
 export { MotionCard } from "./CasinoTableCard";
 import { type CSSProperties } from "react";
@@ -379,60 +380,23 @@ export function CasinoRoundStage({
       </div>
     );
   }
-  if (game === "crash" || game === "limbo") {
+  if (game === "limbo")
+    return (
+      <CasinoLaiJump
+        round={round}
+        t={t}
+        animated={animated}
+        run={run}
+        previewTarget={choice.target}
+      />
+    );
+  if (game === "crash") {
     const end = (v[0] ?? 10000) / 10000,
       target = (v[1] ?? 20000) / 10000,
       current = has ? Math.exp(Math.log(Math.max(0.98, end)) * t) : 1,
       hit = has && end >= target && (done || current >= target),
       cross =
         end >= target ? Math.log(target) / Math.log(Math.max(1.00001, end)) : 2;
-    if (game === "limbo")
-      return (
-        <div
-          className={`limbo-gate ${done ? (hit ? "gate-clear" : "gate-denied") : ""}`}
-          data-progress={t}
-        >
-          <div
-            className="gate-rings"
-            style={{ "--charge": `${has ? t * 360 : 0}deg` } as CSSProperties}
-          >
-            <div className="gate-tunnel" aria-hidden="true">
-              {Array.from({ length: 5 }, (_, i) => (
-                <i
-                  key={i}
-                  style={{
-                    transform: `translate(-50%,-50%) scale(${0.2 + i * 0.16}) rotate(${(i % 2 ? 1 : -1) * t * 40}deg)`,
-                    opacity: 0.15 + i * 0.15,
-                  }}
-                />
-              ))}
-            </div>
-            <svg className="gate-iris" viewBox="0 0 240 240" aria-hidden="true">
-              <g transform={`rotate(${has ? t * 55 : 0} 120 120)`}>
-                {Array.from({ length: 8 }, (_, i) => (
-                  <path
-                    key={i}
-                    d="M52 20 160 20 210 68 149 79 94 52Z"
-                    transform={`rotate(${i * 45} 120 120) translate(0 ${-(has ? Math.sin(t * Math.PI) * 12 : 0)})`}
-                    fill={i % 2 ? "#657a74" : "#344c51"}
-                    stroke="#9eb6a2"
-                    strokeWidth=".7"
-                  />
-                ))}
-              </g>
-            </svg>
-            <strong>{current.toFixed(2)}×</strong>
-          </div>
-          <span>JUMP THRESHOLD {target.toFixed(2)}×</span>
-          <b>
-            {done
-              ? hit
-                ? "GATE CLEARED"
-                : "THRESHOLD NOT REACHED"
-              : "CHARGING"}
-          </b>
-        </div>
-      );
     const x = 30 + t * 270,
       y =
         180 -

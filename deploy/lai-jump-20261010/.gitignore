@@ -1,0 +1,6 @@
+# Full resolution captures and rejected mesh trials remain local.
+qa/*.png
+qa/hull-angles.jpg
+qa/lai-cutout.jpg
+qa/*.log
+render-lai.py

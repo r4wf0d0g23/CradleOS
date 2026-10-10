@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { chipLabel, type Round } from "../lib/casinoPractice";
+import { laiSpeedLabel } from "../lib/casinoLaiMotion";
 import {
   packTotal,
   pendingSlot,
@@ -13,7 +14,8 @@ import {
   type PayoutEvent,
 } from "../lib/casinoResultFeedback";
 
-type Amounts = Pick<Round, "stake" | "payout" | "label">;
+type Amounts = Pick<Round, "stake" | "payout" | "label"> &
+  Partial<Pick<Round, "game" | "values">>;
 
 export function roundOutcome({
   stake,
@@ -30,9 +32,12 @@ export function roundOutcome({
 
 function RoundBreakdown({ round }: { round: Amounts }) {
   const change = round.payout - round.stake;
+  const label = round.game === "limbo" && round.values?.length === 2
+    ? `${laiSpeedLabel(round.values[0], round.values[1])} limit · ${(round.values[1] / 10000).toFixed(2)}× target`
+    : round.label;
   return (
     <div className="casino-round-breakdown">
-      <p>{round.label}</p>
+      <p>{label}</p>
       <dl>
         <div>
           <dt>Total bet</dt>

@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "boundary": "ready-custom-target",
+      "target": "1.37×"
+    },
+    {
+      "boundary": "custom-saved-reload",
+      "phase": "warped",
+      "speed": "1.37×",
+      "values": [
+        97901,
+        13700
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "near-saved-reload",
+      "phase": "destroyed",
+      "speed": "1.9999×",
+      "values": [
+        19999,
+        20000
+      ],
+      "ledgerUnchanged": true
+    },
+    {
+      "boundary": "max-1000-mobile-hud",
+      "bounds": {
+        "a": 169.234375,
+        "b": 186.09375,
+        "end": 268,
+        "edge": 274
+      }
+    }
+  ],
+  "errors": []
+}

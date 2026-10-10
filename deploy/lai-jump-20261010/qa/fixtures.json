@@ -1,0 +1,182 @@
+{
+  "max": {
+    "version": 2,
+    "balance": 3497500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "limbo",
+        "stake": 2500,
+        "payout": 2500000,
+        "values": [
+          10000000,
+          10000000
+        ],
+        "label": "1000.00× limit · 1000.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "limbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "limbo",
+          "stake": 2500,
+          "payout": 2500000,
+          "values": [
+            10000000,
+            10000000
+          ],
+          "label": "1000.00× limit · 1000.00× target"
+        }
+      ]
+    }
+  },
+  "custom": {
+    "version": 2,
+    "balance": 1000925,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "limbo",
+        "stake": 2500,
+        "payout": 3425,
+        "values": [
+          97901,
+          13700
+        ],
+        "label": "9.79× limit · 1.37× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "limbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "limbo",
+          "stake": 2500,
+          "payout": 3425,
+          "values": [
+            97901,
+            13700
+          ],
+          "label": "9.79× limit · 1.37× target"
+        }
+      ]
+    }
+  },
+  "near": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "limbo",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          19999,
+          20000
+        ],
+        "label": "2.00× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "limbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "limbo",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            19999,
+            20000
+          ],
+          "label": "2.00× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "win": {
+    "version": 2,
+    "balance": 1002500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "limbo",
+        "stake": 2500,
+        "payout": 5000,
+        "values": [
+          97901,
+          20000
+        ],
+        "label": "9.79× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "limbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "limbo",
+          "stake": 2500,
+          "payout": 5000,
+          "values": [
+            97901,
+            20000
+          ],
+          "label": "9.79× limit · 2.00× target"
+        }
+      ]
+    }
+  },
+  "loss": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 1,
+    "history": [
+      {
+        "id": 1,
+        "game": "limbo",
+        "stake": 2500,
+        "payout": 0,
+        "values": [
+          9800,
+          20000
+        ],
+        "label": "0.98× limit · 2.00× target"
+      }
+    ],
+    "hand": null,
+    "table": null,
+    "pack": {
+      "game": "limbo",
+      "rounds": [
+        {
+          "id": 1,
+          "game": "limbo",
+          "stake": 2500,
+          "payout": 0,
+          "values": [
+            9800,
+            20000
+          ],
+          "label": "0.98× limit · 2.00× target"
+        }
+      ]
+    }
+  }
+}

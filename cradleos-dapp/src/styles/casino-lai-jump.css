@@ -1,0 +1,127 @@
+.lai-jump-stage {
+  width: min(100%, 600px);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #849b9055;
+  border-radius: 22px;
+  background: radial-gradient(ellipse at 70% 20%, #233744, #0a1721 68%);
+  box-shadow:
+    inset 0 0 0 5px #192b32,
+    0 15px 25px #0008;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.lai-jump-stage > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 1.5px;
+  color: #94a9aa;
+  padding: 4px 2px 0;
+}
+.lai-jump-stage > header > b {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #dbd2ac;
+  text-align: right;
+}
+.lai-space {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lai-hull {
+  filter: drop-shadow(0 7px 5px #0007);
+}
+.lai-speed {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 0 6px 15px;
+  margin-top: -8px;
+  position: relative;
+}
+.lai-speed > div {
+  display: grid;
+  gap: 7px;
+}
+.lai-speed > div:last-child {
+  text-align: right;
+}
+.lai-speed span {
+  font:
+    9px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+  color: #93aaa9;
+}
+.lai-speed strong {
+  font:
+    36px/1 ui-monospace,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  color: #f2ead3;
+  letter-spacing: -1px;
+}
+.lai-speed b {
+  font:
+    19px/1 ui-monospace,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  color: #b2c2b6;
+}
+.lai-charge {
+  height: 6px;
+  margin: 0 6px 6px;
+  overflow: hidden;
+  border: 1px solid #8a9b7c33;
+  border-radius: 3px;
+  background: #041118;
+  box-shadow: inset 0 2px 3px #0008;
+}
+.lai-charge > i {
+  height: 100%;
+  display: block;
+  background: linear-gradient(90deg, #4f7d7d, #cbb17b);
+  box-shadow: 0 0 10px #a6c4a944;
+}
+.lai-jump-stage[data-phase="warped"] > header > b,
+.lai-jump-stage[data-phase="warping"] > header > b {
+  color: #afe0cd;
+}
+.lai-jump-stage[data-phase="destroyed"] > header > b,
+.lai-jump-stage[data-phase="exploding"] > header > b {
+  color: #ed9c70;
+}
+.lai-jump-stage[data-phase="destroyed"] .lai-charge > i {
+  background: #965a43;
+}
+@media (max-width: 400px) {
+  .lai-jump-stage {
+    padding: 12px 9px;
+    border-radius: 16px;
+  }
+  .lai-jump-stage > header {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .lai-jump-stage > header > b {
+    font-size: 8px;
+  }
+  .lai-speed strong {
+    font-size: 26px;
+  }
+  .lai-speed b {
+    font-size: 17px;
+  }
+  .lai-speed {
+    gap: 8px;
+    padding-bottom: 12px;
+  }
+}

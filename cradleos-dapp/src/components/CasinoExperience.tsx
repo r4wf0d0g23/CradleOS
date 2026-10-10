@@ -116,6 +116,7 @@ function GameSurface({
   reducedMotion,
   selectedProfile,
   selectedSide,
+  selectedTarget,
   slotRun,
   animateSlots,
   onNextSlot,
@@ -129,6 +130,7 @@ function GameSurface({
   reducedMotion: boolean;
   selectedProfile: keyof typeof PROFILES;
   selectedSide: number;
+  selectedTarget: number;
   slotRun: SlotMotionRun;
   animateSlots: boolean;
   onNextSlot: () => void;
@@ -326,7 +328,9 @@ function GameSurface({
       choice={
         game === "risk_wheel"
           ? { ...tableRun.choice, side: selectedSide }
-          : tableRun.choice
+          : game === "limbo"
+            ? { ...tableRun.choice, target: selectedTarget }
+            : tableRun.choice
       }
       animateSlots={animateSlots}
     />
@@ -446,7 +450,13 @@ export function CasinoExperience({
       String((state.spinRun?.stake ?? 2500) / 100),
     ),
     [side, setSide] = useState(0),
-    [target, setTarget] = useState(50),
+    [target, setTarget] = useState(() =>
+      casinoLaunchGame(state, initialGame) === "limbo"
+        ? state.history[0]?.game === "limbo"
+          ? state.history[0].values[1] / 100
+          : 200
+        : 50,
+    ),
     [over, setOver] = useState(true);
   const [options, setOptions] = useState<Options>(() => {
     try {
@@ -1372,6 +1382,7 @@ export function CasinoExperience({
                       reducedMotion={reduce}
                       selectedProfile={options.profile ?? "Low"}
                       selectedSide={side}
+                      selectedTarget={target}
                       slotRun={slotRun}
                       animateSlots={animateSlots}
                       onNextSlot={() => nextSlot()}

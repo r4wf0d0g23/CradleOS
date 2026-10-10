@@ -1,0 +1,29 @@
+import {chromium} from '/home/rawdata/.npm-global/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
+import {writeFile,readFile} from 'node:fs/promises';import assert from 'node:assert/strict';
+const base=process.env.QA_BASE??'http://127.0.0.1:5214',live=base.startsWith('https:'),out=new URL('./',import.meta.url).pathname,tag=live?'live':'preview',KEY='cradleos:casino:practice:v2',fixtures=JSON.parse(await readFile(out+'fixtures.json','utf8'));
+const report={base,mode:'Fresh isolated free Play Money RNG plus engine-produced saved rounds; viewport emulation; no wallet',checks:[],errors:[],assetFailures:[]};
+const b=await chromium.launch({executablePath:'/home/rawdata/.cache/ms-playwright/chromium-1228/chrome-linux/chrome',args:['--no-sandbox','--no-proxy-server']});
+const read=p=>p.evaluate(k=>JSON.parse(sessionStorage.getItem(k)),KEY),idle=p=>p.waitForFunction(()=>!document.querySelector('.round-active'));
+const frame=p=>p.locator('.lai-jump-stage').evaluate(e=>({t:+e.dataset.progress,phase:e.dataset.phase,ship:e.querySelector('.lai-hull').getAttribute('transform'),opacity:e.querySelector('.lai-hull').getAttribute('opacity'),speed:e.querySelector('.lai-speed strong').textContent,flash:e.querySelector('.lai-explosion circle')?.getAttribute('r'),debris:[...e.querySelectorAll('.lai-fragment')].map(x=>x.getAttribute('transform'))}));
+const init=async(width,motion='no-preference')=>{const c=await b.newContext({viewport:{width,height:950},reducedMotion:motion}),p=await c.newPage();p.on('pageerror',e=>report.errors.push(e.message));p.on('response',r=>{if(r.url().includes('/casino/lai-jump/')&&r.status()>=400)report.assetFailures.push(r.url())});await p.goto(base+'/#/casino');await p.locator('.lounge-game-tile').filter({hasText:'Jump Threshold'}).click();await p.locator('.lai-hull').waitFor();return {c,p};};
+try{
+for(const width of live?[390,1440]:[320,390,1440]){const {c,p}=await init(width,width===1440?'reduce':'no-preference');assert.equal(await p.getByRole('combobox',{name:'Game animation'}).inputValue(),'animated');assert.equal(await p.locator('.lai-jump-stage').getAttribute('data-phase'),'ready');await p.getByRole('spinbutton',{name:'Target multiplier'}).fill('2.00');assert.equal(await p.locator('.lai-speed b').innerText(),'2.00×');
+ const seen=new Set();for(let attempt=0;attempt<8&&seen.size<2;attempt++){
+  await p.getByRole('spinbutton',{name:'Target multiplier'}).fill(!seen.has('warped')?'1.01':'1000');
+  await p.locator('.lounge-start').click();const committed=await read(p),r=committed.history[0],phase=r.values[0]>=r.values[1]?'warped':'destroyed';
+  await p.waitForTimeout(180);const a=await frame(p);await p.waitForTimeout(200);const z=await frame(p);assert.equal(a.phase,'accelerating');assert.equal(z.phase,'accelerating');assert.notEqual(a.ship,z.ship);assert(Number.parseFloat(z.speed)>Number.parseFloat(a.speed));assert(await p.getByRole('spinbutton',{name:'Target multiplier'}).isDisabled());
+  await p.waitForFunction(()=>Number(document.querySelector('.lai-jump-stage')?.getAttribute('data-progress'))>=.80);const effect=await frame(p);assert.equal(effect.phase,phase==='warped'?'warping':'exploding');await p.locator('.lai-jump-stage').screenshot({path:out+`${tag}-${width}-${phase}-effect.png`});
+  if(phase==='destroyed'){assert(effect.debris.length===12);assert(Number(effect.flash)>18);}else{assert.notEqual(effect.ship,z.ship);assert.equal(await p.locator('.lai-warp-wake').count(),1);}
+  await idle(p);const end=await frame(p);assert.equal(end.phase,phase);assert.equal(+end.opacity,0);assert.deepEqual(await read(p),committed);assert.equal(await p.locator('.lai-explosion').count(),phase==='destroyed'?1:0);assert.equal(await p.locator('.lai-warp-wake').count(),phase==='warped'?1:0);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  await p.locator('.lai-jump-stage').screenshot({path:out+`${tag}-${width}-${phase}-final.png`});report.checks.push({width,phase,frames:[a,z,effect,end],values:r.values,ledgerUnchanged:true});console.log(width,phase,'PASS');seen.add(phase);
+ }
+ assert.equal(seen.size,2,'both actual RNG outcomes exercised');await c.close();
+}
+if(!live){for(const boundary of ['reload-win','reload-loss','hidden','resize','instant','system']){
+ const {c,p}=await init(390,boundary==='system'?'reduce':'no-preference');
+ if(boundary.startsWith('reload')){const saved=fixtures[boundary==='reload-win'?'win':'loss'];await p.evaluate(([k,s])=>sessionStorage.setItem(k,JSON.stringify(s)),[KEY,saved]);await p.reload();await p.locator('.lai-jump-stage').waitFor();assert.deepEqual(await read(p),saved);assert.equal(await p.locator('.lai-jump-stage').getAttribute('data-phase'),boundary==='reload-win'?'warped':'destroyed');assert.equal(await p.getByRole('spinbutton',{name:'Target multiplier'}).inputValue(),'2');assert.equal(await p.locator('.round-active').count(),0);}
+ else {if(boundary==='instant'||boundary==='system')await p.getByRole('combobox',{name:'Game animation'}).selectOption(boundary);await p.locator('.lounge-start').click();const paid=await read(p);await p.waitForTimeout(200);if(boundary==='hidden')await p.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});if(boundary==='resize')await p.setViewportSize({width:320,height:950});if(boundary==='instant'||boundary==='system')assert.equal((await frame(p)).t,1);await idle(p);assert.deepEqual(await read(p),paid);assert.equal((await frame(p)).phase,paid.history[0].values[0]>=paid.history[0].values[1]?'warped':'destroyed');}
+ report.checks.push({boundary,ok:true});console.log(boundary,'PASS');await c.close();
+}}
+assert.deepEqual(report.errors,[]);assert.deepEqual(report.assetFailures,[]);
+}catch(e){report.failure=String(e);throw e;}finally{await writeFile(out+tag+'-browser.json',JSON.stringify(report,null,2));await b.close();}

@@ -23,7 +23,8 @@ export function tableDuration(round: Round | null) {
   if (["baccarat", "three_card_poker"].includes(game ?? "")) return 2900;
   if (game === "scratch_cards") return 300;
   if (game === "keno") return 3200;
-  if (["crash", "limbo", "ore_refine"].includes(game ?? "")) return 2700;
+  if (game === "limbo") return 4100;
+  if (["crash", "ore_refine"].includes(game ?? "")) return 2700;
   return 2400;
 }
 export function wheelAngle(t: number, index: number, n: number) {

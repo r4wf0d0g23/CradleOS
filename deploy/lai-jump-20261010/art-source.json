@@ -1,0 +1,13 @@
+{
+  "typeId": 82425,
+  "name": "LAI",
+  "graphicId": 27407,
+  "source": "res:/dx9/model/spaceobjectfactory/icons/data_frig_light_01/27407_512.jpg",
+  "sourceMd5": "98d8dbad79a3e19d71c27a5160535016",
+  "sourceSha256": "d9190de4e9db5c6dee75b3ae9432ea70cb6d9cdefed498b3856935bb063a1dab",
+  "derivation": "Manual silhouette mask, crop, brightness and WebP encode; no generated replacement geometry",
+  "output": "cradleos-dapp/public/casino/lai-jump/lai-hull.webp",
+  "sha256": "54d4d452e9b93b6e9306fa655f711db18a73e42e27fb71d3d0f4d01b45f01404",
+  "bytes": 14340,
+  "rejected": "Archived lai.glb has visibly broken triangle geometry; trial renders were rejected and are not used."
+}
