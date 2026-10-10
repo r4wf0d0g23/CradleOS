@@ -1321,3 +1321,41 @@
 .scratch-ticket-open .casino-scratch-area .scratch-tool {
   display: none;
 }
+/* Debris Drop: salvaged sorting hardware. Physics stays in board coordinates. */
+.lounge-plinko.plinko-salvage-rig {
+  width: min(100%, 560px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.plinko-salvage-rig svg {
+  max-height: 550px;
+  overflow: visible;
+  filter: drop-shadow(0 10px 12px #0008);
+}
+.plinko-salvage-rig .plinko-ball {
+  stroke: #fff6d8aa;
+  stroke-width: 0.25;
+}
+.plinko-salvage-rig .plinko-trail {
+  stroke: #d3d0b6;
+  stroke-width: 1.2;
+  opacity: 0.17;
+}
+.plinko-salvage-rig .motion-caption {
+  color: #b8bba4;
+  padding: 4px 0 0;
+}
+.plinko-salvage-rig text {
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+}
+.plinko-salvage-rig .plinko-client-mark {
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .frontier-casino[data-game="plinko"] .lounge-surface {
+    padding-inline: 4px;
+  }
+}

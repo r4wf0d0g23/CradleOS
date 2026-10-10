@@ -1,0 +1,13 @@
+import React, {useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {CasinoPlinko} from '../src/components/CasinoPlinko';
+import {CasinoMotionOverride} from '../src/components/useCasinoTimeline';
+import {initialSession,playSession} from '../src/lib/casinoSessions';
+import {buildPlinkoRoute,PLINKO_REVEAL_MS,PLINKO_LAUNCH_MS} from '../src/lib/plinkoMotion';
+import '../src/styles/casino-lounge.css';
+import '../src/styles/casino-nonslot-upgrades.css';
+const query=new URLSearchParams(location.search),mask=+(query.get('mask')??0),count=+(query.get('count')??1),bits=Array.from({length:12},(_,i)=>(mask>>i)&1);
+let index=0;const session=playSession(initialSession(),'plinko',2500,{}, {count},()=>bits[index++%12]);
+(window as any).fixture={session,route:buildPlinkoRoute(bits)};
+function App(){const [busy,setBusy]=useState(false),[run,setRun]=useState({id:0,started:0,duration:1});return <div className="frontier-casino" style={{padding:8}}><button id="start" onClick={()=>{const duration=PLINKO_REVEAL_MS+(count-1)*PLINKO_LAUNCH_MS;setRun({id:run.id+1,started:performance.now(),duration});setBusy(true);setTimeout(()=>setBusy(false),duration);}}>Drop</button><CasinoMotionOverride.Provider value={true}><CasinoPlinko round={session.history[0]} rounds={session.pack!.rounds} busy={busy} reducedMotion={false} run={run}/></CasinoMotionOverride.Provider></div>};
+createRoot(document.getElementById('root')!).render(<App/>);

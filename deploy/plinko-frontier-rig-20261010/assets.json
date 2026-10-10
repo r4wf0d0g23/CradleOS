@@ -1,0 +1,10 @@
+{
+  "space_action/salvage_32px": {
+    "asset": "assets/430c28018d7e2a53323b38c64ac73a262c73c192a396b0b86d40c924f418b28a.png",
+    "source": "res:/ui/texture/eveicon/space_action/salvage_32px.png"
+  },
+  "gameplay/reprocessing_32px": {
+    "asset": "assets/2b0ed58b34eca8516a809ada7763dd9b8e50fd7b29d77e0a102d9e02c56d2a21.png",
+    "source": "res:/ui/texture/eveicon/gameplay/reprocessing_32px.png"
+  }
+}
