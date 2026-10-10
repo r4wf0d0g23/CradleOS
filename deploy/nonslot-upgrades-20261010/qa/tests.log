@@ -1,0 +1,12 @@
+
+> cradleos-dapp@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.5 /home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002/cradleos-dapp
+
+
+ Test Files  38 passed (38)
+      Tests  360 passed (360)
+   Start at  10:21:28
+   Duration  1.67s (transform 2.96s, setup 364ms, import 4.30s, tests 3.94s, environment 2ms)

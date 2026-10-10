@@ -1,0 +1,12 @@
+
+> cradleos-dapp@1.0.0 test
+> vitest run src/lib/casinoObjectMotion.test.ts src/lib/plinkoMotion.test.ts
+
+
+ RUN  v4.1.5 /home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002/cradleos-dapp
+
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  10:06:38
+   Duration  1.53s (transform 94ms, setup 22ms, import 94ms, tests 1.44s, environment 0ms)

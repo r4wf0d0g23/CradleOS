@@ -1,0 +1,572 @@
+{
+  "base": "http://127.0.0.1:5213",
+  "group": "instruments",
+  "mode": "Isolated fresh local Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "dice",
+      "name": "Probability Drive",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, -3.5, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "-5px",
+            "left": "125.094px",
+            "progress": "0.09065217395450759"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, -3.5, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "-5px",
+            "left": "261.312px",
+            "progress": "0.20656521743276846"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DICE\nPRACTICE TABLE\nPROBABILITY DRIVE\n30\n0\n10\n20\n30\n40\n50\n60\n70\n80\n90\n100\nOVER 50 · RESOLVED\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "limbo",
+      "name": "Jump Threshold",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.997036, 0.0769399, -0.0769399, 0.997036, 9.5885, -8.87707)",
+            "svg": "rotate(4.412692306683613 120 120)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.08023076921242932"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.984649, 0.174547, -0.174547, 0.984649, 22.7878, -19.1035)",
+            "svg": "rotate(10.052307691299 120 120)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.1827692307508909"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / LIMBO\nPRACTICE TABLE\n2.22×\nJUMP THRESHOLD 2.00×\nGATE CLEARED\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "crash",
+      "name": "Warp Run",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.882948, -0.469472, 0.469472, 0.882948, 51.7558, 177.218)",
+            "svg": "translate(51.75576924067278 177.2178261845856) rotate(-28)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.08057692311360287"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.882948, -0.469472, 0.469472, 0.882948, 79.4412, 173.677)",
+            "svg": "translate(79.4411538560574 173.67736060534054) rotate(-28)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.18311538465206442"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / CRASH\nPRACTICE TABLE\n1.38×\nAUTO-STOP 2.00×\nFlight ended before 2.00×\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "diamonds",
+      "name": "Signal Clusters",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.240513, 0, -0.970646, 0, 0, 1, 0, 0, 0.970646, 0, 0.240513, 0, 0, -2.88623, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09721739136654398"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09721739136654398"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09721739136654398"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09721739136654398"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09721739136654398"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.946364, 0, -0.323103, 0, 0, 1, 0, 0, 0.323103, 0, 0.946364, 0, 0, -0.0172287, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20591304354045703"
+          },
+          {
+            "transform": "matrix3d(0.621365, 0, -0.783521, 0, 0, 1, 0, 0, 0.783521, 0, 0.621365, 0, 0, -5.44666, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20591304354045703"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20591304354045703"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20591304354045703"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20591304354045703"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DIAMONDS\nPRACTICE TABLE\nLai\nCircuits\nD1 Fuel\nCircuits\nD1 Fuel\n2 MATCHING SIGNALS\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "keno",
+      "name": "Deep Scan",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "60.7031px",
+            "left": "0px",
+            "progress": "0.07803225806451612"
+          }
+        ],
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "123.438px",
+            "left": "0px",
+            "progress": "0.15867741935483873"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 201.0625,
+        "bottom": 542.5625,
+        "height": 341.5,
+        "visible": 341.5
+      },
+      "overflow": 0,
+      "result": "CRADLE / KENO\nPRACTICE TABLE\nTicket 1 · 1/3\nTicket 1 outlined · same shared draw\nINCOMING SIGNAL\n13\n1 / 3 MATCHED\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n10\n34\n20\n1\n22\n2\n24\n19\n17\n13\n\nTicket 1 · 1/3 hits · Return 0 chips\n\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "ore_refine",
+      "name": "Volatile Refinery",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(-0.938291, 0.345848, -0.345848, -0.938291, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.08023076915740966"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.83942, -0.543483, 0.543483, 0.83942, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.1828076922343327"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ORE REFINE\nPRACTICE TABLE\nPARTIAL YIELD\nPAYOUT\n20 chips\nPartial return · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "scratch_cards",
+      "name": "Sealed Salvage",
+      "width": 390,
+      "frames": [
+        [],
+        []
+      ],
+      "overflow": 0,
+      "result": "CRADLE / SCRATCH CARDS\nPRACTICE TABLE\nReveal all tickets\nTicket 1\nReturn 0 chips\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "dice",
+      "name": "Probability Drive",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, -3.5, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "-5px",
+            "left": "162.828px",
+            "progress": "0.09104347828160164"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(1, 0, 0, 1, -3.5, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "-5px",
+            "left": "336.297px",
+            "progress": "0.2070000000207321"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DICE\nPRACTICE TABLE\nPROBABILITY DRIVE\n75\n0\n10\n20\n30\n40\n50\n60\n70\n80\n90\n100\nOVER 50 · RESOLVED\nPAYOUT\n49 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "limbo",
+      "name": "Jump Threshold",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.997016, 0.0771976, -0.0771976, 0.997016, 9.62181, -8.90561)",
+            "svg": "rotate(4.427500002017387 120 120)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.08050000003667977"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.984604, 0.174802, -0.174802, 0.984604, 22.8238, -19.1286)",
+            "svg": "rotate(10.067115386632771 120 120)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.1830384615751413"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / LIMBO\nPRACTICE TABLE\n3.90×\nJUMP THRESHOLD 2.00×\nGATE CLEARED\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "crash",
+      "name": "Warp Run",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.882948, -0.469472, 0.469472, 0.882948, 51.8596, 172.613)",
+            "svg": "translate(51.859615394518926 172.61298023465966) rotate(-28)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.08096153849821826"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.882948, -0.469472, 0.469472, 0.882948, 77.8315, 163.836)",
+            "svg": "translate(77.831538471442 163.83628834641922) rotate(-28)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.17715384619052596"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / CRASH\nPRACTICE TABLE\n2.32×\nAUTO-STOP 2.00×\nAuto-stop paid at 2.00× · Flight ended 2.32×\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "diamonds",
+      "name": "Signal Clusters",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix3d(0.328717, 0, -0.944428, 0, 0, 1, 0, 0, 0.944428, 0, 0.328717, 0, 0, -3.34837, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09047826093176137"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09047826093176137"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09047826093176137"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09047826093176137"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.09047826093176137"
+          }
+        ],
+        [
+          {
+            "transform": "matrix3d(0.948642, 0, -0.31635, 0, 0, 1, 0, 0, 0.31635, 0, 0.948642, 0, 0, -0.0161333, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20643478267089183"
+          },
+          {
+            "transform": "matrix3d(0.615765, 0, -0.787929, 0, 0, 1, 0, 0, 0.787929, 0, 0.615765, 0, 0, -5.39487, 0, 1)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20643478267089183"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20643478267089183"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20643478267089183"
+          },
+          {
+            "transform": "matrix(1, 0, 0, 1, 0, -15)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "0px",
+            "left": "0px",
+            "progress": "0.20643478267089183"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / DIAMONDS\nPRACTICE TABLE\nFeral Data\nChumaq\nFeral Data\nWater Ice\nLai\n2 MATCHING SIGNALS\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "keno",
+      "name": "Deep Scan",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "62.2344px",
+            "left": "0px",
+            "progress": "0.0678064516744306"
+          }
+        ],
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "141.188px",
+            "left": "0px",
+            "progress": "0.1538064516744306"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 219.171875,
+        "bottom": 609.671875,
+        "height": 390.5,
+        "visible": 390.5
+      },
+      "overflow": 0,
+      "result": "CRADLE / KENO\nPRACTICE TABLE\nTicket 1 · 0/3\nTicket 1 outlined · same shared draw\nINCOMING SIGNAL\n40\n0 / 3 MATCHED\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n10\n36\n19\n15\n6\n1\n9\n24\n37\n40\n\nTicket 1 · 0/3 hits · Return 0 chips\n\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "ore_refine",
+      "name": "Volatile Refinery",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(-0.939976, 0.341241, -0.341241, -0.939976, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.08038461538461539"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.841518, -0.540228, 0.540228, 0.841518, 0, 0)",
+            "svg": null,
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "left": "auto",
+            "progress": "0.18296153846153848"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / ORE REFINE\nPRACTICE TABLE\nREFINED YIELD\nPAYOUT\n26.25 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "scratch_cards",
+      "name": "Sealed Salvage",
+      "width": 1440,
+      "frames": [
+        [],
+        []
+      ],
+      "overflow": 0,
+      "result": "CRADLE / SCRATCH CARDS\nPRACTICE TABLE\nReveal all tickets\nTicket 1\nReturn 37.5 chips\nPAYOUT\n37.5 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

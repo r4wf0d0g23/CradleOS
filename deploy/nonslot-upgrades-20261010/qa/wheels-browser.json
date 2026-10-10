@@ -1,0 +1,340 @@
+{
+  "base": "http://127.0.0.1:5213",
+  "group": "wheels",
+  "mode": "Isolated fresh local Play Money; viewport emulation; no wallet",
+  "checks": [
+    {
+      "id": "roulette",
+      "name": "Orbital Roulette",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.681474, -0.731842, 0.731842, 0.681474, -66.1306, 168.059)",
+            "svg": "rotate(312.95892602592 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.07018750002980234"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(-0.343933, -0.938994, 0.938994, -0.343933, 64.7903, 365.268)",
+            "svg": "rotate(609.8833236425188 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.14831250002980234"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 107.078125,
+        "bottom": 478.828125,
+        "height": 371.75,
+        "visible": 371.75
+      },
+      "touch": {
+        "x": 34,
+        "y": 988.515625,
+        "width": 50.328125,
+        "height": 48
+      },
+      "overflow": 0,
+      "result": "CRADLE / ROULETTE\nPRACTICE TABLE\n0\n32\n15\n19\n4\n21\n2\n25\n17\n34\n6\n27\n13\n36\n11\n30\n8\n23\n10\n5\n24\n16\n33\n1\n20\n14\n31\n9\n22\n18\n29\n7\n28\n12\n35\n3\n26\nORBITAL\n16\n16\nRed · 50 chips\nPAYOUT\n50 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "wheel",
+      "name": "Reactor Wheel",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.920299, 0.391216, -0.391216, 0.920299, 75.3468, -49.8424)",
+            "svg": "rotate(383.0302019905615 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.08296296301594486"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.961643, 0.274304, -0.274304, 0.961643, 50.0257, -37.7515)",
+            "svg": "rotate(735.9205092178904 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.17555555560853744"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / WHEEL\nPRACTICE TABLE\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.6×\n1.6×\n10×\nREACTOR\n0×\n0×\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "plinko",
+      "name": "Debris Drop",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": "151.67474008122554",
+            "y": "15.5645085026952",
+            "top": "auto"
+          }
+        ],
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": "150.9358459337222",
+            "y": "36.412229583318975",
+            "top": "auto"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 176.0625,
+        "bottom": 466.0625,
+        "height": 290,
+        "visible": 290
+      },
+      "overflow": 0,
+      "result": "CRADLE / PLINKO\nPRACTICE TABLE\nLast drop · Low\n5×\n2×\n1.5×\n1.2×\n1×\n0.85×\n0.9×\n0.85×\n1×\n1.2×\n1.5×\n2×\n5×\n1\n1 / 1 landed · Low\nPAYOUT\n22.5 chips\nPartial return · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "risk_wheel",
+      "name": "Overdrive Wheel",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.703756, 0.710441, -0.710441, 0.703756, 161.07, -66.2716)",
+            "svg": "rotate(405.2708333333335 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.08333333333333333"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.195116, 0.98078, -0.98078, 0.195116, 285.706, -28.1434)",
+            "svg": "rotate(798.7484588084207 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.18207407407407403"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / RISK WHEEL\nPRACTICE TABLE\n0×\n0×\n0×\n0×\n0×\n0×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.4×\n1.4×\n1.4×\n1.4×\n3×\nOVERDRIVE\n0×\n0×\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "money_wheel",
+      "name": "Salvage Wheel",
+      "width": 390,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.989027, -0.147736, 0.147736, 0.989027, -21.882, 25.3934)",
+            "svg": "rotate(351.50426163672387 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.07829629624331438"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.998796, -0.049056, 0.049056, 0.998796, -7.65632, 8.04159)",
+            "svg": "rotate(717.1881537796164 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.17707407402109218"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / MONEY WHEEL\nPRACTICE TABLE\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.6×\n1.6×\n1.6×\n18×\nSALVAGE\n1.1×\n1.1×\nPAYOUT\n27.5 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "roulette",
+      "name": "Orbital Roulette",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.376037, -0.926605, 0.926605, 0.376037, -48.4227, 248.091)",
+            "svg": "rotate(292.0884318567248 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.07021875000000001"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(-0.874818, -0.484451, 0.484451, -0.874818, 222.459, 377.483)",
+            "svg": "rotate(568.9765152528792 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.14831249999999996"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 121.1875,
+        "bottom": 602.9375,
+        "height": 481.75,
+        "visible": 481.75
+      },
+      "touch": {
+        "x": 1047,
+        "y": 402.984375,
+        "width": 75,
+        "height": 46
+      },
+      "overflow": 0,
+      "result": "CRADLE / ROULETTE\nPRACTICE TABLE\n0\n32\n15\n19\n4\n21\n2\n25\n17\n34\n6\n27\n13\n36\n11\n30\n8\n23\n10\n5\n24\n16\n33\n1\n20\n14\n31\n9\n22\n18\n29\n7\n28\n12\n35\n3\n26\nORBITAL\n28\n28\nRed · 0 chips\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "wheel",
+      "name": "Reactor Wheel",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.657223, -0.753696, 0.753696, 0.657223, -65.7471, 175.436)",
+            "svg": "rotate(311.0884259499999 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.07792592587294402"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.113637, -0.993522, 0.993522, 0.113637, -17.1455, 300.782)",
+            "svg": "rotate(636.5250078849652 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.17674074068775883"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / WHEEL\nPRACTICE TABLE\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.6×\n1.6×\n10×\nREACTOR\n0×\n0×\nPAYOUT\n0 chips\nNo payout · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "plinko",
+      "name": "Debris Drop",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": "150",
+            "y": "17",
+            "top": "auto"
+          }
+        ],
+        [
+          {
+            "transform": "none",
+            "svg": null,
+            "x": "150.89837429111532",
+            "y": "36.59675698382694",
+            "top": "auto"
+          }
+        ]
+      ],
+      "framing": {
+        "top": 434.171875,
+        "bottom": 804.171875,
+        "height": 370,
+        "visible": 370
+      },
+      "overflow": 0,
+      "result": "CRADLE / PLINKO\nPRACTICE TABLE\nLast drop · Low\n5×\n2×\n1.5×\n1.2×\n1×\n0.85×\n0.9×\n0.85×\n1×\n1.2×\n1.5×\n2×\n5×\n1\n1 / 1 landed · Low\nPAYOUT\n21.25 chips\nPartial return · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "risk_wheel",
+      "name": "Overdrive Wheel",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.957361, -0.288894, 0.288894, 0.957361, -39.4009, 53.0454)",
+            "svg": "rotate(343.208233069188 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.07722222223988284"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.968575, -0.24872, 0.24872, 0.968575, -34.7673, 44.8232)",
+            "svg": "rotate(705.5982260492572 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.17596296298062358"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / RISK WHEEL\nPRACTICE TABLE\n0×\n0×\n0×\n0×\n0×\n0×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.4×\n1.4×\n1.4×\n1.4×\n3×\nOVERDRIVE\n1.2×\n1.2×\nPAYOUT\n30 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    },
+    {
+      "id": "money_wheel",
+      "name": "Salvage Wheel",
+      "width": 1440,
+      "frames": [
+        [
+          {
+            "transform": "matrix(0.704541, -0.709664, 0.709664, 0.704541, -66.2727, 160.82)",
+            "svg": "rotate(314.7924451145362 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.07814814809516625"
+          }
+        ],
+        [
+          {
+            "transform": "matrix(0.222509, -0.974931, 0.974931, 0.222509, -31.5903, 280.387)",
+            "svg": "rotate(642.8564592306362 160 160)",
+            "x": null,
+            "y": null,
+            "top": "auto",
+            "progress": "0.176888888835907"
+          }
+        ]
+      ],
+      "overflow": 0,
+      "result": "CRADLE / MONEY WHEEL\nPRACTICE TABLE\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n0×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.1×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.2×\n1.6×\n1.6×\n1.6×\n18×\nSALVAGE\n1.6×\n1.6×\nPAYOUT\n40 chips\nWin · Total bet 25 chips\nRound details",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

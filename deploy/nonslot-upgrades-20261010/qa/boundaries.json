@@ -1,0 +1,14 @@
+{
+  "base": "http://127.0.0.1:5213",
+  "checks": [
+    "animated: explicit preference respected under OS reduction; no ledger mutation",
+    "system: explicit preference respected under OS reduction; no ledger mutation",
+    "instant: explicit preference respected under OS reduction; no ledger mutation",
+    "Overdrive high prelaunch; committed high while resolving; low next preview; unchanged paid history",
+    "Scratch partial work costs nothing, reload retains paid ticket; threshold reveal removes brush, reveal survives reload without credit duplication",
+    "Baccarat resize: concealed early faces/suits; exact final hand; no replay or charge",
+    "Baccarat hidden: concealed early faces/suits; exact final hand; no replay or charge",
+    "Baccarat reload: concealed early faces/suits; exact final hand; no replay or charge"
+  ],
+  "errors": []
+}

@@ -1,0 +1,45 @@
+{
+  "source": "e8459b4f961b90967d187c5420cfb1402aebae51",
+  "pages": "80bd1dcd",
+  "rollback": "6238a7eb",
+  "checks": {
+    "integrated-320": {
+      "count": 25,
+      "pass": true
+    },
+    "integrated-390": {
+      "count": 25,
+      "pass": true
+    },
+    "integrated-1440": {
+      "count": 25,
+      "pass": true
+    },
+    "blackjack": {
+      "count": 13,
+      "pass": true
+    },
+    "slots": {
+      "count": 7,
+      "pass": true
+    },
+    "live-390": {
+      "count": 25,
+      "pass": true
+    },
+    "live-1440": {
+      "count": 6,
+      "pass": true
+    },
+    "slots-live": {
+      "count": 2,
+      "pass": true
+    },
+    "boundaries": {
+      "count": 8,
+      "pass": true
+    }
+  },
+  "unitTests": 360,
+  "exactLiveFiles": 7
+}

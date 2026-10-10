@@ -38,7 +38,7 @@ The first complete pass delivers visible material/motion/identity upgrades for e
 - [x] **23 — Signal Chase:** twin receiver stacks, anchored reference rank and legible card corners.
 - [x] **24 — Transit Window:** readable rank aperture; actual anchor/post ranks and rule outcomes stay authoritative.
 - [x] **25 — Command Deck:** retain astral flight; polish card edge/rim light/rank readability and current-hand framing. Do not redeal unchanged seats.
-- [ ] **26 — Integrated delivery:** independent source review; meaningful motion/endpoints tests; 320/390/1440 browser checks, all25 games, lifecycle and accounting invariants; full test/build/Origins/IOC gates; source push; Pages publish; exact live asset checks and affected-route checks; record receipts.
+- [x] **26 — Integrated delivery:** independent source review; meaningful motion/endpoints tests; 320/390/1440 browser checks, all25 games, lifecycle and accounting invariants; full test/build/Origins/IOC gates; source push; Pages publish; exact live asset checks and affected-route checks; record receipts.
 
 ## Verification rules
 
@@ -46,4 +46,4 @@ Each completed item must show an observable change, not just a new class or prog
 
 ## Status
 
-All 25 game upgrades and foundation implemented. Independent native source gate PASS; full suite 360 tests PASS. Group browser checks passed; integrated release checks are running. No upgrade release published yet.
+Complete. All25 games upgraded and verified. Runtime e8459b4 / Pages80bd1dcd is live at https://cradleos.io/#/casino . Full suite360, final75 cross-device cases, lifecycle/persistence/slot regressions and31 live non-slot cases passed. See RELEASE.md and verification.json for exact scope.

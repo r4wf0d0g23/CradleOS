@@ -1,0 +1,30 @@
+import {chromium} from '/home/rawdata/.npm-global/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
+import {readFile,writeFile} from 'node:fs/promises';import assert from 'node:assert/strict';
+const out=new URL('./',import.meta.url).pathname,base=process.env.QA_BASE??'http://127.0.0.1:5213',group=process.env.QA_GROUP??'foundation',tag=process.env.QA_TAG??group;
+const groups={foundation:['craps','coinflip','sicbo','double_dice','under_over_7','chuck_a_luck','roulette','keno'],wheels:['roulette','wheel','risk_wheel','money_wheel','plinko'],instruments:['scratch_cards','ore_refine','dice','limbo','crash','diamonds','keno'],cards:['baccarat','three_card_poker','war','dragon_tiger','andar_bahar','red_dog','blackjack']};
+const src=await readFile(new URL('../../../cradleos-dapp/src/lib/casinoLounge.ts',import.meta.url),'utf8');
+const names=[...src.matchAll(/(\w+):\s*\{\s*title:\s*"([^"]+)"/g)].map(m=>({id:m[1],name:m[2]})).filter(x=>x.id!=='slots'&&(group==='all'||groups[group]?.includes(x.id)));
+if(process.env.QA_FILTER){const filter=process.env.QA_FILTER.split(',');for(let i=names.length-1;i>=0;i--)if(!filter.includes(names[i].id))names.splice(i,1);}
+const widths=(process.env.QA_WIDTHS??'390,1440').split(',').map(Number),report={base,group,mode:'Isolated fresh local Play Money; viewport emulation; no wallet',checks:[],errors:[]};
+const b=await chromium.launch({executablePath:'/home/rawdata/.cache/ms-playwright/chromium-1228/chrome-linux/chrome',args:['--no-sandbox','--no-proxy-server']});
+try{for(const width of widths)for(const {id,name} of names){const c=await b.newContext({viewport:{width,height:900},reducedMotion:width===1440?'reduce':'no-preference'});const p=await c.newPage();p.on('pageerror',e=>report.errors.push(e.message));const r={id,name,width};
+try{
+ await p.goto(base+'/#/casino');await p.locator('.lounge-game-tile').filter({hasText:name}).click();assert.equal(await p.getByRole('combobox',{name:'Game animation'}).inputValue(),'animated');
+ if(id==='roulette')await p.getByRole('button',{name:'Red',exact:true}).click();if(id==='craps')await p.getByRole('button',{name:/Add Pass line /i}).click();
+ await p.locator(id==='craps'?'.craps-roll':'.lounge-start').click();await p.waitForTimeout(200);
+ const key='cradleos:casino:practice:v2',committed=await p.evaluate(k=>JSON.parse(sessionStorage.getItem(k)),key);
+ const selector=({craps:'.physical-die',coinflip:'.physical-coin',roulette:'.wheel-rotor',wheel:'.wheel-rotor',risk_wheel:'.wheel-rotor',money_wheel:'.wheel-rotor',plinko:'.plinko-ball',blackjack:'.astral-flight',keno:'.scanner-sweep',sicbo:'.physical-die',double_dice:'.physical-die',under_over_7:'.physical-die',chuck_a_luck:'.physical-die',ore_refine:'.refinery-blades',dice:'.probability-rail b',limbo:'.gate-iris g',crash:'.warp-ship',diamonds:'.signal-capsule'})[id]??'.motion-card';
+ const sample=()=>p.locator(selector).evaluateAll(es=>es.map(e=>({transform:getComputedStyle(e).transform,svg:e.getAttribute('transform'),x:e.getAttribute('cx'),y:e.getAttribute('cy'),top:getComputedStyle(e).top,left:getComputedStyle(e).left,progress:e.closest('[data-progress]')?.getAttribute('data-progress')})));
+ const first=await sample();await p.waitForTimeout(250);const second=await sample();r.frames=[first,second];if(['baccarat','three_card_poker','war','dragon_tiger','andar_bahar','red_dog'].includes(id))assert(await p.locator('.motion-card').evaluateAll(es=>es.filter(e=>+e.dataset.cardProgress<.5).every(e=>!e.hasAttribute('data-value')&&!e.hasAttribute('data-suit')&&e.getAttribute('aria-label')==='Unrevealed card')));if(id!=='scratch_cards'){assert(first.length>0,id+' motion nodes');assert.notDeepEqual(first,second,id+' motion changes');}
+ const active=({roulette:'.table-wheel',keno:'.keno-scanner',plinko:'.lounge-plinko',craps:'.craps-throw-zone',blackjack:'.astral-hands'})[id];
+ if(active){r.framing=await p.locator(active).evaluate(e=>{const b=e.getBoundingClientRect();return {top:b.top,bottom:b.bottom,height:b.height,visible:Math.max(0,Math.min(innerHeight,b.bottom)-Math.max(0,b.top))};});if(['roulette','keno','plinko','craps'].includes(id))assert(r.framing.visible>=r.framing.height*.94,id+' stage visible');}
+ const stage=p.locator(id==='craps'?'.craps-table':'.lounge-surface');await stage.screenshot({path:out+`${tag}-${width}-${id}-motion.png`});
+ await p.waitForFunction(()=>!document.querySelector('.round-active')&&!Array.from(document.querySelectorAll('.craps-roll')).some(x=>x.textContent.includes('Rolling')),null,{timeout:40000});
+ if(id==='scratch_cards')await p.getByRole('button',{name:'Reveal all tickets',exact:true}).click();
+ const settled=await p.evaluate(k=>JSON.parse(sessionStorage.getItem(k)),key);assert.equal(settled.sequence,committed.sequence);assert.deepEqual(settled.history,committed.history);if(id!=='craps')assert.equal(settled.balance,committed.balance);else assert.deepEqual(settled.craps.rolls,committed.craps.rolls);
+ if(['craps','sicbo','double_dice','under_over_7','chuck_a_luck'].includes(id)){const faces=await p.locator('.physical-die').evaluateAll(es=>es.map(e=>Number(e.getAttribute('data-face'))));assert.deepEqual(faces,id==='craps'?settled.craps.rolls[0].dice:settled.history[0].values);r.faces=faces;}
+ if(id==='roulette'){r.touch=await p.getByRole('button',{name:'Bet on 1',exact:true}).boundingBox();assert(r.touch.width>=44&&r.touch.height>=44,'roulette target size');}
+ r.overflow=await p.evaluate(()=>document.documentElement.scrollWidth-innerWidth);assert(r.overflow<=1,'no overflow');await stage.screenshot({path:out+`${tag}-${width}-${id}-result.png`});r.result=await stage.innerText();r.ok=true;
+}catch(e){r.error=e.message;await p.screenshot({path:out+`${tag}-${width}-${id}-error.png`}).catch(()=>{});}finally{report.checks.push(r);console.log(width,id,r.ok?'PASS':r.error);await writeFile(out+tag+'-browser.json',JSON.stringify(report,null,2));await c.close();}}
+}finally{await b.close();await writeFile(out+tag+'-browser.json',JSON.stringify(report,null,2));}
+assert.equal(report.checks.filter(x=>!x.ok).length,0,'group failures');assert.deepEqual(report.errors,[]);

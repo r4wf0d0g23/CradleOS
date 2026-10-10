@@ -1,0 +1,127 @@
+{
+  "base": "http://127.0.0.1:5213",
+  "mode": "fresh isolated browser Play Money RNG spins, no wallet/chain actions",
+  "checks": [
+    {
+      "name": "fresh desktop",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, -1989.4)",
+          "matrix(1, 0, 0, 1, 0, -2231.39)",
+          "matrix(1, 0, 0, 1, 0, -2467.77)",
+          "matrix(1, 0, 0, 1, 0, -2698)",
+          "matrix(1, 0, 0, 1, 0, -2922.83)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, -1064.59)",
+          "matrix(1, 0, 0, 1, 0, -1338.38)",
+          "matrix(1, 0, 0, 1, 0, -1602.28)",
+          "matrix(1, 0, 0, 1, 0, -1859.06)",
+          "matrix(1, 0, 0, 1, 0, -2110.27)"
+        ]
+      ]
+    },
+    {
+      "name": "fresh mobile",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, -887.533)",
+          "matrix(1, 0, 0, 1, 0, -997.549)",
+          "matrix(1, 0, 0, 1, 0, -1105.74)",
+          "matrix(1, 0, 0, 1, 0, -1211.89)",
+          "matrix(1, 0, 0, 1, 0, -1315.71)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, -461.307)",
+          "matrix(1, 0, 0, 1, 0, -585.834)",
+          "matrix(1, 0, 0, 1, 0, -705.743)",
+          "matrix(1, 0, 0, 1, 0, -822.322)",
+          "matrix(1, 0, 0, 1, 0, -936.044)"
+        ]
+      ]
+    },
+    {
+      "name": "fresh classic",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, 12.4083)",
+          "matrix(1, 0, 0, 1, 0, 1.92382)",
+          "matrix(1, 0, 0, 1, 0, -21.9831)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, 17.8041)",
+          "matrix(1, 0, 0, 1, 0, 17.3773)",
+          "matrix(1, 0, 0, 1, 0, -20.8753)"
+        ]
+      ]
+    },
+    {
+      "name": "invalid",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, -2034.88)",
+          "matrix(1, 0, 0, 1, 0, -2273.27)",
+          "matrix(1, 0, 0, 1, 0, -2505.42)",
+          "matrix(1, 0, 0, 1, 0, -2731.61)",
+          "matrix(1, 0, 0, 1, 0, -2954.17)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, -1058.92)",
+          "matrix(1, 0, 0, 1, 0, -1332.31)",
+          "matrix(1, 0, 0, 1, 0, -1596.38)",
+          "matrix(1, 0, 0, 1, 0, -1853.01)",
+          "matrix(1, 0, 0, 1, 0, -2104.07)"
+        ]
+      ]
+    },
+    {
+      "name": "blocked preference",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "selected": "animated",
+      "transforms": [
+        [
+          "matrix(1, 0, 0, 1, 0, -2040.06)",
+          "matrix(1, 0, 0, 1, 0, -2278.1)",
+          "matrix(1, 0, 0, 1, 0, -2509.77)",
+          "matrix(1, 0, 0, 1, 0, -2736.02)",
+          "matrix(1, 0, 0, 1, 0, -2958.26)"
+        ],
+        [
+          "matrix(1, 0, 0, 1, 0, -1115.42)",
+          "matrix(1, 0, 0, 1, 0, -1386.88)",
+          "matrix(1, 0, 0, 1, 0, -1649.43)",
+          "matrix(1, 0, 0, 1, 0, -1905.65)",
+          "matrix(1, 0, 0, 1, 0, -2156.2)"
+        ]
+      ]
+    },
+    {
+      "name": "explicit system",
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "selected": "system",
+      "transforms": []
+    },
+    {
+      "name": "explicit instant",
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "selected": "instant",
+      "transforms": []
+    }
+  ],
+  "errors": []
+}
