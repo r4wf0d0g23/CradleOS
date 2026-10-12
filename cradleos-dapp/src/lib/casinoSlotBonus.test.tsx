@@ -36,7 +36,7 @@ describe("earned bonus presentation", () => {
       const r = spinFleet(key, 2500, rng());
       expect(slotBonusView(r)).toBeNull();
       expect(slotBonusView(r, true)).toBeNull();
-      if (["slot_reactor", "slot_feral"].includes(key))
+      if (["slot_reactor", "slot_feral", "slot_xeroti"].includes(key))
         expect(slotBonusView({ ...r, cursor: 1 })).toBeNull();
     }
     const r = feature("slot_scrapyard");

@@ -1,0 +1,18 @@
+[
+  {
+    "virtual": "res:/dx9/model/spaceobjectfactory/icons/moontumor_04v02/29124_128_no_background.png",
+    "cacheKey": "cb/cb268070719ba8e5_c25603ab9d424a53b5956896de346338",
+    "md5": "c25603ab9d424a53b5956896de346338",
+    "bytes": 17916,
+    "sha256": "321dafdc474f8524bfc9a8b64b3c330d444dd313e6246eda08a1266795d9692c",
+    "file": "research/xeroti-tidofiza-20261012/assets/29124_128_no_background.png"
+  },
+  {
+    "virtual": "res:/dx9/model/spaceobjectfactory/icons/moontumor_04v02/29124_512.jpg",
+    "cacheKey": "75/757416b3143855db_0815ca3bfcd20003db0573b96302b451",
+    "md5": "0815ca3bfcd20003db0573b96302b451",
+    "bytes": 64476,
+    "sha256": "08e7547c174f28611de97043c9716350f6ff1ae6d08ee4bf1d792218bfd209b4",
+    "file": "research/xeroti-tidofiza-20261012/assets/29124_512.jpg"
+  }
+]

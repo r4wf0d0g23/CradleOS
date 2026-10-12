@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "published": "2026-10-12",
+  "currency": "Nonredeemable play chips only",
+  "targetPercent": 96,
+  "measurement": {
+    "phase": "validation",
+    "count": 1000000,
+    "seed": 123897,
+    "stake": 10000,
+    "method": "Independent paid rounds, deterministic xorshift32 rejection-sampled bounded draws; interval uses sample SD/sqrt(n), approximate Monte Carlo, not certification.",
+    "games": {
+      "slot_xeroti": {
+        "scale": 12422698,
+        "rtpPercent": 96.23266884011773,
+        "interval95Percent": [
+          95.60858838115138,
+          96.85674929908406
+        ],
+        "hitPercent": 23.6321,
+        "netWinPercent": 18.1068,
+        "featurePercent": 23.6321,
+        "capCount": 0,
+        "maxObservedReturn": 188.825,
+        "maxFrames": 4,
+        "meanPoints": 7.746594,
+        "recommendedScale": 12392543
+      }
+    }
+  },
+  "notes": [
+    "Independent validation of Xeroti Tidofiza. Original eight machines unchanged.",
+    "Winning clusters contain 5+ edge-connected matching symbols. Maximum four boards at 1x, 2x, 3x, 4x.",
+    "WebCrypto production draws; validation uses deterministic xorshift32 rejection-sampled bounded draws.",
+    "Approximate Monte Carlo interval is not certification or a promise of an individual return."
+  ]
+}

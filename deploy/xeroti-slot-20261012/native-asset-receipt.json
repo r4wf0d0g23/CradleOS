@@ -1,0 +1,263 @@
+[
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/hulls/moontumor_04v02.black",
+    "cache": "ba/ba0ffd7a44e929e7_dc32f84cceac80d75833746df5eea2b5",
+    "md5": "dc32f84cceac80d75833746df5eea2b5",
+    "bytes": 11287,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/ba/ba0ffd7a44e929e7_dc32f84cceac80d75833746df5eea2b5",
+    "sha256": "9c8e31294d44f001a159156fb73d63205404634abfbd366413d89e0a3cc6244b",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/spaceobjectfactory/hulls/moontumor_04v02.black"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/races/moontumor.black",
+    "cache": "e1/e168c0a8c6388450_ce2e7f70b6042aa712b34d765c266bb0",
+    "md5": "ce2e7f70b6042aa712b34d765c266bb0",
+    "bytes": 3916,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/e1/e168c0a8c6388450_ce2e7f70b6042aa712b34d765c266bb0",
+    "sha256": "e54bf4cbef230fb37d761184df755a7c47ff5f5ea6bca437d6191093feeb43e6",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/spaceobjectfactory/races/moontumor.black"
+  },
+  {
+    "path": "res:/dx9/model/spaceobjectfactory/factions/asteroids_generic_07.black",
+    "cache": "0c/0c3d9171e5129799_b2699772c29fa32b9fdeeb4f03221a41",
+    "md5": "b2699772c29fa32b9fdeeb4f03221a41",
+    "bytes": 450,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/0c/0c3d9171e5129799_b2699772c29fa32b9fdeeb4f03221a41",
+    "sha256": "40043ea606a5cb84d9a24eb5d3b1e724fd7b584fc04e654448cfef106edb799a",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/spaceobjectfactory/factions/asteroids_generic_07.black"
+  },
+  {
+    "path": "res:/dx9/model/celestial/moontumor/moontumor_04v02.cmf",
+    "cache": "1f/1f0c1d4961fd33c9_e904fe1f3cbe2fb86fc5d78cb20f9d6c",
+    "md5": "e904fe1f3cbe2fb86fc5d78cb20f9d6c",
+    "bytes": 69285331,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/1f/1f0c1d4961fd33c9_e904fe1f3cbe2fb86fc5d78cb20f9d6c",
+    "sha256": "c5fcf3d4030a44d720e713547b77b385fa6c5e5479bd953d5b8d58b7f9e363d8",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/celestial/moontumor/moontumor_04v02.cmf"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/tile/asteroid/generic/tile_aste_gen_08v02_m.dds",
+    "cache": "f5/f5d648270c767e73_e2fccd5534957dafeca25ae7beed333a",
+    "md5": "e2fccd5534957dafeca25ae7beed333a",
+    "bytes": 22369796,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/f5/f5d648270c767e73_e2fccd5534957dafeca25ae7beed333a",
+    "sha256": "8156ea562071b88d96cbfc7bb4308b450635176578c2d65e7241138831dd7bb3",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/shared/celestial/tile/asteroid/generic/tile_aste_gen_08v02_m.dds"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/tile/asteroid/generic/tile_aste_gen_12_m.dds",
+    "cache": "c3/c3f4685b20321ad2_b93d0c34691769325d2478787e1d12f2",
+    "md5": "b93d0c34691769325d2478787e1d12f2",
+    "bytes": 22369796,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/c3/c3f4685b20321ad2_b93d0c34691769325d2478787e1d12f2",
+    "sha256": "4706539db7121a383296ee2bfcd2d255031d01ee04e3fc066ba0ce597155fb64",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/shared/celestial/tile/asteroid/generic/tile_aste_gen_12_m.dds"
+  },
+  {
+    "path": "res:/dx9/model/celestial/asteroid/test/textures/material_selection_02.dds",
+    "cache": "40/402e7cb755ccc747_775511dbed83336a3b0b6b1e53a30b89",
+    "md5": "775511dbed83336a3b0b6b1e53a30b89",
+    "bytes": 2176,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/40/402e7cb755ccc747_775511dbed83336a3b0b6b1e53a30b89",
+    "sha256": "3199a5202b882c808b718a792c49abed8f7752a3f6c5a0ba1b6abddec954bd11",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/celestial/asteroid/test/textures/material_selection_02.dds"
+  },
+  {
+    "path": "res:/dx9/model/celestial/asteroid/test/textures/grunge_01.dds",
+    "cache": "d5/d59e84431d798dbe_f2243e0b1058a2bd2de0f24d983fcf3d",
+    "md5": "f2243e0b1058a2bd2de0f24d983fcf3d",
+    "bytes": 11184936,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/d5/d59e84431d798dbe_f2243e0b1058a2bd2de0f24d983fcf3d",
+    "sha256": "f3aa74ba8cfdf36364b92230c5fe4b39b9bff8216a3a9be70faf88bf11200c7f",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/celestial/asteroid/test/textures/grunge_01.dds"
+  },
+  {
+    "path": "res:/dx9/model/celestial/asteroid/test/textures/grunge_05.dds",
+    "cache": "83/8333d463fe7c730a_b159cc37cbcb4cb469c313a86722cf41",
+    "md5": "b159cc37cbcb4cb469c313a86722cf41",
+    "bytes": 11184936,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/83/8333d463fe7c730a_b159cc37cbcb4cb469c313a86722cf41",
+    "sha256": "ba9f713a7597ad9ac681be573741ee51c708e57156117056ecef97469ce3a9e3",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/celestial/asteroid/test/textures/grunge_05.dds"
+  },
+  {
+    "path": "res:/dx9/model/celestial/asteroid/test/textures/grunge_07.dds",
+    "cache": "81/81ab005253aa09a8_2023db2529ae19f5781273d956f058f0",
+    "md5": "2023db2529ae19f5781273d956f058f0",
+    "bytes": 11184936,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/81/81ab005253aa09a8_2023db2529ae19f5781273d956f058f0",
+    "sha256": "26278a64bbe5a31130807e04e3b7d9aa83dec12e765f7ec5a7957ad26d815283",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/celestial/asteroid/test/textures/grunge_07.dds"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_01_n.dds",
+    "cache": "f2/f2e00aec514990ea_3ba71ec9d91e9aca17ce7058ecddf3f7",
+    "md5": "3ba71ec9d91e9aca17ce7058ecddf3f7",
+    "bytes": 2796328,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/f2/f2e00aec514990ea_3ba71ec9d91e9aca17ce7058ecddf3f7",
+    "sha256": "90027132a9ec11e92a04ccecabb647e54c760f2bdbdaa2056a7f056d029e7bd4",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_01_n.dds"
+  },
+  {
+    "path": "res:/dx9/texture/shared/detail/megastructure/detail_mega_debris_01.dds",
+    "cache": "88/889c676cb14538e5_03d6ad52ee3b72d38e1e2b9d1f7ab909",
+    "md5": "03d6ad52ee3b72d38e1e2b9d1f7ab909",
+    "bytes": 22369776,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/88/889c676cb14538e5_03d6ad52ee3b72d38e1e2b9d1f7ab909",
+    "sha256": "e19f829f1bec3734280435a47f5db9ed817de32fd5f4889d15777408a253e853",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/shared/detail/megastructure/detail_mega_debris_01.dds"
+  },
+  {
+    "path": "res:/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_06_n.dds",
+    "cache": "49/494dab395fd90005_b497b237901877ff700a355c6a1b9c1c",
+    "md5": "b497b237901877ff700a355c6a1b9c1c",
+    "bytes": 22369776,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/49/494dab395fd90005_b497b237901877ff700a355c6a1b9c1c",
+    "sha256": "279b65ad1a9beb7641782f5d0c2652d3ec8bf880eb9d98763041f7c5836b578b",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_06_n.dds"
+  },
+  {
+    "path": "res:/dx9/audio_controllers/frontier_mooneater_standard.black",
+    "cache": "c6/c6c0fff0eb493276_0c9a95d229ffe352f0563dbd9be9cd6b",
+    "md5": "0c9a95d229ffe352f0563dbd9be9cd6b",
+    "bytes": 400,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/c6/c6c0fff0eb493276_0c9a95d229ffe352f0563dbd9be9cd6b",
+    "sha256": "1dd290daa08fac07fcd1d95177a7d69fd78ea6357ed271ed601885b3e156ab56",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/audio_controllers/frontier_mooneater_standard.black"
+  },
+  {
+    "path": "res:/dx9/model/booster/shape01.dds",
+    "cache": "67/6775ce43676c8f48_f7a6384e910bca3873452b5bed1dcfc2",
+    "md5": "f7a6384e910bca3873452b5bed1dcfc2",
+    "bytes": 5568,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/67/6775ce43676c8f48_f7a6384e910bca3873452b5bed1dcfc2",
+    "sha256": "a17a84b9394d7c6b9b522ad333ae8080efb4873d8d9f9a452e69c7cda877f5ce",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/booster/shape01.dds"
+  },
+  {
+    "path": "res:/dx9/model/booster/gradient01.dds",
+    "cache": "0f/0f5289ff26313ad5_7078b3379fca53d6a574346fe4c1619c",
+    "md5": "7078b3379fca53d6a574346fe4c1619c",
+    "bytes": 3072,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/0f/0f5289ff26313ad5_7078b3379fca53d6a574346fe4c1619c",
+    "sha256": "f653f5543a3a718c24494f240e266a9523860f226fbf4a2a22261f15f8c3c1d6",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/booster/gradient01.dds"
+  },
+  {
+    "path": "res:/dx9/model/booster/gradient02.dds",
+    "cache": "a5/a52d6e19b2217ce2_ca14606c15ce2c289285a570fb1a3365",
+    "md5": "ca14606c15ce2c289285a570fb1a3365",
+    "bytes": 3072,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/a5/a52d6e19b2217ce2_ca14606c15ce2c289285a570fb1a3365",
+    "sha256": "3059ff8439e3c69dedff9da8158931dcf8093473c8a856cda7bf54e0873c9329",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/model/booster/gradient02.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/insidemap_03a.dds",
+    "cache": "5d/5daf721e1ee8a446_f107bf988ecb24998fa9abe141baef82",
+    "md5": "f107bf988ecb24998fa9abe141baef82",
+    "bytes": 1398256,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/5d/5daf721e1ee8a446_f107bf988ecb24998fa9abe141baef82",
+    "sha256": "5cd19b5ff911a2f509ff9dd9f2f5337971932baa0c9d12ae94728f7b55ab59eb",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/insidemap_03a.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/3dfx_cutoffsetmap_01a.dds",
+    "cache": "a7/a723c97e92b1c10d_2ce9ad4a59f6b2e416723ba9f2f6887f",
+    "md5": "2ce9ad4a59f6b2e416723ba9f2f6887f",
+    "bytes": 2396912,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/a7/a723c97e92b1c10d_2ce9ad4a59f6b2e416723ba9f2f6887f",
+    "sha256": "09966050d1e9160eb16f16a8b2f2e1741786e7acbcea06e95b3b5fe12146d949",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/3dfx_cutoffsetmap_01a.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/3dfx_layerallmap_01a.dds",
+    "cache": "ca/caaaabb1fb145102_5a6644a99afbf41e8b1e1b630283e625",
+    "md5": "5a6644a99afbf41e8b1e1b630283e625",
+    "bytes": 2396912,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/ca/caaaabb1fb145102_5a6644a99afbf41e8b1e1b630283e625",
+    "sha256": "114c143fea4ecb5d63b03ff1ea3ee4e2fe6fc640a41e88cfa5df0b967c070180",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/3dfx_layerallmap_01a.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/gradientmap_01a.dds",
+    "cache": "af/af27d0354bde4c6c_f26e1602f34ff9d9876b9abd9d5580c0",
+    "md5": "f26e1602f34ff9d9876b9abd9d5580c0",
+    "bytes": 16511,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/af/af27d0354bde4c6c_f26e1602f34ff9d9876b9abd9d5580c0",
+    "sha256": "b56958aa144941bca10b7b8ca43adbcfdc5214cda0e38d5c3728a692a9b8a952",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/gradientmap_01a.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/insidemap_03a_nrm.dds",
+    "cache": "db/dbd867d18c711d3a_cd4f1cc6de2bdc544f61b71958b0471a",
+    "md5": "cd4f1cc6de2bdc544f61b71958b0471a",
+    "bytes": 699176,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/db/dbd867d18c711d3a_cd4f1cc6de2bdc544f61b71958b0471a",
+    "sha256": "99fb660c77d45d8d58a02f33fd8558d38b3f743b76177a5ce1a896f21bdac4d6",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/insidemap_03a_nrm.dds"
+  },
+  {
+    "path": "res:/texture/fx/gradients/gradientbeat_02d.dds",
+    "cache": "6b/6b098dbc9aab51bd_49a85d7c76c0d15b1d68598c33263495",
+    "md5": "49a85d7c76c0d15b1d68598c33263495",
+    "bytes": 87536,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/6b/6b098dbc9aab51bd_49a85d7c76c0d15b1d68598c33263495",
+    "sha256": "1b7d9559d3051bce83ffc3b8b6d0d68732de6f4fe01bcc36ce2e076e7abc346a",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/texture/fx/gradients/gradientbeat_02d.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/hullrepairgradient_smips_01a.dds",
+    "cache": "26/26d0f4695ad93cd7_f6eb18a13ec6cc051dc2a1ff24902c1a",
+    "md5": "f6eb18a13ec6cc051dc2a1ff24902c1a",
+    "bytes": 87508,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/26/26d0f4695ad93cd7_f6eb18a13ec6cc051dc2a1ff24902c1a",
+    "sha256": "c4acc01c28818f07bd40c70c8b5b240c44ffa5a49e264cd3f14c6513848fd533",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/hullrepairgradient_smips_01a.dds"
+  },
+  {
+    "path": "res:/texture/fx/3d/3dfx_shield_concord.dds",
+    "cache": "14/14bf00ece16dcb60_57c323d948e18d309de841ffda147749",
+    "md5": "57c323d948e18d309de841ffda147749",
+    "bytes": 2396912,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/14/14bf00ece16dcb60_57c323d948e18d309de841ffda147749",
+    "sha256": "e05ac963ca5703f71287de0497e833254d707b24fe49289fa1e47f3278e70d38",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/texture/fx/3d/3dfx_shield_concord.dds"
+  },
+  {
+    "path": "res:/dx9/texture/fx/gradients/verticalshield_gradient_01.dds",
+    "cache": "94/94aecf686b8a97b0_7612de567c36fa6bf0d88afba864c2df",
+    "md5": "7612de567c36fa6bf0d88afba864c2df",
+    "bytes": 1172,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/94/94aecf686b8a97b0_7612de567c36fa6bf0d88afba864c2df",
+    "sha256": "0759551ec6b2b386075af41017598dd84718927311c35063ccfb9b4b5f681391",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/fx/gradients/verticalshield_gradient_01.dds"
+  },
+  {
+    "path": "res:/fisfx/impact/temporalfadeout_01a.dds",
+    "cache": "0e/0e980d558a41427a_10c7e8a7378438307c5824f71a681151",
+    "md5": "10c7e8a7378438307c5824f71a681151",
+    "bytes": 11388,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/0e/0e980d558a41427a_10c7e8a7378438307c5824f71a681151",
+    "sha256": "f04b0f412d7b2985af200818de797eb87d45402076e07d80e9648141e62ecb6a",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/fisfx/impact/temporalfadeout_01a.dds"
+  },
+  {
+    "path": "res:/texture/fx/3d/3dfx_voronoi_01a.dds",
+    "cache": "01/012730075f7cdc59_56f134708733afbc6f16b151e81acdca",
+    "md5": "56f134708733afbc6f16b151e81acdca",
+    "bytes": 2396912,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/01/012730075f7cdc59_56f134708733afbc6f16b151e81acdca",
+    "sha256": "9063d0be03985b70e8fac04bb479dec0afd2dc788dbc8e039afb7d1ea661bbca",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/texture/fx/3d/3dfx_voronoi_01a.dds"
+  },
+  {
+    "path": "res:/dx9/texture/fx/caustics/packed_caustics_128x128.dds",
+    "cache": "51/51c0014d399614d7_73d92b7c2fce753a5f068974f3ee0a50",
+    "md5": "73d92b7c2fce753a5f068974f3ee0a50",
+    "bytes": 22000,
+    "source": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/51/51c0014d399614d7_73d92b7c2fce753a5f068974f3ee0a50",
+    "sha256": "9e237250d3ba67022ecb7d737c839b0f43b645eb020ddb003bdf5ef296316f00",
+    "staged": "/home/rawdata/.openclaw-captain/workspace/research/xeroti-tidofiza-20261012/resources/dx9/texture/fx/caustics/packed_caustics_128x128.dds"
+  }
+]

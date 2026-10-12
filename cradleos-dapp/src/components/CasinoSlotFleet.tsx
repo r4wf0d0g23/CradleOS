@@ -1,3 +1,5 @@
+import { XerotiEntity, XerotiConnections } from "./CasinoXeroti";
+import "../styles/casino-xeroti.css";
 import { slotBonusView } from "../lib/casinoSlotBonus";
 import { SlotBonusRail, SlotBonusEntry } from "./SlotBonusExperience";
 import measured from "../data/casino-slot-math.json";
@@ -144,6 +146,7 @@ export function FleetBoard({
           <small>{t.tagline}</small>
           <SlotWordmark game={game} />
         </header>
+        {game === "slot_xeroti" && <XerotiEntity frame={motion.rawStopped && !covered ? frame : previous} consuming={motion.active && motion.plan.kind === "cascade" && !!previous?.wins.length} run={run} />}
         {bonus && (
           <SlotBonusRail
             view={bonus}
@@ -273,6 +276,7 @@ export function FleetBoard({
                         motion.plan.kind === "cascade" &&
                         previous && (
                           <MotionFall
+                            game={game}
                             previous={previous}
                             column={c}
                             row={r}
@@ -340,6 +344,7 @@ export function FleetBoard({
           {game === "slot_feral" && (
             <FeralConnections frame={frame} visible={!busy && !covered} />
           )}
+          {game === "slot_xeroti" && <XerotiConnections frame={frame} visible={!busy && !covered} />}
         </div>
         {bonus && receipt && (
           <SlotBonusEntry
@@ -435,6 +440,7 @@ export function FleetRules({ game }: { game: FleetKey }) {
       <summary>
         Rules, rewards &amp; measured odds <span>＋</span>
       </summary>
+      {game === "slot_xeroti" && <blockquote className="xeroti-lore">“It swells and throbs, a corrupted bulge craving substance.”<cite>Xeroti Tidofiza</cite></blockquote>}
       <p>
         One stake covers the entire spin and its bonus. Returns include any
         returned stake. Weighted independent cells, not physical reel strips. No
@@ -557,7 +563,7 @@ export function FleetRules({ game }: { game: FleetKey }) {
         </p>
         <p>
           {g.mode === "count" || g.mode === "cluster"
-            ? "Cascade continuation (500,000 spins)"
+            ? game === "slot_xeroti" ? "Cascade continuation (1,000,000 spins)" : "Cascade continuation (500,000 spins)"
             : "Free-spin / hold feature"}{" "}
           {measured[game].feature.toFixed(2)}%
         </p>
@@ -565,7 +571,7 @@ export function FleetRules({ game }: { game: FleetKey }) {
       <p>
         Version 1 · calibrated toward 96% long-run return.{" "}
         <a
-          href={`${import.meta.env.BASE_URL}casino/slot-fleet-math.json`}
+          href={`${import.meta.env.BASE_URL}casino/${game === "slot_xeroti" ? "xeroti-slot-math" : "slot-fleet-math"}.json`}
           target="_blank"
           rel="noreferrer"
         >

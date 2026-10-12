@@ -1,0 +1,38 @@
+{
+  "baseline": "e9ccee624d5dbecc72b2b12286d38088d56029e5",
+  "protectedFiles": [
+    {
+      "path": "cradleos-dapp/src/lib/casinoSessions.ts",
+      "sha256": "2e277f6323ed8751fa286fafd76c1797c137cedf08f37f363bf74c77a6403850",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoExperience.tsx",
+      "sha256": "a5e8260a3062875fcb27cd161dfabe95b3930aabf18b73d5a3b912dc60494396",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casino.ts",
+      "sha256": "ab012768e1a6493e9637d6f4159710f4e8f8006c1173a511209c3a62ba887576",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoFrontier.ts",
+      "sha256": "66b4afcf074d17f40d83f7901f52dcaaada6c29901764f5d41441491bc0f95da",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoCraps.ts",
+      "sha256": "85b67791722e86e15d9db2a26276f724ac7c4224cd09b4694d17b663959939b1",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/constants.ts",
+      "sha256": "e89dfedae5d56b9c9c11686d8e42fc19f332c493a2a4bc9a21c197685b6e3634",
+      "unchanged": true
+    }
+  ],
+  "legacyFleetGoldenSHA256": "23cc3d2f394ca1480549faf5d1cf7d8745090fc90952ea2aad0a3d1e84de355c",
+  "physicalTerminalCount": 34,
+  "webPracticeCount": 41
+}

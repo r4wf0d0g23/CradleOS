@@ -9,6 +9,7 @@ import { CasinoFeedback } from "../lib/casinoFeedback";
 import {
   REEL_STOPS,
   CLEAR_MS,
+  XEROTI_CLEAR_MS,
   slotMotionPlan,
   reelStrip,
   reelTravelKeyframes,
@@ -311,11 +312,13 @@ export function MotionReel({
 }
 /** New cells enter from above; survivors retain their exact prior row position until clearance. */
 export function MotionFall({
+  game,
   previous,
   column,
   row,
   run,
 }: {
+  game?: FleetKey;
   previous: SlotFrame;
   column: number;
   row: number;
@@ -336,7 +339,7 @@ export function MotionFall({
       fallKeyframes(p.distance * stride),
       p.duration,
       run,
-      p.delay,
+      p.delay + (game === "slot_xeroti" ? XEROTI_CLEAR_MS - CLEAR_MS : 0),
     );
     cell.dataset.motionSource = String(p.source);
     cell.dataset.motionDistance = String(p.distance);
@@ -345,7 +348,7 @@ export function MotionFall({
       delete cell.dataset.motionSource;
       delete cell.dataset.motionDistance;
     };
-  }, [previous, column, row, run.id, run.started]);
+  }, [game, previous, column, row, run.id, run.started]);
   return <i ref={ref} className="motion-marker" aria-hidden="true" />;
 }
 export function CascadeGhosts({
@@ -379,21 +382,30 @@ export function CascadeGhosts({
         width: `${box.width}px`,
         height: `${box.height}px`,
       });
+      const mouth = game === "slot_xeroti" ? grid.closest(".identity-stage")?.querySelector(".xeroti-mouth")?.getBoundingClientRect() : null;
+      const dx = mouth ? mouth.left + mouth.width / 2 - (box.left - transform.m41 + box.width / 2) : 0;
+      const dy = mouth ? mouth.top + mouth.height / 2 - (box.top - transform.m42 + box.height / 2) : 0;
+      if (mouth) { ghost.dataset.devourX = String(dx); ghost.dataset.devourY = String(dy); }
       anims.push(
         animateAt(
           ghost,
-          [
+          mouth ? [
+            { opacity: 1, transform: "translate(0,0) scale(1)", offset: 0, easing: "ease-in" },
+            { opacity: 1, transform: `translate(${dx * .16}px,${dy * .14}px) scale(.85)`, offset: .28, easing: "cubic-bezier(.4,0,.8,.6)" },
+            { opacity: .9, transform: `translate(${dx}px,${dy}px) scale(.10)`, offset: .92 },
+            { opacity: 0, transform: `translate(${dx}px,${dy}px) scale(0)`, offset: 1 },
+          ] : [
             { opacity: 1, transform: "scale(1)", offset: 0 },
             { opacity: 1, transform: "scale(1.035)", offset: 0.3 },
             { opacity: 0, transform: "scale(.65)", offset: 1 },
           ],
-          CLEAR_MS,
+          mouth ? XEROTI_CLEAR_MS : CLEAR_MS,
           run,
         ),
       );
     }
     return () => anims.forEach((a) => a.cancel());
-  }, [run.id, run.started, previous]);
+  }, [game, run.id, run.started, previous]);
   return (
     <div ref={ref} className="cascade-ghost-layer" aria-hidden="true">
       {wins.map((id) => (

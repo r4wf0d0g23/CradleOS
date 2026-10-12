@@ -1,0 +1,297 @@
+/* Native Moon Tumor silhouette, charred lunar stone and restrained furnace light. */
+.scene-xeroti .identity-stage {
+  background:
+    radial-gradient(ellipse at 68% 18%, #4f221631, transparent 54%), #060a0e;
+  border: 1px solid #82534388;
+  border-radius: 5px;
+  padding: 25px 28px 18px;
+}
+.scene-xeroti .identity-heading {
+  min-height: 106px;
+  text-align: left;
+  padding-left: 10px;
+}
+.scene-xeroti .identity-heading small {
+  color: #bd957c;
+  letter-spacing: 0.45em;
+}
+.scene-xeroti .slot-wordmark {
+  color: #f1d9c4;
+  text-shadow: 0 3px 6px #000;
+}
+.scene-xeroti .slot-wordmark span {
+  letter-spacing: 0.22em;
+  font-size: clamp(22px, 4vw, 33px);
+}
+.scene-xeroti .slot-wordmark strong {
+  letter-spacing: 0.075em;
+  font-size: clamp(34px, 6vw, 52px);
+}
+.xeroti-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, #f9e6c499 0.7px, transparent 1.2px),
+    radial-gradient(circle, #c3d7e277 0.7px, transparent 1px);
+  background-size:
+    83px 71px,
+    127px 137px;
+  background-position:
+    17px 3px,
+    54px 21px;
+  opacity: 0.28;
+}
+.xeroti-eclipsed-moon {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  right: -72px;
+  top: -85px;
+  background: radial-gradient(
+    circle at 35% 25%,
+    #050607 66%,
+    #927867 70%,
+    #352318 71%,
+    #080b0f 73%
+  );
+  box-shadow: -6px 8px 24px #dfa77b19;
+}
+.xeroti-nebula {
+  position: absolute;
+  inset: 80px -160px auto;
+  height: 400px;
+  background: radial-gradient(ellipse, #913d252c, transparent 68%);
+  transform: rotate(-22deg);
+}
+.xeroti-entity {
+  position: relative;
+  height: 220px;
+  margin: -18px -18px 3px;
+  isolation: isolate;
+  pointer-events: none;
+}
+.xeroti-entity img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 10px #000a);
+}
+.xeroti-orbit {
+  position: absolute;
+  width: 70%;
+  height: 34%;
+  left: 15%;
+  bottom: 13%;
+  border: 1px solid #c29a7522;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+.xeroti-mouth {
+  position: absolute;
+  left: 50%;
+  top: 61%;
+  width: 1px;
+  height: 1px;
+}
+.xeroti-feed-pulse {
+  position: absolute;
+  left: 50%;
+  top: 61%;
+  width: 120px;
+  height: 95px;
+  background: radial-gradient(
+    ellipse,
+    #ffe6b3 0%,
+    #f38c4399 10%,
+    #e3512322 38%,
+    transparent 68%
+  );
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.xeroti-hull-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font: 900 30px monospace;
+  letter-spacing: 0.2em;
+  color: #79624f;
+}
+.xeroti-distance-mark {
+  position: absolute;
+  right: 10px;
+  bottom: 25%;
+  display: flex;
+  gap: 5px;
+}
+.xeroti-distance-mark i {
+  display: block;
+  width: 14px;
+  height: 1px;
+  background: #b68b6855;
+}
+.xeroti-instrument {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 2px;
+  font: 10px monospace;
+  color: #c5b5a8;
+}
+.xeroti-instrument > span {
+  letter-spacing: 0.11em;
+}
+.xeroti-instrument > div {
+  display: flex;
+  gap: 5px;
+}
+.xeroti-instrument i {
+  font-style: normal;
+  border: 1px solid #79685355;
+  padding: 5px 8px;
+  color: #786c61;
+  border-radius: 2px;
+}
+.xeroti-instrument i.lit {
+  color: #ffdbb9;
+  border-color: #b57345;
+  background: #a14d272f;
+  box-shadow: inset 0 -2px #cf824777;
+}
+.scene-xeroti .identity-playfield {
+  padding: 8px;
+  background: linear-gradient(145deg, #372a20, #121b20 45%, #352219);
+  border: 1px solid #75523e;
+  border-radius: 4px;
+  box-shadow:
+    0 15px 38px #0009,
+    inset 0 0 0 3px #080e11;
+}
+.scene-xeroti .fleet-grid {
+  overflow: visible;
+  border: 0;
+  background: #05090d;
+}
+.scene-xeroti .fleet-cell {
+  aspect-ratio: 1;
+  height: auto;
+  min-height: 0;
+  border: 1px solid #b1946b18;
+  background: radial-gradient(ellipse at 50% 75%, #25252477, #0a1115 90%);
+  border-radius: 3px;
+}
+.scene-xeroti .slot-symbol-face > .game-icon {
+  max-width: 87%;
+  max-height: 87%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 2px #000b);
+}
+.scene-xeroti .fleet-cell-win {
+  border-color: #d99a64 !important;
+  background: #60331855 !important;
+  box-shadow: inset 0 0 13px #e5974022;
+}
+.scene-xeroti .feral-connections {
+  opacity: 0.5;
+}
+.scene-xeroti .feral-connections line {
+  stroke: #ffc18c;
+  filter: drop-shadow(0 0 3px #e68b42);
+}
+.scene-xeroti .cascade-ghost-layer {
+  overflow: visible;
+  z-index: 12;
+}
+.scene-xeroti .cascade-ghost {
+  filter: drop-shadow(0 0 4px #d66b33);
+}
+.scene-xeroti .identity-stage-foot {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+.identity-tile.scene-xeroti {
+  background: #060b11;
+}
+.identity-tile.scene-xeroti .slot-wordmark {
+  position: relative;
+  z-index: 2;
+  text-align: left;
+  padding: 6px 0;
+}
+.identity-tile.scene-xeroti .slot-wordmark span {
+  font-size: 16px;
+}
+.identity-tile.scene-xeroti .slot-wordmark strong {
+  font-size: 26px;
+}
+.identity-tile.scene-xeroti .identity-tile-symbols {
+  opacity: 0.8;
+}
+.xeroti-tile-hull {
+  position: absolute;
+  width: 80%;
+  height: 85%;
+  right: -14%;
+  bottom: 6%;
+  object-fit: contain;
+  opacity: 0.72;
+}
+.xeroti-lore {
+  margin: 12px 0 16px;
+  padding-left: 12px;
+  border-left: 2px solid #986641;
+  color: #c9b29c;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.xeroti-lore cite {
+  display: block;
+  font: 10px monospace;
+  color: #9a8879;
+  padding-top: 5px;
+}
+@media (max-width: 520px) {
+  .scene-xeroti .identity-stage {
+    padding: 19px 10px 12px;
+  }
+  .scene-xeroti .identity-heading {
+    min-height: 90px;
+    padding-left: 4px;
+  }
+  .scene-xeroti .identity-heading small {
+    font-size: 8px;
+  }
+  .xeroti-entity {
+    height: 155px;
+    margin: -9px -4px 0;
+  }
+  .xeroti-instrument {
+    font-size: 8px;
+    gap: 5px;
+  }
+  .xeroti-instrument i {
+    padding: 4px 5px;
+  }
+  .scene-xeroti .identity-playfield {
+    padding: 5px;
+  }
+  .scene-xeroti .fleet-grid {
+    gap: 3px;
+    padding: 3px;
+  }
+  .scene-xeroti .fleet-reel {
+    gap: 3px;
+  }
+  .scene-xeroti .identity-stage-foot {
+    font-size: 8px;
+    gap: 5px;
+  }
+}
+/* Preserve the native transparent icon; lift its dark relief against the reel. */
+.scene-xeroti .game-icon[src$="xeroti-symbol.png"] {
+  filter: brightness(2) drop-shadow(0 1px 2px #dba27b55);
+}

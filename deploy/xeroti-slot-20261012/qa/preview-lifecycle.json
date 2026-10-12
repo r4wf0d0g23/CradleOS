@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "All 25 replacement cells wait >=760ms; destination and 560ms feeding frame recorded",
+    "instant mode + OS reduce settles once without ghosts",
+    "system mode + OS reduce settles once without ghosts",
+    "resize during devour cancels cleanly; reload resumes unfinished reveal, ledger unchanged",
+    "hidden during devour cancels cleanly; reload resumes unfinished reveal, ledger unchanged",
+    "reload during devour cancels cleanly; reload resumes unfinished reveal, ledger unchanged",
+    "preference during devour cancels cleanly; reload resumes unfinished reveal, ledger unchanged",
+    "Native hero asset failure is handled without breaking the round",
+    "Storage failure refuses cursor advance and preserves ledger"
+  ],
+  "errors": []
+}

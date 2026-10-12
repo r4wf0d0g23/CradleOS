@@ -39,6 +39,11 @@ describe("slot identity asset and presentation contracts", () => {
       const hashes = new Set<string>();
       for (const [i, s] of t.symbols.entries()) {
         const ref = manifest.library[s.library];
+        if (s.asset) {
+          hashes.add(createHash("sha256").update(readFileSync("public/" + s.asset)).digest("hex"));
+          expect(slotSymbol(game, i)).toBe(s);
+          continue;
+        }
         expect(ref, s.library).toBeTruthy();
         const hash = createHash("sha256")
           .update(readFileSync(base + ref.asset))
@@ -183,7 +188,7 @@ describe("original opt-in sound voices", () => {
       new Set(
         FLEET_KEYS.map((k) => JSON.stringify(casinoSoundNotes("spin", k))),
       ).size,
-    ).toBe(8);
+    ).toBe(FLEET_KEYS.length);
     for (const key of [...FLEET_KEYS, undefined])
       for (const cue of cues) {
         const notes = casinoSoundNotes(cue, key);

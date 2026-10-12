@@ -1,6 +1,6 @@
 /** Presentation only. Index positions map to unchanged version-1 payout symbols. */
 import type { FleetKey, SlotFrame, SlotReceipt } from "./casinoSlotFleet";
-export type ArtSymbol = { name: string; library: string };
+export type ArtSymbol = { name: string; library: string; asset?: string };
 export type SlotIdentity = {
   scene: string;
   title: [string, string];
@@ -13,6 +13,19 @@ export type SlotIdentity = {
 };
 const art = (name: string, library: string): ArtSymbol => ({ name, library });
 export const SLOT_IDENTITIES: Record<FleetKey, SlotIdentity> = {
+  slot_xeroti: {
+    scene: "xeroti", title: ["XEROTI", "TIDOFIZA"], tagline: "The Hunger",
+    accent: "#ffc498", secondary: "#a84524", wild: "gr_smf", scatter: "materials/memory_fragment",
+    symbols: [
+      art("Moon shard", "frontier_ore4"),
+      art("Mineral vein", "materials/feldspar"),
+      art("Ruptured core", "gr_gsc1"),
+      art("Living alloy", "materials/biopolymers"),
+      art("Feral memory", "materials/memory_fragment"),
+      art("Sovereign core", "gr_snm1"),
+      { name: "Xeroti", library: "xeroti-tidofiza", asset: "assets/casino/xeroti/xeroti-symbol.png" },
+    ],
+  },
   slot_scrapyard: {
     scene: "scrapyard",
     title: ["SCRAPYARD", "CIRCUIT"],
@@ -167,7 +180,9 @@ export const fullInitialVault = (game: FleetKey, frame?: SlotFrame) =>
   frame.coins.length === 15 &&
   frame.coins.every((n) => n > 0);
 export const slotFrameLabel = (game: FleetKey, frame?: SlotFrame) =>
-  fullInitialVault(game, frame)
+  game === "slot_xeroti" && frame
+    ? frame.wins.length ? frame.index === 3 ? "FEAST COMPLETE" : "HUNGER AWAKENS" : "THE VOID FALLS SILENT"
+    : fullInitialVault(game, frame)
     ? "FULL VAULT · COLLECTION READY"
     : (frame?.label ?? "READY");
 export const slotAwaitingCollection = (receipt?: SlotReceipt) =>

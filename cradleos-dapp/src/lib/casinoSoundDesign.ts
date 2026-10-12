@@ -71,6 +71,7 @@ type Voice = {
   echo?: number;
 };
 const VOICES: Record<FleetKey, Voice> = {
+  slot_xeroti: { pitch: 0.56, wave: "sawtooth", duration: 0.30, spacing: 0.09, attack: 0.035, sweep: 0.55, gain: 0.011, echo: 0.06 },
   slot_scrapyard: {
     pitch: 0.65,
     wave: "triangle",

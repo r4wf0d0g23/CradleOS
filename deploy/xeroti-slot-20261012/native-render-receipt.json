@@ -1,0 +1,606 @@
+{
+  "scene_rendered": true,
+  "ship_rendered": true,
+  "width": 1600,
+  "height": 1000,
+  "fps": 1,
+  "resolved_texture_audit": [
+    {
+      "path": "res:/dx9/scene/universe/hydrogen_alpha_nebula_cube_alpha.dds",
+      "width": 128,
+      "height": 128,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/scene/universe/hydrogen_alpha_nebula_cube.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/scene/starfield/stars01_white.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/texture/global/3dcloud-srgb.dds",
+      "width": 256,
+      "height": 256,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/scene/starfield/Stars01_Tile2.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/Texture/Nebula/angelice_cube_y.dds",
+      "width": 256,
+      "height": 256,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/Texture/Nebula/angelice_cube_uv.dds",
+      "width": 128,
+      "height": 128,
+      "good": true,
+      "used": false
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/tile/asteroid/generic/tile_aste_gen_08v02_m.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/tile/asteroid/generic/tile_aste_gen_12_m.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/celestial/asteroid/test/textures/grunge_05.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/celestial/asteroid/test/textures/material_selection_02.dds",
+      "width": 1024,
+      "height": 4,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/celestial/asteroid/test/textures/grunge_01.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/celestial/asteroid/test/textures/grunge_07.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_01_n.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/detail/megastructure/detail_mega_debris_01.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/tile/megastructure/generic/tile_mega_gen_06_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/texture/fx/3d/3dfx_shield_03.dds",
+      "width": 128,
+      "height": 128,
+      "good": true,
+      "used": false
+    },
+    {
+      "path": "res:/texture/fx/gradients/ramp_orange_03b.dds",
+      "width": 512,
+      "height": 8,
+      "good": true,
+      "used": false
+    },
+    {
+      "path": "res:/texture/fx/gradients/ramp_orange_03c.dds",
+      "width": 512,
+      "height": 8,
+      "good": true,
+      "used": false
+    },
+    {
+      "path": "res:/dx9/model/booster/shape01.dds",
+      "width": 32,
+      "height": 256,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/booster/gradient01.dds",
+      "width": 256,
+      "height": 8,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/booster/gradient02.dds",
+      "width": 256,
+      "height": 8,
+      "good": true,
+      "used": false
+    },
+    {
+      "path": "res:/Texture/Global/noise32cube_volume.dds",
+      "width": 32,
+      "height": 32,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_thick.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/grunge/packed_02_grunge.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_ao.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_dirt2.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_c.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/dataist/atlas_dataist_01_p.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_curvature.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/model/ship/dataist/frigate/data_frig_light_01/data_frig_light_01_dirt1.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/roughness/rough_ship_data_01.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/roughness/rough_ship_data_03.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/roughness/rough_ship_data_04.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_n.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/color/tile_col_black_g.dds",
+      "width": 64,
+      "height": 64,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_a.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_r.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_o.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_mat.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/ship/atlas/alpha/atlas_ship_alpha_01_m.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": false
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_g.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_a.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_r.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/atlas/panels_01/atlas_panels_01_m.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_08_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_08_g.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_08_a.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_08_r.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_08_m.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_01_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/packed_02_grunge.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_conrete_damaged_02_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_01_o.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/detail_concrete_01_n.dds",
+      "width": 512,
+      "height": 512,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_conrete_damaged_02_o.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_01_d.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_conrete_damaged_02_d.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/tile_mega_gen_09_m.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_01_p.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_damaged_01_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_damaged_01_o.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_mega_concrete_damaged_01_d.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_concrete_debris_01_n.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_concrete_debris_01_o.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/rnd/structure_shader_test/trim_concrete_debris_01_d.dds",
+      "width": 4096,
+      "height": 4096,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/global/black.dds",
+      "width": 8,
+      "height": 8,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_alpha_01_n.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_alpha_01_g.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_alpha_01_a.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_alpha_01_r.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_alpha_01_o.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/shared/celestial/trim/megastructure/generic/trim_mega_gen_alpha_01_m.dds",
+      "width": 2048,
+      "height": 2048,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/sprite/variance.dds",
+      "width": 8,
+      "height": 256,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/sprite/interlace.dds",
+      "width": 16,
+      "height": 16,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/planes/atlas_planes_hologram_01v01.dds",
+      "width": 1024,
+      "height": 1024,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/sprite/astroiddirt3.dds",
+      "width": 128,
+      "height": 128,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/sprite/white2.dds",
+      "width": 64,
+      "height": 64,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/sprite/softwhite_hex.dds",
+      "width": 256,
+      "height": 256,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/texture/sprite/caustics.dds",
+      "width": 128,
+      "height": 128,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/Texture/Sprite/WormholeGradient.dds",
+      "width": 128,
+      "height": 128,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/Texture/Sprite/WarpTunnel3_N.dds",
+      "width": 256,
+      "height": 256,
+      "good": true,
+      "used": true
+    },
+    {
+      "path": "res:/dx9/scene/universe/c05_cube.dds",
+      "width": 32,
+      "height": 32,
+      "good": true,
+      "used": true
+    }
+  ],
+  "source": "Native Carbon/Trinity renderer; exact DNA moontumor_04v02:asteroids_generic_07:moontumor",
+  "resourceAuditAllGood": true
+}

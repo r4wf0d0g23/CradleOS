@@ -27,7 +27,8 @@ export function SlotSymbolArt({
       : symbol === SCATTER
         ? t.scatter
         : slotSymbol(game, symbol)?.library;
-  const src = iconAssetUrl(data?.library[key]?.asset);
+  const own = slotSymbol(game, symbol)?.asset;
+  const src = own ? `${import.meta.env.BASE_URL}${own}` : iconAssetUrl(data?.library[key]?.asset);
   const name =
     symbol === WILD
       ? "WILD"
@@ -121,6 +122,7 @@ export function SlotScenery({
       className={`slot-scenery scenery-${s} ${mini ? "scenery-mini" : ""}`}
       aria-hidden="true"
     >
+      {s === "xeroti" && <><div className="xeroti-stars" /><div className="xeroti-eclipsed-moon" /><div className="xeroti-nebula" />{mini && <img className="xeroti-tile-hull" onError={e => { e.currentTarget.style.display = "none"; }} src={`${import.meta.env.BASE_URL}assets/casino/xeroti/xeroti-hero.webp`} alt="" />}</>}
       {s === "scrapyard" && (
         <>
           <div className="yard-gantry">
@@ -254,6 +256,7 @@ export function SlotFeatureInstrument({
   const s = SLOT_IDENTITIES[game].scene,
     visible = frame && !covered,
     stage = visible ? frame.multiplier : 1;
+  if (s === "xeroti") return <div className="xeroti-instrument"><span>DEVOUR CHAIN</span><div>{[1, 2, 3, 4].map(n => <i key={n} className={visible && n <= stage ? "lit" : ""}>{n}×</i>)}</div><b>{visible ? `${stage} / 4` : "—"}</b></div>;
   if (s === "reactor")
     return (
       <div

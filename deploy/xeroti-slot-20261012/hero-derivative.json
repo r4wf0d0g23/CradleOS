@@ -1,0 +1,19 @@
+{
+  "source": "Carbon/Trinity native render of exact graphics 29124 DNA moontumor_04v02:asteroids_generic_07:moontumor",
+  "image": "research/xeroti-tidofiza-20261012/render-close/e5e6468a6ca74e6a9f4800021f29ebd9/runtime/feral-0003.png",
+  "emptyControl": "research/xeroti-tidofiza-20261012/render-close/e5e6468a6ca74e6a9f4800021f29ebd9/runtime/feral-empty.png",
+  "sourceSHA256": "871fb13ae9e8aff2e9e6038b2f29fd107c38fceff41d15f839968fa761aa53f5",
+  "crop": [
+    237,
+    335,
+    964,
+    901
+  ],
+  "dimensions": [
+    727,
+    566
+  ],
+  "treatment": "Empty-scene difference alpha, 1px coverage fringe, 0.45px feather, brightness 1.15, proportional resize, WebP91. No invented mesh or texture.",
+  "outputSHA256": "2242f07b1abdbc5497d37029dfb1259e76ead585cb5dcca7a5699075046c6330",
+  "bytes": 87726
+}

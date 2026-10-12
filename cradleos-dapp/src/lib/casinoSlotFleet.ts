@@ -8,6 +8,7 @@ export const FLEET_KEYS = [
   "slot_gatecrash",
   "slot_drones",
   "slot_eclipse",
+  "slot_xeroti",
 ] as const;
 export type FleetKey = (typeof FLEET_KEYS)[number];
 export const isFleet = (key: string): key is FleetKey =>
@@ -27,6 +28,11 @@ export type FleetGame = {
   scale: number;
 };
 export const FLEET: Record<FleetKey, FleetGame> = {
+  slot_xeroti: {
+    key: "slot_xeroti", name: "Xeroti Tidofiza", mechanic: "5+ connected symbols",
+    feature: "Devouring cascades · 1–4×", icon: 91011, accent: "#ffaf79",
+    mode: "cluster", rows: 5, free: 0, boost: 1, stages: 4, scale: 12422698,
+  },
   slot_scrapyard: {
     key: "slot_scrapyard",
     name: "Scrapyard Circuit",

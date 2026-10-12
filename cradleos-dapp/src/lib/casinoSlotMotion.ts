@@ -9,6 +9,7 @@ import {
 export type SlotMotionRun = { id: number; started: number };
 export const REEL_STOPS = [1160, 1305, 1450, 1595, 1740] as const;
 export const CLEAR_MS = 260;
+export const XEROTI_CLEAR_MS = 760;
 // One timing contract for every vault shutter and the parent's reveal deadline.
 export const VAULT_SOCKET_MS = 660;
 export const socketLanding = (column: number, row: number) =>
@@ -30,10 +31,10 @@ export function slotMotionPlan(
   if (frame?.kind === "cascade")
     return {
       kind: "cascade",
-      rawStop: 1120,
-      expand: 1120,
-      finish: 1220,
-      reveal: 1440,
+      rawStop: game === "slot_xeroti" ? 1620 : 1120,
+      expand: game === "slot_xeroti" ? 1620 : 1120,
+      finish: game === "slot_xeroti" ? 1720 : 1220,
+      reveal: game === "slot_xeroti" ? 1940 : 1440,
     };
   if (FLEET[game].mode === "hold") {
     if (previous?.coins.length === 15 && previous.coins.every((n) => n > 0))

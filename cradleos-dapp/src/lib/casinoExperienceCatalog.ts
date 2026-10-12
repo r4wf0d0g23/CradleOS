@@ -43,7 +43,7 @@ export const FRONTIER_CATALOG: GameEntry[] = FRONTIER_KEYS.map((key) => ({
 }));
 export const STATION_CATALOG: GameEntry[] = [
   ...CASINO_CATALOG,
-  ...FLEET_CATALOG,
+  ...FLEET_CATALOG.filter((g) => g.key !== "slot_xeroti"),
   CRAPS_CATALOG,
 ].filter(
   (g) =>
@@ -55,6 +55,7 @@ export const STATION_CATALOG: GameEntry[] = [
 export const PRACTICE_CATALOG: GameEntry[] = [
   ...STATION_CATALOG,
   ...FRONTIER_CATALOG,
+  ...FLEET_CATALOG.filter((g) => g.key === "slot_xeroti"),
 ];
 export const isPracticeTerminal = (key: unknown): key is string =>
   typeof key === "string" && PRACTICE_CATALOG.some((g) => g.key === key);

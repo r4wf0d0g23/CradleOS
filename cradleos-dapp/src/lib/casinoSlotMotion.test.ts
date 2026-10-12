@@ -64,7 +64,7 @@ describe("presentation motion contracts", () => {
   it("maps every real collapsed survivor bijectively to its former position and admits refills only above the board", () => {
     const draw = rng();
     let compared = 0;
-    for (const game of ["slot_reactor", "slot_feral"] as const)
+    for (const game of ["slot_reactor", "slot_feral", "slot_xeroti"] as const)
       for (let i = 0; i < 300; i++) {
         const receipt = spinFleet(game, 2500, draw);
         for (let f = 1; f < receipt.frames.length; f++) {

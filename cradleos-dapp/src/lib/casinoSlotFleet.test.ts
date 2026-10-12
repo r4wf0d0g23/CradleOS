@@ -68,7 +68,7 @@ function session(r: SlotReceipt) {
 describe("slot fleet evaluated mechanics", () => {
   it("freezes v1 rules and replay strings with a deterministic golden fingerprint", () => {
     const data = [
-      FLEET,
+      Object.fromEntries(Object.entries(FLEET).filter(([k]) => k !== "slot_xeroti")),
       BASE_POINTS,
       LINE_WEIGHTS,
       WAY_WEIGHTS,
@@ -77,7 +77,7 @@ describe("slot fleet evaluated mechanics", () => {
       COIN_POINTS,
       COIN_THRESHOLDS,
       LINES,
-      FLEET_KEYS.map((k) => spinFleet(k, 2500, rng(18828))),
+      FLEET_KEYS.filter(k => k !== "slot_xeroti").map((k) => spinFleet(k, 2500, rng(18828))),
     ];
     expect(
       createHash("sha256").update(JSON.stringify(data)).digest("hex"),
@@ -154,6 +154,7 @@ describe("slot fleet evaluated mechanics", () => {
     for (const [key, n] of [
       ["slot_reactor", 6],
       ["slot_feral", 4],
+      ["slot_xeroti", 4],
     ] as const) {
       const r = spinFleet(key, 100, () => 0);
       expect(r.frames).toHaveLength(n);

@@ -1,0 +1,13 @@
+{
+  "url": "http://127.0.0.1:5232/",
+  "checks": [
+    "320: fresh natural spin, rapid activation one debit, ten slot tiles",
+    "320: loss/partial/full25 outcomes, measured veins, 760ms devouring only winners, four-stage cap, saved recovery, no extra debit, readable rules/native art",
+    "390: fresh natural spin, rapid activation one debit, ten slot tiles",
+    "390: loss/partial/full25 outcomes, measured veins, 760ms devouring only winners, four-stage cap, saved recovery, no extra debit, readable rules/native art",
+    "1440: fresh natural spin, rapid activation one debit, ten slot tiles",
+    "1440: loss/partial/full25 outcomes, measured veins, 760ms devouring only winners, four-stage cap, saved recovery, no extra debit, readable rules/native art"
+  ],
+  "errors": [],
+  "badAssets": []
+}
