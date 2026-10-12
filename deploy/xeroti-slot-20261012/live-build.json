@@ -1,0 +1,32 @@
+{
+  "origin": "https://cradleos.io",
+  "transport": "Chromium same-origin fetch; direct urllib request received403",
+  "status": "exact-match",
+  "verified": [
+    {
+      "path": "/assets/index-Da7qpZlR.js",
+      "sha256": "2dbe1fd7eadfc31fe0e976237f8b98c4e9ef6d41008398a42e84a0925b952ccc",
+      "bytes": 2348655
+    },
+    {
+      "path": "/assets/index-DUhdN06v.css",
+      "sha256": "1045b37dae4dccaae557ab1108eabf79c652b1866fb812969275db4ed0799509",
+      "bytes": 899285
+    },
+    {
+      "path": "/assets/casino/xeroti/xeroti-hero.webp",
+      "sha256": "2242f07b1abdbc5497d37029dfb1259e76ead585cb5dcca7a5699075046c6330",
+      "bytes": 87726
+    },
+    {
+      "path": "/assets/casino/xeroti/xeroti-symbol.png",
+      "sha256": "321dafdc474f8524bfc9a8b64b3c330d444dd313e6246eda08a1266795d9692c",
+      "bytes": 17916
+    },
+    {
+      "path": "/casino/xeroti-slot-math.json",
+      "sha256": "9dba54dcc79672def8b6e2c9367908cf7b32088f0bd9ab87c90265ded664646a",
+      "bytes": 1298
+    }
+  ]
+}

@@ -25,6 +25,17 @@ Web practice40→41 / slot machines9→10. Retired physical-station catalog rema
 
 ## Publication
 
-Pending source push, primary Pages deployment and live verification. Previous primary deployment7384c7df/runtime d72035c719c9e2b9bba96d93feed08440d13b65b, baseline receipt e9ccee6. Primary cradleos.io only; GitHub Pages redirect-only.
+Published https://cradleos.io/#/casino. Runtime implementation82ac86f, deployed source **f4115945562edd0cb4d0faafb9e5d4c7410902ad** (includes research-receipt LF normalization only). Source pushed to cycle7-vestiges-20261002. Cloudflare Pages **3c7c7854**, https://3c7c7854.cradleos-d75.pages.dev. Previous primary deployment7384c7df/runtime d72035c719c9e2b9bba96d93feed08440d13b65b, baseline receipt e9ccee6. Primary cradleos.io only; GitHub Pages redirect-only.
 
 Rollback should prefer a forward correction: old readers do not recognize new Xeroti saved receipts. Do not discard players' unfinished local practice rounds. No shared database migration.
+
+
+## Live verification
+
+`live-build.json`: all five production files byte-identical to reviewed dist (JS/CSS/native portrait/native icon/new math JSON). JS index-Da7qpZlR.js SHA2562dbe1fd7eadfc31fe0e976237f8b98c4e9ef6d41008398a42e84a0925b952ccc; CSS index-DUhdN06v.css SHA2561045b37dae4dccaae557ab1108eabf79c652b1866fb812969275db4ed0799509.
+
+`qa/live-browser.json`: fresh natural Play Money spins at390/1440 on the public site, repeated activation charges once, ten slot tiles, no overflow/page errors/failed assets. Live screenshots reviewed; native hull and brightened symbol visible. Deterministic full-board/cascade/lifecycle tests are production-preview evidence, not relabeled as fresh live natural outcomes. No wallet/chain actions.
+
+Direct Python urllib verification receivedHTTP403; actual Chromium same-origin fetch successfully verified all five hashes. No credentials or access-policy changes. Only evidence scripts/docs changed after source publication.
+
+Final independent delivery gate PASS: five exact hashes, clear live screenshot, documentation-only normalization commit and live/preview scope reconciled. Owned development/production-preview ports5232/5233 stopped; port closure verified. Canonical service-hosting worktree preserved. Complete.

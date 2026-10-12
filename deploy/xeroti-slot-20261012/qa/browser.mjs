@@ -4,7 +4,7 @@ const dir=new URL('./',import.meta.url),BASE=process.env.QA_URL??'http://127.0.0
 const fixtures=JSON.parse(await fs.readFile(new URL('./fixtures.json',dir))),report={url:BASE,checks:[],errors:[],badAssets:[]};
 const browser=await chromium.launch({executablePath:'/home/rawdata/.cache/ms-playwright/chromium-1228/chrome-linux/chrome',args:['--no-sandbox','--no-proxy-server']});
 const state=p=>p.evaluate(k=>JSON.parse(sessionStorage.getItem(k)),KEY),idle=p=>p.waitForFunction(()=>!document.querySelector('.round-active'));
-const shot=(p,name)=>p.locator('[data-slot-game="slot_xeroti"]').screenshot({path:new URL(`${TAG}-${name}.png`,dir).pathname});
+const shot=async(p,name)=>{const e=p.locator('[data-slot-game="slot_xeroti"]');await e.evaluate(el=>window.scrollTo(0,scrollY+el.getBoundingClientRect().top-90));await e.screenshot({path:new URL(`${TAG}-${name}.png`,dir).pathname});};
 const check=s=>{report.checks.push(s);console.log(s)};
 async function inject(p,s,mode='animated'){await p.evaluate(([k,s,m])=>{sessionStorage.setItem(k,JSON.stringify(s));localStorage.setItem('cradleos:casino:slot-motion:v1',m)},[KEY,s,mode]);await p.reload();await p.locator('[data-slot-game="slot_xeroti"]').waitFor();}
 async function geometry(p){return p.locator('.xeroti-connections').evaluate(svg=>{const b=svg.getBoundingClientRect();return [...svg.querySelectorAll('line')].map(l=>{const c=svg.parentElement.querySelector(`[data-cell="${l.dataset.from}"]`).getBoundingClientRect();return Math.hypot(+l.getAttribute('x1')+b.left-c.left-c.width/2,+l.getAttribute('y1')+b.top-c.top-c.height/2)})})}

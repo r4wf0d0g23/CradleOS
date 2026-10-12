@@ -44,4 +44,4 @@ Independent new validation: **1,000,000** paid rounds at 100 chips, rejection-sa
 - Preserve 34 physical terminals and disabled wagering boundaries.
 - Build, focused/full tests, Origins/IOC gates, independent review, live file hashes and fresh live Play Money rounds.
 
-Release status: implementation and verification in progress.
+Release status: published and verified; Pages3c7c7854, sourcef411594. See RELEASE.md.
