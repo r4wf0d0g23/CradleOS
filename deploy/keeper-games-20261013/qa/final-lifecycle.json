@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "instant/cipherDone: immediate exact collection, no looping signal",
+    "instant/archiveDone: immediate exact collection, no looping signal",
+    "instant/passageLoss: immediate exact collection, no looping signal",
+    "system/cipherDone: immediate exact collection, no looping signal",
+    "system/archiveDone: immediate exact collection, no looping signal",
+    "system/passageLoss: immediate exact collection, no looping signal",
+    "Animated overrides reduced-motion; native video plays, neutral controls, mid-redraw320 resize, touch holds",
+    "Hidden-tab synthetic interruption leaves saved result concealed; explicit resume credits once",
+    "Intermediate passage never shows terminal0; pending safe-stage reload retains gates and bank",
+    "Failed collection storage write leaves payout unpaid; retry collects exactly once",
+    "Failed action storage write does not mutate/debit; keyboard retry works",
+    "Invalid stake and blocked initial write do not debit",
+    "Five deep gates auto-bank exact30.72x, all five chosen safe gates visible",
+    "Pre-cross refund returns stake only",
+    "Intermediate reload preserves clue and concealed code without extra charge",
+    "Missing native images/video leaves fallback and playable glyphs"
+  ],
+  "errors": []
+}

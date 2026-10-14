@@ -1,0 +1,58 @@
+{
+  "baseline": "987cf2680b997c0918ec3b3c474942a00cc1262d",
+  "protectedFiles": [
+    {
+      "path": "cradleos-dapp/src/lib/casino.ts",
+      "sha256": "ab012768e1a6493e9637d6f4159710f4e8f8006c1173a511209c3a62ba887576",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoCraps.ts",
+      "sha256": "85b67791722e86e15d9db2a26276f724ac7c4224cd09b4694d17b663959939b1",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoPractice.ts",
+      "sha256": "0b64e8f6aa91444af646ee1d2ce702d09c90a12a96ddf20e07b1e63c184de8ac",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoSlotFleet.ts",
+      "sha256": "4008364b225effe2ccb24e26dc2a0839d3b6ab41e260a41b9869c4f07597578d",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoExpansionRules.ts",
+      "sha256": "964918d4f326472df5342fde6372ae844f6eac33167d4d46e4b3907ac5f48e8f",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/components/CasinoPanel.tsx",
+      "sha256": "3d51dcae294eefb0cbc09d87a21f1053df297e72bb83a0e35adc7e16bed82af1",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/constants.ts",
+      "sha256": "e89dfedae5d56b9c9c11686d8e42fc19f332c493a2a4bc9a21c197685b6e3634",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/package.json",
+      "sha256": "73a75b3a29ee2b980238c381916ff991cbf21a0e716ee239a170b2703e36977d",
+      "unchanged": true
+    },
+    {
+      "path": "cradleos-dapp/src/lib/casinoExperienceCatalog.ts",
+      "sha256": "511d329f134ee2aa90fbc893d8023a4bcc22883c07ce1c93734401e6b1b6d390",
+      "unchanged": true
+    }
+  ],
+  "physicalTerminalCount": 34,
+  "webPracticeCount": 44,
+  "newKeys": [
+    "keeper_cipher",
+    "keeper_archive",
+    "keeper_passage"
+  ],
+  "existingLedgerChange": "Only Keeper key dispatch and32x outstanding-liability headroom; existing actions/stakes/payouts unchanged."
+}

@@ -1,0 +1,42 @@
+{
+  "officialPage": "https://evefrontier.com/en/thekeep/keeper",
+  "sourceImage": {
+    "page": "https://evefrontier.com/en/thekeep/keeper",
+    "image": "https://images.ctfassets.net/nl199sv2jlik/1QnKAhY55hurPLzj3IVtzx/c8722273e7c1fb149befb255fd813e1f/image__4_.jpg",
+    "title": "Keeper \u2014 The Last Archivist",
+    "sha256": "50207810c5cdd9021b66df249a40d5597b4ce2286d66c89f567a5e0b511306ba"
+  },
+  "clientSources": [
+    {
+      "path": "res:/ui/texture/classes/frontier/keeper/keepernotificationstandardanim.webm",
+      "cache": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/1c/1cde999fc1d5055b_a21b8ce6b675bab51883186e5b249fff",
+      "md5": "a21b8ce6b675bab51883186e5b249fff",
+      "sha256": "859189a8fec3717e8e952b145b6c0b8a2375dd1a3e6705dd254e890996cceafa",
+      "file": "keepernotificationstandardanim.webm"
+    },
+    {
+      "path": "res:/ui/texture/classes/frontier/keeper/t_ui_keeperbackground.png",
+      "cache": "/home/rawdata/frontier-client/launcher/fex-linux/wineprefix/drive_c/CCP/EVE Frontier/ResFiles/5f/5f9de67745041316_deaa816e04f70128aee113d81bd3a3d0",
+      "md5": "deaa816e04f70128aee113d81bd3a3d0",
+      "sha256": "fb0aad4142f8e9480e12efaf643fa1820922d95503c10c55caec27c656df7fcf",
+      "file": "t_ui_keeperbackground.png"
+    }
+  ],
+  "derivatives": [
+    {
+      "file": "keeper-sigil.webp",
+      "sha256": "3ca8267e7ebe11b47ec5a5ca675dae39cf969f9a1dfc948910be397c0b810759",
+      "bytes": 29260
+    },
+    {
+      "file": "keeper-signal.webm",
+      "sha256": "859189a8fec3717e8e952b145b6c0b8a2375dd1a3e6705dd254e890996cceafa",
+      "bytes": 206472
+    },
+    {
+      "file": "keeper-frame.png",
+      "sha256": "b5cd3bde19634f9b4484c22d076f8aecd2fa58454c2b467560af8bd2ba68c1ab",
+      "bytes": 40795
+    }
+  ]
+}

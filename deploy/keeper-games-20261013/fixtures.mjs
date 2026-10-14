@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import {initialSession} from '../../cradleos-dapp/src/lib/casinoSessions.ts';
+import {startFrontier,actFrontier} from '../../cradleos-dapp/src/lib/casinoFrontierSession.ts';
+const set=(game,draw)=>{const s=startFrontier(initialSession(),game,2500,[],()=>0);s.frontier.current.draw=draw;return s};
+const passage=Array.from({length:5},()=>[0,1,2,3]).flat();
+const fixtures={cipher:set('keeper_cipher',[0,1,2]),archive:set('keeper_archive',[0,0,0,1,2,3,4,5,0,0]),archiveLoss:set('keeper_archive',[0,1,2,3,4,1,2,3,4,5]),passage:set('keeper_passage',passage)};
+fixtures.cipherDone=actFrontier(fixtures.cipher,1,0,{kind:'guess',values:[0,1,2]});
+fixtures.archiveDone=actFrontier(fixtures.archive,1,0,{kind:'draw',values:[0,1,2]});
+fixtures.passageLoss=actFrontier(fixtures.passage,1,0,{kind:'cross',values:[1,3]});
+fs.writeFileSync(new URL('./qa/fixtures.json',import.meta.url),JSON.stringify(fixtures,null,2));

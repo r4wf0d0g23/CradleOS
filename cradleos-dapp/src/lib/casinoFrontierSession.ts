@@ -1,3 +1,4 @@
+import { isKeeperGame } from "./casinoKeeper";
 import { activeSession, type Session } from "./casinoSessions";
 import { crapsReserve } from "./casinoCraps";
 import { randomInt, type RandomInt } from "./casinoPractice";
@@ -34,7 +35,7 @@ export function startFrontier(
   cap(
     s,
     stake *
-      (game === "frontier_holdem" ? 511 : game === "frontier_pusher" ? 101 : 5),
+      (game === "frontier_holdem" ? 511 : game === "frontier_pusher" ? 101 : isKeeperGame(game) ? 32 : 5),
   );
   const f = s.frontier,
     r = makeFrontierRound(game, stake, choice, (f?.sequence ?? 0) + 1, f, rng),

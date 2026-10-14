@@ -14,8 +14,8 @@ import { casinoLaunchGame } from "./casinoStationSession";
 
 describe("station game launch boundary", () => {
   it("lists all current practice games once without reopening disabled games", () => {
-    expect(PRACTICE_CATALOG).toHaveLength(41);
-    expect(new Set(PRACTICE_CATALOG.map((g) => g.key)).size).toBe(41);
+    expect(PRACTICE_CATALOG).toHaveLength(44);
+    expect(new Set(PRACTICE_CATALOG.map((g) => g.key)).size).toBe(44);
     for (const key of ["craps", "slot_eclipse", "slot_xeroti", "blackjack"])
       expect(isPracticeTerminal(key)).toBe(true);
     for (const key of [

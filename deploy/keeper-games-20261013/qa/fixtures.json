@@ -1,0 +1,272 @@
+{
+  "cipher": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_cipher",
+        "stake": 2500,
+        "draw": [
+          0,
+          1,
+          2
+        ],
+        "choice": [],
+        "actions": [],
+        "collected": false
+      },
+      "history": []
+    }
+  },
+  "archive": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_archive",
+        "stake": 2500,
+        "draw": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0
+        ],
+        "choice": [],
+        "actions": [],
+        "collected": false
+      },
+      "history": []
+    }
+  },
+  "archiveLoss": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_archive",
+        "stake": 2500,
+        "draw": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "choice": [],
+        "actions": [],
+        "collected": false
+      },
+      "history": []
+    }
+  },
+  "passage": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_passage",
+        "stake": 2500,
+        "draw": [
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3
+        ],
+        "choice": [],
+        "actions": [],
+        "collected": false
+      },
+      "history": []
+    }
+  },
+  "cipherDone": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_cipher",
+        "stake": 2500,
+        "draw": [
+          0,
+          1,
+          2
+        ],
+        "choice": [],
+        "actions": [
+          {
+            "kind": "guess",
+            "values": [
+              0,
+              1,
+              2
+            ]
+          }
+        ],
+        "collected": false
+      },
+      "history": []
+    }
+  },
+  "archiveDone": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_archive",
+        "stake": 2500,
+        "draw": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0
+        ],
+        "choice": [],
+        "actions": [
+          {
+            "kind": "draw",
+            "values": [
+              0,
+              1,
+              2
+            ]
+          }
+        ],
+        "collected": false
+      },
+      "history": []
+    }
+  },
+  "passageLoss": {
+    "version": 2,
+    "balance": 997500,
+    "sequence": 0,
+    "history": [],
+    "hand": null,
+    "table": null,
+    "pack": null,
+    "frontier": {
+      "version": 1,
+      "sequence": 1,
+      "current": {
+        "id": 1,
+        "game": "keeper_passage",
+        "stake": 2500,
+        "draw": [
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3
+        ],
+        "choice": [],
+        "actions": [
+          {
+            "kind": "cross",
+            "values": [
+              1,
+              3
+            ]
+          }
+        ],
+        "collected": false
+      },
+      "history": []
+    }
+  }
+}

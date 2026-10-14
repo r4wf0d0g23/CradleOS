@@ -1,3 +1,5 @@
+import { CasinoKeeper, KeeperTile } from "./CasinoKeeper";
+import { isKeeperGame } from "../lib/casinoKeeper";
 import { CasinoFrontier, FrontierTile } from "./CasinoFrontier";
 import { isFrontierGame } from "../lib/casinoFrontier";
 import { PRACTICE_CATALOG } from "../lib/casinoExperienceCatalog";
@@ -1288,7 +1290,9 @@ export function CasinoExperience({
                       onClick={() => navigate(entry.key)}
                     >
                       <div className="tile-art">
-                        {isFrontierGame(entry.key) ? (
+                        {isKeeperGame(entry.key) ? (
+                          <KeeperTile game={entry.key} />
+                        ) : isFrontierGame(entry.key) ? (
                           <FrontierTile game={entry.key} />
                         ) : entry.key === "craps" ? (
                           <CrapsTile />
@@ -1357,7 +1361,11 @@ export function CasinoExperience({
                     onLobby={() => navigate(null)}
                   />
                 </div>
-              ) : isFrontierGame(game) ? (
+              ) : isKeeperGame(game) ? (
+                <CasinoKeeper key={game} game={game} state={state} commit={commit} busy={busy}
+                  setBusy={(value) => { busyRef.current = value; setBusy(value); }}
+                  reduced={reduce} onError={setError} />
+              ) : isFrontierGame(game) && !isKeeperGame(game) ? (
                 <CasinoFrontier
                   key={game}
                   game={game}

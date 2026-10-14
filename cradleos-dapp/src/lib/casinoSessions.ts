@@ -1,3 +1,4 @@
+import { isKeeperGame } from "./casinoKeeper";
 import {
   frontierPending,
   validFrontierState,
@@ -742,7 +743,7 @@ export function restoreSession(
         const payout =
           v.phase === "done"
             ? v.payout
-            : r.stake * (r.game === "frontier_holdem" ? 511 : 5);
+            : r.stake * (r.game === "frontier_holdem" ? 511 : isKeeperGame(r.game) ? 32 : 5);
         if (
           s.balance < reserve ||
           !integer(s.balance + crapsReserve(s.craps) + payout)

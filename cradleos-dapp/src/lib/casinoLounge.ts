@@ -14,6 +14,9 @@ export const LOUNGE_NAMES: Record<
   string,
   { title: string; tag: string; icon: number }
 > = {
+  keeper_cipher: { title: "Keeper’s Cipher", tag: "CODEBREAKER", icon: 72244 },
+  keeper_archive: { title: "Archive Resonance", tag: "GLYPH DRAW", icon: 84180 },
+  keeper_passage: { title: "Keeper’s Passage", tag: "GATE TRIAL", icon: 84955 },
   frontier_remainder: {
     title: "Reactor Remainder",
     tag: "ORE SORTER",

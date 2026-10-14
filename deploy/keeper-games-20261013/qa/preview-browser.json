@@ -1,0 +1,27 @@
+{
+  "url": "http://127.0.0.1:5250/",
+  "checks": [
+    "320 keeper_cipher: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "320 keeper_cipher: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "320 keeper_archive: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "320 keeper_archive: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "320 keeper_passage: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "320 keeper_passage: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "390 keeper_cipher: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "390 keeper_cipher: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "390 keeper_archive: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "390 keeper_archive: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "390 keeper_passage: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "390 keeper_passage: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "1440 keeper_cipher: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "1440 keeper_cipher: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "1440 keeper_archive: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "1440 keeper_archive: deterministic reveal boundaries, outcomes, motion and pending reload/collect once",
+    "1440 keeper_passage: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "1440 keeper_passage: deterministic reveal boundaries, outcomes, motion and pending reload/collect once"
+  ],
+  "errors": [],
+  "badAssets": [
+    "http://127.0.0.1:5250/casino/keeper/keeper-frame.png"
+  ]
+}

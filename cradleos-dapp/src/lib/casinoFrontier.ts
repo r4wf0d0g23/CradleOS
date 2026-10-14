@@ -1,3 +1,4 @@
+import { KEEPER_KEYS, KEEPER_NAMES, isKeeperGame, keeperDraw, keeperView, validKeeperRound } from "./casinoKeeper";
 import {
   randomInt,
   shuffledDeck,
@@ -19,6 +20,7 @@ import {
   type PusherResult,
 } from "./casinoFrontierPusher";
 export const FRONTIER_KEYS = [
+  ...KEEPER_KEYS,
   "frontier_remainder",
   "frontier_broker",
   "frontier_holdem",
@@ -30,6 +32,7 @@ export type FrontierGame = (typeof FRONTIER_KEYS)[number];
 export const isFrontierGame = (x: unknown): x is FrontierGame =>
   typeof x === "string" && (FRONTIER_KEYS as readonly string[]).includes(x);
 export const FRONTIER_NAMES: Record<FrontierGame, string> = {
+  ...KEEPER_NAMES,
   frontier_remainder: "Reactor Remainder",
   frontier_broker: "Derelict Broker",
   frontier_holdem: "Command Hold’em",
@@ -146,6 +149,7 @@ export function frontierView(r: FrontierRound): FrontierView {
     dealerEscort: [],
     boardCount: 0,
   };
+  if (isKeeperGame(r.game)) return { ...v, ...keeperView(r) };
   if (r.game === "frontier_remainder") {
     const result = r.draw[0] % 4 || 4;
     v.payout = result === r.choice[0] ? bps(r.stake, 38000) : 0;
@@ -294,6 +298,7 @@ export function makeFrontierRound(
     return v;
   };
   let draw: number[] = [];
+  if (isKeeperGame(game)) draw = keeperDraw(game, sample);
   if (game === "frontier_remainder") draw = [48 + sample(48)];
   if (game === "frontier_broker") {
     draw = [...BROKER_VALUES];
@@ -347,6 +352,7 @@ export function validFrontierRound(r: unknown): r is FrontierRound {
       q.actions.length > 24
     )
       return false;
+    if (isKeeperGame(q.game) && !validKeeperRound(q)) return false;
     const d = q.draw,
       c = q.choice;
     if (

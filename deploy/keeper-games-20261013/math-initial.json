@@ -1,0 +1,34 @@
+{
+  "cipher": {
+    "returns": [
+      20,
+      5,
+      2
+    ],
+    "optimalReturnFraction": "127/120",
+    "optimalRTP": 1.0583333333333333,
+    "firstFeedbackGroups": 8
+  },
+  "archive": {
+    "payoutBps": {
+      "five": 300000,
+      "four": 50000,
+      "full": 20000,
+      "three": 10000,
+      "two": 5000,
+      "none": 0
+    },
+    "optimalReturnFraction": "111145/69984",
+    "optimalRTP": 1.5881487197073616
+  },
+  "passage": {
+    "maxSteps": 5,
+    "safeCounts": [
+      3,
+      2
+    ],
+    "returnScaleBps": 9600,
+    "fixedPolicyRTP": 0.96,
+    "maxReturn": 30.72
+  }
+}

@@ -1,3 +1,4 @@
+import { type KeeperGame } from "../lib/casinoKeeper";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { type Session } from "../lib/casinoSessions";
 import { chipLabel, practiceBet } from "../lib/casinoPractice";
@@ -32,7 +33,7 @@ type Run = {
   duration: number;
   from?: FrontierRound;
 };
-const rules: Record<FrontierGame, string[]> = {
+const rules: Record<Exclude<FrontierGame, KeeperGame>, string[]> = {
   frontier_remainder: [
     "Choose a remainder: 1–4. A batch of 48–95 ore is sorted in groups of four. Zero remainder counts as 4.",
     "Correct: 3.8× total return. 95% theoretical return before rounding.",
@@ -71,7 +72,7 @@ export function CasinoFrontier({
   reduced,
   onError,
 }: {
-  game: FrontierGame;
+  game: Exclude<FrontierGame, KeeperGame>;
   state: Session;
   commit: (s: Session) => void;
   busy: boolean;
