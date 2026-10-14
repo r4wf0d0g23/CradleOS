@@ -1,0 +1,13 @@
+{
+  "url": "https://cradleos.io/",
+  "checks": [
+    "320 keeper_cipher: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "320 keeper_archive: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "320 keeper_passage: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "1440 keeper_cipher: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "1440 keeper_archive: fresh natural round, one debit, correct saved payout, completed reload silent, bounds",
+    "1440 keeper_passage: fresh natural round, one debit, correct saved payout, completed reload silent, bounds"
+  ],
+  "errors": [],
+  "badAssets": []
+}

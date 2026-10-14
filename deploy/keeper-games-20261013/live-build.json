@@ -1,0 +1,46 @@
+{
+  "origin": "https://cradleos.io",
+  "checkedAt": "2026-10-14T00:11:55.370Z",
+  "files": [
+    {
+      "path": "assets/index-BRCKVvPn.js",
+      "sha256": "0e433c60776cac4c7be7fd2bc3f2ef75898e5eac8ff585109de212764680a0be",
+      "bytes": 2365675,
+      "liveHash": "0e433c60776cac4c7be7fd2bc3f2ef75898e5eac8ff585109de212764680a0be",
+      "status": 200,
+      "htmlReferenced": true
+    },
+    {
+      "path": "assets/index-chWpDu4P.css",
+      "sha256": "93ade8467133a42b608aa218385610168b4be8b4bf27b93fe387fac6c56af948",
+      "bytes": 908519,
+      "liveHash": "93ade8467133a42b608aa218385610168b4be8b4bf27b93fe387fac6c56af948",
+      "status": 200,
+      "htmlReferenced": true
+    },
+    {
+      "path": "casino/keeper/keeper-sigil.webp",
+      "sha256": "3ca8267e7ebe11b47ec5a5ca675dae39cf969f9a1dfc948910be397c0b810759",
+      "bytes": 29260,
+      "liveHash": "3ca8267e7ebe11b47ec5a5ca675dae39cf969f9a1dfc948910be397c0b810759",
+      "status": 200,
+      "htmlReferenced": true
+    },
+    {
+      "path": "casino/keeper/keeper-signal.webm",
+      "sha256": "859189a8fec3717e8e952b145b6c0b8a2375dd1a3e6705dd254e890996cceafa",
+      "bytes": 206472,
+      "liveHash": "859189a8fec3717e8e952b145b6c0b8a2375dd1a3e6705dd254e890996cceafa",
+      "status": 200,
+      "htmlReferenced": true
+    },
+    {
+      "path": "casino/keeper/keeper-frame.png",
+      "sha256": "b5cd3bde19634f9b4484c22d076f8aecd2fa58454c2b467560af8bd2ba68c1ab",
+      "bytes": 40795,
+      "liveHash": "b5cd3bde19634f9b4484c22d076f8aecd2fa58454c2b467560af8bd2ba68c1ab",
+      "status": 200,
+      "htmlReferenced": true
+    }
+  ]
+}

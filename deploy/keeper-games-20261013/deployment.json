@@ -1,0 +1,13 @@
+{
+  "project": "cradleos",
+  "productionLabel": "main",
+  "source": "c3bed89691c5103f57ac19df05f2b63ec4cd779c",
+  "deployment": "ea9de180",
+  "url": "https://ea9de180.cradleos-d75.pages.dev",
+  "primary": "https://cradleos.io/#/casino",
+  "previous": "3c7c7854",
+  "uploaded": 6,
+  "reused": 1053,
+  "wrangler": "4.127.0 (existing cached executable)",
+  "note": "PATH lacked wrangler; used cached absolute node CLI, no installation. Untracked existing .wrangler cache caused dirty warning; reviewed tracked source and dist exact."
+}

@@ -8,9 +8,12 @@ Engine/action validation, positional archive redraw, one-time rational rounding,
 - Intermediate steps briefly showed a terminal0return: terminal phase now required.
 - Button labels exposed new bank/terminal state early: all busy controls and phase metadata now neutral.
 
-460tests49files pass. Origins8/approvedIOC exactdirectory clean, TypeScript/production build pass. Browser evidence scope to be finalized after completion. Exploratory preview run crossed a rebuild and recorded one asset404; not release evidence. Final-tag suites run against stable corrected candidate.
+460tests49files pass. Origins8/approvedIOC exactdirectory clean, TypeScript/production build pass. Final browser evidence is scoped below. Exploratory preview run crossed a rebuild and recorded one asset404; not release evidence. Final-tag suites run against stable corrected candidate.
 
 The workspace requests Opus review; Opus is unavailable in the native model catalogue. Reviews use the available inherited native reviewer, not represented as Opus. User art-direction approval remains distinct from technical review.
 
 ## Submission gate — PASS
 Final source/visual review confirmed authenticKeeper/readableglyphs/clues/holds/gates. Stable final browser18checks and lifecycle16checks allPASS, noerrors/failedassets; no interrupted-run evidence reused. CandidateReady for scoped primaryPages publication.
+
+## Deployment/delivery gate — PASS
+Independent reviewer visited the primary public site at 320 pixels, found all three Keeper catalog entries, verified the real diamond/grid artwork and native WebM playback, and completed one natural Archive hold-all round. Saved payout, one receipt and exact reload persistence were correct; no overflow, page errors or missing assets. The complete release evidence reconciles: 460 tests/49 files, 18 final browser checks, 16 lifecycle checks, six fresh live rounds and five exact public artifact hashes. Financial hold and retired physical catalog unchanged. No blockers to delivery.
