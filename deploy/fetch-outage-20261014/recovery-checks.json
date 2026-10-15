@@ -1,0 +1,51 @@
+{
+  "index": {
+    "status": 200,
+    "health": {
+      "ok": true,
+      "ts": 1792034004025,
+      "cycle": 7,
+      "worldPackage": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "stillness": {
+        "count": 3380,
+        "kills": 2118,
+        "last_backfill_ms": 1790948317672,
+        "last_poll_ms": 1792033983101,
+        "last_kills_poll_ms": 1792033988369,
+        "catalogs": {
+          "world_types": 538,
+          "solarsystems": 0,
+          "tribes": 163,
+          "last_ok_ms": 1792033952613
+        }
+      }
+    },
+    "pollAgeSeconds": 21
+  },
+  "rpcPreflight": {
+    "status": 204,
+    "origin": "*",
+    "methods": "POST, GET, OPTIONS"
+  },
+  "originsDirectUnauthenticated": {
+    "status": 404
+  },
+  "characterSearch": {
+    "status": 200,
+    "keys": [
+      "server",
+      "q",
+      "limit",
+      "total",
+      "matches"
+    ],
+    "matches": 1,
+    "total": 3380
+  },
+  "indexedEventRead": {
+    "status": 200,
+    "events": 1,
+    "error": null
+  },
+  "services": "MainPID=534036\nNRestarts=9675\nId=character-index.service\nActiveState=active\nSubState=running\nUnitFileState=enabled\n\nMainPID=534033\nNRestarts=0\nId=sui-proxy.service\nActiveState=active\nSubState=running\nUnitFileState=enabled\n\nMainPID=0\nNRestarts=0\nId=sui-fullnode.service\nActiveState=inactive\nSubState=dead\nUnitFileState=disabled\n"
+}

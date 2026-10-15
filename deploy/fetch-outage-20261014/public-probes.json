@@ -1,0 +1,85 @@
+[
+  {
+    "name": "site",
+    "status": 200,
+    "cors": "*",
+    "seconds": 0.42,
+    "html": true
+  },
+  {
+    "name": "index",
+    "status": 200,
+    "cors": "https://cradleos.io",
+    "seconds": 0.32,
+    "body": {
+      "ok": true,
+      "ts": 1792033964923,
+      "cycle": 7,
+      "worldPackage": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "stillness": {
+        "count": 3326,
+        "kills": 2090,
+        "last_backfill_ms": 1790948317672,
+        "last_poll_ms": 1791983325134,
+        "last_kills_poll_ms": 1791983327707,
+        "catalogs": {
+          "world_types": 538,
+          "solarsystems": 0,
+          "tribes": 163,
+          "last_ok_ms": 1792033952613
+        }
+      }
+    }
+  },
+  {
+    "name": "count",
+    "status": 200,
+    "cors": "https://cradleos.io",
+    "seconds": 0.38,
+    "body": {
+      "server": "stillness",
+      "count": 3326
+    }
+  },
+  {
+    "name": "types",
+    "status": 200,
+    "cors": "https://cradleos.io",
+    "seconds": 1.07,
+    "keys": [
+      "data",
+      "metadata"
+    ],
+    "count": 1
+  },
+  {
+    "name": "graphql",
+    "status": 200,
+    "cors": "https://cradleos.io",
+    "seconds": 0.62,
+    "body": {
+      "data": {
+        "chainIdentifier": "69WiPg3DAQiwdxfncX6wYQ2siKwAe6L9BZthQea3JNMD"
+      }
+    }
+  },
+  {
+    "name": "rpc-chain",
+    "status": 200,
+    "cors": "*",
+    "seconds": 0.57,
+    "body": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": "4c78adac"
+    }
+  },
+  {
+    "name": "rpc-object",
+    "status": 200,
+    "cors": "*",
+    "seconds": 0.62,
+    "objectId": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+    "error": null
+  }
+]

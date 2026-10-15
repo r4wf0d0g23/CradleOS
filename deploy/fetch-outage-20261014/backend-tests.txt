@@ -1,0 +1,36 @@
+✔ newest-first pages retain actual event IDs and opaque previous cursor (0.771989ms)
+✔ unresolved events and stalled pagination fail rather than look empty (0.237843ms)
+✔ legacy RPC cursor cannot be silently reused as GraphQL cursor (0.464198ms)
+✔ event window persists only the newest event actually processed, never a second fetch (0.146696ms)
+✔ event window refuses to advance on capped or failing backlogs (0.120025ms)
+✔ initial owned poll includes events during snapshot and stops only before its start (0.065436ms)
+✔ lookup paginates and preserves actual object read format (0.732791ms)
+✔ does not call failed field lookup an absent field (0.825282ms)
+✔ rejects stalled pagination (0.10961ms)
+✔ empty complete page yields an explicit missing field (0.071468ms)
+✔ hex-looking string keys remain distinct (0.107434ms)
+✔ missing field-value variant is not guessed (0.08654ms)
+✔ dynamic object fields resolve the referenced child object (0.199381ms)
+✔ missing pagination completeness flag fails closed (0.079132ms)
+✔ chapter 2 is separately routed and retains auth, HEAD and conditional headers (26.00685ms)
+✔ origins media proxy preserves range status and immutable evidence headers (6.393482ms)
+✔ filters and projects owned objects (3.154543ms)
+✔ derives coins and balances from one snapshot (0.872591ms)
+✔ refresh is paginated, atomic, and retains bounded stale data on upstream failure (22.980507ms)
+✔ translates local gRPC objects into legacy JSON-RPC shape (0.673002ms)
+✔ derives all coins and exact legacy balance counts from gRPC (0.223059ms)
+✔ uses local gRPC primary without touching recovery cache (0.612414ms)
+✔ falls back to recovered cache when local gRPC fails (0.115098ms)
+✔ characters: a failed database write cannot advance event markers or freshness (32.148602ms)
+✔ killmails: a failed database write cannot advance event markers or freshness (1.264905ms)
+✔ owned_objects: a failed database write cannot advance event markers or freshness (2.640781ms)
+✔ owned event candidates skip confirmed non-target types without blocking current structures (2.027135ms)
+✔ mixed candidates never turn unresolved target content into a healthy empty poll (2.091467ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 136.754322

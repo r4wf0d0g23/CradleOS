@@ -1,0 +1,22 @@
+{
+  "boot": "2026-10-14 08:11:10",
+  "sparse": [
+    "/cradleos-dapp/*",
+    "!/cradleos-dapp/public/",
+    "!/cradleos-dapp/animation/",
+    "/cradleos/",
+    "/cradleos_casino/",
+    "/cradleos_ssu_access/",
+    "/cradleos_voting/",
+    "/cradleos_keeper_seal/",
+    "/.gitignore",
+    "/README.md",
+    "--no-cone",
+    "/cradleos-dapp/public/",
+    "/datamine/",
+    "/deploy/",
+    "/cradleos_turret/"
+  ],
+  "serverIndexFlag": "S services/character-index/server.js",
+  "currentServiceState": "MainPID=534036\nNRestarts=9675\nWorkingDirectory=/home/rawdata/character-index/releases/c3bed896-20261014\nId=character-index.service\nActiveState=active\nSubState=running\nUnitFileState=enabled\n\nMainPID=534033\nNRestarts=0\nWorkingDirectory=/home/rawdata/sui-proxy\nId=sui-proxy.service\nActiveState=active\nSubState=running\nUnitFileState=enabled\n\nMainPID=0\nNRestarts=0\nWorkingDirectory=/home/rawdata/sui-fullnode\nId=sui-fullnode.service\nActiveState=inactive\nSubState=dead\nUnitFileState=disabled\n"
+}

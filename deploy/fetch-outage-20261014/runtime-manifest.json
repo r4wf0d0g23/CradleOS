@@ -1,0 +1,87 @@
+{
+  "source": "c3bed89691c5103f57ac19df05f2b63ec4cd779c",
+  "release": "/home/rawdata/character-index/releases/c3bed896-20261014",
+  "files": [
+    {
+      "file": ".gitignore",
+      "sha256": "0db3695011d4646b4f1c9205672579a0249f763acc3261189bb0e12f01114f8f"
+    },
+    {
+      "file": "README.md",
+      "sha256": "36f55c5cd1b9da95ad389603cff5c7dbd58628630814bdc6c2339d2f604eaaaf"
+    },
+    {
+      "file": "db.js",
+      "sha256": "04204004a2cc529ebb8ed3f9dc0173f03484242a18b09055c495dfe783fbbc13"
+    },
+    {
+      "file": "event-reader.js",
+      "sha256": "0b00d77a767190d08f8ce28d1551c55cc38f6bdd6f7906836cd7e5e6c88bc8de"
+    },
+    {
+      "file": "indexed-reads.js",
+      "sha256": "26fbb15b8770e2d8d0137e84b762288b9920babe2b0eb731f551b38416d484e5"
+    },
+    {
+      "file": "indexer.js",
+      "sha256": "2727784d83a3e864e1c6edddc65525a5a69c056b245674dbe4f8a0276a15e882"
+    },
+    {
+      "file": "origins-media-proxy.js",
+      "sha256": "d75db64c3404593aa90e9963375890282ea30b473fcae86f643622a8e1f8bf96"
+    },
+    {
+      "file": "ownership-cache.js",
+      "sha256": "824e5eb0ff2da2cd599a5e8654d634362066275143722935e9bf4f2be8991ef6"
+    },
+    {
+      "file": "ownership-grpc.js",
+      "sha256": "b60c5996e8eb291dd1447710055cf6eb882c1cade7c22c51c9d949076e57accf"
+    },
+    {
+      "file": "ownership-router.js",
+      "sha256": "288883087d08aa6b648b004f3efa5fdd23c379e947be24166b126d27850c8669"
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "822b76f5aae53062148a7d04e5ae8904d82417af4e3e6fcbb894121cb3c3a3be"
+    },
+    {
+      "file": "package.json",
+      "sha256": "05b0eb4c200e5e932bbbaf3d5cf12f13283412e53c8560dc4b6b674d0f078320"
+    },
+    {
+      "file": "server.js",
+      "sha256": "2ecb929a1d307b9e9b748aeb676d82c0f04c6356192cfa4e56e07ab8958ad7da"
+    },
+    {
+      "file": "test/event-reader.test.js",
+      "sha256": "7aa2dd81cb65f581f93165b856e9b766cb93eb40422c98dc651537cc5217fb51"
+    },
+    {
+      "file": "test/indexed-reads.test.js",
+      "sha256": "ea2aee694d8b7832d3bbc0098c0a3e16f7cd14c19d6282c7b03b5197463e9308"
+    },
+    {
+      "file": "test/origins-media-proxy.test.js",
+      "sha256": "621c9c44728c64ef3529157afb49dffa03d1156d5887a51b638df71bd778c3d8"
+    },
+    {
+      "file": "test/ownership-cache.test.js",
+      "sha256": "c6aeaa5324d5c254c473d972e1c1bce880992acc8ca40dc94e105bd7b61eca63"
+    },
+    {
+      "file": "test/ownership-grpc.test.js",
+      "sha256": "dfa1f861f0a92f708b68ebb61da8bfe9c8fae87fe03783f961b3aaf5d1464b43"
+    },
+    {
+      "file": "test/ownership-router.test.js",
+      "sha256": "779dcda4fb5c801d987198a320c6b586c17efe32fbbc827123feb9b3432f325e"
+    },
+    {
+      "file": "test/poller-atomicity.test.js",
+      "sha256": "f40f62982c91445e6853e79a96987230bc55edc9b299633c042f46468417bdd0"
+    }
+  ],
+  "dependencies": "Existing tested node_modules copied, not linked to sparse checkout; no install"
+}
