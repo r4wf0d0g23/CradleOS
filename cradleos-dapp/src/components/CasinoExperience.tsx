@@ -48,6 +48,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { HouseDonatePanel } from "./HouseDonatePanel";
+import { BettingBookPanel } from "./BettingBookPanel";
 import { CasinoPanel } from "./CasinoPanel";
 import { CasinoRoundStage } from "./CasinoRoundStage";
 import { CasinoRoundSummary, CasinoRoundHistory } from "./CasinoRoundSummary";
@@ -448,7 +449,7 @@ export function CasinoExperience({
 } = {}) {
   const [state, setState] = useState(initial),
     current = useRef<Session>(state);
-  const [mode, setMode] = useState<"practice" | "testnet" | "donate">(
+  const [mode, setMode] = useState<"practice" | "testnet" | "donate" | "book">(
     "practice",
   );
   const [game, setGame] = useState<string | null>(() =>
@@ -1103,7 +1104,7 @@ export function CasinoExperience({
               href="#/casino"
               onClick={(e) => {
                 e.preventDefault();
-                if (mode === "donate") changeMode("practice");
+                if (mode === "donate" || mode === "book") changeMode("practice");
                 else navigate(null);
               }}
               aria-label="Casino lobby"
@@ -1132,6 +1133,9 @@ export function CasinoExperience({
                 onClick={() => changeMode("testnet")}
               >
                 $EVE Testnet
+              </button>
+              <button aria-pressed={mode === "book"} disabled={locked} onClick={() => changeMode("book")}>
+                Betting Book
               </button>
             </div>
             <button
@@ -1223,7 +1227,9 @@ export function CasinoExperience({
             </p>
           )}
           {mode === "testnet" && <TestnetStatus q={houseQuery} />}
-          {mode === "donate" ? (
+          {mode === "book" ? (
+            <BettingBookPanel onBusyChange={(value) => { busyRef.current=value; chainBusyRef.current=value; setChainBusy(value); }} />
+          ) : mode === "donate" ? (
             <HouseDonatePanel
               onBusyChange={(value) => {
                 busyRef.current = value;

@@ -1,0 +1,222 @@
+.betting-book {
+  margin: 18px 0;
+  color: #eee8da;
+  min-width: 0;
+}
+.book-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.book-heading h2 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+.book-heading span,
+.book-metrics dt {
+  color: #aaa59b;
+  font-size: 12px;
+}
+.book-heading h3 {
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.book-layout {
+  display: grid;
+  grid-template-columns: minmax(210px, 1fr) minmax(0, 3fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.betting-book button,
+.betting-book input,
+.betting-book select {
+  font: inherit;
+  border: 1px solid #48443d;
+  border-radius: 5px;
+  background: #191b1e;
+  color: #eee8da;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+.betting-book button {
+  cursor: pointer;
+}
+.betting-book button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.betting-book button[aria-pressed="true"] {
+  border-color: #e8b84b;
+  background: #302a20;
+}
+.book-list button {
+  text-align: left;
+  display: grid;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+.book-list small {
+  color: #aaa59b;
+}
+.book-detail,
+.book-tickets,
+.book-admin {
+  padding: 18px;
+  background: #101216;
+  border: 1px solid #33363c;
+  border-radius: 8px;
+  min-width: 0;
+}
+.book-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.book-metrics dd {
+  margin: 4px 0 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.book-sides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+.book-sides button {
+  display: grid;
+  gap: 10px;
+  overflow-wrap: anywhere;
+}
+.book-sides b {
+  font-size: 22px;
+  color: #e8b84b;
+}
+.book-bet,
+.book-proof,
+.book-confirm {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.betting-book label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  min-width: 0;
+}
+.betting-book input {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.book-proof label {
+  flex: 1;
+  min-width: 180px;
+}
+.book-bet > span {
+  padding: 12px 0;
+}
+.book-bet > span b {
+  display: block;
+}
+.book-confirm {
+  padding: 12px;
+  border: 1px solid #e8b84b;
+  border-radius: 5px;
+  align-items: center;
+}
+.book-rules {
+  margin-top: 22px;
+  color: #c8c2b7;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.book-rules summary,
+.book-admin summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.book-rules li {
+  margin: 8px 0;
+}
+.book-result {
+  font-weight: 700;
+  color: #e8b84b;
+}
+.book-tickets,
+.book-admin {
+  margin-top: 16px;
+}
+.book-ticket {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-top: 1px solid #33363c;
+  padding: 12px 0;
+}
+.book-ticket > span {
+  flex: 1;
+  min-width: 100px;
+}
+.book-create {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.book-notice {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  color: #e8b84b;
+}
+.book-error {
+  color: #ff918b;
+}
+.betting-book a {
+  color: #e8b84b;
+}
+.betting-book :focus-visible {
+  outline: 2px solid #e8b84b;
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .book-layout {
+    grid-template-columns: 1fr;
+  }
+  .book-list {
+    max-height: 220px;
+    overflow: auto;
+  }
+  .book-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .book-detail {
+    padding: 12px;
+  }
+  .book-create {
+    grid-template-columns: 1fr;
+  }
+  .book-heading h2 {
+    font-size: 23px;
+  }
+  .book-sides {
+    gap: 8px;
+  }
+  .book-sides b {
+    font-size: 18px;
+  }
+}
