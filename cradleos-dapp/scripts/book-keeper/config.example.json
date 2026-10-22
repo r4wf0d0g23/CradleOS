@@ -1,0 +1,11 @@
+{
+  "liveEnabled": false,
+  "chainId": "4c78adac",
+  "tenant": "stillness",
+  "packageId": "",
+  "bookId": "",
+  "coinType": "0xc663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE",
+  "pythState": "0x3c48fe392912de6c18087a2b3f5fdbfbfdb4598e180947feff1f12f8e9ea073e",
+  "wormholeState": "0x750da8e6d16b6a363a39fe2eaa8295ac224a1e6fce4e47b58845e2e8746164f0",
+  "signer": ""
+}

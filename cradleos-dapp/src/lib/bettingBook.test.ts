@@ -10,7 +10,8 @@ import {
   ticketReturn,
   buildBet,
   buildClaim,
-  buildProof,
+  buildPriceProof,
+  PRICE_FEEDS, parsePrice, priceLabel, buildFulfill, buildDeliveryRefund, buildDelivery, parseDelivery, fetchTickets,
   buildFinalize,
   buildCreate,
   bookReceipt,
@@ -18,7 +19,7 @@ import {
   findBookCharacter,
   type Market,
 } from "./bettingBook";
-import { queryChain, findCurrentCharacters } from "./currentWorldRead";
+import { queryChain, findCurrentCharacters, listOwnedCurrentObjects } from "./currentWorldRead";
 vi.mock("./currentWorldRead", () => ({
   queryChain: vi.fn(),
   findCurrentCharacters: vi.fn(),
@@ -30,6 +31,7 @@ const cfg = {
   packageId: id(99),
   bookId: id(100),
   wageringEnabled: true,
+  rewardsEnabled: true,
 };
 function node() {
   return {
@@ -41,21 +43,13 @@ function node() {
         json: {
           version: "1",
           book_id: cfg.bookId,
-          registry: cfg.registry,
-          tenant: cfg.tenant,
-          a: { item_id: "1", tenant: cfg.tenant },
-          b: { item_id: "2", tenant: cfg.tenant },
-          character_a: id(1),
-          character_b: id(2),
-          starts: "2000000000",
-          ends: "2000001000",
-          proof_deadline: "2000005000",
-          loss_type: 1,
-          system_id: "0",
+          tenant: cfg.tenant, creator: id(9), asset: 1,
+          starts: "2000000000", ends: "2000001000", proof_deadline: "2000004600",
+          price_feed: btoa(String.fromCharCode(...PRICE_FEEDS[1].feed.match(/../g)!.map(x=>parseInt(x,16)))),
+          price_exponent: 8, price_strike: "10000000000", price_value: "0", price_time: "0",
+          claim_count: "2", claims: {id:id(88)},
           pool_a: "3",
           pool_b: "2",
-          score_a: "1",
-          score_b: "0",
           escrow: "5",
           result: 0,
           remaining_winning_stake: "0",
@@ -79,15 +73,15 @@ describe("exact EVE and market reads", () => {
     "Infinity",
     "18446744073.709551616",
   ])("rejects malformed stake %s", (s) => expect(() => parseEve(s)).toThrow());
-  it("rejects wrong package, owner, registry, tenant and null numeric state", () => {
+  it("rejects wrong package, owner, feed, tenant and null numeric state", () => {
     const mutations = [
       (n: ReturnType<typeof node>) =>
         (n.asMoveObject.contents.type.repr = "wrong"),
       (n: ReturnType<typeof node>) => (n.owner.__typename = "AddressOwner"),
       (n: ReturnType<typeof node>) =>
-        (n.asMoveObject.contents.json.registry = id(55)),
+        (n.asMoveObject.contents.json.price_feed = "AA=="),
       (n: ReturnType<typeof node>) =>
-        (n.asMoveObject.contents.json.a.tenant = "utopia"),
+        (n.asMoveObject.contents.json.tenant = "utopia"),
       (n: ReturnType<typeof node>) =>
         Object.assign(n.asMoveObject.contents.json, { result: null }),
       (n: ReturnType<typeof node>) =>
@@ -160,7 +154,7 @@ describe("payout conservation", () => {
               marketId: m.id,
               bettor: id(1),
               side: 1,
-              stake,
+              stake, entitlementId:id(80), paid:false, payout:0n,
             })!;
             const numerator = stake * (a + b),
               diff = p * a - numerator;
@@ -180,7 +174,7 @@ describe("payout conservation", () => {
         marketId: m.id,
         bettor: id(1),
         side: 2 as const,
-        stake: 2n,
+        stake: 2n, entitlementId:id(80), paid:false, payout:0n,
       };
     expect(ticketReturn(m, t)).toBeNull();
     expect(
@@ -227,7 +221,7 @@ describe("transaction construction", () => {
     const paused = { ...cfg, wageringEnabled: false };
     for (const tx of [
       buildClaim(id(101), id(4), paused),
-      buildProof(id(101), id(8), paused),
+      buildPriceProof(id(101), new Uint8Array([1]), paused),
       buildFinalize(id(101), paused),
     ])
       expect(tx.getData().commands[0].MoveCall?.package).toBe(cfg.packageId);
@@ -241,13 +235,7 @@ describe("transaction construction", () => {
       buildCreate(
         id(1),
         {
-          a: id(2),
-          b: id(2),
-          starts: 1,
-          ends: 100,
-          proofDeadline: 5000,
-          lossType: 1,
-          systemId: 0n,
+          asset: 3 as 1, strike: 1n, starts: 2000000000, ends: 2000001000,
         },
         cfg,
       ),
@@ -256,13 +244,7 @@ describe("transaction construction", () => {
       buildCreate(
         id(1),
         {
-          a: id(2),
-          b: id(3),
-          starts: 1,
-          ends: 100,
-          proofDeadline: 101,
-          lossType: 1,
-          systemId: 0n,
+          asset: 1, strike: 1n, starts: 2000000000, ends: 2000000001,
         },
         cfg,
       ),
@@ -277,5 +259,33 @@ describe("transaction construction", () => {
         Transaction: { digest: "abc", status: { success: true } },
       }),
     ).toBe("abc");
+  });
+});
+describe("fixed oracle and item terms", () => {
+  it("parses USD exactly and rejects open-ended/invalid prices", () => {
+    for(const v of [1n,10000000001n,U64]) expect(parsePrice(priceLabel(v).slice(1))).toBe(v);
+    for(const v of ["0","-1","1e8","1.000000001", "NaN"]) expect(()=>parsePrice(v)).toThrow();
+  });
+  const rewardNode=()=>({address:id(200),owner:{__typename:"Shared"},asMoveObject:{contents:{type:{repr:`${cfg.packageId}::delivery::Delivery<${cfg.coinType}>`},json:{book_id:cfg.bookId,tenant:cfg.tenant,title:"Ammo",sponsor:id(7),sponsor_character:id(8),origin:id(9),item_type:"88069",quantity:"10",deadline:"2000000000",reward:"100",reward_amount:"100",status:0,fulfilled_by:id(0),fulfilled_at:"0"}}}});
+  it("requires conserved reward escrow and exact origin/type/quantity",()=>{
+    const d=parseDelivery(rewardNode(),cfg),items=[{id:id(77),origin:d.origin,itemType:d.itemType,quantity:10n}];
+    expect(buildFulfill(d,id(1),items,cfg).getData().commands.slice(-1)[0]?.MoveCall?.function).toBe("fulfill");
+    for(const bad of [[{...items[0],quantity:9n}],[{...items[0],origin:id(10)}],[{...items[0],itemType:88070n}],[...items,...items]])expect(()=>buildFulfill(d,id(1),bad,cfg)).toThrow();
+    const n=rewardNode();n.asMoveObject.contents.json.reward="99";expect(()=>parseDelivery(n,cfg)).toThrow();
+  });
+  it("funding splits exact EVE and refund cannot choose a recipient",()=>{
+    const tx=buildDelivery(id(1),{title:"Ammo",origin:id(9),itemType:88069n,quantity:10n,deadline:Math.floor(Date.now()/1000)+600,reward:100n},[{id:id(50),balance:U64}],cfg);
+    expect(tx.getData().commands.map(c=>c.$kind)).toEqual(["SplitCoins","MoveCall"]);
+    const refund=buildDeliveryRefund(id(200),cfg).getData().commands[0].MoveCall!;
+    expect(refund.function).toBe("refund");expect(refund.arguments).toHaveLength(2);
+    const claim=buildClaim(id(101),id(80),cfg).getData().commands[0].MoveCall!;
+    expect(claim.function).toBe("claim_for");expect(claim.arguments).toHaveLength(2);
+  });
+  it("uses paid shared-entitlement state after automatic payout",async()=>{
+    vi.mocked(listOwnedCurrentObjects).mockResolvedValue([{address:id(80),version:1,asMoveObject:{contents:{json:{market_id:id(101),bettor:id(1),side:1,stake:"3",entitlement_id:id(81)}}}}]);
+    const claim={address:id(81),owner:{__typename:"Shared"},asMoveObject:{contents:{type:{repr:`${cfg.packageId}::book::Entitlement<${cfg.coinType}>`},json:{market_id:id(101),bettor:id(1),side:1,stake:"3",paid:true,payout:"5"}}}};
+    vi.mocked(queryChain).mockResolvedValue({e0:claim});
+    const tickets=await fetchTickets(id(1),cfg);expect(tickets[0].paid).toBe(true);expect(ticketReturn({...market(),result:1,remainingWinningStake:0n,escrow:0n},tickets[0])).toBe(5n);
+    claim.asMoveObject.contents.json.bettor=id(2);await expect(fetchTickets(id(1),cfg)).rejects.toThrow("Payment status");
   });
 });

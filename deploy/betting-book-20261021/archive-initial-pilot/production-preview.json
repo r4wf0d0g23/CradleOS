@@ -1,0 +1,21 @@
+{
+  "localProductionBuild": true,
+  "liveDeployment": false,
+  "fixtures": false,
+  "reports": [
+    {
+      "width": 390,
+      "setupPending": true,
+      "noBetAction": true,
+      "noPageErrors": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "setupPending": true,
+      "noBetAction": true,
+      "noPageErrors": true,
+      "noOverflow": true
+    }
+  ]
+}

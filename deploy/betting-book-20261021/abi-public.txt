@@ -1,11 +1,66 @@
-public create_book<T>(cap#0#0: BootstrapCap, ctx#0#0: &mut TxContext)
-public set_paused<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, paused#0#0: bool)
-public create_market<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, a#0#0: &Character, b#0#0: &Character, starts#0#0: u64, ends#0#0: u64, proof_deadline#0#0: u64, loss_type#0#0: u8, system_id#0#0: u64, clock#0#0: &Clock, ctx#0#0: &mut TxContext)
-public place_bet<T>(book#0#0: &Book<T>, market#0#0: &mut Market<T>, player#0#0: &Character, side#0#0: u8, funds#0#0: Coin<T>, clock#0#0: &Clock, ctx#0#0: &mut TxContext)
-public submit_proof<T>(market#0#0: &mut Market<T>, proof#0#0: &Killmail, clock#0#0: &Clock)
-public finalize<T>(market#0#0: &mut Market<T>, clock#0#0: &Clock)
-public claim<T>(market#0#0: &mut Market<T>, ticket#0#0: Ticket<T>, ctx#0#0: &mut TxContext)
-public scores<T>(market#0#0: &Market<T>): u64 * u64
-public result<T>(market#0#0: &Market<T>): u8
-public escrow<T>(market#0#0: &Market<T>): u64
-public market_ids<T>(book#0#0: &Book<T>): vector<ID>
+CURRENT production ABI — staged, not published. public(friend) is package-only.
+
+## book
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character;
+public create_book<T>(cap#0#0: BootstrapCap, ctx#0#0: &mut TxContext) {
+public set_paused<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, paused#0#0: bool) {
+public feed(asset#0#0: u8): vector<u8> {
+public(friend) create_price<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, asset#0#0: u8, strike#0#0: u64, starts#0#0: u64, target#0#0: u64, clock#0#0: &Clock, ctx#0#0: &mut TxContext) {
+public place_bet<T>(book#0#0: &Book<T>, market#0#0: &mut Market<T>, player#0#0: &Character, side#0#0: u8, funds#0#0: Coin<T>, clock#0#0: &Clock, ctx#0#0: &mut TxContext) {
+public(friend) record_price<T>(market#0#0: &mut Market<T>, feed#0#0: vector<u8>, exponent#0#0: u8, value#0#0: u64, conf#0#0: u64, previous#0#0: u64, published#0#0: u64, clock#0#0: &Clock) {
+public finalize<T>(market#0#0: &mut Market<T>, clock#0#0: &Clock) {
+public claim_for<T>(market#0#0: &mut Market<T>, claim#0#0: &mut Entitlement<T>, ctx#0#0: &mut TxContext) {
+public claim<T>(market#0#0: &mut Market<T>, ticket#0#0: Ticket<T>, entitlement#0#0: &mut Entitlement<T>, ctx#0#0: &mut TxContext) {
+public(friend) register_delivery<T>(book#0#0: &mut Book<T>, id#0#0: ID, player#0#0: &Character, ctx#0#0: &TxContext) {
+public result<T>(m#0#0: &Market<T>): u8 {
+public escrow<T>(m#0#0: &Market<T>): u64 {
+public market_ids<T>(b#0#0: &Book<T>): vector<ID> {
+public entitlement_id<T>(t#0#0: &Ticket<T>): ID {
+public paid<T>(e#0#0: &Entitlement<T>): bool {
+public payout<T>(e#0#0: &Entitlement<T>): u64 {
+
+## delivery
+use 0000000000000000000000000000000000000000000000000000000000000000::book;
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit;
+public create<T>(book#0#0: &mut Book<T>, sponsor#0#0: &Character, origin#0#0: &StorageUnit, title#0#0: String, item_type#0#0: u64, quantity#0#0: u64, deadline#0#0: u64, reward#0#0: Coin<T>, clock#0#0: &Clock, ctx#0#0: &mut TxContext) {
+public fulfill<T>(d#0#0: &mut Delivery<T>, carrier#0#0: &Character, origin#0#0: &StorageUnit, items#0#0: vector<Item>, clock#0#0: &Clock, ctx#0#0: &mut TxContext) {
+public refund<T>(d#0#0: &mut Delivery<T>, clock#0#0: &Clock, ctx#0#0: &mut TxContext) {
+public status<T>(d#0#0: &Delivery<T>): u8 {
+public reward<T>(d#0#0: &Delivery<T>): u64 {
+
+## price
+use 0000000000000000000000000000000000000000000000000000000000000000::book;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::deserialize;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::hot_potato_vector;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::i64;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::price_info;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::pyth;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::state;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use e79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::cursor;
+use e79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::state as 0state;
+use e79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::vaa;
+public create<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, asset#0#0: u8, strike#0#0: u64, starts#0#0: u64, target#0#0: u64, clock#0#0: &Clock, ctx#0#0: &mut TxContext) {
+public submit<T>(market#0#0: &mut Market<T>, pyth#0#0: &State, worm#0#0: &State, data#0#0: vector<u8>, clock#0#0: &Clock) {

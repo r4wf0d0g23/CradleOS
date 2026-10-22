@@ -21,13 +21,15 @@ import {
   estimatedReturn,
   ticketReturn,
   buildBet,
-  buildProof,
+  buildPriceProof,
+  PRICE_FEEDS, priceLabel, parsePrice,
   buildFinalize,
   buildClaim,
   buildCreate,
   bookReceipt,
 } from "../lib/bettingBook";
 import "./BettingBookPanel.css";
+import { DeliveryBoard } from "./DeliveryBoard";
 
 const PENDING = "cradle.book.pending.v1";
 const utc = (s: number) =>
@@ -118,15 +120,7 @@ export function BettingBookPanel({
   useEffect(() => {
     setConfirm(null);
   }, [active]);
-  const [create, setCreate] = useState({
-    a: "",
-    b: "",
-    starts: "",
-    ends: "",
-    deadline: "",
-    loss: "1",
-    system: "0",
-  });
+  const [create, setCreate] = useState({asset:"1",strike:"",starts:"",ends:""});
   const preview = (() => {
     try {
       return m ? formatEve(estimatedReturn(m, side, parseEve(amount))) : "—";
@@ -240,13 +234,9 @@ export function BettingBookPanel({
     if (!admin.data) return;
     void execute("Create market", () =>
       buildCreate(admin.data!, {
-        a: create.a,
-        b: create.b,
+        asset: Number(create.asset) as 1 | 2, strike: parsePrice(create.strike),
         starts: Date.parse(create.starts + "Z") / 1000,
         ends: Date.parse(create.ends + "Z") / 1000,
-        proofDeadline: Date.parse(create.deadline + "Z") / 1000,
-        lossType: Number(create.loss) as 1 | 2,
-        systemId: BigInt(create.system),
       }),
     );
   }
@@ -267,7 +257,7 @@ export function BettingBookPanel({
       <header className="book-heading">
         <div>
           <h2 id="book-title">Betting Book</h2>
-          <span>TESTNET EVE · KILL CONTESTS · 0% FEE</span>
+          <span>TESTNET EVE · PRICE MARKETS · 0% FEE</span>
         </div>
         {!addr && <ConnectButton />}
       </header>
@@ -298,7 +288,7 @@ export function BettingBookPanel({
                     aria-pressed={active === id}
                     onClick={() => select(id)}
                   >
-                    <strong>{v ? `Pilot ${v.a} vs ${v.b}` : "Market"}</strong>
+                    <strong>{v ? `${PRICE_FEEDS[v.asset].label} · ${priceLabel(v.strike)}` : "Market"}</strong>
                     <span>
                       {v
                         ? marketPhase(v, now)
@@ -326,30 +316,26 @@ export function BettingBookPanel({
                 <>
                   <div className="book-heading">
                     <h3>
-                      Pilot {m.a} <span>vs</span> Pilot {m.b}
+                      {PRICE_FEEDS[m.asset].label} · {priceLabel(m.strike)}
                     </h3>
                     <b>{marketPhase(m, now)}</b>
                   </div>
                   <dl className="book-metrics">
                     <div>
-                      <dt>Starts</dt>
+                      <dt>Bets close</dt>
                       <dd>{utc(m.starts)}</dd>
                     </div>
                     <div>
-                      <dt>Ends</dt>
+                      <dt>Price time</dt>
                       <dd>{utc(m.ends)}</dd>
                     </div>
                     <div>
-                      <dt>Proof deadline</dt>
+                      <dt>Settlement</dt>
                       <dd>{utc(m.proofDeadline)}</dd>
                     </div>
                     <div>
-                      <dt>Losses</dt>
-                      <dd>{m.lossType === 1 ? "Ships" : "Structures"}</dd>
-                    </div>
-                    <div>
-                      <dt>System</dt>
-                      <dd>{m.systemId === "0" ? "Any" : m.systemId}</dd>
+                      <dt>Verified price</dt>
+                      <dd>{m.priceTime ? priceLabel(m.price) : "Pending"}</dd>
                     </div>
                     <div>
                       <dt>Pool</dt>
@@ -364,8 +350,8 @@ export function BettingBookPanel({
                         disabled={busy}
                         onClick={() => setSide(s)}
                       >
-                        <strong>Pilot {s === 1 ? m.a : m.b}</strong>
-                        <b>{String(s === 1 ? m.scoreA : m.scoreB)} verified</b>
+                        <strong>{s === 1 ? "Above" : "At or below"}</strong>
+                        <b>{priceLabel(m.strike)}</b>
                         <span>
                           {formatEve(s === 1 ? m.poolA : m.poolB)} EVE
                         </span>
@@ -391,6 +377,7 @@ export function BettingBookPanel({
                           disabled ||
                           book.data.paused ||
                           !cfg.wageringEnabled ||
+                          addr === m.creator ||
                           preview === "—"
                         }
                         onClick={() => {
@@ -413,8 +400,7 @@ export function BettingBookPanel({
                   {confirm && (
                     <div className="book-confirm">
                       <span>
-                        Lock {amount} EVE on Pilot {side === 1 ? m.a : m.b}? No
-                        cash-out.
+                        Lock {amount} EVE on {side === 1 ? "Above" : "At or below"} {priceLabel(m.strike)}? No cash-out.
                       </span>
                       <button
                         disabled={disabled}
@@ -429,22 +415,25 @@ export function BettingBookPanel({
                       </button>
                     </div>
                   )}
-                  {!m.result && now >= m.starts && now < m.proofDeadline && (
+                  {!m.result && now >= m.ends && now < m.proofDeadline && !m.priceTime && (
                     <div className="book-proof">
                       <label>
-                        Killmail object ID
+                        Signed price proof · hex
                         <input
                           value={proof}
                           disabled={busy}
                           onChange={(e) => setProof(e.target.value)}
-                          placeholder="0x…"
+                          placeholder="504e4155…"
                         />
                       </label>
                       <button
                         disabled={disabled || !proof}
                         onClick={() =>
                           void execute("Submit proof", () =>
-                            buildProof(m.id, proof),
+                            buildPriceProof(m.id, (() => {
+                              if (!/^(?:[0-9a-fA-F]{2})+$/.test(proof) || proof.length > 32768) throw Error("Invalid proof.");
+                              return Uint8Array.from(proof.match(/../g)!,v=>parseInt(v,16));
+                            })()),
                           )
                         }
                       >
@@ -466,30 +455,17 @@ export function BettingBookPanel({
                     <p className="book-result">
                       {m.result === 3
                         ? "Stakes refundable"
-                        : `Winner · Pilot ${m.result === 1 ? m.a : m.b}`}
+                        : `Winner · ${m.result === 1 ? "Above" : "At or below"}`}
                     </p>
                   )}
                   <details className="book-rules">
                     <summary>Rules</summary>
                     <ul>
-                      <li>
-                        Only qualifying official killmails submitted before the
-                        proof deadline count. Scores remain provisional until
-                        settlement.
-                      </li>
-                      <li>
-                        Most verified kills wins. Ties, no proofs or a one-sided
-                        pool return stakes.
-                      </li>
-                      <li>
-                        All qualifying official records count; self/alt/farmed
-                        kills are not filtered.
-                      </li>
-                      <li>
-                        Winners split the full pool. Estimated returns change
-                        until betting closes; rounding may vary by one atomic
-                        unit. No early withdrawal.
-                      </li>
+                      <li>Above wins only if the verified USD price exceeds the target. Equality pays At or below.</li>
+                      <li>First signed update crossing the price time; at most 60 seconds late, confidence within 1%.</li>
+                      <li>No qualifying proof by settlement or a one-sided pool: full stake refunds.</li>
+                      <li>Winners split the pool. Returns change until bets close; rounding varies by at most one atomic unit. No cash-out.</li>
+                      <li>Automatic wallet payment when the keeper is available; Claim remains available. Market creator cannot bet.</li>
                     </ul>
                   </details>
                 </>
@@ -507,7 +483,7 @@ export function BettingBookPanel({
             ) : !tickets.data ? (
               <p>Loading bets…</p>
             ) : !tickets.data.length ? (
-              <p>No open tickets</p>
+              <p>No bets yet</p>
             ) : (
               tickets.data.map((t) => {
                 const v = markets[ids.indexOf(t.marketId)]?.data;
@@ -521,21 +497,21 @@ export function BettingBookPanel({
                 return (
                   <div key={t.id} className="book-ticket">
                     <button disabled={busy} onClick={() => select(t.marketId)}>
-                      {v ? `Pilot ${t.side === 1 ? v.a : v.b}` : "Market"}
+                      {v ? `${PRICE_FEEDS[v.asset].label} · ${t.side === 1 ? "Above" : "At or below"}` : "Market"}
                     </button>
                     <span>{formatEve(t.stake)} EVE</span>
                     <span>
-                      {v?.result ? `${payout} EVE return` : "Pending"}
+                      {t.paid ? `${payout} EVE paid` : v?.result ? `${payout} EVE return` : "Pending"}
                     </span>
                     <button
-                      disabled={disabled || !v?.result || payout === "—"}
+                      disabled={disabled || t.paid || !v?.result || payout === "—"}
                       onClick={() =>
                         void execute("Claim ticket", () =>
-                          buildClaim(t.marketId, t.id),
+                          buildClaim(t.marketId, t.entitlementId),
                         )
                       }
                     >
-                      {v?.result === 3
+                      {t.paid ? "Paid" : v?.result === 3
                         ? "Refund"
                         : payout === "0"
                           ? "Close ticket"
@@ -546,25 +522,23 @@ export function BettingBookPanel({
               })
             )}
           </section>
+          <DeliveryBoard ids={book.data.deliveryIds} addr={addr} disabled={disabled} busy={busy} paused={book.data.paused} now={now} execute={execute} />
           {admin.data && (
             <details className="book-admin">
               <summary>Create market</summary>
               <div className="book-create">
                 {(
                   [
-                    ["a", "Pilot A · character object ID"],
-                    ["b", "Pilot B · character object ID"],
-                    ["starts", "Starts · UTC"],
-                    ["ends", "Ends · UTC"],
-                    ["deadline", "Proof deadline · UTC"],
-                    ["system", "System ID · 0 for any"],
+                    ["strike", "Target · USD"],
+                    ["starts", "Bets close · UTC"],
+                    ["ends", "Price time · UTC"],
                   ] as const
                 ).map(([k, label]) => (
                   <label key={k}>
                     {label}
                     <input
                       type={
-                        ["starts", "ends", "deadline"].includes(k)
+                        ["starts", "ends"].includes(k)
                           ? "datetime-local"
                           : "text"
                       }
@@ -577,19 +551,19 @@ export function BettingBookPanel({
                   </label>
                 ))}
                 <label>
-                  Loss type
+                  Asset
                   <select
-                    value={create.loss}
+                    value={create.asset}
                     onChange={(e) =>
-                      setCreate((v) => ({ ...v, loss: e.target.value }))
+                      setCreate((v) => ({ ...v, asset: e.target.value }))
                     }
                   >
-                    <option value="1">Ships</option>
-                    <option value="2">Structures</option>
+                    <option value="1">BTC/USD</option>
+                    <option value="2">ETH/USD</option>
                   </select>
                 </label>
                 <button
-                  disabled={disabled || book.data.paused}
+                  disabled={disabled || book.data.paused || !cfg.wageringEnabled}
                   onClick={submitCreate}
                 >
                   Create market

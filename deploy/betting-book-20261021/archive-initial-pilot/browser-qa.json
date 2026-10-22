@@ -1,0 +1,38 @@
+{
+  "fixtureOnly": true,
+  "noWalletSignatures": true,
+  "reports": [
+    {
+      "check": "fixture-open-320",
+      "pass": true
+    },
+    {
+      "check": "new-market-poll-invalidates-confirmation",
+      "pass": true
+    },
+    {
+      "check": "reward-poll-invalidates-captured-delivery",
+      "pass": true
+    },
+    {
+      "check": "fixture-open-390",
+      "pass": true
+    },
+    {
+      "check": "proof-window-no-new-bets",
+      "pass": true
+    },
+    {
+      "check": "unavailable-is-not-empty",
+      "pass": true
+    },
+    {
+      "check": "fixture-open-1440",
+      "pass": true
+    },
+    {
+      "check": "unconfigured-real-source-fails-closed",
+      "pass": true
+    }
+  ]
+}

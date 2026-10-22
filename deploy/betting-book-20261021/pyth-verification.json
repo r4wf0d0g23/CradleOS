@@ -1,0 +1,324 @@
+{
+  "checksEnabled": true,
+  "simulationOnly": true,
+  "cases": [
+    {
+      "feed": "USDC/USD verifier sample",
+      "sourceTransaction": "6kmVn3Ej5UQHF1VkwK5VrUKRtUyy4iz7K4UKZqpyYja3",
+      "name": "valid",
+      "kind": "Transaction",
+      "status": {
+        "success": true,
+        "error": null
+      }
+    },
+    {
+      "feed": "USDC/USD verifier sample",
+      "sourceTransaction": "6kmVn3Ej5UQHF1VkwK5VrUKRtUyy4iz7K4UKZqpyYja3",
+      "name": "signature",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 1st command, abort code: 2, in '0xe79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::vaa::verify_signatures' (instruction 66)",
+          "command": 0,
+          "MoveAbort": {
+            "abortCode": "2",
+            "location": {
+              "package": "0xe79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053",
+              "module": "vaa",
+              "function": 19,
+              "instruction": 66,
+              "functionName": "verify_signatures"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "USDC/USD verifier sample",
+      "sourceTransaction": "6kmVn3Ej5UQHF1VkwK5VrUKRtUyy4iz7K4UKZqpyYja3",
+      "name": "feed",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "USDC/USD verifier sample",
+      "sourceTransaction": "6kmVn3Ej5UQHF1VkwK5VrUKRtUyy4iz7K4UKZqpyYja3",
+      "name": "value",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "USDC/USD verifier sample",
+      "sourceTransaction": "6kmVn3Ej5UQHF1VkwK5VrUKRtUyy4iz7K4UKZqpyYja3",
+      "name": "merkle",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "BTC/USD",
+      "sourceTransaction": "5MPpknX1xgDLqZrgSSTe5h2KMRsbSxwrBFX456KgAqD8",
+      "name": "valid",
+      "kind": "Transaction",
+      "status": {
+        "success": true,
+        "error": null
+      }
+    },
+    {
+      "feed": "BTC/USD",
+      "sourceTransaction": "5MPpknX1xgDLqZrgSSTe5h2KMRsbSxwrBFX456KgAqD8",
+      "name": "signature",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 1st command, abort code: 2, in '0xe79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::vaa::verify_signatures' (instruction 66)",
+          "command": 0,
+          "MoveAbort": {
+            "abortCode": "2",
+            "location": {
+              "package": "0xe79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053",
+              "module": "vaa",
+              "function": 19,
+              "instruction": 66,
+              "functionName": "verify_signatures"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "BTC/USD",
+      "sourceTransaction": "5MPpknX1xgDLqZrgSSTe5h2KMRsbSxwrBFX456KgAqD8",
+      "name": "feed",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "BTC/USD",
+      "sourceTransaction": "5MPpknX1xgDLqZrgSSTe5h2KMRsbSxwrBFX456KgAqD8",
+      "name": "value",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "BTC/USD",
+      "sourceTransaction": "5MPpknX1xgDLqZrgSSTe5h2KMRsbSxwrBFX456KgAqD8",
+      "name": "merkle",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "ETH/USD",
+      "sourceTransaction": "8VjfqQaPJ661rfhYqbEQMJFYhcQg1fA4VvJvRhpbGfNo",
+      "name": "valid",
+      "kind": "Transaction",
+      "status": {
+        "success": true,
+        "error": null
+      }
+    },
+    {
+      "feed": "ETH/USD",
+      "sourceTransaction": "8VjfqQaPJ661rfhYqbEQMJFYhcQg1fA4VvJvRhpbGfNo",
+      "name": "signature",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 1st command, abort code: 0, in '0x0000000000000000000000000000000000000000000000000000000000000002::ecdsa_k1::secp256k1_ecrecover' (instruction 0)",
+          "command": 0,
+          "MoveAbort": {
+            "abortCode": "0",
+            "location": {
+              "package": "0x0000000000000000000000000000000000000000000000000000000000000002",
+              "module": "ecdsa_k1",
+              "function": 0,
+              "instruction": 0,
+              "functionName": "secp256k1_ecrecover"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "ETH/USD",
+      "sourceTransaction": "8VjfqQaPJ661rfhYqbEQMJFYhcQg1fA4VvJvRhpbGfNo",
+      "name": "feed",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "ETH/USD",
+      "sourceTransaction": "8VjfqQaPJ661rfhYqbEQMJFYhcQg1fA4VvJvRhpbGfNo",
+      "name": "value",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feed": "ETH/USD",
+      "sourceTransaction": "8VjfqQaPJ661rfhYqbEQMJFYhcQg1fA4VvJvRhpbGfNo",
+      "name": "merkle",
+      "kind": "FailedTransaction",
+      "status": {
+        "success": false,
+        "error": {
+          "$kind": "MoveAbort",
+          "message": "MoveAbort in 2nd command, abort code: 345, in '0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::accumulator::parse_and_verify_accumulator_updates' (instruction 42)",
+          "command": 1,
+          "MoveAbort": {
+            "abortCode": "345",
+            "location": {
+              "package": "0xd1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd",
+              "module": "accumulator",
+              "function": 3,
+              "instruction": 42,
+              "functionName": "parse_and_verify_accumulator_updates"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

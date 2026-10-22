@@ -1,35 +1,30 @@
-# Independent review record
+# Current review — October21 expanded book
 
-Parent summary of native reviewer `betting_architecture_review`, October 21.
-The workspace requests an Opus milestone review, but that model was not an
-available native target; the inherited available reviewer model was used.
-This is not represented as an Opus review or independent third-party audit.
+**PASS — staged implementation; not approval/evidence of live activation.**
+Native independent reviewer `book_v2_architecture_review` reviewed current source.
+Workspace requests Opus, but that model was unavailable; inherited native reviewer
+was used. No Opus result is claimed.
 
-## Architecture — PASS after corrections
+Architecture review blocked combat wagering: no canonical victim-controller-at-
+death attestation. Current package removes combat entry points entirely.
 
-- Official current-world Killmail objects and canonical derived registry IDs
-  are appropriate for positive-event proofs, with game-admin publication trust.
-- A caller cannot prove "first kill" or complete event absence. Use only the
-  expressly defined submitted-proof contest with fixed proof deadline.
-- Freeze character keys, tenant, registry, loss type/system and all times.
-- Do not claim victim ID proves historical ownership or filters self/alt kills.
-- Replace arbitrary last-claimant dust with cumulative entitlement arithmetic;
-  preserve exact conservation and less-than-one-atom deviation from ideal share.
-- Keep new book independent from paused casino House and existing state.
+Implementation review confirmed fixed recipient/indexed/idempotent payment,
+conserved cumulative arithmetic, permissionless pause-safe recovery, pinned
+canonical Pyth authentication of exactly parsed bytes, and deadline refunds.
+Resolved findings:
+- Removed >10000 reward-count branch that could stop all keeper work.
+- Enforced real kernel flock before signing/journal access, including manual runs.
+- Captured/check-bound delivery ID/items/recipient/reward/form in confirmation.
+- Required exact live origin StorageUnit during fulfillment; no SSU access promise.
+- Exposed pending digest/action and documented evidence-backed journal incident
+  recovery; unknown transactions are never silently rebuilt/reset.
+- Scope no-admin-override to reviewed code; UpgradeCap remains governed authority.
 
-## Implementation — PASS after fixes
+Reviewer independently ran6 keeper tests, inspected54 Move/483 frontend passes,
+and gave a final scoped PASS after the origin and operational fixes. They required
+release artifact replacement; this directory now supersedes old pilot artifacts.
 
-No contract fund-loss/settlement blocker identified in reviewed source. Reviewer
-flagged two frontend correctness issues, both corrected before the final pass:
-
-1. Polling can change the default active market after bet confirmation. Capture
-   `{marketId, wallet, side, stake}`, reset on relevant changes and reject
-   mismatches before execution; browser regression proves invalidation.
-2. Transferred character's old PlayerProfile can remain discoverable. Re-read
-   current official Character object type/address/tenant before selecting it;
-   a unit test proves stale candidates are skipped.
-
-Final review independently ran the 19 book-specific frontend tests and inspected
-browser evidence. Reviewed contract invariants and existing-casino isolation
-remained sound. Approval covers staged source only, not publication, external
-audit certification, full event completeness, or live wallet-to-chain E2E.
+Remaining external gates: restored backup verification/attestation, current API
+credential and authenticated exact-expiry retrieval, actual publication/cap
+custody, funded scheduled keeper proof, wallet lifecycle, web cutover. Do not
+convert simulation or local browser fixtures into claims of production success.

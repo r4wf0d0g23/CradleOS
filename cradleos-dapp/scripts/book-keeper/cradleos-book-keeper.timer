@@ -1,0 +1,11 @@
+[Unit]
+Description=Settle CradleOS testnet book every 30 seconds
+
+[Timer]
+OnBootSec=30
+OnUnitInactiveSec=30
+AccuracySec=2
+Unit=cradleos-book-keeper.service
+
+[Install]
+WantedBy=timers.target

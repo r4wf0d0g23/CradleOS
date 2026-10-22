@@ -1,0 +1,12 @@
+[Unit]
+Description=CradleOS testnet book settlement keeper
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002/cradleos-dapp
+EnvironmentFile=%h/.config/cradleos-book-keeper/environment
+ExecStart=/usr/bin/node scripts/book-keeper/main.mjs
+UMask=0077
+NoNewPrivileges=yes
+TimeoutStartSec=240

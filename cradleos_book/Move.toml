@@ -4,6 +4,8 @@ edition = "2024"
 
 [dependencies]
 world = { local = "../world-contracts/contracts/world" }
+pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/sui/contracts", rev = "6c78a4d882daf4d91457ad5142cb58fc7e376f98" }
+wormhole = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/sui/vendor/wormhole_simple_majority/wormhole", rev = "6c78a4d882daf4d91457ad5142cb58fc7e376f98" }
 
 [environments]
 testnet_stillness = "4c78adac"

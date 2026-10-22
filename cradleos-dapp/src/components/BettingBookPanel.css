@@ -220,3 +220,8 @@
     font-size: 18px;
   }
 }
+.book-deliveries { margin-top: 2rem; border-top: 1px solid #ffffff22; padding-top: 1rem; }
+.book-object-id { overflow-wrap: anywhere; font-size: .72rem; }
+.book-items { display: grid; gap: .6rem; }
+.book-items label { display: flex; align-items: center; gap: .5rem; }
+.book-items input[type=checkbox] { width: auto; }

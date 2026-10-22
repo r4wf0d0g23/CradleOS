@@ -11,6 +11,10 @@
       "pass": true
     },
     {
+      "check": "reward-poll-invalidates-captured-delivery",
+      "pass": true
+    },
+    {
       "check": "fixture-open-390",
       "pass": true
     },

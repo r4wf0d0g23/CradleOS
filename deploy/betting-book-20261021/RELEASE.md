@@ -1,119 +1,96 @@
-# Frontier Betting Book — staged release, October 21, 2026
+# Betting book — reviewed staging, NOT DEPLOYED
 
-**NOT PUBLISHED. NOT ENABLED ON THE LIVE WEBSITE.** No new wallet signature,
-funding, wager, market, or chain object was created. Current casino House/HOLD,
-balances, practice games and production deployment remain unchanged.
+Current release replaces the initial pilot/fleet design. Old receipts are in
+`archive-initial-pilot/`; never use their ABI or simulated IDs for deployment.
+Current exact source/bytecode/build hashes: `provenance.json`.
 
-## Reviewed implementation
+## Implemented
 
-- Source: `de37c69358243c75f4d4a6a41ebe2a3e3dc46bd6`.
-- Local provenance tag: `publish/cradleos_book-2026-10-21` (pre-publication
-  source snapshot, not evidence of publication). Neither source nor tag pushed.
-- Separate `cradleos_book` Move package and casino Betting Book panel.
-- Current Sui testnet EVE; player-funded two-pilot kill contests, zero house fee.
-- Terms freeze before betting. Only qualifying canonical official Killmail
-  objects submitted before the proof deadline count. Scores stay provisional
-  until then. Game-admin attestation is trusted; game-wide completeness and
-  self/alt-kill filtering are NOT promised.
-- Tie/zero-proof/one-sided pools refund. No administrator withdrawal or result
-  override. Permissionless proof/finalize/claim remains available when paused.
-- Owned, sender-bound tickets; integer accounting; exact aggregate escrow
-  conservation with at most one atomic unit of order-dependent rounding per
-  winning ticket. No current character required to reclaim a prior ticket.
-- Publication manifest intentionally has blank package/book IDs and wagering
-  disabled. No simulated publication IDs are used as real deployment data.
+- Fixed BTC/USD and ETH/USD Above / At-or-below markets, testnet EVE, zero fee.
+- Immutable rules, canonical authenticated first-crossing price, fixed cutoff;
+  missing proof or one-sided pool refunds. Equality pays At-or-below.
+- Exact-item sponsored wallet handoff/reward with live origin SSU check and
+  timed refund. No outcome wager on a supplier-controlled delivery.
+- Shared fixed-recipient automatic-payment entitlement, owned discovery receipt,
+  permissionless wallet fallback, pause-safe recovery and integer conservation.
+- Dedicated-signer keeper, durable signed transaction journal, OS process lock,
+  bounded jobs, systemd user timer, incident/status guidance.
+- **No combat entry points.** Current killmails cannot establish victim controller
+  at death. See `EXPANSION.md`; no self/alt/collusion-proof claim.
 
-## Completed checks
+No chain write/signature, market, wager, funding, service activation, or website
+cutover occurred. Manifest has blank IDs; wagering/rewards disabled. Existing
+casino House/HOLD, balances and production ea9de180 are unchanged.
 
-- 29 Move tests, including maximum-u64 pool, rounding, refunds, canonical proof
-  rejection, deadlines, pause recovery, cap binding and foreign-market tickets.
-- 479 frontend tests in 50 files; 19 are new book-specific tests.
-- TypeScript, 8 Origins canon checks, approved exact-directory IOC scanner,
-  production Vite build and `git diff --check` PASS.
-- Seven fixture-only browser checks at 320/390/1440 pixels; no wallet signatures.
-  Confirmation invalidation on market refresh is covered. Official-character
-  ownership is re-read to reject transferred-profile stale candidates.
-- Unmodified production-build preview at 390/1440 is checked separately:
-  setup pending, no betting action, no page errors or horizontal overflow.
-- Clean production Move build in a fresh temporary installation directory:
-  only module `book`, no test-only setup; current world reference present,
-  other published world origins and protocol-listed retired origin absent.
-  It exactly matches the package-directory bytecode used by the dry-run.
-- Unsigned `sui client publish --dry-run --verify-deps` succeeded against the
-  verified current testnet. Estimated gas 46,303,600 MIST. This is a simulation,
-  not a publication. All IDs in `publish-dryrun.json` are simulation outputs.
-- Independent architecture and staged-release reviews PASS after fixes;
-  reviewer did not approve or claim live publication/wallet E2E.
+## Completed verification
 
-Evidence: `provenance.json`, `abi-public.txt`, `browser-qa.json`,
-`production-preview.json`, `publish-dryrun.json`, `REVIEW.md`. Raw tool logs are
-retained locally (repository ignores `*.log`). Existing Vite chunk/dynamic-import
-warnings are non-blocking; this release does not claim bundle optimization.
+- 54 Move tests, including permissionless paid-replay, exact conservation/u64 edge,
+  explicit equality, first-crossing/confidence/time/feed rejection, creator
+  exclusion, real World Item handoff, sponsor-self/second/wrong-origin rejection,
+  exact quantity, deadline refund and pause independence.
+- 483 frontend tests (23 book-specific); TypeScript,8 Origins canon checks,
+  approved scanner of the **exact dapp directory**, production Vite build,
+  git diff checks. Existing large-bundle warnings remain; no optimization claimed.
+- 6 keeper tests, including durable-before-broadcast and identical-byte recovery
+  after lost response; actual OS-lock smoke check before config/signer load.
+- 8 fixture-only browser checks at320/390/1440: market/reward poll invalidates
+  confirmation, exact conditions, no horizontal overflow, error distinct from
+  empty. Separate unmodified production preview fails closed at390/1440.
+- 15 live read-only verifier simulations: USDC sample and configured BTC/ETH
+  historical leaves accepted; four mutations each rejected. These are canonical
+  Pyth/Wormhole calls, not deployed book lifecycle or a live historical API test.
+- Clean production build: only book/delivery/price, no test-only/combat entry points,
+  current World and pinned Pyth/Wormhole origins. Matches unsigned publication
+  simulation build. Dependency verification and unsigned publish dry-run PASS.
+  Estimated gas81,529,600 MIST. Dry-run IDs are not actual publication IDs.
+- Independent staged implementation review PASS; see `REVIEW.md`.
 
-## Actual remaining publication gate
+## Concrete publication/activation blockers
 
-`cradleos-dapp/FRESH_DEPLOY_PROTOCOL.md` §8.1 requires an immediately-before-publish
-signature from restored backup material and operator-attested readable backups
-on at least two off-host locations. Existing deploy wallet/custody destination
-is already authorized: `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
-Do not ask Raw to reselect it.
+1. **Backup access.** DGX2 Tailscale is NeedsLogin/no peers. Approved pinned
+   Jetson2 and DGX1 routes unavailable; does not establish DGX1 power state.
+   FRESH_DEPLOY_PROTOCOL §8.1 requires a fresh restored-backup signing proof and
+   operator-attested readable backups at two off-host locations. The Oct2
+   exception covered only that prior release. Existing authorized wallet/custody:
+   `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
+   No need to reselect it; no false attestation, host-key bypass or key movement.
+2. **Oracle access.** Secure PYTH_API_KEY request expired unanswered. Current
+   authenticated exact-target retrieval, feed catalog and durable service-secret
+   provisioning unverified. Public posted proofs establish verifier feasibility,
+   not continuous availability. No account purchase is authorized.
 
-October 2 records prove one Jetson2 backup then, not today. The second (DGX1)
-was not verified. The October 2 backup exception explicitly covered that Cycle 7
-release only. Today the approved pinned-host SSH route to Jetson2 times out;
-Tailscale reports NeedsLogin/no peers. No host-key bypass, secret output, new
-backup destination, login change, or signature was attempted to work around it.
+## Exact resume sequence (already authorized work)
 
-Before signing this release: restore approved backup access and satisfy §8.1,
-or obtain a new **explicit release-scoped exception** from Raw covering the
-currently-unrefreshed backup signing proof and second-backup requirement. Record
-the exact authorization and its scope. No exception has yet been requested or
-granted in this receipt. Existing casino activation HOLD is not part of any
-book-only exception.
+1. Restore Tailscale; verify approved DGX1/Jetson2 backups and refreshed signing
+   proof/physical-host attestation. Record custody before any publication signature.
+2. Obtain existing oracle credential via protected input (never chat), verify
+   authenticated catalog and signed first-crossing responses for the exact pinned
+   feed/state pairs. Generic documentation's Beta note must not override actual
+   upgraded canonical verification. If IDs/API semantics change, edit/review/test
+   source before publishing. Do not enable price markets on a guessed endpoint.
+3. Recheck source hashes, current World/EVE, chain4c78adac and wallet. Rebuild clean
+   production artifacts and unsigned dependency-verified dry-run if source changes.
+   Source snapshot must have its own new tag; do not move the original pilot tag.
+4. Publish **only cradleos_book** with pinned Sui1.81.0 and existing client config.
+   Record actual digest/package/BootstrapCap/UpgradeCap/custody immediately. Compare
+   runtime ABI/type origins to current `abi-public.txt`; no test-only functions.
+   Consume BootstrapCap once via `book::create_book<CURRENT_EVE_COIN_TYPE>`.
+   Record Book/AdminCap owner and exact version/tenant/empty lists. No migrations
+   of other packages or existing player state. No cap immutability without Raw.
+5. Verify real current Character/Item/Pyth inputs by unsigned simulations. Create
+   no invented events or wagers. Live wallet lifecycle needs consenting users;
+   do not fabricate coverage from fixtures.
+6. Provision/fund gas-only keeper, verify journal/lock/timer and an autonomous run.
+   Observe a genuine qualifying proof, finalization and payment/refund. Only then
+   state automatic payouts are operational. Keep per-template activation gates
+   accurate; unresolved price access must not be described as live.
+7. Fill frontend manifest from real receipts, review actual IDs and affected
+   checks. Commit/push reviewed source, run PRIMARY_DEPLOY gates, publish same
+   dist to cradleos primary only. Verify exact live HTML/JS/CSS and affected UI.
+   Rollback web target ea9de180; Move publication cannot be rolled back.
+8. Update memory/receipts with actual deployment and verification gaps. House
+   wagering HOLD is unrelated and remains untouched.
 
-## Resume publication after that gate
-
-1. Recheck current world/EVE/registry, chain `4c78adac`, deploy wallet, source
-   hashes and selected environment. Move source is world-lineage-bound through
-   `&Character` and `&Killmail`; a future world rotation requires a new package.
-   This is a first book lineage: no previous book/player-state migration or
-   prior book ABI exists. Do not alter other packages or old player state.
-2. Satisfy/record custody gate, then regenerate a clean production build and
-   rerun bytecode assertions. Re-run unsigned publication simulation with
-   dependency verification. Keep the exact source commit/tag as anchor.
-3. Publish only `cradleos_book` with the pinned Sui 1.81.0 tool and existing
-   `research/eve-cycle7-clean-wipe-20261002/client.yaml`. Record actual digest,
-   package ID, BootstrapCap, UpgradeCap and owner immediately. Never use IDs
-   from `publish-dryrun.json`.
-4. Compare new normalized public ABI against `abi-public.txt` (prepublish
-   disassembly signatures). Check all public entry signatures and type origins.
-   Bootstrap exactly once via `book::create_book<CURRENT_EVE_COIN_TYPE>`, consuming
-   actual BootstrapCap. Record Book/AdminCap and custody; verify shared Book
-   exact type, version1, correct registry/tenant, paused state, empty markets.
-5. Pre-cutover type-identity dry-runs with live current Character/Killmail objects:
-   create_market future terms; place_bet with exact EVE coin; submit_proof with
-   current Killmail; finalize/claim against actual book objects once available.
-   Expected time/authority aborts must be distinguished from type/ABI failures.
-   No demo or invented-event market and no wager on Raw's behalf. Full wallet
-   lifecycle requires actual consenting test participants/eligible events.
-6. Fill manifest using real verified receipts only. Keep new betting disabled
-   until checks pass. Do not make package immutable without explicit approval;
-   retaining an UpgradeCap is not permission to bypass event/escrow rules.
-7. Re-run affected tests/production build and independent release review after
-   real IDs are wired. Follow `PRIMARY_DEPLOY.md`: commit/push reviewed source,
-   canon/IOC/build gates, primary-only Pages deployment, exact live asset hashes
-   and actual browser checks. Current rollback target is `ea9de180`.
-8. Report actual chain/frontend receipts and any live-wallet verification gaps.
-   Book begins empty; operator can create future contests with actual official
-   character IDs. A book release never unpauses the existing casino House.
-
-## Local reproduction
-
-Use `/home/rawdata/.openclaw-captain/workspace/tools/sui-testnet-1.81.0/sui`,
-not the host's unrelated/broken global Sui link. Build/test with environment
-`testnet_stillness`. CLI `client publish` uses the selected client environment,
-not `--build-env`. Native Move publication verifies dependency source; do not
-add skip-verification flags. Browser fixture runner expects local Vite port5230;
-production preview uses port5231 with `VITE_BASE=/`. Both temporary servers were
-stopped after validation. Rebuild artifacts from source rather than committing
-build caches.
+Toolchain: `/home/rawdata/.openclaw-captain/workspace/tools/sui-testnet-1.81.0/sui`.
+Client config: `research/eve-cycle7-clean-wipe-20261002/client.yaml` in workspace.
+Package build environment `testnet_stillness`. Never skip dependency verification.

@@ -1,39 +1,57 @@
 {
   "status": "staged-not-published",
-  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
   "environment": "testnet_stillness",
   "chainId": "4c78adac",
   "worldSourceCommit": "d33ff232bd3878e8f9ad0721e18564b21facc925",
+  "pythSourceCommit": "6c78a4d882daf4d91457ad5142cb58fc7e376f98",
   "moveModules": [
-    "book"
+    "book",
+    "delivery",
+    "price"
   ],
-  "bytecodeSha256": "557503c51dee125c98f21e2c3e8b16d193ba874f75fb9988e312fccaeb108df1",
+  "bytecodeSha256": {
+    "book": "1d676d5987a648604ce3717c4b0c4f488f12f45ce2b45a798eae659001f57ad6",
+    "delivery": "1f4715942b738bc679cd2c3435f5c77a412a9510b39637230a231a5b165d5fb3",
+    "price": "c0ac7c3bee5d97f34ebd6c161c8a2d1b62c51a36f76e6f4d9f843541ea873fab"
+  },
   "assertions": {
-    "environmentPin": true,
-    "currentWorldInBytecode": true,
-    "otherWorldOriginsAbsent": true,
-    "testOnlyFunctionsAbsent": true,
+    "testOnlyAndCombatAbsent": true,
+    "onlyPinnedDependencyOrigins": true,
     "cleanArtifactMatchesPublicationDryrunBuild": true,
-    "noPublicationLedger": true
+    "unsignedPublicationSimulationSucceeded": true,
+    "noPublicationPerformed": true
   },
   "sourceSha256": {
-    "cradleos_book/Move.toml": "023384d8f3659bbb41ffc70d778473c66154515db0e26d34229ccf240ab08ee6",
-    "cradleos_book/Move.lock": "12851f8bac046ebe0da20edf5b80dec52661017a02d2e3ae4d5bb3bac5c98141",
-    "cradleos_book/sources/book.move": "fe9a46e9b108e6aacc97bab623fc9901af03229d4cdaef6e333acd8934492ec2",
-    "cradleos_book/tests/book_tests.move": "55709a1aa0116d4a77e5d0c67d2456362a6ddcbe7cf223dfbc4970c32d43bfff",
-    "cradleos-dapp/src/lib/bookDeployment.ts": "161bcbbd74bcf49c0f00c49a199ffce2ace776538c7171c87f22f2c8e6fabd29",
-    "cradleos-dapp/src/lib/bettingBook.ts": "a56f0ba6eb77588dc78bbb0d9f516e7e63be075a3b43261766068bed0e7858e0",
-    "cradleos-dapp/src/lib/bettingBook.test.ts": "c09f236ff3a0fa0f39e2fb17f2bf6426ab67f3df484ae05b7eb78021e56f4451",
+    "cradleos_book/Move.toml": "1fbef06e5f261a6d180929eb1f0c5ab9154076312362f3fea3485d6ed5567572",
+    "cradleos_book/Move.lock": "d39aeec0c4b5e29e565d43d2c766e5fa44e0f0d138bd1cb79213be2711483ccd",
+    "cradleos_book/sources/book.move": "15a07c5ae38b84ca030583717ee3df8eb50643011d47f09e1046a382aaa1b60e",
+    "cradleos_book/sources/price.move": "93ee2053c89b9b963612435211095a1036e39fd33706b31ab70249bd313888b1",
+    "cradleos_book/sources/delivery.move": "3aec04db43e496b3770f2b013ac8130723f4587c8135194098889183ca7eee33",
+    "cradleos_book/tests/delivery_tests.move": "98c0896d1f40a8258ada42851f2c6e7e1e0b4fbe4e60fedc8f10fd39546fb478",
+    "cradleos_book/tests/book_tests.move": "ab20377346ede2ac766d628ea3ac3b577a0e43946972945e6ec59e42dae09c6a",
+    "cradleos_book/tests/price_tests.move": "15e1447ccfaf749407c55a0687d11dee69cf22855e5ab42e6d461967515bd5ef",
+    "cradleos-dapp/src/lib/bookDeployment.ts": "ccf992dc51b1e845356c3333d6c7e1f40880c143047a72bbfd0a0eb9c59c0d67",
+    "cradleos-dapp/src/lib/bettingBook.ts": "99cbd2097aa7320c699393e913b9b05c5967f8040fe86de99b131fd1a63c15e9",
+    "cradleos-dapp/src/lib/bettingBook.test.ts": "5f46ea2f20620c630bfdbaf80d49b16f2d2b2f136c6ed9126c94c462db6d8cfc",
     "cradleos-dapp/src/lib/transactionCompatibility.ts": "ebb8ce628b842bc6334db653cee387534dde2d4c98e95e13fb199671dd747ac7",
-    "cradleos-dapp/src/components/BettingBookPanel.tsx": "8bd347c5161de5b460025dd930b89e727eb5b22100d7d22029fe80a754e204bb",
-    "cradleos-dapp/src/components/BettingBookPanel.css": "12edf951afa5885b854972f17d203c4541f4c49c6f4d1c458c33952a4c25c825",
-    "cradleos-dapp/src/components/CasinoExperience.tsx": "519c33aa962d20742f0c989cade9dee78a8f9c5edc8afb315a23764000e4172d"
+    "cradleos-dapp/src/components/BettingBookPanel.tsx": "e8ee17e8f00a2e70b0c94c1c86418e200d073a8828561c11aeb2e531f1c78de7",
+    "cradleos-dapp/src/components/BettingBookPanel.css": "1a20d45e41d8aa24c71952841b18822c04cc16838c508afaf58e31af6a59f104",
+    "cradleos-dapp/src/components/DeliveryBoard.tsx": "c59a4729ca8af1da4a37f2a6918e55e2545858fcb1e4cdadccfe0618b5ab3d56",
+    "cradleos-dapp/src/components/CasinoExperience.tsx": "519c33aa962d20742f0c989cade9dee78a8f9c5edc8afb315a23764000e4172d",
+    "cradleos-dapp/scripts/book-keeper/journal.mjs": "139512e0115f2179d82a45430355a82a4ac4bebe05623a2725ebc026ca8b8555",
+    "cradleos-dapp/scripts/book-keeper/README.md": "47a02e5857a5ab49a918a63248b27170288f90bd7540fe09aabf916963610786",
+    "cradleos-dapp/scripts/book-keeper/engine.mjs": "bcdfd916e6544eee7d1579c0473b40acedb082b09551a6d5f3a64f3e64ac567c",
+    "cradleos-dapp/scripts/book-keeper/main.mjs": "b5a2cf7aa88fc4d013d54fd9fcbf9390ce8f46e246fdb4a2ab9298c2f2e7930b",
+    "cradleos-dapp/scripts/book-keeper/engine.test.mjs": "3d47e538632c37a63ffbc68ae4db44362ff5e2dc7cdadeacca15c62a6bf3512c",
+    "cradleos-dapp/scripts/book-keeper/config.example.json": "f4ff3f816c299a191f7bf15bc068d83bd5c2cc0b4fffb6d47ace9380d4be043f",
+    "cradleos-dapp/scripts/book-keeper/cradleos-book-keeper.timer": "d2bec6474d2ffcb40e32fcff6f30cd979705b25c5cb378c563c3beb45cb615c2",
+    "cradleos-dapp/scripts/book-keeper/cradleos-book-keeper.service": "2885a73d9733072b8b3988aee7a2f0cec79a2a8a21b223b24c57a9e75e99cb5d"
   },
   "frontendDistSha256": {
-    "index.html": "bb58106ce770eb6ac224a9fd1d730735bebe7219ecc57f44d956b5c1baa89069",
-    "assets/index-DJ69FWIJ.js": "4572cfa2dd054564194e74171721ff71bdb4ebc980cac42792eddce2cafca573",
-    "assets/index-Cj0IutYE.css": "d454c4e808c1443ace67e7862845cb96db185563991fcc965810e5a96b436c55"
+    "index.html": "81eb672669628bfb2c432e2d29485a1e19361d9bb0702a8ac97d7a8c523471ad",
+    "assets/index-Cry5MCOP.css": "ce6e6bad08abb0f066d4859c00eaa033e05a635235730ec5fbb5243713e39c43",
+    "assets/index-DwL9aW8p.js": "6d3d0c22c465f227f95c2e4cb8c7f5ec692094f0c3fb6aadb0cb3aae74acfdf3"
   },
-  "sourceCommit": "de37c69358243c75f4d4a6a41ebe2a3e3dc46bd6",
-  "sourceTag": "publish/cradleos_book-2026-10-21"
+  "sourceCommit": null,
+  "sourceTag": "publish/cradleos_book-oracle-2026-10-21"
 }
