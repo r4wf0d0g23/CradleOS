@@ -1,5 +1,11 @@
 # Sports book — testnet EVE extension
 
+> **Oct21 20:58 steering:** use official league APIs with our trusted result
+> reporter and sparse conclusion-time checks. See OFFICIAL-LEAGUE-SOURCES.md.
+> Its observed-final confirmation rule replaces the earlier mandatory signed
+> provider/revision-history and independent-authority requirements below.
+> Sports remains undeployed; this is an architectural correction, not activation.
+
 Requested by Raw 2026-10-21, message1562641724566798481. NFL/NBA are
 working defaults pending league preference. This is NOT a mainnet release.
 
