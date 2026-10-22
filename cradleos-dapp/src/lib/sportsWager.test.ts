@@ -1,0 +1,24 @@
+import {describe,it,expect} from 'vitest';
+import {parseMarket,phase,buildBet,estimatedReturn,buildClaim}from'./sportsWager';
+import {SPORTS_DEPLOYMENT}from'./sportsDeployment';
+import {sha256}from'@noble/hashes/sha2.js';
+const id=(s:string)=>'0x'+s.repeat(64);const cfg={...SPORTS_DEPLOYMENT,packageId:id('a'),bookId:id('b'),reporter:id('c'),wageringEnabled:true};
+const now=Math.floor(Date.now()/1000),start=now+3600;
+const t={adapter:1,version:'v1',chain:137,ctf:'0x4d97dcd97ec945f40cf65f87097ace5ea0476045',oracle:'0x65070be91477460d8a7aeeb94ef92fe056c2f2a7',league:'nba',labels:['Cavaliers','76ers'],marketId:'5765055',condition:id('1'),slug:'nba-cle-phi-2026-10-22',start,cutoff:start-300,deadline:start+172800,hold:7200};
+const json=JSON.stringify(t),b64=(x:Uint8Array)=>Buffer.from(x).toString('base64');
+const node={address:id('d'),owner:{__typename:'Shared'},asMoveObject:{contents:{type:{repr:`${cfg.packageId}::sports::Market<${cfg.coinType}>`},json:{version:'1',book_id:cfg.bookId,tenant:cfg.tenant,reporter:cfg.reporter,creator:id('e'),terms_json:json,terms_hash:b64(sha256(new TextEncoder().encode(json))),condition:b64(new Uint8Array(32).fill(0x11)),label_a:'Cavaliers',label_b:'76ers',source_market:'5765055',league:1,starts:String(start),cutoff:String(start-300),proof_deadline:String(start+172800),candidate:0,candidate_at:'0',pool_a:'3',pool_b:'7',escrow:'10',result:0,remaining_winning_stake:'0',claim_count:'2',claims:{id:id('f')}}}}};
+const market=()=>parseMarket(structuredClone(node),cfg);
+describe('sports state/transactions',()=>{
+ it('accepts exact source and escrow',()=>expect(market().labels).toEqual(['Cavaliers','76ers']));
+ for(const[k,v]of[['book_id',id('0')],['reporter',id('0')],['terms_json',json+' '],['label_a','Bucks'],['cutoff','0'],['proof_deadline','0'],['result',9],['escrow','11'],['claim_count','10001']] as const)it('rejects '+k,()=>{const n=structuredClone(node);(n.asMoveObject.contents.json as Record<string,unknown>)[k]=v;expect(()=>parseMarket(n,cfg)).toThrow();});
+ it('wrong package rejected',()=>{const n=structuredClone(node);n.asMoveObject.contents.type.repr='0x1::sports::Market';expect(()=>parseMarket(n,cfg)).toThrow();});
+ it('exact cutoff closed',()=>expect(phase(market(),start-300)).toBe('Awaiting result'));
+ it('deadline prioritized',()=>expect(phase({...market(),candidate:1},start+172800)).toBe('Refund due'));
+ it('pari-mutuel estimate not upstream odds',()=>expect(estimatedReturn(market(),1,2n)).toBe(4n));
+ it('zero/overflow rejected',()=>{expect(()=>estimatedReturn(market(),1,0n)).toThrow();expect(()=>estimatedReturn(market(),2,2n**64n)).toThrow();});
+ it('bet targets dedicated escrow with exact EVE split',()=>{const tx=buildBet(market(),id('4'),1,2n,[{id:id('5'),balance:20n}],cfg);const calls=tx.getData().commands.filter(x=>x.$kind==='MoveCall');expect(calls).toHaveLength(1);expect(calls[0].MoveCall).toMatchObject({package:cfg.packageId,module:'sports',function:'place_bet',typeArguments:[cfg.coinType]});});
+ it('disabled release never signs new bets',()=>expect(()=>buildBet(market(),id('4'),1,2n,[],{...cfg,wageringEnabled:false})).toThrow());
+ it('closed market never signs',()=>expect(()=>buildBet({...market(),cutoff:now},id('4'),1,2n,[],cfg)).toThrow());
+ it('duplicate coins fail',()=>expect(()=>buildBet(market(),id('4'),1,2n,[{id:id('5'),balance:2n},{id:id('5'),balance:2n}],cfg)).toThrow());
+ it('claim has no caller-selected recipient or coin amount',()=>{const c=buildClaim(id('d'),id('6'),cfg).getData().commands[0];expect(c.MoveCall?.function).toBe('claim_for');expect(c.MoveCall?.arguments).toHaveLength(2);});
+});

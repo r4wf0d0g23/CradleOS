@@ -29,6 +29,7 @@ import {
   bookReceipt,
 } from "../lib/bettingBook";
 import "./BettingBookPanel.css";
+import { SportsBookPanel } from "./SportsBookPanel";
 import { DeliveryBoard } from "./DeliveryBoard";
 
 const PENDING = "cradle.book.pending.v1";
@@ -41,7 +42,7 @@ function readPending() {
     return "Storage unavailable";
   }
 }
-export function BettingBookPanel({
+function PriceRewardBook({
   onBusyChange,
 }: {
   onBusyChange?: (v: boolean) => void;
@@ -610,4 +611,10 @@ export function BettingBookPanel({
       )}
     </section>
   );
+}
+
+export function BettingBookPanel({onBusyChange}:{onBusyChange?:(v:boolean)=>void}){
+ const [tab,setTab]=useState<'sports'|'rewards'>('sports'),[busy,setBusy]=useState(false);
+ const status=(v:boolean)=>{setBusy(v);onBusyChange?.(v);};
+ return <div className="betting-book"><nav className="book-heading" aria-label="Book sections"><button disabled={busy} aria-pressed={tab==='sports'} onClick={()=>setTab('sports')}>Sports</button><button disabled={busy} aria-pressed={tab==='rewards'} onClick={()=>setTab('rewards')}>Item rewards / Prices</button></nav>{tab==='sports'?<SportsBookPanel onBusyChange={status}/>:<PriceRewardBook onBusyChange={status}/>}</div>;
 }

@@ -1,0 +1,33 @@
+{
+  "adapter": 1,
+  "chain": 137,
+  "ctf": "0x4d97dcd97ec945f40cf65f87097ace5ea0476045",
+  "oracle": "0x65070be91477460d8a7aeeb94ef92fe056c2f2a7",
+  "collateral": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+  "version": "v1",
+  "league": "nfl",
+  "gameId": "19548",
+  "eventId": "1004101",
+  "marketId": "4465810",
+  "slug": "nfl-ne-chi-2026-10-23",
+  "teams": [
+    "ne",
+    "chi"
+  ],
+  "labels": [
+    "Patriots",
+    "Bears"
+  ],
+  "tokens": [
+    "100418554533870028564580320858616813722975772325054442709650747770554067362636",
+    "98455634397831700132935577320611350585110802128203461948662184473105090001848"
+  ],
+  "condition": "0x3274464d5a09edb00cdb2f4e9243531eb9bb0a7a1003d6190f42f2f6a9f1f6c5",
+  "question": "0x974546ae0c111d83196dff20480f0e59b1b351958c699ab176f231cbf7e69d00",
+  "description": "In the upcoming NFL football game between Patriots and Bears, scheduled for October 22 at 8:15PM ET:\nThis market will resolve to \"Patriots\" if Patriots win the game.\nThis market will resolve to \"Bears\" if Bears win the game.\nOvertime is included if played.\nIf the game ends in a tie, this market will resolve 50-50.\nIf the game is postponed, this market will remain open until the game has been completed.\nIf the game is canceled entirely, with no make-up game, this market will resolve 50-50.",
+  "rulesHash": "481fadcdd5076d05e3e5b3ce4cb554419862996c57eed039529260c3e4ce48ce",
+  "start": 1792714500,
+  "cutoff": 1792714200,
+  "deadline": 1792887300,
+  "hold": 7200
+}
