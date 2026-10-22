@@ -1,4 +1,5 @@
 // Explicit deployment/listing CLI; never invoked by the reporter or public UI.
+import { dirname } from "node:path";
 import { readFile, writeFile, open } from "node:fs/promises";
 import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { Transaction } from "@mysten/sui/transactions";
@@ -123,6 +124,8 @@ try {
 } finally {
   await journal.close();
 }
+const directory = await open(dirname(output), "r");
+try { await directory.sync(); } finally { await directory.close(); }
 const result = await client.executeTransaction({
   transaction: bytes,
   signatures: [signed.signature],
@@ -130,6 +133,7 @@ const result = await client.executeTransaction({
 });
 await writeFile(output + ".json", JSON.stringify(result, null, 2));
 const r = receipt(result);
+if (r.digest !== digest) throw Error("DIGEST_MISMATCH");
 if (!r.success) throw Error("CONFIRMED_FAILURE");
 console.log(
   JSON.stringify({ operation, ...r, source: proof?.receipt.terms.marketId }),
