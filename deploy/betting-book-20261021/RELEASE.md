@@ -3,6 +3,8 @@
 Current release replaces the initial pilot/fleet design. Old receipts are in
 `archive-initial-pilot/`; never use their ABI or simulated IDs for deployment.
 Current exact source/bytecode/build hashes: `provenance.json`.
+Reviewed source: `507712e7769c7c531921f32458f0590b9cec77df`; local tag
+`publish/cradleos_book-oracle-2026-10-21`. Source/tag are committed locally, not pushed.
 
 ## Implemented
 
