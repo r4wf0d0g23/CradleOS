@@ -1,0 +1,11 @@
+public create_book<T>(cap#0#0: BootstrapCap, ctx#0#0: &mut TxContext)
+public set_paused<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, paused#0#0: bool)
+public create_market<T>(book#0#0: &mut Book<T>, cap#0#0: &AdminCap, a#0#0: &Character, b#0#0: &Character, starts#0#0: u64, ends#0#0: u64, proof_deadline#0#0: u64, loss_type#0#0: u8, system_id#0#0: u64, clock#0#0: &Clock, ctx#0#0: &mut TxContext)
+public place_bet<T>(book#0#0: &Book<T>, market#0#0: &mut Market<T>, player#0#0: &Character, side#0#0: u8, funds#0#0: Coin<T>, clock#0#0: &Clock, ctx#0#0: &mut TxContext)
+public submit_proof<T>(market#0#0: &mut Market<T>, proof#0#0: &Killmail, clock#0#0: &Clock)
+public finalize<T>(market#0#0: &mut Market<T>, clock#0#0: &Clock)
+public claim<T>(market#0#0: &mut Market<T>, ticket#0#0: Ticket<T>, ctx#0#0: &mut TxContext)
+public scores<T>(market#0#0: &Market<T>): u64 * u64
+public result<T>(market#0#0: &Market<T>): u8
+public escrow<T>(market#0#0: &Market<T>): u64
+public market_ids<T>(book#0#0: &Book<T>): vector<ID>

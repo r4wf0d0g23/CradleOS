@@ -1,0 +1,17 @@
+{
+  "status": "not-published",
+  "network": "testnet_stillness",
+  "chainId": "4c78adac",
+  "publisherAndCustodyAddress": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "walletSelectionAlreadyAuthorized": true,
+  "backupRestoredSigningProofToday": false,
+  "twoOffHostBackupsVerifiedToday": false,
+  "previousVerifiedBackupDate": "2026-10-02",
+  "previousReleaseExceptionApplies": false,
+  "approvedBackupRouteToday": "pinned-host SSH timed out; Tailscale NeedsLogin",
+  "newReleaseExceptionAuthorized": false,
+  "publicationPerformed": false,
+  "chainIdsAndCaps": null,
+  "frontendDeployed": false,
+  "currentProductionRollbackId": "ea9de180"
+}

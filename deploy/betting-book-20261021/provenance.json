@@ -1,0 +1,39 @@
+{
+  "status": "staged-not-published",
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "environment": "testnet_stillness",
+  "chainId": "4c78adac",
+  "worldSourceCommit": "d33ff232bd3878e8f9ad0721e18564b21facc925",
+  "moveModules": [
+    "book"
+  ],
+  "bytecodeSha256": "557503c51dee125c98f21e2c3e8b16d193ba874f75fb9988e312fccaeb108df1",
+  "assertions": {
+    "environmentPin": true,
+    "currentWorldInBytecode": true,
+    "otherWorldOriginsAbsent": true,
+    "testOnlyFunctionsAbsent": true,
+    "cleanArtifactMatchesPublicationDryrunBuild": true,
+    "noPublicationLedger": true
+  },
+  "sourceSha256": {
+    "cradleos_book/Move.toml": "023384d8f3659bbb41ffc70d778473c66154515db0e26d34229ccf240ab08ee6",
+    "cradleos_book/Move.lock": "12851f8bac046ebe0da20edf5b80dec52661017a02d2e3ae4d5bb3bac5c98141",
+    "cradleos_book/sources/book.move": "fe9a46e9b108e6aacc97bab623fc9901af03229d4cdaef6e333acd8934492ec2",
+    "cradleos_book/tests/book_tests.move": "55709a1aa0116d4a77e5d0c67d2456362a6ddcbe7cf223dfbc4970c32d43bfff",
+    "cradleos-dapp/src/lib/bookDeployment.ts": "161bcbbd74bcf49c0f00c49a199ffce2ace776538c7171c87f22f2c8e6fabd29",
+    "cradleos-dapp/src/lib/bettingBook.ts": "a56f0ba6eb77588dc78bbb0d9f516e7e63be075a3b43261766068bed0e7858e0",
+    "cradleos-dapp/src/lib/bettingBook.test.ts": "c09f236ff3a0fa0f39e2fb17f2bf6426ab67f3df484ae05b7eb78021e56f4451",
+    "cradleos-dapp/src/lib/transactionCompatibility.ts": "ebb8ce628b842bc6334db653cee387534dde2d4c98e95e13fb199671dd747ac7",
+    "cradleos-dapp/src/components/BettingBookPanel.tsx": "8bd347c5161de5b460025dd930b89e727eb5b22100d7d22029fe80a754e204bb",
+    "cradleos-dapp/src/components/BettingBookPanel.css": "12edf951afa5885b854972f17d203c4541f4c49c6f4d1c458c33952a4c25c825",
+    "cradleos-dapp/src/components/CasinoExperience.tsx": "519c33aa962d20742f0c989cade9dee78a8f9c5edc8afb315a23764000e4172d"
+  },
+  "frontendDistSha256": {
+    "index.html": "bb58106ce770eb6ac224a9fd1d730735bebe7219ecc57f44d956b5c1baa89069",
+    "assets/index-DJ69FWIJ.js": "4572cfa2dd054564194e74171721ff71bdb4ebc980cac42792eddce2cafca573",
+    "assets/index-Cj0IutYE.css": "d454c4e808c1443ace67e7862845cb96db185563991fcc965810e5a96b436c55"
+  },
+  "sourceCommit": "de37c69358243c75f4d4a6a41ebe2a3e3dc46bd6",
+  "sourceTag": "publish/cradleos_book-2026-10-21"
+}
