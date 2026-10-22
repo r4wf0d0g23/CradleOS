@@ -1,0 +1,741 @@
+{
+  "events": [
+    {
+      "id": "401909834",
+      "uid": "s:40~l:46~e:401909834",
+      "date": "2026-10-21T23:00Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 105.0,
+        "displayClock": "1:45",
+        "period": 4,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "1:45 - 4th Quarter",
+          "shortDetail": "1:45 - 4th"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909834",
+          "date": "2026-10-21T23:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 105.0,
+            "displayClock": "1:45",
+            "period": 4,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "1:45 - 4th Quarter",
+              "shortDetail": "1:45 - 4th"
+            }
+          },
+          "competitors": [
+            {
+              "id": "19",
+              "type": "team",
+              "homeAway": "home",
+              "score": "119",
+              "team": {
+                "id": "19",
+                "displayName": "Orlando Magic"
+              }
+            },
+            {
+              "id": "1",
+              "type": "team",
+              "homeAway": "away",
+              "score": "122",
+              "team": {
+                "id": "1",
+                "displayName": "Atlanta Hawks"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909835",
+      "uid": "s:40~l:46~e:401909835",
+      "date": "2026-10-21T23:00Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0.0",
+        "period": 4,
+        "type": {
+          "id": "3",
+          "name": "STATUS_FINAL",
+          "state": "post",
+          "completed": true,
+          "description": "Final",
+          "detail": "Final",
+          "shortDetail": "Final"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909835",
+          "date": "2026-10-21T23:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0.0",
+            "period": 4,
+            "type": {
+              "id": "3",
+              "name": "STATUS_FINAL",
+              "state": "post",
+              "completed": true,
+              "description": "Final",
+              "detail": "Final",
+              "shortDetail": "Final"
+            }
+          },
+          "competitors": [
+            {
+              "id": "27",
+              "type": "team",
+              "homeAway": "home",
+              "score": "128",
+              "team": {
+                "id": "27",
+                "displayName": "Washington Wizards"
+              }
+            },
+            {
+              "id": "15",
+              "type": "team",
+              "homeAway": "away",
+              "score": "116",
+              "team": {
+                "id": "15",
+                "displayName": "Milwaukee Bucks"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909091",
+      "uid": "s:40~l:46~e:401909091",
+      "date": "2026-10-21T23:30Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 643.0,
+        "displayClock": "10:43",
+        "period": 4,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "10:43 - 4th Quarter",
+          "shortDetail": "10:43 - 4th"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909091",
+          "date": "2026-10-21T23:30Z",
+          "timeValid": true,
+          "status": {
+            "clock": 643.0,
+            "displayClock": "10:43",
+            "period": 4,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "10:43 - 4th Quarter",
+              "shortDetail": "10:43 - 4th"
+            }
+          },
+          "competitors": [
+            {
+              "id": "14",
+              "type": "team",
+              "homeAway": "home",
+              "score": "81",
+              "team": {
+                "id": "14",
+                "displayName": "Miami Heat"
+              }
+            },
+            {
+              "id": "16",
+              "type": "team",
+              "homeAway": "away",
+              "score": "104",
+              "team": {
+                "id": "16",
+                "displayName": "Minnesota Timberwolves"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909836",
+      "uid": "s:40~l:46~e:401909836",
+      "date": "2026-10-21T23:30Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 717.0,
+        "displayClock": "11:57",
+        "period": 4,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "11:57 - 4th Quarter",
+          "shortDetail": "11:57 - 4th"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909836",
+          "date": "2026-10-21T23:30Z",
+          "timeValid": true,
+          "status": {
+            "clock": 717.0,
+            "displayClock": "11:57",
+            "period": 4,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "11:57 - 4th Quarter",
+              "shortDetail": "11:57 - 4th"
+            }
+          },
+          "competitors": [
+            {
+              "id": "17",
+              "type": "team",
+              "homeAway": "home",
+              "score": "81",
+              "team": {
+                "id": "17",
+                "displayName": "Brooklyn Nets"
+              }
+            },
+            {
+              "id": "30",
+              "type": "team",
+              "homeAway": "away",
+              "score": "86",
+              "team": {
+                "id": "30",
+                "displayName": "Charlotte Hornets"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909837",
+      "uid": "s:40~l:46~e:401909837",
+      "date": "2026-10-21T23:30Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 95.0,
+        "displayClock": "1:35",
+        "period": 3,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "1:35 - 3rd Quarter",
+          "shortDetail": "1:35 - 3rd"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909837",
+          "date": "2026-10-21T23:30Z",
+          "timeValid": true,
+          "status": {
+            "clock": 95.0,
+            "displayClock": "1:35",
+            "period": 3,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "1:35 - 3rd Quarter",
+              "shortDetail": "1:35 - 3rd"
+            }
+          },
+          "competitors": [
+            {
+              "id": "28",
+              "type": "team",
+              "homeAway": "home",
+              "score": "101",
+              "team": {
+                "id": "28",
+                "displayName": "Toronto Raptors"
+              }
+            },
+            {
+              "id": "4",
+              "type": "team",
+              "homeAway": "away",
+              "score": "65",
+              "team": {
+                "id": "4",
+                "displayName": "Chicago Bulls"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909838",
+      "uid": "s:40~l:46~e:401909838",
+      "date": "2026-10-22T00:00Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 348.0,
+        "displayClock": "5:48",
+        "period": 3,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "5:48 - 3rd Quarter",
+          "shortDetail": "5:48 - 3rd"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909838",
+          "date": "2026-10-22T00:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 348.0,
+            "displayClock": "5:48",
+            "period": 3,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "5:48 - 3rd Quarter",
+              "shortDetail": "5:48 - 3rd"
+            }
+          },
+          "competitors": [
+            {
+              "id": "29",
+              "type": "team",
+              "homeAway": "home",
+              "score": "82",
+              "team": {
+                "id": "29",
+                "displayName": "Memphis Grizzlies"
+              }
+            },
+            {
+              "id": "26",
+              "type": "team",
+              "homeAway": "away",
+              "score": "55",
+              "team": {
+                "id": "26",
+                "displayName": "Utah Jazz"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909839",
+      "uid": "s:40~l:46~e:401909839",
+      "date": "2026-10-22T00:00Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 234.0,
+        "displayClock": "3:54",
+        "period": 3,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "3:54 - 3rd Quarter",
+          "shortDetail": "3:54 - 3rd"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909839",
+          "date": "2026-10-22T00:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 234.0,
+            "displayClock": "3:54",
+            "period": 3,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "3:54 - 3rd Quarter",
+              "shortDetail": "3:54 - 3rd"
+            }
+          },
+          "competitors": [
+            {
+              "id": "3",
+              "type": "team",
+              "homeAway": "home",
+              "score": "84",
+              "team": {
+                "id": "3",
+                "displayName": "New Orleans Pelicans"
+              }
+            },
+            {
+              "id": "11",
+              "type": "team",
+              "homeAway": "away",
+              "score": "76",
+              "team": {
+                "id": "11",
+                "displayName": "Indiana Pacers"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909840",
+      "uid": "s:40~l:46~e:401909840",
+      "date": "2026-10-22T00:30Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0.0",
+        "period": 2,
+        "type": {
+          "id": "2",
+          "name": "STATUS_IN_PROGRESS",
+          "state": "in",
+          "completed": false,
+          "description": "In Progress",
+          "detail": "0.0 - 2nd Quarter",
+          "shortDetail": "0.0 - 2nd"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909840",
+          "date": "2026-10-22T00:30Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0.0",
+            "period": 2,
+            "type": {
+              "id": "2",
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress",
+              "detail": "0.0 - 2nd Quarter",
+              "shortDetail": "0.0 - 2nd"
+            }
+          },
+          "competitors": [
+            {
+              "id": "10",
+              "type": "team",
+              "homeAway": "home",
+              "score": "70",
+              "team": {
+                "id": "10",
+                "displayName": "Houston Rockets"
+              }
+            },
+            {
+              "id": "6",
+              "type": "team",
+              "homeAway": "away",
+              "score": "38",
+              "team": {
+                "id": "6",
+                "displayName": "Dallas Mavericks"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909092",
+      "uid": "s:40~l:46~e:401909092",
+      "date": "2026-10-22T02:00Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0.0",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Wed, October 21st at 10:00 PM EDT",
+          "shortDetail": "10/21 - 10:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909092",
+          "date": "2026-10-22T02:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0.0",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Wed, October 21st at 10:00 PM EDT",
+              "shortDetail": "10/21 - 10:00 PM EDT"
+            }
+          },
+          "competitors": [
+            {
+              "id": "13",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "13",
+                "displayName": "Los Angeles Lakers"
+              }
+            },
+            {
+              "id": "9",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "9",
+                "displayName": "Golden State Warriors"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909841",
+      "uid": "s:40~l:46~e:401909841",
+      "date": "2026-10-22T02:00Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0.0",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Wed, October 21st at 10:00 PM EDT",
+          "shortDetail": "10/21 - 10:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909841",
+          "date": "2026-10-22T02:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0.0",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Wed, October 21st at 10:00 PM EDT",
+              "shortDetail": "10/21 - 10:00 PM EDT"
+            }
+          },
+          "competitors": [
+            {
+              "id": "22",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "22",
+                "displayName": "Portland Trail Blazers"
+              }
+            },
+            {
+              "id": "21",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "21",
+                "displayName": "Phoenix Suns"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401909842",
+      "uid": "s:40~l:46~e:401909842",
+      "date": "2026-10-22T02:30Z",
+      "season": {
+        "year": 2027,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0.0",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Wed, October 21st at 10:30 PM EDT",
+          "shortDetail": "10/21 - 10:30 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401909842",
+          "date": "2026-10-22T02:30Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0.0",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Wed, October 21st at 10:30 PM EDT",
+              "shortDetail": "10/21 - 10:30 PM EDT"
+            }
+          },
+          "competitors": [
+            {
+              "id": "12",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "12",
+                "displayName": "LA Clippers"
+              }
+            },
+            {
+              "id": "23",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "23",
+                "displayName": "Sacramento Kings"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

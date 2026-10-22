@@ -1,0 +1,37 @@
+{
+  "status": "read-only development; NOT deployed",
+  "recordedAt": "2026-10-22T01:50:03.311499+00:00",
+  "network": "Sui testnet",
+  "wageringEnabled": false,
+  "authenticatedResultOracle": false,
+  "transactions": 0,
+  "productionChanges": false,
+  "tests": 21,
+  "typecheck": "pass",
+  "discovery": [
+    {
+      "league": "nfl",
+      "retrievedAt": "2026-10-22T01:43:39.655319+00:00",
+      "events": 14,
+      "authenticated": false,
+      "use": "read-only fixture normalization, never payout proof",
+      "originalSha256": "572ab5338f70d89dbbde9fafe8721dffe4c871ede43d737b1e6f582f1c2cbbb8",
+      "sha256": "52f10c3a5d1170b22d48bf4d9c3a88525aa1a546c88efc19825d731c85a82894",
+      "subset": "Only original fixture identity/status/score fields retained; values unchanged"
+    },
+    {
+      "league": "nba",
+      "retrievedAt": "2026-10-22T01:43:39.944874+00:00",
+      "events": 11,
+      "authenticated": false,
+      "use": "read-only fixture normalization, never payout proof",
+      "originalSha256": "8c37a94f60f7db37d1a2bb6df5d42d401a1a56524c9a85132c490f131f2cba8f",
+      "sha256": "0f7facb6eba693771769a58e6f77b58a9a7b7d346d0bac0400ec8eb92f73b575",
+      "subset": "Only original fixture identity/status/score fields retained; values unchanged"
+    }
+  ],
+  "files": {
+    "cradleos-dapp/src/lib/sportsBook.ts": "44974974b7d015047df088c14f2112e8ddf8652599c876760a85d246c8722451",
+    "cradleos-dapp/src/lib/sportsBook.test.ts": "5a4c8d83e6dd431110703f92015d7874771cfd12d50141a3abcd32d3e835bf0c"
+  }
+}

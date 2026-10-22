@@ -1,0 +1,956 @@
+{
+  "events": [
+    {
+      "id": "401873010",
+      "uid": "s:20~l:28~e:401873010",
+      "date": "2026-10-23T00:15Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Thu, October 22nd at 8:15 PM EDT",
+          "shortDetail": "10/22 - 8:15 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873010",
+          "date": "2026-10-23T00:15Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Thu, October 22nd at 8:15 PM EDT",
+              "shortDetail": "10/22 - 8:15 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "3",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "3",
+                "displayName": "Chicago Bears"
+              }
+            },
+            {
+              "id": "17",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "17",
+                "displayName": "New England Patriots"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873011",
+      "uid": "s:20~l:28~e:401873011",
+      "date": "2026-10-25T13:30Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 9:30 AM EDT",
+          "shortDetail": "10/25 - 9:30 AM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873011",
+          "date": "2026-10-25T13:30Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 9:30 AM EDT",
+              "shortDetail": "10/25 - 9:30 AM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "18",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "18",
+                "displayName": "New Orleans Saints"
+              }
+            },
+            {
+              "id": "23",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "23",
+                "displayName": "Pittsburgh Steelers"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873017",
+      "uid": "s:20~l:28~e:401873017",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873017",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "1",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "1",
+                "displayName": "Atlanta Falcons"
+              }
+            },
+            {
+              "id": "25",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "25",
+                "displayName": "San Francisco 49ers"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873013",
+      "uid": "s:20~l:28~e:401873013",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873013",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "10",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "10",
+                "displayName": "Tennessee Titans"
+              }
+            },
+            {
+              "id": "5",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "5",
+                "displayName": "Cleveland Browns"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873014",
+      "uid": "s:20~l:28~e:401873014",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873014",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "16",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "16",
+                "displayName": "Minnesota Vikings"
+              }
+            },
+            {
+              "id": "11",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "11",
+                "displayName": "Indianapolis Colts"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873015",
+      "uid": "s:20~l:28~e:401873015",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873015",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "20",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "20",
+                "displayName": "New York Jets"
+              }
+            },
+            {
+              "id": "15",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "15",
+                "displayName": "Miami Dolphins"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873018",
+      "uid": "s:20~l:28~e:401873018",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873018",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "29",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "29",
+                "displayName": "Carolina Panthers"
+              }
+            },
+            {
+              "id": "27",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "27",
+                "displayName": "Tampa Bay Buccaneers"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873012",
+      "uid": "s:20~l:28~e:401873012",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873012",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "33",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "33",
+                "displayName": "Baltimore Ravens"
+              }
+            },
+            {
+              "id": "4",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "4",
+                "displayName": "Cincinnati Bengals"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873016",
+      "uid": "s:20~l:28~e:401873016",
+      "date": "2026-10-25T17:00Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 1:00 PM EDT",
+          "shortDetail": "10/25 - 1:00 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873016",
+          "date": "2026-10-25T17:00Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 1:00 PM EDT",
+              "shortDetail": "10/25 - 1:00 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "34",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "34",
+                "displayName": "Houston Texans"
+              }
+            },
+            {
+              "id": "19",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "19",
+                "displayName": "New York Giants"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873019",
+      "uid": "s:20~l:28~e:401873019",
+      "date": "2026-10-25T20:05Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 4:05 PM EDT",
+          "shortDetail": "10/25 - 4:05 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873019",
+          "date": "2026-10-25T20:05Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 4:05 PM EDT",
+              "shortDetail": "10/25 - 4:05 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "22",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "22",
+                "displayName": "Arizona Cardinals"
+              }
+            },
+            {
+              "id": "7",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "7",
+                "displayName": "Denver Broncos"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873020",
+      "uid": "s:20~l:28~e:401873020",
+      "date": "2026-10-25T20:25Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 4:25 PM EDT",
+          "shortDetail": "10/25 - 4:25 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873020",
+          "date": "2026-10-25T20:25Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 4:25 PM EDT",
+              "shortDetail": "10/25 - 4:25 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "8",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "8",
+                "displayName": "Detroit Lions"
+              }
+            },
+            {
+              "id": "9",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "9",
+                "displayName": "Green Bay Packers"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873021",
+      "uid": "s:20~l:28~e:401873021",
+      "date": "2026-10-25T20:25Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 4:25 PM EDT",
+          "shortDetail": "10/25 - 4:25 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873021",
+          "date": "2026-10-25T20:25Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 4:25 PM EDT",
+              "shortDetail": "10/25 - 4:25 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "13",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "13",
+                "displayName": "Las Vegas Raiders"
+              }
+            },
+            {
+              "id": "14",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "14",
+                "displayName": "Los Angeles Rams"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873022",
+      "uid": "s:20~l:28~e:401873022",
+      "date": "2026-10-26T00:20Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Sun, October 25th at 8:20 PM EDT",
+          "shortDetail": "10/25 - 8:20 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873022",
+          "date": "2026-10-26T00:20Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sun, October 25th at 8:20 PM EDT",
+              "shortDetail": "10/25 - 8:20 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "26",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "26",
+                "displayName": "Seattle Seahawks"
+              }
+            },
+            {
+              "id": "12",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "12",
+                "displayName": "Kansas City Chiefs"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401873009",
+      "uid": "s:20~l:28~e:401873009",
+      "date": "2026-10-27T00:15Z",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "status": {
+        "clock": 0.0,
+        "displayClock": "0:00",
+        "period": 0,
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Mon, October 26th at 8:15 PM EDT",
+          "shortDetail": "10/26 - 8:15 PM EDT"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401873009",
+          "date": "2026-10-27T00:15Z",
+          "timeValid": true,
+          "status": {
+            "clock": 0.0,
+            "displayClock": "0:00",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Mon, October 26th at 8:15 PM EDT",
+              "shortDetail": "10/26 - 8:15 PM EDT"
+            },
+            "isTBDFlex": false
+          },
+          "competitors": [
+            {
+              "id": "21",
+              "type": "team",
+              "homeAway": "home",
+              "score": "0",
+              "team": {
+                "id": "21",
+                "displayName": "Philadelphia Eagles"
+              }
+            },
+            {
+              "id": "6",
+              "type": "team",
+              "homeAway": "away",
+              "score": "0",
+              "team": {
+                "id": "6",
+                "displayName": "Dallas Cowboys"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
