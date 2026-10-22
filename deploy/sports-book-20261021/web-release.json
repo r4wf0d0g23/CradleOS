@@ -1,0 +1,32 @@
+{
+  "status": "deployed-testnet-sports",
+  "sourceCommit": "81d901feff5896600eb8904e1fbf7e465e1d738b",
+  "packageId": "0x7b705d0e74b7b8c5e8874db91e0cf717a89f8413d6e0a146398a7d4b1ceeb2c6",
+  "bookId": "0x31c07a935633158211587519945eed0a0d52add58f7e2548d9b5bab43c9acbe4",
+  "deploymentId": "302e8112",
+  "deploymentUrl": "https://302e8112.cradleos-d75.pages.dev",
+  "productionUrl": "https://cradleos.io/",
+  "previousProduction": "8e87ba66",
+  "sportsWageringEnabled": true,
+  "priceWageringEnabled": false,
+  "houseUnchanged": true,
+  "rewardKeeperUnchanged": true,
+  "sourcePushed": true,
+  "publicationTagPushed": "publish/cradleos_sports-polymarket-2026-10-21",
+  "verification": {
+    "moveTests": 36,
+    "frontendTests": 524,
+    "nodeTests": 69,
+    "originsChecks": 8,
+    "approvedExactDappIocScan": "PASS",
+    "liveBrowser": "live-browser.json",
+    "liveAssetProof": "live-assets.json",
+    "keeper": "keeper-deployment.json",
+    "realUserPaymentVerified": false,
+    "walletSigningVerified": false,
+    "embeddedWebviewVerified": false,
+    "finalIndependentReview": "PASS",
+    "htmlDifference": "One Cloudflare Insights script and whitespace only"
+  },
+  "verifiedAt": "2026-10-22T02:43:39.510996+00:00"
+}

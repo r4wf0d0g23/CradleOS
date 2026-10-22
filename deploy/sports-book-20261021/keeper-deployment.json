@@ -10,7 +10,7 @@
   },
   "services": {
     "reporter": {
-      "startedAt": "2026-10-22T02:37:55.723Z",
+      "startedAt": "2026-10-22T02:43:15.464Z",
       "mode": "live",
       "state": "healthy",
       "submitted": 0,
@@ -20,10 +20,10 @@
       "refunds": 0,
       "errors": [],
       "markets": 2,
-      "finishedAt": "2026-10-22T02:37:56.488Z"
+      "finishedAt": "2026-10-22T02:43:16.195Z"
     },
     "payout": {
-      "startedAt": "2026-10-22T02:37:55.680Z",
+      "startedAt": "2026-10-22T02:43:15.469Z",
       "mode": "live",
       "state": "healthy",
       "submitted": 0,
@@ -33,7 +33,7 @@
       "refunds": 0,
       "errors": [],
       "markets": 2,
-      "finishedAt": "2026-10-22T02:37:56.432Z"
+      "finishedAt": "2026-10-22T02:43:16.192Z"
     }
   },
   "dedicatedSigners": {

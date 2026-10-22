@@ -4,7 +4,12 @@ Raw selected Polymarket and authorized plan/build/deploy. Sui testnet EVE only.
 Zero-fee independent pari-mutuel pools, source finalized Polygon payout vector,
 Cradle trusted reporter. No upstream accounts, bets, odds, funds or liquidity.
 NBA Cavaliers–76ers and NFL Patriots–Bears listed on Sui testnet.
-Contracts and services live; production website publication pending.
+Contracts, services and production website live at https://cradleos.io/#/casino.
+Select Betting Book → Sports. Cloudflare Pages `302e8112`; source
+`81d901feff5896600eb8904e1fbf7e465e1d738b`; previous rollback `8e87ba66`.
+Production JS/CSS bytes match reviewed dist exactly; HTML asset references match.
+Live browser repeats all preview checks at 320/390/1440 with both real fixtures.
+See web-release.json, live-assets.json and live-browser.json.
 
 ## Published deployment
 - Package: `0x7b705d0e74b7b8c5e8874db91e0cf717a89f8413d6e0a146398a7d4b1ceeb2c6`
