@@ -1,0 +1,20 @@
+{
+  "publisher": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "packageId": "0x7b705d0e74b7b8c5e8874db91e0cf717a89f8413d6e0a146398a7d4b1ceeb2c6",
+  "bootstrapCap": "0x609a24e3ea4e9b718bf1dab499ed3683fe94fb2dce433299dab77c11478e94d7",
+  "upgradeCap": "0xd1b150c3fe3e7f640e2e30f94ec1a426f20aa3aca75bf89a95951d5b1a9e8f7a",
+  "coinType": "0xc663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE",
+  "reporter": "0xd20ca4b642b3d4502fd6cb8aa9a5a6e92526457e247803edabb1bce6e1aa93c3",
+  "payout": "0xb36bbd1d214986d87703bd8b3179284ad37114bfe0feb55ab42ca6285a4f6a02",
+  "publishDigest": "4AVsSP4vwXwtAY7Vqx8p1nZbyy6kwnsV6Tfy3Za3WMvt",
+  "bookId": "0x31c07a935633158211587519945eed0a0d52add58f7e2548d9b5bab43c9acbe4",
+  "adminCap": "0x873d6cfa313a1fbbcbcc91977b891d0f2ddb2f2a1174f3605b1df6836f605721",
+  "bootstrapDigest": "7Jc525XDS2jgzr9mQEyLRfkqdrZk5En5QRNmZa8e8ywb",
+  "marketIds": [
+    "0xe9c4cd23560e3b023fb5e19eeaef4b76c2cc9db46b3debd395362e94ae4a6510",
+    "0xcf6d527c498f20b85c0a9c1f527eebc917d1bbaf49eaebd19eed5b76c859e306"
+  ],
+  "list-nbaDigest": "CK2S5qpk1PVVUhW5TWtUVwX3kSDQQvaGNvtDLNDiHtWH",
+  "list-nflDigest": "9D9ri9x1qf6fWmGqPoAUqLHNZGiCy4kn4GWsiwWjaUVp",
+  "gasFundingDigest": "3A6oFPtYuxsa6GMNDqENhKQFd9cuvVQdpHazNAjindYZ"
+}

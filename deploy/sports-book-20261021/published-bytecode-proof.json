@@ -1,0 +1,11 @@
+{
+  "packageId": "0x7b705d0e74b7b8c5e8874db91e0cf717a89f8413d6e0a146398a7d4b1ceeb2c6",
+  "modules": [
+    "sports"
+  ],
+  "selfAddressOccurrences": 1,
+  "entireBytecodeMatchesReviewedAfterSelfAddressRelocation": true,
+  "typeOriginsMatch": true,
+  "publishedSha256": "7d014fe332b011ba1541a893813ff19b0516476d4d906719fee4ca5437ddda94",
+  "reviewedSha256": "98364b706d741ef9ee070170a3920a040b0f54792a62aa0a7f70b8335e5de7dc"
+}

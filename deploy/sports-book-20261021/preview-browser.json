@@ -1,0 +1,52 @@
+{
+  "base": "http://127.0.0.1:5232",
+  "at": "2026-10-22T02:39:29.612Z",
+  "realChainData": true,
+  "fixtures": false,
+  "walletSignatures": false,
+  "livePlayerPayoutVerified": false,
+  "checks": [
+    {
+      "width": 320,
+      "fixtures": [
+        "Cavaliers vs. 76ers",
+        "Patriots vs. Bears"
+      ],
+      "sourceLink": true,
+      "testnetLabel": true,
+      "anonymousSigningBlocked": true,
+      "rewardsPreserved": true,
+      "pricesStillPaused": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "fixtures": [
+        "Cavaliers vs. 76ers",
+        "Patriots vs. Bears"
+      ],
+      "sourceLink": true,
+      "testnetLabel": true,
+      "anonymousSigningBlocked": true,
+      "rewardsPreserved": true,
+      "pricesStillPaused": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "fixtures": [
+        "Cavaliers vs. 76ers",
+        "Patriots vs. Bears"
+      ],
+      "sourceLink": true,
+      "testnetLabel": true,
+      "anonymousSigningBlocked": true,
+      "rewardsPreserved": true,
+      "pricesStillPaused": true,
+      "noHorizontalOverflow": true,
+      "errors": []
+    }
+  ]
+}

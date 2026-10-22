@@ -1,0 +1,9 @@
+{
+  "publisher": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "upgradeCapDestination": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "adminCapDestination": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "backupProof": "434db8ff4e92b6ee0a8462e60ac99c14db450d9f76dbb5af998bdc7ce343da17",
+  "operatorException": "1562636926295740447 Jetson2 sufficient for continuing bet-book deployment",
+  "secondBackupVerified": false,
+  "recordedBeforePublish": "2026-10-22T02:34:04.067234+00:00"
+}

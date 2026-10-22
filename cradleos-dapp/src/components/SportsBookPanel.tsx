@@ -225,7 +225,7 @@ export function SportsBookPanel({
   }
   return (
     <section
-      className="betting-book"
+      className="betting-book sports-book"
       aria-labelledby="sports-title"
       aria-busy={busy}
     >

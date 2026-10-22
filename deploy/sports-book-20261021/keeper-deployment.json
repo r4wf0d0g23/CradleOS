@@ -1,0 +1,47 @@
+{
+  "runtime": "/home/rawdata/cradleos-sports/releases/60f3d82",
+  "source": "60f3d82",
+  "hashes": {
+    "sports-book/main.mjs": "8c60973d8c58de484c63090ce44820b2954ba349d437d2eb8a129b172b9aa511",
+    "sports-book/policy.mjs": "78d620a08f6bb1069c87bbc0780ef3d97ce89517b80d61e6031c4f8b9c026194",
+    "sports-book/polymarket.mjs": "7797386356c444476086b68efb70822b04bdf8110b5e5eb911852369cb6f5e49",
+    "book-keeper/journal.mjs": "139512e0115f2179d82a45430355a82a4ac4bebe05623a2725ebc026ca8b8555",
+    "book-keeper/engine.mjs": "b8f91e77490c984f9383056d9dfbfc1f073d627aded51801acf0d21d4c529e04"
+  },
+  "services": {
+    "reporter": {
+      "startedAt": "2026-10-22T02:37:55.723Z",
+      "mode": "live",
+      "state": "healthy",
+      "submitted": 0,
+      "paid": 0,
+      "proofs": 0,
+      "finalized": 0,
+      "refunds": 0,
+      "errors": [],
+      "markets": 2,
+      "finishedAt": "2026-10-22T02:37:56.488Z"
+    },
+    "payout": {
+      "startedAt": "2026-10-22T02:37:55.680Z",
+      "mode": "live",
+      "state": "healthy",
+      "submitted": 0,
+      "paid": 0,
+      "proofs": 0,
+      "finalized": 0,
+      "refunds": 0,
+      "errors": [],
+      "markets": 2,
+      "finishedAt": "2026-10-22T02:37:56.432Z"
+    }
+  },
+  "dedicatedSigners": {
+    "reporter": "0xd20ca4b642b3d4502fd6cb8aa9a5a6e92526457e247803edabb1bce6e1aa93c3",
+    "payout": "0xb36bbd1d214986d87703bd8b3179284ad37114bfe0feb55ab42ca6285a4f6a02"
+  },
+  "gasFundedEach": 250000000,
+  "gasFundingDigest": "3A6oFPtYuxsa6GMNDqENhKQFd9cuvVQdpHazNAjindYZ",
+  "oldRewardKeeperUnchanged": true,
+  "livePayoutVerified": false
+}

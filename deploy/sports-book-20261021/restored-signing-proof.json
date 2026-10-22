@@ -1,0 +1,21 @@
+{
+  "host": "agent-nav-jetson2",
+  "wallet": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "backupPath": "/home/agent-nav/.local/share/cradleos-backups/deploy-wallet-177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a/sui.keystore",
+  "restoredFromBackup": true,
+  "created": false,
+  "fileMode": "0600",
+  "directoryMode": "0700",
+  "challengeBase64": "Q3JhZGxlT1MgYm9vayBiYWNrdXAgcHJvb2YgT05MWS4gTm90IGEgdHJhbnNhY3Rpb24uIDIwMjYtMTAtMjJUMDI6MzQ6MDMuMjgyNjE3KzAwOjAwIGRmYTUyMjgyZWRmNzUwYTI0MTRlOGVjZDBkMGIyZmQ3NzExZmEwMjIzOTM2YmFjMjM5OTViZmQ1Y2QzZjQzZDU=",
+  "digestHex": "434db8ff4e92b6ee0a8462e60ac99c14db450d9f76dbb5af998bdc7ce343da17",
+  "signature": "AJ9uCmKNVxrjxjWvVfS5Zt7CitWA6Q5EVI8UutPwEufNXs/6xdotJaNPf+ZbHape5B0Fn4HBquJ0H0gnxLuPTAuHR3xUygRKOEQbNDsGe+8xtMY8FaglXCWbswRfrr4wCw==",
+  "signatureType": "SuiPersonalMessage",
+  "checkedAt": "2026-10-22T02:34:03.282617+00:00",
+  "transactionSubmitted": false,
+  "independentSdkVerification": {
+    "valid": true,
+    "address": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+    "kind": "Sui PersonalMessage",
+    "checkedAt": "2026-10-22T02:34:04.034Z"
+  }
+}
