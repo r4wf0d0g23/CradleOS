@@ -1,0 +1,67 @@
+{
+  "data": {
+    "n0": {
+      "address": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b",
+      "owner": {
+        "__typename": "Shared"
+      },
+      "asMoveObject": {
+        "contents": {
+          "type": {
+            "repr": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9::book::Book<0xc663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE>"
+          },
+          "json": {
+            "id": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b",
+            "version": "1",
+            "paused": false,
+            "tenant": "stillness",
+            "markets": [],
+            "deliveries": []
+          }
+        }
+      }
+    },
+    "n1": {
+      "address": "0x689d22942dbcf5f253b56f7af712b39087ee4b6d5e349d7c1dc12c68786ff5c6",
+      "owner": {
+        "__typename": "AddressOwner",
+        "address": {
+          "address": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a"
+        }
+      },
+      "asMoveObject": {
+        "contents": {
+          "type": {
+            "repr": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9::book::AdminCap"
+          },
+          "json": {
+            "id": "0x689d22942dbcf5f253b56f7af712b39087ee4b6d5e349d7c1dc12c68786ff5c6",
+            "book_id": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b"
+          }
+        }
+      }
+    },
+    "n2": {
+      "address": "0x6314a6b7987e0dfb1178dccea40820fdc6eefb9a12476db7a2b223ce4dc570b5",
+      "owner": {
+        "__typename": "AddressOwner",
+        "address": {
+          "address": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a"
+        }
+      },
+      "asMoveObject": {
+        "contents": {
+          "type": {
+            "repr": "0x0000000000000000000000000000000000000000000000000000000000000002::package::UpgradeCap"
+          },
+          "json": {
+            "id": "0x6314a6b7987e0dfb1178dccea40820fdc6eefb9a12476db7a2b223ce4dc570b5",
+            "package": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9",
+            "version": "1",
+            "policy": 0
+          }
+        }
+      }
+    }
+  }
+}

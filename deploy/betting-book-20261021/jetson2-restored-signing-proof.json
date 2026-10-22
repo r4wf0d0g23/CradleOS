@@ -6,16 +6,16 @@
   "created": false,
   "fileMode": "0600",
   "directoryMode": "0700",
-  "challengeBase64": "Q3JhZGxlT1MgYm9vayBiYWNrdXAgcHJvb2YgT05MWS4gTm90IGEgdHJhbnNhY3Rpb24uIDIwMjYtMTAtMjJUMDE6MTc6NTkuNzAyNDk0KzAwOjAwIGY5OThhNWVkNWQ4ZGUwZjBjN2Q2MTUyN2I3ZjEwMTZlZjQwY2NhYjk3Y2Q1ZmY1MmEzYjhmMDFhOWEwZjIwN2Q=",
-  "digestHex": "c58b46dc79adbd16ed96ee2fd2d5ecf5f9abca565f26ea18947619933b636ec7",
-  "signature": "AMkmK3i3mjcrZ/UkoC2oxuFbI4sz2jC+yF+zQKt2zF+6MNxPvY98yp42R6TSXzL0uA3cfjF+88vwU0H0ENPuyQ+HR3xUygRKOEQbNDsGe+8xtMY8FaglXCWbswRfrr4wCw==",
+  "challengeBase64": "Q3JhZGxlT1MgYm9vayBiYWNrdXAgcHJvb2YgT05MWS4gTm90IGEgdHJhbnNhY3Rpb24uIDIwMjYtMTAtMjJUMDE6MjQ6MDYuMTI1NTY3KzAwOjAwIDZjMzI5Mzc5MTAyMzg5OTlkNjczMWU4OGIwMGUyMGEyNzAxYTJlYjRiMDczZDFiNmE2ZDBiOGFiY2FkMjBhOTQ=",
+  "digestHex": "6a289ec38c40b21600fc43e8cc9f3b779ef899144a10757b65e3142e3607bfea",
+  "signature": "AEfmmbhbFg9aZAm8qUTx5f8A15/ZmURmvl0BmRyaYBtLvcVVYBtuUrBCX7KKD2luVUU04GTkNz9u6wx4wexMdAOHR3xUygRKOEQbNDsGe+8xtMY8FaglXCWbswRfrr4wCw==",
   "signatureType": "SuiPersonalMessage",
-  "checkedAt": "2026-10-22T01:17:59.702494+00:00",
+  "checkedAt": "2026-10-22T01:24:06.125567+00:00",
   "transactionSubmitted": false,
   "independentSdkVerification": {
     "valid": true,
     "address": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
     "kind": "Sui PersonalMessage",
-    "checkedAt": "2026-10-22T01:18:00.490Z"
+    "checkedAt": "2026-10-22T01:24:06.735Z"
   }
 }

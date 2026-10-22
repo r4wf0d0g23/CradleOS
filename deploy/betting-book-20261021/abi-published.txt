@@ -1,0 +1,64 @@
+## book
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character;
+public create_book<Ty0>(Arg0: BootstrapCap, Arg1: &mut TxContext) {
+public set_paused<Ty0>(Arg0: &mut Book<Ty0>, Arg1: &AdminCap, Arg2: bool) {
+public feed(Arg0: u8): vector<u8> {
+public(friend) create_price<Ty0>(Arg0: &mut Book<Ty0>, Arg1: &AdminCap, Arg2: u8, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: &Clock, Arg7: &mut TxContext) {
+public place_bet<Ty0>(Arg0: &Book<Ty0>, Arg1: &mut Market<Ty0>, Arg2: &Character, Arg3: u8, Arg4: Coin<Ty0>, Arg5: &Clock, Arg6: &mut TxContext) {
+public(friend) record_price<Ty0>(Arg0: &mut Market<Ty0>, Arg1: vector<u8>, Arg2: u8, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: &Clock) {
+public finalize<Ty0>(Arg0: &mut Market<Ty0>, Arg1: &Clock) {
+public claim_for<Ty0>(Arg0: &mut Market<Ty0>, Arg1: &mut Entitlement<Ty0>, Arg2: &mut TxContext) {
+public claim<Ty0>(Arg0: &mut Market<Ty0>, Arg1: Ticket<Ty0>, Arg2: &mut Entitlement<Ty0>, Arg3: &mut TxContext) {
+public(friend) register_delivery<Ty0>(Arg0: &mut Book<Ty0>, Arg1: ID, Arg2: &Character, Arg3: &TxContext) {
+public result<Ty0>(Arg0: &Market<Ty0>): u8 {
+public escrow<Ty0>(Arg0: &Market<Ty0>): u64 {
+public market_ids<Ty0>(Arg0: &Book<Ty0>): vector<ID> {
+public entitlement_id<Ty0>(Arg0: &Ticket<Ty0>): ID {
+public paid<Ty0>(Arg0: &Entitlement<Ty0>): bool {
+public payout<Ty0>(Arg0: &Entitlement<Ty0>): u64 {
+
+## delivery
+use d3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9::book;
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory;
+use 7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit;
+public create<Ty0>(Arg0: &mut Book<Ty0>, Arg1: &Character, Arg2: &StorageUnit, Arg3: String, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: Coin<Ty0>, Arg8: &Clock, Arg9: &mut TxContext) {
+public fulfill<Ty0>(Arg0: &mut Delivery<Ty0>, Arg1: &Character, Arg2: &StorageUnit, Arg3: vector<Item>, Arg4: &Clock, Arg5: &mut TxContext) {
+public refund<Ty0>(Arg0: &mut Delivery<Ty0>, Arg1: &Clock, Arg2: &mut TxContext) {
+public status<Ty0>(Arg0: &Delivery<Ty0>): u8 {
+public reward<Ty0>(Arg0: &Delivery<Ty0>): u64 {
+
+## price
+use d3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9::book;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::deserialize;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::hot_potato_vector;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::i64;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::price_info;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::pyth;
+use d1ac23e1582080e2e5d43dbad1cf463ea2337cdbbb1a9ca669e470cefb74d8fd::state;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use e79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::cursor;
+use e79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::state as 0state;
+use e79f4e3e02ce132f40f39e73220493a802329d3cb6ad7f789e98a78910fc0053::vaa;
+public create<Ty0>(Arg0: &mut Book<Ty0>, Arg1: &AdminCap, Arg2: u8, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: &Clock, Arg7: &mut TxContext) {
+public submit<Ty0>(Arg0: &mut Market<Ty0>, Arg1: &State, Arg2: &State, Arg3: vector<u8>, Arg4: &Clock) {

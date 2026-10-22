@@ -1,10 +1,11 @@
-# Betting book — reviewed staging, NOT DEPLOYED
+# Betting book — onchain published; rewards-only web release ready
 
 Current release replaces the initial pilot/fleet design. Old receipts are in
 `archive-initial-pilot/`; never use their ABI or simulated IDs for deployment.
 Current exact source/bytecode/build hashes: `provenance.json`.
-Reviewed source: `507712e7769c7c531921f32458f0590b9cec77df`; local tag
-`publish/cradleos_book-oracle-2026-10-21`. Source/tag are committed locally, not pushed.
+Publication source: `c585fe5e695d66f5ce33adc5675de0e7d7f90efe`, tag
+`publish/cradleos_book-rewards-2026-10-21`. Current web manifest/build evidence:
+`web-release.json`. Source is committed locally; final web push/deploy pending.
 
 ## Implemented
 
@@ -20,9 +21,26 @@ Reviewed source: `507712e7769c7c531921f32458f0590b9cec77df`; local tag
 - **No combat entry points.** Current killmails cannot establish victim controller
   at death. See `EXPANSION.md`; no self/alt/collusion-proof claim.
 
-No chain write/signature, market, wager, funding, service activation, or website
-cutover occurred. Manifest has blank IDs; wagering/rewards disabled. Existing
-casino House/HOLD, balances and production ea9de180 are unchanged.
+## Actual onchain and keeper deployment
+
+- Package `0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9`.
+- Book `0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b`, current EVE, version1, tenantstillness,
+  pausedfalse, zero markets/rewards; real GraphQL read verified.
+- Publication `5wEkrB5ssmCBguoyHsnijHXRDPQDLxKAjdLeL91oYPWf`.
+- Bootstrap `5aeoUu1kXzCTyBXLkSBoWUXBngbF7oCjKBZJ4k7PW5Ri`; BootstrapCap consumed.
+- UpgradeCap/AdminCap in recorded deploy custody; actual object owners verified.
+- Entire published module bytes match reviewed source after self-address relocation;
+  public signatures/imports match after debug-argument-label normalization.
+- Dedicated keeper funded0.25 testnet SUI; no EVE/AdminCap. Persistent30-second user
+  timer enabled, private configuration/signer and versioned source snapshot. Healthy
+  autonomous runs verified. No reward/price jobs exist, so real payment remains
+  unverified; do not claim a completed user payout or end-to-end wallet flow.
+- Web manifest: actual IDs, rewardsEnabledtrue/wageringEnabledfalse. Real-book
+  browser checks at320/390/1440 PASS; no mocks/wallet signatures. Website cutover
+  pending. Existing House/HOLD/balances and productionea9de180 unchanged so far.
+
+No fabricated markets/rewards/bets were created. No EVE funds moved. Pricing stays
+disabled pending authenticated current oracle access; no price markets were made.
 
 ## Completed verification
 

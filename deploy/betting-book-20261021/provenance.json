@@ -1,5 +1,5 @@
 {
-  "status": "staged-not-published",
+  "status": "published-and-bootstrapped",
   "environment": "testnet_stillness",
   "chainId": "4c78adac",
   "worldSourceCommit": "d33ff232bd3878e8f9ad0721e18564b21facc925",
@@ -19,7 +19,8 @@
     "onlyPinnedDependencyOrigins": true,
     "cleanArtifactMatchesPublicationDryrunBuild": true,
     "unsignedPublicationSimulationSucceeded": true,
-    "noPublicationPerformed": true
+    "noPublicationPerformed": false,
+    "publishedBytecodeVerified": true
   },
   "sourceSha256": {
     "cradleos_book/Move.toml": "1fbef06e5f261a6d180929eb1f0c5ab9154076312362f3fea3485d6ed5567572",
@@ -52,6 +53,9 @@
     "assets/index-Cry5MCOP.css": "ce6e6bad08abb0f066d4859c00eaa033e05a635235730ec5fbb5243713e39c43",
     "assets/index-DwL9aW8p.js": "6d3d0c22c465f227f95c2e4cb8c7f5ec692094f0c3fb6aadb0cb3aae74acfdf3"
   },
-  "sourceCommit": null,
-  "sourceTag": "publish/cradleos_book-rewards-2026-10-21"
+  "sourceCommit": "c585fe5e695d66f5ce33adc5675de0e7d7f90efe",
+  "sourceTag": "publish/cradleos_book-rewards-2026-10-21",
+  "scope": "Reviewed prepublication source and inactive frontend build. Rewards-enabled web source/bundle evidence is in web-release.json.",
+  "publicationReceipt": "onchain.json",
+  "publishedBytecodeProof": "published-bytecode-proof.json"
 }

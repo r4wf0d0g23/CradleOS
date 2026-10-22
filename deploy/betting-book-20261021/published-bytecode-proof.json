@@ -1,0 +1,21 @@
+{
+  "abiExactMatchAfterSelfAddressRelocationAndDebugLabelRemoval": true,
+  "typeOriginsMatch": true,
+  "modules": {
+    "book": {
+      "publishedSha256": "391c843416ac4f30057dc64787d1d096921d9b3df458fb04b749df7b6bec2b65",
+      "selfAddressNormalizedSha256": "1d676d5987a648604ce3717c4b0c4f488f12f45ce2b45a798eae659001f57ad6",
+      "matchesReviewedBytecode": true
+    },
+    "delivery": {
+      "publishedSha256": "ea8b10f1ce0790060d584e11916a3b2190b00a6bf383042871f9f35c1442ab79",
+      "selfAddressNormalizedSha256": "1f4715942b738bc679cd2c3435f5c77a412a9510b39637230a231a5b165d5fb3",
+      "matchesReviewedBytecode": true
+    },
+    "price": {
+      "publishedSha256": "f54c1ef2b3ad296511a40dcf9b2f5840bac5151f0e1ccf2f2fec2a07dc412fdf",
+      "selfAddressNormalizedSha256": "c0ac7c3bee5d97f34ebd6c161c8a2d1b62c51a36f76e6f4d9f843541ea873fab",
+      "matchesReviewedBytecode": true
+    }
+  }
+}

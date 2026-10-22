@@ -51,3 +51,13 @@ Preflight caught SDK gRPC returning the full genesis digest while keeper compare
 short CLI chain ID. Narrow fix pins full genesis before signer load. Reviewer
 independently queried live genesis and decoded its first four bytes to4c78adac;
 7 keeper tests pass. Move source/bytecode unaffected. Native review PASS.
+
+## Rewards-only web cutover gate
+
+Independent native review PASS: live Book, AdminCap and UpgradeCap re-read from
+canonical GraphQL with exact IDs/owners/bindings; version1/stillness/pausedfalse
+and empty market/reward arrays verified. Timer active with recent healthy
+autonomous runs; deployed runtime hashes equal receipt. Real manifest and all
+three dist hashes match web-release.json; rewards enabled, price wagering off.
+Corrected stale noPublicationPerformed assertion in prepublication provenance.
+Real user payment and signed-wallet lifecycle remain unverified; no fake activity.

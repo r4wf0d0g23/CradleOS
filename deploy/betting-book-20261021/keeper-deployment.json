@@ -1,0 +1,30 @@
+{
+  "signer": "0x93580abd447cbfc8596152d9718c4fccd8fde5b7cd3caa10eca33f337c45f520",
+  "bookId": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b",
+  "packageId": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9",
+  "gasFundingMist": 250000000,
+  "configPath": "/home/rawdata/.config/cradleos-book-keeper/config.json",
+  "stateDirectory": "/home/rawdata/.local/share/cradleos-book-keeper",
+  "mode": "live",
+  "livePaymentVerified": false,
+  "fundingDigest": "Dugub5ggxsRgJiQthGzMfHLT4ZdKcJxn8w1mcWEtysxE",
+  "releaseDirectory": "/home/rawdata/cradleos-book-keeper/releases/c585fe5",
+  "runtimeSha256": {
+    "main.mjs": "781dec0f6e7262f7bef6bc3d75ac0ea12a3b78689a659de27fb57c70623276ae",
+    "engine.mjs": "b8f91e77490c984f9383056d9dfbfc1f073d627aded51801acf0d21d4c529e04",
+    "journal.mjs": "139512e0115f2179d82a45430355a82a4ac4bebe05623a2725ebc026ca8b8555"
+  },
+  "pythCredentialRequiredForCurrentScope": false,
+  "autonomousStatus": {
+    "startedAt": "2026-10-22T01:28:14.686Z",
+    "mode": "live",
+    "state": "healthy",
+    "submitted": 0,
+    "paid": 0,
+    "proofs": 0,
+    "finalized": 0,
+    "refunds": 0,
+    "errors": [],
+    "finishedAt": "2026-10-22T01:28:15.300Z"
+  }
+}

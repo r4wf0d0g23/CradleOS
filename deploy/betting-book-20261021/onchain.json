@@ -1,0 +1,15 @@
+{
+  "network": "testnet_stillness",
+  "chainId": "4c78adac",
+  "sourceCommit": "c585fe5e695d66f5ce33adc5675de0e7d7f90efe",
+  "packageId": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9",
+  "publishDigest": "5wEkrB5ssmCBguoyHsnijHXRDPQDLxKAjdLeL91oYPWf",
+  "custody": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "upgradeCap": "0x6314a6b7987e0dfb1178dccea40820fdc6eefb9a12476db7a2b223ce4dc570b5",
+  "bootstrapCap": "0xf03d5687b0fc4e92fc3520438c231cb0e48edc2a69ec3706a09353b38074c1e1",
+  "bookId": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b",
+  "adminCap": "0x689d22942dbcf5f253b56f7af712b39087ee4b6d5e349d7c1dc12c68786ff5c6",
+  "priceMarketsCreated": 0,
+  "bootstrapDigest": "5aeoUu1kXzCTyBXLkSBoWUXBngbF7oCjKBZJ4k7PW5Ri",
+  "bootstrapCapConsumed": true
+}

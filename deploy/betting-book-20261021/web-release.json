@@ -1,0 +1,27 @@
+{
+  "status": "review-ready-not-web-deployed",
+  "sourceCommit": null,
+  "packageId": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9",
+  "bookId": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b",
+  "rewardsEnabled": true,
+  "wageringEnabled": false,
+  "previousProduction": "ea9de180",
+  "frontendManifestSha256": "ee503ec369ab964e7f6bb9be6eaca7b50c4f00832c03edeae1e1ed9fa8039109",
+  "distSha256": {
+    "index.html": "836b20a94f1f86c169f0488f255a59da8e0da280e0d85fa3e3c2ccad067856c7",
+    "assets/index-C-rYcSDm.js": "565bc909dac1216a80da6ab78e8bbecef99a712eb6496ffecb420e454b8f5dd0",
+    "assets/index-Cry5MCOP.css": "ce6e6bad08abb0f066d4859c00eaa033e05a635235730ec5fbb5243713e39c43"
+  },
+  "verification": {
+    "frontendTests": 483,
+    "moveTests": 54,
+    "keeperTests": 7,
+    "canonChecks": 8,
+    "approvedExactDappIocScan": "PASS",
+    "previewBrowser": "rewards-preview-browser.json",
+    "liveBookCustody": "live-book-custody.json",
+    "keeper": "keeper-deployment.json",
+    "realUserPaymentVerified": false
+  },
+  "priceActivationBlockedOn": "Pyth credential and current authenticated exact-target proof retrieval"
+}
