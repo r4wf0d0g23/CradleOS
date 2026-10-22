@@ -8,7 +8,7 @@ import {Ed25519Keypair} from '@mysten/sui/keypairs/ed25519';
 import {deriveDynamicFieldID} from '@mysten/sui/utils';
 import {bcs} from '@mysten/sui/bcs';
 import {journalRunner} from './journal.mjs';
-import {canonicalObject,marketAction,deliveryAction,selectProof,FEEDS,uint} from './engine.mjs';
+import {assertCanonicalChain,canonicalObject,marketAction,deliveryAction,selectProof,FEEDS,uint} from './engine.mjs';
 const PUBLIC_GRAPHQL='https://graphql.testnet.sui.io/graphql';
 const PYTH='https://pyth.dourolabs.app/hermes';
 const fields='address owner{__typename} asMoveObject{contents{type{repr} json}}';
@@ -66,7 +66,7 @@ async function run(){
  for(const key of ['packageId','bookId','pythState','wormholeState'])id(cfg[key]);
  if(cfg.pythState!=='0x3c48fe392912de6c18087a2b3f5fdbfbfdb4598e180947feff1f12f8e9ea073e'||cfg.wormholeState!=='0x750da8e6d16b6a363a39fe2eaa8295ac224a1e6fce4e47b58845e2e8746164f0')throw Error('CONFIG_ORACLE');
  client=new SuiGrpcClient({network:'testnet',baseUrl:'https://fullnode.testnet.sui.io:443'});
- if((await client.core.getChainIdentifier()).chainIdentifier!==cfg.chainId)throw Error('CHAIN_MISMATCH');
+ assertCanonicalChain((await client.core.getChainIdentifier()).chainIdentifier);
  state=await loadState();if(state.bookId!==cfg.bookId)throw Error('STATE_BOOK_MISMATCH');
  if(cfg.liveEnabled){
   const path=process.env.BOOK_KEEPER_KEYSTORE_PATH;if(!path)throw Error('SIGNER_MISSING');const info=await stat(path);if((info.mode&0o077)!==0)throw Error('SIGNER_PERMISSIONS');

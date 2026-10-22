@@ -33,7 +33,7 @@ casino House/HOLD, balances and production ea9de180 are unchanged.
 - 483 frontend tests (23 book-specific); TypeScript,8 Origins canon checks,
   approved scanner of the **exact dapp directory**, production Vite build,
   git diff checks. Existing large-bundle warnings remain; no optimization claimed.
-- 6 keeper tests, including durable-before-broadcast and identical-byte recovery
+- 7 keeper tests, including durable-before-broadcast and identical-byte recovery
   after lost response; actual OS-lock smoke check before config/signer load.
 - 8 fixture-only browser checks at320/390/1440: market/reward poll invalidates
   confirmation, exact conditions, no horizontal overflow, error distinct from
@@ -47,34 +47,35 @@ casino House/HOLD, balances and production ea9de180 are unchanged.
   Estimated gas81,529,600 MIST. Dry-run IDs are not actual publication IDs.
 - Independent staged implementation review PASS; see `REVIEW.md`.
 
-## Concrete publication/activation blockers
+## Publication/activation gates
 
-1. **Second off-host backup.** DGX2 Tailscale reauthenticated October21 at20:16 CT.
-   Pinned Jetson2 SSH succeeds; existing backup restored and a fresh non-transaction
-   Sui PersonalMessage independently verified. See `network-recovery.json` and
-   `jetson2-restored-signing-proof.json`. Exactly ONE off-host backup verified.
-   DGX1 is offline on Tailscale (last seen September18); Tailscale SSH times out and known
-   LAN SSH reports No route to host. This does not establish physical power state.
-   FRESH_DEPLOY_PROTOCOL §8.1 still requires two operator-attested readable off-host
-   backups; refresh the signing proof again immediately before actual publish.
-   The Oct2 exception covered only that prior release. Existing wallet/custody:
+1. **Custody exception authorized.** Raw approved Jetson2 alone for this deployment
+   at20:21 CT, message1562636926295740447: “Jetson2 should be good enough for this
+   deployment.” One verified off-host backup is accepted for this release; a
+   second copy is deferred, not falsely marked verified. Existing backup restore
+   and independent signature proof PASS. Refresh immediately before publication.
+   Existing publisher/custody remains
    `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
-   No need to reselect it; no false attestation, host-key bypass or key movement.
-2. **Oracle access.** Secure PYTH_API_KEY request expired unanswered. Current
+   See `custody.json`, `network-recovery.json`, `jetson2-restored-signing-proof.json`.
+2. **Price activation only — oracle access.** Secure PYTH_API_KEY request expired unanswered. Current
    authenticated exact-target retrieval, feed catalog and durable service-secret
    provisioning unverified. Public posted proofs establish verifier feasibility,
-   not continuous availability. No account purchase is authorized.
+   not continuous availability. No account purchase is authorized. Independent
+   split-release review PASS: item rewards and expiry refunds have no oracle
+   dependency and can deploy first. Keep zero price markets and AdminCap only
+   in custody; wageringEnabled=false, rewardsEnabled=true after real receipts.
+   This is not a separate onchain price-pause flag.
 
 ## Exact resume sequence (already authorized work)
 
-1. Restore DGX1 or verify another explicitly approved second off-host backup;
-   confirm physical-host attestation. Jetson2 is already verified. Refresh its
-   signing proof immediately before publication. Record custody before signing.
-2. Obtain existing oracle credential via protected input (never chat), verify
+1. Honor the explicit one-backup exception for this release. Refresh Jetson2
+   signing proof immediately before publication; custody already recorded.
+2. For later price activation, obtain oracle credential via protected input, verify
    authenticated catalog and signed first-crossing responses for the exact pinned
    feed/state pairs. Generic documentation's Beta note must not override actual
    upgraded canonical verification. If IDs/API semantics change, edit/review/test
-   source before publishing. Do not enable price markets on a guessed endpoint.
+   source before price activation. Do not enable prices on a guessed endpoint.
+   Missing credential does not block the reviewed rewards-only release.
 3. Recheck source hashes, current World/EVE, chain4c78adac and wallet. Rebuild clean
    production artifacts and unsigned dependency-verified dry-run if source changes.
    Source snapshot must have its own new tag; do not move the original pilot tag.

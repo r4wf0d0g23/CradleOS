@@ -1,8 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
-import {marketAction,deliveryAction,selectProof,FEEDS,receipt} from './engine.mjs';
+import {assertCanonicalChain,marketAction,deliveryAction,selectProof,FEEDS,receipt} from './engine.mjs';
 import {journalRunner} from './journal.mjs';
 import {Transaction} from '@mysten/sui/transactions';import {Ed25519Keypair} from '@mysten/sui/keypairs/ed25519';
 const market=()=>({version:'1',asset:1,price_feed:Buffer.from(FEEDS[1],'hex').toString('base64'),price_exponent:8,ends:'1000',proof_deadline:'4600',claim_count:'2',result:0,price_time:'0'});
+test('canonical gRPC genesis accepted; abbreviated and other chain identities rejected',()=>{assert.doesNotThrow(()=>assertCanonicalChain('69WiPg3DAQiwdxfncX6wYQ2siKwAe6L9BZthQea3JNMD'));for(const bad of ['4c78adac','',undefined,'69WiPg3DAQiwdxfncX6wYQ2siKwAe6L9BZthQea3JNME'])assert.throws(()=>assertCanonicalChain(bad),/CHAIN_MISMATCH/);});
 test('clock gates proof, deadline refund and permissionless payments',()=>{assert.equal(marketAction(market(),999),null);assert.equal(marketAction(market(),1000),'proof');assert.equal(marketAction(market(),4600),'finalize');assert.equal(marketAction({...market(),result:3},4700),'payout');assert.equal(marketAction({...market(),price_time:'1000'},1100),null);assert.equal(deliveryAction({status:0,deadline:'1000'},999),null);assert.equal(deliveryAction({status:0,deadline:'1000'},1000),'refund');assert.equal(deliveryAction({status:1,deadline:'1000'},2000),null);});
 test('closed feed catalog and fixed deadline cannot be reinterpreted',()=>{for(const bad of [{...market(),asset:3},{...market(),price_feed:'AA=='},{...market(),proof_deadline:'9000'},{...market(),result:99}])assert.throws(()=>marketAction(bad,5000));});
 test('ambiguous network response is not a successful payout',()=>{assert.throws(()=>receipt({}));assert.throws(()=>receipt({Transaction:{digest:'x',status:{}}}));assert.deepEqual(receipt({FailedTransaction:{digest:'x',status:{success:false}}}),{digest:'x',success:false});});

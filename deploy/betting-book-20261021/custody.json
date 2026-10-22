@@ -9,7 +9,7 @@
   "previousVerifiedBackupDate": "2026-10-02",
   "previousReleaseExceptionApplies": false,
   "approvedBackupRouteToday": "DGX2 reauthenticated; pinned Jetson2 SSH and restored-backup proof verified; DGX1 Tailscale SSH times out and known LAN reports No route to host",
-  "newReleaseExceptionAuthorized": false,
+  "newReleaseExceptionAuthorized": true,
   "publicationPerformed": false,
   "chainIdsAndCaps": null,
   "frontendDeployed": false,
@@ -19,5 +19,18 @@
   "backupProofCheckedAt": "2026-10-22T01:17:59.702494+00:00",
   "refreshProofImmediatelyBeforePublish": true,
   "verifiedOffHostBackupCount": 1,
-  "networkRecoveryReceipt": "network-recovery.json"
+  "networkRecoveryReceipt": "network-recovery.json",
+  "releaseException": {
+    "messageId": "1562636926295740447",
+    "authorizedAt": "2026-10-21T20:21:15-05:00",
+    "operator": "Raw",
+    "instruction": "Jetson2 should be good enough for this deployment",
+    "scope": "This cradleos_book testnet deployment only: one verified off-host backup on Jetson2 accepted; second-off-host backup deferred",
+    "doesNotWaive": [
+      "fresh restored-backup signing proof",
+      "existing custody destination",
+      "oracle verification before price-market activation",
+      "existing casino House wagering HOLD"
+    ]
+  }
 }

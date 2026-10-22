@@ -19,13 +19,17 @@ calls; losing a Character does not prevent a prior payout.
    address in config and fund only bounded testnet SUI. No EVE or capabilities
    belong in this account.
 4. Private environment file, mode0600, sets `BOOK_KEEPER_CONFIG`,
-   `BOOK_KEEPER_STATE_DIR`, `BOOK_KEEPER_KEYSTORE_PATH`, and a securely provisioned
-   `PYTH_API_KEY`. Credentials are never committed, printed, or entered in chat.
+   `BOOK_KEEPER_STATE_DIR` and `BOOK_KEEPER_KEYSTORE_PATH`. Price markets additionally
+   require securely provisioned `PYTH_API_KEY`. Rewards-only operation with zero
+   price markets does not require it. Credentials are never committed, printed,
+   or entered in chat.
    The API origin is hard-pinned; redirects are refused. Protected-store entries
    are not assumed to appear in a systemd service: verify provisioning explicitly.
 5. Run `node scripts/book-keeper/main.mjs` read-only. Require canonical chain,
-   book and source checks; inspect `status.json`. Test authenticated first-crossing
-   historical retrieval with a live supported feed, not only a decoder fixture.
+   book and source checks; inspect `status.json`. Before enabling price markets,
+   test authenticated first-crossing historical retrieval with a live supported
+   feed, not only a decoder fixture. Rewards-first: retain AdminCap in deploy
+   custody, zero price markets, rewards enabled and price wagering disabled.
 6. Only after those checks, set live mode and install the supplied **user** service
    and timer. Enable with `systemctl --user enable --now cradleos-book-keeper.timer`.
    Check the timer, a funded signer, a successful autonomous run, and a real

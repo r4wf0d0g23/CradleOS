@@ -38,3 +38,16 @@ verification failed. Existing backup restored only on Jetson2, no private key
 transfer, replacement, or transaction. PASS for this narrow proof procedure.
 Only ONE verified off-host backup; this does not clear the two-backup gate or
 authorize publication. Requested Opus unavailable; inherited native model used.
+
+## Rewards-first deployment and chain-identity preflight
+
+Raw's Jetson2-only exception (message1562636926295740447) is recorded in custody.
+Independent native review PASS: publish/bootstrap reviewed modules, enable exact-
+item rewards only, retain AdminCap in custody and create zero price markets.
+Global Book.paused must befalse for new rewards; this is not a separate onchain
+price-pause flag. Pyth key is needed only for price-proof jobs, not reward refunds.
+
+Preflight caught SDK gRPC returning the full genesis digest while keeper compared
+short CLI chain ID. Narrow fix pins full genesis before signer load. Reviewer
+independently queried live genesis and decoded its first four bytes to4c78adac;
+7 keeper tests pass. Move source/bytecode unaffected. Native review PASS.

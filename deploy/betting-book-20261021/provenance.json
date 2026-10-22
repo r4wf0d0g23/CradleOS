@@ -39,10 +39,10 @@
     "cradleos-dapp/src/components/DeliveryBoard.tsx": "c59a4729ca8af1da4a37f2a6918e55e2545858fcb1e4cdadccfe0618b5ab3d56",
     "cradleos-dapp/src/components/CasinoExperience.tsx": "519c33aa962d20742f0c989cade9dee78a8f9c5edc8afb315a23764000e4172d",
     "cradleos-dapp/scripts/book-keeper/journal.mjs": "139512e0115f2179d82a45430355a82a4ac4bebe05623a2725ebc026ca8b8555",
-    "cradleos-dapp/scripts/book-keeper/README.md": "47a02e5857a5ab49a918a63248b27170288f90bd7540fe09aabf916963610786",
-    "cradleos-dapp/scripts/book-keeper/engine.mjs": "bcdfd916e6544eee7d1579c0473b40acedb082b09551a6d5f3a64f3e64ac567c",
-    "cradleos-dapp/scripts/book-keeper/main.mjs": "b5a2cf7aa88fc4d013d54fd9fcbf9390ce8f46e246fdb4a2ab9298c2f2e7930b",
-    "cradleos-dapp/scripts/book-keeper/engine.test.mjs": "3d47e538632c37a63ffbc68ae4db44362ff5e2dc7cdadeacca15c62a6bf3512c",
+    "cradleos-dapp/scripts/book-keeper/README.md": "086fb3f673968653fd0a980376ee4d6a5590945242385c3d8bd497db0684699e",
+    "cradleos-dapp/scripts/book-keeper/engine.mjs": "b8f91e77490c984f9383056d9dfbfc1f073d627aded51801acf0d21d4c529e04",
+    "cradleos-dapp/scripts/book-keeper/main.mjs": "781dec0f6e7262f7bef6bc3d75ac0ea12a3b78689a659de27fb57c70623276ae",
+    "cradleos-dapp/scripts/book-keeper/engine.test.mjs": "5a366812cb50448bc25a7f2d7f892b3e7b66b123e811c57fdcd1df3e32e73f5d",
     "cradleos-dapp/scripts/book-keeper/config.example.json": "f4ff3f816c299a191f7bf15bc068d83bd5c2cc0b4fffb6d47ace9380d4be043f",
     "cradleos-dapp/scripts/book-keeper/cradleos-book-keeper.timer": "d2bec6474d2ffcb40e32fcff6f30cd979705b25c5cb378c563c3beb45cb615c2",
     "cradleos-dapp/scripts/book-keeper/cradleos-book-keeper.service": "2885a73d9733072b8b3988aee7a2f0cec79a2a8a21b223b24c57a9e75e99cb5d"
@@ -52,6 +52,6 @@
     "assets/index-Cry5MCOP.css": "ce6e6bad08abb0f066d4859c00eaa033e05a635235730ec5fbb5243713e39c43",
     "assets/index-DwL9aW8p.js": "6d3d0c22c465f227f95c2e4cb8c7f5ec692094f0c3fb6aadb0cb3aae74acfdf3"
   },
-  "sourceCommit": "507712e7769c7c531921f32458f0590b9cec77df",
-  "sourceTag": "publish/cradleos_book-oracle-2026-10-21"
+  "sourceCommit": null,
+  "sourceTag": "publish/cradleos_book-rewards-2026-10-21"
 }

@@ -1,4 +1,6 @@
 /** Pure, bounded policy. All amounts remain integers; no outcome discretion. */
+// gRPC returns the full base58 genesis digest, not the CLI's short hex chain ID.
+export function assertCanonicalChain(identifier){if(identifier!=='69WiPg3DAQiwdxfncX6wYQ2siKwAe6L9BZthQea3JNMD')throw Error('CHAIN_MISMATCH');}
 export const FEEDS={1:'e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43',2:'ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace'};
 export function uint(value){if(typeof value!=='string'||!/^\d+$/.test(value)||BigInt(value)>18446744073709551615n)throw Error('INVALID_INTEGER');return BigInt(value);}
 export function canonicalObject(node,type,bookId){
