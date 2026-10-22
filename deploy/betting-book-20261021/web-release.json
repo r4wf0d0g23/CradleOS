@@ -1,6 +1,6 @@
 {
-  "status": "review-ready-not-web-deployed",
-  "sourceCommit": null,
+  "status": "deployed-rewards-only",
+  "sourceCommit": "afb0299efed3cf7eb39e2af5d9866ead27cc7cc5",
   "packageId": "0xd3ff5ab45de2c4b9a980d3d35251a9112067824506a03301e6a488c45dee68a9",
   "bookId": "0xd77497e93dcf02d70ce250751844eea561df4e7b2abb11034a4ba19530a6424b",
   "rewardsEnabled": true,
@@ -21,7 +21,15 @@
     "previewBrowser": "rewards-preview-browser.json",
     "liveBookCustody": "live-book-custody.json",
     "keeper": "keeper-deployment.json",
-    "realUserPaymentVerified": false
+    "realUserPaymentVerified": false,
+    "liveBrowser": "rewards-live-browser.json",
+    "liveHashProof": "live-hashes.json"
   },
-  "priceActivationBlockedOn": "Pyth credential and current authenticated exact-target proof retrieval"
+  "priceActivationBlockedOn": "Pyth credential and current authenticated exact-target proof retrieval",
+  "sourcePushed": true,
+  "publicationTagPushed": "publish/cradleos_book-rewards-2026-10-21",
+  "deploymentId": "8e87ba66",
+  "deploymentUrl": "https://8e87ba66.cradleos-d75.pages.dev",
+  "productionUrl": "https://cradleos.io/",
+  "verifiedAt": "2026-10-22T01:33:19.657677+00:00"
 }

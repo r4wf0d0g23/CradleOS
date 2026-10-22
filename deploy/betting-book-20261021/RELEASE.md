@@ -1,11 +1,12 @@
-# Betting book — onchain published; rewards-only web release ready
+# Betting book — rewards-only release DEPLOYED; price wagering OFF
 
 Current release replaces the initial pilot/fleet design. Old receipts are in
 `archive-initial-pilot/`; never use their ABI or simulated IDs for deployment.
 Current exact source/bytecode/build hashes: `provenance.json`.
 Publication source: `c585fe5e695d66f5ce33adc5675de0e7d7f90efe`, tag
 `publish/cradleos_book-rewards-2026-10-21`. Current web manifest/build evidence:
-`web-release.json`. Source is committed locally; final web push/deploy pending.
+`web-release.json`. Web source `afb0299efed3cf7eb39e2af5d9866ead27cc7cc5`
+is pushed; Pages deployment **8e87ba66** is live at https://cradleos.io/.
 
 ## Implemented
 
@@ -36,8 +37,8 @@ Publication source: `c585fe5e695d66f5ce33adc5675de0e7d7f90efe`, tag
   autonomous runs verified. No reward/price jobs exist, so real payment remains
   unverified; do not claim a completed user payout or end-to-end wallet flow.
 - Web manifest: actual IDs, rewardsEnabledtrue/wageringEnabledfalse. Real-book
-  browser checks at320/390/1440 PASS; no mocks/wallet signatures. Website cutover
-  pending. Existing House/HOLD/balances and productionea9de180 unchanged so far.
+  preview/live browser checks at320/390/1440 PASS; no mocks/wallet signatures. Website cutover
+  complete. Existing House/HOLD/balances remain unchanged; rollbackea9de180.
 
 No fabricated markets/rewards/bets were created. No EVE funds moved. Pricing stays
 disabled pending authenticated current oracle access; no price markets were made.
@@ -120,3 +121,21 @@ disabled pending authenticated current oracle access; no price markets were made
 Toolchain: `/home/rawdata/.openclaw-captain/workspace/tools/sui-testnet-1.81.0/sui`.
 Client config: `research/eve-cycle7-clean-wipe-20261002/client.yaml` in workspace.
 Package build environment `testnet_stillness`. Never skip dependency verification.
+
+## Live web delivery proof
+
+Pages8e87ba66, sourceafb0299 (pushed). Actual sandboxed Chromium response bodies
+for JS/CSS exactly match reviewed dist SHA256; HTML references those same assets
+and differs only by Cloudflare Insights injection/whitespace. Raw Python UA gets
+Cloudflare1010; ordinary sandboxed browser works; no WAF settings changed.
+Live book UI at320/390/1440 loads canonical empty book, price wagering paused,
+reward form available and unsigned/anonymous submission disabled. No overflow or
+page exceptions. Six preview/live viewport checks total. Keeper remains healthy
+on its30-second schedule. No genuine user payment or signed-wallet E2E yet.
+
+## Remaining scope
+
+BTC/ETH price wagering remains OFF until protected PYTH_API_KEY/current signed
+first-crossing retrieval is verified. No combat wagering. Second off-host backup
+is deferred under Raw's explicit exception; Jetson2 proof verified. Existing
+House bankroll, HOLD, all44 practice games and all unrelated packages unchanged.

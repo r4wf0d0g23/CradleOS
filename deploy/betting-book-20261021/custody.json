@@ -1,5 +1,5 @@
 {
-  "status": "published-and-bootstrapped",
+  "status": "published-bootstrapped-rewards-web-deployed",
   "network": "testnet_stillness",
   "chainId": "4c78adac",
   "publisherAndCustodyAddress": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
@@ -26,7 +26,7 @@
     "bootstrapDigest": "5aeoUu1kXzCTyBXLkSBoWUXBngbF7oCjKBZJ4k7PW5Ri",
     "bootstrapCapConsumed": true
   },
-  "frontendDeployed": false,
+  "frontendDeployed": true,
   "currentProductionRollbackId": "ea9de180",
   "backupProofReceipt": "jetson2-restored-signing-proof.json",
   "backupProofDigest": "6a289ec38c40b21600fc43e8cc9f3b779ef899144a10757b65e3142e3607bfea",
@@ -46,5 +46,8 @@
       "oracle verification before price-market activation",
       "existing casino House wagering HOLD"
     ]
-  }
+  },
+  "frontendDeploymentId": "8e87ba66",
+  "priceWageringEnabled": false,
+  "itemRewardsEnabled": true
 }

@@ -16,7 +16,7 @@
   },
   "pythCredentialRequiredForCurrentScope": false,
   "autonomousStatus": {
-    "startedAt": "2026-10-22T01:28:14.686Z",
+    "startedAt": "2026-10-22T01:33:01.707Z",
     "mode": "live",
     "state": "healthy",
     "submitted": 0,
@@ -25,6 +25,8 @@
     "finalized": 0,
     "refunds": 0,
     "errors": [],
-    "finishedAt": "2026-10-22T01:28:15.300Z"
-  }
+    "finishedAt": "2026-10-22T01:33:02.325Z"
+  },
+  "timerEnabled": true,
+  "timerActive": true
 }

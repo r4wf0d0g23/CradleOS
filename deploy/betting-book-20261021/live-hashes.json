@@ -1,0 +1,38 @@
+{
+  "deploymentId": "8e87ba66",
+  "sourceCommit": "afb0299efed3cf7eb39e2af5d9866ead27cc7cc5",
+  "checkedAt": "2026-10-22T01:32:48.346Z",
+  "method": "Sandboxed Chromium response bodies",
+  "files": [
+    {
+      "path": "index.html",
+      "url": "https://cradleos.io/",
+      "status": 200,
+      "sha256": "05de349933f0e2d6156dd3ac902a5f70befe6bae7ae829c02637c94f3332b0f5",
+      "expected": "836b20a94f1f86c169f0488f255a59da8e0da280e0d85fa3e3c2ccad067856c7",
+      "exactMatch": false
+    },
+    {
+      "path": "assets/index-Cry5MCOP.css",
+      "url": "https://cradleos.io/assets/index-Cry5MCOP.css",
+      "status": 200,
+      "sha256": "ce6e6bad08abb0f066d4859c00eaa033e05a635235730ec5fbb5243713e39c43",
+      "expected": "ce6e6bad08abb0f066d4859c00eaa033e05a635235730ec5fbb5243713e39c43",
+      "exactMatch": true
+    },
+    {
+      "path": "assets/index-C-rYcSDm.js",
+      "url": "https://cradleos.io/assets/index-C-rYcSDm.js",
+      "status": 200,
+      "sha256": "565bc909dac1216a80da6ab78e8bbecef99a712eb6496ffecb420e454b8f5dd0",
+      "expected": "565bc909dac1216a80da6ab78e8bbecef99a712eb6496ffecb420e454b8f5dd0",
+      "exactMatch": true
+    }
+  ],
+  "htmlVerification": {
+    "sameReviewedAssetReferences": true,
+    "matchesAfterRemovingHostingAnalyticsAndWhitespace": true,
+    "hostingInjection": "Cloudflare Insights beacon; original raw HTML hash intentionally differs"
+  },
+  "passed": true
+}

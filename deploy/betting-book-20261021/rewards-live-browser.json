@@ -1,0 +1,40 @@
+{
+  "base": "https://cradleos.io",
+  "checkedAt": "2026-10-22T01:31:39.481Z",
+  "realPublishedBook": true,
+  "fixtures": false,
+  "noWalletSignatures": true,
+  "livePaymentVerified": false,
+  "checks": [
+    {
+      "width": 320,
+      "bookLoaded": true,
+      "emptyPriceMarkets": true,
+      "wageringDisabled": true,
+      "rewardFormVisible": true,
+      "anonymousSigningBlocked": true,
+      "noHorizontalOverflow": true,
+      "pageErrors": []
+    },
+    {
+      "width": 390,
+      "bookLoaded": true,
+      "emptyPriceMarkets": true,
+      "wageringDisabled": true,
+      "rewardFormVisible": true,
+      "anonymousSigningBlocked": true,
+      "noHorizontalOverflow": true,
+      "pageErrors": []
+    },
+    {
+      "width": 1440,
+      "bookLoaded": true,
+      "emptyPriceMarkets": true,
+      "wageringDisabled": true,
+      "rewardFormVisible": true,
+      "anonymousSigningBlocked": true,
+      "noHorizontalOverflow": true,
+      "pageErrors": []
+    }
+  ]
+}
