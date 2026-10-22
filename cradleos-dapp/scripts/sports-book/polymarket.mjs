@@ -327,7 +327,9 @@ export async function boundedJSON(url, options = {}) {
 }
 export async function getMarket(id) {
   dec(id);
-  return boundedJSON("https://gamma-api.polymarket.com/markets/" + id);
+  const rows=await boundedJSON("https://gamma-api.polymarket.com/markets?id="+id);
+  check(Array.isArray(rows)&&rows.length===1&&String(rows[0].id)===String(id),'SOURCE_MARKET_LOOKUP');
+  return rows[0];
 }
 export async function inspect(
   t,
