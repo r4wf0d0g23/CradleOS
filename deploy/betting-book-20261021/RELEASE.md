@@ -49,11 +49,15 @@ casino House/HOLD, balances and production ea9de180 are unchanged.
 
 ## Concrete publication/activation blockers
 
-1. **Backup access.** DGX2 Tailscale is NeedsLogin/no peers. Approved pinned
-   Jetson2 and DGX1 routes unavailable; does not establish DGX1 power state.
-   FRESH_DEPLOY_PROTOCOL §8.1 requires a fresh restored-backup signing proof and
-   operator-attested readable backups at two off-host locations. The Oct2
-   exception covered only that prior release. Existing authorized wallet/custody:
+1. **Second off-host backup.** DGX2 Tailscale reauthenticated October21 at20:16 CT.
+   Pinned Jetson2 SSH succeeds; existing backup restored and a fresh non-transaction
+   Sui PersonalMessage independently verified. See `network-recovery.json` and
+   `jetson2-restored-signing-proof.json`. Exactly ONE off-host backup verified.
+   DGX1 is offline on Tailscale (last seen September18); Tailscale SSH times out and known
+   LAN SSH reports No route to host. This does not establish physical power state.
+   FRESH_DEPLOY_PROTOCOL §8.1 still requires two operator-attested readable off-host
+   backups; refresh the signing proof again immediately before actual publish.
+   The Oct2 exception covered only that prior release. Existing wallet/custody:
    `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
    No need to reselect it; no false attestation, host-key bypass or key movement.
 2. **Oracle access.** Secure PYTH_API_KEY request expired unanswered. Current
@@ -63,8 +67,9 @@ casino House/HOLD, balances and production ea9de180 are unchanged.
 
 ## Exact resume sequence (already authorized work)
 
-1. Restore Tailscale; verify approved DGX1/Jetson2 backups and refreshed signing
-   proof/physical-host attestation. Record custody before any publication signature.
+1. Restore DGX1 or verify another explicitly approved second off-host backup;
+   confirm physical-host attestation. Jetson2 is already verified. Refresh its
+   signing proof immediately before publication. Record custody before signing.
 2. Obtain existing oracle credential via protected input (never chat), verify
    authenticated catalog and signed first-crossing responses for the exact pinned
    feed/state pairs. Generic documentation's Beta note must not override actual

@@ -28,3 +28,13 @@ Remaining external gates: restored backup verification/attestation, current API
 credential and authenticated exact-expiry retrieval, actual publication/cap
 custody, funded scheduled keeper proof, wallet lifecycle, web cutover. Do not
 convert simulation or local browser fixtures into claims of production success.
+
+## Network recovery / existing-backup proof review
+
+October21 20:16 CT: DGX2 Tailscale reauthenticated; approved pinned Jetson2 route
+restored. Independent native reviewer inspected `refresh-jetson2-proof.py` in
+workspace research and independently verified the public receipt; altered-message
+verification failed. Existing backup restored only on Jetson2, no private key
+transfer, replacement, or transaction. PASS for this narrow proof procedure.
+Only ONE verified off-host backup; this does not clear the two-backup gate or
+authorize publication. Requested Opus unavailable; inherited native model used.

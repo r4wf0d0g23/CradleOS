@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-22T01:18:49.551065+00:00",
+  "dgx2": {
+    "state": "Running",
+    "online": true,
+    "ips": [
+      "100.64.104.52",
+      "fd7a:115c:a1e0::7735:6834"
+    ],
+    "health": []
+  },
+  "peerStatus": [
+    {
+      "HostName": "spark-27c6",
+      "Online": false,
+      "LastSeen": "2026-09-18T12:03:03.1Z"
+    },
+    {
+      "HostName": "agent-nav-jetson2",
+      "Online": true,
+      "LastSeen": "0001-01-01T00:00:00Z"
+    }
+  ],
+  "jetson2PinnedSsh": true,
+  "restoredBackupProof": {
+    "receipt": "jetson2-restored-signing-proof.json",
+    "valid": true,
+    "digestHex": "c58b46dc79adbd16ed96ee2fd2d5ecf5f9abca565f26ea18947619933b636ec7"
+  },
+  "dgx1Ssh": {
+    "tailscale": "timeout",
+    "knownLan": "No route to host"
+  },
+  "verifiedOffHostBackups": 1,
+  "twoBackupGateCleared": false,
+  "privateKeysTransferred": false,
+  "chainTransactionSubmitted": false,
+  "review": {
+    "status": "PASS",
+    "scope": "Existing Jetson2 backup proof only; not two-backup gate or deployment approval",
+    "independentSdkVerification": true,
+    "alteredChallengeRejected": true,
+    "model": "available inherited native reviewer; not Opus"
+  }
+}
