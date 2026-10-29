@@ -1,0 +1,47 @@
+{
+  "url": "https://cradleos.io/",
+  "sourceCommit": "29fd848a78c16fb33dff11bd6dacc498ccda158c",
+  "pagesDeployment": "8f7a5fc5",
+  "deploymentUrl": "https://8f7a5fc5.cradleos-d75.pages.dev",
+  "rollbackPages": "020f14f8",
+  "status": "deployed_verified",
+  "tests": {
+    "frontend": 655,
+    "frontendFiles": 62,
+    "isolatedBrowserGroups": 15,
+    "origins": 8,
+    "ioc": "clean",
+    "build": "pass"
+  },
+  "firstPublishAttempt": "Cloudflare internal Functions publication error; previous production stayed healthy",
+  "retry": "unchanged build succeeded",
+  "transfers": "same-SSU own-personal/shared only; amount+consent+wallet signature",
+  "ownerMainToShared": false,
+  "otherPilotStockTransfers": false,
+  "signedPlayerTransferVerified": false,
+  "actualStockUnsignedSimulation": "pass; one item, no simulated seeding or broadcast",
+  "contractsPoliciesCustodyBackendChanged": false,
+  "partnerReportAssetsUnchanged": true,
+  "previewStopped": 5347,
+  "productionBrowser": {
+    "at": "2026-10-29T15:29:00.131Z",
+    "widths": [
+      1440,
+      650,
+      390,
+      320
+    ],
+    "realChainData": true,
+    "syntheticReadOnlyWallet": true,
+    "initialCapReadFailuresInjected": 2,
+    "cardRefreshRecovered": true,
+    "writes": 0,
+    "errors": []
+  },
+  "finalIndependentReview": {
+    "status": "PASS",
+    "reviewer": "native storage_config_review",
+    "scope": "source, exact production assets, live browser and responsive screenshot, unsigned actual-stock proof",
+    "remainingBlockers": []
+  }
+}
