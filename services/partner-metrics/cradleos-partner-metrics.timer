@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh CradleOS partner report hourly
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1h
+RandomizedDelaySec=30
+Persistent=true
+[Install]
+WantedBy=timers.target

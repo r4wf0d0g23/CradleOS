@@ -7,12 +7,12 @@
     <meta name="referrer" content="no-referrer" />
     <meta
       name="description"
-      content="CradleOS audience metrics and selected Cycle 7 releases for EVE Frontier."
+      content="CradleOS website and wallet metrics with major milestones across EVE Frontier Cycles 5–7."
     />
     <meta property="og:title" content="CradleOS · Partner metrics" />
     <meta
       property="og:description"
-      content="Verified wallet activity, current-cycle releases and public source links."
+      content="Cloudflare website activity, wallet usage by cycle and major project milestones."
     />
     <meta property="og:url" content="https://cradleos.io/partners/metrics/" />
     <meta property="og:type" content="website" />
@@ -29,7 +29,7 @@
           for EVE Frontier.
         </p>
         <div class="tags">
-          <span>Cycle 7</span><span>Sui testnet · Stillness</span
+          <span>Cycles 5–7</span><span>Sui testnet · Stillness</span
           ><span>Community-built</span>
         </div>
         <div class="actions">
@@ -44,9 +44,60 @@
           >
         </div>
       </header>
+      <section aria-labelledby="website-title">
+        <div class="section-heading">
+          <h2 id="website-title">
+            Website access <small>Rolling 30 days</small>
+          </h2>
+          <span id="website-status" role="status">Loading</span>
+        </div>
+        <div class="metrics website-metrics">
+          <article class="metric primary">
+            <h3>Page views</h3>
+            <strong id="pageviews">—</strong
+            ><span>Cloudflare Web Analytics</span>
+          </article>
+          <article class="metric">
+            <h3>Visits</h3>
+            <strong id="visits">—</strong><span>Visits, not unique people</span>
+          </article>
+        </div>
+        <p class="qualifier">
+          cradleos.io · Adaptive estimates · Browser activity only
+        </p>
+        <p class="muted" id="website-window">—</p>
+      </section>
+      <section aria-labelledby="history-title">
+        <div class="section-heading">
+          <h2 id="history-title">Wallet use by cycle</h2>
+          <span id="history-status" role="status">Loading</span>
+        </div>
+        <div class="metrics cycle-metrics" id="cycle-history"></div>
+        <p class="qualifier">
+          Recorded addresses, not full-cycle totals. Earlier sign-ins were not
+          verified. Counts overlap across cycles.
+        </p>
+        <p class="muted">
+          Collected: <span id="history-updated">—</span> · Hourly refresh
+        </p>
+        <div class="actions report-actions">
+          <button id="history-refresh" type="button">Refresh history</button
+          ><button id="history-json" type="button" disabled>
+            Export website + cycles JSON</button
+          ><button id="history-csv" type="button" disabled>
+            Export website + cycles CSV</button
+          ><a
+            href="https://keeper.reapers.shop/telemetry/history"
+            rel="noreferrer"
+            >History source ↗</a
+          >
+        </div>
+      </section>
       <section aria-labelledby="audience-title">
         <div class="section-heading">
-          <h2 id="audience-title">Audience <small>Rolling 30 days</small></h2>
+          <h2 id="audience-title">
+            Current wallet activity <small>Cycle 7 · Rolling 30 days</small>
+          </h2>
           <span id="metrics-status" role="status">Loading</span>
         </div>
         <div class="metrics">
@@ -113,7 +164,9 @@
       </section>
       <section aria-labelledby="releases-title">
         <div class="section-heading">
-          <h2 id="releases-title">Selected releases <small>Cycle 7</small></h2>
+          <h2 id="releases-title">
+            Major milestones <small>Cycles 5–7</small>
+          </h2>
           <span class="muted">Dates · UTC</span>
         </div>
         <ol id="releases" class="releases"></ol>
@@ -123,8 +176,7 @@
         ><span id="report-link">cradleos.io/partners/metrics/</span>
       </footer>
       <noscript
-        >Enable JavaScript for current audience metrics and release
-        links.</noscript
+        >Enable JavaScript for current metrics and milestone links.</noscript
       >
     </main>
     <script type="module" src="/src/partnerMetrics/main.ts"></script>

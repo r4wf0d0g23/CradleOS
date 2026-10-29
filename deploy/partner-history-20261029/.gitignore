@@ -1,0 +1,11 @@
+*.log
+*.png
+*.bundle.mjs
+private/
+exports/
+probe-*.mjs
+create-analytics-token.mjs
+*-failure.txt
+*.pdf
+
+__pycache__/

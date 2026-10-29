@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-29T15:12:32.880Z",
+  "authenticated": false,
+  "results": [
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/tree/cycle7-vestiges-20261002",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/tree/cycle7-vestiges-20261002",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/tree/cycle7-vestiges-20261002/deploy",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/tree/cycle7-vestiges-20261002/deploy",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/902ada7c2d6ac55a3040e7fb0b7f6dc74ca18292",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/902ada7c2d6ac55a3040e7fb0b7f6dc74ca18292",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/cycle7-vestiges-20261002/deploy/storage-config-20261029/README.md",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/cycle7-vestiges-20261002/deploy/storage-config-20261029/README.md",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/81d901feff5896600eb8904e1fbf7e465e1d738b",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/81d901feff5896600eb8904e1fbf7e465e1d738b",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/cycle7-vestiges-20261002/deploy/sports-book-20261021/RELEASE.md",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/cycle7-vestiges-20261002/deploy/sports-book-20261021/RELEASE.md",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/cd5451f8b92f1348cf0b754dc7919c0ae6be2e3a",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/cd5451f8b92f1348cf0b754dc7919c0ae6be2e3a",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/cycle7-vestiges-20261002/deploy/native-game-data-20261003/release.json",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/cycle7-vestiges-20261002/deploy/native-game-data-20261003/release.json",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/ee37e38",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/ee37e38",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/ee37e38/index.html",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/ee37e38/index.html",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/61f9eb7219a3bd3dc48d42781cf5bd9da9c3c38f",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/61f9eb7219a3bd3dc48d42781cf5bd9da9c3c38f",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/61f9eb7219a3bd3dc48d42781cf5bd9da9c3c38f/index.html",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/61f9eb7219a3bd3dc48d42781cf5bd9da9c3c38f/index.html",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/829f0ac707db68836195834f3b3e1285a47502b6",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/829f0ac707db68836195834f3b3e1285a47502b6",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/829f0ac707db68836195834f3b3e1285a47502b6/index.html",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/829f0ac707db68836195834f3b3e1285a47502b6/index.html",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/commit/80bdc4f7f9cb215e1d7eae5ad29578543b64d31e",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/commit/80bdc4f7f9cb215e1d7eae5ad29578543b64d31e",
+      "public": true
+    },
+    {
+      "url": "https://github.com/r4wf0d0g23/CradleOS/blob/80bdc4f7f9cb215e1d7eae5ad29578543b64d31e/index.html",
+      "status": 200,
+      "finalUrl": "https://github.com/r4wf0d0g23/CradleOS/blob/80bdc4f7f9cb215e1d7eae5ad29578543b64d31e/index.html",
+      "public": true
+    }
+  ]
+}

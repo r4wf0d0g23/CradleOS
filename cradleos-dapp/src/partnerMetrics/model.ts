@@ -38,6 +38,7 @@ export type PartnerSnapshot = {
     operator_wallets: string;
     coverage: string;
   };
+  milestone_cycles: [5, 6, 7];
   selected_releases: typeof RELEASES;
 };
 export function parsePartnerSnapshot(
@@ -104,6 +105,7 @@ export function parsePartnerSnapshot(
       coverage:
         "Rolling 30 days, not a full-Cycle audience total. Sign-in history starts at sign_in_coverage_since. New reward, sports and storage-access packages are not in this chain scope.",
     },
+    milestone_cycles: [5, 6, 7],
     selected_releases: RELEASES.map((r) => ({ ...r })),
   };
   assertFresh(snapshot, now);

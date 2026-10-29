@@ -1,3 +1,4 @@
+import "./historyView";
 import "./style.css";
 import { RELEASES, SOURCE_URL } from "./data";
 import {

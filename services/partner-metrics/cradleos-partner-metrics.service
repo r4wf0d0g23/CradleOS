@@ -1,0 +1,14 @@
+[Unit]
+Description=CradleOS aggregate partner metrics (read-only sources)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flock -n %h/.local/share/cradleos-partner-metrics/collector.lock /usr/bin/node %h/cradleos-partner-metrics/current/collect.mjs
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=%h/.local/share/cradleos-partner-metrics
+TimeoutStartSec=90

@@ -1,0 +1,113 @@
+{
+  "at": "2026-10-29T15:14:39.245Z",
+  "base": "http://127.0.0.1:5345",
+  "label": "preview",
+  "anonymous": true,
+  "walletProvider": false,
+  "initialPartnerHostingAnalyticsPosts": 0,
+  "realSource": true,
+  "counts": {
+    "combined": 14,
+    "signins": 13,
+    "onchain": 7,
+    "today": 3
+  },
+  "selectedReleases": 7,
+  "widths": [
+    1440,
+    650,
+    390,
+    320
+  ],
+  "website": {
+    "pageViews": 1540,
+    "visits": 1300
+  },
+  "cycleWallets": [
+    {
+      "cycle": 5,
+      "archived": 37,
+      "verified": null
+    },
+    {
+      "cycle": 6,
+      "archived": 22,
+      "verified": null
+    },
+    {
+      "cycle": 7,
+      "archived": null,
+      "verified": 14
+    }
+  ],
+  "historySource": "real collected snapshot, local response",
+  "independentSourceFailureChecks": true,
+  "historyExpiryAtExport": true,
+  "exports": [
+    "json",
+    "csv",
+    "pdf",
+    "website+cycles JSON",
+    "website+cycles CSV"
+  ],
+  "failureFixtureClearsCounts": true,
+  "expiryAtExportWithoutTimers": true,
+  "mainNavigationUnchanged": true,
+  "directPathVariants": "Cloudflare redirect checked after deployment",
+  "pageErrors": [],
+  "requestTraceScope": "combined partner and root navigation",
+  "requests": [
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "method": "GET"
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "method": "GET"
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "method": "POST"
+    }
+  ]
+}
