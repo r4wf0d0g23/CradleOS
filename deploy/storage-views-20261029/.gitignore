@@ -1,0 +1,5 @@
+fixtures/
+*.png
+*.log
+*-failure.txt
+*.bundle.mjs

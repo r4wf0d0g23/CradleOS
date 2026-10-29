@@ -969,6 +969,8 @@ export function InventoryPanel() {
   });
 
   const mounted = useRef(false);
+  const refreshWallet = useRef(walletAddress);
+  refreshWallet.current = walletAddress;
   const requests = useRef(new Map<string, number>());
   const requestSequence = useRef(0);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; requests.current.clear(); }; }, []);
@@ -976,16 +978,19 @@ export function InventoryPanel() {
     if (!mounted.current || !walletAddress || !inventories.some(inv => inv.ssu.objectId === ssuObjectId)) return;
     const request = ++requestSequence.current;
     requests.current.set(ssuObjectId, request);
-    const current = () => mounted.current && requests.current.get(ssuObjectId) === request;
+    const current = () => mounted.current && refreshWallet.current === walletAddress && requests.current.get(ssuObjectId) === request;
+    const refreshCharacterId = transferState.characterId;
     setInventories(prev => prev.map(inv => inv.ssu.objectId === ssuObjectId ? { ...inv, loading: true, error: undefined, policy: undefined, snapshot: undefined, items: [] } : inv));
     try {
-      const [{ items, maxCapacity, usedCapacity, snapshot }, policy] = await Promise.all([
+      const [{ items, maxCapacity, usedCapacity, snapshot }, policy, refreshedCap] = await Promise.all([
         fetchSSUInventory(ssuObjectId),
         SSU_ACCESS_AVAILABLE ? loadPolicyForSsu(ssuObjectId).catch(() => undefined) : Promise.resolve(undefined),
+        !transferState.charOwnerCapId && refreshCharacterId ? fetchCharacterOwnerCapId(refreshCharacterId).catch(() => null) : Promise.resolve(null),
       ]);
       const resolvedNames = new Map<number, string>();
       await Promise.all(items.map(async item => { resolvedNames.set(item.typeId, await resolveItemName(item.typeId, nameCache.current)); }));
       if (!current()) return;
+      if (refreshedCap) setTransferState(prev => prev.characterId === refreshCharacterId ? { ...prev, charOwnerCapId: refreshedCap } : prev);
       setInventories(prev => prev.map(inv => inv.ssu.objectId === ssuObjectId ? {
         ...inv, items, resolvedNames, maxCapacity, usedCapacity, snapshot, policy,
         loading: false, error: undefined, hasLoadedContents: true,

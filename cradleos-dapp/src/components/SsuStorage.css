@@ -409,3 +409,28 @@
     transition: none !important;
   }
 }
+
+.ssu-stock-toolbar { flex-wrap: wrap; }
+.ssu-search { flex-basis: 160px; }
+.ssu-view-switch { display: flex; gap: 4px; }
+.ssu-view-switch button[aria-pressed="true"] { border-color: #ff8353; background: #ff470020; }
+.ssu-stock-list li[draggable="true"] { cursor: grab; }
+.ssu-stock-list li[draggable="true"]:active { cursor: grabbing; }
+.ssu-card .ssu-storage-tabs button.ssu-drop-ready { outline: 2px solid #8de9b3; outline-offset: -2px; background: #8de9b322; }
+.ssu-stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr)); gap: 10px; }
+.ssu-stock-grid li { flex-direction: column; align-items: stretch; padding: 12px; border: 1px solid #fafae522; background: #fafae505; min-width: 0; }
+.ssu-stock-grid li > .game-icon { align-self: center; }
+.ssu-stock-grid .ssu-stock-name { align-content: start; }
+.ssu-stock-grid .ssu-stock-quantity { text-align: left; }
+.ssu-stock-grid .ssu-stock-quantity button { margin-top: 3px; width: 100%; }
+.ssu-transfer-review:focus { outline: 2px solid #ff8353; outline-offset: 2px; }
+.ssu-transfer-row { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.ssu-transfer-row label { flex: 1 1 160px; }
+.ssu-transfer-row > span { align-self: center; color: var(--ssu-muted); font-size: 11px; }
+.ssu-transfer-row input[aria-invalid="true"] { border-color: #ff7655; }
+@media (max-width: 420px) {
+  .ssu-search { flex-basis: 100%; }
+  .ssu-stock-toolbar > span { margin-left: auto; }
+  .ssu-stock-list:not(.ssu-stock-grid) li { flex-wrap: wrap; }
+  .ssu-stock-list:not(.ssu-stock-grid) .ssu-stock-quantity { margin-left: auto; }
+}

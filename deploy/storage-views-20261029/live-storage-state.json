@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-29T15:22:01.413Z",
+  "ssuId": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+  "extension": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::SharedAccess",
+  "secure": true,
+  "online": true,
+  "policy": {
+    "id": "0xe6ac030c0db74b1836b95e43804e9816fc1f9ac780f383f3f643a9b8265a87f2",
+    "ssuId": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+    "version": "1071475314",
+    "revision": "1",
+    "rules": {
+      "mode": 1,
+      "tribeIds": [
+        98000666
+      ],
+      "deny": [],
+      "allow": []
+    }
+  },
+  "characterCapResolved": true,
+  "ownPersonalStacks": 0,
+  "ownDepositPermitted": true,
+  "partitions": [
+    {
+      "kind": "owner_main",
+      "own": false,
+      "stacks": 1
+    },
+    {
+      "kind": "open",
+      "own": false,
+      "stacks": 0
+    },
+    {
+      "kind": "unknown",
+      "own": false,
+      "stacks": 4
+    },
+    {
+      "kind": "unknown",
+      "own": false,
+      "stacks": 4
+    }
+  ],
+  "transactions": 0
+}

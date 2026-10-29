@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-29T15:25:44.522Z",
+  "unsigned": true,
+  "submitted": false,
+  "stockSeeded": false,
+  "results": [
+    {
+      "label": "exact one-item personal -> shared, real deposited stock",
+      "success": true,
+      "error": null
+    }
+  ]
+}
