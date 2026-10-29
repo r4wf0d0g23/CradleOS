@@ -9,3 +9,9 @@
 /data/icon-api*
   Access-Control-Allow-Origin: *
   X-Content-Type-Options: nosniff
+
+/partners/metrics
+  X-Robots-Tag: noindex, nofollow
+
+/partners/metrics/*
+  X-Robots-Tag: noindex, nofollow

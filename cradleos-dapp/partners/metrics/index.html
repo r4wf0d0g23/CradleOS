@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="description"
+      content="CradleOS audience metrics and selected Cycle 7 releases for EVE Frontier."
+    />
+    <meta property="og:title" content="CradleOS · Partner metrics" />
+    <meta
+      property="og:description"
+      content="Verified wallet activity, current-cycle releases and public source links."
+    />
+    <meta property="og:url" content="https://cradleos.io/partners/metrics/" />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://cradleos.io/partners/metrics/" />
+    <title>CradleOS · Partner metrics</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">CRADLEOS <span>BUILDER REPORT</span></p>
+        <h1>Partner metrics</h1>
+        <p class="lede">
+          Wallet-native tools, shared infrastructure and playable experiences
+          for EVE Frontier.
+        </p>
+        <div class="tags">
+          <span>Cycle 7</span><span>Sui testnet · Stillness</span
+          ><span>Community-built</span>
+        </div>
+        <div class="actions">
+          <a href="/">Open CradleOS ↗</a
+          ><a
+            id="repository"
+            href="https://github.com/r4wf0d0g23/CradleOS/tree/cycle7-vestiges-20261002"
+            >Repository ↗</a
+          ><a
+            href="https://github.com/r4wf0d0g23/CradleOS/tree/cycle7-vestiges-20261002/deploy"
+            >Release archive ↗</a
+          >
+        </div>
+      </header>
+      <section aria-labelledby="audience-title">
+        <div class="section-heading">
+          <h2 id="audience-title">Audience <small>Rolling 30 days</small></h2>
+          <span id="metrics-status" role="status">Loading</span>
+        </div>
+        <div class="metrics">
+          <article class="metric primary">
+            <h3>Verified wallets</h3>
+            <strong id="combined">—</strong><span>Deduplicated total</span>
+          </article>
+          <article class="metric">
+            <h3>Signed-in wallets</h3>
+            <strong id="signins">—</strong><span>Verified identity proofs</span>
+          </article>
+          <article class="metric">
+            <h3>On-chain wallets</h3>
+            <strong id="onchain">—</strong><span>5 tracked contracts</span>
+          </article>
+          <article class="metric">
+            <h3>Signed in today</h3>
+            <strong id="today">—</strong><span>UTC · Unique wallets</span>
+          </article>
+        </div>
+        <p class="qualifier">
+          Wallet addresses, not people or visits. Operator wallets included.
+        </p>
+        <dl class="coverage">
+          <div>
+            <dt>Window · UTC</dt>
+            <dd id="window">—</dd>
+          </div>
+          <div>
+            <dt>Sign-ins recorded since · UTC</dt>
+            <dd id="coverage">—</dd>
+          </div>
+          <div>
+            <dt>Chain indexed · UTC</dt>
+            <dd id="indexed">—</dd>
+          </div>
+          <div>
+            <dt>Report updated · UTC</dt>
+            <dd id="updated">—</dd>
+          </div>
+          <div>
+            <dt>Chain scope</dt>
+            <dd>Core · Turrets · Casino · Legacy storage · Voting</dd>
+          </div>
+        </dl>
+        <p class="qualifier">
+          Chain scope excludes the newer reward, sports and storage-access
+          contracts.
+        </p>
+        <p class="print-source">
+          Source: https://keeper.reapers.shop/telemetry/combined
+        </p>
+        <div class="actions report-actions">
+          <button id="refresh" type="button">Refresh</button
+          ><button id="json" type="button" disabled>Export JSON</button
+          ><button id="csv" type="button" disabled>Export CSV</button
+          ><button id="print" type="button">Print / PDF</button
+          ><a
+            href="https://keeper.reapers.shop/telemetry/combined"
+            rel="noreferrer"
+            >Live source ↗</a
+          >
+        </div>
+      </section>
+      <section aria-labelledby="releases-title">
+        <div class="section-heading">
+          <h2 id="releases-title">Selected releases <small>Cycle 7</small></h2>
+          <span class="muted">Dates · UTC</span>
+        </div>
+        <ol id="releases" class="releases"></ol>
+      </section>
+      <footer>
+        <span>CradleOS · EVE Frontier community project</span
+        ><span id="report-link">cradleos.io/partners/metrics/</span>
+      </footer>
+      <noscript
+        >Enable JavaScript for current audience metrics and release
+        links.</noscript
+      >
+    </main>
+    <script type="module" src="/src/partnerMetrics/main.ts"></script>
+  </body>
+</html>

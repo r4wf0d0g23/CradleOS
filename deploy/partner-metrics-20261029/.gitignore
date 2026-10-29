@@ -1,0 +1,6 @@
+*.log
+*.png
+*.pdf
+*.bundle.mjs
+*-failure.txt
+exports/

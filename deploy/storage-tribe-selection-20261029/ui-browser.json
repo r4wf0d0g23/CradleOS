@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-29T14:53:07.862Z",
+  "environment": "sandboxed Chromium; simulated reads and wallet; real UI/PTB/compatibility guard",
+  "checks": [
+    "blank tribe gives actionable error; current-character lookup reaches review without signing",
+    "lookup preserves entered tribes and does not duplicate current tribe",
+    "missing tribe and read failures preserve manual input without any grant",
+    "deferred tribe lookup discarded across disconnect/reconnect",
+    "new policy explicit stock/replacement review + gated atomic PTB",
+    "changed storage aborts before wallet",
+    "disconnect clears review",
+    "A→B→A rejects deferred old review",
+    "withdraw uses only bound shared→personal wrapper",
+    "deposit all limited to own personal stock",
+    "pilot direction/expiry editor reviewed",
+    "650/390/320px no horizontal overflow",
+    "failed policy read blocks configuration"
+  ],
+  "errors": [],
+  "realTransactions": 0
+}

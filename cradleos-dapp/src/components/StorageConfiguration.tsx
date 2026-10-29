@@ -15,6 +15,7 @@ import {
 } from "../lib/storageAccess";
 import { fetchSsuSnapshot, type SsuSnapshot } from "../lib/ssuSafety";
 import { translateTxError } from "../lib/txError";
+import { readInventoryCharacter } from "../lib/inventoryRead";
 
 type Props = {
   snapshot?: SsuSnapshot;
@@ -103,8 +104,11 @@ export function StorageConfiguration({
     setReview(null);
     setConsent(false);
     setStatus("");
+    setError("");
   };
   function selectedRules() {
+    if (rules.mode === 1 && !tribes.trim())
+      throw new Error("Add your tribe or enter a tribe ID.");
     const split = (v: string) => (v.trim() ? v.trim().split(/[\s,]+/) : []);
     return validateStorageRules({
       ...rules,
@@ -123,6 +127,29 @@ export function StorageConfiguration({
       kit.stores.$currentNetwork.get() !== "testnet"
     )
       throw new Error("Wallet changed. Reopen configuration.");
+  }
+  async function addMyTribe() {
+    if (!isOwner || !characterId || busy || review) return;
+    const g = generation.current;
+    setBusy(true);
+    setError("");
+    try {
+      assertWallet();
+      const { tribeId } = await readInventoryCharacter(characterId);
+      if (g !== generation.current) return;
+      assertWallet();
+      if (!Number.isInteger(tribeId) || tribeId < 1 || tribeId > 0xffffffff)
+        throw new Error("No tribe assigned. Enter a tribe ID.");
+      const ids = tribes.trim() ? tribes.trim().split(/[\s,]+/) : [];
+      if (!ids.some((id) => /^\d+$/.test(id) && Number(id) === tribeId))
+        ids.push(String(tribeId));
+      setTribes(ids.join(", "));
+      change(rules);
+    } catch (e) {
+      if (g === generation.current) setError(translateTxError(e));
+    } finally {
+      if (g === generation.current) setBusy(false);
+    }
   }
   async function prepare() {
     if (
@@ -297,18 +324,23 @@ export function StorageConfiguration({
           ))}
         </div>
         {(rules.mode === 1 || rules.mode === 3) && (
-          <label>
-            Tribe IDs
-            <input
-              aria-label="Tribe IDs"
-              value={tribes}
-              onChange={(e) => {
-                setTribes(e.target.value);
-                setReview(null);
-              }}
-              placeholder="98000666, …"
-            />
-          </label>
+          <div>
+            <label>
+              Tribe IDs
+              <input
+                aria-label="Tribe IDs"
+                value={tribes}
+                onChange={(e) => {
+                  setTribes(e.target.value);
+                  change(rules);
+                }}
+                placeholder="Tribe IDs, comma-separated"
+              />
+            </label>
+            <button type="button" onClick={addMyTribe}>
+              Add my tribe
+            </button>
+          </div>
         )}
         {(rules.mode === 2 || rules.mode === 3) && (
           <div className="ssu-config-pilots">

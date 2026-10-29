@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-29T14:53:31.503Z",
+  "base": "http://127.0.0.1:5343",
+  "label": "preview",
+  "anonymous": true,
+  "walletProvider": false,
+  "realSource": true,
+  "counts": {
+    "combined": 14,
+    "signins": 13,
+    "onchain": 7,
+    "today": 3
+  },
+  "selectedReleases": 8,
+  "widths": [
+    1440,
+    650,
+    390,
+    320
+  ],
+  "exports": [
+    "json",
+    "csv",
+    "pdf"
+  ],
+  "failureFixtureClearsCounts": true,
+  "expiryAtExportWithoutTimers": true,
+  "mainNavigationUnchanged": true,
+  "directPathVariants": "Cloudflare redirect checked after deployment",
+  "pageErrors": [],
+  "requests": [
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "method": "GET"
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "method": "GET"
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "method": "POST"
+    }
+  ]
+}

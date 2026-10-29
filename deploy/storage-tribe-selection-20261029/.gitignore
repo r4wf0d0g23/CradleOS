@@ -1,0 +1,4 @@
+fixtures/
+*.png
+*.log
+*-failure.txt
