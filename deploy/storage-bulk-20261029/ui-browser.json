@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-29T15:58:22.485Z",
+  "environment": "sandboxed Chromium; simulated reads/wallet; real components/PTB builders; no submitted transactions",
+  "checks": [
+    "grid/list and reload persistence",
+    "real mouse drag opens review only; exact deposit amount; invalid amounts blocked; consent resets; Max",
+    "grid shared-to-personal exact withdrawal",
+    "button/touch alternative and cancel without writes",
+    "foreign/same-target/external/cross-SSU drops rejected; preference synchronizes cards",
+    "stale wallet drag rejected",
+    "stock changed after review aborts before wallet",
+    "wallet disconnect during preparation cancels",
+    "network mismatch before signature blocked",
+    "refresh cannot open second wallet request while signature pending; stale completion ignored",
+    "closed nonowner and default extension retain gates",
+    "owner-only recovery preserved",
+    "missing character capability is visible and recovers",
+    "cosmetic preference works when writes blocked",
+    "owner-main drag exact4 amount uses canonical SSU capability and distinct contract call",
+    "owner ingress unavailable to nonowner or policy-denied owner",
+    "owner capability changed after review blocks signature",
+    "all owner stacks: separate amounts, one wallet request, one cap borrow/return; personal and foreign stock excluded",
+    "repeated Remove clicks exclude only the intended stack and reset consent; last stack retained",
+    "nonowner bulk personal deposit uses only caller stock and one approval",
+    "change in any bulk stack blocks the entire transaction before wallet",
+    "more than 100 stacks explicitly labels bounded batch; 100 calls in one approval",
+    "multi-stack amounts/remove review responsive at four widths; cancel sends nothing",
+    "list/grid/amount review responsive at 1440/650/390/320"
+  ],
+  "errors": []
+}

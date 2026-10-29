@@ -215,6 +215,7 @@ export function useStorageTransfers({
   }
   const validAmounts =
     !!selection &&
+    selection.items.length > 0 &&
     selection.items.every(
       (row) => storageTransferAmount(row.amount, row.available) !== null,
     );
@@ -314,7 +315,14 @@ export function useStorageTransfers({
   const personal =
     snapshot?.slots
       .find((s) => s.key === charOwnerCapId && s.partition === "unknown")
-      ?.items.filter((i) => i.quantity > 0) ?? [];
+      ?.items.filter((i) => i.quantity > 0 && directionFor(i) === "deposit") ??
+    [];
+  const ownerStock =
+    snapshot?.slots
+      .find((s) => s.key === ownerCapId && s.partition === "owner_main")
+      ?.items.filter(
+        (i) => i.quantity > 0 && directionFor(i) === "owner_deposit",
+      ) ?? [];
   const disabled = busy || !!selection;
   const request = (item: StorageItem) => {
     // Resolve against this card's actual snapshot, never a dragged payload's quantity.
@@ -359,22 +367,43 @@ export function useStorageTransfers({
     },
     controls: enabled ? (
       <div className="ssu-config">
-        {personal.length > 0 && personal.length <= 100 && permits(false) && (
-          <button
-            disabled={disabled || !snapshot?.online}
-            onClick={() =>
-              prepare(
-                "deposit",
-                personal.map((i) => ({
-                  typeId: i.typeId,
-                  quantity: i.quantity,
-                })),
-              )
-            }
-          >
-            Deposit all personal stock
-          </button>
-        )}
+        <div className="ssu-config-modes">
+          {(
+            [
+              {
+                direction: "owner_deposit",
+                items: ownerStock,
+                all: "Share all owner stock",
+                batch: "Share 100 owner stacks",
+              },
+              {
+                direction: "deposit",
+                items: personal,
+                all: "Deposit all personal stock",
+                batch: "Deposit 100 personal stacks",
+              },
+            ] as const
+          ).map(
+            (group) =>
+              group.items.length > 0 && (
+                <button
+                  key={group.direction}
+                  disabled={disabled || !ready}
+                  onClick={() =>
+                    prepare(
+                      group.direction,
+                      group.items.slice(0, 100).map((i) => ({
+                        typeId: i.typeId,
+                        quantity: i.quantity,
+                      })),
+                    )
+                  }
+                >
+                  {group.items.length > 100 ? group.batch : group.all}
+                </button>
+              ),
+          )}
+        </div>
         {selection && (
           <div
             className="ssu-warning ssu-transfer-review"
@@ -390,6 +419,9 @@ export function useStorageTransfers({
                   ? "Personal → Shared pool"
                   : "Shared pool → Your personal storage"}
             </strong>
+            {selection.items.length > 1 && (
+              <span className="ssu-pill">{selection.items.length} stacks</span>
+            )}
             {selection.items.map((row, i) => (
               <div className="ssu-transfer-row" key={row.typeId}>
                 <label>
@@ -414,6 +446,27 @@ export function useStorageTransfers({
                 >
                   Max
                 </button>
+                {selection.items.length > 1 && (
+                  <button
+                    disabled={busy}
+                    aria-label={`Remove ${names.get(row.typeId) ?? `Item ${row.typeId}`}`}
+                    onClick={() => {
+                      setConsent(false);
+                      setSelection((s) =>
+                        s && s.items.length > 1
+                          ? {
+                              ...s,
+                              items: s.items.filter(
+                                (item) => item.typeId !== row.typeId,
+                              ),
+                            }
+                          : s,
+                      );
+                    }}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             {!validAmounts && (

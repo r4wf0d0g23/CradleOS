@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-29T15:57:07.805Z",
+  "ssuId": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+  "packageId": "0xe5267a986c97c61f4d37a41a897f256f5fb8c943cf0a8540aa429510aa6596d0",
+  "originalBinding": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::SharedAccess",
+  "ownerStacks": 0,
+  "personalStacks": 0,
+  "sharedStacks": 2,
+  "submitted": false,
+  "signed": false,
+  "simulationUnavailable": "Fewer than two caller-owned stacks; no stock seeded or moved."
+}
