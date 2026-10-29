@@ -13,6 +13,7 @@ const browser = await chromium.launch({ headless: true, chromiumSandbox: true, e
 let page;
 try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1050 } });
+  context.setDefaultTimeout(15000);
   const network = [], errors = []; let failCapRead = true; let capFailures = 0;
   await context.route('https://**/*', async route => {
     try {
@@ -75,8 +76,8 @@ try {
   await ownerRow.waitFor(); assert.equal(await ownerRow.getAttribute('draggable'),'true');
   await ownerRow.getByRole('button',{name:'Share',exact:true}).click();
   await target.getByText('Owner storage → Shared pool',{exact:true}).waitFor();
-  await target.getByRole('spinbutton').fill('1');
-  assert.equal(await target.getByRole('spinbutton').inputValue(),'1');
+  await target.getByRole('textbox',{name:/^Quantity for /}).fill('1');
+  assert.equal(await target.getByRole('textbox',{name:/^Quantity for /}).inputValue(),'1');
   assert.equal(await target.getByRole('checkbox').isChecked(),false);
   await page.screenshot({path:new URL(`${label}-owner-review.png`,import.meta.url).pathname});
   await target.getByRole('button',{name:'Cancel',exact:true}).click();

@@ -1,0 +1,300 @@
+{
+  "at": "2026-10-29T15:41:08.331Z",
+  "base": "http://127.0.0.1:5349",
+  "label": "preview",
+  "realChainData": true,
+  "readOnlyWalletFixture": true,
+  "initialCapabilityFailureInjected": 2,
+  "cardRefreshRecoveredCapability": true,
+  "listGridToggle": true,
+  "ownerMainShareReview": true,
+  "exactAmount": 1,
+  "originalBindingPreserved": true,
+  "gridPreferenceStored": true,
+  "widths": [
+    1440,
+    650,
+    390,
+    320
+  ],
+  "counts": {
+    "stacks": 7,
+    "draggable": 0
+  },
+  "writes": 0,
+  "errors": [],
+  "network": [
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    }
+  ]
+}

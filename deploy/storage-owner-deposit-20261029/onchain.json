@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-29T15:39:45.232Z",
+  "packageId": "0xe5267a986c97c61f4d37a41a897f256f5fb8c943cf0a8540aa429510aa6596d0",
+  "originalId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+  "registryId": "0x581cb868c71bece59273b6a5ca361d3ebbbf0259d755b4ae3855d766dd4250f4",
+  "worldId": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "upgradeCap": "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653",
+  "upgradeCapOwner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "upgradeCapVersion": "2",
+  "upgradeDigest": "5Y6UJTnoXz2zCLbP3pjH9zzRKc3HcqBnKVPB6qP8et2g",
+  "sourceCommit": "cab170914df5b82ef4dbbaaf2332786f4a3121eb",
+  "sourceTag": "upgrade/cradleos-storage-owner-deposit-2026-10-29",
+  "existingAbiAndTypeOriginsUnchanged": true,
+  "normalizedBytecodeExact": true,
+  "compiledSha256": "ebcc76d7e067aebe239e9cc05ab5a157f49167850c117b5e20b3c552575c1be5",
+  "liveSha256": "30e27621faf75d44c2706accbfd682fc64d7b26c90ee7ea14f28aa44cf720120",
+  "ssuWrites": 0,
+  "onlyChangedObjects": [
+    "0xe5267a986c97c61f4d37a41a897f256f5fb8c943cf0a8540aa429510aa6596d0",
+    "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653",
+    "0x589ba83f1a1750d48d7a9a77ff534f8aa027f78bae816ed8864fe3f30da49c84"
+  ]
+}
