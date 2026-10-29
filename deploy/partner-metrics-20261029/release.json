@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-29T14:55:25.750337+00:00",
+  "status": "deployed_verified",
+  "origin": "https://cradleos.io",
+  "partnerUrl": "https://cradleos.io/partners/metrics/",
+  "sourceCommit": "4dec4a71c0780bd9a1d097a4516ba146471c0417",
+  "pagesDeployment": "cb41d5f2",
+  "deploymentUrl": "https://cb41d5f2.cradleos-d75.pages.dev",
+  "rollbackPages": "33f7c6b7",
+  "tests": {
+    "frontend": 643,
+    "files": 60,
+    "storageBrowserFixtures": 13,
+    "publicLinks": 18,
+    "originsChecks": 8,
+    "iocScan": "clean",
+    "typescriptBuild": "pass"
+  },
+  "verified": [
+    "anonymous partner report with real aggregate source",
+    "JSON and CSV exports, print PDF",
+    "error and suspended-clock fixtures fail closed",
+    "no app navigation link or wallet provider",
+    "320/390/650/1440 layouts",
+    "HTTP301 no-slash to canonical, HTTP200 canonical and noindex header",
+    "root and partner exact source asset references, all five JS/CSS hashes",
+    "actual Character tribe lookup and owner review; read-only wallet fixture"
+  ],
+  "actualPlayerSigningOrTransfersVerified": false,
+  "contractsChanged": false,
+  "operatorStorageConfigured": false,
+  "stockMoved": false,
+  "existingCloudflareInsights": "Hosting-injected /cdn-cgi/rum; distinguished in browser receipt, not counted as audience",
+  "buildSourceClean": true,
+  "unrelatedUntrackedPreserved": [
+    ".wrangler/",
+    "cradleos-dapp/.wrangler/",
+    "deploy/betting-book-20261021/clean-build-path.json"
+  ],
+  "finalIndependentReview": "PASS; production receipts and mobile screenshot reviewed"
+}

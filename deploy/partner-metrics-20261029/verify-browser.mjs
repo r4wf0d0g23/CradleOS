@@ -33,7 +33,9 @@ try{
  assert.equal(await page.locator('#signins').innerText(),String(lastSource.wallet_mau));
  assert.equal(await page.locator('#onchain').innerText(),String(lastSource.onchain_mau));
  assert.equal(await page.locator('#releases li').count(),8);
- assert.ok(requests.every(r=>r.method==='GET'),'Partner page sends no telemetry/signing POST');
+ const hostingBeacon=r=>{const u=new URL(r.url);return label==='live'&&r.method==='POST'&&u.origin==='https://cradleos.io'&&u.pathname==='/cdn-cgi/rum';};
+ assert.ok(requests.every(r=>r.method==='GET'||hostingBeacon(r)),'Partner page has no app telemetry/signing POST; existing Cloudflare RUM distinguished');
+ const initialPartnerHostingAnalyticsPosts=requests.filter(hostingBeacon).length;
  const counts={combined:lastSource.combined_mau,signins:lastSource.wallet_mau,onchain:lastSource.onchain_mau,today:lastSource.wallet_dau};
  for(const ext of ['json','csv']){
   const pending=page.waitForEvent('download');await page.locator('#'+ext).click();const download=await pending;
@@ -58,6 +60,6 @@ try{
  await page.waitForFunction(()=>document.querySelector('#metrics-status')?.textContent==='Current',undefined,{timeout:30000});
  }
  assert.deepEqual(errors,[]);
- const evidence={at:new Date().toISOString(),base,label,anonymous:true,walletProvider:false,realSource:true,counts,selectedReleases:8,widths:[1440,650,390,320],exports:['json','csv','pdf'],failureFixtureClearsCounts:true,expiryAtExportWithoutTimers:true,mainNavigationUnchanged:true,directPathVariants:label==='live'?true:'Cloudflare redirect checked after deployment',pageErrors:errors,requests};
+ const evidence={at:new Date().toISOString(),base,label,anonymous:true,walletProvider:false,initialPartnerHostingAnalyticsPosts,realSource:true,counts,selectedReleases:8,widths:[1440,650,390,320],exports:['json','csv','pdf'],failureFixtureClearsCounts:true,expiryAtExportWithoutTimers:true,mainNavigationUnchanged:true,directPathVariants:label==='live'?true:'Cloudflare redirect checked after deployment',pageErrors:errors,requestTraceScope:"combined partner and root navigation",requests};
  writeFileSync(new URL(`${label}-browser.json`,dir),JSON.stringify(evidence,null,2));console.log(JSON.stringify({...evidence,requests:undefined,requestCount:requests.length}));
 }catch(e){if(page){writeFileSync(new URL(`${label}-failure.txt`,dir),await page.locator('body').innerText().catch(()=>''));await page.screenshot({path:new URL(`${label}-failure.png`,dir).pathname}).catch(()=>{});}throw e;}finally{await browser.close();}

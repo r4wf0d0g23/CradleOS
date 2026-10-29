@@ -24,3 +24,6 @@ synthetic wallet: it verifies actual Tauriskus tribe98000666 is selected and
 reaches owner review without signing. Actual EVE Vault/player transfers remain
 unverified. Contracts, registry, transfer hook and vulnerable-witness quarantine
 are unchanged. Independent native scoped review passed.
+
+Live Pages cb41d5f2 / source4dec4a7; production read-only check passed at
+2026-10-29T14:55:08Z. Combined web receipt: ../partner-metrics-20261029/release.json.

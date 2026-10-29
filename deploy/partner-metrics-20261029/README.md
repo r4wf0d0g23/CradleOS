@@ -19,6 +19,9 @@ Combined is a union, never a sum. Operator wallets are included. Sign-in
 coverage begins 2026-10-09; new rewards, sports and secure-storage packages are
 not counted in the current chain scope. These bounds are visible in the page
 and exported report. No individual wallet list, key, log or signature exported.
+The existing site-level Cloudflare Insights injection also runs on this page;
+its /cdn-cgi/rum POST is recorded separately and is not used as audience data.
+No new app telemetry POST or wallet identity/signing request is made.
 Strict allowlist projection prevents future upstream extras leaking through.
 
 ## Checks
@@ -42,3 +45,7 @@ telemetry collector, balances or operator configuration is changed.
 
 Deployment and production checks are recorded in release.json, live-assets.json
 and live-browser.json once complete. Previous rollback: Pages33f7c6b7.
+
+Final deployment review passed. Browser receipt hosting count describes the
+initial partner load; full requests array includes the subsequent root-app
+navigation (and its normal reads), not only partner-page traffic.
