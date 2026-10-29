@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  buildOwnerStorageTransfer,
+  StorageCapacityError,
+} from "../lib/storageOwnerRouting";
 import { useDAppKit } from "@mysten/dapp-kit-react";
 import { CurrentAccountSigner } from "../lib/cycleSigner";
 import {
@@ -35,7 +39,7 @@ type Selection = {
   direction: StorageTransferDirection;
   items: { typeId: number; amount: string; available: number }[];
   snapshot: SsuSnapshot;
-  policy: StoragePolicy;
+  policy: StoragePolicy | null;
 };
 export function useStorageTransfers({
   snapshot,
@@ -120,6 +124,12 @@ export function useStorageTransfers({
     !!access &&
     !!characterId &&
     storagePermits(access.policy.rules, characterId, access.tribe, withdraw);
+  const nativeReady =
+    !!snapshot?.online &&
+    !!walletAddress &&
+    !!characterId &&
+    !!ownerCapId &&
+    !!charOwnerCapId;
   const ready =
     enabled &&
     !!snapshot?.online &&
@@ -134,6 +144,52 @@ export function useStorageTransfers({
       canDeposit: permits(false),
       canWithdraw: permits(true),
     });
+  const ownerRoute = (direction: StorageTransferDirection) =>
+    direction === "owner_withdraw" ||
+    direction === "owner_recover" ||
+    direction === "personal_to_owner";
+  const bypassPolicy = (direction: StorageTransferDirection) =>
+    direction === "recover" ||
+    direction === "owner_recover" ||
+    direction === "personal_to_owner";
+  function buildTransfer(
+    state: SsuSnapshot,
+    policy: StoragePolicy | null,
+    direction: StorageTransferDirection,
+    rows: { typeId: number; quantity: number }[],
+  ) {
+    if (!characterId || !walletAddress) throw new Error("Wallet unavailable.");
+    if (
+      direction === "owner_withdraw" ||
+      direction === "owner_recover" ||
+      direction === "personal_to_owner"
+    ) {
+      if (!ownerCapId || !charOwnerCapId)
+        throw new Error("Owner capability unavailable.");
+      return buildOwnerStorageTransfer(
+        state,
+        policy,
+        characterId,
+        walletAddress,
+        direction,
+        rows,
+        ownerCapId,
+        charOwnerCapId,
+      );
+    }
+    if (!policy) throw new Error("Access rules unavailable.");
+    return buildStorageTransfer(
+      state,
+      policy,
+      characterId,
+      walletAddress,
+      direction,
+      rows,
+      direction === "recover" || direction === "owner_deposit"
+        ? ownerCapId
+        : (charOwnerCapId ?? undefined),
+    );
+  }
   async function prepare(
     direction: StorageTransferDirection,
     items: { typeId: number; quantity: number }[],
@@ -159,35 +215,33 @@ export function useStorageTransfers({
       walletCurrent();
       const [fresh, policy, c] = await Promise.all([
         fetchSsuSnapshot(snapshot.id),
-        readStoragePolicy(snapshot.id),
-        readInventoryCharacter(characterId),
+        direction === "personal_to_owner"
+          ? Promise.resolve(null)
+          : readStoragePolicy(snapshot.id),
+        direction === "personal_to_owner"
+          ? Promise.resolve({ tribeId: 0 })
+          : readInventoryCharacter(characterId),
       ]);
       if (g !== generation.current) return;
       walletCurrent();
       if (
-        !policy ||
-        (direction !== "recover" &&
+        (direction !== "personal_to_owner" && !policy) ||
+        (!bypassPolicy(direction) &&
           !storagePermits(
-            policy.rules,
+            policy!.rules,
             characterId,
             c.tribeId,
-            direction === "withdraw",
+            direction === "withdraw" || direction === "owner_withdraw",
           ))
       )
         throw new Error("Access denied or expired.");
-      buildStorageTransfer(
-        fresh,
-        policy,
-        characterId,
-        walletAddress,
-        direction,
-        items,
-        direction === "recover" || direction === "owner_deposit"
-          ? ownerCapId
-          : (charOwnerCapId ?? undefined),
-      );
+      try {
+        buildTransfer(fresh, policy, direction, items);
+      } catch (e) {
+        if (!(e instanceof StorageCapacityError)) throw e;
+      }
       const source = fresh.slots.find((s) =>
-        direction === "deposit"
+        direction === "deposit" || direction === "personal_to_owner"
           ? s.key === charOwnerCapId
           : direction === "owner_deposit"
             ? s.key === ownerCapId && s.partition === "owner_main"
@@ -219,11 +273,30 @@ export function useStorageTransfers({
     selection.items.every(
       (row) => storageTransferAmount(row.amount, row.available) !== null,
     );
+  // Review amounts can be reduced even when the initially selected full stack
+  // exceeds capacity. This is local validation only; submit always rereads chain.
+  let quantityError = "";
+  if (selection && validAmounts) {
+    try {
+      buildTransfer(
+        { ...selection.snapshot, readAt: Date.now() },
+        selection.policy,
+        selection.direction,
+        selection.items.map((row) => ({
+          typeId: row.typeId,
+          quantity: storageTransferAmount(row.amount, row.available)!,
+        })),
+      );
+    } catch (e) {
+      quantityError = translateTxError(e);
+    }
+  }
   async function submit() {
     if (
       !selection ||
       !consent ||
       !validAmounts ||
+      !!quantityError ||
       !characterId ||
       !walletAddress ||
       busy ||
@@ -239,24 +312,29 @@ export function useStorageTransfers({
       walletCurrent();
       const [fresh, policy, c] = await Promise.all([
         fetchSsuSnapshot(selection.snapshot.id),
-        readStoragePolicy(selection.snapshot.id),
-        readInventoryCharacter(characterId),
+        selection.direction === "personal_to_owner"
+          ? Promise.resolve(null)
+          : readStoragePolicy(selection.snapshot.id),
+        selection.direction === "personal_to_owner"
+          ? Promise.resolve({ tribeId: 0 })
+          : readInventoryCharacter(characterId),
       ]);
       if (g !== generation.current) return;
       walletCurrent();
       if (
-        !policy ||
+        (selection.direction !== "personal_to_owner" && !policy) ||
         storagePreviewKey(fresh, policy) !==
           storagePreviewKey(selection.snapshot, selection.policy)
       )
         throw new Error("Stock or rules changed. Review again.");
       if (
-        selection.direction !== "recover" &&
+        !bypassPolicy(selection.direction) &&
         !storagePermits(
-          policy.rules,
+          policy!.rules,
           characterId,
           c.tribeId,
-          selection.direction === "withdraw",
+          selection.direction === "withdraw" ||
+            selection.direction === "owner_withdraw",
         )
       )
         throw new Error("Access denied or expired.");
@@ -264,18 +342,7 @@ export function useStorageTransfers({
         typeId: row.typeId,
         quantity: storageTransferAmount(row.amount, row.available)!,
       }));
-      const tx = buildStorageTransfer(
-        fresh,
-        policy,
-        characterId,
-        walletAddress,
-        selection.direction,
-        rows,
-        selection.direction === "recover" ||
-          selection.direction === "owner_deposit"
-          ? ownerCapId
-          : (charOwnerCapId ?? undefined),
-      );
+      const tx = buildTransfer(fresh, policy, selection.direction, rows);
       signing.current = true;
       let result: any;
       try {
@@ -317,6 +384,11 @@ export function useStorageTransfers({
       .find((s) => s.key === charOwnerCapId && s.partition === "unknown")
       ?.items.filter((i) => i.quantity > 0 && directionFor(i) === "deposit") ??
     [];
+  const movablePersonal = nativeReady
+    ? (snapshot?.slots
+        .find((s) => s.key === charOwnerCapId && s.partition === "unknown")
+        ?.items.filter((i) => i.quantity > 0) ?? [])
+    : [];
   const ownerStock =
     snapshot?.slots
       .find((s) => s.key === ownerCapId && s.partition === "owner_main")
@@ -352,164 +424,207 @@ export function useStorageTransfers({
     identity,
     action(item: StorageItem) {
       const direction = directionFor(item);
-      if (!direction) return null;
+      const canMove = movablePersonal.some(
+        (i) => i.typeId === item.typeId && i.partitionKey === item.partitionKey,
+      );
+      if (!direction && !canMove) return null;
       return (
-        <button disabled={disabled} onClick={() => request(item)}>
-          {direction === "owner_deposit"
-            ? "Share"
-            : direction === "deposit"
-              ? "Deposit"
-              : direction === "recover"
-                ? "Recover"
-                : "Withdraw"}
-        </button>
+        <span className="ssu-config-modes">
+          {direction && (
+            <button disabled={disabled} onClick={() => request(item)}>
+              {direction === "owner_deposit"
+                ? "Share"
+                : direction === "deposit"
+                  ? "Deposit"
+                  : direction === "recover" || direction === "owner_recover"
+                    ? "Recover"
+                    : "Withdraw"}
+            </button>
+          )}
+          {canMove && (
+            <button
+              disabled={disabled}
+              onClick={() =>
+                prepare("personal_to_owner", [
+                  { typeId: item.typeId, quantity: item.quantity },
+                ])
+              }
+            >
+              Move to owner storage
+            </button>
+          )}
+        </span>
       );
     },
-    controls: enabled ? (
-      <div className="ssu-config">
-        <div className="ssu-config-modes">
-          {(
-            [
-              {
-                direction: "owner_deposit",
-                items: ownerStock,
-                all: "Share all owner stock",
-                batch: "Share 100 owner stacks",
-              },
-              {
-                direction: "deposit",
-                items: personal,
-                all: "Deposit all personal stock",
-                batch: "Deposit 100 personal stacks",
-              },
-            ] as const
-          ).map(
-            (group) =>
-              group.items.length > 0 && (
-                <button
-                  key={group.direction}
-                  disabled={disabled || !ready}
-                  onClick={() =>
-                    prepare(
-                      group.direction,
-                      group.items.slice(0, 100).map((i) => ({
-                        typeId: i.typeId,
-                        quantity: i.quantity,
-                      })),
-                    )
-                  }
-                >
-                  {group.items.length > 100 ? group.batch : group.all}
-                </button>
-              ),
-          )}
-        </div>
-        {selection && (
-          <div
-            className="ssu-warning ssu-transfer-review"
-            ref={reviewRef}
-            tabIndex={-1}
-            role="region"
-            aria-label="Review storage transfer"
-          >
-            <strong>
-              {selection.direction === "owner_deposit"
-                ? "Owner storage → Shared pool"
-                : selection.direction === "deposit"
-                  ? "Personal → Shared pool"
-                  : "Shared pool → Your personal storage"}
-            </strong>
-            {selection.items.length > 1 && (
-              <span className="ssu-pill">{selection.items.length} stacks</span>
-            )}
-            {selection.items.map((row, i) => (
-              <div className="ssu-transfer-row" key={row.typeId}>
-                <label>
-                  {names.get(row.typeId) ?? `Item ${row.typeId}`}
-                  <input
-                    aria-label={`Quantity for ${row.typeId}`}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={row.amount}
-                    disabled={busy}
-                    aria-invalid={
-                      storageTransferAmount(row.amount, row.available) === null
+    controls:
+      enabled || nativeReady ? (
+        <div className="ssu-config">
+          <div className="ssu-config-modes">
+            {(
+              [
+                {
+                  direction: "personal_to_owner",
+                  items: movablePersonal,
+                  all: "Move all to owner storage",
+                  batch: "Move 100 stacks to owner storage",
+                },
+                {
+                  direction: "owner_deposit",
+                  items: ownerStock,
+                  all: "Share all owner stock",
+                  batch: "Share 100 owner stacks",
+                },
+                {
+                  direction: "deposit",
+                  items: personal,
+                  all: "Deposit all personal stock",
+                  batch: "Deposit 100 personal stacks",
+                },
+              ] as const
+            ).map(
+              (group) =>
+                group.items.length > 0 && (
+                  <button
+                    key={group.direction}
+                    disabled={
+                      disabled ||
+                      (group.direction === "personal_to_owner"
+                        ? !nativeReady
+                        : !ready)
                     }
-                    onChange={(e) => setAmount(i, e.target.value)}
-                  />
-                </label>
-                <span>Available {row.available.toLocaleString()}</span>
-                <button
-                  disabled={busy}
-                  onClick={() => setAmount(i, String(row.available))}
-                >
-                  Max
-                </button>
-                {selection.items.length > 1 && (
+                    onClick={() =>
+                      prepare(
+                        group.direction,
+                        group.items.slice(0, 100).map((i) => ({
+                          typeId: i.typeId,
+                          quantity: i.quantity,
+                        })),
+                      )
+                    }
+                  >
+                    {group.items.length > 100 ? group.batch : group.all}
+                  </button>
+                ),
+            )}
+          </div>
+          {selection && (
+            <div
+              className="ssu-warning ssu-transfer-review"
+              ref={reviewRef}
+              tabIndex={-1}
+              role="region"
+              aria-label="Review storage transfer"
+            >
+              <strong>
+                {selection.direction === "personal_to_owner"
+                  ? "Your personal storage → Owner storage"
+                  : ownerRoute(selection.direction)
+                    ? "Shared pool → Owner storage"
+                    : selection.direction === "owner_deposit"
+                      ? "Owner storage → Shared pool"
+                      : selection.direction === "deposit"
+                        ? "Personal → Shared pool"
+                        : "Shared pool → Your personal storage"}
+              </strong>
+              {selection.items.length > 1 && (
+                <span className="ssu-pill">
+                  {selection.items.length} stacks
+                </span>
+              )}
+              {selection.items.map((row, i) => (
+                <div className="ssu-transfer-row" key={row.typeId}>
+                  <label>
+                    {names.get(row.typeId) ?? `Item ${row.typeId}`}
+                    <input
+                      aria-label={`Quantity for ${row.typeId}`}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={row.amount}
+                      disabled={busy}
+                      aria-invalid={
+                        storageTransferAmount(row.amount, row.available) ===
+                        null
+                      }
+                      onChange={(e) => setAmount(i, e.target.value)}
+                    />
+                  </label>
+                  <span>Available {row.available.toLocaleString()}</span>
                   <button
                     disabled={busy}
-                    aria-label={`Remove ${names.get(row.typeId) ?? `Item ${row.typeId}`}`}
-                    onClick={() => {
-                      setConsent(false);
-                      setSelection((s) =>
-                        s && s.items.length > 1
-                          ? {
-                              ...s,
-                              items: s.items.filter(
-                                (item) => item.typeId !== row.typeId,
-                              ),
-                            }
-                          : s,
-                      );
-                    }}
+                    onClick={() => setAmount(i, String(row.available))}
                   >
-                    Remove
+                    Max
                   </button>
-                )}
+                  {selection.items.length > 1 && (
+                    <button
+                      disabled={busy}
+                      aria-label={`Remove ${names.get(row.typeId) ?? `Item ${row.typeId}`}`}
+                      onClick={() => {
+                        setConsent(false);
+                        setSelection((s) =>
+                          s && s.items.length > 1
+                            ? {
+                                ...s,
+                                items: s.items.filter(
+                                  (item) => item.typeId !== row.typeId,
+                                ),
+                              }
+                            : s,
+                        );
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              {quantityError && <p role="status">{quantityError}</p>}
+              {!validAmounts && (
+                <p role="status">Enter whole amounts within available stock.</p>
+              )}
+              <label className="ssu-confirm">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  disabled={busy || !validAmounts || !!quantityError}
+                  onChange={(e) => setConsent(e.target.checked)}
+                />
+                {selection.direction === "deposit" ||
+                selection.direction === "owner_deposit"
+                  ? "Shared stock can be withdrawn by permitted pilots."
+                  : ownerRoute(selection.direction)
+                    ? "Move these items to my owner storage."
+                    : "Move these items to my personal storage."}
+              </label>
+              <div className="ssu-config-modes">
+                <button
+                  disabled={
+                    !consent || !validAmounts || !!quantityError || busy
+                  }
+                  onClick={submit}
+                >
+                  {busy ? "Submitting…" : "Sign transfer"}
+                </button>
+                <button
+                  disabled={busy}
+                  onClick={() => {
+                    setSelection(null);
+                    setConsent(false);
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
-            ))}
-            {!validAmounts && (
-              <p role="status">Enter whole amounts within available stock.</p>
-            )}
-            <label className="ssu-confirm">
-              <input
-                type="checkbox"
-                checked={consent}
-                disabled={busy || !validAmounts}
-                onChange={(e) => setConsent(e.target.checked)}
-              />
-              {selection.direction === "deposit" ||
-              selection.direction === "owner_deposit"
-                ? "Shared stock can be withdrawn by permitted pilots."
-                : "Move these items to my personal storage."}
-            </label>
-            <div className="ssu-config-modes">
-              <button
-                disabled={!consent || !validAmounts || busy}
-                onClick={submit}
-              >
-                {busy ? "Submitting…" : "Sign transfer"}
-              </button>
-              <button
-                disabled={busy}
-                onClick={() => {
-                  setSelection(null);
-                  setConsent(false);
-                }}
-              >
-                Cancel
-              </button>
             </div>
-          </div>
-        )}
-        {error && (
-          <div className="ssu-warning" role="alert">
-            {error}
-          </div>
-        )}
-        {status && <p role="status">{status}</p>}
-      </div>
-    ) : null,
+          )}
+          {error && (
+            <div className="ssu-warning" role="alert">
+              {error}
+            </div>
+          )}
+          {status && <p role="status">{status}</p>}
+        </div>
+      ) : null,
   };
 }

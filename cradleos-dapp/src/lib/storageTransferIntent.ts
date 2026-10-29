@@ -3,8 +3,11 @@ export type StorageTransferDirection =
   | "deposit"
   | "owner_deposit"
   | "withdraw"
-  | "recover";
-export type StorageDropTarget = "personal" | "open";
+  | "recover"
+  | "owner_withdraw"
+  | "owner_recover"
+  | "personal_to_owner";
+export type StorageDropTarget = "personal" | "open" | "owner_main";
 export function storageTransferDirection(
   item: StorageItem,
   access: {
@@ -17,6 +20,12 @@ export function storageTransferDirection(
 ): StorageTransferDirection | null {
   if (!access.ready || !Number.isInteger(item.quantity) || item.quantity <= 0)
     return null;
+  if (item.partition === "open" && access.ownerCapId)
+    return !access.charOwnerCapId
+      ? null
+      : access.canWithdraw
+        ? "owner_withdraw"
+        : "owner_recover";
   if (item.partition === "open")
     return access.canWithdraw
       ? "withdraw"
@@ -41,7 +50,11 @@ export function storageTransferTarget(
 ): StorageDropTarget {
   return direction === "deposit" || direction === "owner_deposit"
     ? "open"
-    : "personal";
+    : direction === "owner_withdraw" ||
+        direction === "owner_recover" ||
+        direction === "personal_to_owner"
+      ? "owner_main"
+      : "personal";
 }
 /** Strict decimal integers only; never round/clamp an amount the pilot entered. */
 export function storageTransferAmount(

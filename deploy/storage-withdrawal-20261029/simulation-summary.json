@@ -1,0 +1,832 @@
+{
+  "signed": false,
+  "submitted": false,
+  "checksEnabled": true,
+  "evidence": [
+    {
+      "kind": "personal_to_owner",
+      "at": "2026-10-29T20:02:21.190Z",
+      "success": true,
+      "error": null,
+      "stacks": 13,
+      "preparatoryPersonalDepositSimulated": false,
+      "events": [
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 163,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 163,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 28,
+            "type_id": "84210"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 28,
+            "type_id": "84210"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 300,
+            "type_id": "77800"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 300,
+            "type_id": "77800"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 9,
+            "type_id": "88764"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 9,
+            "type_id": "88764"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 132,
+            "type_id": "92483"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 132,
+            "type_id": "92483"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 16,
+            "type_id": "84180"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 16,
+            "type_id": "84180"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 16,
+            "type_id": "88561"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 16,
+            "type_id": "88561"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 373,
+            "type_id": "77810"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 373,
+            "type_id": "77810"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 214,
+            "type_id": "77728"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 214,
+            "type_id": "77728"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 955,
+            "type_id": "88783"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 955,
+            "type_id": "88783"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1052,
+            "type_id": "84868"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 1052,
+            "type_id": "84868"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1184,
+            "type_id": "99014"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 1184,
+            "type_id": "99014"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 13,
+            "type_id": "77729"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 13,
+            "type_id": "77729"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "wrong_sender",
+      "at": "2026-10-29T20:02:21.806Z",
+      "success": false,
+      "error": {
+        "$kind": "MoveAbort",
+        "message": "MoveAbort in 1st command, 'ESenderCannotAccessCharacter': Sender cannot access Character, in '0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::borrow_owner_cap' (line 196)",
+        "command": 0,
+        "MoveAbort": {
+          "abortCode": "13836466271979962379",
+          "location": {
+            "package": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+            "module": "character",
+            "function": 11,
+            "instruction": 11,
+            "functionName": "borrow_owner_cap"
+          },
+          "cleverError": {
+            "errorCode": 5,
+            "lineNumber": 196,
+            "constantName": "ESenderCannotAccessCharacter",
+            "value": "Sender cannot access Character"
+          }
+        }
+      },
+      "stacks": 13,
+      "preparatoryPersonalDepositSimulated": false,
+      "events": []
+    },
+    {
+      "kind": "owner_withdraw",
+      "at": "2026-10-29T20:02:22.406Z",
+      "success": true,
+      "error": null,
+      "stacks": 1,
+      "preparatoryPersonalDepositSimulated": true,
+      "events": [
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Transfer",
+          "fields": {
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "owner_recovery": false,
+            "quantity": 1,
+            "ssu_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "to_shared": true,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Transfer",
+          "fields": {
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "owner_recovery": false,
+            "quantity": 1,
+            "ssu_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "to_shared": false,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "owner_recover",
+      "at": "2026-10-29T20:02:22.967Z",
+      "success": true,
+      "error": null,
+      "stacks": 1,
+      "preparatoryPersonalDepositSimulated": true,
+      "events": [
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Transfer",
+          "fields": {
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "owner_recovery": false,
+            "quantity": 1,
+            "ssu_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "to_shared": true,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Transfer",
+          "fields": {
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "owner_recovery": true,
+            "quantity": 1,
+            "ssu_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "to_shared": false,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemWithdrawnEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        },
+        {
+          "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::inventory::ItemDepositedEventV2",
+          "fields": {
+            "assembly_id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+            "assembly_key": {
+              "item_id": "1000004133133",
+              "tenant": "stillness"
+            },
+            "character_id": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+            "character_key": {
+              "item_id": "2112112506",
+              "tenant": "stillness"
+            },
+            "inventory_key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "item_id": "0",
+            "quantity": 1,
+            "type_id": "89089"
+          }
+        }
+      ]
+    }
+  ]
+}

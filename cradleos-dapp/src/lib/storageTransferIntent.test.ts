@@ -70,7 +70,7 @@ describe("storage transfer intent boundaries", () => {
         canWithdraw: false,
         ownerCapId: "owner",
       }),
-    ).toBe("recover");
+    ).toBe("owner_recover");
     expect(storageTransferTarget("withdraw")).toBe("personal");
     expect(storageTransferTarget("recover")).toBe("personal");
   });
@@ -104,4 +104,24 @@ describe("storage transfer intent boundaries", () => {
       expect(storageTransferAmount(invalid, 10)).toBeNull();
     expect(storageTransferAmount("4294967296", 4294967296)).toBeNull();
   });
+});
+
+it("routes owner withdrawal to owner storage without falling back on missing personal capability", () => {
+  const shared = { ...item, partition: "open" as const };
+  expect(
+    storageTransferDirection(shared, { ...access, ownerCapId: "owner" }),
+  ).toBe("owner_withdraw");
+  expect(
+    storageTransferDirection(shared, {
+      ...access,
+      ownerCapId: "owner",
+      charOwnerCapId: null,
+    }),
+  ).toBeNull();
+  for (const direction of [
+    "owner_withdraw",
+    "owner_recover",
+    "personal_to_owner",
+  ] as const)
+    expect(storageTransferTarget(direction)).toBe("owner_main");
 });

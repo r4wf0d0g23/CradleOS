@@ -1,0 +1,20 @@
+// Public chain reads only; never signs or executes transactions.
+import {writeFileSync} from 'node:fs';
+import {readStructureSnapshot} from '../../cradleos-dapp/src/lib/structureRead';
+import {fetchSsuSnapshot} from '../../cradleos-dapp/src/lib/ssuSafety';
+import {storageObject,storageClient as client,idFieldId} from '../../cradleos-dapp/src/lib/storageRead';
+const wallet='0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33';
+const holdings=await readStructureSnapshot(wallet),character=await storageObject(holdings.characterId);
+const ssus=holdings.structures.filter(s=>s.kind==='StorageUnit');
+const candidates=ssus.map(s=>({id:s.objectId,name:s.displayName,gameItemId:s.gameItemId}));
+console.log(JSON.stringify({characterId:character.id,personalCap:character.fields.owner_cap_id,candidates}));
+const targets=ssus.filter(s=>/Large Reaper Shared Storage/i.test(s.displayName||''));
+if(targets.length!==1)throw Error('Expected one named affected storage');
+const structure=targets[0],state=await fetchSsuSnapshot(structure.objectId);
+const fields=await client.core.getObjects({objectIds:[state.id,...state.slots.map(s=>idFieldId(state.id,s.key))],include:{previousTransaction:true,json:true}});
+const digests=[...new Set(fields.objects.map((o:any)=>o.previousTransaction).filter(Boolean))];
+const transactions=[];
+for(const digest of digests)transactions.push(await client.core.getTransaction({digest,include:{effects:true,events:true,transaction:true}}));
+const result={at:new Date().toISOString(),wallet,character,structure,state,fields,transactions,signed:false,submitted:false};
+writeFileSync(new URL('live-inspection.json',import.meta.url),JSON.stringify(result,(_,v)=>typeof v==='bigint'?v.toString():v,2));
+console.log(JSON.stringify({at:result.at,structure,state,transactionDigests:digests}));

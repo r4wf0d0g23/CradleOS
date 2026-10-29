@@ -1,0 +1,8 @@
+*.bundle.mjs
+fixtures/
+*.png
+*.log
+*-failure.txt
+live-inspection.json
+recovery-simulation.json
+builder-simulations.json
