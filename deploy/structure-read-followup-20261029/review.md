@@ -1,3 +1,5 @@
 # Independent source review
 
 PASS — native storage_config_review. Official Move fuel::create and captured live node confirm explicit-null empty fuel is valid. Only null volume + validated zero quantity maps to0; missing/malformed fields, positive-null stock and invalid quantity/capacity still fail; burn-rate validation remains. Cap/owner/status/identity/typed-NOT_FOUND behavior unchanged. Seven regressions cover whole-wallet retention and invalid variants. No source blocker. Real-wallet/browser release checks required before reporting recovery.
+
+Final deployment review PASS: five saved live hashes match dist/source0edbbef, partner assets unchanged. Successful16:25:28 network trace loaded exact verified app-IMmokNa-.js. Affected wallet31structures, injected-outage unavailable/refreshrecovery, disconnect,zeroerrors/writes; control144 supports correction. QA retry change adds diagnostics only. Initial postdeploy unavailable attempt remains unclassified; no claim of known propagation cause. No wallet signatures/transactions.

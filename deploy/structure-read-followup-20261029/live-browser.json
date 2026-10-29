@@ -1,0 +1,234 @@
+{
+  "at": "2026-10-29T16:25:28.739Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "readOnlyWalletFixture": true,
+  "realChainData": true,
+  "transport": "TLS-validating authenticated egress relay",
+  "displayedCount": 31,
+  "declinedSignatureKeepsConnected": true,
+  "promptCount": 1,
+  "writes": 0,
+  "injectedTransportFailureShowsUnavailable": true,
+  "refreshRecovery": true,
+  "disconnectHidesHoldings": true,
+  "errors": [],
+  "network": [
+    {
+      "url": "https://cradleos.io/",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/assets/app-tJARgvBw.css",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/assets/app-IMmokNa-.js",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/ef-wordmark.svg",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui?nocache=1",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    }
+  ]
+}

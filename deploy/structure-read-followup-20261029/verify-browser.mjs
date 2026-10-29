@@ -9,17 +9,18 @@ const label = process.env.STRUCTURE_QA_LABEL || 'preview';
 assert.ok(['preview', 'live'].includes(label));
 const walletAddress = '0x29a4be9bf591d1409319b4f763b041a82f64225bc4868cf86875f834833bd676';
 const browser = await chromium.launch({ headless: true, chromiumSandbox: true, executablePath: '/tmp/cradleos-sandboxed-chrome-20261021.sh' });
+const network=[],errors=[];
 try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1050 } });
   context.setDefaultTimeout(15000);
-  const network = [], errors = []; let simulateReadFailure = false;
+  let simulateReadFailure = false;
   await context.route('https://**/*', async route => {
     try {
       const req = route.request();
       if (simulateReadFailure && req.url().includes('fullnode.testnet.sui.io')) return route.abort('failed');
       const res = await fetch(req.url(), { method: req.method(), headers: req.headers(), body: ['GET', 'HEAD'].includes(req.method()) ? undefined : req.postDataBuffer(), signal: AbortSignal.timeout(20000) });
       const headers = Object.fromEntries(res.headers); delete headers['content-encoding']; delete headers['content-length'];
-      network.push({ url: req.url(), status: res.status });
+      network.push({ url: req.url(), status: res.status, grpcStatus:res.headers.get('grpc-status'), grpcMessage:res.headers.get('grpc-message') });
       await route.fulfill({ status: res.status, headers, body: Buffer.from(await res.arrayBuffer()) });
     } catch (e) { network.push({ url: route.request().url(), error: e.message }); await route.abort(); }
   });
@@ -68,4 +69,4 @@ try {
   const receipt = { at: new Date().toISOString(), base, label, readOnlyWalletFixture: true, realChainData: true, transport: 'TLS-validating authenticated egress relay', displayedCount: 31, declinedSignatureKeepsConnected: true, promptCount: 1, writes: 0, injectedTransportFailureShowsUnavailable: true, refreshRecovery: true, disconnectHidesHoldings: true, errors, network };
   writeFileSync(new URL(`${label}-browser.json`, import.meta.url), JSON.stringify(receipt, null, 2));
   console.log(JSON.stringify({ ...receipt, network: { calls: network.length } }));
-} finally { await browser.close(); }
+} catch(error) { writeFileSync(new URL(`${label}-failure.txt`,import.meta.url),JSON.stringify({error:String(error),network,errors},null,2)); throw error; } finally { await browser.close(); }

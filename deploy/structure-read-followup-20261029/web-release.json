@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-29T16:24:44.768Z",
+  "source": "0edbbef7dd84ead7c1c9fc2880e72c7c7e8d566e",
+  "url": "https://cradleos.io/",
+  "pages": "8b14f93c",
+  "pagesUrl": "https://8b14f93c.cradleos-d75.pages.dev",
+  "previousPages": "c0658bfc",
+  "frontendTests": 665,
+  "regressionsAdded": 7,
+  "canonChecks": 8,
+  "iocClean": true,
+  "exactWalletRead": 31,
+  "controlWalletRead": 144,
+  "contractsChanged": false,
+  "custodyChanged": false,
+  "userTransactions": 0,
+  "realWalletSignatures": "not used; browser uses read-only synthetic account",
+  "liveAssetsExact": true,
+  "liveBrowserPassed": true,
+  "initialLiveAttempt": "Unavailable once immediately after publication; no network evidence retained. Same-source fresh browser and repeat direct read passed; cause unclassified.",
+  "finalIndependentReview": "PASS"
+}
