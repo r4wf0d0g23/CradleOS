@@ -1,0 +1,28 @@
+{
+  "status": "deployed-verified",
+  "sourceCommit": "da6a7e0bcf697308ed48f78d94801b3e5e732f9c",
+  "sourcePushed": true,
+  "deploymentId": "a024f5bd",
+  "productionUrl": "https://cradleos.io/",
+  "deploymentUrl": "https://a024f5bd.cradleos-d75.pages.dev",
+  "previousProduction": "6e88c302",
+  "verification": {
+    "frontendTests": 586,
+    "testFiles": 58,
+    "independentFocusedTests": 64,
+    "originsChecks": 8,
+    "ioc": "clean exact dApp scan",
+    "typecheck": "pass",
+    "build": "pass",
+    "liveStorageUnits": 9,
+    "liveItemStacks": 265,
+    "assets": "live-assets.json",
+    "previewBrowser": "preview-browser.json",
+    "chainWrites": 0,
+    "sharedTransfersRemainPaused": true,
+    "realEveVaultSigningVerified": false,
+    "inGameWebviewVerified": false,
+    "liveBrowser": "live-browser.json"
+  },
+  "verifiedAt": "2026-10-29T13:34:09.487134+00:00"
+}

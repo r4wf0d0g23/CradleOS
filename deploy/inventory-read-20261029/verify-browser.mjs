@@ -36,6 +36,7 @@ try {
       'sui:signTransaction': { version: '2.0.0', signTransaction: async () => { window.structureQA.writes++; throw Error('Read-only QA wallet'); } },
       'sui:signAndExecuteTransaction': { version: '2.0.0', signAndExecuteTransaction: async () => { window.structureQA.writes++; throw Error('Read-only QA wallet'); } },
     } };
+    window.structureQA.disconnect = () => wallet.features['standard:disconnect'].disconnect();
     window.addEventListener('wallet-standard:app-ready', e => e.detail.register(wallet));
     window.dispatchEvent(new CustomEvent('wallet-standard:register-wallet', { detail: ({ register }) => register(wallet) }));
   }, walletAddress);
@@ -77,10 +78,17 @@ try {
   assert.equal(await page.locator('.ssu-stock-list li').count(),expected.stacks);
   assert.equal(await page.evaluate(() => window.structureQA.writes),0);
   assert.equal(await page.evaluate(() => window.structureQA.prompts),1);
-  await page.getByRole('button',{name:/disconnect/i}).click();
+  await page.setViewportSize({ width: 650, height: 600 });
+  await page.evaluate(() => { window.location.hash = '#/storage'; });
+  await page.getByRole('button', {name:'INV', exact:true}).waitFor();
+  assert.equal(await page.locator('.ssu-stock-list li').count(), expected.stacks);
+  await target.locator('.ssu-storage-tabs').scrollIntoViewIfNeeded();
+  await page.screenshot({path:new URL(`${label}-kiosk.png`,import.meta.url).pathname});
+  await page.evaluate(() => window.structureQA.disconnect());
+  await page.waitForFunction(() => document.querySelectorAll('.ssu-card').length === 0);
   assert.equal(await page.locator('.ssu-card').count(),0);
   assert.deepEqual(errors,[]);
-  const receipt={at:new Date().toISOString(),base,label,readOnlyWalletFixture:true,realChainData:true,transport:'TLS-validating authenticated egress relay',storageUnits:expected.storageUnits,stacks,emptySharedPartitionVerified:true,failedReadCountsUnknown:true,failedReadHidesOldStock:true,retryRestoresStock:true,disconnectHidesInventory:true,writes:0,errors,network};
+  const receipt={at:new Date().toISOString(),base,label,readOnlyWalletFixture:true,realChainData:true,transport:'TLS-validating authenticated egress relay',storageUnits:expected.storageUnits,stacks,emptySharedPartitionVerified:true,failedReadCountsUnknown:true,failedReadHidesOldStock:true,retryRestoresStock:true,walletDisconnectEventHidesInventory:true,kioskLayoutWidth:650,writes:0,errors,network};
   writeFileSync(new URL(`${label}-browser.json`,import.meta.url),JSON.stringify(receipt,null,2));
   console.log(JSON.stringify({...receipt,networkRequests:network.length,network:undefined}));
 } catch (error) {

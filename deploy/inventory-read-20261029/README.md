@@ -26,3 +26,7 @@ Publication and final production evidence recorded in release.json and live-brow
 ## Reproduce the read-only checks
 
 From repository root, bundle `read-entry.ts` with the installed dApp esbuild into this directory's ignored `read-bundle.mjs`, then run `verify-read.mjs`. Run `verify-browser.mjs` with `INVENTORY_QA_BASE` (preview defaults localhost5341; production https://cradleos.io) and `INVENTORY_QA_LABEL=preview|live`. Browser expectations are anchored to the newly captured `current-read.json`; live stock can legitimately change between reads. `verify-assets.mjs` checks production hashes with `INVENTORY_RELEASE_SHA`.
+
+## Production result
+
+Published source `da6a7e0bcf697308ed48f78d94801b3e5e732f9c` to Pages `a024f5bd`. Primary HTML and JS/CSS hashes match the reviewed build. Production browser displays 9 live storage units / 265 stacks, validates a truly empty shared partition, renders unknown counts and no stale rows during injected read failure, recovers after Retry, and hides inventory on wallet disconnect. The 650px kiosk route renders correctly in sandboxed Chromium; this is not an actual EVE in-game webview test. Zero signing/execution calls and zero JavaScript page errors. Contracts, backend workers and the existing shared-transfer pause are unchanged.
