@@ -1,6 +1,6 @@
 # Storage configuration restoration — 2026-10-29
 
-## Status: staged, NOT published or deployed
+## Status: contract published and verified; frontend release in progress
 
 Raw reported missing storage configuration on `Reap Shared storage` in a screenshot.
 The current `Manage access` view was intentionally reduced to status/revocation on
@@ -54,7 +54,7 @@ of existing users: each owner must explicitly activate the new extension.
   tenant, quantity/capacity failure, owner-main/other-personal isolation, recovery.
 - External attacker compilation fails both direct witness construction and old
   `new_auth()` calls (`check-package.py`, `package-checks.json`).
-- 628 frontend tests / 59 files pass; 83 focused tests independently checked.
+- Activated release: 629 frontend tests / 59 files pass; 84 focused tests independently checked.
 - TypeScript + production build, Origins8 and exact-dApp IOC scan pass.
 - Browser: sandboxed Chromium fixture with REAL components, transaction builders
   and compatibility guard; simulated reads and wallet. Nine checks, 650/390/320px,
@@ -82,9 +82,9 @@ Fresh proof and publication receipts follow below; staging evidence above remain
 
 Proposed unchanged publisher/custody destination:
 `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
-Deployment pin remains `null`; no production frontend activation.
+Deployment pin now matches the verified package, registry and world IDs in `onchain.json`. Frontend production activation follows the release checks.
 
-## Resume after custody gate
+## Release procedure (custody and publication completed)
 
 1. Refresh restored-backup signature proof and record attestation/exception plus
    custody destination. Commit/tag exact reviewed source before publishing.
@@ -106,3 +106,27 @@ Deployment pin remains `null`; no production frontend activation.
 
 Other panels, House, casino, services, world contracts, legacy extension and
 existing on-chain permissions are out of scope and unchanged.
+
+## Publication verification — 2026-10-29
+
+- Source tag `publish/cradleos-storage-access-2026-10-29`, commit `3b30c8f`.
+- `onchain.json`: independent canonical-chain execution lookup, exact relocated
+  bytecode, registry type/empty table and UpgradeCap custody all pass.
+- `owner-flow-simulations.json`: two actual-owner configurations pass; both wrong
+  senders fail specifically `ESenderCannotAccessCharacter` in `borrow_owner_cap`.
+- All public functions pass in a fifth unsigned live-object simulation. The owner
+  has no own personal stock, so that simulation explicitly prepares one item via
+  official owner-only APIs and a temporary simulation-only extension, then binds
+  the real extension before testing deposit/withdraw/closed recovery. This seed is
+  NOT in product builders and was NEVER signed/submitted. Registry still empty.
+- No actual EVE Vault signing or live player inventory transfer is claimed.
+
+## Activated frontend release checks
+
+629 frontend tests /59 files, 84 independently checked focused tests, TypeScript
+production build, Origins8 and exact-dApp IOC check pass. Real-data sandboxed
+browser preview passes owner Manage access, five modes, tribe permission review,
+pilot direction/expiry controls and 1440/650/390/320px layout; zero writes/errors.
+The wallet account is a read-only synthetic Wallet Standard account representing
+the real owner address, not a real EVE Vault/PIN or embedded-browser sign-in.
+Independent release review PASS; actual owner signing remains untested.

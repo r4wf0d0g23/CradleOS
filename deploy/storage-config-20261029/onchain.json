@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-29T14:13:02.693Z",
+  "packageId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+  "originalId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+  "registryId": "0x581cb868c71bece59273b6a5ca361d3ebbbf0259d755b4ae3855d766dd4250f4",
+  "upgradeCap": "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653",
+  "publisher": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "upgradeCapOwner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "publishDigest": "FJBBBB3gi3LRtoNji2rpVsRjcrvSRz6WEuz8hLFoUce3",
+  "sourceCommit": "3b30c8fb5551cf0ed31dd5a3abd80b800f7e91f9",
+  "sourceTag": "publish/cradleos-storage-access-2026-10-29",
+  "worldId": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "registryType": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Registry",
+  "tableId": "0x78e8316d79de0150bf80d3ae51cda985bfa82dd1a6750f01ecaa950b31c73b70",
+  "policyCount": 0,
+  "registryReadSucceeded": true,
+  "normalizedBytecodeExact": true,
+  "compiledSha256": "be9db0cc9bef0d3610c8e3a5f5cf9e4c34b325ffe9c8f514aabda19fbf8166ad",
+  "liveSha256": "9952fb9a0402e99f8e89e7b89fd47f6bde03e5e82f366bed1063566d1613045d",
+  "abiSource": "Full ABI identical because all relocated bytecode matches exactly",
+  "ssuWrites": 0
+}

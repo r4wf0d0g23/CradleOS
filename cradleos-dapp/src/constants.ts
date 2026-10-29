@@ -172,3 +172,10 @@ export const STRUCTURE_TYPES = [
 ] as const;
 
 export type StructureKind = "NetworkNode" | "Gate" | "Assembly" | "Turret" | "StorageUnit";
+
+// Storage access provenance; active pins: lib/storageAccessDeployment.ts
+// Package 0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f
+// Registry 0x581cb868c71bece59273b6a5ca361d3ebbbf0259d755b4ae3855d766dd4250f4
+// UpgradeCap 0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653 held by 0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a
+// Publish FJBBBB3gi3LRtoNji2rpVsRjcrvSRz6WEuz8hLFoUce3 · source 3b30c8fb5551cf0ed31dd5a3abd80b800f7e91f9
+// Tag publish/cradleos-storage-access-2026-10-29; details deploy/storage-config-20261029/onchain.json

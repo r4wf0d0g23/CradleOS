@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { GrpcTypes } from "@mysten/sui/grpc";
 import { WORLD_PKG } from "../constants";
+import { STORAGE_ACCESS_DEPLOYMENT } from "./storageAccessDeployment";
 import {
   SSU_AUTH,
   SSU_TYPE,
@@ -204,6 +205,14 @@ describe("owner PTB and transfer boundaries", () => {
       /not in the current deployment/,
     );
   });
+  it("accepts the activated package while still rejecting the legacy authorization witness", () => {
+    expect(STORAGE_ACCESS_DEPLOYMENT?.worldId).toBe(WORLD_PKG);
+    const tx=buildStorageConfiguration({...snapshot(),extension:null},null,CLOSED_RULES,id(3),id(2),id(4),true);
+    expect(()=>assertCycleCompatible(tx)).not.toThrow();
+    expect(tx.getData().commands[1].MoveCall?.package).toBe(STORAGE_ACCESS_DEPLOYMENT?.packageId);
+    tx.moveCall({target:`${WORLD_PKG}::storage_unit::authorize_extension`,typeArguments:[SSU_AUTH],arguments:[]});
+    expect(()=>assertCycleCompatible(tx)).toThrow(/Unsafe SSU sharing/);
+  });
   it("updates using the expected revision without silently replacing an extension", () => {
     const tx = create();
     expect(tx.getData().commands.map((c) => c.MoveCall?.function)).toEqual([
@@ -230,6 +239,7 @@ describe("owner PTB and transfer boundaries", () => {
         id(2),
         id(4),
         false,
+        null,
       ),
     ).toThrow(/unavailable/);
   });

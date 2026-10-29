@@ -20,7 +20,7 @@ and explicit replacement semantics verified. Production source SHA256
 - Common signer retains old package/type quarantine; new pins still null.
 - Current world/SSU/cap/revision, wallet/network/generation guards checked.
 
-## Final evidence
+## Prepublication staging evidence (historical)
 
 - Confirmed publication simulation successful effects, unsigned.
 - Confirmed all21 world dependency bytecode hashes match live.
@@ -35,3 +35,15 @@ run above is the evidence. That transient result is not counted.
 ## Authorized publication review — 2026-10-29
 
 Raw message1565366765733675169 extends Jetson2-only backup authorization to this and future releases. Fresh restored proof verified and altered challenge rejected by independent native reviewer. Publication scope isolated; durable wx/0600 fsynced journal before execute; no blind retry. Added digest/chain recheck and journal gitignore per review. No SSU writes authorized by publication.
+
+## Publication and activated web release review
+
+Independent reviewer decoded the durable signed transaction: exactly one Publish
+and transfer of the new UpgradeCap; canonical-chain execution, registry/custody
+and normalized bytecode agree. All five unsigned owner-flow simulations pass
+expected outcomes; wrong sender fails specifically in character::borrow_owner_cap.
+All-functions test uses explicitly simulation-only stock preparation; never signed.
+Actual four frontend pins match onchain.json, Move source unchanged, old witness
+still quarantined, explicit-null fails closed. 84 focused pinned-Vitest tests
+independently pass; main suite629 and real-data preview browser pass. No production
+SSU writes or migration. Actual Vault signing/two-player transfers not claimed.
