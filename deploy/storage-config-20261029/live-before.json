@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-29T14:00:58.301Z",
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "legacyAdopters": [
+    {
+      "ssuId": "0x63e80d174bdcb508dad45dc9883c235ff31cc49968b854bf02a0ede5eb6d71e7",
+      "policyId": "0x819bd58fac13aee1baf6569884b110178979499fc8735712fb23a3a0ccf8aed4",
+      "name": "STRG-1",
+      "ownerCharacter": "0x959562e0cbde19f9bc72e447346fbbe7e7b020993c3ba7fed444b87e1c8f8278",
+      "extension": "0xd73c02463c1c679c94a5d7a133a944798870a2da302a6f4f52f626aa0010721e::ssu_access::SsuAuth",
+      "frozen": false,
+      "sharedStacks": 0,
+      "personalStacks": 0,
+      "mode": {
+        "kind": "tribe_alliance",
+        "tribeIds": [
+          98000661
+        ]
+      }
+    }
+  ],
+  "target": {
+    "ssuId": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+    "name": "Reap Shared storage",
+    "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+    "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+    "extension": null,
+    "frozen": false,
+    "online": true,
+    "partitions": [
+      {
+        "partition": "owner_main",
+        "stacks": 1
+      },
+      {
+        "partition": "open",
+        "stacks": 0
+      },
+      {
+        "partition": "unknown",
+        "stacks": 3
+      },
+      {
+        "partition": "unknown",
+        "stacks": 1
+      }
+    ]
+  },
+  "transactions": 0,
+  "legacyBindingsAndDiscoveryUnchanged": true
+}

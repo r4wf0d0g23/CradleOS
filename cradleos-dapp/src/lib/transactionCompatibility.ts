@@ -4,7 +4,12 @@ import { CURRENT_WORLD, CURRENT_EVE_PACKAGE } from "./cycle";
 import { CYCLE_DEPLOYMENT, CURRENT_CONTRACT_PACKAGES } from "./cycleDeployment";
 import { BOOK_DEPLOYMENT } from "./bookDeployment";
 import { SPORTS_DEPLOYMENT } from "./sportsDeployment";
+import { STORAGE_ACCESS_DEPLOYMENT } from './storageAccessDeployment';
 const allowed = new Set(["0x1", "0x2", CURRENT_WORLD, CURRENT_EVE_PACKAGE, ...CURRENT_CONTRACT_PACKAGES, ...(SPORTS_DEPLOYMENT.packageId ? [SPORTS_DEPLOYMENT.packageId] : []), ...(BOOK_DEPLOYMENT.packageId ? [BOOK_DEPLOYMENT.packageId] : [])].map(p => normalizeSuiAddress(p)));
+if (STORAGE_ACCESS_DEPLOYMENT && normalizeSuiAddress(STORAGE_ACCESS_DEPLOYMENT.worldId) === normalizeSuiAddress(CURRENT_WORLD)) {
+  allowed.add(normalizeSuiAddress(STORAGE_ACCESS_DEPLOYMENT.packageId));
+  allowed.add(normalizeSuiAddress(STORAGE_ACCESS_DEPLOYMENT.originalId));
+}
 /** No previous-cycle recovery exceptions: this is a clean wipe. */
 export function assertCycleCompatible(input: Transaction | Uint8Array | string): void {
   for (const command of Transaction.from(input).getData().commands) {

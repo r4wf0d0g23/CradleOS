@@ -12,6 +12,8 @@ import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { Transaction } from "@mysten/sui/transactions";
 import { SsuStorageCard as SSUCard } from "./SsuStorageCard";
 import { fetchSsuSnapshot, SSU_SHARING_PAUSED, type SsuSnapshot } from "../lib/ssuSafety";
+import { STORAGE_ACCESS_DEPLOYMENT } from '../lib/storageAccessDeployment';
+import { discoverStoragePolicies, secureStorageExtension } from '../lib/storageAccess';
 import "./SsuStorage.css";
 import {
   loadPolicyForSsu,
@@ -1015,17 +1017,35 @@ export function InventoryPanel() {
         const empty = (ssu: PlayerStructure): SSUInventory => ({ ssu, items: [], resolvedNames: new Map(), loading: false, maxCapacity: 0, usedCapacity: 0, hasLoadedContents: false });
         setInventories(owned.map(ssu => ({ ...empty(ssu), operator: { name: character?.name ?? 'You', key: characterId } })));
         setGlobalLoading(false);
-        if (!SSU_ACCESS_AVAILABLE || !characterId) return;
+        if ((!SSU_ACCESS_AVAILABLE && !STORAGE_ACCESS_DEPLOYMENT) || !characterId) return;
         setSharedLoading(true);
         try {
           // No stale event-based tribe fallback when checking saved policies.
           if (!character) throw new Error('Character unavailable');
-          const discovered = await discoverSharedSsus({ characterObjectId: characterId, ownTribeId: character.tribeId }, new Set(owned.map(s => s.objectId)));
+          const [legacyResult, secureResult] = await Promise.allSettled([
+            SSU_ACCESS_AVAILABLE ? discoverSharedSsus({ characterObjectId: characterId, ownTribeId: character.tribeId }, new Set(owned.map(s => s.objectId))) : Promise.resolve([]),
+            STORAGE_ACCESS_DEPLOYMENT ? discoverStoragePolicies(characterId, character.tribeId, new Set(owned.map(s => s.objectId))) : Promise.resolve([]),
+          ]);
+          if (!cancelled && (legacyResult.status === 'rejected' || secureResult.status === 'rejected')) setSharedError(true);
+          const discovered = legacyResult.status === 'fulfilled' ? legacyResult.value : [];
           const shared: SSUInventory[] = [];
           for (const d of discovered) {
+            try {
             const { structure, operator } = await readSharedStorage(d.ssuObjectId);
             shared.push({ ...empty(structure), operator, policy: { policyId: d.policyId, mode: d.mode },
               sharedFrom: d.mode.kind === 'tribe_alliance' ? 'tribe' : d.mode.kind === 'none' ? undefined : d.mode.kind });
+            } catch { if (!cancelled) setSharedError(true); }
+          }
+          if (secureResult.status === 'fulfilled') {
+            const existing = new Set([...owned.map(s => s.objectId), ...shared.map(s => s.ssu.objectId)]);
+            for (const p of secureResult.value) {
+              try {
+              const snapshot = await fetchSsuSnapshot(p.ssuId);
+              if (!secureStorageExtension(snapshot.extension) || existing.has(p.ssuId)) continue;
+              const { structure, operator } = await readSharedStorage(p.ssuId);
+              shared.push({ ...empty(structure), operator }); existing.add(p.ssuId);
+              } catch { if (!cancelled) setSharedError(true); }
+            }
           }
           if (!cancelled) setInventories(prev => [...prev, ...shared]);
         } catch { if (!cancelled) setSharedError(true); }
@@ -1301,7 +1321,7 @@ export function InventoryPanel() {
       <section className="ssu-overview">
         <h2><ClientUIIcon name="gameplay/inventory_32px" size={32} />Tribal storage</h2>
 
-        <div className="ssu-warning"><strong>Shared transfers paused</strong>Existing on-chain access remains active.</div>
+        <div className="ssu-warning"><strong>{STORAGE_ACCESS_DEPLOYMENT ? 'Legacy sharing paused' : 'Shared transfers paused'}</strong>Existing on-chain access remains active.</div>
       </section>
 
       {/* No wallet */}

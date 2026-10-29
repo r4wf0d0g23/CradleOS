@@ -1,0 +1,1439 @@
+{
+  "id": {
+    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "name": "storage_access"
+  },
+  "immediate_dependencies": [
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "name": "vector"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "clock"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "event"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "object"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "table"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "transfer"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "tx_context"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "access"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "character"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "inventory"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "storage_unit"
+    }
+  ],
+  "functions": {
+    "init": {
+      "index": 0,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "create_policy": {
+      "index": 1,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Registry",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "name": "storage_access"
+            },
+            "name": "Policy",
+            "type_arguments": []
+          }
+        }
+      ]
+    },
+    "share_policy": {
+      "index": 2,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "name": "storage_access"
+              },
+              "name": "Policy",
+              "type_arguments": []
+            }
+          }
+        }
+      ],
+      "return_": []
+    },
+    "configure": {
+      "index": 3,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u8"
+        },
+        {
+          "type_": {
+            "vector": "u32"
+          }
+        },
+        {
+          "type_": {
+            "vector": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        },
+        {
+          "type_": {
+            "vector": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        },
+        {
+          "type_": {
+            "vector": "u64"
+          }
+        },
+        {
+          "type_": {
+            "vector": "bool"
+          }
+        },
+        {
+          "type_": {
+            "vector": "bool"
+          }
+        }
+      ],
+      "return_": []
+    },
+    "authorize": {
+      "index": 4,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "withdraw": {
+      "index": 5,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "clock"
+                  },
+                  "name": "Clock",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "deposit": {
+      "index": 6,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "character"
+                          },
+                          "name": "Character",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "clock"
+                  },
+                  "name": "Clock",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "recover_shared": {
+      "index": 7,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "withdraw_to_personal": {
+      "index": 8,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": "bool"
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "check_caller": {
+      "index": 9,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "emit_policy": {
+      "index": 10,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "unique": {
+      "index": 11,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [
+        {
+          "constraints": [
+            "Copy",
+            "Drop"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "TypeParameter": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "validate": {
+      "index": 12,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": "u8"
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": "u32"
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "Datatype": {
+                    "module": {
+                      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                      "name": "object"
+                    },
+                    "name": "ID",
+                    "type_arguments": []
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "Datatype": {
+                    "module": {
+                      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                      "name": "object"
+                    },
+                    "name": "ID",
+                    "type_arguments": []
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": "u64"
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": "bool"
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": "bool"
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "permits": {
+      "index": 13,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                "name": "object"
+              },
+              "name": "ID",
+              "type_arguments": []
+            }
+          }
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "bool"
+        }
+      ],
+      "return_": [
+        "bool"
+      ]
+    },
+    "revision": {
+      "index": 14,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Policy",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        "u64"
+      ]
+    },
+    "policy_id": {
+      "index": 15,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "Registry",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                "name": "object"
+              },
+              "name": "ID",
+              "type_arguments": []
+            }
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+              "name": "object"
+            },
+            "name": "ID",
+            "type_arguments": []
+          }
+        }
+      ]
+    }
+  },
+  "structs": {
+    "SharedAccess": {
+      "index": 0,
+      "abilities": [
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "dummy_field": {
+            "index": 0,
+            "type_": "bool"
+          }
+        }
+      }
+    },
+    "AllowEntry": {
+      "index": 1,
+      "abilities": [
+        "Copy",
+        "Drop",
+        "Store"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "character_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "expires_at": {
+            "index": 1,
+            "type_": "u64"
+          },
+          "can_deposit": {
+            "index": 2,
+            "type_": "bool"
+          },
+          "can_withdraw": {
+            "index": 3,
+            "type_": "bool"
+          }
+        }
+      }
+    },
+    "Policy": {
+      "index": 2,
+      "abilities": [
+        "Key"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "UID",
+                "type_arguments": []
+              }
+            }
+          },
+          "ssu_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "revision": {
+            "index": 2,
+            "type_": "u64"
+          },
+          "mode": {
+            "index": 3,
+            "type_": "u8"
+          },
+          "tribe_ids": {
+            "index": 4,
+            "type_": {
+              "vector": "u32"
+            }
+          },
+          "deny": {
+            "index": 5,
+            "type_": {
+              "vector": {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "object"
+                  },
+                  "name": "ID",
+                  "type_arguments": []
+                }
+              }
+            }
+          },
+          "allow": {
+            "index": 6,
+            "type_": {
+              "vector": {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storage_access"
+                  },
+                  "name": "AllowEntry",
+                  "type_arguments": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Registry": {
+      "index": 3,
+      "abilities": [
+        "Key"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "UID",
+                "type_arguments": []
+              }
+            }
+          },
+          "policies": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "table"
+                },
+                "name": "Table",
+                "type_arguments": [
+                  {
+                    "phantom": true,
+                    "argument": {
+                      "Datatype": {
+                        "module": {
+                          "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                          "name": "object"
+                        },
+                        "name": "ID",
+                        "type_arguments": []
+                      }
+                    }
+                  },
+                  {
+                    "phantom": true,
+                    "argument": {
+                      "Datatype": {
+                        "module": {
+                          "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                          "name": "object"
+                        },
+                        "name": "ID",
+                        "type_arguments": []
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "PolicyChanged": {
+      "index": 4,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "ssu_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "policy_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "revision": {
+            "index": 2,
+            "type_": "u64"
+          },
+          "mode": {
+            "index": 3,
+            "type_": "u8"
+          }
+        }
+      }
+    },
+    "Transfer": {
+      "index": 5,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "ssu_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "character_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "type_id": {
+            "index": 2,
+            "type_": "u64"
+          },
+          "quantity": {
+            "index": 3,
+            "type_": "u32"
+          },
+          "to_shared": {
+            "index": 4,
+            "type_": "bool"
+          },
+          "owner_recovery": {
+            "index": 5,
+            "type_": "bool"
+          }
+        }
+      }
+    }
+  },
+  "enums": {}
+}

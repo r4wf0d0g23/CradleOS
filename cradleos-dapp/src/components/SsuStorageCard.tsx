@@ -9,6 +9,8 @@ import {
 import type { PlayerStructure } from "../lib";
 import type { LoadedPolicy } from "../lib/ssuAccess";
 import "./SsuStorage.css";
+import { secureStorageExtension } from '../lib/storageAccess';
+import { useStorageTransfers } from './useStorageTransfers';
 
 export type SsuInventoryView = {
   ssu: PlayerStructure;
@@ -48,6 +50,7 @@ export function SsuStorageCard({
   const { ssu, snapshot } = inv;
   const ownerCapId = ownerCaps.get(ssu.objectId);
   const available = !!snapshot && !inv.error && !inv.loading;
+  const transfers = useStorageTransfers({ snapshot: available ? snapshot : undefined, characterId, walletAddress, ownerCapId, charOwnerCapId, names: inv.resolvedNames, onRefresh: () => onRefresh(ssu.objectId) });
   const all = inv.items.filter((i) => i.quantity > 0);
   const nameOf = (item: StorageItem) =>
     inv.resolvedNames.get(item.typeId) ?? `Item ${item.typeId}`;
@@ -125,7 +128,7 @@ export function SsuStorageCard({
                 : unsafe
                   ? "Owner action needed"
                   : snapshot.extension
-                    ? "Other extension"
+                    ? secureStorageExtension(snapshot.extension) ? "Sharing enabled" : "Other extension"
                     : "Default storage"}
           </span>
           <button
@@ -211,7 +214,7 @@ export function SsuStorageCard({
                     <strong>{nameOf(item)}</strong>
                     <small>
                       {item.partition === "open"
-                        ? "Shared pool · transfers paused"
+                        ? secureStorageExtension(snapshot.extension) ? "Shared pool" : "Shared pool · transfers paused"
                         : item.partition === "owner_main"
                           ? "Owner storage"
                           : item.partitionKey === charOwnerCapId
@@ -222,11 +225,13 @@ export function SsuStorageCard({
                   <div className="ssu-stock-quantity">
                     <strong>× {item.quantity.toLocaleString()}</strong>
                     <small>{volume(item.volume * item.quantity)} m³</small>
+                    {transfers.action(item)}
                   </div>
                 </li>
               ))}
             </ul>
           )}
+          {transfers.controls}
           {available && snapshot && (
             <details className="ssu-details">
               <summary>

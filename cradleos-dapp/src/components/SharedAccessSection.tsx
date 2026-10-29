@@ -10,6 +10,9 @@ import {
 } from "../lib/ssuSafety";
 import { ClientUIIcon } from "./GameIcon";
 import "./SsuStorage.css";
+import { StorageConfiguration } from './StorageConfiguration';
+import { secureStorageExtension } from '../lib/storageAccess';
+import { STORAGE_ACCESS_DEPLOYMENT } from '../lib/storageAccessDeployment';
 
 type Props = {
   ssuObjectId: string;
@@ -55,6 +58,7 @@ export function SharedAccessSection({
     };
   }, [identity]);
   const unsafe = !!snapshot && isUnsafeSsuExtension(snapshot.extension);
+  const secure = !!snapshot && secureStorageExtension(snapshot.extension);
   const isOwner = !!ownerCapId && !!characterId && !!walletAddress;
   async function prepare() {
     if (!isOwner || !characterId || !walletAddress || !ownerCapId) return;
@@ -156,6 +160,7 @@ export function SharedAccessSection({
               ? "Checking…"
               : unsafe
                 ? "Action required"
+                : secure ? "Enabled"
                 : snapshot.extension
                   ? "Other extension"
                   : "Not enabled"}
@@ -185,8 +190,8 @@ export function SharedAccessSection({
             : !snapshot
               ? "Checking access…"
               : snapshot.extension
-                ? "External extension"
-                : "Default storage · Sharing paused"}
+                ? secure ? "Shared pool" : "External extension"
+                : STORAGE_ACCESS_DEPLOYMENT ? "Default storage" : "Default storage · Sharing paused"}
         </p>
       )}
       <details className="ssu-details">
@@ -195,7 +200,7 @@ export function SharedAccessSection({
           Manage access
         </summary>
 
-        <ul className="ssu-policy-facts">
+        {!secure && <ul className="ssu-policy-facts">
           <li>
             Saved rule {unsafe ? "(unenforced)" : ""}:{" "}
             {loadedPolicy?.policyId
@@ -217,10 +222,11 @@ export function SharedAccessSection({
             {snapshot
               ? snapshot.frozen
                 ? "No — permanently frozen"
-                : "Yes"
+                : snapshot.extension ? "Yes" : "Not enabled"
               : "Not verified"}
           </li>
-        </ul>
+        </ul>}
+        <StorageConfiguration snapshot={snapshot} characterId={characterId} ownerCapId={ownerCapId} walletAddress={walletAddress} onRefresh={onRefresh} resolvedNames={resolvedNames} />
         {loadedPolicy?.policyId && (
           <small className="ssu-object-id">
             Policy {loadedPolicy.policyId}

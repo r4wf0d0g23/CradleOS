@@ -1,0 +1,11 @@
+*.log
+*.png
+fixtures/
+attacker/
+preview-output/
+*.bundle.mjs
+package-build.json
+abi/
+fresh-build/
+fresh-build.json
+root-test-cache/

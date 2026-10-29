@@ -7,6 +7,16 @@
   font-family: inherit;
   min-width: 0;
 }
+.ssu-config { display: grid; gap: 12px; margin: 12px 0; min-width: 0; }
+.ssu-config > .ssu-pill { justify-self: start; }
+.ssu-config fieldset { border: 1px solid #fafae52a; padding: 12px; min-width: 0; display: grid; gap: 12px; }
+.ssu-config-modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ssu-config-modes button[aria-pressed="true"] { border-color: #ff8353; background: #ff470020; }
+.ssu-config label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; min-width: 0; }
+.ssu-config input:not([type="checkbox"]), .ssu-config textarea { display: block; width: 100%; box-sizing: border-box; background: #0c0d0d; border: 1px solid #fafae533; color: #fafae5; padding: 10px; font: inherit; min-width: 0; }
+.ssu-config-pilots { display: grid; gap: 12px; }
+.ssu-config-pilot { display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #fafae522; padding-bottom: 12px; }
+.ssu-config-pilot > label:first-child { flex: 1 1 100%; }
 .ssu-card {
   background: linear-gradient(135deg, #171715, #101111);
   border: 1px solid #ff470033;
