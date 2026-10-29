@@ -107,7 +107,10 @@ function structure(object: ReadObject, cap: ReadObject): PlayerStructure {
     gameItemId: itemId, typeId: uint(f.type_id), initialSharedVersion: uint(object.owner.version.toString()),
   };
   if (entry.kind === "NetworkNode") {
-    const fuel = record(f.fuel), qty = uint(fuel.quantity), volume = uint(fuel.unit_volume), capacity = uint(fuel.max_capacity);
+    const fuel = record(f.fuel), qty = uint(fuel.quantity), capacity = uint(fuel.max_capacity);
+    // A never-fueled node has an explicit None unit volume and zero quantity.
+    // Missing/malformed fields and positive stock without a volume still fail.
+    const volume = fuel.unit_volume === null && qty === 0 ? 0 : uint(fuel.unit_volume);
     if (!capacity) return fail();
     s.fuelLevelPct = Math.min(100, qty * volume / capacity * 100);
     s.runtimeHoursRemaining = qty * uint(fuel.burn_rate_in_ms) / 3_600_000;

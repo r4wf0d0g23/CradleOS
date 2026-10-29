@@ -1,0 +1,7 @@
+*.bundle.mjs
+*.map
+*.log
+*.png
+raw-read.json
+*-failure.txt
+*-browser-text.txt

@@ -1,0 +1,7 @@
+import{writeFileSync}from'node:fs';
+import{SuiGrpcClient,GrpcTypes}from'@mysten/sui/grpc';
+import{readStructureSnapshot}from'../../cradleos-dapp/src/lib/structureRead';
+const c=new SuiGrpcClient({network:'testnet',baseUrl:'https://fullnode.testnet.sui.io:443'}),trace:any[]=[],raw:any[]=[];
+const api:any={stateService:{listOwnedObjects:(req:any,opt:any)=>({response:(async()=>{const r=await c.stateService.listOwnedObjects(req,opt).response;trace.push({operation:'owned',owner:req.owner,type:req.objectType,count:r.objects.length,next:!!r.nextPageToken?.length});raw.push(...r.objects.map(x=>GrpcTypes.Object.toJson(x)));return r})()})},ledgerService:{batchGetObjects:(req:any,opt:any)=>({response:(async()=>{const r=await c.ledgerService.batchGetObjects(req,opt).response;trace.push({operation:'batch',count:req.requests.length,results:r.objects.map(x=>x.result.oneofKind==='error'?x.result.error.code:'object')});for(const x of r.objects)if(x.result.oneofKind==='object')raw.push(GrpcTypes.Object.toJson(x.result.object));return r})()})}};
+const wallet='0x29a4be9bf591d1409319b4f763b041a82f64225bc4868cf86875f834833bd676';
+try{const s=await readStructureSnapshot(wallet,api);console.log(JSON.stringify({wallet,character:s.characterId,count:s.structures.length,kinds:s.structures.reduce((a:any,x)=>(a[x.kind]=(a[x.kind]??0)+1,a),{})}));}catch(e){console.log(JSON.stringify({wallet,error:String(e),stack:(e as Error).stack,trace}));}finally{writeFileSync(new URL('raw-read.json',import.meta.url),JSON.stringify(raw,null,2));}

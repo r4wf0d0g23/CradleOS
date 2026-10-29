@@ -1,0 +1,5 @@
+// Compare exact deployed-before reader to local correction using live read-only data.
+import{createRequire}from'node:module';import{execFileSync}from'node:child_process';import{fileURLToPath}from'node:url';
+const root=new URL('../../',import.meta.url),require=createRequire(new URL('cradleos-dapp/package.json',root)),{build}=require('esbuild');
+const before='7f15a814a91e362bb80d66fce54bbc12a4d19c32';
+await build({entryPoints:[fileURLToPath(new URL('verify-read.ts',import.meta.url))],bundle:true,platform:'node',format:'esm',packages:'external',define:{'import.meta.env':'{}'},outfile:fileURLToPath(new URL('verify-read.bundle.mjs',import.meta.url)),plugins:[{name:'committed-before-reader',setup(b){b.onResolve({filter:/^before-structure-read$/},()=>({path:'before-reader',namespace:'before'}));b.onLoad({filter:/.*/,namespace:'before'},()=>({contents:execFileSync('git',['show',`${before}:cradleos-dapp/src/lib/structureRead.ts`],{encoding:'utf8',cwd:root}),loader:'ts',resolveDir:fileURLToPath(new URL('cradleos-dapp/src/lib',root))}));}}]});

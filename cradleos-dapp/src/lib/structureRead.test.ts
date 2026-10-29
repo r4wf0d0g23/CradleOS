@@ -108,6 +108,40 @@ describe("current structure snapshot", () => {
       else expect(s.linkedGateId).toBeUndefined();
     }
   });
+  it("retains a never-fueled offline node and the rest of the wallet's structures", async () => {
+    const f = fixture(2), t = `${W}::network_node::NetworkNode`;
+    f.caps[0].objectType = `${W}::access::OwnerCap<${t}>`;
+    const j = GrpcTypes.Object.toJson(f.structures[0]) as any;
+    j.objectType = t; j.json.status.status["@variant"] = "OFFLINE";
+    j.json.fuel = { quantity: "0", type_id: null, unit_volume: null, max_capacity: "100000", burn_rate_in_ms: "3000000" };
+    f.map.set(id(2000), GrpcTypes.Object.fromJson(j));
+    const r = await readStructureSnapshot(wallet, f.api);
+    expect(r.structures).toHaveLength(2);
+    expect(r.structures[0]).toMatchObject({ kind: "NetworkNode", isOnline: false, fuelLevelPct: 0, runtimeHoursRemaining: 0 });
+    expect(r.structures[1].ownerCapId).toBe(f.caps[1].objectId);
+  });
+  it.each([
+    { quantity: "1", unit_volume: null },
+    { quantity: "0" },
+    { quantity: "0", unit_volume: "unknown" },
+    { quantity: null, unit_volume: null },
+    { quantity: "0", unit_volume: null, max_capacity: "0" },
+  ])("does not turn invalid fuel data into an empty tank %#", async (fuel) => {
+    const f = fixture(), t = `${W}::network_node::NetworkNode`;
+    f.caps[0].objectType = `${W}::access::OwnerCap<${t}>`;
+    const j = GrpcTypes.Object.toJson(f.structures[0]) as any; j.objectType = t;
+    j.json.fuel = { max_capacity: "100000", burn_rate_in_ms: "3000000", ...fuel };
+    f.map.set(id(2000), GrpcTypes.Object.fromJson(j));
+    await expect(readStructureSnapshot(wallet, f.api)).rejects.toThrow(/unavailable/);
+  });
+  it("retains zero-fuel readings when a previously fueled node keeps its unit volume", async () => {
+    const f = fixture(), t = `${W}::network_node::NetworkNode`;
+    f.caps[0].objectType = `${W}::access::OwnerCap<${t}>`;
+    const j = GrpcTypes.Object.toJson(f.structures[0]) as any; j.objectType = t;
+    j.json.fuel = { quantity: "0", unit_volume: "28", max_capacity: "100000", burn_rate_in_ms: "3000000" };
+    f.map.set(id(2000), GrpcTypes.Object.fromJson(j));
+    expect((await readStructureSnapshot(wallet, f.api)).structures[0]).toMatchObject({ fuelLevelPct: 0, runtimeHoursRemaining: 0 });
+  });
   it("prefers live holdings over a newer empty sibling without mixing characters", async () => {
     const f = fixture(); const sibling = id(88);
     f.map.set(sibling, obj(sibling, `${W}::character::Character`, { character_address: wallet })); f.map.get(sibling)!.version = 999n;
