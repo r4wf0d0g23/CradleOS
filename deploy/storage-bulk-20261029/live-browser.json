@@ -1,0 +1,474 @@
+{
+  "at": "2026-10-29T15:59:21.224Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "realChainData": true,
+  "readOnlyWalletFixture": true,
+  "initialCapabilityFailureInjected": 2,
+  "cardRefreshRecoveredCapability": true,
+  "listGridToggle": true,
+  "ownerBulkReview": false,
+  "reviewedStacks": 0,
+  "bulkUnavailable": "No owner or own-personal stock remains in target SSU; fixture covers bulk action",
+  "existingSharedWithdrawReview": true,
+  "originalBindingPreserved": true,
+  "gridPreferenceStored": true,
+  "widths": [
+    1440,
+    650,
+    390,
+    320
+  ],
+  "counts": {
+    "stacks": 7,
+    "draggable": 0
+  },
+  "writes": 0,
+  "errors": [],
+  "network": [
+    {
+      "url": "https://cradleos.io/",
+      "status": 200
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-tJARgvBw.css",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-BQH5_zud.js",
+      "status": 200
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/ef-wordmark.svg",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/manifest.json",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/404e0fb6ebfe0b4fe64dc89bed61041e26226b8949c2b2213f76ef2e40bc35e6.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/404e0fb6ebfe0b4fe64dc89bed61041e26226b8949c2b2213f76ef2e40bc35e6.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/a18d14dd938000cba9f142ff6abdbeb97197dd978b204fa9bab1580f191e84dd.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/91e3001f3ee73b8d4347cfdd92aa7c66369a30d547a6cadeba907b440d595acb.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/f7362e61ee6f4fad6e692441569b50ec4112e8b32751c038e79c078ed6a8b633.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/e8f9699fd3b80f221a6e0c6936524e6f6b3734e08375e08b392f16f91a174c81.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/d8e1d8079f74db08fdf0a0527201126f66610006f9cbd7e9a60e7e2c1f39c71c.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/e80a56e608a6278f5927ef0ffb30ce8184ff9ec3e0cd31217a2ea21543d33c06.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/9f5bbcdefff72a44131a951640876dd1d69790861fb3c48fc0265575e5643ece.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/8586ef802ac63e7c2c5287fa272471009d51929defdef69df0f1b7457210d997.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/7619c0491187ca7a1df51c731c64010c3bf4700180c402b898ec65814989de54.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/045f5aa23841249838e40ad47caeef919037315b6a3f796cda853c528cddc291.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/d8e1d8079f74db08fdf0a0527201126f66610006f9cbd7e9a60e7e2c1f39c71c.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/8586ef802ac63e7c2c5287fa272471009d51929defdef69df0f1b7457210d997.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/e8f9699fd3b80f221a6e0c6936524e6f6b3734e08375e08b392f16f91a174c81.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/e80a56e608a6278f5927ef0ffb30ce8184ff9ec3e0cd31217a2ea21543d33c06.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/f7362e61ee6f4fad6e692441569b50ec4112e8b32751c038e79c078ed6a8b633.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/a18d14dd938000cba9f142ff6abdbeb97197dd978b204fa9bab1580f191e84dd.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/404e0fb6ebfe0b4fe64dc89bed61041e26226b8949c2b2213f76ef2e40bc35e6.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/ca00926ae4674d44d683df7ec7769968bcc3ec3d5574388be958b25686360447.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/e5c6476cacbcb1e1c9ad29cf805234988c2f1680c703577c0629905c02680025.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/18c93ad07b3d5b9c2c9240b7372b0fd1921b4bc9b278e7b342b647cf163dd237.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/bddba5cfcc23d382b3dbe1f9194f68b7e1dc8713c10d24e6ab7d7c7149cf406e.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/2e22eb5b84282a67057616ee9e212bcedba45af85fcac1741f2bb6afc5cdb5fb.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/748a22e9a3704c9fdd33eadf417a9f471f14e1c0af181450b3ba140a6f959049.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/7bf234713cbbd60afcdb572bc2f98265e55bd9e847383176f9ac1e79d79d3a13.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/e5c6476cacbcb1e1c9ad29cf805234988c2f1680c703577c0629905c02680025.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/ca00926ae4674d44d683df7ec7769968bcc3ec3d5574388be958b25686360447.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/2e22eb5b84282a67057616ee9e212bcedba45af85fcac1741f2bb6afc5cdb5fb.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/18c93ad07b3d5b9c2c9240b7372b0fd1921b4bc9b278e7b342b647cf163dd237.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/7bf234713cbbd60afcdb572bc2f98265e55bd9e847383176f9ac1e79d79d3a13.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/bddba5cfcc23d382b3dbe1f9194f68b7e1dc8713c10d24e6ab7d7c7149cf406e.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/748a22e9a3704c9fdd33eadf417a9f471f14e1c0af181450b3ba140a6f959049.png",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    }
+  ]
+}

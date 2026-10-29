@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-29T15:59:12.135Z",
+  "source": "7f15a814a91e362bb80d66fce54bbc12a4d19c32",
+  "url": "https://cradleos.io/",
+  "pages": "c0658bfc",
+  "pagesUrl": "https://c0658bfc.cradleos-d75.pages.dev",
+  "previousPages": "d2438395",
+  "frontendTests": 658,
+  "browserFixtureGroups": 24,
+  "canonChecks": 8,
+  "iocClean": true,
+  "contractsChanged": false,
+  "custodyChanged": false,
+  "userInventoryTransactions": 0,
+  "individualWebsiteTransfer": "player-reported successful in screenshot1565393519798132829",
+  "bulkWalletFlow": "simulated fixture only; live owner/personal source stock empty",
+  "playerSharedWithdrawal": "pending player verification",
+  "liveAssetsExact": true,
+  "liveReadOnlyBrowserPassed": true,
+  "finalIndependentReview": "PASS"
+}
