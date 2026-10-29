@@ -575,6 +575,8 @@ any key is declared lost. This section is acceptance-tested, not aspirational.
 
 ### 8.1 Pre-publish (blocks Phase B) — **REQUIRES OPERATOR (Raw)** for key handling
 
+**Standing operator exception (2026-10-29):** Raw explicitly approved Jetson2 moving forward (2026-10-29 09:08 CDT, Discord message 1565366765733675169): one verified off-host backup on Jetson2 is the standing exception for this storage release and future CradleOS deployments. Do not re-request the second-host attestation. Fresh restored-backup signature proof and recorded cap custody remain required; no second backup is claimed. This supersedes the two-host requirement in §8.1.2 and its checklist for these releases, not the signing-proof/custody gates.
+
 1. **Signing proof FROM BACKUP MATERIAL.** Immediately before publish, the
    publish wallet must sign a 0-value self-transaction (or `sui keytool sign` a
    digest) *using the key material restored from its backup location* — not the

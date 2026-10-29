@@ -9,3 +9,6 @@ abi/
 fresh-build/
 fresh-build.json
 root-test-cache/
+prepublish-clean/
+prepublish-build.json
+publish-pending.json

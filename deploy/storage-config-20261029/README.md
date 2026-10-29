@@ -77,12 +77,8 @@ calls or simulated publication output as transaction digests on chain.
 
 ## Custody / release gate
 
-Follow `cradleos-dapp/FRESH_DEPLOY_PROTOCOL.md` §8.1 before publication. Recorded
-Oct21 Jetson2-only exception applies to that betting-book release only. For this
-release, two physical off-host backups need operator attestation, or Raw must
-explicitly extend the single-host exception. A fresh restored-backup signing
-proof must still be produced before publish. No keys were read/copied by this
-staging task; no fresh backup proof or new attestation is claimed.
+Raw explicitly approved Jetson2 moving forward (2026-10-29 09:08 CDT, Discord message 1565366765733675169): one verified off-host backup on Jetson2 is the standing exception for this storage release and future CradleOS deployments. Do not re-request the second-host attestation. Fresh restored-backup signature proof and recorded cap custody remain required; no second backup is claimed.
+Fresh proof and publication receipts follow below; staging evidence above remains unchanged.
 
 Proposed unchanged publisher/custody destination:
 `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
