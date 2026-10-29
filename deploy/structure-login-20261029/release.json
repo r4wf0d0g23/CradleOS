@@ -1,0 +1,27 @@
+{
+  "status": "deployed-verified",
+  "sourceCommit": "b565777edea0cb2fb4a7ef52a188a5377fd93a3d",
+  "deploymentId": "6e88c302",
+  "productionUrl": "https://cradleos.io/",
+  "deploymentUrl": "https://6e88c302.cradleos-d75.pages.dev",
+  "previousProduction": "302e8112-d3c2-4230-9596-3df11428f9a3",
+  "sourcePushed": true,
+  "verifiedAt": "2026-10-29T11:38:15.432509+00:00",
+  "verification": {
+    "frontendTests": 551,
+    "testFiles": 55,
+    "independentTargetedTests": 27,
+    "originsChecks": 8,
+    "ioc": "clean exact dApp scan",
+    "typecheck": "pass",
+    "build": "pass",
+    "liveStructures": 139,
+    "liveBrowser": "live-browser.json",
+    "liveAssets": "live-assets.json",
+    "verificationHookBrowser": "hook-browser.json",
+    "realWalletPinVerified": false,
+    "realWalletSigningVerified": false,
+    "chainWrites": 0,
+    "contractsAndHouseUnchanged": true
+  }
+}
