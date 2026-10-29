@@ -207,11 +207,25 @@ describe("owner PTB and transfer boundaries", () => {
   });
   it("accepts the activated package while still rejecting the legacy authorization witness", () => {
     expect(STORAGE_ACCESS_DEPLOYMENT?.worldId).toBe(WORLD_PKG);
-    const tx=buildStorageConfiguration({...snapshot(),extension:null},null,CLOSED_RULES,id(3),id(2),id(4),true);
-    expect(()=>assertCycleCompatible(tx)).not.toThrow();
-    expect(tx.getData().commands[1].MoveCall?.package).toBe(STORAGE_ACCESS_DEPLOYMENT?.packageId);
-    tx.moveCall({target:`${WORLD_PKG}::storage_unit::authorize_extension`,typeArguments:[SSU_AUTH],arguments:[]});
-    expect(()=>assertCycleCompatible(tx)).toThrow(/Unsafe SSU sharing/);
+    const tx = buildStorageConfiguration(
+      { ...snapshot(), extension: null },
+      null,
+      CLOSED_RULES,
+      id(3),
+      id(2),
+      id(4),
+      true,
+    );
+    expect(() => assertCycleCompatible(tx)).not.toThrow();
+    expect(tx.getData().commands[1].MoveCall?.package).toBe(
+      STORAGE_ACCESS_DEPLOYMENT?.packageId,
+    );
+    tx.moveCall({
+      target: `${WORLD_PKG}::storage_unit::authorize_extension`,
+      typeArguments: [SSU_AUTH],
+      arguments: [],
+    });
+    expect(() => assertCycleCompatible(tx)).toThrow(/Unsafe SSU sharing/);
   });
   it("updates using the expected revision without silently replacing an extension", () => {
     const tx = create();
@@ -469,5 +483,81 @@ describe("canonical supported policy reads", () => {
     await expect(
       discoverStoragePolicies(id(3), 100, new Set(), d, f.api),
     ).rejects.toThrow();
+  });
+});
+
+describe("owner-main sharing upgrade boundary", () => {
+  const ownerState = () => {
+    const s = snapshot();
+    s.slots.push({
+      key: id(2),
+      partition: "owner_main",
+      used: 100,
+      max: 10000,
+      items: [{ ...item(id(2), "unknown"), partition: "owner_main" }],
+    });
+    return s;
+  };
+  it("uses the SSU cap and only owner-main stock, retaining original type identity", () => {
+    const next = { ...d, packageId: id(100) };
+    const tx = buildStorageTransfer(
+      ownerState(),
+      policy,
+      id(3),
+      id(4),
+      "owner_deposit",
+      [{ typeId: 42, quantity: 3 }],
+      id(2),
+      next,
+    );
+    const calls = tx.getData().commands.map((c) => c.MoveCall!);
+    expect(calls.map((c) => c.function)).toEqual([
+      "borrow_owner_cap",
+      "deposit_owner",
+      "return_owner_cap",
+    ]);
+    expect(calls[0].typeArguments).toEqual([SSU_TYPE]);
+    expect(calls[1].package).toBe(next.packageId);
+    expect(calls[1].arguments).toHaveLength(7);
+    expect(secureStorageExtension(auth, next)).toBe(true);
+    expect(
+      secureStorageExtension(
+        `${next.packageId}::storage_access::SharedAccess`,
+        next,
+      ),
+    ).toBe(false);
+    expect(JSON.stringify(tx.getData())).not.toMatch(
+      /authorize_extension|TransferObjects|create_policy/,
+    );
+  });
+  it("rejects missing/wrong owner capabilities and source substitution", () => {
+    const build = (s = ownerState(), cap: string | undefined = id(2)) =>
+      buildStorageTransfer(
+        s,
+        policy,
+        id(3),
+        id(4),
+        "owner_deposit",
+        [{ typeId: 42, quantity: 3 }],
+        cap,
+        d,
+      );
+    expect(() => build(ownerState(), id(5))).toThrow(/ownership changed/);
+    expect(() =>
+      buildStorageTransfer(
+        ownerState(),
+        policy,
+        id(3),
+        id(4),
+        "owner_deposit",
+        [{ typeId: 42, quantity: 3 }],
+        undefined,
+        d,
+      ),
+    ).toThrow(/capability/);
+    expect(() => build(snapshot())).toThrow(/Stock changed/);
+    const s = ownerState();
+    s.slots.find((v) => v.partition === "owner_main")!.items[0].quantity = 2;
+    expect(() => build(s)).toThrow(/Stock changed/);
   });
 });

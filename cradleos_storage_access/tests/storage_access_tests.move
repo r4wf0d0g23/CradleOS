@@ -546,3 +546,120 @@ fun wrong_character_cap_rejected() {
     sa::deposit(&mut su, &p, &guest_c, &cap, AMMO_TYPE_ID, 1, &clock, s.ctx());
     c.return_owner_cap(cap, receipt); clock.destroy_for_testing(); ts::return_shared(c); ts::return_shared(guest_c); ts::return_shared(su); ts::return_shared(p); s.end();
 }
+
+fun owner_deposit(s: &mut ts::Scenario, cid: ID, sid: ID, pid: ID, qty: u32, now: u64) {
+    s.next_tx(user_a());
+    let mut c=s.take_shared_by_id<Character>(cid);
+    let (cap, receipt)=c.borrow_owner_cap<StorageUnit>(ts::most_recent_receiving_ticket<OwnerCap<StorageUnit>>(&cid), s.ctx());
+    let mut su=s.take_shared_by_id<StorageUnit>(sid); let p=s.take_shared_by_id<Policy>(pid);
+    let mut clock=clock::create_for_testing(s.ctx()); clock.increment_for_testing(now);
+    sa::deposit_owner(&mut su, &p, &c, &cap, AMMO_TYPE_ID, qty, &clock, s.ctx());
+    clock.destroy_for_testing(); c.return_owner_cap(cap, receipt);
+    ts::return_shared(c); ts::return_shared(su); ts::return_shared(p);
+}
+#[test]
+fun owner_deposit_exact_partial_preserves_all_personal_stock() {
+    let (mut s, owner, guest, sid, pid)=setup(); mint_ammo<Character>(&mut s, sid, owner, user_a());
+    deposit(&mut s, guest, sid, pid, 2);
+    owner_deposit(&mut s, owner, sid, pid, 4, 1);
+    s.next_tx(user_a()); let su=s.take_shared_by_id<StorageUnit>(sid);
+    let a=s.take_shared_by_id<Character>(owner); let b=s.take_shared_by_id<Character>(guest);
+    assert_eq!(su.item_quantity(su.owner_cap_id(), AMMO_TYPE_ID),6);
+    assert_eq!(su.item_quantity(a.owner_cap_id(), AMMO_TYPE_ID),10);
+    assert_eq!(su.item_quantity(b.owner_cap_id(), AMMO_TYPE_ID),8);
+    assert_eq!(su.item_quantity(su.inventory_keys()[1], AMMO_TYPE_ID),6);
+    ts::return_shared(a); ts::return_shared(b); ts::return_shared(su);
+    withdraw(&mut s, guest, sid, pid, 6, 2);
+    s.next_tx(user_b()); let su=s.take_shared_by_id<StorageUnit>(sid); let b=s.take_shared_by_id<Character>(guest);
+    assert_eq!(su.item_quantity(b.owner_cap_id(),AMMO_TYPE_ID),14);
+    assert_eq!(su.item_quantity(su.owner_cap_id(),AMMO_TYPE_ID),6);
+    ts::return_shared(b); ts::return_shared(su); s.end();
+}
+#[test]
+fun owner_deposit_full_stack() {
+    let (mut s, owner, _, sid, pid)=setup(); owner_deposit(&mut s,owner,sid,pid,10,0);
+    s.next_tx(user_a());let su=s.take_shared_by_id<StorageUnit>(sid);
+    assert!(!su.contains_item(su.owner_cap_id(),AMMO_TYPE_ID));
+    assert_eq!(su.item_quantity(su.inventory_keys()[1],AMMO_TYPE_ID),10);
+    ts::return_shared(su);s.end();
+}
+#[test]
+#[expected_failure(abort_code = 0, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_closed_denied() {let(mut s,o,_,sid,pid)=setup();config(&mut s,o,pid,1,0,vector[],vector[],vector[],vector[],vector[],vector[]);owner_deposit(&mut s,o,sid,pid,1,0);s.end();}
+#[test]
+#[expected_failure(abort_code = 0, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_deny_beats_tribe() {let(mut s,o,_,sid,pid)=setup();config(&mut s,o,pid,1,3,vector[100],vector[o],vector[],vector[],vector[],vector[]);owner_deposit(&mut s,o,sid,pid,1,0);s.end();}
+#[test]
+#[expected_failure(abort_code = 0, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_expiry_denied() {let(mut s,o,_,sid,pid)=setup();config(&mut s,o,pid,1,2,vector[],vector[],vector[o],vector[1000],vector[true],vector[true]);owner_deposit(&mut s,o,sid,pid,1,1000);s.end();}
+#[test]
+#[expected_failure(abort_code = 0, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_withdraw_only_denied() {let(mut s,o,_,sid,pid)=setup();config(&mut s,o,pid,1,2,vector[],vector[],vector[o],vector[0],vector[false],vector[true]);owner_deposit(&mut s,o,sid,pid,1,0);s.end();}
+#[test]
+#[expected_failure(abort_code = world::inventory::EInventoryInsufficientQuantity)]
+fun owner_deposit_overdraw() {let(mut s,o,_,sid,pid)=setup();owner_deposit(&mut s,o,sid,pid,11,0);s.end();}
+#[test]
+#[expected_failure(abort_code = world::inventory::ESplitQuantityInvalid)]
+fun owner_deposit_zero() {let(mut s,o,_,sid,pid)=setup();owner_deposit(&mut s,o,sid,pid,0,0);s.end();}
+#[test]
+#[expected_failure(abort_code = 3, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_wrong_ssu_cap() {let(mut s,o,_,sid,pid)=setup();create_storage_unit(&mut s,o,LOCATION_A_HASH,STORAGE_A_ITEM_ID+1,STORAGE_A_TYPE_ID);owner_deposit(&mut s,o,sid,pid,1,0);s.end();}
+#[test]
+#[expected_failure(abort_code = 4, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_wrong_policy() {let(mut s,o,_,_,pid)=setup();let(sid,_)=create_storage_unit(&mut s,o,LOCATION_A_HASH,STORAGE_A_ITEM_ID+1,STORAGE_A_TYPE_ID);owner_deposit(&mut s,o,sid,pid,1,0);s.end();}
+#[test]
+#[expected_failure(abort_code = 1, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_spoofed_sender() {
+    let(mut s,o,_,sid,pid)=setup();s.next_tx(user_a());let mut c=s.take_shared_by_id<Character>(o);
+    let(cap,receipt)=c.borrow_owner_cap<StorageUnit>(ts::most_recent_receiving_ticket<OwnerCap<StorageUnit>>(&o),s.ctx());
+    s.next_tx(user_b());let mut su=s.take_shared_by_id<StorageUnit>(sid);let p=s.take_shared_by_id<Policy>(pid);let clock=clock::create_for_testing(s.ctx());
+    sa::deposit_owner(&mut su,&p,&c,&cap,AMMO_TYPE_ID,1,&clock,s.ctx());
+    clock.destroy_for_testing();c.return_owner_cap(cap,receipt);ts::return_shared(c);ts::return_shared(su);ts::return_shared(p);s.end();
+}
+#[test]
+#[expected_failure(abort_code = world::storage_unit::EExtensionNotAuthorized)]
+fun owner_deposit_revoked_extension() {
+    let(mut s,o,_,sid,pid)=setup();s.next_tx(user_a());let mut c=s.take_shared_by_id<Character>(o);
+    let(cap,r)=c.borrow_owner_cap<StorageUnit>(ts::most_recent_receiving_ticket<OwnerCap<StorageUnit>>(&o),s.ctx());let mut su=s.take_shared_by_id<StorageUnit>(sid);su.revoke_extension_authorization(&cap);
+    c.return_owner_cap(cap,r);ts::return_shared(c);ts::return_shared(su);owner_deposit(&mut s,o,sid,pid,1,0);s.end();
+}
+#[test]
+#[expected_failure(abort_code = world::storage_unit::ENotOnline)]
+fun owner_deposit_offline() {
+    let(mut s,o,_,sid,pid)=setup();s.next_tx(user_a());let mut c=s.take_shared_by_id<Character>(o);
+    let(cap,r)=c.borrow_owner_cap<StorageUnit>(ts::most_recent_receiving_ticket<OwnerCap<StorageUnit>>(&o),s.ctx());let mut su=s.take_shared_by_id<StorageUnit>(sid);let mut nwn=s.take_shared<NetworkNode>();let ec=s.take_shared<EnergyConfig>();su.offline(&mut nwn,&ec,&cap);
+    c.return_owner_cap(cap,r);ts::return_shared(c);ts::return_shared(su);ts::return_shared(nwn);ts::return_shared(ec);owner_deposit(&mut s,o,sid,pid,1,0);s.end();
+}
+#[test]
+#[expected_failure(abort_code = world::inventory::EInventoryInsufficientCapacity)]
+fun owner_deposit_shared_capacity() {
+    let(mut s,o,g,sid,pid)=setup();deposit(&mut s,g,sid,pid,10);
+    s.next_tx(user_b());let mut c=s.take_shared_by_id<Character>(g);let(cap,r)=c.borrow_owner_cap<Character>(ts::most_recent_receiving_ticket<OwnerCap<Character>>(&g),s.ctx());let mut su=s.take_shared_by_id<StorageUnit>(sid);
+    su.game_item_to_chain_inventory_test(&c,&cap,AMMO_ITEM_ID,AMMO_TYPE_ID,AMMO_VOLUME,990,s.ctx());c.return_owner_cap(cap,r);ts::return_shared(c);ts::return_shared(su);
+    deposit(&mut s,g,sid,pid,990);owner_deposit(&mut s,o,sid,pid,1,0);s.end();
+}
+#[test]
+#[expected_failure(abort_code = 3, location = cradleos_storage_access::storage_access)]
+fun owner_deposit_noncanonical_authorized_cap() {
+    let(mut s,o,_,sid,pid)=setup();s.next_tx(admin());let acl=s.take_shared<AdminACL>();
+    let cap=world::access::create_owner_cap_by_id<StorageUnit>(sid,&acl,s.ctx());ts::return_shared(acl);
+    s.next_tx(user_a());let c=s.take_shared_by_id<Character>(o);let mut su=s.take_shared_by_id<StorageUnit>(sid);let p=s.take_shared_by_id<Policy>(pid);let clock=clock::create_for_testing(s.ctx());
+    sa::deposit_owner(&mut su,&p,&c,&cap,AMMO_TYPE_ID,1,&clock,s.ctx());
+    world::access::transfer_owner_cap(cap,user_a());clock.destroy_for_testing();ts::return_shared(c);ts::return_shared(su);ts::return_shared(p);s.end();
+}
+#[test]
+#[expected_failure(abort_code = world::storage_unit::EExtensionNotAuthorized)]
+fun owner_deposit_foreign_binding() {
+    let(mut s,o,_,sid,pid)=setup();s.next_tx(user_a());let mut c=s.take_shared_by_id<Character>(o);
+    let(cap,r)=c.borrow_owner_cap<StorageUnit>(ts::most_recent_receiving_ticket<OwnerCap<StorageUnit>>(&o),s.ctx());let mut su=s.take_shared_by_id<StorageUnit>(sid);su.authorize_extension<OldExportedWitness>(&cap);
+    c.return_owner_cap(cap,r);ts::return_shared(c);ts::return_shared(su);owner_deposit(&mut s,o,sid,pid,1,0);s.end();
+}
+#[test]
+fun owner_deposit_keeps_storage_item_origin_after_character_tenant_change() {
+    let(mut s,o,_,sid,pid)=setup();s.next_tx(admin());let mut c=s.take_shared_by_id<Character>(o);let acl=s.take_shared<AdminACL>();
+    c.update_tenant_id(&acl,b"OTHER".to_string(),s.ctx());ts::return_shared(c);ts::return_shared(acl);owner_deposit(&mut s,o,sid,pid,1,0);
+    s.next_tx(user_a());let su=s.take_shared_by_id<StorageUnit>(sid);
+    assert_eq!(su.item_quantity(su.owner_cap_id(),AMMO_TYPE_ID),9);
+    assert_eq!(su.item_quantity(su.inventory_keys()[1],AMMO_TYPE_ID),1);
+    ts::return_shared(su);s.end();
+}

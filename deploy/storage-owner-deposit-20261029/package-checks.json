@@ -1,0 +1,16 @@
+{
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "sourceSHA256": "5c4ed81904bb4ccc336c71021ce696807e16881067a63782a2481036a4324f7b",
+  "bytecodeSHA256": "ebcc76d7e067aebe239e9cc05ab5a157f49167850c117b5e20b3c552575c1be5",
+  "dependencies": [
+    "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "0x0000000000000000000000000000000000000000000000000000000000000002",
+    "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92"
+  ],
+  "modules": 1,
+  "externalAttacksRejected": [
+    "external_witness_constructor",
+    "old_constructor_missing"
+  ],
+  "noWitnessOrItemExport": true
+}

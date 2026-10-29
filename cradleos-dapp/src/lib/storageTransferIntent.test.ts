@@ -33,6 +33,31 @@ describe("storage transfer intent boundaries", () => {
     ).toBeNull();
     expect(storageTransferTarget("deposit")).toBe("open");
   });
+  it("allows owner-main only for its exact owner capability and deposit permission", () => {
+    const ownerItem = {
+      ...item,
+      partition: "owner_main" as const,
+      partitionKey: "ssu-cap",
+    };
+    expect(
+      storageTransferDirection(ownerItem, { ...access, ownerCapId: "ssu-cap" }),
+    ).toBe("owner_deposit");
+    expect(storageTransferDirection(ownerItem, access)).toBeNull();
+    expect(
+      storageTransferDirection(ownerItem, {
+        ...access,
+        ownerCapId: "wrong-cap",
+      }),
+    ).toBeNull();
+    expect(
+      storageTransferDirection(ownerItem, {
+        ...access,
+        ownerCapId: "ssu-cap",
+        canDeposit: false,
+      }),
+    ).toBeNull();
+    expect(storageTransferTarget("owner_deposit")).toBe("open");
+  });
   it("separates permitted withdrawal from owner recovery", () => {
     const shared = { ...item, partition: "open" as const };
     expect(storageTransferDirection(shared, access)).toBe("withdraw");

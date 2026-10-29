@@ -1,0 +1,10 @@
+{
+  "publisher": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "upgradeCap": "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653",
+  "upgradeCapOwner": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "operatorMessage": "1565366765733675169",
+  "backupHost": "agent-nav-jetson2",
+  "backupProof": "28cd662e120a2f95ecddcc81976eeda7da9f3ac9af503d688d034c2cee1b3b9a",
+  "backupCount": 1,
+  "standingException": true
+}

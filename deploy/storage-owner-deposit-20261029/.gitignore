@@ -1,0 +1,10 @@
+*.log
+*.png
+fixtures/
+attacker/
+*.bundle.mjs
+package-build.json
+fresh-build/
+fresh-build.json
+upgrade-pending.json
+*-failure.txt

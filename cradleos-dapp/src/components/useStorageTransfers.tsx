@@ -182,12 +182,16 @@ export function useStorageTransfers({
         walletAddress,
         direction,
         items,
-        direction === "recover" ? ownerCapId : (charOwnerCapId ?? undefined),
+        direction === "recover" || direction === "owner_deposit"
+          ? ownerCapId
+          : (charOwnerCapId ?? undefined),
       );
       const source = fresh.slots.find((s) =>
         direction === "deposit"
           ? s.key === charOwnerCapId
-          : s.partition === "open",
+          : direction === "owner_deposit"
+            ? s.key === ownerCapId && s.partition === "owner_main"
+            : s.partition === "open",
       );
       setSelection({
         direction,
@@ -266,7 +270,8 @@ export function useStorageTransfers({
         walletAddress,
         selection.direction,
         rows,
-        selection.direction === "recover"
+        selection.direction === "recover" ||
+          selection.direction === "owner_deposit"
           ? ownerCapId
           : (charOwnerCapId ?? undefined),
       );
@@ -342,11 +347,13 @@ export function useStorageTransfers({
       if (!direction) return null;
       return (
         <button disabled={disabled} onClick={() => request(item)}>
-          {direction === "deposit"
-            ? "Deposit"
-            : direction === "recover"
-              ? "Recover"
-              : "Withdraw"}
+          {direction === "owner_deposit"
+            ? "Share"
+            : direction === "deposit"
+              ? "Deposit"
+              : direction === "recover"
+                ? "Recover"
+                : "Withdraw"}
         </button>
       );
     },
@@ -377,9 +384,11 @@ export function useStorageTransfers({
             aria-label="Review storage transfer"
           >
             <strong>
-              {selection.direction === "deposit"
-                ? "Personal → Shared pool"
-                : "Shared pool → Your personal storage"}
+              {selection.direction === "owner_deposit"
+                ? "Owner storage → Shared pool"
+                : selection.direction === "deposit"
+                  ? "Personal → Shared pool"
+                  : "Shared pool → Your personal storage"}
             </strong>
             {selection.items.map((row, i) => (
               <div className="ssu-transfer-row" key={row.typeId}>
@@ -417,7 +426,8 @@ export function useStorageTransfers({
                 disabled={busy || !validAmounts}
                 onChange={(e) => setConsent(e.target.checked)}
               />
-              {selection.direction === "deposit"
+              {selection.direction === "deposit" ||
+              selection.direction === "owner_deposit"
                 ? "Shared stock can be withdrawn by permitted pilots."
                 : "Move these items to my personal storage."}
             </label>

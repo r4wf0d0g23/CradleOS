@@ -352,7 +352,7 @@ export function buildStorageTransfer(
   policy: StoragePolicy,
   characterId: string,
   wallet: string,
-  direction: "deposit" | "withdraw" | "recover",
+  direction: "deposit" | "owner_deposit" | "withdraw" | "recover",
   rows: { typeId: number; quantity: number }[],
   capId?: string,
   deployment = STORAGE_ACCESS_DEPLOYMENT,
@@ -370,10 +370,12 @@ export function buildStorageTransfer(
   let cap: ReturnType<Transaction["moveCall"]>[number] | undefined,
     receipt: ReturnType<Transaction["moveCall"]>[number] | undefined;
   const capType =
-    direction === "recover" ? SSU_TYPE : `${WORLD_PKG}::character::Character`;
+    direction === "recover" || direction === "owner_deposit"
+      ? SSU_TYPE
+      : `${WORLD_PKG}::character::Character`;
   if (direction !== "withdraw") {
     if (!capId) throw new Error("Owner capability unavailable.");
-    if (direction === "recover")
+    if (direction === "recover" || direction === "owner_deposit")
       [cap, receipt] = ownerCap(tx, state, characterId, capId);
     else
       [cap, receipt] = tx.moveCall({
@@ -396,8 +398,10 @@ export function buildStorageTransfer(
       throw new Error("Invalid transfer quantity.");
     const slot = state.slots.find((s) =>
       direction === "deposit"
-        ? s.key === storageId(capId!)
-        : s.partition === "open",
+        ? s.key === storageId(capId!) && s.partition === "unknown"
+        : direction === "owner_deposit"
+          ? s.key === state.ownerCapId && s.partition === "owner_main"
+          : s.partition === "open",
     );
     if (
       !slot ||
@@ -412,10 +416,12 @@ export function buildStorageTransfer(
             tx.object(state.id),
             tx.object(policy.id),
             tx.object(storageId(characterId)),
-            ...(direction === "deposit" ? [cap!] : []),
+            ...(direction === "deposit" || direction === "owner_deposit"
+              ? [cap!]
+              : []),
           ];
     tx.moveCall({
-      target: `${d.packageId}::storage_access::${direction === "recover" ? "recover_shared" : direction}`,
+      target: `${d.packageId}::storage_access::${direction === "recover" ? "recover_shared" : direction === "owner_deposit" ? "deposit_owner" : direction}`,
       arguments: [
         ...args,
         tx.pure.u64(row.typeId),

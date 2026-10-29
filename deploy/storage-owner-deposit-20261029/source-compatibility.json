@@ -1,0 +1,9 @@
+{
+  "existingProductionSourceUnchanged": true,
+  "additions": [
+    "OwnerDeposit",
+    "deposit_owner"
+  ],
+  "oldSourceCommit": "09ba8038febc2e1e05305d8d812958d34eeeb11d",
+  "sourceSha256": "5c4ed81904bb4ccc336c71021ce696807e16881067a63782a2481036a4324f7b"
+}

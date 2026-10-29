@@ -1,5 +1,9 @@
 import type { StorageItem } from "./ssuSafety";
-export type StorageTransferDirection = "deposit" | "withdraw" | "recover";
+export type StorageTransferDirection =
+  | "deposit"
+  | "owner_deposit"
+  | "withdraw"
+  | "recover";
 export type StorageDropTarget = "personal" | "open";
 export function storageTransferDirection(
   item: StorageItem,
@@ -19,6 +23,12 @@ export function storageTransferDirection(
       : access.ownerCapId
         ? "recover"
         : null;
+  if (item.partition === "owner_main")
+    return !!access.ownerCapId &&
+      item.partitionKey === access.ownerCapId &&
+      access.canDeposit
+      ? "owner_deposit"
+      : null;
   return item.partition === "unknown" &&
     !!access.charOwnerCapId &&
     item.partitionKey === access.charOwnerCapId &&
@@ -29,7 +39,9 @@ export function storageTransferDirection(
 export function storageTransferTarget(
   direction: StorageTransferDirection,
 ): StorageDropTarget {
-  return direction === "deposit" ? "open" : "personal";
+  return direction === "deposit" || direction === "owner_deposit"
+    ? "open"
+    : "personal";
 }
 /** Strict decimal integers only; never round/clamp an amount the pilot entered. */
 export function storageTransferAmount(

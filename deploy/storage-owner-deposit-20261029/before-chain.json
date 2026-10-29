@@ -1,0 +1,1139 @@
+{
+  "at": "2026-10-29T15:37:36.490Z",
+  "ids": {
+    "packageId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+    "registryId": "0x581cb868c71bece59273b6a5ca361d3ebbbf0259d755b4ae3855d766dd4250f4",
+    "upgradeCap": "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653"
+  },
+  "package": {
+    "modules": [
+      {
+        "datatypes": [
+          {
+            "abilities": [
+              1,
+              2,
+              3
+            ],
+            "typeParameters": [],
+            "fields": [
+              {
+                "name": "character_id",
+                "position": 0,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "name": "expires_at",
+                "position": 1,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "name": "can_deposit",
+                "position": 2,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              },
+              {
+                "name": "can_withdraw",
+                "position": 3,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              }
+            ],
+            "variants": [],
+            "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::AllowEntry",
+            "definingId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+            "module": "storage_access",
+            "name": "AllowEntry",
+            "kind": 1
+          },
+          {
+            "abilities": [
+              4
+            ],
+            "typeParameters": [],
+            "fields": [
+              {
+                "name": "id",
+                "position": 0,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::UID"
+                }
+              },
+              {
+                "name": "ssu_id",
+                "position": 1,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "name": "revision",
+                "position": 2,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "name": "mode",
+                "position": 3,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 3
+                }
+              },
+              {
+                "name": "tribe_ids",
+                "position": 4,
+                "type": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 5
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "name": "deny",
+                "position": 5,
+                "type": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "name": "allow",
+                "position": 6,
+                "type": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::AllowEntry"
+                    }
+                  ],
+                  "type": 9
+                }
+              }
+            ],
+            "variants": [],
+            "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy",
+            "definingId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+            "module": "storage_access",
+            "name": "Policy",
+            "kind": 1
+          },
+          {
+            "abilities": [
+              1,
+              2
+            ],
+            "typeParameters": [],
+            "fields": [
+              {
+                "name": "ssu_id",
+                "position": 0,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "name": "policy_id",
+                "position": 1,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "name": "revision",
+                "position": 2,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "name": "mode",
+                "position": 3,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 3
+                }
+              }
+            ],
+            "variants": [],
+            "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::PolicyChanged",
+            "definingId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+            "module": "storage_access",
+            "name": "PolicyChanged",
+            "kind": 1
+          },
+          {
+            "abilities": [
+              4
+            ],
+            "typeParameters": [],
+            "fields": [
+              {
+                "name": "id",
+                "position": 0,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::UID"
+                }
+              },
+              {
+                "name": "policies",
+                "position": 1,
+                "type": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    },
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    }
+                  ],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::table::Table"
+                }
+              }
+            ],
+            "variants": [],
+            "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Registry",
+            "definingId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+            "module": "storage_access",
+            "name": "Registry",
+            "kind": 1
+          },
+          {
+            "abilities": [
+              2
+            ],
+            "typeParameters": [],
+            "fields": [
+              {
+                "name": "dummy_field",
+                "position": 0,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              }
+            ],
+            "variants": [],
+            "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::SharedAccess",
+            "definingId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+            "module": "storage_access",
+            "name": "SharedAccess",
+            "kind": 1
+          },
+          {
+            "abilities": [
+              1,
+              2
+            ],
+            "typeParameters": [],
+            "fields": [
+              {
+                "name": "ssu_id",
+                "position": 0,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "name": "character_id",
+                "position": 1,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "name": "type_id",
+                "position": 2,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "name": "quantity",
+                "position": 3,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 5
+                }
+              },
+              {
+                "name": "to_shared",
+                "position": 4,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              },
+              {
+                "name": "owner_recovery",
+                "position": 5,
+                "type": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              }
+            ],
+            "variants": [],
+            "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Transfer",
+            "definingId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+            "module": "storage_access",
+            "name": "Transfer",
+            "kind": 1
+          }
+        ],
+        "functions": [
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              },
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                    }
+                  ],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::access::OwnerCap"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "authorize",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::Character"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "check_caller",
+            "visibility": 1,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                    }
+                  ],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::access::OwnerCap"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 3
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 5
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 6
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 2
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 2
+                    }
+                  ],
+                  "type": 9
+                }
+              }
+            ],
+            "returns": [],
+            "name": "configure",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Registry"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                    }
+                  ],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::access::OwnerCap"
+                }
+              },
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              }
+            ],
+            "name": "create_policy",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::Character"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::Character"
+                    }
+                  ],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::access::OwnerCap"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 5
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::clock::Clock"
+                }
+              },
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "deposit",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "emit_policy",
+            "visibility": 1,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "init",
+            "visibility": 1,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 5
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              }
+            ],
+            "returns": [
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              }
+            ],
+            "name": "permits",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Registry"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              }
+            ],
+            "returns": [
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                }
+              }
+            ],
+            "name": "policy_id",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                    }
+                  ],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::access::OwnerCap"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::Character"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 5
+                }
+              },
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "recover_shared",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              }
+            ],
+            "returns": [
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              }
+            ],
+            "name": "revision",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "share_policy",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [
+              {
+                "constraints": [
+                  1,
+                  2
+                ]
+              }
+            ],
+            "parameters": [
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 11,
+                      "typeParameter": 0
+                    }
+                  ],
+                  "type": 9
+                }
+              }
+            ],
+            "returns": [],
+            "name": "unique",
+            "visibility": 1,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 3
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 5
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 10,
+                      "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID"
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 6
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 2
+                    }
+                  ],
+                  "type": 9
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [
+                    {
+                      "typeParameterInstantiation": [],
+                      "type": 2
+                    }
+                  ],
+                  "type": 9
+                }
+              }
+            ],
+            "returns": [],
+            "name": "validate",
+            "visibility": 1,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Policy"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::Character"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 5
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::clock::Clock"
+                }
+              },
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "withdraw",
+            "visibility": 2,
+            "isEntry": false
+          },
+          {
+            "typeParameters": [],
+            "parameters": [
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit"
+                }
+              },
+              {
+                "reference": 1,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::character::Character"
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 6
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 5
+                }
+              },
+              {
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 2
+                }
+              },
+              {
+                "reference": 2,
+                "body": {
+                  "typeParameterInstantiation": [],
+                  "type": 10,
+                  "typeName": "0x0000000000000000000000000000000000000000000000000000000000000002::tx_context::TxContext"
+                }
+              }
+            ],
+            "returns": [],
+            "name": "withdraw_to_personal",
+            "visibility": 1,
+            "isEntry": false
+          }
+        ],
+        "name": "storage_access"
+      }
+    ],
+    "typeOrigins": [],
+    "linkage": [],
+    "storageId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+    "originalId": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+    "version": "1"
+  },
+  "objects": {
+    "registryId": {
+      "objectId": "0x581cb868c71bece59273b6a5ca361d3ebbbf0259d755b4ae3855d766dd4250f4",
+      "version": "1071502510",
+      "owner": {
+        "kind": "SHARED",
+        "version": "1062049348"
+      },
+      "objectType": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::Registry",
+      "json": {
+        "id": "0x581cb868c71bece59273b6a5ca361d3ebbbf0259d755b4ae3855d766dd4250f4",
+        "policies": {
+          "id": "0x78e8316d79de0150bf80d3ae51cda985bfa82dd1a6750f01ecaa950b31c73b70",
+          "size": "2"
+        }
+      }
+    },
+    "upgradeCap": {
+      "objectId": "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653",
+      "version": "1062049348",
+      "owner": {
+        "kind": "ADDRESS",
+        "address": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a"
+      },
+      "objectType": "0x0000000000000000000000000000000000000000000000000000000000000002::package::UpgradeCap",
+      "json": {
+        "id": "0xe0fe0b530e1f46c6140bc8105bd4476392133694b2ac48854da7e743cef7b653",
+        "package": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f",
+        "policy": 0,
+        "version": "1"
+      }
+    }
+  }
+}

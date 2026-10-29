@@ -1,7 +1,7 @@
 /// Isolated replacement for the quarantined ssu_access extension.
-/// This module never exports its witness, an Item, or owner-main access.
-/// Every shared transfer is atomic between the shared pool and the caller's
-/// personal partition on the SAME storage unit. Existing stock is not migrated.
+/// This module never exports its witness or an Item. Owner-main ingress requires the canonical SSU capability.
+/// Transfers stay within the SAME storage unit. Personal transfers and canonical
+/// owner-main deposits never expose Item values. Existing stock is not migrated.
 module cradleos_storage_access::storage_access;
 
 use sui::{clock::{Self, Clock}, event, table::{Self, Table}};
@@ -20,6 +20,7 @@ public struct Policy has key {
 public struct Registry has key { id: UID, policies: Table<ID, ID> }
 public struct PolicyChanged has copy, drop { ssu_id: ID, policy_id: ID, revision: u64, mode: u8 }
 public struct Transfer has copy, drop { ssu_id: ID, character_id: ID, type_id: u64, quantity: u32, to_shared: bool, owner_recovery: bool }
+public struct OwnerDeposit has copy, drop { ssu_id: ID, character_id: ID, type_id: u64, quantity: u32 }
 
 const EAccessDenied: u64 = 0;
 const ESenderMismatch: u64 = 1;
@@ -97,6 +98,20 @@ public fun deposit(ssu: &mut StorageUnit, policy: &Policy, character: &Character
     su::deposit_to_open_inventory<SharedAccess>(ssu, character, item, SharedAccess {}, ctx);
     event::emit(Transfer { ssu_id: object::id(ssu), character_id: character::id(character), type_id,
         quantity, to_shared: true, owner_recovery: false });
+}
+
+/// Canonical owner-main -> same-unit shared pool, atomically. Existing ingress
+/// rules apply; owning the SSU does not bypass closed/denied/expired policies.
+public fun deposit_owner(ssu: &mut StorageUnit, policy: &Policy, character: &Character,
+    cap: &OwnerCap<StorageUnit>, type_id: u64, quantity: u32,
+    clock: &Clock, ctx: &mut TxContext) {
+    check_caller(ssu, policy, character, ctx);
+    assert!(access::is_authorized(cap, object::id(ssu)), EWrongOwner);
+    assert!(object::id(cap) == su::owner_cap_id(ssu), EWrongOwner);
+    assert!(permits(policy, character::id(character), character::tribe(character), clock::timestamp_ms(clock), false), EAccessDenied);
+    let item = su::withdraw_by_owner<StorageUnit>(ssu, character, cap, type_id, quantity, ctx);
+    su::deposit_to_open_inventory<SharedAccess>(ssu, character, item, SharedAccess {}, ctx);
+    event::emit(OwnerDeposit { ssu_id: object::id(ssu), character_id: object::id(character), type_id, quantity });
 }
 
 /// Closed policies retain an explicit owner-cap recovery path, to the owner's
