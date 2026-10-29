@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-29T15:14:39.245Z",
+  "at": "2026-10-29T15:15:39.211Z",
   "base": "http://127.0.0.1:5345",
   "label": "preview",
   "anonymous": true,
@@ -40,7 +40,7 @@
       "verified": 14
     }
   ],
-  "historySource": "real collected snapshot, local response",
+  "historySource": "live endpoint",
   "independentSourceFailureChecks": true,
   "historyExpiryAtExport": true,
   "exports": [

@@ -52,7 +52,7 @@ feature remains financially activated; current House HOLD remains unchanged.
 services/partner-metrics contains pure aggregation, scheduled collector,
 strict projected GET handler and user service/timer. Source telemetry.db opens
 readonly in one consistent read transaction. Archive0600, parent0700; report
-atomic0600 rename. No sourceDB or other service data changes. Secret missing or
+atomic0600 rename. Collector never writes the source DB or other service data. Secret missing or
 Cloudflare failure yields website unavailable while wallet collection proceeds.
 GET /telemetry/history returns only strict known aggregate schema; no raw file
 extras, wallet list, token, signatures or error details.2hreportTTL; nested
@@ -70,3 +70,10 @@ Injected failures are labelled fixtures, not source data.
 Previous web rollback: Pagescb41d5f2. Backend backup/runtime/token permission and
 live checks recorded in backend-install.json and release.json after execution.
 No contract/custody/stock/player transaction changes.
+
+## Final deployment review
+
+Independent native review PASS: deployed service, timer, credential scope,
+aggregate-only endpoint, exact assets, public routing, exports and responsive
+presentation verified. Independently reran 13 Node and 26 focused frontend
+tests; no remaining blockers. Historical wallet observations remain partial.

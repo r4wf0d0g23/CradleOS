@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-29T15:15:12.736722+00:00",
+  "sourceCommit": "4ee4045ae4072226c447ab20adc3e68563cb7d5e",
+  "runtime": "/home/rawdata/cradleos-partner-metrics/releases/4ee4045ae4072226c447ab20adc3e68563cb7d5e",
+  "backup": "/home/rawdata/cradleos-agent-proxy/backups/partner-metrics-20261029T151512Z",
+  "serverBefore": "21a2b754b08936f8fc3752e26ea759bb04dbf69053d56a77c66c95062a33a6bd",
+  "serverAfter": "a3383017d21004f2346b2e465d634411286a1325f963a6913cca6ad61d2e7acd",
+  "credentialPermissions": [
+    "Account Analytics Read"
+  ],
+  "credentialMode": "0o600",
+  "archiveMode": "0o600",
+  "sourceDbAccess": "read-only",
+  "scheduler": "hourly user timer",
+  "collectorService": "sandboxed real run passed",
+  "runtimeCheckAt": "2026-10-29T15:16:03.140603+00:00",
+  "serviceProperties": [
+    "Result=success",
+    "ExecMainStartTimestamp=Thu 2026-10-29 10:15:12 CDT",
+    "ExecMainExitTimestamp=Thu 2026-10-29 10:15:17 CDT",
+    "ExecMainStatus=0",
+    "PrivateTmp=yes",
+    "ProtectSystem=strict",
+    "NoNewPrivileges=yes"
+  ],
+  "timerEnabled": "enabled",
+  "timerActive": "active",
+  "agentActive": "active",
+  "runtimeSourceHashesMatch": {
+    "report.mjs": true,
+    "collect.mjs": true,
+    "handler.mjs": true,
+    "history-model.mjs": true
+  }
+}

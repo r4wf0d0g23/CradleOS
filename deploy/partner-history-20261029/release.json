@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-29T15:16:58.645425+00:00",
+  "status": "deployed_verified",
+  "url": "https://cradleos.io/partners/metrics/",
+  "sourceCommit": "4ee4045ae4072226c447ab20adc3e68563cb7d5e",
+  "pagesDeployment": "020f14f8",
+  "deploymentUrl": "https://020f14f8.cradleos-d75.pages.dev",
+  "rollbackPages": "cb41d5f2",
+  "tests": {
+    "frontend": 651,
+    "testFiles": 61,
+    "node": 13,
+    "publicLinks": 16,
+    "origins": 8,
+    "ioc": "clean",
+    "build": "pass"
+  },
+  "website": {
+    "source": "Cloudflare Web Analytics",
+    "window": "30 days",
+    "pageViews": 1540,
+    "visits": 1300,
+    "sampling": "adaptive estimates",
+    "refresh": "hourly"
+  },
+  "walletCycles": [
+    {
+      "cycle": 5,
+      "archivedObserved": 37,
+      "coverage": "partial"
+    },
+    {
+      "cycle": 6,
+      "archivedObserved": 22,
+      "coverage": "partial"
+    },
+    {
+      "cycle": 7,
+      "recordedVerifiedUnion": 14,
+      "verifiedSignIns": 13,
+      "recordedChain": 7,
+      "coverage": "partial"
+    }
+  ],
+  "majorMilestones": 7,
+  "oldestMilestone": "2026-03-27",
+  "scope": "existing project cycles 5 through 7",
+  "noCrossCycleOrWebsiteWalletSum": true,
+  "legacyUnverifiedSigninsExcluded": true,
+  "mainAppBundleUnchanged": true,
+  "navigationUnchanged": true,
+  "anonymousAccess": true,
+  "individualWalletsPublished": false,
+  "credential": "provider-verified Account Analytics Read only; private600",
+  "scheduler": "active/enabled hourly user timer; real sandboxed run success",
+  "contractsOrCustodyChanged": false,
+  "operatorStockOrWalletTransactions": false,
+  "productionEvidence": [
+    "live-assets.json",
+    "live-browser.json",
+    "backend-live.json",
+    "backend-install.json",
+    "credential-policy.json"
+  ],
+  "finalIndependentReview": {
+    "status": "PASS",
+    "reviewer": "native partner_metrics_review",
+    "verified": [
+      "sandboxed service execution and hourly timer",
+      "read-only analytics credential scope",
+      "aggregate-only endpoint",
+      "exact production assets and public routing",
+      "exports and responsive presentation"
+    ],
+    "independentTests": {
+      "node": 13,
+      "focusedFrontend": 26
+    },
+    "remainingBlockers": []
+  }
+}

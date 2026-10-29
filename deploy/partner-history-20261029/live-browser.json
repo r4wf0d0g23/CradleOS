@@ -1,0 +1,205 @@
+{
+  "at": "2026-10-29T15:16:32.860Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "anonymous": true,
+  "walletProvider": false,
+  "initialPartnerHostingAnalyticsPosts": 1,
+  "realSource": true,
+  "counts": {
+    "combined": 14,
+    "signins": 13,
+    "onchain": 7,
+    "today": 3
+  },
+  "selectedReleases": 7,
+  "widths": [
+    1440,
+    650,
+    390,
+    320
+  ],
+  "website": {
+    "pageViews": 1540,
+    "visits": 1300
+  },
+  "cycleWallets": [
+    {
+      "cycle": 5,
+      "archived": 37,
+      "verified": null
+    },
+    {
+      "cycle": 6,
+      "archived": 22,
+      "verified": null
+    },
+    {
+      "cycle": 7,
+      "archived": null,
+      "verified": 14
+    }
+  ],
+  "historySource": "live endpoint",
+  "independentSourceFailureChecks": true,
+  "historyExpiryAtExport": true,
+  "exports": [
+    "json",
+    "csv",
+    "pdf",
+    "website+cycles JSON",
+    "website+cycles CSV"
+  ],
+  "failureFixtureClearsCounts": true,
+  "expiryAtExportWithoutTimers": true,
+  "mainNavigationUnchanged": true,
+  "directPathVariants": true,
+  "pageErrors": [],
+  "requestTraceScope": "combined partner and root navigation",
+  "requests": [
+    {
+      "url": "https://cradleos.io/partners/metrics/",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/partnerMetrics-ByKjvoO4.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/partnerMetrics-DNU_A6Go.css",
+      "method": "GET"
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "method": "POST"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/",
+      "method": "GET"
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "method": "GET"
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/app-D3W2lt-n.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/app-BTRO77Wi.css",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "method": "GET"
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/ef-wordmark.svg",
+      "method": "GET"
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "method": "POST"
+    },
+    {
+      "url": "https://cradleos.io/partners/metrics",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "method": "POST"
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "method": "GET"
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/partnerMetrics-ByKjvoO4.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/assets/partnerMetrics-DNU_A6Go.css",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/history",
+      "method": "GET"
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "method": "GET"
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "method": "POST"
+    }
+  ]
+}
