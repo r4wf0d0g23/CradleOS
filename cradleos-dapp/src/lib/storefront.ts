@@ -203,6 +203,13 @@ export function formatShopPrice(amount: string, currency: string): string {
       .replace(/0+$/, "");
   return `${n / scale}${fraction ? "." + fraction : ""}`;
 }
+// Supported gRPC JSON decorates TypeName as a string. Raw struct fixtures and
+// alternate readers may retain its single `name` field.
+function moveTypeName(value: unknown): string {
+  const name = typeof value === "string" ? value : storageRecord(value).name;
+  if (typeof name !== "string" || !name) throw Error("Storefront unavailable.");
+  return name;
+}
 function decodeShop(
   o: Awaited<ReturnType<typeof storageObject>>,
   sid: string,
@@ -227,8 +234,7 @@ function decodeShop(
   });
   const listings = f.listings.map((raw: unknown) => {
     const l = storageRecord(raw),
-      name = storageRecord(l.currency).name;
-    if (typeof name !== "string") throw Error("Storefront unavailable.");
+      name = moveTypeName(l.currency);
     return validateListing({
       typeId: storageUint(l.type_id),
       currency: name.startsWith("0x") ? name : `0x${name}`,
@@ -652,10 +658,14 @@ export async function readShopProceeds(
       o.id !== keys[i] ||
       o.owner.kind !== 2 ||
       storageId(o.owner.address) !== shop.proceedsId ||
-      storageRecord(o.fields.name).name !== currency.slice(2)
+      moveTypeName(o.fields.name) !== currency.slice(2)
     )
       throw Error("Proceeds unavailable.");
-    out[currency] = shopU64(storageRecord(o.fields.value).value);
+    out[currency] = shopU64(
+      typeof o.fields.value === "string"
+        ? o.fields.value
+        : storageRecord(o.fields.value).value,
+    );
   });
   return out;
 }

@@ -1,0 +1,354 @@
+{
+  "at": "2026-10-29T17:11:26.027Z",
+  "base": "http://127.0.0.1:5356",
+  "label": "preview",
+  "readOnlyWalletFixture": true,
+  "realChainData": true,
+  "transport": "TLS-validating Node relay",
+  "catalogEmpty": true,
+  "ownedSsuDiscovered": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+  "reviewActivationWithoutSigning": true,
+  "tribalStorageSeparate": true,
+  "readFailureRecovery": true,
+  "disconnectHidesHoldings": true,
+  "writes": 0,
+  "errors": [],
+  "network": [
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    }
+  ]
+}

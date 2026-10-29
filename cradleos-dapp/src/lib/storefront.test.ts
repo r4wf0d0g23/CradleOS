@@ -433,6 +433,24 @@ describe("supported registry, proceeds and cap ownership reads", () => {
     const f = readFixture();
     expect(await readShop(id(1), d, f.api)).toEqual(shop);
   });
+  it("decodes populated gRPC shops with string-decorated TypeName", async () => {
+    const f = readFixture();
+    f.records.get(shop.id).json.listings[0].currency =
+      listing.currency.slice(2);
+    expect(await readShop(id(1), d, f.api)).toEqual(shop);
+    expect(await discoverShops(d, f.api)).toEqual({
+      shops: [shop],
+      unavailable: 0,
+    });
+  });
+  it.each([null, 12, {}, { name: 12 }])(
+    "rejects malformed TypeName %j",
+    async (currency) => {
+      const f = readFixture();
+      f.records.get(shop.id).json.listings[0].currency = currency;
+      await expect(readShop(id(1), d, f.api)).rejects.toThrow();
+    },
+  );
   it("does not report transport failures as absent shop", async () => {
     const f = readFixture();
     f.records.delete(f.field);
@@ -525,4 +543,50 @@ describe("supported registry, proceeds and cap ownership reads", () => {
     f.records.get(key).owner.address = id(11);
     await expect(readShopProceeds(shop, f.api)).rejects.toThrow();
   });
+  it.each(["1", "18446744073709551615"])(
+    "decodes decorated TypeName and Balance %s with exact field binding",
+    async (amount) => {
+      const f = readFixture(),
+        type = listing.currency,
+        name = type.slice(2);
+      const key = deriveDynamicFieldID(
+        shop.proceedsId,
+        "0x1::type_name::TypeName",
+        bcs.string().serialize(name).toBytes(),
+      );
+      f.put(
+        key,
+        `0x2::dynamic_field::Field<0x1::type_name::TypeName,0x2::balance::Balance<${type}>>`,
+        { name, value: amount },
+        { kind: "OBJECT", address: shop.proceedsId },
+      );
+      expect((await readShopProceeds(shop, f.api))[type]).toBe(amount);
+      f.records.get(key).json.name = SHOP_CURRENCIES[1].type.slice(2);
+      await expect(readShopProceeds(shop, f.api)).rejects.toThrow();
+      f.records.get(key).json.name = name;
+      f.records.get(key).objectType =
+        `0x2::dynamic_field::Field<0x1::type_name::TypeName,0x2::balance::Balance<${SHOP_CURRENCIES[1].type}>>`;
+      await expect(readShopProceeds(shop, f.api)).rejects.toThrow();
+    },
+  );
+  it.each(["-1", "1.5", "18446744073709551616", "", null, 9007199254740992])(
+    "rejects malformed decorated Balance %j",
+    async (amount) => {
+      const f = readFixture(),
+        type = listing.currency,
+        name = type.slice(2);
+      const key = deriveDynamicFieldID(
+        shop.proceedsId,
+        "0x1::type_name::TypeName",
+        bcs.string().serialize(name).toBytes(),
+      );
+      f.put(
+        key,
+        `0x2::dynamic_field::Field<0x1::type_name::TypeName,0x2::balance::Balance<${type}>>`,
+        { name, value: amount },
+        { kind: "OBJECT", address: shop.proceedsId },
+      );
+      await expect(readShopProceeds(shop, f.api)).rejects.toThrow();
+    },
+  );
 });

@@ -1,0 +1,149 @@
+{
+  "at": "2026-10-29T17:10:55.427Z",
+  "source": "raw Sui gRPC SimulateTransactionResponse JSON",
+  "signed": false,
+  "submitted": false,
+  "checksEnabled": true,
+  "packageId": "0x2845dbb680315b6f579275b9553847d6dd118f17a9f91b837cc29ef44924853a",
+  "ssuId": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+  "ssuVersionUnchanged": true,
+  "registryEmpty": true,
+  "outputs": [
+    {
+      "command": 3,
+      "json": {
+        "deny": [],
+        "id": "0x304f8aa61d45252a9d5e20c3a530f14310c250054f66b84bfe7cf8aa9c75cab4",
+        "listings": [
+          {
+            "currency": "c663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE",
+            "enabled": true,
+            "ends_at": "0",
+            "maximum": 2,
+            "minimum": 1,
+            "per_pilot": "0",
+            "price": "1",
+            "revision": "1",
+            "starts_at": "0",
+            "step": 1,
+            "stock": 0,
+            "type_id": "96039"
+          }
+        ],
+        "mode": 4,
+        "name": "Unsigned JSON shape proof",
+        "open": true,
+        "owner_cap_id": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+        "pilots": [],
+        "proceeds": {
+          "id": "0x33c64675158bd57ff5ad50eb1808d37f43dce23f429977a2f845cb277e4db5c2",
+          "size": "0"
+        },
+        "purchases": {
+          "id": "0xf95edbe6ecaba22615b923cc22a4480c43bca5b40d1a3ecad051038abae19f57",
+          "size": "0"
+        },
+        "revision": "1",
+        "ssu_id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+        "tribes": []
+      }
+    },
+    {
+      "command": 4,
+      "json": {
+        "deny": [],
+        "id": "0x304f8aa61d45252a9d5e20c3a530f14310c250054f66b84bfe7cf8aa9c75cab4",
+        "listings": [
+          {
+            "currency": "c663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE",
+            "enabled": true,
+            "ends_at": "0",
+            "maximum": 2,
+            "minimum": 1,
+            "per_pilot": "0",
+            "price": "1",
+            "revision": "1",
+            "starts_at": "0",
+            "step": 1,
+            "stock": 2,
+            "type_id": "96039"
+          }
+        ],
+        "mode": 4,
+        "name": "Unsigned JSON shape proof",
+        "open": true,
+        "owner_cap_id": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+        "pilots": [],
+        "proceeds": {
+          "id": "0x33c64675158bd57ff5ad50eb1808d37f43dce23f429977a2f845cb277e4db5c2",
+          "size": "0"
+        },
+        "purchases": {
+          "id": "0xf95edbe6ecaba22615b923cc22a4480c43bca5b40d1a3ecad051038abae19f57",
+          "size": "0"
+        },
+        "revision": "1",
+        "ssu_id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+        "tribes": []
+      }
+    },
+    {
+      "command": 7,
+      "json": {
+        "deny": [],
+        "id": "0x304f8aa61d45252a9d5e20c3a530f14310c250054f66b84bfe7cf8aa9c75cab4",
+        "listings": [
+          {
+            "currency": "c663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE",
+            "enabled": true,
+            "ends_at": "0",
+            "maximum": 2,
+            "minimum": 1,
+            "per_pilot": "0",
+            "price": "1",
+            "revision": "1",
+            "starts_at": "0",
+            "step": 1,
+            "stock": 1,
+            "type_id": "96039"
+          }
+        ],
+        "mode": 4,
+        "name": "Unsigned JSON shape proof",
+        "open": true,
+        "owner_cap_id": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+        "pilots": [],
+        "proceeds": {
+          "id": "0x33c64675158bd57ff5ad50eb1808d37f43dce23f429977a2f845cb277e4db5c2",
+          "size": "1"
+        },
+        "purchases": {
+          "id": "0xf95edbe6ecaba22615b923cc22a4480c43bca5b40d1a3ecad051038abae19f57",
+          "size": "1"
+        },
+        "revision": "1",
+        "ssu_id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+        "tribes": []
+      }
+    }
+  ],
+  "saleFields": [],
+  "simpleOutputs": [
+    {
+      "command": 10,
+      "json": "c663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE"
+    },
+    {
+      "command": 11,
+      "json": "0"
+    },
+    {
+      "command": 13,
+      "json": "0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+    },
+    {
+      "command": 14,
+      "json": "0"
+    }
+  ]
+}
