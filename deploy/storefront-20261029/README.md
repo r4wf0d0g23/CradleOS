@@ -1,6 +1,6 @@
 # SSU storefront release — 2026-10-29
 
-Raw authorized adding SSU storefront options separate from tribal storage (Discord1565407155635355649). Isolated testnet contract published and independently verified; reviewed website integration ready for deployment. No player SSU has been activated by this release.
+Raw authorized adding SSU storefront options separate from tribal storage (Discord1565407155635355649). LIVE: isolated testnet contract and website integration deployed and independently verified. No player SSU has been activated by this release.
 
 ## Model
 - Isolated `cradleos_storefront` package and registry. No changes to tribal sharing Move package, policies or inventories.
@@ -28,3 +28,10 @@ Jetson2 standing exception applies; fresh restored-backup PersonalMessage proof 
 - Raw gRPC shape proof caught decorated TypeName/Balance strings. Readers corrected with strict u64 and exact field identity/type/parent/currency checks. Real post-sale Shop JSON retained in raw-json-shapes.json; no persistent populated Shop was created.
 - Final preview browser uses real chain reads and a synthetic read-only wallet. Activation review, owned SSU discovery, tribal/storefront separation, read failure recovery, disconnect and zero transaction-sign calls pass with zero page errors. Screenshots include desktop and 390px mobile.
 - Rollback baseline: Cloudflare Pages `8b14f93c`, runtime source `0edbbef7dd84ead7c1c9fc2880e72c7c7e8d566e`. This release changes no backend service or existing tribal/casino package.
+
+## Website release
+- Runtime source: `a0a5f8f760272a0c4bd4593d1577f1519284f0de`.
+- Cloudflare Pages: `d4c05728` (`https://d4c05728.cradleos-d75.pages.dev`), primary `https://cradleos.io`.
+- Production verification at 2026-10-29T17:12:37Z: both app and partner report HTML references match; all five JS/CSS hashes match reviewed dist; partner noindex and slash redirect preserved. Production browser confirms real-chain owned SSU discovery and activation review, separate tribal mode, failure recovery, disconnect, zero transaction-sign calls and zero page errors.
+- Release status: available in **Inventory → Storefronts**. Dedicated owner-activated SSU mode, not a second shared partition on an existing tribal SSU. Existing tribal/casino contracts and settings unchanged.
+- New buyers/owners must sign their own stock/configuration/purchase transactions. No actual player activation or purchase was submitted for release verification.

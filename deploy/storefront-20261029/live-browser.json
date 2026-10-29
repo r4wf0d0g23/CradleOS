@@ -1,0 +1,462 @@
+{
+  "at": "2026-10-29T17:12:37.976Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "readOnlyWalletFixture": true,
+  "realChainData": true,
+  "transport": "TLS-validating Node relay",
+  "catalogEmpty": true,
+  "ownedSsuDiscovered": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+  "reviewActivationWithoutSigning": true,
+  "tribalStorageSeparate": true,
+  "readFailureRecovery": true,
+  "disconnectHidesHoldings": true,
+  "writes": 0,
+  "errors": [],
+  "network": [
+    {
+      "url": "https://cradleos.io/",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/assets/app-BjYzHG2x.js",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/assets/app-B0lJOHYk.css",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/ef-wordmark.svg",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/manifest.json",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/045f5aa23841249838e40ad47caeef919037315b6a3f796cda853c528cddc291.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/91e3001f3ee73b8d4347cfdd92aa7c66369a30d547a6cadeba907b440d595acb.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/404e0fb6ebfe0b4fe64dc89bed61041e26226b8949c2b2213f76ef2e40bc35e6.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/9f5bbcdefff72a44131a951640876dd1d69790861fb3c48fc0265575e5643ece.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://cradleos.io/data/icons-cycle7-3573151/assets/7619c0491187ca7a1df51c731c64010c3bf4700180c402b898ec65814989de54.png",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    }
+  ]
+}

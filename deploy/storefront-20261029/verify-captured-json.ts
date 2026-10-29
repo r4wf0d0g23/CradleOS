@@ -1,0 +1,33 @@
+// Offline replay of REAL unsigned gRPC JSON bodies through production readers.
+// Registry links/object metadata are fixtures; no Shop was created on-chain.
+import { readFileSync, writeFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+import { GrpcTypes } from '@mysten/sui/grpc';
+import { bcs } from '@mysten/sui/bcs';
+import { deriveDynamicFieldID } from '@mysten/sui/utils';
+import { readShop, readShopProceeds, SHOP_CURRENCIES } from '../../cradleos-dapp/src/lib/storefront';
+import { idFieldId, type StorageReadClient } from '../../cradleos-dapp/src/lib/storageRead';
+const read = (name: string) => JSON.parse(readFileSync(new URL(name, import.meta.url), 'utf8'));
+const d = read('onchain.json'), capture = read('raw-json-shapes.json');
+const body = capture.outputs.at(-1).json;
+const records = new Map<string, unknown>();
+const put = (objectId: string, objectType: string, json: unknown, owner: unknown = { kind: 'SHARED', version: '1' }) => records.set(objectId, { objectId, objectType, version: '1', owner, json });
+put(d.registryId, `${d.packageId}::storefront::Registry`, { id: d.registryId, shops: { id: d.tableId, size: '1' } });
+const link = idFieldId(d.tableId, body.ssu_id);
+put(link, '0x2::dynamic_field::Field<0x2::object::ID,0x2::object::ID>', { id: link, name: body.ssu_id, value: body.id }, { kind: 'OBJECT', address: d.tableId });
+put(body.id, `${d.packageId}::storefront::Shop`, body);
+const api = { ledgerService: { batchGetObjects: ({ requests }: any) => ({ response: Promise.resolve({objects: requests.map(({objectId}: any) => ({ result: records.has(objectId) ? { oneofKind: 'object', object: GrpcTypes.Object.fromJson(records.get(objectId) as any) } : { oneofKind: 'error', error: { code: 5, message: 'Fixture NOT_FOUND' } } }))}) }) } } as unknown as StorageReadClient;
+const shop = await readShop(body.ssu_id, d, api);
+assert.ok(shop); assert.equal(shop.id, body.id); assert.equal(shop.listings.length, 1);
+const listing = shop.listings[0];
+assert.equal(listing.currency, SHOP_CURRENCIES[0].type);
+assert.equal(listing.price, '1'); assert.equal(listing.stock, 1);
+assert.equal(shop.proceedsId, body.proceeds.id);
+const rawTypeName = capture.simpleOutputs.find((v: any) => v.json === body.listings[0].currency).json;
+const rawBalance = capture.simpleOutputs.find((v: any) => v.json === '0').json;
+const key = deriveDynamicFieldID(shop.proceedsId, '0x1::type_name::TypeName', bcs.string().serialize(rawTypeName).toBytes());
+put(key, `0x2::dynamic_field::Field<0x1::type_name::TypeName,0x2::balance::Balance<${listing.currency}>>`, { id: key, name: rawTypeName, value: rawBalance }, { kind: 'OBJECT', address: shop.proceedsId });
+assert.equal((await readShopProceeds(shop, api))[listing.currency], '0');
+const result = { at: new Date().toISOString(), passed: true, sourceCapture: 'raw-json-shapes.json', productionReaders: ['readShop','readShopProceeds'], actualCapturedShopBody: true, capturedTypeNameAndBalanceValues: true, syntheticRegistryAndFieldMetadata: true, shopId:shop.id, listingCurrency:listing.currency, listingPrice:listing.price, stock:listing.stock, signed:false, submitted:false, networkRequests:0 };
+writeFileSync(new URL('captured-json-reader.json',import.meta.url),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));

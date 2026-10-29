@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-29T17:11:51.897Z",
+  "passed": true,
+  "sourceCapture": "raw-json-shapes.json",
+  "productionReaders": [
+    "readShop",
+    "readShopProceeds"
+  ],
+  "actualCapturedShopBody": true,
+  "capturedTypeNameAndBalanceValues": true,
+  "syntheticRegistryAndFieldMetadata": true,
+  "shopId": "0x304f8aa61d45252a9d5e20c3a530f14310c250054f66b84bfe7cf8aa9c75cab4",
+  "listingCurrency": "0xc663658ff707985246bc7b5c605a458ec2caea28bfc35c253eb526dcf961643e::EVE::EVE",
+  "listingPrice": "1",
+  "stock": 1,
+  "signed": false,
+  "submitted": false,
+  "networkRequests": 0
+}

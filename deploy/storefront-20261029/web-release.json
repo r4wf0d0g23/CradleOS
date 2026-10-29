@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-29T17:12:55.374890+00:00",
+  "sourceCommit": "a0a5f8f760272a0c4bd4593d1577f1519284f0de",
+  "pagesDeployment": "d4c05728",
+  "deploymentUrl": "https://d4c05728.cradleos-d75.pages.dev",
+  "origin": "https://cradleos.io",
+  "rollbackPages": "8b14f93c",
+  "rollbackSource": "0edbbef7dd84ead7c1c9fc2880e72c7c7e8d566e",
+  "moveTests": 42,
+  "frontendTests": 728,
+  "storefrontTests": 63,
+  "browserFixtureGroups": 17,
+  "unsignedLiveFlowChecks": 6,
+  "actualGrpcReaderReplay": true,
+  "originsGuardChecks": 8,
+  "dependencyIocScan": "clean",
+  "webAssets": "live-assets.json",
+  "webBrowser": "live-browser.json",
+  "playerTransactionsSubmitted": 0,
+  "livePlayerPurchaseVerified": false,
+  "independentFinalReview": "PASS"
+}
