@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-29T11:33:59.229Z",
+  "checks": [
+    "StrictMode + in-flight requests: one prompt",
+    "decline does not loop or disconnect",
+    "A-B-A stale signature/proof ignored, no telemetry",
+    "mismatched address never verified or reported",
+    "current valid proof alone permits verification/telemetry",
+    "switch/disconnect immediately invalidates verified state"
+  ],
+  "errors": [],
+  "walletAndVerifier": "deferred fixtures",
+  "realPinOrSigningVerified": false
+}

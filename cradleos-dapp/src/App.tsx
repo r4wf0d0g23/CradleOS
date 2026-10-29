@@ -1122,8 +1122,8 @@ function AppInner() {
       )}
       {!waitingForDeployment && (account || PUBLIC_TABS.has(activeTab)) && activeTab !== "map" && activeTab !== "efmap" && activeTab !== "dapps" && (
         <div style={{ background: "transparent", padding: "0" }}>
-          {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel    onTxSuccess={setLastDigest} /></div>}
-          {activeTab === "dashboard"  && <div style={{ background: "transparent" }} className="content-panel"><DashboardPanel /></div>}
+          {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel key={account?.address ?? "disconnected"} onTxSuccess={setLastDigest} /></div>}
+          {activeTab === "dashboard"  && <div style={{ background: "transparent" }} className="content-panel"><DashboardPanel key={account?.address ?? "disconnected"} /></div>}
           {activeTab === "inventory"  && <div style={{ background: "transparent" }} className="content-panel"><InventoryPanel /></div>}
           {activeTab === "tribe"      && <div style={{ background: "transparent" }} className="content-panel"><TribeVaultPanel   onTxSuccess={setLastDigest} /></div>}
           {activeTab === "defense"    && <div style={{ background: "transparent" }} className="content-panel"><TurretPolicyPanel /></div>}

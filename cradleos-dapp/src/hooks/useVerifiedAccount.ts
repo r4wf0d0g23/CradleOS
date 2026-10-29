@@ -5,6 +5,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useCurrentAccount, useDAppKit, useCurrentClient } from "@mysten/dapp-kit-react";
 import { verifyPersonalMessageSignature } from "@mysten/sui/verify";
+import { VerificationSession, type VerificationAttempt } from "../lib/verificationSession";
 
 export type VerifiedAccount = {
   address: string;
@@ -35,17 +36,22 @@ export function useVerifiedAccount(): UseVerifiedAccountResult {
   const dAppKit = useDAppKit();
   const suiClient = useCurrentClient();
 
-  const [cryptoVerified, setCryptoVerified] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  // Track which address we last attempted so we don't re-loop on failure
-  const lastAttempted = useRef<string | null>(null);
+  const session = useRef(new VerificationSession());
+  session.current.sync(currentAccount?.address ?? null);
+  const active = useRef(true);
+  useEffect(() => { active.current = true; return () => { active.current = false; }; }, []);
+  const [state, setState] = useState<{ attempt: VerificationAttempt | null; verified: boolean; verifying: boolean; error: string | null }>({ attempt: null, verified: false, verifying: false, error: null });
+  const stateIsCurrent = session.current.current(state.attempt);
+  const cryptoVerified = stateIsCurrent && state.verified;
+  const isVerifying = stateIsCurrent && state.verifying;
+  const error = stateIsCurrent ? state.error : null;
 
-  const requestVerification = useCallback(async () => {
+  const verify = useCallback(async (automatic: boolean) => {
     if (!currentAccount) return;
-    setIsVerifying(true);
-    setError(null);
-    lastAttempted.current = currentAccount.address;
+    const attempt = session.current.begin(automatic);
+    if (!attempt) return;
+    const current = () => active.current && session.current.current(attempt);
+    setState({ attempt, verified: false, verifying: true, error: null });
 
     try {
       // Build challenge before signing — we'll use THIS exact buffer for verification
@@ -56,6 +62,7 @@ export function useVerifiedAccount(): UseVerifiedAccountResult {
       const { signature } = await dAppKit.signPersonalMessage({
         message: challenge,
       });
+      if (!current()) return;
 
       // Derive address from signature using the original challenge bytes we sent.
       // EVE Vault uses zkLogin — must pass a Sui RPC client so the verifier can
@@ -64,6 +71,7 @@ export function useVerifiedAccount(): UseVerifiedAccountResult {
         client: suiClient,
       });
       const derivedAddress = publicKey.toSuiAddress();
+      if (!current()) return;
 
       if (derivedAddress !== currentAccount.address) {
         throw new Error(
@@ -72,7 +80,7 @@ export function useVerifiedAccount(): UseVerifiedAccountResult {
         );
       }
 
-      setCryptoVerified(true);
+      setState({ attempt, verified: true, verifying: false, error: null });
 
       // Fire-and-forget telemetry ping. Server re-verifies sig and logs unique
       // address per day for MAU tracking. Privacy: only the wallet address
@@ -95,40 +103,34 @@ export function useVerifiedAccount(): UseVerifiedAccountResult {
         /* silent — telemetry is best-effort */
       }
     } catch (e) {
+      if (!current()) return;
       const msg = e instanceof Error ? e.message : String(e);
+      let verificationError = msg;
       if (
         msg.includes("reject") ||
         msg.includes("cancel") ||
         msg.toLowerCase().includes("user denied") ||
         msg.toLowerCase().includes("user rejected")
       ) {
-        setError("declined");
+        verificationError = "declined";
       } else {
         // Verification failed (e.g. zkLogin testnet RPC limitation) — not a spoofing signal,
         // just an unsupported verification path. Address is still usable for tx signing.
-        setError(msg);
+        verificationError = msg;
       }
-      setCryptoVerified(false);
+      setState({ attempt, verified: false, verifying: false, error: verificationError });
     } finally {
-      setIsVerifying(false);
+      session.current.finish(attempt);
+      if (current()) setState(s => s.attempt === attempt ? { ...s, verifying: false } : s);
     }
   }, [currentAccount, dAppKit, suiClient]);
 
   // Auto-trigger on fresh connect or account switch
   useEffect(() => {
-    if (!currentAccount) {
-      setCryptoVerified(false);
-      setError(null);
-      lastAttempted.current = null;
-      return;
-    }
-
-    // Only auto-fire if this address hasn't been attempted yet
-    if (currentAccount.address !== lastAttempted.current) {
-      requestVerification();
-    }
+    void verify(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAccount?.address]);
+  const requestVerification = useCallback(() => { void verify(false); }, [verify]);
 
   // account is always non-null when connected — verified flag reflects crypto proof result
   const account: VerifiedAccount | null = currentAccount

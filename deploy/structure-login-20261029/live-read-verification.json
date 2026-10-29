@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-29T11:30:47.739Z",
+  "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+  "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+  "count": 139,
+  "kinds": {
+    "Turret": 14,
+    "Assembly": 85,
+    "NetworkNode": 32,
+    "StorageUnit": 8
+  },
+  "online": 126,
+  "boundCaps": true
+}

@@ -1,5 +1,6 @@
 import { cycleCacheKey } from "../lib/cycleCache";
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { playPowerOn, playPowerOff } from "../lib/sound";
 import { useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
@@ -10,7 +11,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useSponsoredTransaction, SponsoredTransactionActions, Assemblies } from "@evefrontier/dapp-kit";
 import type { AssemblyType } from "@evefrontier/dapp-kit";
 import {
-  fetchPlayerStructures,
+  fetchPlayerStructureSnapshot,
   buildStructureOnlineTransaction,
   buildStructureOfflineTransaction,
   buildBatchSequencedTransaction,
@@ -1553,11 +1554,6 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
 export function DashboardPanel() {
   const account = useCurrentAccount();
   const dAppKit = useDAppKit();
-  const [groups, setGroups] = useState<LocationGroup[]>([]);
-  const [characterId, setCharacterId] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [loadedFor, setLoadedFor] = useState<string | null>(null);
   const [dashTab, setDashTab] = useState<"structures" | "links" | "transfer">("structures");
   const [transferRecipients, setTransferRecipients] = useState<Map<string, string>>(new Map());
   const [transferBusy, setTransferBusy] = useState<string | null>(null);
@@ -1565,39 +1561,18 @@ export function DashboardPanel() {
 
   const walletAddress = account?.address ?? null;
 
-  const load = useCallback(
-    async (address: string) => {
-      setLoading(true);
-      setErr(null);
-      try {
-        const [g, charInfo] = await Promise.all([
-          fetchPlayerStructures(address),
-          findCharacterForWallet(address),
-        ]);
-        setGroups(g);
-        setCharacterId(charInfo?.characterId ?? "");
-        setLoadedFor(address);
-      } catch (e) {
-        setErr(translateTxError(e));
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
-
-  // Auto-load on wallet connect
+  const { data, isPending, error, refetch } = useQuery({
+    queryKey: ["playerStructureSnapshot", walletAddress],
+    queryFn: ({ signal }) => fetchPlayerStructureSnapshot(walletAddress!, signal),
+    enabled: !!walletAddress, staleTime: 30_000, retry: 1,
+  });
+  const groups = walletAddress && !error ? data?.groups ?? [] : [];
+  const characterId = walletAddress && !error ? data?.characterId ?? "" : "";
+  const loading = !!walletAddress && isPending;
+  const err = walletAddress && error ? "Structures unavailable. Retry." : null;
+  const handleRefresh = useCallback(() => { if (walletAddress) void refetch(); }, [walletAddress, refetch]);
   useEffect(() => {
-    if (walletAddress && walletAddress !== loadedFor) {
-      load(walletAddress);
-    }
-  }, [walletAddress, loadedFor, load]);
-
-  const handleRefresh = useCallback(() => {
-    if (walletAddress) {
-      // Refresh data without resetting loadedFor — preserves nav state by avoiding loading screen
-      fetchPlayerStructures(walletAddress).then(g => setGroups(g)).catch(() => {});
-    }
+    setTransferRecipients(new Map()); setTransferResult(new Map()); setTransferBusy(null);
   }, [walletAddress]);
 
   // Transfer ownership handler
@@ -1663,7 +1638,7 @@ export function DashboardPanel() {
         {dashTab === "structures" && <span style={{ fontSize: 14, fontWeight: 700, color: "#FF4700", letterSpacing: "0.1em" }}>MY STRUCTURES</span>}
         {dashTab === "links" && <span style={{ fontSize: 14, fontWeight: 700, color: "#FF4700", letterSpacing: "0.1em" }}>STRUCTURE LINKS</span>}
         {dashTab === "transfer" && <span style={{ fontSize: 14, fontWeight: 700, color: "#FF4700", letterSpacing: "0.1em" }}>TRANSFER OWNERSHIP</span>}
-        {walletAddress && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "monospace" }}>char: {characterId.slice(0, 10)}…</span>}
+        {characterId && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "monospace" }}>char: {characterId.slice(0, 10)}…</span>}
       </div>
 
       {/* Connect prompt */}
@@ -1692,13 +1667,13 @@ export function DashboardPanel() {
 
       {/* Topology drill-down view */}
       {dashTab === "structures" && !loading && groups.length > 0 && (
-        <TopologyGraph groups={groups} characterId={characterId} onRefresh={handleRefresh} />
+        <TopologyGraph key={walletAddress} groups={groups} characterId={characterId} onRefresh={handleRefresh} />
       )}
 
       {/* Transfer Ownership tab */}
       {dashTab === "links" && <LinksPanel />}
 
-      {dashTab === "transfer" && !loading && (
+      {dashTab === "transfer" && walletAddress && !loading && !err && (
         <div>
           <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginBottom: 8 }}>
             Transfer the OwnerCap for any structure to another pilot. The recipient gains full control — this cannot be undone.

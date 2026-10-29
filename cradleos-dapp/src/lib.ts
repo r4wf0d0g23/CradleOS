@@ -3,6 +3,7 @@ import { cycleCacheKey } from "./lib/cycleCache";
 import { CYCLE_DEPLOYMENT } from "./lib/cycleDeployment";
 import { CURRENT_WORLD } from "./lib/cycle";
 import { findCurrentCharacters, listOwnedCurrentObjects } from "./lib/currentWorldRead";
+import { readStructureSnapshot } from "./lib/structureRead";
 import { Transaction } from "@mysten/sui/transactions";
 import {
   executeGraphQLQuery,
@@ -108,8 +109,14 @@ export async function rpcGetObject(objectId: string): Promise<Record<string, unk
       params: [objectId, { showContent: true, showType: true, showOwner: true }],
     }),
   });
-  const json = await res.json() as { result: { data: { content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } };
-  // Object deleted/not found — return empty sentinel
+  const json = await res.json() as { error?: unknown; result?: { error?: { code?: string }; data?: { content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } };
+  if (!res.ok || json.error || !json.result) throw new Error("Object data unavailable. Retry.");
+  if (json.result.error) {
+    if (["notExists", "deleted"].includes(json.result.error.code ?? "")) return { _deleted: true };
+    throw new Error("Object data unavailable. Retry.");
+  }
+  if (!json.result.data?.content?.fields) throw new Error("Object data unavailable. Retry.");
+  // Only explicit notExists/deleted responses may produce the deleted sentinel.
   if (!json.result?.data || !json.result.data.content?.fields) return { _deleted: true };
   const objType = json.result.data.type ?? json.result.data.content?.type ?? "";
   return { ...json.result.data.content.fields, _type: objType, _owner: json.result.data.owner };
@@ -137,13 +144,17 @@ export async function rpcMultiGetObjects(objectIds: string[]): Promise<Map<strin
       }),
     });
     const json = await res.json() as {
-      result?: Array<{ data?: { objectId?: string; content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } | null>
+      error?: unknown;
+      result?: Array<{ error?: { code?: string }; data?: { objectId?: string; content?: { fields?: Record<string, unknown>; type?: string } | null; type?: string; owner?: unknown } | null } | null>
     };
-    const entries = json.result ?? [];
+    if (!res.ok || json.error || !Array.isArray(json.result) || json.result.length !== batch.length) throw new Error("Object data unavailable. Retry.");
+    const entries = json.result;
     for (let k = 0; k < batch.length; k++) {
       const d = entries[k]?.data;
       const id = batch[k];
-      if (!d || !d.content?.fields) { out.set(id, { _deleted: true }); continue; }
+      if (entries[k]?.error && ["notExists", "deleted"].includes(entries[k]!.error!.code ?? "")) { out.set(id, { _deleted: true }); continue; }
+      if (entries[k]?.error) throw new Error("Object data unavailable. Retry.");
+      if (!d?.content?.fields || d.objectId !== id) throw new Error("Object data unavailable. Retry.");
       const objType = d.type ?? d.content?.type ?? "";
       out.set(id, { ...d.content.fields, _type: objType, _owner: d.owner });
     }
@@ -1110,10 +1121,12 @@ export async function fetchCharacterTribeId(walletAddress: string): Promise<numb
 /** Fetch all LocationRevealedEvents and return a map: assemblyId -> solarSystemId */
 async function buildLocationEventMap(): Promise<Map<string, number>> {
   const map = new Map<string, number>();
+  const signal = AbortSignal.timeout(6000);
   let cursor: string | null = null;
   do {
     const res = await fetch(SUI_TESTNET_RPC, {
       method: "POST",
+      signal,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jsonrpc: "2.0", id: 1,
@@ -1322,7 +1335,31 @@ async function _fetchStructuresFromIndex(characterId: string): Promise<Array<{
   return out; // may be [] for a structure-less character — caller treats [] as "index healthy, none"
 }
 
+/** Identity and holdings must come from the same current-world read. */
+export async function fetchPlayerStructureSnapshot(walletAddress: string, signal?: AbortSignal): Promise<{ characterId: string; groups: LocationGroup[] }> {
+  const snapshot = await readStructureSnapshot(walletAddress, undefined, signal);
+  const [names, costs, locations] = await Promise.all([
+    fetchTypeNames().catch(() => new Map<number, string>()),
+    fetchEnergyCostMap().catch(() => new Map<number, number>()),
+    snapshot.structures.length ? buildLocationEventMap().catch(() => new Map<string, number>()) : Promise.resolve(new Map<string, number>()),
+  ]);
+  signal?.throwIfAborted();
+  const grouped = new Map<string, LocationGroup>();
+  for (const s of snapshot.structures) {
+    s.typeName = s.typeId === undefined ? undefined : names.get(s.typeId);
+    if (!s.hasCustomName && s.typeName) s.displayName = s.typeName;
+    s.energyCost = s.typeId === undefined ? undefined : costs.get(s.typeId);
+    s.solarSystemId = locations.get(s.objectId);
+    const key = s.solarSystemId ? String(s.solarSystemId) : "unknown";
+    if (!grouped.has(key)) grouped.set(key, { key, solarSystemId: s.solarSystemId, tabLabel: s.solarSystemId ? `System ${s.solarSystemId}` : "Your Structures", structures: [] });
+    grouped.get(key)!.structures.push(s);
+  }
+  const groups = [...grouped.values()].sort((a, b) => Number(a.key === "unknown") - Number(b.key === "unknown"));
+  return { characterId: snapshot.characterId, groups };
+}
+
 export async function fetchPlayerStructures(walletAddress: string): Promise<LocationGroup[]> {
+  if (WORLD_PKG === CURRENT_WORLD) return (await fetchPlayerStructureSnapshot(walletAddress)).groups;
   // 2026-06-25: always use the NEWEST Character. If a wallet has multiple
   // Characters, the older ones represent destroyed identities (player rerolled
   // in-game) and their owned structures are unreachable from the game client —

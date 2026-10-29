@@ -43,7 +43,7 @@ const DAPP_PRESETS: Record<string, Array<{ label: string; url: string; desc: str
   ],
 };
 import {
-  fetchPlayerStructures,
+  fetchPlayerStructureSnapshot,
   parseAvailableEnergy,
   rpcGetObject,
   buildStructureOnlineTransaction,
@@ -52,7 +52,6 @@ import {
   buildBatchOfflineTransaction,
   buildRenameTransaction, buildSetUrlTransaction,
   waitForStructureStatus,
-  type LocationGroup,
   type PlayerStructure,
 } from "../lib";
 import { playPowerOn, playPowerOff } from "../lib/sound";
@@ -441,9 +440,7 @@ function StructureRow({
                 const fixedUrl = structure.metadataUrl!.replace(DAPP_OTHER_BASE, DAPP_BASE);
                 setBusy(true); setErr(null);
                 try {
-                  const charInfo = await (await import("../lib")).findCharacterForWallet(account!.address);
-                  if (!charInfo) { setErr("Character not found"); return; }
-                  const tx = buildSetUrlTransaction(structure, charInfo.characterId, fixedUrl);
+                  const tx = buildSetUrlTransaction(structure, characterId, fixedUrl);
                   const signer = new CurrentAccountSigner(dAppKit);
                   const result = await signer.signAndExecuteTransaction({ transaction: tx });
                   onTxSuccess?.(readDigest(result));
@@ -846,7 +843,6 @@ export function StructurePanel({ onTxSuccess }: Props) {
   const { overrideAccount } = useDevOverrides();
   const account = overrideAccount(_verifiedAcct);
   const [activeTab, setActiveTab] = useState(0);
-  const [characterId, setCharacterId] = useState<string | null>(null);
 
   // Read cached tribe vault ID so delegation can reference it
   const tribeVaultId = (() => {
@@ -857,23 +853,13 @@ export function StructurePanel({ onTxSuccess }: Props) {
     } catch { return undefined; }
   })();
 
-  const { data: groups, isLoading, error, refetch } = useQuery<LocationGroup[]>({
-    queryKey: ["playerStructures", account?.address],
-    queryFn: async () => {
-      if (!account?.address) return [];
-      const groups = await fetchPlayerStructures(account.address);
-      // Resolve character ID via the canonical version-sorting resolver so a
-      // destroyed-and-rerolled wallet surfaces the LIVE character, not whichever
-      // PlayerProfile the RPC happens to list first. (2026-07-19: this path
-      // previously took data[0] with no version sort and showed Raw's destroyed
-      // Char 0x3bd788b5 instead of live 0xf1e61824.)
-      const live = await (await import("../lib")).findLatestCharacterForWallet(account.address);
-      setCharacterId(live?.characterId ?? null);
-      return groups;
-    },
-    enabled: !!account?.address,
-    staleTime: 30_000,
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["playerStructureSnapshot", account?.address ?? null],
+    queryFn: ({ signal }) => fetchPlayerStructureSnapshot(account!.address, signal),
+    enabled: !!account?.address, staleTime: 30_000, retry: 1,
   });
+  const groups = account && !error ? data?.groups : undefined;
+  const characterId = account && !error ? data?.characterId ?? null : null;
 
   const handleTxSuccess = (digest?: string) => {
     onTxSuccess?.(digest);
@@ -899,7 +885,7 @@ export function StructurePanel({ onTxSuccess }: Props) {
   if (error) {
     return (
       <div className="card" style={{ color: "#ff6432", padding: "16px" }}>
-        Failed to load structures: {error instanceof Error ? error.message : String(error)}
+        Structures unavailable. <button onClick={() => void refetch()}>Retry</button>
       </div>
     );
   }
