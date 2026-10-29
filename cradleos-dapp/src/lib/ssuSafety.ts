@@ -5,7 +5,9 @@ import {
   normalizeSuiAddress,
 } from "@mysten/sui/utils";
 import { blake2b } from "@noble/hashes/blake2.js";
-import { SSU_ACCESS_ORIGINAL, SUI_TESTNET_RPC, WORLD_PKG } from "../constants";
+import { SSU_ACCESS_ORIGINAL, WORLD_PKG } from "../constants";
+
+import { storageObject, storageObjects, storageClient, storageRecord, assertStorageType, assertStorageOwner, assertIdField, idFieldId, type StorageReadClient } from './storageRead';
 
 export const SSU_SHARING_PAUSED = true;
 export const SSU_SHARING_PAUSE_REASON =
@@ -102,118 +104,61 @@ export function isUnsafeSsuExtension(extension: string | null): boolean {
     normalizeStructTag(extension) === normalizeStructTag(SSU_AUTH)
   );
 }
-async function rpc(method: string, params: unknown[]): Promise<any> {
-  const r = await fetch(`${SUI_TESTNET_RPC}?nocache=1`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-    signal: AbortSignal.timeout(15000),
-  });
-  if (!r.ok)
-    throw new Error(
-      `Storage data unavailable (HTTP ${r.status}). Retry; this is not an empty inventory.`,
-    );
-  const j = await r.json();
-  if (j.error || !j.result)
-    throw new Error(j.error?.message ?? "Incomplete storage response.");
-  return j.result;
-}
-async function object(objectId: string, allowMissing = false): Promise<any> {
-  const r = await rpc("sui_getObject", [
-    id(objectId),
-    { showContent: true, showType: true },
-  ]);
-  if (allowMissing && r.error?.code === "notExists") return null;
-  if (r.error || !r.data?.content?.fields)
-    throw new Error("Storage object could not be verified. Refresh to retry.");
-  return r.data;
-}
-
-/** Read the SSU's authoritative inventory_keys, not a truncated dynamic-field page. */
-export async function fetchSsuSnapshot(ssuId: string): Promise<SsuSnapshot> {
+/** Read every authoritative partition and verify all versions again before display. */
+export async function fetchSsuSnapshot(ssuId: string, api: StorageReadClient = storageClient): Promise<SsuSnapshot> {
   const readAt = Date.now();
-  const ssu = await object(ssuId);
-  if (
-    normalizeStructTag(ssu.content.type) !== normalizeStructTag(SSU_TYPE) ||
-    id(ssu.objectId) !== id(ssuId)
-  )
-    throw new Error("Not a current-world storage unit.");
-  const f = ssu.content.fields;
-  const ownerCapId = id(f.owner_cap_id);
+  const ssu = await storageObject(ssuId, api);
+  assertStorageType(ssu, SSU_TYPE);
+  if (ssu.owner.kind !== 3) throw new Error("Not a shared current-world storage unit.");
+  const f = ssu.fields, ownerCapId = id(f.owner_cap_id);
   if (!Array.isArray(f.inventory_keys) || f.inventory_keys.length > 200)
-    throw new Error(
-      "Storage partitions are incomplete or exceed the safe read limit.",
-    );
+    throw new Error("Storage partitions unavailable. Retry.");
   const keys: string[] = f.inventory_keys.map(id);
-  if (new Set(keys).size !== keys.length)
-    throw new Error("Duplicate storage partition keys.");
   const openKey = openStorageKey(ssuId);
-  const frozenId = deriveDynamicFieldID(
-    id(ssuId),
-    `${WORLD_PKG}::extension_freeze::ExtensionFrozenKey`,
-    new Uint8Array([0]),
-  );
-  const frozen = await object(frozenId, true);
-  const slots: StorageSlot[] = [];
-  for (const key of keys) {
-    const r = await rpc("suix_getDynamicFieldObject", [
-      id(ssuId),
-      { type: "0x2::object::ID", value: key },
-    ]);
-    const field = r.data?.content?.fields;
-    const v = field?.value?.fields;
-    if (
-      r.error ||
-      !v ||
-      id(field.name) !== key ||
-      !Array.isArray(v.items?.fields?.contents)
-    )
-      throw new Error(
-        "An inventory partition could not be verified. No partial inventory will be shown.",
-      );
-    const partition: StoragePartition =
-      key === openKey ? "open" : key === ownerCapId ? "owner_main" : "unknown";
-    const items: StorageItem[] = v.items.fields.contents.map((entry: any) => {
-      const item = entry?.fields?.value?.fields;
-      if (!item) throw new Error("Incomplete inventory item.");
-      return {
-        typeId: natural(item.type_id, "item type"),
-        quantity: natural(item.quantity, "item quantity", 0xffffffff),
-        volume: natural(item.volume, "item volume"),
-        itemId: String(item.item_id ?? ""),
-        partition,
-        partitionKey: key,
-      };
-    });
-    if (new Set(items.map((i) => i.typeId)).size !== items.length)
-      throw new Error("Duplicate item types in an inventory partition.");
-    slots.push({
-      key,
-      partition,
-      items,
-      used: natural(v.used_capacity, "used capacity"),
-      max: natural(v.max_capacity, "capacity"),
-    });
+  if (new Set(keys).size !== keys.length || !keys.includes(ownerCapId) || !keys.includes(openKey))
+    throw new Error("Storage partitions unavailable. Retry.");
+  const frozenKeyType = `${WORLD_PKG}::extension_freeze::ExtensionFrozenKey`;
+  const frozenId = deriveDynamicFieldID(id(ssuId), frozenKeyType, new Uint8Array([0]));
+  const partIds = keys.map(key => idFieldId(ssuId, key));
+  const objects = await storageObjects([...partIds, frozenId], api);
+  const frozen = objects[objects.length - 1];
+  if (frozen) {
+    assertStorageType(frozen, `0x2::dynamic_field::Field<${frozenKeyType},${WORLD_PKG}::extension_freeze::ExtensionFrozen>`);
+    assertStorageOwner(frozen, ssuId, true);
+    // Live compiled empty Move structs contain the synthetic false bool.
+    if (storageRecord(frozen.fields.name).dummy_field !== false || storageRecord(frozen.fields.value).dummy_field !== false)
+      throw new Error("Storage freeze status unavailable.");
   }
-  const status = f.status?.fields?.status?.variant;
-  if (typeof status !== "string" || !ssu.version)
-    throw new Error("Storage status is unavailable.");
-  const after = await object(ssuId);
-  if (String(after.version) !== String(ssu.version))
-    throw new Error(
-      "Storage changed during the read. Refresh to get a consistent snapshot.",
-    );
-  return {
-    id: id(ssuId),
-    type: ssu.content.type,
-    version: String(ssu.version),
-    ownerCapId,
-    extension: decodeSsuExtension(f.extension),
-    frozen: frozen !== null,
-    online: status === "ONLINE",
-    slots,
-    readAt,
-  };
+  const slots: StorageSlot[] = keys.map((key, i) => {
+    const field = objects[i];
+    if (!field) throw new Error("Storage partition unavailable. Retry.");
+    assertIdField(field, ssuId, key, `${WORLD_PKG}::inventory::Inventory`);
+    const v = storageRecord(field.fields.value), entries = storageRecord(v.items).contents;
+    if (!Array.isArray(entries)) throw new Error("Inventory items unavailable. Retry.");
+    const partition: StoragePartition = key === openKey ? "open" : key === ownerCapId ? "owner_main" : "unknown";
+    const items: StorageItem[] = entries.map((entry: any) => {
+      const item = storageRecord(entry?.value);
+      const typeId = natural(item.type_id, "item type");
+      if (natural(entry.key, "item key") !== typeId || item.tenant !== "stillness" ||
+          typeof item.item_id !== "string" || !/^\d+$/.test(item.item_id) || BigInt(item.item_id) > 0xffffffffffffffffn)
+        throw new Error("Inventory item unavailable. Retry.");
+      return { typeId, quantity: natural(item.quantity, "item quantity", 0xffffffff),
+        volume: natural(item.volume, "item volume"), itemId: item.item_id, partition, partitionKey: key };
+    });
+    if (new Set(items.map(i => i.typeId)).size !== items.length) throw new Error("Duplicate inventory item.");
+    const used = natural(v.used_capacity, "used capacity"), max = natural(v.max_capacity, "capacity");
+    const volume = items.reduce((sum, item) => sum + BigInt(item.volume) * BigInt(item.quantity), 0n);
+    if (used > max || volume !== BigInt(used)) throw new Error("Storage capacity unavailable. Retry.");
+    return { key, partition, items, used, max };
+  });
+  const status = f.status?.status?.["@variant"];
+  if (status !== "ONLINE" && status !== "OFFLINE") throw new Error("Storage status unavailable.");
+  const after = await storageObjects([ssu.id, ...partIds, frozenId], api);
+  const before = [ssu, ...objects];
+  if (after.some((o, i) => o?.version !== before[i]?.version))
+    throw new Error("Storage changed during the read. Retry.");
+  return { id: ssu.id, type: ssu.type, version: ssu.version, ownerCapId,
+    extension: decodeSsuExtension(f.extension), frozen: !!frozen, online: status === "ONLINE", slots, readAt };
 }
 
 export function assertSharedSsuOperationsEnabled(): void {

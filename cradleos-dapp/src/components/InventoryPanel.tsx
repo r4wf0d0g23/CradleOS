@@ -2,8 +2,9 @@ import { ItemIcon, ClientUIIcon } from "./GameIcon";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { PortalSelect } from "./PortalSelect";
 import { useVerifiedAccountContext } from "../contexts/VerifiedAccountContext";
-import { fetchPlayerStructures, type PlayerStructure, findCharacterForWallet, fetchCharacterTribeId, synthesizeSharedSsuStructure, fetchTypeNames, resolveSsuOperator, fetchCharacterDisplayName } from "../lib";
-import { SUI_TESTNET_RPC, WORLD_PKG, SSU_ACCESS_AVAILABLE, SERVER_ENV } from "../constants";
+import { fetchPlayerStructureSnapshot, type PlayerStructure } from "../lib";
+import { WORLD_PKG, SSU_ACCESS_AVAILABLE, SERVER_ENV } from "../constants";
+import { readInventoryCharacter, readSharedStorage } from '../lib/inventoryRead';
 import { getType } from "../lib/dataClient";
 import { getTypeName as getStaticTypeName, type WorldKey } from "../data/typeCatalog";
 import { useDAppKit } from "@mysten/dapp-kit-react";
@@ -119,20 +120,6 @@ type WalletItem = {
 // cascade into "Failed to fetch". With private node + caching proxy in front,
 // 8 concurrent is well under the 16-slot upstream concurrency cap and gives
 // the inventory panel meaningfully faster load times.
-async function pMap<T, R>(items: T[], fn: (item: T, idx: number) => Promise<R>, concurrency = 8): Promise<R[]> {
-  const out: R[] = new Array(items.length);
-  let cursor = 0;
-  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
-    while (true) {
-      const i = cursor++;
-      if (i >= items.length) return;
-      out[i] = await fn(items[i], i);
-    }
-  });
-  await Promise.all(workers);
-  return out;
-}
-
 type SSUInventoryResult = {
   items: InventoryItem[];
   maxCapacity: number;
@@ -183,87 +170,15 @@ async function resolveItemName(
   }
 }
 
-async function fetchOwnerCaps(characterId: string): Promise<Map<string, string>> {
-  const capType = `${WORLD_PKG}::access::OwnerCap<${WORLD_PKG}::storage_unit::StorageUnit>`;
-  const res = await fetch(SUI_TESTNET_RPC, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "suix_getOwnedObjects",
-      params: [
-        characterId,
-        {
-          filter: { StructType: capType },
-          options: { showContent: true },
-        },
-        null,
-        50,
-      ],
-    }),
-  });
-  const json = await res.json();
-  const caps = new Map<string, string>();
-  const data = json.result?.data ?? [];
-  for (const obj of data) {
-    const fields = obj?.data?.content?.fields;
-    const capId = obj?.data?.objectId;
-    const ssuId = fields?.authorized_object_id;
-    if (capId && ssuId) {
-      caps.set(ssuId, capId);
-    }
-  }
-  return caps;
-}
-
-async function fetchWalletItems(
-  walletAddress: string,
-  nameCache: Map<number, string>,
-  characterId?: string,
-): Promise<WalletItem[]> {
-  const itemType = `${WORLD_PKG}::inventory::Item`;
-  // Search both wallet address AND character object for loose Items
-  const addresses = [walletAddress];
-  if (characterId) addresses.push(characterId);
-  const allData: any[] = [];
-  for (const addr of addresses) {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "suix_getOwnedObjects",
-        params: [
-          addr,
-          {
-            filter: { StructType: itemType },
-            options: { showContent: true },
-          },
-          null,
-          50,
-        ],
-      }),
-    });
-    const json = await res.json();
-    allData.push(...(json.result?.data ?? []));
-  }
-  // Deduplicate by objectId
+async function fetchWalletItems(walletAddress: string, nameCache: Map<number, string>, characterId?: string): Promise<WalletItem[]> {
+  const all = (await Promise.all([walletAddress, ...(characterId ? [characterId] : [])].map(address => fetchStuckItems(address, WORLD_PKG)))).flat();
   const seen = new Set<string>();
-  const items: WalletItem[] = [];
-  for (const obj of allData) {
-    const objectId = obj?.data?.objectId;
-    const fields = obj?.data?.content?.fields;
-    if (!objectId || !fields || seen.has(objectId)) continue;
-    seen.add(objectId);
-    const typeId = Number(fields.type_id ?? 0);
-    const quantity = Number(fields.quantity ?? 1);
-    const parentId = fields.parent_id as string | undefined;
-    const name = await resolveItemName(typeId, nameCache);
-    items.push({ objectId, typeId, quantity, name, parentId });
-  }
-  return items;
+  return Promise.all(all.map(async item => {
+    if (seen.has(item.itemObjectId)) throw new Error('Wallet items changed. Retry.');
+    seen.add(item.itemObjectId);
+    return { objectId: item.itemObjectId, typeId: item.typeId, quantity: item.quantity,
+      parentId: item.parentSsuId, name: await resolveItemName(item.typeId, nameCache) };
+  }));
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -336,8 +251,8 @@ function WalletStuckItemsSection({
     try {
       const items = await fetchStuckItems(walletAddress, WORLD_PKG);
       setStuck(items);
-    } catch (e) {
-      setScanError(e instanceof Error ? e.message : String(e));
+    } catch {
+      setStuck([]); setScanError('Wallet items unavailable.');
     } finally {
       setLoading(false);
     }
@@ -448,7 +363,7 @@ function WalletStuckItemsSection({
           STUCK ITEMS — wallet recovery
         </span>
         <span style={{ fontSize: 11, fontFamily: "monospace", color: "rgba(255,71,0,0.6)" }}>
-          {loading ? "scanning…" : `${stuck.length} item${stuck.length === 1 ? "" : "s"}`}
+          {scanError ? "Unavailable" : loading ? "scanning…" : `${stuck.length} item${stuck.length === 1 ? "" : "s"}`}
         </span>
         <button
           onClick={e => { e.stopPropagation(); void refreshScan(); }}
@@ -639,15 +554,17 @@ function WalletItemsSection({
   onRefresh,
 }: WalletItemsSectionProps) {
   const [walletItems, setWalletItems] = useState<WalletItem[]>([]);
+  const [itemsError, setItemsError] = useState(false);
+  const [itemsReload, setItemsReload] = useState(0);
   const [loading, setLoading] = useState(false);
   const [depositStatus, setDepositStatus] = useState<Map<string, { status?: string; error?: string }>>(new Map());
 
   // Caller's tribe — needed for canDepositVia in tribe_alliance / hybrid modes.
   const [ownTribeId, setOwnTribeId] = useState<number | undefined>(undefined);
   useEffect(() => {
-    if (!walletAddress) { setOwnTribeId(undefined); return; }
+    if (!walletAddress || !characterId) { setOwnTribeId(undefined); return; }
     let cancelled = false;
-    fetchCharacterTribeId(walletAddress).then(t => {
+    readInventoryCharacter(characterId).then(({ tribeId: t }) => {
       if (!cancelled) setOwnTribeId(t ?? undefined);
     }).catch(() => { if (!cancelled) setOwnTribeId(undefined); });
     return () => { cancelled = true; };
@@ -655,12 +572,14 @@ function WalletItemsSection({
 
   useEffect(() => {
     if (!walletAddress) return;
-    setLoading(true);
+    let cancelled = false;
+    setLoading(true); setItemsError(false); setWalletItems([]);
     fetchWalletItems(walletAddress, nameCache, characterId ?? undefined)
-      .then(setWalletItems)
-      .catch(() => setWalletItems([]))
-      .finally(() => setLoading(false));
-  }, [walletAddress, characterId]);
+      .then(items => { if (!cancelled) setWalletItems(items); })
+      .catch(() => { if (!cancelled) setItemsError(true); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [walletAddress, characterId, itemsReload]);
 
   // Build the list of valid deposit targets for each item. Owned SSUs first,
   // then shared-eligible SSUs (tribe-alliance match, allowlist, public, or
@@ -761,7 +680,7 @@ function WalletItemsSection({
       onRefresh(target.ssuId);
       // Refresh wallet items list
       if (walletAddress) {
-        fetchWalletItems(walletAddress, nameCache, characterId ?? undefined).then(setWalletItems).catch(() => {});
+        setItemsReload(n => n + 1);
       }
     } catch (err: any) {
       const msg = err?.message ?? String(err);
@@ -824,7 +743,7 @@ function WalletItemsSection({
           <div style={{ color: "rgba(175,175,155,0.4)", fontFamily: "monospace", fontSize: 11 }}>
             loading wallet items…
           </div>
-        ) : walletItems.length === 0 ? (
+        ) : itemsError ? (<p role="status">Wallet items unavailable. <button onClick={() => setItemsReload(n => n + 1)}>Retry</button></p>) : walletItems.length === 0 ? (
           <div
             style={{
               color: "rgba(175,175,155,0.3)",
@@ -1031,7 +950,10 @@ export function InventoryPanel() {
   const walletAddress = account?.address;
   const dAppKit = useDAppKit();
   const [inventories, setInventories] = useState<SSUInventory[]>([]);
-  const [globalLoading, setGlobalLoading] = useState(false);
+  const [globalLoading, setGlobalLoading] = useState(true);
+  const [reload, setReload] = useState(0);
+  const [sharedError, setSharedError] = useState(false);
+  const [sharedLoading, setSharedLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>();
   const nameCache = useRef<Map<number, string>>(new Map());
   const [transferState, setTransferState] = useState<TransferState>({
@@ -1044,34 +966,32 @@ export function InventoryPanel() {
     txError: null,
   });
 
-  // Refresh a single SSU's inventory + its ssu_access policy. Both are
-  // best-effort: a stale or missing policy must NOT block inventory display,
-  // so the policy fetch errors are swallowed and we keep the previous policy
-  // value when re-resolution fails (typical case: testnet RPC blip).
-  const inventoryIdentity = useRef(walletAddress);
-  inventoryIdentity.current = walletAddress;
+  const mounted = useRef(false);
+  const requests = useRef(new Map<string, number>());
+  const requestSequence = useRef(0);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; requests.current.clear(); }; }, []);
   const refreshSSU = async (ssuObjectId: string) => {
-    const requestedWallet = walletAddress;
-    if (!requestedWallet || !inventories.some(inv => inv.ssu.objectId === ssuObjectId)) return;
-    setInventories(prev => prev.map(inv => inv.ssu.objectId === ssuObjectId ? { ...inv, loading: true } : inv));
+    if (!mounted.current || !walletAddress || !inventories.some(inv => inv.ssu.objectId === ssuObjectId)) return;
+    const request = ++requestSequence.current;
+    requests.current.set(ssuObjectId, request);
+    const current = () => mounted.current && requests.current.get(ssuObjectId) === request;
+    setInventories(prev => prev.map(inv => inv.ssu.objectId === ssuObjectId ? { ...inv, loading: true, error: undefined, policy: undefined, snapshot: undefined, items: [] } : inv));
     try {
-      const [{ items, maxCapacity, usedCapacity, snapshot }, policyResult] = await Promise.all([
+      const [{ items, maxCapacity, usedCapacity, snapshot }, policy] = await Promise.all([
         fetchSSUInventory(ssuObjectId),
         SSU_ACCESS_AVAILABLE ? loadPolicyForSsu(ssuObjectId).catch(() => undefined) : Promise.resolve(undefined),
       ]);
       const resolvedNames = new Map<number, string>();
-      await Promise.all(items.map(async item => {
-        resolvedNames.set(item.typeId, await resolveItemName(item.typeId, nameCache.current));
-      }));
-      if (inventoryIdentity.current !== requestedWallet) return;
+      await Promise.all(items.map(async item => { resolvedNames.set(item.typeId, await resolveItemName(item.typeId, nameCache.current)); }));
+      if (!current()) return;
       setInventories(prev => prev.map(inv => inv.ssu.objectId === ssuObjectId ? {
-        ...inv, items, resolvedNames, maxCapacity, usedCapacity, snapshot,
-        loading: false, error: undefined, policy: policyResult ?? inv.policy, hasLoadedContents: true,
+        ...inv, items, resolvedNames, maxCapacity, usedCapacity, snapshot, policy,
+        loading: false, error: undefined, hasLoadedContents: true,
       } : inv));
-    } catch (err: any) {
-      if (inventoryIdentity.current !== requestedWallet) return;
+    } catch {
+      if (!current()) return;
       setInventories(prev => prev.map(inv => inv.ssu.objectId === ssuObjectId ? {
-        ...inv, loading: false, error: err?.message ?? String(err), snapshot: undefined,
+        ...inv, loading: false, error: 'Storage unavailable.', snapshot: undefined, items: [], policy: undefined,
       } : inv));
     }
   };
@@ -1079,279 +999,44 @@ export function InventoryPanel() {
   useEffect(() => {
     if (!walletAddress) return;
     let cancelled = false;
-
+    const abort = new AbortController();
     async function load() {
-      setGlobalLoading(true);
-      setGlobalError(undefined);
-      setInventories([]);
+      requests.current.clear();
+      setGlobalLoading(true); setGlobalError(undefined); setSharedError(false); setSharedLoading(false); setInventories([]);
       try {
-        // Load structures + character + owner caps in parallel
-        const [groups, charInfo] = await Promise.all([
-          fetchPlayerStructures(walletAddress!),
-          findCharacterForWallet(walletAddress!),
-        ]);
-        const characterId = charInfo?.characterId ?? null;
-        // Use the spawn tribe_id from CharacterCreatedEvent as a baseline.
-        // This will be replaced by the *current* tribe_id read from the
-        // Character object below before shared-SSU discovery runs.
-        let ownTribeId: number | undefined =
-          charInfo?.tribeId !== undefined ? Number(charInfo.tribeId) : undefined;
-
-        const allStructures = groups.flatMap(g => g.structures);
-        const ownedSsus = allStructures.filter(s => s.kind === "StorageUnit");
-
-        // Sort: online first, then offline
-        ownedSsus.sort((a, b) => {
-          if (a.isOnline === b.isOnline) return 0;
-          return a.isOnline ? -1 : 1;
-        });
-
-        // Fetch OwnerCaps + character's own OwnerCap<Character> if we have a characterId
-        let ownerCaps = new Map<string, string>();
-        let charOwnerCapId: string | null = null;
-        if (characterId) {
-          try {
-            [ownerCaps, charOwnerCapId] = await Promise.all([
-              fetchOwnerCaps(characterId),
-              SSU_ACCESS_AVAILABLE
-                ? fetchCharacterOwnerCapId(characterId).catch(() => null)
-                : Promise.resolve(null),
-            ]);
-          } catch {
-            // non-fatal
-          }
-        }
-
+        const { groups, characterId } = await fetchPlayerStructureSnapshot(walletAddress!, abort.signal);
+        const owned = groups.flatMap(g => g.structures).filter(s => s.kind === 'StorageUnit').sort((a,b) => Number(b.isOnline) - Number(a.isOnline));
+        const ownerCaps = new Map(owned.map(s => [s.objectId, s.ownerCapId]));
+        const [character, charOwnerCapId] = characterId ? await Promise.all([
+          readInventoryCharacter(characterId).catch(() => null), fetchCharacterOwnerCapId(characterId).catch(() => null),
+        ]) : [null, null];
         if (cancelled) return;
-
-        setTransferState(prev => ({ ...prev, characterId, ownerCaps, charOwnerCapId }));
-
-        // Initialize empty placeholders for OWNED SSUs only. Shared SSUs
-        // will be appended below once discovery completes.
-        //
-        // 2026-05-01: SSU contents (items + capacity) are now loaded
-        // lazily on first expand, NOT eagerly on mount. Eagerly loading
-        // 11+ SSUs at once burned through the public Sui RPC's rate
-        // limit, producing a 'Failed to fetch' cascade and a stuck
-        // 'Resolving…' header (operator resolution starved by the
-        // inventory loads competing for the same window). With lazy
-        // load, only the SSUs the user actually opens hit the RPC,
-        // and they hit it in serial (one card at a time clicked) so
-        // there's no parallel pressure. The eager pMap(ownedSsus, ...)
-        // and the per-shared-SSU inventory loop are both removed below.
-        // Operator resolution and shared-SSU discovery still run on
-        // mount because both are critical for the grouping/filter UI.
-        // `loading: false` here means 'waiting for user expand', not
-        // 'actively loading'. The expand handler in SSUCard kicks off
-        // the actual fetch via onRefresh when needed.
-        const ssus: PlayerStructure[] = [...ownedSsus];
-        setInventories(
-          ssus.map(ssu => ({
-            ssu,
-            items: [],
-            resolvedNames: new Map(),
-            loading: false,
-            maxCapacity: 0,
-            usedCapacity: 0,
-            hasLoadedContents: false,
-          }))
-        );
+        setTransferState(prev => ({ ...prev, characterId: characterId || null, ownerCaps, charOwnerCapId }));
+        const empty = (ssu: PlayerStructure): SSUInventory => ({ ssu, items: [], resolvedNames: new Map(), loading: false, maxCapacity: 0, usedCapacity: 0, hasLoadedContents: false });
+        setInventories(owned.map(ssu => ({ ...empty(ssu), operator: { name: character?.name ?? 'You', key: characterId } })));
         setGlobalLoading(false);
-
-        // Stamp every owned SSU with the caller's character name in a
-        // SINGLE RPC. We already know `characterId` from
-        // findCharacterForWallet above; one fetchCharacterDisplayName
-        // call gets the display string. This avoids paying a per-SSU
-        // resolveSsuOperator round-trip (3 RPCs each) for SSUs whose
-        // operator we already know is the caller. Critical for not
-        // starving discoverSharedSsus on the public Sui fullnode.
-        if (characterId) {
-          (async () => {
-            const name = await fetchCharacterDisplayName(characterId).catch(() => null);
-            if (cancelled || !name) return;
-            const ownedKey = characterId.toLowerCase();
-            setInventories(prev => {
-              const next = [...prev];
-              for (let i = 0; i < next.length; i++) {
-                // Only stamp owned SSUs (those without sharedFrom set).
-                // Shared SSUs get their own resolveSsuOperator pass
-                // below since their operator is NOT the caller.
-                if (!next[i].sharedFrom && !next[i].operator) {
-                  next[i] = { ...next[i], operator: { name, key: ownedKey } };
-                }
-              }
-              return next;
-            });
-          })();
-        }
-
-        // ── Shared-SSU discovery (cradleos::ssu_access) ────────────────
-        // Surface SSUs the caller does NOT own but DOES have access to via
-        // a shared policy (TRIBE / ALLOWLIST / HYBRID / PUBLIC). This is
-        // best-effort: discovery failures here must NOT block owned-SSU
-        // rendering. Runs in parallel with owned-SSU inventory loading
-        // below to avoid serial latency. The caller's *current* tribe_id
-        // is read from the Character object (not the spawn-event tribe_id)
-        // so tribe switches are reflected immediately.
-        const sharedDiscoveryPromise = (async () => {
-          if (!SSU_ACCESS_AVAILABLE || !characterId) return [] as Array<SSUInventory>;
-          try {
-            // Read current tribe from Character object before checking policies.
-            // The spawn-event tribe id from CharacterCreatedEvent is stale if
-            // the character has switched tribes since creation.
-            try {
-              const charFields = await fetch(SUI_TESTNET_RPC, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  jsonrpc: "2.0", id: 1, method: "sui_getObject",
-                  params: [characterId, { showContent: true }],
-                }),
-              }).then(r => r.json());
-              const tid = Number(charFields?.result?.data?.content?.fields?.tribe_id);
-              if (Number.isFinite(tid)) ownTribeId = tid;
-            } catch { /* keep spawn tribe as fallback */ }
-
-            const ownedIds = new Set(ownedSsus.map(s => s.objectId));
-            const discovered = await discoverSharedSsus(
-              { characterObjectId: characterId, ownTribeId },
-              ownedIds,
-            );
-            if (cancelled || discovered.length === 0) return [];
-
-            // Synthesize PlayerStructure records + patch type names from
-            // the World API. We do this in two passes so we don't pay the
-            // type-name fetch cost when no shared SSUs exist.
-            const synthesized = (await Promise.all(
-              discovered.map(async d => {
-                const ps = await synthesizeSharedSsuStructure(d.ssuObjectId);
-                if (!ps) return null;
-                return { structure: ps, discovered: d };
-              }),
-            )).filter((x): x is { structure: PlayerStructure; discovered: typeof discovered[number] } => x !== null);
-
-            if (synthesized.length === 0) return [];
-
-            // Resolve type names so the cards show "Mini Storage" etc.
-            // instead of the fallback "Storage Unit (shared)" label.
-            const typeNameMap = await fetchTypeNames().catch(() => new Map<number, string>());
-            for (const s of synthesized) {
-              if (s.structure.typeId !== undefined && typeNameMap.has(s.structure.typeId)) {
-                s.structure.typeName = typeNameMap.get(s.structure.typeId);
-                if (!s.structure.hasCustomName) {
-                  s.structure.displayName = s.structure.typeName!;
-                }
-              }
-            }
-
-            // Sort shared SSUs: online before offline (mirror owned sort).
-            synthesized.sort((a, b) => {
-              if (a.structure.isOnline === b.structure.isOnline) return 0;
-              return a.structure.isOnline ? -1 : 1;
-            });
-
-            const sharedFromOf = (kind: string): SSUInventory["sharedFrom"] => {
-              if (kind === "tribe_alliance") return "tribe";
-              if (kind === "allowlist") return "allowlist";
-              if (kind === "hybrid") return "hybrid";
-              if (kind === "public") return "public";
-              return undefined;
-            };
-
-            return synthesized.map(({ structure, discovered }) => ({
-              ssu: structure,
-              items: [] as InventoryItem[],
-              resolvedNames: new Map<number, string>(),
-              // loading: false — waiting for user to expand; lazy-load
-              // pattern (see initial setInventories above for full
-              // rationale). hasLoadedContents starts false; flips true
-              // after the first successful refreshSSU call.
-              loading: false,
-              maxCapacity: 0,
-              usedCapacity: 0,
-              hasLoadedContents: false,
-              policy: { policyId: discovered.policyId, mode: discovered.mode } as LoadedPolicy,
-              sharedFrom: sharedFromOf(discovered.mode.kind),
-            }));
-          } catch {
-            return [];
+        if (!SSU_ACCESS_AVAILABLE || !characterId) return;
+        setSharedLoading(true);
+        try {
+          // No stale event-based tribe fallback when checking saved policies.
+          if (!character) throw new Error('Character unavailable');
+          const discovered = await discoverSharedSsus({ characterObjectId: characterId, ownTribeId: character.tribeId }, new Set(owned.map(s => s.objectId)));
+          const shared: SSUInventory[] = [];
+          for (const d of discovered) {
+            const { structure, operator } = await readSharedStorage(d.ssuObjectId);
+            shared.push({ ...empty(structure), operator, policy: { policyId: d.policyId, mode: d.mode },
+              sharedFrom: d.mode.kind === 'tribe_alliance' ? 'tribe' : d.mode.kind === 'none' ? undefined : d.mode.kind });
           }
-        })();
-
-        // Append discovered shared-SSU placeholders to the inventories
-        // list as soon as discovery resolves. Contents stay empty until
-        // the user expands a card (lazy-load pattern — see the owned-SSU
-        // setInventories above for full rationale).
-        sharedDiscoveryPromise.then(sharedInvs => {
-          if (cancelled || sharedInvs.length === 0) return;
-          ssus.push(...sharedInvs.map(s => s.ssu));
-          setInventories(prev => [...prev, ...sharedInvs]);
-        });
-
-        // After shared discovery has completed, kick off operator
-        // resolution for SHARED SSUs ONLY (owned ones already got the
-        // caller-name stamp above). Concurrency-2 + 250ms grace so we
-        // don't compete with inventory loads. Cards re-render as each
-        // operator resolves.
-        sharedDiscoveryPromise.then(async (sharedInvs) => {
-          if (cancelled || sharedInvs.length === 0) return;
-          await new Promise(r => setTimeout(r, 250));
-          if (cancelled) return;
-          await pMap(
-            sharedInvs.map(s => s.ssu.objectId),
-            async (id) => {
-              if (cancelled) return null;
-              // resolveSsuOperator() returns null only when the upstream
-              // SSU object read itself fails (network/RPC). In that case
-              // we still need to clear the 'Resolving…' state — stamp a
-              // synthetic 'Unknown' operator so the row leaves the
-              // unresolved bucket instead of hanging forever. The user
-              // can hit REFRESH on the card to retry.
-              const op = await resolveSsuOperator(id).catch(() => null);
-              if (cancelled) return null;
-              const finalOp = op ?? {
-                name: `Unknown (${id.slice(0, 6)}…${id.slice(-4)})`,
-                key: `__unresolved_${id.toLowerCase()}`,
-              };
-              setInventories(prev => {
-                const idx = prev.findIndex(p => p.ssu.objectId === id);
-                if (idx === -1) return prev;
-                const next = [...prev];
-                next[idx] = { ...next[idx], operator: finalOp };
-                return next;
-              });
-              return finalOp;
-            },
-            // 2026-06-01: raised from 2 → 8 after DGX2 private fullnode
-            // promotion. Operator resolution per-SSU does 2-3 RPCs (read
-            // SSU, read owner_cap, read partition_owner) so 8 concurrent
-            // is ~24 in-flight — well under the 16-slot proxy upstream
-            // concurrency cap, with safe headroom from the cache layer.
-            8,
-          );
-        });
-
-        // OWNED SSU inventory loads are now lazy — see refreshSSU /
-        // SSUCard expand handler. The eager pMap(ownedSsus, ...) loop
-        // that previously lived here was removed 2026-05-01 to fix the
-        // 'Failed to fetch' cascade and stuck 'Resolving…' header.
-        // Critical paths still run on mount: shared-SSU discovery (so
-        // the panel knows what to show), operator resolution (so the
-        // grouping/filter UI works). Per-SSU contents and policy load
-        // when the user expands a card.
-      } catch (err: any) {
-        if (!cancelled) {
-          setGlobalError(err?.message ?? String(err));
-          setGlobalLoading(false);
-        }
+          if (!cancelled) setInventories(prev => [...prev, ...shared]);
+        } catch { if (!cancelled) setSharedError(true); }
+        finally { if (!cancelled) setSharedLoading(false); }
+      } catch {
+        if (!cancelled) { setGlobalError('Storage units unavailable.'); setGlobalLoading(false); }
       }
     }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [walletAddress]);
+    void load();
+    return () => { cancelled = true; abort.abort(); };
+  }, [walletAddress, reload]);
 
   const allSsuIds = inventories.map(inv => inv.ssu.objectId);
 
@@ -1658,12 +1343,14 @@ export function InventoryPanel() {
             padding: "10px 0",
           }}
         >
-          ERR: {globalError}
+          {globalError} <button onClick={() => setReload(n => n + 1)}>Retry</button>
         </div>
       )}
 
+      {sharedLoading && <div role="status">Reading shared storage…</div>}
+      {sharedError && <div role="status">Shared storage unavailable. <button onClick={() => setReload(n => n + 1)}>Retry</button></div>}
       {/* No SSUs found */}
-      {walletAddress && !globalLoading && !globalError && inventories.length === 0 && (
+      {walletAddress && !globalLoading && !globalError && !sharedLoading && !sharedError && inventories.length === 0 && (
         <div
           style={{
             color: "rgba(175,175,155,0.4)",

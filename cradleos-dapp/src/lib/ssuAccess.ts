@@ -20,9 +20,11 @@ import {
   SSU_ACCESS_PKG,
   SSU_POLICY_REGISTRY,
   SSU_ACCESS_AVAILABLE,
-  SUI_TESTNET_RPC,
+  SSU_ACCESS_ORIGINAL,
   WORLD_PKG,
 } from "../constants";
+
+import { storageObject, storageObjects, storageOwned, storageFields, storageId, storageUint, storageRecord, assertStorageType, assertIdField, idFieldId, unavailable } from './storageRead';
 
 // ──────────────────────────────────────────────────────────────────────────
 // Move mode constants (mirror cradleos::ssu_access)
@@ -85,181 +87,50 @@ export function decodeAllowEntry(raw: any): AllowEntry {
 // Chain reads
 // ──────────────────────────────────────────────────────────────────────────
 
-/**
- * Wrap fetch() with retries on 429 / 5xx / network errors. Public Sui
- * fullnode rate-limits aggressively when the inventory panel fans out
- * RPCs in parallel (per-SSU inventory loads + operator resolution +
- * policy walks all hit the same window). Without retries, a transient
- * 429 silently breaks discovery: page walks return partial data,
- * loadPolicyForSsu returns null, and shared SSUs disappear from the
- * UI. This helper restores discovery's robustness without changing
- * the surrounding logic.
- */
-// 2026-06-01: backoffMs default dropped 600 → 300 after promoting DGX2
-// private fullnode to primary upstream. Original sizing rode out public
-// fullnode rate-limit windows; with private node + caching proxy, the
-// retry path is now a defensive measure for proxy hiccups rather than a
-// rate-limit absorber, so faster retry is preferred. retries=3 unchanged.
-async function fetchWithRetry(
-  url: string,
-  init: RequestInit,
-  retries = 3,
-  backoffMs = 300,
-  perAttemptTimeoutMs = 8000,
-): Promise<Response> {
-  // Per-attempt timeout via AbortController. Browser `fetch()` has no
-  // default timeout, so a stalled connection (common in the in-game
-  // webview when the public Sui RPC chokes) would otherwise hang
-  // discovery indefinitely. AbortError surfaces as a caught throw
-  // below and triggers retry/backoff like any other transient failure.
-  let lastErr: unknown;
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), perAttemptTimeoutMs);
-    try {
-      const res = await fetch(url, { ...init, signal: ctrl.signal });
-      clearTimeout(timer);
-      if ((res.status === 429 || res.status >= 500) && attempt < retries) {
-        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
-        continue;
-      }
-      return res;
-    } catch (err) {
-      clearTimeout(timer);
-      lastErr = err;
-      if (attempt < retries) {
-        await new Promise(r => setTimeout(r, backoffMs * Math.pow(2, attempt)));
-        continue;
-      }
-    }
-  }
-  throw lastErr ?? new Error("fetch failed after retries");
-}
-
-/**
- * Memoize the policies-table id. Registry layout never changes, so the
- * Table<ID, ID> id is stable for the lifetime of the deployed package.
- */
-let _policiesTableIdCache: string | null = null;
-let _policiesTableIdInflight: Promise<string | null> | null = null;
-
+/** Live registry and exact dynamic-field binding. No cached absence on read failure. */
 export async function getPoliciesTableId(): Promise<string | null> {
-  if (_policiesTableIdCache) return _policiesTableIdCache;
-  if (_policiesTableIdInflight) return _policiesTableIdInflight;
   if (!SSU_ACCESS_AVAILABLE || !SSU_POLICY_REGISTRY) return null;
-  _policiesTableIdInflight = (async () => {
-    try {
-      const res = await fetchWithRetry(SUI_TESTNET_RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "sui_getObject",
-          params: [SSU_POLICY_REGISTRY, { showContent: true }],
-        }),
-      });
-      const json = await res.json();
-      const tableId =
-        json.result?.data?.content?.fields?.policies?.fields?.id?.id;
-      const v = typeof tableId === "string" ? tableId : null;
-      _policiesTableIdCache = v;
-      return v;
-    } catch {
-      return null;
-    } finally {
-      _policiesTableIdInflight = null;
-    }
-  })();
-  return _policiesTableIdInflight;
+  const registry = await storageObject(SSU_POLICY_REGISTRY);
+  assertStorageType(registry, `${SSU_ACCESS_ORIGINAL}::ssu_access::SsuPolicyRegistry`);
+  if (registry.owner.kind !== 3) return unavailable();
+  return storageId(storageRecord(registry.fields.policies).id);
 }
-
-/**
- * Resolve the policy_id for an SSU via Table<ID, ID> dynamic field lookup.
- * Returns null when no policy has been initialized for this SSU (the
- * common case for stock SSUs that haven't opted in to shared access).
- */
-export async function resolvePolicyId(
-  ssuObjectId: string,
-): Promise<string | null> {
-  const tableId = await getPoliciesTableId();
-  if (!tableId) return null;
-  try {
-    const res = await fetchWithRetry(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "suix_getDynamicFieldObject",
-        params: [
-          tableId,
-          { type: "0x2::object::ID", value: ssuObjectId },
-        ],
-      }),
-    });
-    const json = await res.json();
-    if (json.error || !json.result?.data || json.result?.error) return null;
-    const value = json.result.data.content?.fields?.value;
-    if (typeof value === "string") return value;
-    if (value?.fields?.id) return value.fields.id;
-    if (value?.id) return value.id;
-    return null;
-  } catch {
-    return null;
-  }
+export async function resolvePolicyId(ssuObjectId: string): Promise<string | null> {
+  const tableId = await getPoliciesTableId(); if (!tableId) return null;
+  const field = (await storageObjects([idFieldId(tableId, ssuObjectId)]))[0];
+  if (!field) return null;
+  assertIdField(field, tableId, ssuObjectId, '0x2::object::ID');
+  return storageId(field.fields.value);
 }
-
-/** Fetch a SsuPolicy object's contents and decode into AccessMode. */
-export async function fetchPolicy(
-  policyId: string,
-): Promise<AccessMode | null> {
-  try {
-    const res = await fetchWithRetry(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "sui_getObject",
-        params: [policyId, { showContent: true, showType: true }],
-      }),
-    });
-    const json = await res.json();
-    const fields = json.result?.data?.content?.fields;
-    if (!fields) return null;
-    const mode = Number(fields.mode);
-    const tribeIdsRaw: any[] = fields.tribe_ids ?? [];
-    const tribeIds = tribeIdsRaw
-      .map((t) => Number(t))
-      .filter((t) => Number.isFinite(t));
-    const denyRaw: any[] = fields.deny ?? [];
-    const allowRaw: any[] = fields.allow ?? [];
-    const deny = denyRaw.map((d) =>
-      typeof d === "string" ? d : d.fields?.id ?? d.id ?? "",
-    );
-    const allow: AllowEntry[] = allowRaw.map(decodeAllowEntry);
-
-    if (mode === MODE_NONE) return { kind: "none" };
-    if (mode === MODE_TRIBE_ALLIANCE)
-      return { kind: "tribe_alliance", tribeIds };
-    if (mode === MODE_ALLOWLIST) return { kind: "allowlist", entries: allow };
-    if (mode === MODE_HYBRID)
-      return { kind: "hybrid", tribeIds, deny, allow };
-    if (mode === MODE_PUBLIC) return { kind: "public" };
-    return { kind: "none" };
-  } catch {
-    return null;
-  }
+function decodePolicy(fields: Record<string, any>): AccessMode {
+  const mode = storageUint(fields.mode);
+  // Deployed versions use either tribe_id (single tribe) or tribe_ids (alliance).
+  const tribeIds = Array.isArray(fields.tribe_ids) ? fields.tribe_ids.map(storageUint) : [storageUint(fields.tribe_id)];
+  if (!Array.isArray(fields.deny) || !Array.isArray(fields.allow)) return unavailable();
+  const deny = fields.deny.map(storageId);
+  const allow: AllowEntry[] = fields.allow.map((raw: any) => {
+    const f = storageRecord(raw);
+    if (typeof f.can_deposit !== 'boolean' || typeof f.can_withdraw !== 'boolean') return unavailable();
+    return { characterId: storageId(f.character_id), expiresAt: storageUint(f.expires_at), canDeposit: f.can_deposit, canWithdraw: f.can_withdraw };
+  });
+  if (mode === MODE_NONE) return { kind: 'none' };
+  if (mode === MODE_TRIBE_ALLIANCE) return { kind: 'tribe_alliance', tribeIds };
+  if (mode === MODE_ALLOWLIST) return { kind: 'allowlist', entries: allow };
+  if (mode === MODE_HYBRID) return { kind: 'hybrid', tribeIds, deny, allow };
+  if (mode === MODE_PUBLIC) return { kind: 'public' };
+  return unavailable();
 }
-
-export async function loadPolicyForSsu(
-  ssuObjectId: string,
-): Promise<LoadedPolicy> {
+export async function fetchPolicy(policyId: string, ssuObjectId?: string): Promise<AccessMode> {
+  const policy = await storageObject(policyId);
+  assertStorageType(policy, `${SSU_ACCESS_ORIGINAL}::ssu_access::SsuPolicy`);
+  if (policy.owner.kind !== 3 || (ssuObjectId && storageId(policy.fields.ssu_id) !== storageId(ssuObjectId))) return unavailable();
+  storageId(policy.fields.ssu_id);
+  return decodePolicy(policy.fields);
+}
+export async function loadPolicyForSsu(ssuObjectId: string): Promise<LoadedPolicy> {
   const policyId = await resolvePolicyId(ssuObjectId);
-  if (!policyId) return { policyId: null, mode: { kind: "none" } };
-  const mode = await fetchPolicy(policyId);
-  return { policyId, mode: mode ?? { kind: "none" } };
+  if (!policyId) return { policyId: null, mode: { kind: 'none' } };
+  return { policyId, mode: await fetchPolicy(policyId, ssuObjectId) };
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -749,86 +620,22 @@ export type StuckItem = {
   tenant: string;
 };
 
-/**
- * The `world` package's `inventory::Item` struct type. Used as the
- * StructType filter in suix_getOwnedObjects to enumerate wallet-stuck
- * items. world's package id is read from constants.
- */
-function worldItemStructType(worldPkgOriginal: string): string {
-  return `${worldPkgOriginal}::inventory::Item`;
-}
-
-/**
- * Enumerate all `world::inventory::Item` objects currently owned by
- * `walletAddress`. Returns an empty list when ssu_access is unavailable
- * or no items are stuck. Pages through `suix_getOwnedObjects` until
- * exhausted (cap 4 pages × 50 = 200 items to avoid runaway calls in
- * pathological wallets).
- */
+function worldItemStructType(worldPkgOriginal: string): string { return `${worldPkgOriginal}::inventory::Item`; }
+/** Complete wallet-owned transit items; unavailable never means empty. */
 export async function fetchStuckItems(
   walletAddress: string,
   worldPkgOriginal: string,
 ): Promise<StuckItem[]> {
-  const filter = { StructType: worldItemStructType(worldPkgOriginal) };
-  const opts = { showContent: true, showType: true };
-  const out: StuckItem[] = [];
-  let cursor: string | null = null;
-  for (let page = 0; page < 4; page++) {
-    let resp: any;
-    try {
-      const r = await fetch(SUI_TESTNET_RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "suix_getOwnedObjects",
-          params: [walletAddress, { filter, options: opts }, cursor, 50],
-        }),
-      });
-      const j = await r.json();
-      resp = j?.result;
-    } catch {
-      break;
-    }
-    const items = (resp?.data ?? []) as any[];
-    for (const entry of items) {
-      const data = entry?.data;
-      const fields = (data?.content as any)?.fields;
-      if (!data?.objectId || !fields) continue;
-      const parentSsuId = String(fields.parent_id ?? "");
-      if (!parentSsuId) continue;
-      out.push({
-        itemObjectId: String(data.objectId),
-        parentSsuId,
-        typeId: Number(fields.type_id ?? 0),
-        quantity: Number(fields.quantity ?? 0),
-        volume: Number(fields.volume ?? 0),
-        tenant: String(fields.tenant ?? ""),
-      });
-    }
-    if (!resp?.hasNextPage || !resp?.nextCursor) break;
-    cursor = resp.nextCursor as string;
-  }
-  return out;
+  const objects = await storageOwned(walletAddress, worldItemStructType(worldPkgOriginal));
+  return objects.map(o => {
+    const f = o.fields, quantity = storageUint(f.quantity);
+    if (f.tenant !== 'stillness' || quantity > 0xffffffff) return unavailable();
+    return { itemObjectId: o.id, parentSsuId: storageId(f.parent_id), typeId: storageUint(f.type_id),
+      quantity, volume: storageUint(f.volume), tenant: f.tenant };
+  });
 }
 
-// ──────────────────────────────────────────────────────────────────────────
-// Shared-SSU discovery (added 2026-04-26)
-//
-// Registry-walk path: enumerate every (ssu_id → policy_id) entry in the
-// SsuPolicyRegistry's policies table, fetch each policy, and surface SSUs
-// whose policy permits the caller to deposit OR withdraw. Used by
-// InventoryPanel to show tribe-shared / allowlist / public SSUs that the
-// caller does NOT own but does have access to.
-//
-// Cost: O(N) RPC calls where N = total policies on chain. Page size 50 per
-// dynamic-field call. Each policy is then fetched via sui_getObject. For
-// the Stillness server's current SSU policy population this is small
-// (single-digit page count). If the registry grows large, switch to
-// event-based incremental discovery via PolicyConfigured events.
-// ──────────────────────────────────────────────────────────────────────────
-
+// Read-only saved-policy discovery. Shared transfers remain quarantined.
 export type DiscoveredSharedSsu = {
   ssuObjectId: string;
   policyId: string;
@@ -839,139 +646,25 @@ export type DiscoveredSharedSsu = {
   canDeposit: boolean;
 };
 
-/**
- * Enumerate every (ssu, policy) entry in SsuPolicyRegistry.policies and
- * filter to the ones the caller has shared access to. Skips any ssu_id in
- * `skipSsuIds` (use this to exclude SSUs the caller already owns to avoid
- * duplicate cards).
- *
- * Returns an empty list when:
- *   - ssu_access feature not available on this server (no Move package), OR
- *   - registry table id can't be resolved, OR
- *   - the registry has no entries.
- *
- * RPC failures during page walking are non-fatal — the caller will simply
- * see fewer shared SSUs surfaced rather than a broken UI.
- */
+/** Complete current-world saved-policy view; failures propagate separately to UI. */
 export async function discoverSharedSsus(
   caller: CallerIdentity,
   skipSsuIds: Set<string>,
 ): Promise<DiscoveredSharedSsu[]> {
   if (!SSU_ACCESS_AVAILABLE) return [];
-  const tableId = await getPoliciesTableId();
-  if (!tableId) return [];
-
-  // Walk all dynamic fields of the policies table. Each field's name is
-  // the SSU id (the Table<ID, ID> key); the value is the policy id. Since
-  // suix_getDynamicFields gives us the names but not the values directly,
-  // we then fetch each value via getDynamicFieldObject. For now we
-  // re-resolve via resolvePolicyId() which already does that round trip;
-  // batching is fine because we already paged through field names.
-
-  const ssuIds: string[] = [];
-  let cursor: string | null = null;
-  // Hard cap iterations at 20 pages * 50 = 1000 SSUs to avoid runaway
-  // walks if the registry gets large. Anything beyond that should switch
-  // to event-based discovery anyway.
-  for (let page = 0; page < 20; page++) {
-    let json: any;
-    try {
-      const res = await fetchWithRetry(SUI_TESTNET_RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "suix_getDynamicFields",
-          params: [tableId, cursor, 50],
-        }),
-      });
-      json = await res.json();
-    } catch {
-      break;
-    }
-    const data = json?.result?.data ?? [];
-    for (const f of data) {
-      // Field name layout for Table<ID, ID>: name.value is the SSU id.
-      const v = f?.name?.value;
-      if (typeof v === "string" && v.startsWith("0x")) ssuIds.push(v);
-    }
-    if (!json?.result?.hasNextPage) break;
-    cursor = json?.result?.nextCursor ?? null;
-    if (!cursor) break;
-  }
-
-  // De-dup vs caller's owned set BEFORE doing per-policy round trips.
-  const rawCandidates = ssuIds.filter(id => !skipSsuIds.has(id));
-
-  // Filter out SSUs typed against an orphaned world package. The CradleOS
-  // ssu_access policies table outlived the 2026-06-25 wipe so it still maps
-  // pre-wipe SSU ids — those Sui shared objects exist forever but the game
-  // client can't see them anymore, so surfacing them in the inventory panel
-  // is just user-confusing dead data. Batch-fetch types via sui_multiGetObjects
-  // (50 per call, the public RPC cap) and keep only SSUs typed against the
-  // active WORLD_PKG.
-  const candidates: string[] = [];
-  if (WORLD_PKG) {
-    const expectedTypePrefix = `${WORLD_PKG}::storage_unit::StorageUnit`;
-    const TYPE_BATCH = 50;
-    for (let i = 0; i < rawCandidates.length; i += TYPE_BATCH) {
-      const batch = rawCandidates.slice(i, i + TYPE_BATCH);
-      try {
-        const res = await fetchWithRetry(SUI_TESTNET_RPC, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "sui_multiGetObjects",
-            params: [batch, { showType: true }],
-          }),
-        });
-        const json = await res.json();
-        const data = (json?.result ?? []) as Array<{ data?: { objectId: string; type?: string } } | null>;
-        for (const entry of data) {
-          const ssuId = entry?.data?.objectId;
-          const type = entry?.data?.type;
-          if (!ssuId || !type) continue;
-          // type looks like `${WORLD_PKG}::storage_unit::StorageUnit`
-          if (type === expectedTypePrefix) candidates.push(ssuId);
-        }
-      } catch {
-        // On RPC failure, fall back to including the batch — better to show a
-        // few stale SSUs than to hide live ones.
-        candidates.push(...batch);
-      }
-    }
-  } else {
-    candidates.push(...rawCandidates);
-  }
-
-  // Resolve policies in parallel. Bound concurrency so we don't hammer
-  // public RPC endpoints — chunk size 8 is a safe middle ground.
+  const tableId = await getPoliciesTableId(); if (!tableId) return [];
+  const fields = await storageFields(tableId, '0x2::object::ID');
+  const candidates = fields.filter(f => !skipSsuIds.has(storageId(f.fields.name)));
+  const targets = await storageObjects(candidates.map(f => storageId(f.fields.name)));
   const out: DiscoveredSharedSsu[] = [];
-  const CHUNK = 8;
-  for (let i = 0; i < candidates.length; i += CHUNK) {
-    const chunk = candidates.slice(i, i + CHUNK);
-    const resolved = await Promise.all(
-      chunk.map(async ssuId => {
-        const policy = await loadPolicyForSsu(ssuId).catch(() => null);
-        if (!policy || !policy.policyId) return null;
-        // Filter early: skip "none" policies (initialized but disabled).
-        if (policy.mode.kind === "none") return null;
-        const canW = canWithdrawVia(policy.mode, caller);
-        const canD = canDepositVia(policy.mode, caller);
-        if (!canW && !canD) return null;
-        return {
-          ssuObjectId: ssuId,
-          policyId: policy.policyId,
-          mode: policy.mode,
-          canWithdraw: canW,
-          canDeposit: canD,
-        } as DiscoveredSharedSsu;
-      }),
-    );
-    for (const r of resolved) if (r) out.push(r);
+  for (const [i, target] of targets.entries()) {
+    // Explicitly deleted or previous-world targets are not live shared storage.
+    if (!target || target.type !== `${WORLD_PKG}::storage_unit::StorageUnit`) continue;
+    if (target.owner.kind !== 3) return unavailable();
+    const policyId = storageId(candidates[i].fields.value);
+    const mode = await fetchPolicy(policyId, target.id);
+    const canWithdraw = canWithdrawVia(mode, caller), canDeposit = canDepositVia(mode, caller);
+    if (canWithdraw || canDeposit) out.push({ ssuObjectId: target.id, policyId, mode, canWithdraw, canDeposit });
   }
   return out;
 }
@@ -1005,30 +698,10 @@ export async function discoverSharedSsus(
 export async function fetchCharacterOwnerCapId(
   characterId: string,
 ): Promise<string | null> {
-  if (!WORLD_PKG) return null;
-  const capType = `${WORLD_PKG}::access::OwnerCap<${WORLD_PKG}::character::Character>`;
-  try {
-    const res = await fetch(SUI_TESTNET_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "suix_getOwnedObjects",
-        params: [
-          characterId,
-          { filter: { StructType: capType }, options: {} },
-          null,
-          1,
-        ],
-      }),
-    });
-    const json = await res.json();
-    const data = json.result?.data ?? [];
-    return (data[0]?.data?.objectId as string) ?? null;
-  } catch {
-    return null;
-  }
+  const caps = await storageOwned(characterId, `${WORLD_PKG}::access::OwnerCap<${WORLD_PKG}::character::Character>`);
+  const matches = caps.filter(c => storageId(c.fields.authorized_object_id) === storageId(characterId));
+  if (matches.length !== 1) return unavailable();
+  return matches[0].id;
 }
 
 /**

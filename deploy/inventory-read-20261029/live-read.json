@@ -1,0 +1,163 @@
+{
+  "at": "2026-10-29T13:26:51.140Z",
+  "summary": [
+    {
+      "id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+      "name": "Home Depot",
+      "partitions": 2,
+      "stacks": 88,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x3d249735fbbc12886f1e0d5f09aacd6c7a511ecfde886a7779d76851b666756c",
+      "name": "Home Depot",
+      "partitions": 2,
+      "stacks": 38,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x192902969e958a9b5e06fae2f06f7cf8efaf7091c9ee5f66acaa62606e96d05b",
+      "name": "",
+      "partitions": 2,
+      "stacks": 4,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0xdfc6d017e4c4fe03225e55d12fd870f249cb6022803b758bec0c9cc8207ec8b5",
+      "name": "",
+      "partitions": 2,
+      "stacks": 78,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x42f86a475471f2f833b1b899cf56faa26b23ab8c43e4c1e8961ec0e0540a6708",
+      "name": "Lowes",
+      "partitions": 2,
+      "stacks": 1,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x7ec700bd0d826cbfebf96c1c2537fcef0b4f651bca45c5881ae0a1e54d4d794b",
+      "name": "Home Depot",
+      "partitions": 2,
+      "stacks": 6,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x4e42dcdd91b910f3281bf14c6d009f12bdaeead9946d537c015bc011e9d719c9",
+      "name": "",
+      "partitions": 2,
+      "stacks": 17,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0xf300ea0e21f2ed15294e560ce538d8c9fafae46596ee69c0b32634d60b3b5312",
+      "name": "Home Depot",
+      "partitions": 2,
+      "stacks": 32,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "datatype": {
+        "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::extension_freeze::ExtensionFrozenKey",
+        "definingId": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+        "module": "extension_freeze",
+        "name": "ExtensionFrozenKey",
+        "abilities": [
+          "COPY",
+          "DROP",
+          "STORE"
+        ],
+        "kind": "STRUCT",
+        "fields": [
+          {
+            "name": "dummy_field",
+            "position": 0,
+            "type": {
+              "type": "BOOL"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "datatype": {
+        "typeName": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::extension_freeze::ExtensionFrozen",
+        "definingId": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+        "module": "extension_freeze",
+        "name": "ExtensionFrozen",
+        "abilities": [
+          "COPY",
+          "DROP",
+          "STORE"
+        ],
+        "kind": "STRUCT",
+        "fields": [
+          {
+            "name": "dummy_field",
+            "position": 0,
+            "type": {
+              "type": "BOOL"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "characterOwnerCapId": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+  "walletItemCount": 0,
+  "shared": {
+    "characterTribeId": 98000666,
+    "verified": []
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "at": "2026-10-29T13:31:20.627Z",
+  "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+  "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+  "characterTribeId": 98000666,
+  "summary": [
+    {
+      "id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+      "name": "Home Depot",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 88,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x3d249735fbbc12886f1e0d5f09aacd6c7a511ecfde886a7779d76851b666756c",
+      "name": "Home Depot",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 38,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x192902969e958a9b5e06fae2f06f7cf8efaf7091c9ee5f66acaa62606e96d05b",
+      "name": "Storage Unit",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 4,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0xdfc6d017e4c4fe03225e55d12fd870f249cb6022803b758bec0c9cc8207ec8b5",
+      "name": "Storage Unit",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 78,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x42f86a475471f2f833b1b899cf56faa26b23ab8c43e4c1e8961ec0e0540a6708",
+      "name": "Lowes",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 1,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x7ec700bd0d826cbfebf96c1c2537fcef0b4f651bca45c5881ae0a1e54d4d794b",
+      "name": "Home Depot",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 6,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x4e42dcdd91b910f3281bf14c6d009f12bdaeead9946d537c015bc011e9d719c9",
+      "name": "Storage Unit",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 17,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+      "name": "Reap Shared storage",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 1,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    },
+    {
+      "id": "0xf300ea0e21f2ed15294e560ce538d8c9fafae46596ee69c0b32634d60b3b5312",
+      "name": "Home Depot",
+      "owned": true,
+      "partitions": 2,
+      "stacks": 32,
+      "frozen": false,
+      "policy": {
+        "policyId": null,
+        "mode": {
+          "kind": "none"
+        }
+      }
+    }
+  ],
+  "storageUnits": 9,
+  "stacks": 265,
+  "walletItems": 0,
+  "sharedCount": 0
+}

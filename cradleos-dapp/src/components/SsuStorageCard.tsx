@@ -47,6 +47,7 @@ export function SsuStorageCard({
   const [query, setQuery] = useState("");
   const { ssu, snapshot } = inv;
   const ownerCapId = ownerCaps.get(ssu.objectId);
+  const available = !!snapshot && !inv.error && !inv.loading;
   const all = inv.items.filter((i) => i.quantity > 0);
   const nameOf = (item: StorageItem) =>
     inv.resolvedNames.get(item.typeId) ?? `Item ${item.typeId}`;
@@ -165,7 +166,7 @@ export function SsuStorageCard({
               >
                 <ClientUIIcon name={tab.icon} size={24} />
                 <span>{tab.label}</span>
-                <b>{counts[tab.key]}</b>
+                <b>{available ? counts[tab.key] : "—"}</b>
               </button>
             ))}
           </div>
@@ -183,7 +184,7 @@ export function SsuStorageCard({
               />
             </label>
             <span>
-              {rows.length} stack{rows.length === 1 ? "" : "s"}
+              {available ? `${rows.length} stack${rows.length === 1 ? "" : "s"}` : inv.loading ? "Loading" : "Unavailable"}
             </span>
           </div>
           {inv.loading ? (
@@ -192,12 +193,12 @@ export function SsuStorageCard({
             </p>
           ) : inv.error ? (
             <div className="ssu-warning" role="alert">
-              {inv.error}
+              Storage unavailable.
               <button onClick={() => onRefresh(ssu.objectId)}>
                 Retry storage read
               </button>
             </div>
-          ) : !rows.length ? (
+          ) : !snapshot ? (<p className="ssu-empty">Not loaded</p>) : !rows.length ? (
             <p className="ssu-empty">
               {query ? "No matching items." : "No stock in this view."}
             </p>
@@ -226,7 +227,7 @@ export function SsuStorageCard({
               ))}
             </ul>
           )}
-          {snapshot && (
+          {available && snapshot && (
             <details className="ssu-details">
               <summary>
                 <ClientUIIcon name="editing/details_view_16px" />

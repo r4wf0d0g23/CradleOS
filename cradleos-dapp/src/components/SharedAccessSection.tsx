@@ -200,7 +200,7 @@ export function SharedAccessSection({
             Saved rule {unsafe ? "(unenforced)" : ""}:{" "}
             {loadedPolicy?.policyId
               ? modeLabel(loadedPolicy.mode)
-              : "No policy loaded"}
+              : loadedPolicy ? "None" : "Unavailable"}
           </li>
           <li>
             Extension:{" "}

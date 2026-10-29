@@ -1124,7 +1124,7 @@ function AppInner() {
         <div style={{ background: "transparent", padding: "0" }}>
           {activeTab === "structures" && <div style={{ background: "transparent" }} className="content-panel"><StructurePanel key={account?.address ?? "disconnected"} onTxSuccess={setLastDigest} /></div>}
           {activeTab === "dashboard"  && <div style={{ background: "transparent" }} className="content-panel"><DashboardPanel key={account?.address ?? "disconnected"} /></div>}
-          {activeTab === "inventory"  && <div style={{ background: "transparent" }} className="content-panel"><InventoryPanel /></div>}
+          {activeTab === "inventory"  && <div style={{ background: "transparent" }} className="content-panel"><InventoryPanel key={account?.address ?? "disconnected"} /></div>}
           {activeTab === "tribe"      && <div style={{ background: "transparent" }} className="content-panel"><TribeVaultPanel   onTxSuccess={setLastDigest} /></div>}
           {activeTab === "defense"    && <div style={{ background: "transparent" }} className="content-panel"><TurretPolicyPanel /></div>}
           {activeTab === "registry"   && <div style={{ background: "transparent" }} className="content-panel"><RegistryPanel /></div>}
