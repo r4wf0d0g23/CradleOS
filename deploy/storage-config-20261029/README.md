@@ -1,6 +1,6 @@
 # Storage configuration restoration — 2026-10-29
 
-## Status: contract published and verified; frontend release in progress
+## Status: deployed and production verified
 
 Raw reported missing storage configuration on `Reap Shared storage` in a screenshot.
 The current `Manage access` view was intentionally reduced to status/revocation on
@@ -82,7 +82,7 @@ Fresh proof and publication receipts follow below; staging evidence above remain
 
 Proposed unchanged publisher/custody destination:
 `0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a`.
-Deployment pin now matches the verified package, registry and world IDs in `onchain.json`. Frontend production activation follows the release checks.
+Deployment pin now matches the verified package, registry and world IDs in `onchain.json`. Frontend activated on production; see web-release.json.
 
 ## Release procedure (custody and publication completed)
 
@@ -130,3 +130,20 @@ pilot direction/expiry controls and 1440/650/390/320px layout; zero writes/error
 The wallet account is a read-only synthetic Wallet Standard account representing
 the real owner address, not a real EVE Vault/PIN or embedded-browser sign-in.
 Independent release review PASS; actual owner signing remains untested.
+
+## Final delivery
+
+Production https://cradleos.io/ — Pages **33f7c6b7**, source
+**902ada7c2d6ac55a3040e7fb0b7f6dc74ca18292**; rollback **a024f5bd**.
+Live HTML references and both JS/CSS hashes match the reviewed build.
+`live-browser.json` passes on real chain data with a read-only synthetic wallet:
+owner configuration, all five modes, tribe review, pilot expiry/direction controls,
+consent, 1440/650/390/320px, zero signing attempts and JS errors.
+Initial domain/asset propagation probes were stale; normal requests and a fresh
+browser succeeded at14:19:17Z. No cache configuration or unrelated services changed.
+Independent deployed-delivery review PASS. Local preview stopped.
+
+Owner path: **Inventory → storage unit → Manage access**. Owners explicitly choose
+rules, review stock/access consequences and sign. No SSU binding, permissions or
+inventory was changed automatically. Actual EVE Vault signing and live player
+transfers remain unverified; neither fixture wallets nor simulations prove them.

@@ -12,3 +12,4 @@ root-test-cache/
 prepublish-clean/
 prepublish-build.json
 publish-pending.json
+*-failure.txt

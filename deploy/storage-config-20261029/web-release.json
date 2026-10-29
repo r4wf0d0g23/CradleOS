@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "902ada7c2d6ac55a3040e7fb0b7f6dc74ca18292",
+  "deployment": "33f7c6b7",
+  "origin": "https://cradleos.io/",
+  "immutableUrl": "https://33f7c6b7.cradleos-d75.pages.dev",
+  "previousRollback": "a024f5bd",
+  "at": "2026-10-29T14:18:15.893526+00:00",
+  "verification": {
+    "assets": "live-assets.json",
+    "browser": "live-browser.json",
+    "productionVerifiedAt": "2026-10-29T14:19:17.279Z",
+    "independentDeployedReview": "PASS",
+    "ownerSigningVerified": false,
+    "playerTransfersVerified": false,
+    "automaticSsuChanges": false,
+    "initialPropagationResolved": true
+  }
+}

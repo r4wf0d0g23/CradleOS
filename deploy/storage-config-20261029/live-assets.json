@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-29T14:18:51.727Z",
+  "origin": "https://cradleos.io/",
+  "sourceCommit": "902ada7c2d6ac55a3040e7fb0b7f6dc74ca18292",
+  "htmlReferencesMatch": true,
+  "assets": [
+    {
+      "path": "assets/index-BTRO77Wi.css",
+      "bytes": 912933,
+      "sha256": "b556f1ab8218c0a99c3a84479028c4b2b80bc864ec6b33bd310f1beec9f04bb4",
+      "matches": true
+    },
+    {
+      "path": "assets/index-CCuSmqk5.js",
+      "bytes": 2424097,
+      "sha256": "193c4df634c2c209379d05445baf84114331516e073d9d6ffe9fc928b33a464e",
+      "matches": true
+    }
+  ]
+}
