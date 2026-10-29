@@ -1,3 +1,4 @@
+import {publicationScope} from './publication-scope.mjs';
 // Explicit one-shot isolated publication. No SSU configuration or asset transfer.
 import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync, existsSync, openSync, writeSync, fsyncSync, closeSync } from 'node:fs';
@@ -24,7 +25,9 @@ assert.equal(custody.backupProof,proof.digestHex);
 const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
 assert.equal(git('status','--porcelain','--untracked-files=no'),'');
 const source=git('rev-parse','HEAD');
-assert.equal(git('rev-parse','publish/cradleos-storefront-2026-10-29'),source);
+assert.equal(git('rev-parse','publish/cradleos-storefront-2026-10-29-reviewed'),source);
+const clean=read('clean-build.json');assert.equal(clean.sourceCommit,source);assert.equal(clean.exactBuildMatch,true);
+assert.equal(createHash('sha256').update(readFileSync(new URL('../../cradleos_storefront/sources/storefront.move',dir))).digest('hex'),read('package-checks.json').sourceSHA256);
 const build=read('package-build.json');
 assert.deepEqual(build,read('fresh-build.json'));
 assert.equal(build.modules.length,1);
@@ -40,6 +43,7 @@ const bytes=await tx.build({client});
 const sim=await client.core.simulateTransaction({transaction:bytes,checksEnabled:true,include:{effects:true,objectTypes:true}});
 save('final-publish-simulation.json',sim);
 assert.ok(sim.Transaction?.status?.success,'Publication simulation failed');
+publicationScope(sim.Transaction,publisher);
 if(process.env.STOREFRONT_RELEASE_SIGN!=='1'){console.log(JSON.stringify({simulation:true,signed:false,source}));process.exit(0);}
 const journal=openSync(new URL('publish-pending.json',dir),'wx',0o600);
 let signer;

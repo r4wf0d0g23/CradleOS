@@ -1,3 +1,4 @@
+import {effectBytes,publicationScope} from './publication-scope.mjs';
 // Read-only package/registry/custody verification. Run before frontend pinning.
 import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -15,6 +16,9 @@ assert.equal(result.digest,read('publish-pending.json').digest);
 const confirmed=await c.core.getTransaction({digest:result.digest,include:{effects:true,objectTypes:true}});
 assert.equal(confirmed.Transaction?.digest,result.digest);assert.ok(confirmed.Transaction?.status.success);
 assert.deepEqual(confirmed.Transaction.objectTypes,result.objectTypes);
+assert.deepEqual(effectBytes(confirmed.Transaction),effectBytes(result),"Independently confirmed effects differ");
+const scope=publicationScope(confirmed.Transaction,read("custody.json").publisher);
+assert.equal(scope.effects.transactionDigest,result.digest);
 // SDK objectTypes records all newly published/created types from execution.
 const types=result.objectTypes;
 assert.ok(types && typeof types==='object');
@@ -28,7 +32,7 @@ const [pkg,reg,cap]=await Promise.all([get(packageId),get(registryId),get(upgrad
 assert.equal(cap.owner.address,publisher);assert.equal(cap.owner.kind,1);
 assert.equal(GrpcTypes.Object.toJson(cap).json.package,packageId);
 assert.equal(reg.objectType,`${packageId}::storefront::Registry`);assert.equal(reg.owner.kind,3);
-const fields=GrpcTypes.Object.toJson(reg).json;assert.equal(Number(fields.shops.size),0);
+const fields=GrpcTypes.Object.toJson(reg).json;assert.equal(Number(fields.shops.size),0);assert.equal(fields.shops.id,scope.tableId);
 const table=await c.stateService.listDynamicFields({parent:fields.shops.id,pageSize:100}).response;
 assert.equal(table.dynamicFields.length,0);assert.ok(!table.nextPageToken?.length);
 assert.equal(pkg.package.modules.length,1);assert.equal(pkg.package.modules[0].name,'storefront');
@@ -36,7 +40,7 @@ const live=Buffer.from(pkg.package.modules[0].contents),local=Buffer.from(read('
 let count=0;for(let at=normalized.indexOf(address);at!==-1;at=normalized.indexOf(address,at+32)){normalized.fill(0,at,at+32);count++;}
 assert.equal(count,1,'Unexpected self-address table');assert.deepEqual(normalized,local,'Published bytecode differs from reviewed bytecode');
 const sha=b=>createHash('sha256').update(b).digest('hex');
-const out={at:new Date().toISOString(),packageId,originalId:packageId,registryId,upgradeCap,publisher,upgradeCapOwner:cap.owner.address,publishDigest:result.digest,sourceCommit:read('publish-pending.json').source,sourceTag:'publish/cradleos-storefront-2026-10-29',worldId:read('package-build.json').dependencies.find(p=>!/^0x0+[12]$/.test(p)),registryType,tableId:fields.shops.id,shopCount:0,registryReadSucceeded:true,normalizedBytecodeExact:true,compiledSha256:sha(local),liveSha256:sha(live),abiSource:'Full ABI identical because all relocated bytecode matches exactly',ssuWrites:0};
+const out={at:new Date().toISOString(),packageId,originalId:packageId,registryId,upgradeCap,publisher,upgradeCapOwner:cap.owner.address,publishDigest:result.digest,sourceCommit:read('publish-pending.json').source,sourceTag:'publish/cradleos-storefront-2026-10-29-reviewed',worldId:read('package-build.json').dependencies.find(p=>!/^0x0+[12]$/.test(p)),registryType,tableId:fields.shops.id,shopCount:0,registryReadSucceeded:true,normalizedBytecodeExact:true,compiledSha256:sha(local),liveSha256:sha(live),abiSource:'Full ABI identical because all relocated bytecode matches exactly',ssuWrites:scope.ssuWrites,changedExistingObjects:scope.changedExistingObjects,independentlyConfirmedEffectsExact:true};
 save('onchain.json',out);
 save('published-package.json',GrpcTypes.Object.toJson(pkg));
 console.log(JSON.stringify(out));
