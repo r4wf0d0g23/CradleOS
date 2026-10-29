@@ -1,3 +1,4 @@
+import { StorefrontPanel } from "./StorefrontPanel";
 import { ItemIcon, ClientUIIcon } from "./GameIcon";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { PortalSelect } from "./PortalSelect";
@@ -948,6 +949,7 @@ function OperatorFilterDropdown({
 }
 
 export function InventoryPanel() {
+  const [area,setArea] = useState<"storage"|"storefront">(()=>new URLSearchParams(window.location.search).has("storefront")?"storefront":"storage");
   const { account } = useVerifiedAccountContext();
   const walletAddress = account?.address;
   const dAppKit = useDAppKit();
@@ -1323,6 +1325,8 @@ export function InventoryPanel() {
 
   return (
     <div style={{ padding: "0 0 24px" }}>
+      <nav className="inventory-modes" aria-label="Inventory mode"><button aria-pressed={area === "storage"} onClick={()=>setArea("storage")}>Tribal storage</button><button aria-pressed={area === "storefront"} onClick={()=>setArea("storefront")}>Storefronts</button></nav>
+      {area === "storefront" ? <StorefrontPanel walletAddress={walletAddress} characterId={transferState.characterId} ownerCaps={transferState.ownerCaps} charOwnerCapId={transferState.charOwnerCapId} owned={inventories.filter(i=>transferState.ownerCaps.has(i.ssu.objectId)).map(i=>i.ssu)} /> : <>
       <section className="ssu-overview">
         <h2><ClientUIIcon name="gameplay/inventory_32px" size={32} />Tribal storage</h2>
 
@@ -1525,6 +1529,7 @@ export function InventoryPanel() {
           onRefresh={refreshSSU}
         />
       )}
+      </>}
     </div>
   );
 }

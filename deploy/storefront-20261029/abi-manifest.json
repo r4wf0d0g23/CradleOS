@@ -1,0 +1,2174 @@
+{
+  "id": {
+    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "name": "storefront"
+  },
+  "immediate_dependencies": [
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "name": "bcs"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "name": "string"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "name": "type_name"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "name": "vector"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "bag"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "balance"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "clock"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "coin"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "event"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "object"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "table"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "transfer"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "name": "tx_context"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "access"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "character"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "inventory"
+    },
+    {
+      "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+      "name": "storage_unit"
+    }
+  ],
+  "functions": {
+    "init": {
+      "index": 0,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "assert_empty": {
+      "index": 1,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "create": {
+      "index": 2,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Registry",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "name": "string"
+              },
+              "name": "String",
+              "type_arguments": []
+            }
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "name": "storefront"
+            },
+            "name": "Shop",
+            "type_arguments": []
+          }
+        }
+      ]
+    },
+    "share_shop": {
+      "index": 3,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "name": "storefront"
+              },
+              "name": "Shop",
+              "type_arguments": []
+            }
+          }
+        }
+      ],
+      "return_": []
+    },
+    "configure": {
+      "index": 4,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "name": "string"
+              },
+              "name": "String",
+              "type_arguments": []
+            }
+          }
+        },
+        {
+          "type_": "bool"
+        },
+        {
+          "type_": "u8"
+        },
+        {
+          "type_": {
+            "vector": "u32"
+          }
+        },
+        {
+          "type_": {
+            "vector": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        },
+        {
+          "type_": {
+            "vector": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        }
+      ],
+      "return_": []
+    },
+    "set_listing": {
+      "index": 5,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "bool"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u64"
+        }
+      ],
+      "return_": []
+    },
+    "stock_owner": {
+      "index": 6,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "stock_personal": {
+      "index": 7,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "character"
+                          },
+                          "name": "Character",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "unstock": {
+      "index": 8,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "buy": {
+      "index": 9,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                "name": "coin"
+              },
+              "name": "Coin",
+              "type_arguments": [
+                {
+                  "phantom": true,
+                  "argument": {
+                    "TypeParameter": 0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "clock"
+                  },
+                  "name": "Clock",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "claim": {
+      "index": 10,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "deliver": {
+      "index": 11,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        },
+        {
+          "type_": "u32"
+        },
+        {
+          "type_": {
+            "Reference": [
+              true,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "canonical": {
+      "index": 12,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "owner": {
+      "index": 13,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "access"
+                  },
+                  "name": "OwnerCap",
+                  "type_arguments": [
+                    {
+                      "phantom": true,
+                      "argument": {
+                        "Datatype": {
+                          "module": {
+                            "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                            "name": "storage_unit"
+                          },
+                          "name": "StorageUnit",
+                          "type_arguments": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "caller": {
+      "index": 14,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "character"
+                  },
+                  "name": "Character",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "tx_context"
+                  },
+                  "name": "TxContext",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "linked": {
+      "index": 15,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+                    "name": "storage_unit"
+                  },
+                  "name": "StorageUnit",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "valid_name": {
+      "index": 16,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                    "name": "string"
+                  },
+                  "name": "String",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "unique": {
+      "index": 17,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [
+        {
+          "constraints": [
+            "Copy",
+            "Drop"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "vector": {
+                  "TypeParameter": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": []
+    },
+    "index": {
+      "index": 18,
+      "visibility": "Private",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        "u64"
+      ]
+    },
+    "permits": {
+      "index": 19,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                "name": "object"
+              },
+              "name": "ID",
+              "type_arguments": []
+            }
+          }
+        },
+        {
+          "type_": "u32"
+        }
+      ],
+      "return_": [
+        "bool"
+      ]
+    },
+    "shop_id": {
+      "index": 20,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Registry",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": {
+            "Datatype": {
+              "module": {
+                "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                "name": "object"
+              },
+              "name": "ID",
+              "type_arguments": []
+            }
+          }
+        }
+      ],
+      "return_": [
+        {
+          "Datatype": {
+            "module": {
+              "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+              "name": "object"
+            },
+            "name": "ID",
+            "type_arguments": []
+          }
+        }
+      ]
+    },
+    "stock": {
+      "index": 21,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type_": "u64"
+        }
+      ],
+      "return_": [
+        "u32"
+      ]
+    },
+    "proceeds": {
+      "index": 22,
+      "visibility": "Public",
+      "entry": false,
+      "type_parameters": [
+        {
+          "constraints": []
+        }
+      ],
+      "parameters": [
+        {
+          "type_": {
+            "Reference": [
+              false,
+              {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Shop",
+                  "type_arguments": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "return_": [
+        "u64"
+      ]
+    }
+  },
+  "structs": {
+    "StorefrontAuth": {
+      "index": 0,
+      "abilities": [
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "dummy_field": {
+            "index": 0,
+            "type_": "bool"
+          }
+        }
+      }
+    },
+    "Registry": {
+      "index": 1,
+      "abilities": [
+        "Key"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "UID",
+                "type_arguments": []
+              }
+            }
+          },
+          "shops": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "table"
+                },
+                "name": "Table",
+                "type_arguments": [
+                  {
+                    "phantom": true,
+                    "argument": {
+                      "Datatype": {
+                        "module": {
+                          "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                          "name": "object"
+                        },
+                        "name": "ID",
+                        "type_arguments": []
+                      }
+                    }
+                  },
+                  {
+                    "phantom": true,
+                    "argument": {
+                      "Datatype": {
+                        "module": {
+                          "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                          "name": "object"
+                        },
+                        "name": "ID",
+                        "type_arguments": []
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "Shop": {
+      "index": 2,
+      "abilities": [
+        "Key"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "UID",
+                "type_arguments": []
+              }
+            }
+          },
+          "ssu_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "owner_cap_id": {
+            "index": 2,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "revision": {
+            "index": 3,
+            "type_": "u64"
+          },
+          "name": {
+            "index": 4,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "name": "string"
+                },
+                "name": "String",
+                "type_arguments": []
+              }
+            }
+          },
+          "open": {
+            "index": 5,
+            "type_": "bool"
+          },
+          "mode": {
+            "index": 6,
+            "type_": "u8"
+          },
+          "tribes": {
+            "index": 7,
+            "type_": {
+              "vector": "u32"
+            }
+          },
+          "pilots": {
+            "index": 8,
+            "type_": {
+              "vector": {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "object"
+                  },
+                  "name": "ID",
+                  "type_arguments": []
+                }
+              }
+            }
+          },
+          "deny": {
+            "index": 9,
+            "type_": {
+              "vector": {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                    "name": "object"
+                  },
+                  "name": "ID",
+                  "type_arguments": []
+                }
+              }
+            }
+          },
+          "listings": {
+            "index": 10,
+            "type_": {
+              "vector": {
+                "Datatype": {
+                  "module": {
+                    "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "name": "storefront"
+                  },
+                  "name": "Listing",
+                  "type_arguments": []
+                }
+              }
+            }
+          },
+          "purchases": {
+            "index": 11,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "table"
+                },
+                "name": "Table",
+                "type_arguments": [
+                  {
+                    "phantom": true,
+                    "argument": {
+                      "Datatype": {
+                        "module": {
+                          "address": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                          "name": "storefront"
+                        },
+                        "name": "PurchaseKey",
+                        "type_arguments": []
+                      }
+                    }
+                  },
+                  {
+                    "phantom": true,
+                    "argument": "u64"
+                  }
+                ]
+              }
+            }
+          },
+          "proceeds": {
+            "index": 12,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "bag"
+                },
+                "name": "Bag",
+                "type_arguments": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "Listing": {
+      "index": 3,
+      "abilities": [
+        "Drop",
+        "Store"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "type_id": {
+            "index": 0,
+            "type_": "u64"
+          },
+          "currency": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "name": "type_name"
+                },
+                "name": "TypeName",
+                "type_arguments": []
+              }
+            }
+          },
+          "price": {
+            "index": 2,
+            "type_": "u64"
+          },
+          "stock": {
+            "index": 3,
+            "type_": "u32"
+          },
+          "revision": {
+            "index": 4,
+            "type_": "u64"
+          },
+          "enabled": {
+            "index": 5,
+            "type_": "bool"
+          },
+          "minimum": {
+            "index": 6,
+            "type_": "u32"
+          },
+          "maximum": {
+            "index": 7,
+            "type_": "u32"
+          },
+          "step": {
+            "index": 8,
+            "type_": "u32"
+          },
+          "starts_at": {
+            "index": 9,
+            "type_": "u64"
+          },
+          "ends_at": {
+            "index": 10,
+            "type_": "u64"
+          },
+          "per_pilot": {
+            "index": 11,
+            "type_": "u64"
+          }
+        }
+      }
+    },
+    "PurchaseKey": {
+      "index": 4,
+      "abilities": [
+        "Copy",
+        "Drop",
+        "Store"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "type_id": {
+            "index": 0,
+            "type_": "u64"
+          },
+          "character_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "ShopCreated": {
+      "index": 5,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "shop_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "ssu_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "ShopChanged": {
+      "index": 6,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "shop_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "revision": {
+            "index": 1,
+            "type_": "u64"
+          }
+        }
+      }
+    },
+    "ListingChanged": {
+      "index": 7,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "shop_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "type_id": {
+            "index": 1,
+            "type_": "u64"
+          },
+          "revision": {
+            "index": 2,
+            "type_": "u64"
+          }
+        }
+      }
+    },
+    "StockChanged": {
+      "index": 8,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "shop_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "type_id": {
+            "index": 1,
+            "type_": "u64"
+          },
+          "quantity": {
+            "index": 2,
+            "type_": "u32"
+          },
+          "added": {
+            "index": 3,
+            "type_": "bool"
+          }
+        }
+      }
+    },
+    "Sale": {
+      "index": 9,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "shop_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "ssu_id": {
+            "index": 1,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "buyer": {
+            "index": 2,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "type_id": {
+            "index": 3,
+            "type_": "u64"
+          },
+          "quantity": {
+            "index": 4,
+            "type_": "u32"
+          },
+          "currency": {
+            "index": 5,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "name": "type_name"
+                },
+                "name": "TypeName",
+                "type_arguments": []
+              }
+            }
+          },
+          "paid": {
+            "index": 6,
+            "type_": "u64"
+          }
+        }
+      }
+    },
+    "ProceedsClaimed": {
+      "index": 10,
+      "abilities": [
+        "Copy",
+        "Drop"
+      ],
+      "type_parameters": [],
+      "fields": {
+        "positional_fields": false,
+        "fields": {
+          "shop_id": {
+            "index": 0,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000002",
+                  "name": "object"
+                },
+                "name": "ID",
+                "type_arguments": []
+              }
+            }
+          },
+          "recipient": {
+            "index": 1,
+            "type_": "address"
+          },
+          "currency": {
+            "index": 2,
+            "type_": {
+              "Datatype": {
+                "module": {
+                  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                  "name": "type_name"
+                },
+                "name": "TypeName",
+                "type_arguments": []
+              }
+            }
+          },
+          "amount": {
+            "index": 3,
+            "type_": "u64"
+          }
+        }
+      }
+    }
+  },
+  "enums": {}
+}

@@ -1,0 +1,143 @@
+.shop-panel {
+  color: #e4e3d5;
+  font-size: 12px;
+}
+.shop-heading,
+.shop-actions,
+.shop-selection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+.shop-heading h2,
+.shop-heading h3 {
+  margin-right: auto;
+}
+.shop-selection label,
+.shop-form label,
+.shop-create label,
+.shop-offer label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.shop-panel button,
+.inventory-modes button {
+  padding: 7px 12px;
+  border: 1px solid #544531;
+  background: #16120a;
+  color: #e4e3d5;
+  cursor: pointer;
+}
+.shop-panel button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.shop-panel button[aria-pressed="true"],
+.inventory-modes button[aria-pressed="true"] {
+  border-color: #ff6600;
+  color: #ff8a26;
+}
+.shop-panel input,
+.shop-panel select,
+.shop-panel textarea {
+  max-width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #554a37;
+  background: #0c0c09;
+  color: #eee;
+}
+.shop-panel input[type="checkbox"] {
+  width: auto;
+}
+.shop-panel fieldset {
+  border: 0;
+  padding: 12px 0;
+}
+.shop-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+.shop-panel details {
+  border-top: 1px solid #383126;
+  padding: 14px 0;
+}
+.shop-panel summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+.shop-offers.grid,
+.shop-directory {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.shop-offers.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.shop-offer {
+  padding: 16px;
+  border: 1px solid #423624;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  background: #0e0c08;
+}
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.shop-offer input {
+  max-width: 130px;
+}
+.shop-review {
+  border: 1px solid #ff6600;
+  padding: 16px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.shop-directory button {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 10px;
+}
+.shop-selection select {
+  max-width: 420px;
+}
+.shop-panel .ssu-pill {
+  align-self: flex-start;
+}
+.inventory-modes {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.shop-panel h4 {
+  color: #ff8a26;
+}
+@media (max-width: 600px) {
+  .shop-offers.grid,
+  .shop-directory,
+  .shop-form {
+    grid-template-columns: 1fr;
+  }
+  .shop-selection label {
+    width: 100%;
+  }
+  .shop-panel {
+    overflow-wrap: anywhere;
+  }
+  .shop-actions button {
+    flex: 1 1 auto;
+  }
+}

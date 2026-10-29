@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-29T17:03:38.515Z",
+  "checks": [
+    "grid/list and exact total",
+    "one reviewed purchase, explicit amount and destination",
+    "duplicate approve while reads held prompts once",
+    "changed stock invalidates reviewed approval",
+    "wallet change blocks approval",
+    "updated tribe is checked before wallet",
+    "non-owner sees no owner stock controls",
+    "proceeds totals and zero disabled",
+    "proceeds claim survives destroyed SSU",
+    "held signer remains locked across keyed identity remount",
+    "partial directory retains good shops",
+    "invalid huge total does not crash",
+    "owner and personal stocking use their own capability paths",
+    "new listing preview and no automatic write",
+    "fresh default activation requires consent and share_shop",
+    "occupied or tribal-bound unit never offers activation",
+    "mobile layout"
+  ],
+  "errors": [],
+  "realTransactions": 0
+}

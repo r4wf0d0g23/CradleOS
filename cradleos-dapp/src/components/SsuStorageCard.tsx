@@ -1,3 +1,4 @@
+import { shopExtension } from "../lib/storefront";
 import { useEffect, useRef, useState } from "react";
 import { ItemIcon, ClientUIIcon } from "./GameIcon";
 import { SharedAccessSection } from "./SharedAccessSection";
@@ -120,7 +121,7 @@ export function SsuStorageCard({
     },
     {
       key: "open",
-      label: "Shared pool",
+      label: shopExtension(snapshot?.extension ?? null) ? "Shop stock" : "Shared pool",
       icon: "folder/shared_folder_16px",
     },
   ];
@@ -158,7 +159,9 @@ export function SsuStorageCard({
                 ? "Not checked"
                 : unsafe
                   ? "Owner action needed"
-                  : snapshot.extension
+                  : shopExtension(snapshot.extension)
+                    ? "Storefront"
+                    : snapshot.extension
                     ? secureStorageExtension(snapshot.extension)
                       ? "Sharing enabled"
                       : "Other extension"
@@ -177,7 +180,7 @@ export function SsuStorageCard({
       </header>
       {!collapsed && (
         <div className="ssu-card-body">
-          <SharedAccessSection
+          {shopExtension(snapshot?.extension ?? null) ? <div className="ssu-warning">Storefront mode · Manage under Storefronts</div> : <SharedAccessSection
             ssuObjectId={ssu.objectId}
             ssuTypeFull={ssu.typeFull}
             ownerCapId={ownerCapId}
@@ -188,7 +191,7 @@ export function SsuStorageCard({
             resolvedNames={inv.resolvedNames}
             readError={inv.error}
             onRefresh={() => onRefresh(ssu.objectId)}
-          />
+          />}
           <div
             className="ssu-storage-tabs"
             role="group"

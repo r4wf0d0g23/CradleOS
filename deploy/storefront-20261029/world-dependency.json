@@ -1,0 +1,133 @@
+{
+  "at": "2026-10-29T17:02:28.457Z",
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "modules": [
+    {
+      "name": "access",
+      "local": "44575a164d38d303ea30798dd77c9ae070d264fa901e88b1c86d67f6f235f75a",
+      "live": "44575a164d38d303ea30798dd77c9ae070d264fa901e88b1c86d67f6f235f75a",
+      "same": true
+    },
+    {
+      "name": "assembly",
+      "local": "94fa76d119ebf7de2bc10a64930e46adfc080ced886f17d4b20fae051624c824",
+      "live": "94fa76d119ebf7de2bc10a64930e46adfc080ced886f17d4b20fae051624c824",
+      "same": true
+    },
+    {
+      "name": "character",
+      "local": "9c3545e285ec9aa6f83b8e882e49a82ede98c38ccaf742f36349fecee82c7584",
+      "live": "9c3545e285ec9aa6f83b8e882e49a82ede98c38ccaf742f36349fecee82c7584",
+      "same": true
+    },
+    {
+      "name": "energy",
+      "local": "7f6d2e624522a2cb73179137ba3dd28635178da1d2a91e1e3e290a509150cc3d",
+      "live": "7f6d2e624522a2cb73179137ba3dd28635178da1d2a91e1e3e290a509150cc3d",
+      "same": true
+    },
+    {
+      "name": "extension_freeze",
+      "local": "120cad54476829d8587d0cd512d1e07a4dec00ddc12575ebc87b8a3eb649db10",
+      "live": "120cad54476829d8587d0cd512d1e07a4dec00ddc12575ebc87b8a3eb649db10",
+      "same": true
+    },
+    {
+      "name": "fuel",
+      "local": "4de4223666bfce4ce81473b2fdf23454a771661ae7d6855a641e85d411611287",
+      "live": "4de4223666bfce4ce81473b2fdf23454a771661ae7d6855a641e85d411611287",
+      "same": true
+    },
+    {
+      "name": "gate",
+      "local": "5e63cc1f8c85ff916ac09d1e702740b3a543e9e36a93be1d6aca526b253a46c0",
+      "live": "5e63cc1f8c85ff916ac09d1e702740b3a543e9e36a93be1d6aca526b253a46c0",
+      "same": true
+    },
+    {
+      "name": "in_game_id",
+      "local": "ff9686bb111ad0545eed47d4bbb8b939b0de2267616248d9911b43fbdd6e4792",
+      "live": "ff9686bb111ad0545eed47d4bbb8b939b0de2267616248d9911b43fbdd6e4792",
+      "same": true
+    },
+    {
+      "name": "inventory",
+      "local": "26e426f641de9261c4f074592ad37b8711e5367bab2e85308b963dcd158fb3c9",
+      "live": "26e426f641de9261c4f074592ad37b8711e5367bab2e85308b963dcd158fb3c9",
+      "same": true
+    },
+    {
+      "name": "killmail",
+      "local": "b9b99d457ed3a7e1fc2652bd924d806e263c47c5eebb7b514f85dcc3de272454",
+      "live": "b9b99d457ed3a7e1fc2652bd924d806e263c47c5eebb7b514f85dcc3de272454",
+      "same": true
+    },
+    {
+      "name": "killmail_registry",
+      "local": "41b44cd1f1520f8af9591cbe42a88b39f64394942865ec777210075dc0e0d04f",
+      "live": "41b44cd1f1520f8af9591cbe42a88b39f64394942865ec777210075dc0e0d04f",
+      "same": true
+    },
+    {
+      "name": "location",
+      "local": "4e8d62728bd544a1ba6f5eb51e7c7492dbb793171d83641edfc65b9e475603de",
+      "live": "4e8d62728bd544a1ba6f5eb51e7c7492dbb793171d83641edfc65b9e475603de",
+      "same": true
+    },
+    {
+      "name": "metadata",
+      "local": "7ee6be67209324757cef7f83d21308f8cfab0282e9e8851cdcfb43583d92df0e",
+      "live": "7ee6be67209324757cef7f83d21308f8cfab0282e9e8851cdcfb43583d92df0e",
+      "same": true
+    },
+    {
+      "name": "network_node",
+      "local": "e8dc0da704288cadaeae3c60a28367a22cd823479866fab50dd07f595289bbcc",
+      "live": "e8dc0da704288cadaeae3c60a28367a22cd823479866fab50dd07f595289bbcc",
+      "same": true
+    },
+    {
+      "name": "object_registry",
+      "local": "275b26061252ec43ac00f2551550fcaf38050349cacd124cedd7ae8dad574f1a",
+      "live": "275b26061252ec43ac00f2551550fcaf38050349cacd124cedd7ae8dad574f1a",
+      "same": true
+    },
+    {
+      "name": "rift",
+      "local": "4728f9180cb2a4697cd807e690e45abc5995d99fff49aa941409fa598ff2b0e5",
+      "live": "4728f9180cb2a4697cd807e690e45abc5995d99fff49aa941409fa598ff2b0e5",
+      "same": true
+    },
+    {
+      "name": "sig_verify",
+      "local": "c552e7dc7744f90b5df78ec789978eb40db4e235c031794abf785c410d2dcd21",
+      "live": "c552e7dc7744f90b5df78ec789978eb40db4e235c031794abf785c410d2dcd21",
+      "same": true
+    },
+    {
+      "name": "status",
+      "local": "708ac5339ee343b01dffe6e71ab4e95cdec2b83a661874e7f1c4f197e6a968b0",
+      "live": "708ac5339ee343b01dffe6e71ab4e95cdec2b83a661874e7f1c4f197e6a968b0",
+      "same": true
+    },
+    {
+      "name": "storage_unit",
+      "local": "0775b67dc5f522f6f82e6667d62b66c693b6051d36e50602feba2da5284bf6b6",
+      "live": "0775b67dc5f522f6f82e6667d62b66c693b6051d36e50602feba2da5284bf6b6",
+      "same": true
+    },
+    {
+      "name": "turret",
+      "local": "8410ce8ececf6e85bb6db0984b7579b649f626c94fe4f12be02569b32d35d346",
+      "live": "8410ce8ececf6e85bb6db0984b7579b649f626c94fe4f12be02569b32d35d346",
+      "same": true
+    },
+    {
+      "name": "world",
+      "local": "612b7f3144aebea99cdae2b222eaed75a055e76e2b41403ee5e7315c3b963a4b",
+      "live": "612b7f3144aebea99cdae2b222eaed75a055e76e2b41403ee5e7315c3b963a4b",
+      "same": true
+    }
+  ],
+  "exactMatch": true
+}

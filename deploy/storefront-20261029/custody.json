@@ -1,0 +1,10 @@
+{
+  "publisher": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "upgradeCapDestination": "0x177583b2ee07dc6ce8056e49fda83637c996b9143adf651a8de5ebe03699b91a",
+  "backupProof": "f39e600f085cf7fbaeb0e90039f53b40ab79d1b53ad6b75cf9de32bb4db09b18",
+  "operatorMessage": "1565366765733675169",
+  "operatorInstruction": "Yes, use jetson2 moving forward",
+  "scope": "Standing Jetson2-only exception for this storage release and future CradleOS deployments; fresh proof and custody still required",
+  "secondBackupVerified": false,
+  "recordedBeforePublish": "2026-10-29T17:02:49.227614+00:00"
+}

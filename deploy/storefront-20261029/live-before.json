@@ -1,0 +1,3330 @@
+{
+  "at": "2026-10-29T17:03:25.672Z",
+  "candidate": {
+    "ssuId": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+    "name": "Home Depot",
+    "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+    "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+    "snapshot": {
+      "id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+      "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+      "version": "1071583257",
+      "ownerCapId": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+      "extension": null,
+      "frozen": false,
+      "online": true,
+      "slots": [
+        {
+          "key": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+          "partition": "owner_main",
+          "items": [
+            {
+              "typeId": 96039,
+              "quantity": 5,
+              "volume": 6000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 96013,
+              "quantity": 1,
+              "volume": 3000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95316,
+              "quantity": 6,
+              "volume": 5600,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95718,
+              "quantity": 3,
+              "volume": 6800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95811,
+              "quantity": 1,
+              "volume": 4800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95302,
+              "quantity": 3,
+              "volume": 2000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95284,
+              "quantity": 2,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88780,
+              "quantity": 23,
+              "volume": 2000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 96099,
+              "quantity": 22,
+              "volume": 4800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88564,
+              "quantity": 325,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95322,
+              "quantity": 10,
+              "volume": 400,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95663,
+              "quantity": 4,
+              "volume": 5000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95753,
+              "quantity": 7,
+              "volume": 400,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88234,
+              "quantity": 7752,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 97360,
+              "quantity": 1,
+              "volume": 20800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78418,
+              "quantity": 59,
+              "volume": 3000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83980,
+              "quantity": 59,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83984,
+              "quantity": 68,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83895,
+              "quantity": 116,
+              "volume": 300,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83897,
+              "quantity": 111,
+              "volume": 300,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 96055,
+              "quantity": 1,
+              "volume": 1600,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88565,
+              "quantity": 270,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 89087,
+              "quantity": 15,
+              "volume": 2000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78416,
+              "quantity": 4,
+              "volume": 6020,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78420,
+              "quantity": 4,
+              "volume": 3450,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78417,
+              "quantity": 3,
+              "volume": 3450,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78422,
+              "quantity": 1,
+              "volume": 15170,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95319,
+              "quantity": 8,
+              "volume": 5200,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95810,
+              "quantity": 3,
+              "volume": 5200,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 89088,
+              "quantity": 11,
+              "volume": 2000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 99020,
+              "quantity": 185,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 89258,
+              "quantity": 376,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95778,
+              "quantity": 2,
+              "volume": 400,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95759,
+              "quantity": 3,
+              "volume": 2000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 89260,
+              "quantity": 680,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95315,
+              "quantity": 45,
+              "volume": 3600,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88235,
+              "quantity": 9048,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77805,
+              "quantity": 16720,
+              "volume": 1,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 82126,
+              "quantity": 1573,
+              "volume": 30,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78421,
+              "quantity": 3,
+              "volume": 3450,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 99001,
+              "quantity": 850,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 84180,
+              "quantity": 312,
+              "volume": 400,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77804,
+              "quantity": 907,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95988,
+              "quantity": 13,
+              "volume": 6000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77728,
+              "quantity": 528,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95325,
+              "quantity": 53,
+              "volume": 800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 97359,
+              "quantity": 1,
+              "volume": 20800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95343,
+              "quantity": 157,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78437,
+              "quantity": 987,
+              "volume": 28,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95680,
+              "quantity": 6,
+              "volume": 6800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 84182,
+              "quantity": 4082,
+              "volume": 1000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83818,
+              "quantity": 239,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88561,
+              "quantity": 331,
+              "volume": 1000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78449,
+              "quantity": 25,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77810,
+              "quantity": 335,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77811,
+              "quantity": 16,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78446,
+              "quantity": 79,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 99003,
+              "quantity": 222,
+              "volume": 42,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95639,
+              "quantity": 36,
+              "volume": 200,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95339,
+              "quantity": 198,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83898,
+              "quantity": 34,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83896,
+              "quantity": 27,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83981,
+              "quantity": 7,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83979,
+              "quantity": 2,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83983,
+              "quantity": 1,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83891,
+              "quantity": 1,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83892,
+              "quantity": 3,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83894,
+              "quantity": 1,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78435,
+              "quantity": 17,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95341,
+              "quantity": 64,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95321,
+              "quantity": 4,
+              "volume": 6800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95679,
+              "quantity": 10,
+              "volume": 3500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95767,
+              "quantity": 2,
+              "volume": 5000,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95678,
+              "quantity": 5,
+              "volume": 6800,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 83463,
+              "quantity": 1,
+              "volume": 200,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 96106,
+              "quantity": 4,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78516,
+              "quantity": 1539,
+              "volume": 28,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 84868,
+              "quantity": 2985,
+              "volume": 28,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77800,
+              "quantity": 257,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78448,
+              "quantity": 60,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78447,
+              "quantity": 17,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88782,
+              "quantity": 11099,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 88783,
+              "quantity": 1157,
+              "volume": 30,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77801,
+              "quantity": 168,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 89259,
+              "quantity": 544,
+              "volume": 100,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 78423,
+              "quantity": 3374,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 95344,
+              "quantity": 6,
+              "volume": 500,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            },
+            {
+              "typeId": 77803,
+              "quantity": 2705,
+              "volume": 10,
+              "itemId": "0",
+              "partition": "owner_main",
+              "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+            }
+          ],
+          "used": 7527192,
+          "max": 20000000
+        },
+        {
+          "key": "0x20bde249880cc45866b4c3fa30c00512f4f2e5304332d71c82dbf680fc10ab0c",
+          "partition": "open",
+          "items": [],
+          "used": 0,
+          "max": 20000000
+        }
+      ],
+      "readAt": 1793293402996
+    },
+    "row": {
+      "typeId": 96039,
+      "quantity": 5,
+      "volume": 6000,
+      "itemId": "0",
+      "partition": "owner_main",
+      "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+    },
+    "characterCap": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362"
+  },
+  "evidence": [
+    {
+      "ssuId": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+      "name": "Home Depot",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x893cd5736caf3abdde8adb8a09153a8be1cfb1dc11111bb2741531b3821d4cd6",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583257",
+        "ownerCapId": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 96039,
+                "quantity": 5,
+                "volume": 6000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 96013,
+                "quantity": 1,
+                "volume": 3000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95316,
+                "quantity": 6,
+                "volume": 5600,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95718,
+                "quantity": 3,
+                "volume": 6800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95811,
+                "quantity": 1,
+                "volume": 4800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95302,
+                "quantity": 3,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95284,
+                "quantity": 2,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88780,
+                "quantity": 23,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 96099,
+                "quantity": 22,
+                "volume": 4800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88564,
+                "quantity": 325,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95322,
+                "quantity": 10,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95663,
+                "quantity": 4,
+                "volume": 5000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95753,
+                "quantity": 7,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88234,
+                "quantity": 7752,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 97360,
+                "quantity": 1,
+                "volume": 20800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78418,
+                "quantity": 59,
+                "volume": 3000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83980,
+                "quantity": 59,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83984,
+                "quantity": 68,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83895,
+                "quantity": 116,
+                "volume": 300,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83897,
+                "quantity": 111,
+                "volume": 300,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 96055,
+                "quantity": 1,
+                "volume": 1600,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88565,
+                "quantity": 270,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 89087,
+                "quantity": 15,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78416,
+                "quantity": 4,
+                "volume": 6020,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78420,
+                "quantity": 4,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78417,
+                "quantity": 3,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78422,
+                "quantity": 1,
+                "volume": 15170,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95319,
+                "quantity": 8,
+                "volume": 5200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95810,
+                "quantity": 3,
+                "volume": 5200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 89088,
+                "quantity": 11,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 99020,
+                "quantity": 185,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 89258,
+                "quantity": 376,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95778,
+                "quantity": 2,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95759,
+                "quantity": 3,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 89260,
+                "quantity": 680,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95315,
+                "quantity": 45,
+                "volume": 3600,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88235,
+                "quantity": 9048,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77805,
+                "quantity": 16720,
+                "volume": 1,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 82126,
+                "quantity": 1573,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78421,
+                "quantity": 3,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 99001,
+                "quantity": 850,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 84180,
+                "quantity": 312,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77804,
+                "quantity": 907,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95988,
+                "quantity": 13,
+                "volume": 6000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77728,
+                "quantity": 528,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95325,
+                "quantity": 53,
+                "volume": 800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 97359,
+                "quantity": 1,
+                "volume": 20800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95343,
+                "quantity": 157,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78437,
+                "quantity": 987,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95680,
+                "quantity": 6,
+                "volume": 6800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 84182,
+                "quantity": 4082,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83818,
+                "quantity": 239,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88561,
+                "quantity": 331,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78449,
+                "quantity": 25,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77810,
+                "quantity": 335,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77811,
+                "quantity": 16,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78446,
+                "quantity": 79,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 99003,
+                "quantity": 222,
+                "volume": 42,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95639,
+                "quantity": 36,
+                "volume": 200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95339,
+                "quantity": 198,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83898,
+                "quantity": 34,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83896,
+                "quantity": 27,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83981,
+                "quantity": 7,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83979,
+                "quantity": 2,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83983,
+                "quantity": 1,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83891,
+                "quantity": 1,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83892,
+                "quantity": 3,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83894,
+                "quantity": 1,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78435,
+                "quantity": 17,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95341,
+                "quantity": 64,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95321,
+                "quantity": 4,
+                "volume": 6800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95679,
+                "quantity": 10,
+                "volume": 3500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95767,
+                "quantity": 2,
+                "volume": 5000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95678,
+                "quantity": 5,
+                "volume": 6800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 83463,
+                "quantity": 1,
+                "volume": 200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 96106,
+                "quantity": 4,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78516,
+                "quantity": 1539,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 84868,
+                "quantity": 2985,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77800,
+                "quantity": 257,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78448,
+                "quantity": 60,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78447,
+                "quantity": 17,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88782,
+                "quantity": 11099,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 88783,
+                "quantity": 1157,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77801,
+                "quantity": 168,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 89259,
+                "quantity": 544,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 78423,
+                "quantity": 3374,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 95344,
+                "quantity": 6,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              },
+              {
+                "typeId": 77803,
+                "quantity": 2705,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x1b783b321e815aa39b99a7d9732eb9656f56f084903d3cc469892205bc943614"
+              }
+            ],
+            "used": 7527192,
+            "max": 20000000
+          },
+          {
+            "key": "0x20bde249880cc45866b4c3fa30c00512f4f2e5304332d71c82dbf680fc10ab0c",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293402996
+      }
+    },
+    {
+      "ssuId": "0x3d249735fbbc12886f1e0d5f09aacd6c7a511ecfde886a7779d76851b666756c",
+      "name": "Home Depot",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x3d249735fbbc12886f1e0d5f09aacd6c7a511ecfde886a7779d76851b666756c",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583229",
+        "ownerCapId": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 78449,
+                "quantity": 1,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78447,
+                "quantity": 38,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77810,
+                "quantity": 237,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77800,
+                "quantity": 256,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77811,
+                "quantity": 6,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78446,
+                "quantity": 13,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 81658,
+                "quantity": 9,
+                "volume": 1,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 84868,
+                "quantity": 3826,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78417,
+                "quantity": 4,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78422,
+                "quantity": 10,
+                "volume": 15170,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 83818,
+                "quantity": 161,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 83979,
+                "quantity": 3,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 83983,
+                "quantity": 4,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 84210,
+                "quantity": 30,
+                "volume": 1500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88780,
+                "quantity": 12,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 89088,
+                "quantity": 1,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88564,
+                "quantity": 14,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88783,
+                "quantity": 75,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 99001,
+                "quantity": 94,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 84180,
+                "quantity": 51,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 84182,
+                "quantity": 171,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88565,
+                "quantity": 29,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 89087,
+                "quantity": 2,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88561,
+                "quantity": 1,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88235,
+                "quantity": 2304,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 89260,
+                "quantity": 4,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77801,
+                "quantity": 7032,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77805,
+                "quantity": 700,
+                "volume": 1,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 89259,
+                "quantity": 3,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77803,
+                "quantity": 5605,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77804,
+                "quantity": 1290,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 88234,
+                "quantity": 511,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78423,
+                "quantity": 61,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 83892,
+                "quantity": 1,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 83894,
+                "quantity": 2,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78516,
+                "quantity": 184,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 77728,
+                "quantity": 118,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              },
+              {
+                "typeId": 78435,
+                "quantity": 81,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x2a919add047783fe72a86c70e9dc8a7a0e3ba0c9c242e4873e765d94c1c21204"
+              }
+            ],
+            "used": 934379,
+            "max": 20000000
+          },
+          {
+            "key": "0x4330ef4de7f305d60bb14bbd79e0f70d68c220d047352733d62029b7a182df05",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293403290
+      }
+    },
+    {
+      "ssuId": "0x192902969e958a9b5e06fae2f06f7cf8efaf7091c9ee5f66acaa62606e96d05b",
+      "name": "Storage Unit",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x192902969e958a9b5e06fae2f06f7cf8efaf7091c9ee5f66acaa62606e96d05b",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071569810",
+        "ownerCapId": "0x5a73d656571cbbd424ba39960254b563d835a51b15067532729dc98de824ae7a",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x5a73d656571cbbd424ba39960254b563d835a51b15067532729dc98de824ae7a",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 83818,
+                "quantity": 80,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x5a73d656571cbbd424ba39960254b563d835a51b15067532729dc98de824ae7a"
+              },
+              {
+                "typeId": 88335,
+                "quantity": 7934,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x5a73d656571cbbd424ba39960254b563d835a51b15067532729dc98de824ae7a"
+              },
+              {
+                "typeId": 99001,
+                "quantity": 714,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x5a73d656571cbbd424ba39960254b563d835a51b15067532729dc98de824ae7a"
+              },
+              {
+                "typeId": 84182,
+                "quantity": 280,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x5a73d656571cbbd424ba39960254b563d835a51b15067532729dc98de824ae7a"
+              }
+            ],
+            "used": 899152,
+            "max": 20000000
+          },
+          {
+            "key": "0x42d03fa42b1aa189af0146ad051c0642b6a53fe472ffbd58dfe25bea2103e33b",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293403544
+      }
+    },
+    {
+      "ssuId": "0xdfc6d017e4c4fe03225e55d12fd870f249cb6022803b758bec0c9cc8207ec8b5",
+      "name": "Storage Unit",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0xdfc6d017e4c4fe03225e55d12fd870f249cb6022803b758bec0c9cc8207ec8b5",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583243",
+        "ownerCapId": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 78448,
+                "quantity": 52,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77811,
+                "quantity": 28,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 82126,
+                "quantity": 2787,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95339,
+                "quantity": 138,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95340,
+                "quantity": 116,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78437,
+                "quantity": 1368,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95779,
+                "quantity": 16,
+                "volume": 200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95639,
+                "quantity": 40,
+                "volume": 200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83983,
+                "quantity": 1,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83980,
+                "quantity": 1,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83984,
+                "quantity": 2,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95343,
+                "quantity": 31,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95345,
+                "quantity": 270,
+                "volume": 60,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78417,
+                "quantity": 3,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78422,
+                "quantity": 1,
+                "volume": 15170,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83988,
+                "quantity": 6,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 91496,
+                "quantity": 2,
+                "volume": 1,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83979,
+                "quantity": 5,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78435,
+                "quantity": 1347,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77805,
+                "quantity": 7060,
+                "volume": 1,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88780,
+                "quantity": 14,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 89088,
+                "quantity": 1,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88564,
+                "quantity": 38,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88234,
+                "quantity": 5508,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 99001,
+                "quantity": 648,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 84182,
+                "quantity": 3471,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88565,
+                "quantity": 122,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 89087,
+                "quantity": 2,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83899,
+                "quantity": 27,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83893,
+                "quantity": 9,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83891,
+                "quantity": 4,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83892,
+                "quantity": 14,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83894,
+                "quantity": 19,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95680,
+                "quantity": 3,
+                "volume": 6800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95988,
+                "quantity": 2,
+                "volume": 6000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 96106,
+                "quantity": 46,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 93629,
+                "quantity": 9,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95325,
+                "quantity": 5,
+                "volume": 800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88335,
+                "quantity": 581,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 89089,
+                "quantity": 42,
+                "volume": 4700,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78449,
+                "quantity": 98,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78447,
+                "quantity": 4,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88781,
+                "quantity": 21,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 96035,
+                "quantity": 125,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88765,
+                "quantity": 574,
+                "volume": 70,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78423,
+                "quantity": 294,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95778,
+                "quantity": 5,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77801,
+                "quantity": 72434,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88235,
+                "quantity": 32256,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77800,
+                "quantity": 70,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 89258,
+                "quantity": 11,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 89260,
+                "quantity": 5,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 89259,
+                "quantity": 5,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77803,
+                "quantity": 5442,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 84210,
+                "quantity": 13,
+                "volume": 1500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 78516,
+                "quantity": 3703,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83839,
+                "quantity": 696,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88782,
+                "quantity": 2381,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83818,
+                "quantity": 253,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77810,
+                "quantity": 228,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 83463,
+                "quantity": 3,
+                "volume": 200,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95315,
+                "quantity": 3,
+                "volume": 3600,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95659,
+                "quantity": 39,
+                "volume": 2500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 92422,
+                "quantity": 286,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 95341,
+                "quantity": 5,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 84868,
+                "quantity": 15695,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 77728,
+                "quantity": 7,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 88561,
+                "quantity": 9,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 99014,
+                "quantity": 513,
+                "volume": 6,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 84180,
+                "quantity": 263,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              },
+              {
+                "typeId": 96099,
+                "quantity": 2,
+                "volume": 4800,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x68e471a42830916af7cc58935c02430c264122e9541d542e613b21b1f99f4501"
+              }
+            ],
+            "used": 6718776,
+            "max": 20000000
+          },
+          {
+            "key": "0xb4a46bbb1a9bdba18bbd5f0a0e86cef160455b24ad247624c96bf072e1f3b67b",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293403806
+      }
+    },
+    {
+      "ssuId": "0x42f86a475471f2f833b1b899cf56faa26b23ab8c43e4c1e8961ec0e0540a6708",
+      "name": "Lowes",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x42f86a475471f2f833b1b899cf56faa26b23ab8c43e4c1e8961ec0e0540a6708",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071569970",
+        "ownerCapId": "0x71e39b85d2b4e159fba1a4ccbe90eaf701038d748ec115555297bf62142a8a0d",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x71e39b85d2b4e159fba1a4ccbe90eaf701038d748ec115555297bf62142a8a0d",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 88335,
+                "quantity": 970,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x71e39b85d2b4e159fba1a4ccbe90eaf701038d748ec115555297bf62142a8a0d"
+              }
+            ],
+            "used": 27160,
+            "max": 2000000
+          },
+          {
+            "key": "0x23c77619fc571d14f665cac16f385826c0b908e1535fc0de61342ba0d13cba3b",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 2000000
+          }
+        ],
+        "readAt": 1793293404056
+      }
+    },
+    {
+      "ssuId": "0x7ec700bd0d826cbfebf96c1c2537fcef0b4f651bca45c5881ae0a1e54d4d794b",
+      "name": "Home Depot",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x7ec700bd0d826cbfebf96c1c2537fcef0b4f651bca45c5881ae0a1e54d4d794b",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583302",
+        "ownerCapId": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 99001,
+                "quantity": 417,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13"
+              },
+              {
+                "typeId": 88565,
+                "quantity": 190,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13"
+              },
+              {
+                "typeId": 83818,
+                "quantity": 299,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13"
+              },
+              {
+                "typeId": 88780,
+                "quantity": 22,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13"
+              },
+              {
+                "typeId": 82126,
+                "quantity": 9,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13"
+              },
+              {
+                "typeId": 88335,
+                "quantity": 533,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x76c98a3de6d5ae98cd67d3c3df5810ee56688063bb99191a0612ae66fb65df13"
+              }
+            ],
+            "used": 512194,
+            "max": 20000000
+          },
+          {
+            "key": "0xfba711533fc532c216a26517cc1542a6d953e81303f31a25570b2f611da7f93f",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293404328
+      }
+    },
+    {
+      "ssuId": "0x4e42dcdd91b910f3281bf14c6d009f12bdaeead9946d537c015bc011e9d719c9",
+      "name": "Storage Unit",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x4e42dcdd91b910f3281bf14c6d009f12bdaeead9946d537c015bc011e9d719c9",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071569959",
+        "ownerCapId": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 99001,
+                "quantity": 488,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 88565,
+                "quantity": 26,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 77805,
+                "quantity": 5640,
+                "volume": 1,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 88234,
+                "quantity": 3115,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 83818,
+                "quantity": 104,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 88561,
+                "quantity": 60,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 88782,
+                "quantity": 2013,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 77801,
+                "quantity": 48727,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 78417,
+                "quantity": 1,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 78437,
+                "quantity": 558,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 84182,
+                "quantity": 176,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 84868,
+                "quantity": 5688,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 78516,
+                "quantity": 765,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 82126,
+                "quantity": 5747,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 88783,
+                "quantity": 81,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 89259,
+                "quantity": 244,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              },
+              {
+                "typeId": 83892,
+                "quantity": 1,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0x91190a38b22a3f94ebc18547803145faf01995ef51f0e19f08734624c2844e09"
+              }
+            ],
+            "used": 1488288,
+            "max": 20000000
+          },
+          {
+            "key": "0xf45576c4eff8d7a429ea7494431616a41dcf0ff29ee50d5588de3f9046836daf",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293404542
+      }
+    },
+    {
+      "ssuId": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+      "name": "Reap Shared storage",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0x573d25ba9bafd0f01de44b81090a5ea2bfac42c6c07a84267a5b95b9e1be18c5",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583316",
+        "ownerCapId": "0x98834a9b2a7897f82eefa3351bfcd2edc2d902ae63e5f61be108f5876ecf564c",
+        "extension": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::SharedAccess",
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0x98834a9b2a7897f82eefa3351bfcd2edc2d902ae63e5f61be108f5876ecf564c",
+            "partition": "owner_main",
+            "items": [],
+            "used": 0,
+            "max": 2000000
+          },
+          {
+            "key": "0x7f179cfeea357a13f1023524c568a6a813ab00dbfad3fd60597fd6d93e8a8663",
+            "partition": "open",
+            "items": [
+              {
+                "typeId": 77800,
+                "quantity": 50,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x7f179cfeea357a13f1023524c568a6a813ab00dbfad3fd60597fd6d93e8a8663"
+              },
+              {
+                "typeId": 92394,
+                "quantity": 180,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x7f179cfeea357a13f1023524c568a6a813ab00dbfad3fd60597fd6d93e8a8663"
+              }
+            ],
+            "used": 23000,
+            "max": 2000000
+          },
+          {
+            "key": "0x58ca2cac8eb8e6b0902da5bb7cb81a2b78372225d5f4a986321826e5773c7018",
+            "partition": "unknown",
+            "items": [
+              {
+                "typeId": 89089,
+                "quantity": 53,
+                "volume": 4700,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0x58ca2cac8eb8e6b0902da5bb7cb81a2b78372225d5f4a986321826e5773c7018"
+              }
+            ],
+            "used": 249100,
+            "max": 2000000
+          },
+          {
+            "key": "0x649359a814af663e68da381932306ba34da31f26390910752062995265eb0b96",
+            "partition": "unknown",
+            "items": [
+              {
+                "typeId": 89089,
+                "quantity": 28,
+                "volume": 4700,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0x649359a814af663e68da381932306ba34da31f26390910752062995265eb0b96"
+              },
+              {
+                "typeId": 92422,
+                "quantity": 936,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0x649359a814af663e68da381932306ba34da31f26390910752062995265eb0b96"
+              },
+              {
+                "typeId": 78435,
+                "quantity": 216,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0x649359a814af663e68da381932306ba34da31f26390910752062995265eb0b96"
+              },
+              {
+                "typeId": 92483,
+                "quantity": 7,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0x649359a814af663e68da381932306ba34da31f26390910752062995265eb0b96"
+              }
+            ],
+            "used": 166060,
+            "max": 2000000
+          }
+        ],
+        "readAt": 1793293404823
+      }
+    },
+    {
+      "ssuId": "0xf300ea0e21f2ed15294e560ce538d8c9fafae46596ee69c0b32634d60b3b5312",
+      "name": "Home Depot",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0xf300ea0e21f2ed15294e560ce538d8c9fafae46596ee69c0b32634d60b3b5312",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583172",
+        "ownerCapId": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f",
+        "extension": null,
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f",
+            "partition": "owner_main",
+            "items": [
+              {
+                "typeId": 77810,
+                "quantity": 19,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88780,
+                "quantity": 94,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88565,
+                "quantity": 485,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 89260,
+                "quantity": 1366,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88234,
+                "quantity": 1108,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 95341,
+                "quantity": 5,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 77800,
+                "quantity": 614,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 84182,
+                "quantity": 2284,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88564,
+                "quantity": 125,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 78418,
+                "quantity": 55,
+                "volume": 3000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 78417,
+                "quantity": 1,
+                "volume": 3450,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 89087,
+                "quantity": 1,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 78422,
+                "quantity": 1,
+                "volume": 15170,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88781,
+                "quantity": 10,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 89088,
+                "quantity": 3,
+                "volume": 2000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 78416,
+                "quantity": 1,
+                "volume": 6020,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88335,
+                "quantity": 1756,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 83984,
+                "quantity": 6,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 83980,
+                "quantity": 5,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 88561,
+                "quantity": 326,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 78516,
+                "quantity": 9649,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 84868,
+                "quantity": 600,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 99001,
+                "quantity": 1082,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 95344,
+                "quantity": 45,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 84180,
+                "quantity": 123,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 83818,
+                "quantity": 606,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 77801,
+                "quantity": 1029,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 89259,
+                "quantity": 566,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 77803,
+                "quantity": 541,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 78423,
+                "quantity": 2501,
+                "volume": 10,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 95343,
+                "quantity": 90,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              },
+              {
+                "typeId": 95315,
+                "quantity": 16,
+                "volume": 3600,
+                "itemId": "0",
+                "partition": "owner_main",
+                "partitionKey": "0xaa534790c1f8ef381428b607cba8aa7777672412420b96ef1727b76b97c6184f"
+              }
+            ],
+            "used": 4912280,
+            "max": 20000000
+          },
+          {
+            "key": "0xef04e252c740204214617a94ddfd0e639b73501e597679449bea4e4f462d1251",
+            "partition": "open",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293405054
+      }
+    },
+    {
+      "ssuId": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+      "name": "Large Reaper Shared Storage",
+      "characterId": "0x753a02cc4a064d09704eb7333fb3bfee41317ee60a094571b85b120c4cea1ce5",
+      "wallet": "0x9eb4912cc02e0e82c0dec9a97a0b4c5ac3e5fbebc4cde4089cfbc0150e382c33",
+      "snapshot": {
+        "id": "0xda43c01a71b703083b3196985e821169c7093a7687fee47498fedf143e7247ed",
+        "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::storage_unit::StorageUnit",
+        "version": "1071583243",
+        "ownerCapId": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+        "extension": "0xb373fbf3bc4236e92494214fe5a57a8e95b62bb0efd6262023daa3d60d86401f::storage_access::SharedAccess",
+        "frozen": false,
+        "online": true,
+        "slots": [
+          {
+            "key": "0xadece70a119b9f10b6489f2bf72058cd097e704ebbd2843c03258687f714446d",
+            "partition": "owner_main",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          },
+          {
+            "key": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc",
+            "partition": "open",
+            "items": [
+              {
+                "typeId": 92483,
+                "quantity": 132,
+                "volume": 500,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 88561,
+                "quantity": 16,
+                "volume": 1000,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 84868,
+                "quantity": 1052,
+                "volume": 28,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 77800,
+                "quantity": 300,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 99014,
+                "quantity": 1184,
+                "volume": 6,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 77728,
+                "quantity": 214,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 77810,
+                "quantity": 373,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 84180,
+                "quantity": 16,
+                "volume": 400,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 88764,
+                "quantity": 9,
+                "volume": 24,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 77729,
+                "quantity": 13,
+                "volume": 100,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              },
+              {
+                "typeId": 88783,
+                "quantity": 955,
+                "volume": 30,
+                "itemId": "0",
+                "partition": "open",
+                "partitionKey": "0x47ae17f293f539b1ff5b16f5e069ce0794111c7dec7afb3bfb29ec108d75bbfc"
+              }
+            ],
+            "used": 243826,
+            "max": 20000000
+          },
+          {
+            "key": "0x58ca2cac8eb8e6b0902da5bb7cb81a2b78372225d5f4a986321826e5773c7018",
+            "partition": "unknown",
+            "items": [],
+            "used": 0,
+            "max": 20000000
+          },
+          {
+            "key": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362",
+            "partition": "unknown",
+            "items": [
+              {
+                "typeId": 89089,
+                "quantity": 163,
+                "volume": 4700,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362"
+              },
+              {
+                "typeId": 84210,
+                "quantity": 28,
+                "volume": 1500,
+                "itemId": "0",
+                "partition": "unknown",
+                "partitionKey": "0xd13e797a8a39630d68c36e87bcf57fb232421aa22efc81c8f8344e6425b8f362"
+              }
+            ],
+            "used": 808100,
+            "max": 20000000
+          }
+        ],
+        "readAt": 1793293405303
+      }
+    }
+  ],
+  "signed": false,
+  "submitted": false
+}
