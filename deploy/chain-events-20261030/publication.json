@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-30T18:36:46.088539+00:00",
+  "sourceCommit": "24a7e08cf1e28d292cd510703b737bb18d0d37cf",
+  "productionOrigin": "https://cradleos.io",
+  "publicLog": "https://cradleos.io/#/events",
+  "project": "cradleos",
+  "productionBranch": "main",
+  "deployment": "5298055e",
+  "deploymentUrl": "https://5298055e.cradleos-d75.pages.dev",
+  "rollback": {
+    "deployment": "c150da8c",
+    "sourceCommit": "9c638d0228d3fafd1a66072b922ad0cc2eea0e00"
+  },
+  "contractsChanged": false,
+  "backendChanged": false,
+  "playerTransactions": 0
+}

@@ -28,6 +28,7 @@ Route events contain neither tenant nor token type. Before publication into the 
 - TypeScript/Vite production build; Origins guard (8 checks); approved scoped IOC scan clean.
 - Independent architecture and final source review by existing native reviewer: PASS after correcting the event-specific index watermark. Review was not an Opus run.
 - Preview browser uses live chain data with explicit simulated failures, TLS verification and sandboxed Chromium. See preview-browser.json; no transactions or wallet signing performed.
-- Root/partner assets and production browser receipts are recorded after publication.
+- Production verified: exact hashes for all five JS/CSS assets, root and partner metrics HTML references, partner noindex and slash redirect. Eleven live browser scenario groups passed at 320/390/650/1440 px with no page errors and zero chain writes. See live-assets.json and live-browser.json.
+- LIVE runtime source `24a7e08cf1e28d292cd510703b737bb18d0d37cf`, Pages `5298055e`. Publication receipt: publication.json.
 
 Previous production rollback: Cloudflare Pages `c150da8c`, runtime source `9c638d0228d3fafd1a66072b922ad0cc2eea0e00`.

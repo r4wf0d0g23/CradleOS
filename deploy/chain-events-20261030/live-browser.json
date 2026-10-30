@@ -1,0 +1,442 @@
+{
+  "at": "2026-10-30T18:36:53.992Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "checks": [
+    "All-source failure is Unavailable, not an empty-success count",
+    "Public log reads real current-world events and typed names without wallet access",
+    "Category, exact gate-ID search and per-event transaction provenance",
+    "Backfilled losses show occurred time separately from chain-recorded time",
+    "Older pages deduplicate, preserve history snapshot and suspend automatic head polling/ticker",
+    "One-source outage retains labelled stale rows without failing other sources",
+    "Index/sample freshness expires; ticker hides stale highlights and recovers",
+    "Ticker pause persists; focus stops motion; reduced-motion is static; duplicate is inert/hidden to accessibility",
+    "Ticker highlight opens the corresponding transaction-filtered event log",
+    "Log and ticker fit 320/390/650/1440px",
+    "Metadata outage preserves real events with ID fallbacks; direct event-log route works"
+  ],
+  "liveChainData": true,
+  "syntheticFailures": true,
+  "writes": 0,
+  "errors": [],
+  "eventReads": 35,
+  "network": [
+    {
+      "url": "https://cradleos.io/",
+      "status": 200
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-Dq68G_mi.css",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-Ds9wnO0Y.js",
+      "status": 200
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "simulatedFailure": "fail",
+      "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::gate"
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "simulatedFailure": "fail",
+      "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::killmail"
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "simulatedFailure": "fail",
+      "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::status::StatusChangedEvent"
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "simulatedFailure": "fail",
+      "type": "0x52a273e9250744b72fdbd242ebeb89bb0ed0606857c9028963abfd6c1645434e::route"
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/ef-wordmark.svg",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/system-names-stillness-cycle7-3573151.json",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "simulatedFailure": "gate-fail",
+      "type": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92::gate"
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-Ds9wnO0Y.js",
+      "status": 200
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "status": 200
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-Dq68G_mi.css",
+      "status": 200
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/ef-wordmark.svg",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/data/system-names-stillness-cycle7-3573151.json",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204
+    },
+    {
+      "url": "https://cradleos.io/",
+      "status": 200
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200
+    },
+    {
+      "url": "https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-Dq68G_mi.css",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/app-Ds9wnO0Y.js",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/assets/activityTelemetry-D3-Jnl0P.js",
+      "status": 200
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403
+    },
+    {
+      "url": "https://cradleos.io/bg/eve-frontier-bg.gif",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "simulatedFailure": "names-fail"
+    },
+    {
+      "url": "https://cradleos.io/data/system-names-stillness-cycle7-3573151.json",
+      "status": 200
+    },
+    {
+      "url": "https://cradleos.io/cdn-cgi/rum?",
+      "status": 204
+    },
+    {
+      "url": "https://cradleos.io/cradleos-logo.png",
+      "status": 200
+    }
+  ]
+}
