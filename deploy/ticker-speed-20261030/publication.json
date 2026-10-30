@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-30T19:13:19.022596+00:00",
+  "sourceCommit": "1e8e98b7bd123151d4004c2606d32fbf97d4f7c8",
+  "deployment": "a03fd651",
+  "deploymentUrl": "https://a03fd651.cradleos-d75.pages.dev",
+  "origin": "https://cradleos.io",
+  "rollback": {
+    "deployment": "d48d0689",
+    "sourceCommit": "e3bf5259622c9d37fbcf0a31002862f369a919d6"
+  },
+  "speedMultiplier": 2,
+  "typescriptBuild": "passed",
+  "originsChecks": 8,
+  "ioc": "clean",
+  "playerWrites": 0
+}

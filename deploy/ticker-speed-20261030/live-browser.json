@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-30T19:13:15.449Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "checks": [
+    {
+      "check": "Duration halved and ticker visibly advances",
+      "duration": 22.5,
+      "chars": 34,
+      "count": 1,
+      "state": "running"
+    },
+    {
+      "check": "Hover, keyboard, explicit pause and reduced-motion preserved"
+    }
+  ],
+  "mobileFits": true,
+  "errors": [],
+  "writes": 0,
+  "realChainData": true
+}
