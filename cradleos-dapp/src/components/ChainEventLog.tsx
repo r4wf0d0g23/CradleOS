@@ -68,7 +68,7 @@ export function ChainEventTicker({ onOpen }: { onOpen: (query?: string) => void 
     <button className="chain-ticker-open" onClick={()=>onOpen()}>Event log</button>
     {events.length>0 && Object.values(feed.streams).some(s=>streamStatus(s,feed.now)!=='Current') && <span className="chain-ticker-empty">Partial</span>}
     <div className="chain-ticker-window">
-      {events.length ? <div className="chain-ticker-track" style={{animationDuration:`${Math.max(45,events.reduce((n,e)=>n+eventSentence(e,feed.names).length,0)/9)}s`}}>
+      {events.length ? <div className="chain-ticker-track" style={{animationDuration:`${Math.max(22.5,events.reduce((n,e)=>n+eventSentence(e,feed.names).length,0)/18)}s`}}>
         <div className="chain-ticker-group">{events.map(e=><button key={e.id} data-event-id={e.id} onClick={()=>onOpen(e.digest)}><time dateTime={new Date(e.recordedAt).toISOString()}>{timestamp(e.recordedAt)}</time> · <EventText event={e} names={feed.names} /></button>)}</div>
         <div className="chain-ticker-group chain-ticker-copy" aria-hidden="true" inert>{events.map(e=><span key={e.id} data-event-id={e.id}><time dateTime={new Date(e.recordedAt).toISOString()}>{timestamp(e.recordedAt)}</time> · <EventText event={e} names={feed.names} /></span>)}</div>
       </div> : <span className="chain-ticker-empty">{state}</span>}
