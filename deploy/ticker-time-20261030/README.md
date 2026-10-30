@@ -7,3 +7,5 @@ Raw request1565803393119686697: ticker goes forward in time, latest events only.
 Rollback: Pages7483fcc2/source351fb31e39099ff09cf30ba310cedc9a33be322f.
 
 Checks PASS: 31 targeted tests, Origins8, approved scoped IOC scan, TypeScript/Vite build. Preview four scenario groups on real chain data; chronological/top-eight selection tested with shuffled twelve-record unit fixture. Live preview had one eligible recent highlight at check time. Fresh-index/old-event simulation correctly clears ticker without clearing log. 390/1440px, pause, highlight click and refresh recovery checked; zero page errors/writes.
+
+LIVE runtime1ae7a0f49fc2d85f923d67eec374ce13bb1b37b1/Pages9e1a427e. Production exact five asset hashes/root/partner/noindex/301 checks PASS; four production browser groups PASS with zero errors/writes. Only one eligible real highlight existed at check time; chronological multi-event selection remains covered by the shuffled unit fixture. Owned preview5363 stopped.
