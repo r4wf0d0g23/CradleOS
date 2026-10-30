@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-30T11:56:44.863612+00:00",
+  "sourceCommit": "5eba751a60e3aae55c6ee80b1a7463337fb9f054",
+  "pagesDeployment": "9fc2e31d",
+  "origin": "https://cradleos.io",
+  "rollbackPages": "925de9e9",
+  "runtimeChange": "three preference default lines only",
+  "sourceReview": "PASS",
+  "build": "PASS",
+  "originsChecks": 8,
+  "ioc": "clean",
+  "newUnitTests": false,
+  "contractsChanged": false,
+  "playerTransactionsSubmitted": 0,
+  "productionReview": "PASS",
+  "liveAssetsExact": true,
+  "freshGridAndSavedListBrowser": "PASS"
+}
