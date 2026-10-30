@@ -64,4 +64,3 @@ These receipts are not substituted for actual owner-wallet operation.
   cannot be recalled. Restoring power can revive an unexpired permit.
 - EVE Vault destination selection and an actual owner-signed link/permit/jump
   remain unverified. Publication must not alter existing player gates.
-
