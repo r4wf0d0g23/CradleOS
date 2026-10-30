@@ -18,7 +18,7 @@ import { EFMapPanel } from "./components/EFMapPanel";
 import { CommunityDappsPanel } from "./components/CommunityDappsPanel";
 import { BountyPanel } from "./components/BountyPanel";
 import { CargoContractPanel } from "./components/CargoContractPanel";
-import { GatePolicyPanel } from "./components/GatePolicyPanel";
+import { GateControlPanel } from "./components/GateControlPanel";
 import { InheritancePanel } from "./components/InheritancePanel";
 import { IntelDashboardPanel } from "./components/IntelDashboardPanel";
 import { AnnouncementPanel } from "./components/AnnouncementPanel";
@@ -1131,7 +1131,7 @@ function AppInner() {
           {activeTab === "bounties"   && <div style={{ background: "transparent" }} className="content-panel"><BountyPanel /></div>}
           {activeTab === "srp"        && <div style={{ background: "transparent" }} className="content-panel"><SRPPanel /></div>}
           {activeTab === "cargo"      && <div style={{ background: "transparent" }} className="content-panel"><CargoContractPanel /></div>}
-          {activeTab === "gates"      && <div style={{ background: "transparent" }} className="content-panel"><GatePolicyPanel /></div>}
+          {activeTab === "gates"      && <div style={{ background: "transparent" }} className="content-panel"><GateControlPanel /></div>}
           {activeTab === "succession"    && <div style={{ background: "transparent" }} className="content-panel"><InheritancePanel /></div>}
           {activeTab === "intel"         && <div style={{ background: "transparent" }} className="content-panel"><IntelDashboardPanel /></div>}
           {activeTab === "announcements" && <div style={{ background: "transparent" }} className="content-panel"><AnnouncementPanel /></div>}

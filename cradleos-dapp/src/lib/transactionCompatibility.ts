@@ -6,6 +6,7 @@ import { BOOK_DEPLOYMENT } from "./bookDeployment";
 import { SPORTS_DEPLOYMENT } from "./sportsDeployment";
 import { STORAGE_ACCESS_DEPLOYMENT } from './storageAccessDeployment';
 import { STOREFRONT_DEPLOYMENT } from "./storefrontDeployment";
+import { GATE_DEPLOYMENT } from "./gateDeployment";
 const allowed = new Set(["0x1", "0x2", CURRENT_WORLD, CURRENT_EVE_PACKAGE, ...CURRENT_CONTRACT_PACKAGES, ...(SPORTS_DEPLOYMENT.packageId ? [SPORTS_DEPLOYMENT.packageId] : []), ...(BOOK_DEPLOYMENT.packageId ? [BOOK_DEPLOYMENT.packageId] : [])].map(p => normalizeSuiAddress(p)));
 if (STORAGE_ACCESS_DEPLOYMENT && normalizeSuiAddress(STORAGE_ACCESS_DEPLOYMENT.worldId) === normalizeSuiAddress(CURRENT_WORLD)) {
   allowed.add(normalizeSuiAddress(STORAGE_ACCESS_DEPLOYMENT.packageId));
@@ -14,6 +15,10 @@ if (STORAGE_ACCESS_DEPLOYMENT && normalizeSuiAddress(STORAGE_ACCESS_DEPLOYMENT.w
 if (STOREFRONT_DEPLOYMENT && normalizeSuiAddress(STOREFRONT_DEPLOYMENT.worldId) === normalizeSuiAddress(CURRENT_WORLD)) {
   allowed.add(normalizeSuiAddress(STOREFRONT_DEPLOYMENT.packageId));
   allowed.add(normalizeSuiAddress(STOREFRONT_DEPLOYMENT.originalId));
+}
+if (GATE_DEPLOYMENT && normalizeSuiAddress(GATE_DEPLOYMENT.worldId) === normalizeSuiAddress(CURRENT_WORLD)) {
+  allowed.add(normalizeSuiAddress(GATE_DEPLOYMENT.packageId));
+  allowed.add(normalizeSuiAddress(GATE_DEPLOYMENT.originalId));
 }
 /** No previous-cycle recovery exceptions: this is a clean wipe. */
 export function assertCycleCompatible(input: Transaction | Uint8Array | string): void {

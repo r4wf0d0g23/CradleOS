@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-30T15:53:24.029Z",
+  "checks": [
+    "permit review exact member discount and no implicit signature",
+    "pass price and expiry terms",
+    "existing pass produces zero fee",
+    "owner rules amounts zero and decimal text",
+    "invalid amount cannot retain old valid quote",
+    "editing rules clears consent and review",
+    "policy change before signing rejects stale quote",
+    "unrelated buyer activity does not invalidate quote",
+    "wallet/network change cannot sign",
+    "history failure blocks buyer while owner lockdown remains",
+    "lockdown atomic builder and explicit confirmation",
+    "non-owner has no settings or claim",
+    "new pricing data outage never becomes zero",
+    "pending signature blocks repeated action even remount",
+    "responsive owner controls 320 390 650 1440"
+  ],
+  "errors": [],
+  "signed": false,
+  "submitted": false,
+  "fixtureOnly": true
+}

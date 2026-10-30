@@ -1,0 +1,13 @@
+{
+  "moveTests": 30,
+  "frontendTests": 776,
+  "frontendFiles": 66,
+  "focusedGateTests": 39,
+  "browserGroups": 15,
+  "originsChecks": 8,
+  "ioc": "clean",
+  "typescriptBuild": "pass",
+  "featureReview": "PASS",
+  "liveHistoryPositive": true,
+  "publicationChangesPlayerGates": false
+}

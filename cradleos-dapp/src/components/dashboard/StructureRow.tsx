@@ -42,7 +42,7 @@ export interface StructureRowProps {
   onRename: (s: PlayerStructure) => void;
   onDelegate: (s: PlayerStructure) => void;
   onRevoke: (s: PlayerStructure) => void;
-  onLinkGate?: (s: PlayerStructure, destinationId: string) => void;
+  onLinkGate?: (s: PlayerStructure) => void;
   onUnlinkGate?: (s: PlayerStructure) => void;
   onOpenDApp: (s: PlayerStructure) => void;
 
@@ -317,7 +317,7 @@ function GateLinkControls({
   transientStatus,
 }: {
   structure: PlayerStructure;
-  onLink?: (s: PlayerStructure, destinationId: string) => void;
+  onLink?: (s: PlayerStructure) => void;
   onUnlink?: (s: PlayerStructure) => void;
   availableTargets: PlayerStructure[];
   transientStatus: string | null;
@@ -347,40 +347,9 @@ function GateLinkControls({
     );
   }
 
-  // No link target available — hide the select rather than render an
-  // empty/no-op dropdown. The user can return when they own another gate.
-  const linkable = availableTargets.filter(
-    g => g.objectId !== s.objectId && !g.linkedGateId,
-  );
-  if (linkable.length === 0) return null;
-
-  return (
-    <select
-      onClick={e => e.stopPropagation()}
-      onChange={e => {
-        const destId = e.target.value;
-        if (destId && onLink) onLink(s, destId);
-        e.target.value = "";
-      }}
-      defaultValue=""
-      style={{
-        background: "rgba(0,0,0,0.6)",
-        color: "#00ccff",
-        border: "1px solid #00ccff",
-        fontSize: 9,
-        padding: "3px 6px",
-        fontFamily: "inherit",
-        fontWeight: 700,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-      }}
-    >
-      <option value="" disabled>⛩ LINK GATE…</option>
-      {linkable.map(g => (
-          <option key={g.objectId} value={g.objectId}>
-            {g.displayName} ({g.gameItemId ?? g.objectId.slice(0, 8)})
-          </option>
-        ))}
-    </select>
-  );
+  const linkable = availableTargets.some(g => g.objectId !== s.objectId && !g.linkedGateId && g.typeId === s.typeId);
+  if (!linkable) return null;
+  return <button type="button" onClick={e => { e.stopPropagation(); onLink?.(s); }} style={ghostBtn("#00ccff")}>
+    Link in EVE Vault
+  </button>;
 }

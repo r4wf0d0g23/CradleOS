@@ -1,0 +1,13 @@
+.gate-control{max-width:1000px;margin:auto;padding:16px;color:#dbd9c9;font-size:13px;overflow-wrap:anywhere}
+.gate-control header,.gate-actions,.gate-owned,.gate-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gate-control header h2{margin-right:auto;color:#ff6b18}.gate-control h3{color:#ff8c4b}
+.gate-control button,.gate-control input,.gate-control select,.gate-control textarea{font:inherit;color:inherit;background:#11110e;border:1px solid #51422b;padding:8px;min-width:0;max-width:100%;box-sizing:border-box}
+.gate-control button{cursor:pointer}.gate-control button:hover,.gate-control button[aria-pressed=true]{border-color:#ff6b18;color:#ff9e64}.gate-control button:disabled{opacity:.45;cursor:not-allowed}
+.gate-route-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:8px;margin:12px 0}.gate-route-list button{display:flex;justify-content:space-between;gap:8px;text-align:left}
+.gate-owned,.gate-control details,.gate-editor{border:1px solid #39301e;padding:12px;margin-top:10px}.gate-owned strong{margin-right:auto}
+.gate-control summary{cursor:pointer;padding:5px 0}.gate-endpoints{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.gate-endpoints div{display:flex;flex-direction:column;gap:8px}
+.gate-actions,.gate-stats{margin:12px 0}.gate-stats span{padding:7px;background:#17170f;border:1px solid #343024}
+.gate-control fieldset{border:0;padding:10px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.gate-control label{display:flex;flex-direction:column;gap:5px}.gate-control textarea{min-height:64px;resize:vertical}
+.gate-review{border:1px solid #ff6b18;padding:14px;margin-top:14px}.gate-review label{flex-direction:row;align-items:center;margin:10px 0}.gate-review button{margin-right:8px}.gate-error{color:#ffb57e;margin:10px 0}
+.gate-activity{list-style:none;padding:0}.gate-activity li{display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid #29261a;padding:8px 0}.gate-activity time{margin-left:auto}
+@media(max-width:600px){.gate-control{padding:8px}.gate-control fieldset,.gate-endpoints{grid-template-columns:1fr}.gate-owned{align-items:flex-start}.gate-owned strong{flex-basis:100%}.gate-control button{min-height:38px}}

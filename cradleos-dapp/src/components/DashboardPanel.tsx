@@ -8,8 +8,9 @@ import { LinksPanel } from "./LinksPanel";
 import { CurrentAccountSigner } from "../lib/cycleSigner";
 import { SERVER_ENV, CRADLEOS_PKG, CRADLEOS_ORIGINAL, CLOCK, SUI_TESTNET_RPC } from "../constants";
 import { Transaction } from "@mysten/sui/transactions";
-import { useSponsoredTransaction, SponsoredTransactionActions, Assemblies } from "@evefrontier/dapp-kit";
-import type { AssemblyType } from "@evefrontier/dapp-kit";
+import { useSponsoredTransaction } from "@evefrontier/dapp-kit";
+import { sponsoredGateLink } from "../lib/gateLink";
+import { gateOperationLock } from "../lib/gateControl";
 import {
   fetchPlayerStructureSnapshot,
   buildStructureOnlineTransaction,
@@ -847,59 +848,27 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
     [groups]
   );
 
-  const handleLinkGate = async (sourceGate: PlayerStructure, _destinationGateId: string) => {
-    if (!account || !sourceGate.gameItemId) return;
-    setGateActionState({ gateId: sourceGate.objectId, status: "Requesting link via EVE Vault…" });
+  const handleGateLinkAction = async (gate: PlayerStructure, unlink: boolean) => {
+    if (!account || gateOperationLock.busy) return;
+    const address = account.address;
+    const current = () => {
+      if (dAppKit.stores.$connection.get().account?.address !== address ||
+          dAppKit.stores.$currentNetwork.get() !== "testnet") throw Error("Wallet changed. Refresh.");
+    };
+    gateOperationLock.busy = true;
+    setGateActionState({ gateId: gate.objectId, status: "Opening EVE Vault…" });
     try {
-      // Build a fake assembly object for the hook — it reads item_id + type
-      const assemblyObj = {
-        item_id: Number(sourceGate.gameItemId),
-        type: Assemblies.SmartGate,
-        // Other fields required by AssemblyType — minimal shape
-        id: sourceGate.objectId,
-        dappURL: undefined,
-        name: sourceGate.displayName,
-        state: sourceGate.isOnline ? "online" : "anchored",
-        ownerId: account.address,
-      } as unknown as AssemblyType<Assemblies.SmartGate>;
-
-      const result = await sendSponsoredTx({
-        txAction: SponsoredTransactionActions.LINK_SMART_GATE,
-        assembly: assemblyObj,
-      });
-      setGateActionState({ gateId: sourceGate.objectId, status: `✓ Linked (tx: ${result.digest?.slice(0, 10)}…)` });
-      setTimeout(() => { setGateActionState(null); onRefresh(); }, 3000);
+      await sponsoredGateLink(gate.objectId, address, unlink, sendSponsoredTx, current);
+      current();
+      setGateActionState({ gateId: gate.objectId, status: unlink ? "✓ Unlink confirmed" : "✓ Link confirmed" });
+      onRefresh();
     } catch (e) {
-      setGateActionState({ gateId: sourceGate.objectId, status: `✗ ${e instanceof Error ? e.message : String(e)}` });
-      setTimeout(() => setGateActionState(null), 5000);
-    }
+      if (dAppKit.stores.$connection.get().account?.address === address)
+        setGateActionState({ gateId: gate.objectId, status: `✗ ${e instanceof Error ? e.message : "Unverified. Refresh."}` });
+    } finally { gateOperationLock.busy = false; }
   };
-
-  const handleUnlinkGate = async (gate: PlayerStructure) => {
-    if (!account || !gate.gameItemId) return;
-    setGateActionState({ gateId: gate.objectId, status: "Requesting unlink via EVE Vault…" });
-    try {
-      const assemblyObj = {
-        item_id: Number(gate.gameItemId),
-        type: Assemblies.SmartGate,
-        id: gate.objectId,
-        dappURL: undefined,
-        name: gate.displayName,
-        state: gate.isOnline ? "online" : "anchored",
-        ownerId: account.address,
-      } as unknown as AssemblyType<Assemblies.SmartGate>;
-
-      const result = await sendSponsoredTx({
-        txAction: SponsoredTransactionActions.UNLINK_SMART_GATE,
-        assembly: assemblyObj,
-      });
-      setGateActionState({ gateId: gate.objectId, status: `✓ Unlinked (tx: ${result.digest?.slice(0, 10)}…)` });
-      setTimeout(() => { setGateActionState(null); onRefresh(); }, 3000);
-    } catch (e) {
-      setGateActionState({ gateId: gate.objectId, status: `✗ ${e instanceof Error ? e.message : String(e)}` });
-      setTimeout(() => setGateActionState(null), 5000);
-    }
-  };
+  const handleLinkGate = (gate: PlayerStructure) => handleGateLinkAction(gate, false);
+  const handleUnlinkGate = (gate: PlayerStructure) => handleGateLinkAction(gate, true);
 
   // Discover tribe vault ID
   const [tribeVaultId, setTribeVaultId] = useState<string>(() => localStorage.getItem(cycleCacheKey("dashboard-vault")) ?? "");

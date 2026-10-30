@@ -1,0 +1,17 @@
+attacker/
+fixtures/
+*.bundle.mjs
+*.png
+*.log
+ui-failure.txt
+publish-pending.json
+package-build.json
+fresh-build.json
+final-publish-simulation.json
+publication.json
+published-package.json
+live-flows.json
+recent-gates.json
+live-candidate.json
+live-before.json
+history-diagnostic.ts
