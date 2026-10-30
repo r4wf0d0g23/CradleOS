@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useChainEvents } from '../contexts/ChainEventsContext';
-import { eventAmount, eventLabel, eventMatches, eventSentence, EVENT_MAX_PAGES, EVENT_SOURCES, streamStatus, tickerEvents, type ChainEvent } from '../lib/chainEvents';
+import { eventAmount, eventIdentity, eventMatches, eventSentence, eventSentenceParts, EVENT_MAX_PAGES, EVENT_SOURCES, streamStatus, tickerEvents, type ChainEvent, type EntityNames, type EventRef } from '../lib/chainEvents';
 import './ChainEventLog.css';
 
 const timestamp = (ms: number) => new Date(ms).toLocaleString();
@@ -32,16 +32,23 @@ export function ChainEventLog() {
     {!more && Object.values(feed.streams).some(s=>s.more) && <span>History limit reached</span>}
   </section>;
 }
+function EntityLabel({ entity, names }: { entity: EventRef; names: EntityNames }) {
+  const identity = eventIdentity(entity,names);
+  return <span className="chain-entity" data-identified={identity.identified}>{identity.label}</span>;
+}
+function EventText({ event, names }: { event: ChainEvent; names: EntityNames }) {
+  return <>{eventSentenceParts(event,names).map((part,i)=>typeof part==='string' ? part : <EntityLabel key={i} entity={part} names={names} />)}</>;
+}
 function EventRow({ event: e }: { event: ChainEvent }) {
   const { names } = useChainEvents(), amount = eventAmount(e, names);
   return <li data-event-id={e.id} data-kind={e.kind}>
     <div className="chain-event-meta"><time dateTime={new Date(e.recordedAt).toISOString()}>{timestamp(e.recordedAt)}</time><span>{e.category}</span>
       <a href={`https://suiscan.xyz/testnet/tx/${e.digest}`} target="_blank" rel="noreferrer">Transaction ↗</a></div>
-    <div className="chain-event-text">{eventSentence(e,names)}</div>
+    <div className="chain-event-text"><EventText event={e} names={names} /></div>
     {amount && e.kind !== 'claimed' && <div className="chain-event-amount">Paid · {amount}</div>}
     {e.occurredAt !== undefined && <div className="chain-event-occurred">Occurred · {timestamp(e.occurredAt)} · Recorded above</div>}
     <details><summary>Details</summary><dl>
-      {e.refs.map((r,i)=><div key={`${r.role}:${i}`}><dt>{r.role}</dt><dd>{eventLabel(r,names)}<code>{r.id}</code></dd></div>)}
+      {e.refs.map((r,i)=><div key={`${r.role}:${i}`}><dt>{r.role}</dt><dd><EntityLabel entity={r} names={names} /><code>{r.id}</code></dd></div>)}
       {e.expiresAt !== undefined && <div><dt>Expires</dt><dd>{timestamp(e.expiresAt)}</dd></div>}
       <div><dt>Event</dt><dd><code>{e.type}</code></dd></div>
       <div><dt>Record</dt><dd><code>{e.id}</code></dd></div>
@@ -61,8 +68,8 @@ export function ChainEventTicker({ onOpen }: { onOpen: (query?: string) => void 
     {events.length>0 && Object.values(feed.streams).some(s=>streamStatus(s,feed.now)!=='Current') && <span className="chain-ticker-empty">Partial</span>}
     <div className="chain-ticker-window">
       {events.length ? <div className="chain-ticker-track" style={{animationDuration:`${Math.max(45,events.reduce((n,e)=>n+eventSentence(e,feed.names).length,0)/9)}s`}}>
-        <div className="chain-ticker-group">{events.map(e=><button key={e.id} onClick={()=>onOpen(e.digest)}><time>{timestamp(e.recordedAt)}</time> · {eventSentence(e,feed.names)}</button>)}</div>
-        <div className="chain-ticker-group chain-ticker-copy" aria-hidden="true" inert>{events.map(e=><span key={e.id}>{timestamp(e.recordedAt)} · {eventSentence(e,feed.names)}</span>)}</div>
+        <div className="chain-ticker-group">{events.map(e=><button key={e.id} onClick={()=>onOpen(e.digest)}><time>{timestamp(e.recordedAt)}</time> · <EventText event={e} names={feed.names} /></button>)}</div>
+        <div className="chain-ticker-group chain-ticker-copy" aria-hidden="true" inert>{events.map(e=><span key={e.id}>{timestamp(e.recordedAt)} · <EventText event={e} names={feed.names} /></span>)}</div>
       </div> : <span className="chain-ticker-empty">{state}</span>}
     </div>
     <button className="chain-ticker-pause" onClick={toggle} aria-label={paused?'Resume event ticker':'Pause event ticker'} aria-pressed={paused}>{paused?'Resume':'Pause'}</button>

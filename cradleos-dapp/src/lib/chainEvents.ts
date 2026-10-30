@@ -237,12 +237,15 @@ export async function readEventNames(events: ChainEvent[], signal: AbortSignal):
   }
   return { names, failed };
 }
-export function eventLabel(ref: EventRef | undefined, names: EntityNames): string {
-  if (!ref) return 'Unknown';
+export function eventIdentity(ref: EventRef | undefined, names: EntityNames): { label: string; identified: boolean } {
+  if (!ref) return { label: 'Unknown', identified: false };
   const entity = names[ref.id], compatible = entity && (ref.kind === 'entity' || entity.kind === ref.kind || ref.kind === 'structure' && entity.kind === 'gate');
-  if (compatible && entity.name) return entity.name;
+  if (compatible && entity.name) return { label: entity.name, identified: true };
   const prefix = { character: 'Pilot', gate: 'Gate', route: 'Route', structure: 'Structure', system: 'System', wallet: 'Wallet', entity: ref.role }[ref.kind];
-  return `${prefix} ${ref.itemId ?? (compatible ? entity.itemId : undefined) ?? `${ref.id.slice(0,8)}…${ref.id.slice(-6)}`}`;
+  return { label: `${prefix} ${ref.itemId ?? (compatible ? entity.itemId : undefined) ?? `${ref.id.slice(0,8)}…${ref.id.slice(-6)}`}`, identified: false };
+}
+export function eventLabel(ref: EventRef | undefined, names: EntityNames): string {
+  return eventIdentity(ref,names).label;
 }
 export function eventAmount(event: ChainEvent, names: EntityNames): string | null {
   if (event.paid === undefined) return null;
@@ -251,23 +254,26 @@ export function eventAmount(event: ChainEvent, names: EntityNames): string | nul
   const n = BigInt(event.paid), fraction = (n % 1000000000n).toString().padStart(9,'0').replace(/0+$/, '');
   return `${n / 1000000000n}${fraction ? `.${fraction}` : ''} ${coin === 'EVE' ? '$EVE' : 'SUI'}`;
 }
-export function eventSentence(e: ChainEvent, names: EntityNames): string {
-  const label = (role: string) => eventLabel(e.refs.find(r => r.role === role), names);
+export function eventSentenceParts(e: ChainEvent, names: EntityNames): (string | EventRef)[] {
+  const label = (role: string): string | EventRef => e.refs.find(r => r.role === role) ?? 'Unknown';
   switch(e.kind) {
-    case 'jump': return `${label('Pilot')} jumped · ${label('From')} → ${label('To')}`;
-    case 'linked': return `${label('From')} linked to ${label('To')}`;
-    case 'unlinked': return `${label('From')} unlinked from ${label('To')}`;
-    case 'gate-created': return `${label('Gate')} anchored`;
-    case 'permit': return `${label('Pilot')} obtained a jump permit · ${e.refs.some(r=>r.role==='Route') ? label('Route') : `${label('From')} ↔ ${label('To')}`}`;
-    case 'pass': return `${label('Pilot')} bought a timed pass · ${label('Route')}`;
-    case 'claimed': return `${label('Route')} proceeds claimed · ${eventAmount(e,names)}`;
-    case 'route-created': return `${label('Route')} created · ${label('From')} ↔ ${label('To')}`;
-    case 'route-changed': return `${label('Route')} settings updated · ${e.detail}`;
-    case 'extension-set': return `${label('Gate')} access extension configured`;
-    case 'extension-removed': return `${label('Gate')} access extension removed`;
-    case 'loss': return `${e.detail} reported · ${label('Killer')} → ${label('Victim')} · ${label('System')}`;
-    default: return `${label('Structure')} ${e.kind}`;
+    case 'jump': return [label('Pilot'), ' jumped · ', label('From'), ' → ', label('To')];
+    case 'linked': return [label('From'), ' linked to ', label('To')];
+    case 'unlinked': return [label('From'), ' unlinked from ', label('To')];
+    case 'gate-created': return [label('Gate'), ' anchored'];
+    case 'permit': return [label('Pilot'), ' obtained a jump permit · ', ...(e.refs.some(r=>r.role==='Route') ? [label('Route')] : [label('From'), ' ↔ ', label('To')])];
+    case 'pass': return [label('Pilot'), ' bought a timed pass · ', label('Route')];
+    case 'claimed': return [label('Route'), ` proceeds claimed · ${eventAmount(e,names)}`];
+    case 'route-created': return [label('Route'), ' created · ', label('From'), ' ↔ ', label('To')];
+    case 'route-changed': return [label('Route'), ` settings updated · ${e.detail}`];
+    case 'extension-set': return [label('Gate'), ' access extension configured'];
+    case 'extension-removed': return [label('Gate'), ' access extension removed'];
+    case 'loss': return [`${e.detail} reported · `, label('Killer'), ' → ', label('Victim'), ' · ', label('System')];
+    default: return [label('Structure'), ` ${e.kind}`];
   }
+}
+export function eventSentence(e: ChainEvent, names: EntityNames): string {
+  return eventSentenceParts(e,names).map(part=>typeof part==='string' ? part : eventLabel(part,names)).join('');
 }
 export function eventMatches(e: ChainEvent, query: string, names: EntityNames): boolean {
   const q = query.trim().toLowerCase();

@@ -15,6 +15,8 @@
 .chain-log a { color:#f7ad75; }
 .chain-event-meta a { margin-left:auto; }
 .chain-event-text { line-height:1.6; overflow-wrap:anywhere; }
+.chain-entity[data-identified='true'] { color:#ffdc9b; font-weight:600; }
+.chain-entity[data-identified='false'] { color:#8b8d92; font-weight:400; }
 .chain-event-amount, .chain-event-occurred { margin-top:5px; font-size:11px; color:#b8b5a5; }
 .chain-event-list details { margin-top:7px; font-size:10px; }
 .chain-event-list summary { cursor:pointer; color:#9e9786; }
