@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-30T15:56:47.304Z",
+  "pass": true,
+  "actualGrpcRouteBody": true,
+  "registryMetadataFixtures": true,
+  "productionReader": "readGateRoute",
+  "signed": false,
+  "submitted": false,
+  "networkRequests": 0
+}

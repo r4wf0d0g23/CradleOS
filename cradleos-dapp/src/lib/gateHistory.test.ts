@@ -44,3 +44,15 @@ describe("archival gate admission",()=>{
     await expect(verifyGateHistory({...gate,ownerCapId:id(9)},null,d,read([version(1,[created]),version(2,[]) ]))).rejects.toThrow();
   });
 });
+
+describe("archival transport",()=>{
+  it("retries transient service failures without converting them to empty history",async()=>{
+    const original=globalThis.fetch;let calls=0;
+    globalThis.fetch=(async()=>{calls++;return calls===1?new Response('',{status:503}):new Response(JSON.stringify({data:{valid:true}}),{status:200});}) as typeof fetch;
+    try{const {gateGraph}=await import('./gateHistory');expect(await gateGraph('query',{})).toEqual({valid:true});expect(calls).toBe(2);}finally{globalThis.fetch=original;}
+  });
+  it("never accepts a successful HTTP response with GraphQL errors",async()=>{
+    const original=globalThis.fetch;globalThis.fetch=(async()=>new Response(JSON.stringify({data:null,errors:[{message:'unavailable'}]}),{status:200})) as typeof fetch;
+    try{const {gateGraph}=await import('./gateHistory');await expect(gateGraph('query',{})).rejects.toThrow('unavailable');}finally{globalThis.fetch=original;}
+  });
+});

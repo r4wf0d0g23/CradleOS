@@ -1,7 +1,8 @@
 {
-  "at": "2026-10-30T15:53:24.029Z",
+  "at": "2026-10-30T15:57:18.236Z",
   "checks": [
     "permit review exact member discount and no implicit signature",
+    "activation refresh selects newly created route",
     "pass price and expiry terms",
     "existing pass produces zero fee",
     "owner rules amounts zero and decimal text",

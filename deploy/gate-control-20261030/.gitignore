@@ -15,3 +15,5 @@ recent-gates.json
 live-candidate.json
 live-before.json
 history-diagnostic.ts
+*-failure.txt
+raw-route-bodies.json

@@ -1,5 +1,6 @@
 // UNSIGNED, checks-enabled live-world simulation only. No keystore, signer or execute.
 import {readFileSync,writeFileSync} from 'node:fs';import assert from 'node:assert/strict';
+import {GrpcTypes} from '@mysten/sui/grpc';
 import {Transaction,coinWithBalance} from '@mysten/sui/transactions';
 import {storageClient as client,storageObject} from '../../cradleos-dapp/src/lib/storageRead';
 import {readGatePair,verifyGatePairHistory,assertGateOwner,buildGateAction,discoverGateRoutes,GATE_TYPE,GATE_COIN} from '../../cradleos-dapp/src/lib/gateControl';
@@ -45,7 +46,13 @@ await simulate('stale revision rejected',flow('stale'),false,'exact');
 await simulate('lockdown rejects existing pass use',flow('locked'),false,'ready');
 const eveBalance=await client.core.getBalance({owner:c.address,coinType:GATE_COIN});
 if(BigInt(eveBalance.balance.balance)>=2n)await simulate('current EVE paid permit pass and claim',flow('eve-paid'),true);
+// Capture the real full gRPC JSON representation, not a fabricated route body.
+const probe=flow('eve-free');probe.setGasOwner(d.publisher);probe.setGasBudget(100000000);
+const bytes=await probe.build({client});const rawResponse=await client.transactionExecutionService.simulateTransaction({transaction:{bcs:{value:bytes}},checks:0,doGasSelection:false,readMask:{paths:['transaction.effects.status','transaction.signatures','command_outputs']}});
+const raw:any=GrpcTypes.SimulateTransactionResponse.toJson(rawResponse.response);assert.equal(raw.transaction.effects.status.success,true);assert.equal(raw.transaction.signatures?.length??0,0);
+const bodies=raw.commandOutputs.flatMap((x:any)=>[...(x.returnValues??[]),...(x.mutatedByRef??[])].map((v:any)=>v.json).filter((j:any)=>j?.gate_a&&j?.rates&&j?.rules));
+assert.ok(bodies.some((b:any)=>b.active&&b.activity.length===3));writeFileSync(new URL('raw-route-bodies.json',import.meta.url),JSON.stringify({at:new Date().toISOString(),bodies,signed:false,submitted:false},null,2));
 const after=await readGatePair(a.id,null);assert.equal(after.a.version,a.version);assert.equal(after.b.version,b.version);
 assert.deepEqual(await discoverGateRoutes(d),{routes:[],unavailable:0});
-const receipt={at:new Date().toISOString(),simulations:evidence.length,registryEmpty:true,gateVersionsUnchanged:true,realPairHistoryVerified:true,signed:false,submitted:false,liveOwnerLink:false,livePlayerJump:false};
+const receipt={at:new Date().toISOString(),simulations:evidence.length,rawShapeSimulation:true,registryEmpty:true,gateVersionsUnchanged:true,realPairHistoryVerified:true,signed:false,submitted:false,liveOwnerLink:false,livePlayerJump:false};
 writeFileSync(new URL('live-flow-summary.json',import.meta.url),JSON.stringify(receipt,null,2));console.log(JSON.stringify(receipt));

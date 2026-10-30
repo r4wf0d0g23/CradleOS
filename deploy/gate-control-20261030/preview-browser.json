@@ -1,0 +1,657 @@
+{
+  "at": "2026-10-30T15:56:39.279Z",
+  "base": "http://127.0.0.1:5359",
+  "label": "preview",
+  "readOnlyWalletFixture": true,
+  "realChainData": true,
+  "transport": "TLS-validating Node relay",
+  "catalogEmpty": true,
+  "ownedGatePairDiscovered": [
+    "0x36a5ab5c29b3e7070fa229c68a343ada9e8a408573894636486c1ee5045f88ef",
+    "0x5986886c2ced506548b501f545a073edd49efc611b63c33b5026ead627c185a2"
+  ],
+  "reviewActivationWithoutSigning": true,
+  "historyAdmission": true,
+  "readFailureRecovery": true,
+  "disconnectHidesHoldings": true,
+  "writes": 0,
+  "errors": [],
+  "network": [
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://graphql.testnet.sui.io/graphql",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListDynamicFields",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.StateService/ListOwnedObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/BatchGetObjects",
+      "status": 200,
+      "grpcStatus": null,
+      "grpcMessage": null
+    }
+  ]
+}

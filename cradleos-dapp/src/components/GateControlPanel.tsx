@@ -43,7 +43,7 @@ export function GateControlPanel() {
     finally{gateOperationLock.busy=false;setLinkBusy(false);}
   }
   const gates=owned?.structures.filter(s=>s.kind==="Gate")??[];
-  const selectedRoute=routes.find(r=>r.id===selected)??null;
+  const selectedRoute=routes.find(r=>r.id===selected)??routes.find(r=>r.active&&(r.gateA===selected||r.gateB===selected))??null;
   const selectedGate=selectedRoute?.gateA??gates.find(g=>g.objectId===selected)?.objectId;
   return <section className="gate-control">
     <header><h2>Gates</h2><span>Testnet</span><button disabled={loading||linkBusy} onClick={()=>setRefresh(n=>n+1)}>Refresh</button></header>
@@ -53,7 +53,7 @@ export function GateControlPanel() {
       <div className="gate-route-list">{routes.map(r=><button key={r.id} aria-pressed={selected===r.id} onClick={()=>setSelected(r.id)}>
         {r.name}<span>{!r.active?"Inactive":!r.historyVerified?"Unverified":r.locked?"Paused":"Active"}</span></button>)}</div>
       {gates.length>0&&<details open={!routes.length}><summary>My gates · {gates.length}</summary>
-        {gates.map(g=><div className="gate-owned" key={g.objectId}><strong>{g.displayName}</strong><span>{g.isOnline?"Online":"Offline"}</span>
+        {gates.map(g=><div className="gate-owned" data-gate-id={g.objectId} key={g.objectId}><strong>{g.displayName}</strong><span>{g.isOnline?"Online":"Offline"}</span>
           <span>{g.linkedGateId?"Linked":"Unlinked"}</span>
           {g.linkedGateId?<button onClick={()=>setSelected(routes.find(r=>r.active&&(r.gateA===g.objectId||r.gateB===g.objectId))?.id??g.objectId)}>Manage</button>:
             <button disabled={linkBusy||!address} onClick={()=>void link(g.objectId)}>Link in EVE Vault</button>}</div>)}

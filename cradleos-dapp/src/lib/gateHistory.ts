@@ -8,12 +8,18 @@ export type HistoryGate = { id: string; version: string; ownerCapId: string };
 export type HistoryRoute = { id: string; gateA: string; gateB: string };
 export type GraphRead = (query: string, variables: Record<string, unknown>) => Promise<any>;
 export const gateGraph: GraphRead = async (query, variables) => {
-  const res = await fetch(SUI_GRAPHQL, { method: "POST", headers: { "content-type": "application/json" },
-    body: JSON.stringify({ query, variables }), signal: AbortSignal.timeout(20000) });
-  if (!res.ok) throw Error("Gate history unavailable.");
-  const json = await res.json().catch(()=>{throw Error("Gate history unavailable.");});
-  if (!res.ok || json.errors?.length || !json.data) throw Error("Gate history unavailable.");
-  return json.data;
+  for (let attempt=0; attempt<3; attempt++) {
+    let res:Response;
+    try { res=await fetch(SUI_GRAPHQL, { method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({query,variables}),signal:AbortSignal.timeout(20000) }); }
+    catch { if(attempt===2)throw Error("Gate history unavailable."); await new Promise(r=>setTimeout(r,250*(attempt+1))); continue; }
+    if ([429,502,503,504].includes(res.status)&&attempt<2) { await new Promise(r=>setTimeout(r,250*(attempt+1))); continue; }
+    if (!res.ok) throw Error("Gate history unavailable.");
+    const json=await res.json().catch(()=>{throw Error("Gate history unavailable.");});
+    if(json.errors?.length||!json.data)throw Error("Gate history unavailable.");
+    return json.data;
+  }
+  throw Error("Gate history unavailable.");
 };
 const eventsSelection = `nodes { contents { type { repr } json } } pageInfo { hasNextPage endCursor }`;
 const versionsQuery = `query($gate:SuiAddress!,$after:String) {
