@@ -7,3 +7,5 @@ Presentation only: no readers, metadata provenance, transaction handlers, event 
 Prior production rollback: Pages5298055e, source24a7e08cf1e28d292cd510703b737bb18d0d37cf.
 
 Release checks PASS: 29 existing event tests, TypeScript/Vite build, Origins8, scoped IOC clean; five real-data preview browser groups passed with no page errors or writes. Verified both identified and unresolved entities in log and ticker, details, search, 390/1440px layout and muted fallback after simulated metadata failure. Initial harness reload wrongly expected root navigation to persist; corrected test to reload the explicit event route, without application changes.
+
+LIVE Pages7483fcc2/source351fb31e39099ff09cf30ba310cedc9a33be322f. Production five browser groups pass; exact five JS/CSS hashes and root/partner/noindex/301 verified. Independent production PASS. Owned preview5362 stopped. Source and receipts pushed.

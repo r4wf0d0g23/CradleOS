@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-30T18:47:44.116325+00:00",
+  "sourceCommit": "351fb31e39099ff09cf30ba310cedc9a33be322f",
+  "deployment": "7483fcc2",
+  "deploymentUrl": "https://7483fcc2.cradleos-d75.pages.dev",
+  "origin": "https://cradleos.io",
+  "rollback": {
+    "deployment": "5298055e",
+    "sourceCommit": "24a7e08cf1e28d292cd510703b737bb18d0d37cf"
+  },
+  "tests": {
+    "existingEventTests": 29,
+    "passed": true
+  },
+  "originsChecks": 8,
+  "ioc": "clean",
+  "typescriptBuild": "passed",
+  "contractsChanged": false,
+  "backendChanged": false,
+  "playerWrites": 0
+}

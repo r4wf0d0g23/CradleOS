@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-30T18:47:34.559Z",
+  "sourceCommit": "351fb31e39099ff09cf30ba310cedc9a33be322f",
+  "origin": "https://cradleos.io",
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "htmlReferencesMatch": true,
+      "robots": null
+    },
+    {
+      "path": "/partners/metrics/",
+      "status": 200,
+      "htmlReferencesMatch": true,
+      "robots": "noindex, nofollow"
+    }
+  ],
+  "redirect": {
+    "status": 301,
+    "location": "/partners/metrics/"
+  },
+  "assets": [
+    {
+      "path": "assets/activityTelemetry-D3-Jnl0P.js",
+      "bytes": 1767,
+      "sha256": "07e114df5afd66ee49f66d26172bdce249bea1fc602d80bf1798577b34147746",
+      "matches": true
+    },
+    {
+      "path": "assets/app-BrW_0RDA.css",
+      "bytes": 923042,
+      "sha256": "2f50864dd3f597ad5984e57e012c6ef27aa508daf633a1f08751d27d758025e8",
+      "matches": true
+    },
+    {
+      "path": "assets/app-D3w5YSGz.js",
+      "bytes": 2447501,
+      "sha256": "62de6268651c066a737eebd79b7a9ccabff711d0d9a164c89890d9a8bb1b0d8d",
+      "matches": true
+    },
+    {
+      "path": "assets/partnerMetrics-ByKjvoO4.js",
+      "bytes": 15272,
+      "sha256": "9416c0f8c88304810d99cfc64543a445b2424752eafdbc550b42417380b95427",
+      "matches": true
+    },
+    {
+      "path": "assets/partnerMetrics-DNU_A6Go.css",
+      "bytes": 4647,
+      "sha256": "b9e9c30caf7e18112dde3ed373b6a2c4f8b78fb31080e58e181c4f82b772b523",
+      "matches": true
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-30T18:47:38.979Z",
+  "base": "https://cradleos.io",
+  "label": "live",
+  "checks": [
+    {
+      "check": "Real named entities gold/semibold; unresolved IDs gray/normal; all labels retained",
+      "count": 205,
+      "identified": 134,
+      "unidentified": 71
+    },
+    {
+      "check": "Expanded details use same identity colors",
+      "count": 3,
+      "identified": 1,
+      "unidentified": 2
+    },
+    {
+      "check": "Ticker and inert duplicate use same identity colors",
+      "count": 22,
+      "identified": 6,
+      "unidentified": 16
+    },
+    {
+      "check": "Search preserved; desktop/mobile layout fits"
+    },
+    {
+      "check": "Metadata failure retains muted readable jump IDs",
+      "count": 81,
+      "identified": 0,
+      "unidentified": 81
+    }
+  ],
+  "errors": [],
+  "writes": 0,
+  "realChainData": true,
+  "simulatedMetadataOutage": true
+}
