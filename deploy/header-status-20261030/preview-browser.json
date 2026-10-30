@@ -1,0 +1,188 @@
+{
+  "at": "2026-10-30T16:23:54.363Z",
+  "base": "http://127.0.0.1:5360",
+  "label": "preview",
+  "checks": [
+    "First-read failure is Unavailable, no fabricated values or successful latency",
+    "Live supported gRPC checkpoint/epoch/committee/gas and successful API read timing",
+    "Header fits 320/390/650/1440; narrow desktop retains correct install choice",
+    "Epoch failure is Partial; checkpoint retained, unknown fields not zero",
+    "Failed refresh marks previous chain readings Stale and suppresses old latency",
+    "Age advances with clock; suspended/old samples become Stale and recover",
+    "Mobile without provider shows desktop guidance; no extension ZIP or missing-wallet ownership claim",
+    "Detected provider retains Connect action on mobile; no UA-based connection block (synthetic discovery only)"
+  ],
+  "realData": true,
+  "simulatedFailures": true,
+  "syntheticMobileProviderDiscovery": true,
+  "walletSigningTested": false,
+  "transport": "TLS-validating Node fetch relay",
+  "errors": [],
+  "network": [
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "simulatedFailure": "partial"
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null
+    }
+  ]
+}

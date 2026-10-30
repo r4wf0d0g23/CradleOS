@@ -39,165 +39,9 @@ import { FlappyFrontierPanel } from "./components/FlappyFrontierPanel";
 import { VotingPanel } from "./components/VotingPanel";
 import { CasinoExperience as CasinoPanel } from "./components/CasinoExperience";
 import { ComicsPanel } from "./components/ComicsPanel";
-import { getServerEnv, onServerEnvChange, SERVER_ENV, SUI_TESTNET_RPC, type ServerEnv } from "./constants";
+import { getServerEnv, onServerEnvChange, SERVER_ENV, type ServerEnv } from "./constants";
 import { isMuted, toggleMuted } from "./lib/sound";
-
-// ── Server status dots ────────────────────────────────────────────────────────
-const SERVERS = [
-  { label: "STILLNESS", url: "https://world-api-stillness.live.pub.evefrontier.com/health" },
-  // 2026-07-08: Utopia disabled per Raw — not in use for the foreseeable future.
-  // Its UAT world-api DNS is also dead (ERR_NAME_NOT_RESOLVED), so the ping only
-  // produced console noise. Re-add when Utopia returns:
-];
-type ServerStatus = "checking" | "online" | "offline";
-
-function ServerStatusDots({ compact }: { compact: boolean }) {
-  const [statuses, setStatuses] = useState<ServerStatus[]>(SERVERS.map(() => "checking"));
-  useEffect(() => {
-    SERVERS.forEach((s, i) => {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 6000);
-      // mode: 'no-cors' returns an opaque response — we can't read status,
-      // but the promise resolves if the server is reachable and rejects if not.
-      fetch(s.url, { method: "GET", signal: controller.signal })
-        .then(r => setStatuses(prev => { const n = [...prev]; n[i] = r.ok ? "online" : "offline"; return n; }))
-        .catch(() => setStatuses(prev => { const n = [...prev]; n[i] = "offline"; return n; }))
-        .finally(() => clearTimeout(timer));
-    });
-  }, []);
-  return (
-    <div style={{ display: "flex", gap: compact ? "6px" : "10px", alignItems: "center" }}>
-      {SERVERS.map((s, i) => {
-        const st = statuses[i];
-        const color = st === "online" ? "#00ff96" : st === "offline" ? "#ff4444" : "rgba(180,160,140,0.4)";
-        return (
-          <div key={s.label} style={{ display: "flex", alignItems: "center", gap: "4px" }}
-               title={`${s.label}: ${st.toUpperCase()}`}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: color,
-                          boxShadow: st === "online" ? `0 0 4px ${color}` : "none" }} />
-            {!compact && <span style={{ fontSize: "9px", fontFamily: "monospace",
-                                        color: "rgba(180,160,140,0.5)", letterSpacing: "0.06em" }}>
-              {s.label}
-            </span>}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ── Chain Health Strip ────────────────────────────────────────────────────────
-
-interface ChainMetrics {
-  checkpoint: number | null;
-  checkpointAgeMs: number | null;
-  epoch: number | null;
-  validators: number | null;
-  gasPrice: number | null;
-  latencyMs: number | null;
-}
-
-function ChainHealth() {
-  const [metrics, setMetrics] = useState<ChainMetrics>({
-    checkpoint: null, checkpointAgeMs: null, epoch: null,
-    validators: null, gasPrice: null, latencyMs: null,
-  });
-
-  useEffect(() => {
-    let cancelled = false;
-    const RPC = SUI_TESTNET_RPC;
-    const post = async (method: string, params: unknown[] = []) => {
-      const r = await fetch(RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-      });
-      return (await r.json()).result;
-    };
-
-    const load = async () => {
-      try {
-        const t0 = Date.now();
-        const seqStr = await post("sui_getLatestCheckpointSequenceNumber");
-        const latencyMs = Date.now() - t0;
-        const seq = parseInt(seqStr, 10);
-
-        const [cp, committee, gasStr] = await Promise.all([
-          post("sui_getCheckpoint", [String(seq)]),
-          post("suix_getCommitteeInfo"),
-          post("suix_getReferenceGasPrice"),
-        ]);
-
-        if (cancelled) return;
-        setMetrics({
-          checkpoint: seq,
-          checkpointAgeMs: cp?.timestampMs ? Date.now() - parseInt(cp.timestampMs, 10) : null,
-          epoch: committee?.epoch ? parseInt(committee.epoch, 10) : null,
-          validators: committee?.validators?.length ?? null,
-          gasPrice: gasStr ? parseInt(gasStr, 10) : null,
-          latencyMs,
-        });
-      } catch { /* silent — chain unreachable */ }
-    };
-
-    load();
-    const id = setInterval(load, 30_000);
-    return () => { cancelled = true; clearInterval(id); };
-  }, []);
-
-  const ageColor = metrics.checkpointAgeMs === null ? "rgba(180,160,140,0.4)"
-    : metrics.checkpointAgeMs < 5_000 ? "#00ff96"
-    : metrics.checkpointAgeMs < 15_000 ? "#ffcc00"
-    : "#ff4444";
-
-  const latColor = metrics.latencyMs === null ? "rgba(180,160,140,0.4)"
-    : metrics.latencyMs < 400 ? "#00ff96"
-    : metrics.latencyMs < 1000 ? "#ffcc00"
-    : "#ff4444";
-
-  const fmt = (n: number | null, suffix = "") =>
-    n === null ? <span style={{ color: "rgba(180,160,140,0.3)" }}>—</span>
-    : <span>{n.toLocaleString()}{suffix}</span>;
-
-  const fmtAge = (ms: number | null) => {
-    if (ms === null) return <span style={{ color: "rgba(180,160,140,0.3)" }}>—</span>;
-    if (ms < 1000) return <span>{ms}ms ago</span>;
-    return <span>{(ms / 1000).toFixed(1)}s ago</span>;
-  };
-
-  const dot = (color: string) => (
-    <span style={{ display: "inline-block", width: 5, height: 5, borderRadius: "50%",
-      background: color, boxShadow: color !== "rgba(180,160,140,0.4)" ? `0 0 4px ${color}` : "none",
-      marginRight: 4, verticalAlign: "middle" }} />
-  );
-
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "center",
-      gap: "16px", flexWrap: "wrap",
-      fontFamily: "IBM Plex Mono, monospace", fontSize: "8px",
-      letterSpacing: "0.08em", color: "rgba(180,160,140,0.55)",
-      padding: "5px 12px",
-      borderTop: "1px solid rgba(255,71,0,0.08)",
-      background: "rgba(3,2,1,0.4)",
-    }}>
-      <span title="Sui testnet chain">SUI TESTNET</span>
-      <span title="Latest checkpoint sequence number">
-        {dot(ageColor)}CP #{fmt(metrics.checkpoint)}
-      </span>
-      <span title="Time since last checkpoint" style={{ color: ageColor }}>
-        {fmtAge(metrics.checkpointAgeMs)}
-      </span>
-      <span title="Current epoch">EPOCH {fmt(metrics.epoch)}</span>
-      <span title="Active validators">{fmt(metrics.validators)} VALIDATORS</span>
-      <span title="Reference gas price in MIST">GAS {fmt(metrics.gasPrice)} MIST</span>
-      <span title="RPC round-trip latency" style={{ color: latColor }}>
-        {metrics.latencyMs !== null ? `${metrics.latencyMs}ms` : "—"} RPC
-      </span>
-      <PrivateNodeStatus />
-    </div>
-  );
-}
+import { ChainHealth, MissingVault, StillnessStatus } from "./components/HeaderStatus";
 
 // ── Private Node Status ──────────────────────────────────────────────────────
 // Two-tier visibility on the status of the DGX2-hosted Sui fullnode:
@@ -797,7 +641,7 @@ function AppInner() {
         </div>
       )}
 
-      {/* ── Topbar: era/cycle left, wallet right ── */}
+      {/* ── Topbar: cycle/API left, wallet right ── */}
       {!kioskMode && <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: compact ? "4px 10px" : "6px 20px",
@@ -805,15 +649,14 @@ function AppInner() {
         borderBottom: "1px solid rgba(255,71,0,0.15)",
         flexWrap: "wrap", gap: "6px",
       }}>
-        {/* Era / Cycle */}
-        <div style={{ display: "flex", gap: compact ? "8px" : "16px", alignItems: "center" }}>
-          <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,71,0,0.8)" }}>ERA 6: AWAKENING</span>
+        {/* Cycle / API */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: compact ? "8px" : "16px", alignItems: "center" }}>
           <span style={{ fontSize: compact ? "7px" : "9px", fontFamily: "monospace", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(180,160,140,0.45)" }}>{CURRENT_CYCLE}</span>
-          <ServerStatusDots compact={compact} />
+          <StillnessStatus />
           {import.meta.env.DEV && <span style={{ fontSize: "7px", fontFamily: "monospace", color: "#00ff96", border: "1px solid rgba(0,255,150,0.25)", padding: "0 4px" }}>DEV</span>}
         </div>
         {/* Wallet */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
           {connectError && (
             <span style={{ fontSize:"10px", color:"#ff6b6b", fontFamily:"monospace" }}>
               ERR: {connectError.slice(0,40)}
@@ -838,7 +681,7 @@ function AppInner() {
             fontWeight: 700, background: "#111111",
             textTransform: "uppercase",
           }}>
-            {account ? abbreviateAddress(account.address) : "NO WALLET"}
+            {account ? abbreviateAddress(account.address) : "NOT CONNECTED"}
           </div>
           {/* Testnet faucet button */}
           {account && <FaucetButton address={account.address} compact={compact} />}
@@ -860,20 +703,7 @@ function AppInner() {
             )
           )}
           {!hasEveVault && !isConnected ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-end" }}>
-              <div style={{ fontSize: "10px", color: "#FF4700", letterSpacing: "0.12em", fontWeight:700, textTransform:"uppercase" }}>⚠ EVE VAULT NOT DETECTED</div>
-              <a
-                href="https://github.com/evefrontier/evevault/releases/latest/download/eve-vault-chrome.zip"
-                target="_blank" rel="noreferrer"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: "5px",
-                  padding: "7px 14px", borderRadius: "0", fontSize: "11px", fontWeight: 700,
-                  background: "rgba(5,3,2,0.88)", border: "1px solid rgba(255,71,0,0.5)",
-                  color: "#FF4700", textDecoration: "none", letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >⬇ Install EVE Vault</a>
-            </div>
+            <MissingVault />
           ) : (
             <button className="accent-button" style={{ padding: "7px 18px", fontSize: "12px" }}
               onClick={() => (isConnected ? handleDisconnect() : handleConnect())}>
@@ -936,7 +766,7 @@ function AppInner() {
           <img src="ef-wordmark.svg" alt="EVE FRONTIER"
             style={{ height: 20, width: "auto", opacity: 0.3 }} />
           <div style={{ marginTop: 10 }}>
-            <ChainHealth />
+            <ChainHealth><PrivateNodeStatus /></ChainHealth>
           </div>
           {isDev && (
             <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>

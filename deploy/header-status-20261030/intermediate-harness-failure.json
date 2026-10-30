@@ -1,0 +1,83 @@
+{
+  "error": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.header-api-status[data-state=\"Unavailable\"]') to be visible\u001b[22m\n",
+  "checks": [
+    "First-read failure is Unavailable, no fabricated values or successful latency",
+    "Live supported gRPC checkpoint/epoch/committee/gas and successful API read timing",
+    "Header fits 320/390/650/1440; narrow desktop retains correct install choice",
+    "Epoch failure is Partial; checkpoint retained, unknown fields not zero"
+  ],
+  "errors": [],
+  "network": [
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Disket+Mono:wght@400;700&display=swap",
+      "status": 400,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://artifacts.evefrontier.com/fonts/fonts.css",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://api.slush.app/api/wallet/metadata",
+      "status": 403,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/sui-status",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetEpoch",
+      "simulatedFailure": "partial"
+    },
+    {
+      "url": "https://fullnode.testnet.sui.io/sui.rpc.v2.LedgerService/GetServiceInfo",
+      "simulatedFailure": "down"
+    },
+    {
+      "url": "https://world-api-stillness.live.pub.evefrontier.com/health",
+      "status": 200,
+      "grpcStatus": null
+    },
+    {
+      "url": "https://keeper.reapers.shop/telemetry/combined",
+      "status": 200,
+      "grpcStatus": null
+    }
+  ]
+}

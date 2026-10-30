@@ -1,0 +1,30 @@
+.header-chain-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  flex-wrap: wrap;
+  font: 10px 'IBM Plex Mono', monospace;
+  letter-spacing: .03em;
+  color: #b6b1a2;
+  padding: 8px 4px;
+  border-top: 1px solid rgba(255, 71, 0, .12);
+}
+.header-chain-status > span { white-space: nowrap; }
+.header-api-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 9px monospace;
+  color: #b6b1a2;
+}
+.header-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #8b877a; flex-shrink: 0; }
+.header-api-status[data-state='Available'] .header-status-dot { background: #00ff96; }
+.header-chain-status[data-state='Live'] .header-status-value { color: #00ff96; }
+.header-chain-status[data-state='Stale'] .header-status-value,
+.header-chain-status[data-state='Partial'] .header-status-value { color: #ffcc66; }
+.header-api-status[data-state='Stale'] .header-status-dot,
+.header-api-status[data-state='Unavailable'] .header-status-dot { background: #ffcc66; }
+.header-missing-vault { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; font: 10px monospace; color: #ff8b5e; }
+.header-missing-vault a { padding: 6px 10px; border: 1px solid #7b3c26; color: #ff8b5e; text-decoration: none; }
+.header-missing-vault .header-wallet-help { color: #b6b1a2; }

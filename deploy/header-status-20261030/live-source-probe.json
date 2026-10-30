@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-30T16:24:03.596Z",
+  "info": {
+    "chainId": "69WiPg3DAQiwdxfncX6wYQ2siKwAe6L9BZthQea3JNMD",
+    "chain": "testnet",
+    "epoch": "1268",
+    "checkpointHeight": "400951690",
+    "timestamp": {
+      "seconds": "1793377442",
+      "nanos": 195000000
+    },
+    "lowestAvailableCheckpoint": "395415791",
+    "lowestAvailableCheckpointObjects": "395415791",
+    "server": "sui-node/1.83.0-16d2dc1e05ed"
+  },
+  "epoch": "1268",
+  "committeeEpoch": "1268",
+  "validators": 111,
+  "referenceGasPrice": "1000",
+  "stillness": {
+    "status": 200,
+    "body": {
+      "ok": true
+    }
+  }
+}

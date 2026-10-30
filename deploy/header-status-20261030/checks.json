@@ -1,0 +1,14 @@
+{
+  "frontendTests": 809,
+  "frontendFiles": 67,
+  "targetedHeaderTests": 31,
+  "typescript": "PASS",
+  "build": "PASS",
+  "originsChecks": 8,
+  "iocScan": "CLEAN",
+  "nativeIndependentSourceReview": "PASS",
+  "previewBrowserChecks": 8,
+  "previewErrors": 0,
+  "signedTransactions": 0,
+  "browserWalletFixture": "synthetic detection only"
+}
