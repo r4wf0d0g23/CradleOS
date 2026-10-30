@@ -18,7 +18,7 @@ const when=(ms:number)=>new Date(ms).toLocaleString();
 const parts=(s:string)=>s.trim()?s.trim().split(/[\s,]+/):[];
 const durations=[[0,"Off"],[3600000,"1 hour"],[86400000,"1 day"],[604800000,"7 days"],[2592000000,"30 days"]] as const;
 
-export function GateControlPanel() {
+export function GateControlPanel({ onEvents }: { onEvents?: (gateId: string) => void } = {}) {
   const account=useCurrentAccount(), kit=useDAppKit(), {mutateAsync:send}=useSponsoredTransaction();
   const address=account?.address??"";
   const [owned,setOwned]=useState<StructureSnapshot|null>(null),[routes,setRoutes]=useState<GateRoute[]>([]),
@@ -60,13 +60,13 @@ export function GateControlPanel() {
       </details>}
       {!gates.length&&!routes.length&&<p>{GATE_DEPLOYMENT?"No gates found":"Gate setup unavailable"}</p>}
       {selectedGate&&<GateRouteEditor key={`${selected}:${address}`} gateId={selectedGate} routeId={selectedRoute?.id??null}
-        characterId={owned?.characterId??""} wallet={address} ownedGateIds={gates.map(g=>g.objectId)} refresh={refresh}
+        onEvents={onEvents} characterId={owned?.characterId??""} wallet={address} ownedGateIds={gates.map(g=>g.objectId)} refresh={refresh}
         changed={()=>{setStatus("Confirmed");setRefresh(n=>n+1);}}/>}
     </>}
   </section>;
 }
 
-function GateRouteEditor({gateId,routeId,characterId,wallet,ownedGateIds,refresh,changed}:{gateId:string;routeId:string|null;
+function GateRouteEditor({gateId,routeId,characterId,wallet,ownedGateIds,refresh,changed,onEvents}:{gateId:string;routeId:string|null;onEvents?: (gateId: string) => void;
   characterId:string;wallet:string;ownedGateIds:string[];refresh:number;changed:()=>void}) {
   const kit=useDAppKit();
   const [pair,setPair]=useState<GatePair|null>(null),[character,setCharacter]=useState<GateCharacter|null>(null),
@@ -145,6 +145,7 @@ function GateRouteEditor({gateId,routeId,characterId,wallet,ownedGateIds,refresh
   return <article className="gate-editor">
     {loading?<p>Loading route…</p>:pair&&<>
       <h3>{r?.name??"Gate pair"}</h3>
+      {onEvents&&<button onClick={()=>onEvents(gateId)}>Gate event log</button>}
       <div className="gate-endpoints">{[pair.a,pair.b].map(g=><div key={g.id}><strong>{g.name}</strong><span>{g.online?"Online":"Offline"} · {g.itemId}</span></div>)}</div>
       {!r&&owner&&<button disabled={busy||!GATE_DEPLOYMENT} onClick={()=>void prepare({kind:"activate",name},"Enable access control on both gates · Starts paused")}>Set up route</button>}
       {r&&<>
