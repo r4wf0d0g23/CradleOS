@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-30T19:08:10.779Z",
+  "base": "http://127.0.0.1:5364",
+  "label": "preview",
+  "checks": [
+    "Failure shows specific source warnings and unknown counts, no generic duplicate warning",
+    "Healthy status row absent; concise Refresh/Search/counters; no Current labels",
+    "Clean event header fits mobile and desktop",
+    "Partial outage shows only Gates · Stale and retains loaded rows",
+    "Expired data still surfaces stale warnings and recovery removes them",
+    "Older history remains explicitly qualified without repeating per-source history labels"
+  ],
+  "errors": [],
+  "writes": 0,
+  "liveChainData": true,
+  "simulatedFailures": true
+}

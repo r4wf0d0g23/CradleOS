@@ -14,18 +14,19 @@ export function ChainEventLog() {
   const more = Object.values(feed.streams).some(s => !s.pages || s.more && s.pages < EVENT_MAX_PAGES);
   const initial = !Object.values(feed.streams).some(s => s.pages);
   const broken = Object.values(feed.streams).some(s => s.error);
+  const warnings = EVENT_SOURCES.map(source=>({source,state:streamStatus(feed.streams[source.id],feed.now,feed.history)}))
+    .filter(({state})=>state==='Stale'||state==='Unavailable');
   return <section className="chain-log" aria-label="Chain event log">
-    <header><h2>Event log</h2><span>Stillness · Testnet</span><button disabled={feed.busy} onClick={feed.refresh}>{feed.busy ? 'Loading…' : 'Refresh latest'}</button></header>
-    <div className="chain-source-status">{EVENT_SOURCES.map(source => <span key={source.id} data-state={streamStatus(feed.streams[source.id],feed.now,feed.history)}>{source.label} · {streamStatus(feed.streams[source.id],feed.now,feed.history)}</span>)}</div>
-    <div className="chain-log-filters"><input aria-label="Search chain events" placeholder="Pilot, gate, name, ID or transaction…" value={feed.query} onChange={e => feed.setQuery(e.target.value)} />
+    <header><h2>Event log</h2><span>Stillness · Testnet</span><button disabled={feed.busy} onClick={feed.refresh}>{feed.busy ? 'Loading…' : 'Refresh'}</button></header>
+    {warnings.length>0 && <div className="chain-source-status" role="status">{warnings.map(({source,state}) => <span key={source.id} data-state={state}>{source.label} · {state}</span>)}</div>}
+    <div className="chain-log-filters"><input aria-label="Search chain events" placeholder="Search events…" value={feed.query} onChange={e => feed.setQuery(e.target.value)} />
       <select aria-label="Event category" value={category} onChange={e => setCategory(e.target.value)}>{['All','Jumps','Gates','Structures','Access','Payments','Losses'].map(c=><option key={c}>{c}</option>)}</select>
       {(feed.query || category !== 'All') && <button onClick={()=>{feed.setQuery('');setCategory('All');}}>Clear</button>}
     </div>
-    <div className="chain-log-counts"><span>Loaded events · {initial?'—':shown.length}</span><span>Loaded jumps · {initial?'—':jumps.length}</span><span>Loaded unique pilots · {initial?'—':pilots.size}</span>
-      {feed.history && <span>History snapshot</span>}{feed.namesFailed && <span>Names unavailable</span>}
+    <div className="chain-log-counts"><span>Loaded</span><span>{initial?'—':shown.length} events</span><span>{initial?'—':jumps.length} jumps</span><span>{initial?'—':pilots.size} pilots</span>
+      {feed.history && <span>History</span>}{feed.namesFailed && <span>Names unavailable</span>}
       {Object.values(feed.streams).some(s=>s.skipped) && <span>Unsupported events omitted</span>}
     </div>
-    {broken && <div role="status">Some sources unavailable · Retry with Refresh latest</div>}
     {!shown.length ? <p>{initial && feed.busy ? 'Loading events…' : initial && broken ? 'Events unavailable' : 'No matching events loaded'}</p>
       : <ol className="chain-event-list">{shown.map(e => <EventRow key={e.id} event={e} />)}</ol>}
     {more && !initial && <button className="chain-load-older" disabled={feed.busy} onClick={feed.older}>Load older</button>}

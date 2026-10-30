@@ -6,8 +6,8 @@
 .chain-log button { cursor:pointer; }
 .chain-log button:disabled { opacity:.5; cursor:wait; }
 .chain-source-status, .chain-log-counts { margin:12px 0; font-size:10px; color:#aaa38f; }
-.chain-source-status [data-state='Current'] { color:#70d7ab; }
 .chain-source-status [data-state='Stale'], .chain-source-status [data-state='Unavailable'] { color:#ffcc66; }
+.chain-log-filters { margin-top:12px; }
 .chain-log-filters input { min-width:150px; flex:1; }
 .chain-event-list { margin:0; padding:0; list-style:none; }
 .chain-event-list > li { padding:13px 0; border-top:1px solid #393021; }
