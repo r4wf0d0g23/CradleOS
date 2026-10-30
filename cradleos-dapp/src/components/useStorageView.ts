@@ -2,13 +2,13 @@ import { useSyncExternalStore } from "react";
 export type StorageView = "list" | "grid";
 const KEY = "cradleos:storage:view:v1";
 const EVENT = "cradleos:storage-view";
-let fallback: StorageView = "list";
+let fallback: StorageView = "grid";
 let memoryOnly: StorageView | null = null;
 function read(): StorageView {
   if (memoryOnly) return memoryOnly;
   try {
     const v = localStorage.getItem(KEY);
-    return v === "grid" ? "grid" : "list";
+    return v === "list" ? "list" : "grid";
   } catch {
     return fallback;
   }
@@ -28,7 +28,7 @@ function subscribe(fn: () => void) {
   };
 }
 export function useStorageView() {
-  const view = useSyncExternalStore(subscribe, read, () => "list" as const);
+  const view = useSyncExternalStore(subscribe, read, () => "grid" as const);
   return [
     view,
     (next: StorageView) => {

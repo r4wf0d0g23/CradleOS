@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-30T11:55:58.761Z",
+  "base": "http://127.0.0.1:5358",
+  "label": "preview",
+  "actualChain": true,
+  "readOnlySyntheticWallet": true,
+  "freshDefault": "grid",
+  "savedListAfterReload": "list",
+  "gridToggle": true,
+  "mobileOverflow": false,
+  "writes": 0,
+  "errors": []
+}
