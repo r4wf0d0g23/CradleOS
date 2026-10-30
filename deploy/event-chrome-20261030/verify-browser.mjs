@@ -25,7 +25,7 @@ try{
  const counts=await log.locator('.chain-log-counts').innerText();assert.equal((counts.match(/Loaded/g)||[]).length,1);assert.match(counts,/\d+ events/);assert.match(counts,/\d+ jumps/);assert.match(counts,/\d+ pilots/);
  assert.equal(await log.getByLabel('Search chain events').getAttribute('placeholder'),'Search events…');
  checks.push('Healthy status row absent; concise Refresh/Search/counters; no Current labels');
- for(const width of [390,1440]){await page.setViewportSize({width,height:1000});for(const sel of ['.chain-log','.chain-ticker'])assert.ok(await page.locator(sel).evaluate(e=>e.scrollWidth<=e.clientWidth+1));await log.scrollIntoViewIfNeeded();await page.screenshot({path:new URL(`${label}-${width}.png`,import.meta.url).pathname});}
+ for(const width of [390,1440]){await page.setViewportSize({width,height:1000});for(const sel of ['.chain-log','.chain-ticker'])assert.ok(await page.locator(sel).evaluate(e=>e.scrollWidth<=e.clientWidth+1));await page.locator('.chain-ticker').evaluate(e=>window.scrollTo(0,e.getBoundingClientRect().top+window.scrollY-12));await page.screenshot({path:new URL(`${label}-${width}.png`,import.meta.url).pathname});}
  checks.push('Clean event header fits mobile and desktop');
  mode='gate-fail';await refresh();assert.equal(await log.locator('.chain-source-status>span').count(),1);await log.getByText('Gates · Stale',{exact:true}).waitFor();assert.ok(await rows.count()>0);
  checks.push('Partial outage shows only Gates · Stale and retains loaded rows');

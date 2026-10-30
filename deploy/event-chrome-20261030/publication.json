@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-30T19:09:29.492910+00:00",
+  "sourceCommit": "e3bf5259622c9d37fbcf0a31002862f369a919d6",
+  "deployment": "d48d0689",
+  "deploymentUrl": "https://d48d0689.cradleos-d75.pages.dev",
+  "origin": "https://cradleos.io",
+  "rollback": {
+    "deployment": "9e1a427e",
+    "sourceCommit": "1ae7a0f49fc2d85f923d67eec374ce13bb1b37b1"
+  },
+  "typescriptBuild": "passed",
+  "originsChecks": 8,
+  "ioc": "clean",
+  "previewGroups": 6,
+  "productionGroups": 6,
+  "playerWrites": 0,
+  "sourceScope": "Two-file UI label/render change only"
+}

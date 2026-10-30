@@ -7,3 +7,5 @@ UI-only two-file change; no unit tests added for label/render cleanup. TypeScrip
 Rollback: Pages9e1a427e/source1ae7a0f49fc2d85f923d67eec374ce13bb1b37b1.
 
 Preview PASS: six real-data scenario groups with explicit all/partial source failures, freshness expiry/recovery, history and390/1440px. No page errors or writes. TypeScript/Vite, Origins8 and IOC guards PASS. First preview attempt raced the ongoing build and returned HTTP failure; rerun after confirmed build completion passed, no application change needed.
+
+LIVE Pagesd48d0689/runtimee3bf5259622c9d37fbcf0a31002862f369a919d6. Six production browser groups PASS, exact five asset hashes and root/partner/noindex/301 verified. Independent production PASS. Screenshot-only test framing corrected in receipt commit; application source remains the reviewed runtime. Owned preview5364 stopped.
