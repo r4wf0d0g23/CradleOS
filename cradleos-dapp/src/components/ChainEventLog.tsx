@@ -68,8 +68,8 @@ export function ChainEventTicker({ onOpen }: { onOpen: (query?: string) => void 
     {events.length>0 && Object.values(feed.streams).some(s=>streamStatus(s,feed.now)!=='Current') && <span className="chain-ticker-empty">Partial</span>}
     <div className="chain-ticker-window">
       {events.length ? <div className="chain-ticker-track" style={{animationDuration:`${Math.max(45,events.reduce((n,e)=>n+eventSentence(e,feed.names).length,0)/9)}s`}}>
-        <div className="chain-ticker-group">{events.map(e=><button key={e.id} onClick={()=>onOpen(e.digest)}><time>{timestamp(e.recordedAt)}</time> · <EventText event={e} names={feed.names} /></button>)}</div>
-        <div className="chain-ticker-group chain-ticker-copy" aria-hidden="true" inert>{events.map(e=><span key={e.id}>{timestamp(e.recordedAt)} · <EventText event={e} names={feed.names} /></span>)}</div>
+        <div className="chain-ticker-group">{events.map(e=><button key={e.id} data-event-id={e.id} onClick={()=>onOpen(e.digest)}><time dateTime={new Date(e.recordedAt).toISOString()}>{timestamp(e.recordedAt)}</time> · <EventText event={e} names={feed.names} /></button>)}</div>
+        <div className="chain-ticker-group chain-ticker-copy" aria-hidden="true" inert>{events.map(e=><span key={e.id} data-event-id={e.id}><time dateTime={new Date(e.recordedAt).toISOString()}>{timestamp(e.recordedAt)}</time> · <EventText event={e} names={feed.names} /></span>)}</div>
       </div> : <span className="chain-ticker-empty">{state}</span>}
     </div>
     <button className="chain-ticker-pause" onClick={toggle} aria-label={paused?'Resume event ticker':'Pause event ticker'} aria-pressed={paused}>{paused?'Resume':'Pause'}</button>

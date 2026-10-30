@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-30T19:05:30.784Z",
+  "base": "http://127.0.0.1:5363",
+  "label": "preview",
+  "checks": [
+    {
+      "check": "Latest-only ticker increases in time, at most8/15min; copy matches; full log remains newest-first",
+      "count": 1,
+      "records": [
+        {
+          "id": "7SDb5h8ehZAaxpb1MbwPZt8TiQSLsk6ZALMiKG5ck6jT#1",
+          "time": 1793386818524
+        }
+      ]
+    },
+    {
+      "check": "Pause, transaction-filter click, identity colors and mobile/desktop layouts retained"
+    },
+    {
+      "check": "Fresh sources with only old events show no ticker highlights, preserving full log history",
+      "simulatedOldEvents": true
+    },
+    {
+      "check": "Latest feed recovers after refresh"
+    }
+  ],
+  "errors": [],
+  "writes": 0,
+  "liveChainData": true
+}

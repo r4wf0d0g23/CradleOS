@@ -10,6 +10,7 @@ import { resolveCurrentSystemName } from './currentSystemNames';
 export const EVENT_PAGE_SIZE = 30;
 export const EVENT_STALE_MS = 180_000;
 export const EVENT_MAX_PAGES = 10;
+export const TICKER_RECENCY_MS = 15 * 60_000;
 export const EVENT_SOURCES = [
   { id: 'gates', label: 'Gates', type: `${CURRENT_WORLD}::gate` },
   { id: 'losses', label: 'Loss reports', type: `${CURRENT_WORLD}::killmail` },
@@ -281,5 +282,8 @@ export function eventMatches(e: ChainEvent, query: string, names: EntityNames): 
 }
 export function tickerEvents(events: ChainEvent[], streams: Record<string, EventStream>, now: number, history: boolean): ChainEvent[] {
   if (history) return [];
-  return events.filter(e => e.notable && streamStatus(streams[e.source],now) === 'Current' && now - e.recordedAt < 86400000).slice(0,8);
+  const recent = (time: number) => time <= now && now - time < TICKER_RECENCY_MS;
+  return sortEvents(events.filter(e => e.notable && streamStatus(streams[e.source],now) === 'Current'
+    && recent(e.recordedAt) && (e.occurredAt === undefined || recent(e.occurredAt))))
+    .slice(0,8).reverse();
 }

@@ -157,4 +157,18 @@ describe('route scope, currency and metadata', () => {
     expect(tickerEvents([{...e,recordedAt:at-86400001}],{gates:s},at,false)).toEqual([]);
     expect(tickerEvents([event()],{gates:s},at,false)).toEqual([]);
   });
+  it('selects the newest eight then scrolls them forward in time without mutating log order', () => {
+    const events=Array.from({length:12},(_,i)=>({...event(),id:`${digest}#${i}`,sequence:i,recordedAt:at-i*1000,notable:true}));
+    const s=mergeEventPage(emptyStream(),page(events),false), original=events.map(e=>e.id);
+    expect(tickerEvents(events,{gates:s},at,false).map(e=>e.sequence)).toEqual([7,6,5,4,3,2,1,0]);
+    expect(tickerEvents([...events].reverse(),{gates:s},at,false).map(e=>e.sequence)).toEqual([7,6,5,4,3,2,1,0]);
+    expect(events.map(e=>e.id)).toEqual(original);
+  });
+  it('shows only the last fifteen minutes and excludes old backfilled losses and future records', () => {
+    const e={...event(),notable:true},s=mergeEventPage(emptyStream(),page([e]),false);
+    const records=[{...e,id:'recent',recordedAt:at-899999},{...e,id:'boundary',recordedAt:at-900000},
+      {...e,id:'future',recordedAt:at+1},{...e,id:'backfilled',occurredAt:at-86400000},
+      {...e,id:'future-loss',occurredAt:at+1},{...e,id:'current-loss',occurredAt:at-60000}];
+    expect(tickerEvents(records,{gates:s},at,false).map(e=>e.id)).toEqual(['recent','current-loss']);
+  });
 });
