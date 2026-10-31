@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-31T18:47:13.921877+00:00",
+  "beforeEvents": 14039,
+  "afterEvents": 14039,
+  "allPriorIdsPreserved": true,
+  "integrity": "ok",
+  "backup": {
+    "at": "2026-10-31T18:46:38.201556+00:00",
+    "host": "Jetson2",
+    "file": "cycle7-20261031T184636Z.sqlite",
+    "sha256": "ab9bb1a5e103b1651d572dea9e2f15ebad51d6ba652d5bd97b0546801371f4c6",
+    "integrity": "ok",
+    "events": {
+      "gate::GateCreatedEvent": 376,
+      "gate::GateLinkedEvent": 224,
+      "gate::GateUnlinkedEvent": 88,
+      "gate::JumpEvent": 6050,
+      "location::LocationRevealedEvent": 129,
+      "status::StatusChangedEvent": 5967
+    }
+  }
+}

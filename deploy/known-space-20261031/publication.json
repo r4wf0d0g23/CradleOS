@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-31T18:47:28.250136+00:00",
+  "sourceCommit": "3b81f24e40d94068306b10340cf2f95b1efe612d",
+  "deployment": "55757e91",
+  "deploymentUrl": "https://55757e91.cradleos-d75.pages.dev",
+  "origin": "https://cradleos.io",
+  "map": "https://cradleos.io/#/known-space",
+  "api": "https://keeper.reapers.shop/known-space",
+  "rollback": {
+    "deployment": "a03fd651",
+    "sourceCommit": "1e8e98b7bd123151d4004c2606d32fbf97d4f7c8"
+  },
+  "tunnelConfigVersion": 6,
+  "playerWrites": 0
+}

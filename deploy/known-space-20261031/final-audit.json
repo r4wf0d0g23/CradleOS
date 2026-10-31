@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-31T18:49:03.132642+00:00",
+  "review": "independent native production PASS",
+  "sourceCommit": "3b81f24e40d94068306b10340cf2f95b1efe612d",
+  "liveAssetHashes": 5,
+  "publicBrowserNodes": 281,
+  "nonemptyReplayVerified": true,
+  "currentMetadataAbsentFromReplay": true,
+  "jetson2IndependentHashIntegrity": "passed",
+  "restartPreservedIds": 14039,
+  "backfill": "ongoing",
+  "explicitHistoryGaps": 4,
+  "playerWrites": 0
+}

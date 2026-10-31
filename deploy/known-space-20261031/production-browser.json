@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-31T18:47:31.812Z",
+  "base": "https://cradleos.io",
+  "label": "production",
+  "checks": [
+    {
+      "check": "Public route loads actual jump-backed graph without wallet",
+      "nodes": 279
+    },
+    {
+      "check": "Zoom, keyboard pan, node/edge selection, search and provenance links"
+    },
+    {
+      "check": "Historical replay and Live return",
+      "at": 1792288549585
+    },
+    {
+      "check": "390px and 320px map/control layout fits"
+    },
+    {
+      "check": "Actual mobile pinch zoom and no map animation under reduced motion"
+    },
+    {
+      "check": "Failed refresh preserves graph and marks Stale"
+    }
+  ],
+  "api": [
+    {
+      "url": "https://keeper.reapers.shop/known-space",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/known-space?at=1792288549585",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/known-space",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "writes": 0,
+  "realChainData": true
+}

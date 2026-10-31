@@ -1,0 +1,10 @@
+[
+  {
+    "path": "/health",
+    "status": 200
+  },
+  {
+    "path": "/index/health",
+    "status": 200
+  }
+]

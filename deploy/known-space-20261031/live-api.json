@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-31T18:47:49.192Z",
+  "endpoint": "https://keeper.reapers.shop/known-space",
+  "status": "backfilling",
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "events": 15039,
+  "jumps": 7150,
+  "gates": 279,
+  "systems": 1,
+  "backfillComplete": false,
+  "coverageGaps": 4,
+  "countsReconciled": true,
+  "replayNoLookahead": true,
+  "pilotIdentifiersOmitted": true,
+  "readonlyMethods": true,
+  "unrelatedHealthRoutesUnchanged": [
+    "/health",
+    "/index/health"
+  ]
+}

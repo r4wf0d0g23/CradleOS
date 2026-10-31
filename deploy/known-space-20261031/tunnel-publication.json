@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-31T18:46:54.925993+00:00",
+  "version": 6,
+  "priorVersion": 5,
+  "added": {
+    "hostname": "keeper.reapers.shop",
+    "path": "^/known-space$",
+    "service": "http://localhost:8045"
+  },
+  "otherConfigurationUnchanged": true
+}
