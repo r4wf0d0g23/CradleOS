@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-31T18:44:42.206Z",
+  "base": "http://127.0.0.1:5366",
+  "label": "preview",
+  "checks": [
+    {
+      "check": "Public route loads actual jump-backed graph without wallet",
+      "nodes": 256
+    },
+    {
+      "check": "Zoom, keyboard pan, node/edge selection, search and provenance links"
+    },
+    {
+      "check": "Historical replay and Live return",
+      "at": 1792288465300
+    },
+    {
+      "check": "390px and 320px map/control layout fits"
+    },
+    {
+      "check": "Actual mobile pinch zoom and no map animation under reduced motion"
+    },
+    {
+      "check": "Failed refresh preserves graph and marks Stale"
+    },
+    {
+      "check": "Explicit empty and initial-failure UI fixtures distinguish zero from unavailable"
+    }
+  ],
+  "api": [
+    {
+      "url": "https://keeper.reapers.shop/known-space",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/known-space?at=1792288465300",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/known-space",
+      "status": 200
+    },
+    {
+      "url": "https://keeper.reapers.shop/known-space",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "writes": 0,
+  "realChainData": true
+}

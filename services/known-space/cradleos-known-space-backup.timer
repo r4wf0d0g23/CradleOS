@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily known-space archive backup
+
+[Timer]
+OnCalendar=*-*-* 04:15:00
+RandomizedDelaySec=15m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

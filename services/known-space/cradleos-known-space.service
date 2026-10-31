@@ -1,0 +1,20 @@
+[Unit]
+Description=CradleOS read-only known-space archive
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/cradleos-known-space
+ExecStart=/usr/bin/node %h/.local/share/cradleos-known-space/current/server.mjs
+Environment=KNOWN_SPACE_PORT=8045
+Environment=KNOWN_SPACE_DB=%h/.local/share/cradleos-known-space/cycle7.sqlite
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=180
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

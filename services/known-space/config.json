@@ -1,0 +1,9 @@
+{
+  "world": "0x7be18d6294e533bedd9a5d70a96ce8d9d4b87a7c74188ba65d3fe966bbed9d92",
+  "cycleStart": "2026-09-29",
+  "chainId": "69WiPg3DAQiwdxfncX6wYQ2siKwAe6L9BZthQea3JNMD",
+  "registry": "0x8fd47e6e5cf8cb9b789cef26fbb674be819d8abd6afccaf50e95451212f0813a",
+  "tenant": "stillness",
+  "cycle": 7,
+  "graphql": "https://graphql.testnet.sui.io/graphql"
+}

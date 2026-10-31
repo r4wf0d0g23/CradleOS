@@ -1,0 +1,9 @@
+[Unit]
+Description=Verify known-space archive backup on Jetson2
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flock -n %h/.local/share/cradleos-known-space/backup.lock /usr/bin/python3 %h/.local/share/cradleos-known-space/current/backup.py
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
