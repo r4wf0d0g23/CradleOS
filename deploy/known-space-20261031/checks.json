@@ -10,5 +10,6 @@
   "systemdUnits": "validated",
   "previewBrowser": "preview-browser.json",
   "sourceAudit": "independent native prelaunch PASS; all blockers resolved",
-  "chainWrites": 0
+  "chainWrites": 0,
+  "symlinkRuntime": "bundled CLI startup and graceful SIGTERM passed"
 }

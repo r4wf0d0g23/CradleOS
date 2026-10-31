@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync,realpathSync } from 'node:fs';
 import { dirname,resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openStore,snapshot,CONFIG,SOURCES,stateOf } from './core.mjs';
@@ -34,7 +34,7 @@ export function serve(db,port=8045) {
   } catch {res.writeHead(503);res.end('{"error":"map_unavailable"}');}
  });server.requestTimeout=10000;server.headersTimeout=10000;server.maxConnections=64;server.listen(port,'127.0.0.1');return server;
 }
-if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
+if(process.argv[1] && realpathSync(resolve(process.argv[1]))===fileURLToPath(import.meta.url)) {
  process.umask(0o077);
  const path=process.env.KNOWN_SPACE_DB || `${process.env.HOME}/.local/share/cradleos-known-space/cycle7.sqlite`;
  mkdirSync(dirname(path),{recursive:true,mode:0o700});const db=openStore(path);
