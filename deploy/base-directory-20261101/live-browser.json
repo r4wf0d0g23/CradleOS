@@ -1,0 +1,167 @@
+{
+  "at": "2026-11-01T21:14:31.722Z",
+  "base": "https://cradleos.io",
+  "readOnlyWalletFixture": true,
+  "realChainData": true,
+  "summary": "6 bases\n27 structures\n21 online\n6 turrets\n2 storage",
+  "checks": [
+    "six owned bases",
+    "all 27 structures",
+    "truthful location labels",
+    "custom and stable ID names",
+    "child search retains full base",
+    "no matches and clear",
+    "collapse persists across reload",
+    "expand all",
+    "responsive 1440/650/390/320",
+    "disconnect clears"
+  ],
+  "widths": [
+    {
+      "width": 1440,
+      "document": 1440,
+      "cards": [
+        {
+          "left": 104,
+          "right": 1336,
+          "width": 1232
+        },
+        {
+          "left": 104,
+          "right": 1336,
+          "width": 1232
+        },
+        {
+          "left": 104,
+          "right": 1336,
+          "width": 1232
+        },
+        {
+          "left": 104,
+          "right": 1336,
+          "width": 1232
+        },
+        {
+          "left": 104,
+          "right": 1336,
+          "width": 1232
+        },
+        {
+          "left": 104,
+          "right": 1336,
+          "width": 1232
+        }
+      ]
+    },
+    {
+      "width": 650,
+      "document": 650,
+      "cards": [
+        {
+          "left": 24,
+          "right": 626,
+          "width": 602
+        },
+        {
+          "left": 24,
+          "right": 626,
+          "width": 602
+        },
+        {
+          "left": 24,
+          "right": 626,
+          "width": 602
+        },
+        {
+          "left": 24,
+          "right": 626,
+          "width": 602
+        },
+        {
+          "left": 24,
+          "right": 626,
+          "width": 602
+        },
+        {
+          "left": 24,
+          "right": 626,
+          "width": 602
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "document": 390,
+      "cards": [
+        {
+          "left": 8,
+          "right": 382,
+          "width": 374
+        },
+        {
+          "left": 8,
+          "right": 382,
+          "width": 374
+        },
+        {
+          "left": 8,
+          "right": 382,
+          "width": 374
+        },
+        {
+          "left": 8,
+          "right": 382,
+          "width": 374
+        },
+        {
+          "left": 8,
+          "right": 382,
+          "width": 374
+        },
+        {
+          "left": 8,
+          "right": 382,
+          "width": 374
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "document": 320,
+      "cards": [
+        {
+          "left": 8,
+          "right": 312,
+          "width": 304
+        },
+        {
+          "left": 8,
+          "right": 312,
+          "width": 304
+        },
+        {
+          "left": 8,
+          "right": 312,
+          "width": 304
+        },
+        {
+          "left": 8,
+          "right": 312,
+          "width": 304
+        },
+        {
+          "left": 8,
+          "right": 312,
+          "width": 304
+        },
+        {
+          "left": 8,
+          "right": 312,
+          "width": 304
+        }
+      ]
+    }
+  ],
+  "writes": 0,
+  "errors": []
+}
