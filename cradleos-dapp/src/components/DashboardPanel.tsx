@@ -1,5 +1,5 @@
 import { cycleCacheKey } from "../lib/cycleCache";
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { playPowerOn, playPowerOff } from "../lib/sound";
@@ -30,6 +30,8 @@ import { StructureRowHeader } from "./dashboard/StructureRowHeader";
 import { NodeHeader } from "./dashboard/NodeHeader";
 import { StructureRowList } from "./dashboard/StructureRowList";
 import { sortByFamily } from "./dashboard/sortByFamily";
+import { baseTitle, baseContents, baseMatches, buildBaseDirectory, structureMatches } from "../lib/baseDirectory";
+import "./dashboard/baseDirectory.css";
 import { translateTxError } from "../lib/txError";
 
 // Node EP capacity. The on-chain Move object does not expose this as a field
@@ -473,29 +475,7 @@ function _StructureGroup({
   );
 }
 
-// ── Summary stats bar ─────────────────────────────────────────────────────────
-
-// ── Topology Drill-Down (Bubble Navigation) ──────────────────────────────────
-// Level 0: Systems overview (big bubbles per system + hidden/exposed split)
-// Level 1: Nodes in selected system
-// Level 2: Structures attached to selected node
-
-// KIND_COLORS / KIND_ICONS keys MUST match the `label` field on
-// PlayerStructure (defined in constants.ts STRUCTURE_TYPES). The five
-// real kinds are: "Network Node", "Gate", "Assembly", "Turret",
-// "Storage Unit". Anything else ("Smart Gate", "Manufacturing",
-// "Refinery") was legacy and never matched, so every non-Node /
-// non-Assembly structure fell back to the gray default color in the
-// system topology bubbles + legend. (2026-05-01: Raw flagged the
-// legend mismatch + ellipse vs circle shape inconsistency.)
-const KIND_COLORS: Record<string, string> = {
-  "Network Node": "#FF4700",
-  "Gate":         "#00ccff",
-  "Turret":       "#ff4444",
-  "Storage Unit": "#ffd700",
-  "Assembly":     "#88cc44",
-};
-
+// Structure icons retained for the existing actionable rows.
 const KIND_ICONS: Record<string, string> = {
   "Network Node": "⚡",
   "Gate":         "⛩",
@@ -504,189 +484,6 @@ const KIND_ICONS: Record<string, string> = {
   "Assembly":     "⊞",
 };
 
-type BubbleItem = {
-  id: string;
-  label: string;
-  sublabel?: string;
-  count?: number;
-  online?: number;
-  offline?: number;
-  color: string;
-  icon?: string;
-  fuelPct?: number;
-  fuelHours?: number;
-  isOnline?: boolean;
-  onClick?: () => void;
-  onDApp?: () => void;
-  typeDots?: Array<{ color: string; online: boolean }>;
-};
-
-function BubbleGrid({ items, title, breadcrumb, onBack }: {
-  items: BubbleItem[];
-  title: string;
-  breadcrumb?: string[];
-  onBack?: () => void;
-}) {
-  const [hovered, setHovered] = useState<string | null>(null);
-
-  return (
-    <div>
-      {/* Navigation header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", marginBottom: 12, borderBottom: "1px solid rgba(255,71,0,0.15)" }}>
-        {onBack && (
-          <button
-            onClick={onBack}
-            style={{ background: "none", border: "1px solid rgba(255,71,0,0.3)", color: "#FF4700", padding: "5px 14px", cursor: "pointer", fontSize: 13, fontFamily: "inherit", fontWeight: 700, letterSpacing: "0.04em" }}
-          >
-            ←
-          </button>
-        )}
-        {breadcrumb && breadcrumb.length > 0 && (
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>
-            {breadcrumb.join(" › ")} ›
-          </span>
-        )}
-        <span style={{ fontSize: 18, fontWeight: 700, color: "#FF4700", letterSpacing: "0.04em" }}>
-          {title}
-        </span>
-      </div>
-
-      {/* Bubble grid */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 20, justifyContent: "center", padding: "10px 0" }}>
-        {items.map(item => {
-          const isHov = hovered === item.id;
-          const bubbleSize = Math.max(140, Math.min(200, 120 + (item.count ?? 1) * 6));
-          return (
-            <div
-              key={item.id}
-              onMouseEnter={() => setHovered(item.id)}
-              onMouseLeave={() => setHovered(null)}
-              style={{
-                // Square aspect — width === height so borderRadius:50% is
-                // a circle, not an ellipse. Previous version used
-                // minHeight which let content stretch the box vertically;
-                // small bubbles (count=1) had taller content than
-                // bubbleSize and rendered as ellipses while large bubbles
-                // (count=27) stayed circular. Locking to a square fixes
-                // the inconsistency.
-                width: bubbleSize, height: bubbleSize,
-                borderRadius: "50%",
-                border: `2.5px solid ${isHov ? item.color : `${item.color}66`}`,
-                background: isHov
-                  ? `radial-gradient(circle at 40% 40%, ${item.color}18, rgba(5,3,2,0.95))`
-                  : "radial-gradient(circle at 40% 40%, rgba(255,71,0,0.04), rgba(5,3,2,0.95))",
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                cursor: item.onClick ? "pointer" : "default",
-                transition: "all 0.2s",
-                position: "relative",
-                boxShadow: isHov ? `0 0 30px ${item.color}33` : "0 0 10px rgba(255,71,0,0.05)",
-                padding: "12px 8px",
-              }}
-              onClick={item.onClick}
-            >
-              {/* Icon */}
-              {item.icon && (
-                <div style={{ fontSize: 24, marginBottom: 4, opacity: 0.8 }}>{item.icon}</div>
-              )}
-
-              {/* Label */}
-              <div style={{ fontSize: 14, fontWeight: 700, color: item.color, textAlign: "center", lineHeight: 1.2, marginBottom: 4, padding: "0 6px" }}>
-                {item.label}
-              </div>
-
-              {/* Sublabel */}
-              {item.sublabel && (
-                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", textAlign: "center", marginBottom: 4 }}>
-                  {item.sublabel}
-                </div>
-              )}
-
-              {/* Count */}
-              {item.count !== undefined && (
-                <div style={{ fontSize: 28, fontWeight: 700, color: "#ddd" }}>{item.count}</div>
-              )}
-
-              {/* Online/offline stats */}
-              {(item.online !== undefined || item.offline !== undefined) && (
-                <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
-                  {item.online !== undefined && <span style={{ fontSize: 12, color: "#00ff96", fontWeight: 600 }}>{item.online}↑</span>}
-                  {item.offline !== undefined && item.offline > 0 && <span style={{ fontSize: 12, color: "#ff4444", fontWeight: 600 }}>{item.offline}↓</span>}
-                </div>
-              )}
-
-              {/* Fuel bar (for nodes) */}
-              {item.fuelPct !== undefined && (
-                <div style={{ marginTop: 6, width: "60%", textAlign: "center" }}>
-                  <div style={{ width: "100%", height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ width: `${Math.min(100, item.fuelPct)}%`, height: "100%", background: item.fuelPct > 50 ? "#00ff96" : item.fuelPct > 10 ? "#ffd700" : "#ff4444" }} />
-                  </div>
-                  <div style={{ fontSize: 9, color: "rgba(255,255,255,0.55)", marginTop: 2 }}>
-                    {item.fuelPct.toFixed(0)}% fuel{item.fuelHours !== undefined ? ` · ~${Math.round(item.fuelHours)}h` : ""}
-                  </div>
-                </div>
-              )}
-
-              {/* Status indicator */}
-              {item.isOnline !== undefined && (
-                <div style={{ position: "absolute", top: 8, right: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: item.isOnline ? "#00ff96" : "#ff4444", display: "inline-block", boxShadow: `0 0 6px ${item.isOnline ? "#00ff96" : "#ff4444"}` }} />
-                </div>
-              )}
-
-              {/* Type composition dots (for system bubbles) */}
-              {item.typeDots && item.typeDots.length > 0 && (
-                <>
-                  {item.typeDots.slice(0, 24).map((dot, di) => {
-                    const angle = (di / Math.min(24, item.typeDots!.length)) * 2 * Math.PI - Math.PI / 2;
-                    const dotR = bubbleSize / 2 - 6;
-                    return (
-                      <div key={di} style={{
-                        position: "absolute",
-                        width: 6, height: 6, borderRadius: "50%",
-                        background: dot.color,
-                        opacity: dot.online ? 0.8 : 0.25,
-                        left: bubbleSize / 2 + Math.cos(angle) * dotR - 3,
-                        top: bubbleSize / 2 + Math.sin(angle) * dotR - 3,
-                        pointerEvents: "none",
-                      }} />
-                    );
-                  })}
-                </>
-              )}
-
-              {/* dApp link indicator */}
-              {item.onDApp && isHov && (
-                <div
-                  style={{ position: "absolute", bottom: -10, fontSize: 9, color: "rgba(255,71,0,0.6)", background: "rgba(5,3,2,0.9)", padding: "2px 8px", border: "1px solid rgba(255,71,0,0.2)", whiteSpace: "nowrap", pointerEvents: "none" }}
-                >
-                  click to open controls ↗
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Legend */}
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 12, flexWrap: "wrap" }}>
-        {/* Legend — keys map directly to KIND_COLORS / typeDots so the
-            colors here match the dots in the bubble rings 1:1. No more
-            "Smart " prefix stripping; legend labels are the canonical
-            structure labels. */}
-        {Object.entries(KIND_COLORS).map(([kind, color]) => (
-          <span key={kind} style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", display: "flex", alignItems: "center", gap: 4 }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, display: "inline-block", opacity: 0.7 }} />
-            {kind}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// onNavigate prop removed 2026-05-01 — was only used by the per-node
-// DEFENSE / GATES shortcuts which have been replaced by the kiosk nav
-// bar (every kiosk page can reach Defense + Gates via the top nav).
 function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGroup[]; characterId: string; onRefresh: () => void }) {
   const dAppKit = useDAppKit();
   const [actionBusy, setActionBusy] = useState<string | null>(null);
@@ -885,9 +682,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
     }).catch(() => {});
     return () => { cancelled = true; };
   }, [characterId, account?.address, tribeVaultId]);
-  const [level, setLevel] = useState<"systems" | "nodes" | "structures">("systems");
-  const [selectedSystem, setSelectedSystem] = useState<string | null>(null);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const [focused, setFocused] = useState<PlayerStructure | null>(null);
   // Per-node collapse state. Default is expanded (object not in the set).
   // Persists to localStorage so user choices survive page reloads. Keyed
@@ -913,68 +708,17 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
       return next;
     });
   }, []);
-  // Tracks whether we have already handled the "hidden-only" auto-jump for this
-  // mount so we do not fight the user if they manually navigate back to the
-  // systems overview after we redirected them.
-  const hiddenAutoJumpHandledRef = useRef(false);
-
-  const allStructures = useMemo(() => groups.flatMap(g => g.structures), [groups]);
+  const directory = useMemo(() => buildBaseDirectory(groups), [groups]);
+  const allStructures = directory.structures;
+  const visibleBases = directory.bases.filter(base => baseMatches(base, search));
+  const visibleOthers = directory.others.filter(structure => structureMatches(structure, search));
   const totalOnline = allStructures.filter(s => s.isOnline).length;
-
-  const kindColor = (s: PlayerStructure) => KIND_COLORS[s.label] ?? "rgba(255,255,255,0.5)";
   const kindIcon = (s: PlayerStructure) => KIND_ICONS[s.label] ?? "●";
 
   const openDApp = (s: PlayerStructure) => {
     const id = s.gameItemId ?? s.objectId;
     window.open(`${EVE_DAPP_BASE}?itemId=${id}&tenant=${SERVER_ENV}`, "eve-dapp", "width=800,height=700,menubar=no,toolbar=no,location=no,status=no");
   };
-
-  // Auto-jump into the hidden-structures view when the user has structures
-  // but ALL of them are hidden (no exposed solar systems). The hidden bubble
-  // is the only meaningful thing on the page in that case, and the previous
-  // UX forced users to discover that the unlabeled "?" bubble was clickable.
-  //
-  // Triggers exactly once per mount (hiddenAutoJumpHandledRef gate). After we
-  // redirect, if the user backs out to the systems overview manually, we do
-  // not fight them — they keep the systems view for the rest of the session.
-  useEffect(() => {
-    if (hiddenAutoJumpHandledRef.current) return;
-    if (level !== "systems" || selectedSystem !== null) return;
-    if (groups.length === 0) return;
-    const allStructuresFlat = groups.flatMap(g => g.structures);
-    if (allStructuresFlat.length === 0) return;
-    const exposedCount = groups.filter(g => g.solarSystemId !== undefined).length;
-    const hiddenCount = groups.filter(g => g.solarSystemId === undefined)
-      .reduce((sum, g) => sum + g.structures.length, 0);
-    if (exposedCount === 0 && hiddenCount > 0) {
-      hiddenAutoJumpHandledRef.current = true;
-      setSelectedSystem("hidden");
-      setLevel("nodes");
-    } else {
-      // Mixed or only-exposed: nothing to redirect; mark handled so we do not
-      // fire on a future hidden-only re-render after the user navigates around.
-      hiddenAutoJumpHandledRef.current = true;
-    }
-  }, [groups, level, selectedSystem]);
-
-  // Build per-system topology
-  const systems = useMemo(() => {
-    return groups.map(g => {
-      const nodes = g.structures.filter(s => s.kind === "NetworkNode");
-      const others = g.structures.filter(s => s.kind !== "NetworkNode");
-      const nodeChildren = new Map<string, PlayerStructure[]>();
-      const orphans: PlayerStructure[] = [];
-      for (const n of nodes) nodeChildren.set(n.objectId, []);
-      for (const s of others) {
-        if (s.energySourceId && nodeChildren.has(s.energySourceId)) {
-          nodeChildren.get(s.energySourceId)!.push(s);
-        } else {
-          orphans.push(s);
-        }
-      }
-      return { ...g, nodes, nodeChildren, orphans };
-    });
-  }, [groups]);
 
   // Portal-mounted rename modal. Rendered into document.body so it works
   // regardless of which level branch (systems / nodes / structures) is
@@ -1097,138 +841,37 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
     document.body,
   ) : null;
 
-  // ── LEVEL 0: Systems ──
-  if (level === "systems") {
-    // Split into exposed (has location/system) vs hidden (unknown system)
-    const exposed = systems.filter(s => s.solarSystemId !== undefined);
-    const hidden = systems.filter(s => s.solarSystemId === undefined);
-    const hiddenStructures = hidden.flatMap(s => s.structures);
-
-    const items: BubbleItem[] = [];
-
-    // System bubbles
-    for (const sys of exposed) {
-      const on = sys.structures.filter(s => s.isOnline).length;
-      items.push({
-        id: sys.key,
-        label: sys.tabLabel,
-        sublabel: `${sys.nodes.length} node${sys.nodes.length !== 1 ? "s" : ""}`,
-        count: sys.structures.length,
-        online: on,
-        offline: sys.structures.length - on,
-        color: "#FF4700",
-        icon: "☉",
-        onClick: () => { setSelectedSystem(sys.key); setLevel("nodes"); },
-        typeDots: sys.structures.map(s => ({ color: kindColor(s), online: s.isOnline })),
-      });
+  const setAllCollapsed = (collapsed: boolean) => {
+    const next = new Set(collapsedNodes);
+    for (const base of directory.bases) {
+      if (collapsed) next.add(base.node.objectId);
+      else next.delete(base.node.objectId);
     }
+    setCollapsedNodes(next);
+    try { localStorage.setItem("cradleos.dashboard.collapsedNodes", JSON.stringify([...next])); } catch { /* unavailable */ }
+  };
 
-    // Hidden structures bubble (if any)
-    if (hiddenStructures.length > 0) {
-      const on = hiddenStructures.filter(s => s.isOnline).length;
-      items.push({
-        id: "hidden",
-        label: "Hidden",
-        sublabel: "system not revealed",
-        onClick: () => { setSelectedSystem("hidden"); setLevel("nodes"); },
-        count: hiddenStructures.length,
-        online: on,
-        offline: hiddenStructures.length - on,
-        color: "rgba(255,255,255,0.55)",
-        icon: "?",
-        typeDots: hiddenStructures.map(s => ({ color: kindColor(s), online: s.isOnline })),
-      });
-    }
-
-    return (
-      <div style={{ marginBottom: 12 }}>
-        {/* Summary */}
-        <div style={{ display: "flex", gap: 20, padding: "10px 14px", marginBottom: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", flexWrap: "wrap", alignItems: "center" }}>
-          <span><span style={{ fontSize: 26, fontWeight: 700, color: "#ddd" }}>{allStructures.length}</span><span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}> structures</span></span>
-          <span><span style={{ fontSize: 26, fontWeight: 700, color: "#00ff96" }}>{totalOnline}</span><span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}> online</span></span>
-          <span><span style={{ fontSize: 26, fontWeight: 700, color: "#FF4700" }}>{exposed.length}</span><span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}> systems</span></span>
-          {hiddenStructures.length > 0 && (
-            <span><span style={{ fontSize: 26, fontWeight: 700, color: "rgba(255,255,255,0.55)" }}>{hiddenStructures.length}</span><span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}> hidden</span></span>
-          )}
+  return (
+      <div className="base-directory">
+        <div className="base-directory-summary" role="status">
+          <strong>{directory.bases.length} bases</strong>
+          <span>{allStructures.length} structures</span>
+          <span>{totalOnline} online</span>
+          <span>{allStructures.filter(s => s.kind === "Turret").length} turrets</span>
+          <span>{allStructures.filter(s => s.kind === "StorageUnit").length} storage</span>
         </div>
-        <BubbleGrid items={items} title="YOUR SYSTEMS" />
-        {renameModal}
-      </div>
-    );
-  }
-
-  // ── LEVEL 1: Nodes in system ──
-  if (level === "nodes" && selectedSystem) {
-    // For hidden systems, merge all unlocated system groups into one virtual system
-    // so the multi-node topology view still works
-    const sys = selectedSystem === "hidden"
-      ? (() => {
-          const hiddenSystems = systems.filter(s => s.solarSystemId === undefined);
-          const allStructures = hiddenSystems.flatMap(s => s.structures);
-          const nodes = allStructures.filter(s => s.kind === "NetworkNode");
-          const others = allStructures.filter(s => s.kind !== "NetworkNode");
-          const nodeChildren = new Map<string, PlayerStructure[]>();
-          const orphans: PlayerStructure[] = [];
-          for (const n of nodes) nodeChildren.set(n.objectId, []);
-          for (const s of others) {
-            if (s.energySourceId && nodeChildren.has(s.energySourceId)) {
-              nodeChildren.get(s.energySourceId)!.push(s);
-            } else {
-              orphans.push(s);
-            }
-          }
-          return { key: "hidden", tabLabel: "Hidden Structures", structures: allStructures, nodes, nodeChildren, orphans, solarSystemId: undefined };
-        })()
-      : systems.find(s => s.key === selectedSystem);
-    if (!sys) { setLevel("systems"); return null; }
-
-    // ── Multi-node topology view ──
-    // Each node is a hub with its child structures displayed around it
-    const nodeCount = sys.nodes.length;
-    const hasOrphans = sys.orphans.length > 0;
-
-    return (
-      <div>
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", marginBottom: 12, borderBottom: "1px solid rgba(255,71,0,0.15)" }}>
-          <button
-            onClick={() => { setLevel("systems"); setSelectedSystem(null); setFocused(null); }}
-            style={{ background: "none", border: "1px solid rgba(255,71,0,0.3)", color: "#FF4700", padding: "5px 14px", cursor: "pointer", fontSize: 13, fontFamily: "inherit", fontWeight: 700 }}
-          >←</button>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>Systems ›</span>
-          <span style={{ fontSize: 18, fontWeight: 700, color: "#FF4700" }}>{sys.tabLabel}</span>
-          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}>
-            {nodeCount} node{nodeCount !== 1 ? "s" : ""} · {sys.structures.length} structures
-          </span>
+        <div className="base-directory-tools">
+          <input aria-label="Find base or structure" placeholder="Find base, structure or item ID…" value={search} onChange={e => setSearch(e.target.value)} />
+          {search && <button onClick={() => setSearch("")}>Clear</button>}
+          <button onClick={() => setAllCollapsed(false)}>Expand all</button>
+          <button onClick={() => setAllCollapsed(true)}>Collapse all</button>
         </div>
-
-        {/* Auto-jump banner: when ALL of a pilot's structures are hidden, we
-            land them here automatically. Explain why so the back button is
-            obviously available and the redirect doesn't feel like a glitch. */}
-        {selectedSystem === "hidden" && systems.filter(s => s.solarSystemId !== undefined).length === 0 && (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "10px 14px",
-            marginBottom: 14,
-            background: "rgba(255,71,0,0.05)",
-            border: "1px solid rgba(255,71,0,0.2)",
-            borderRadius: 2,
-          }}>
-            <span style={{ fontSize: 16, color: "#FF4700" }}>◆</span>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", lineHeight: 1.5 }}>
-              <span style={{ color: "#FF4700", fontWeight: 700 }}>All of your structures are in unrevealed systems.</span>
-              {" "}Their solar-system identity has not yet been written to the lattice. They are still controllable from this view.
-              {" "}Use <span style={{ color: "#FF4700" }}>←</span> above to return to the Systems overview when other systems become visible.
-            </span>
-          </div>
-        )}
+        {search.trim() && <div className="base-directory-results">{visibleBases.length} bases · {visibleOthers.length} other structures</div>}
+        {!visibleBases.length && !visibleOthers.length && <div className="base-directory-empty">No matches</div>}
 
         {/* Node clusters — each node with its children */}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          {sys.nodes.map(node => {
-            const children = sys.nodeChildren.get(node.objectId) ?? [];
+          {visibleBases.map(({ node, children }) => {
             const childOnline = children.filter(c => c.isOnline).length;
             const isNodeFocused = focused?.objectId === node.objectId;
             const onlineEnergyCost = children.filter(c => c.isOnline).reduce((sum, c) => sum + (c.energyCost ?? 0), 0);
@@ -1242,7 +885,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
             const isCollapsed = collapsedNodes.has(node.objectId);
 
             return (
-              <div key={node.objectId} style={{
+              <div key={node.objectId} className="base-directory-card" data-base-id={node.objectId} style={{
                 padding: "16px",
                 background: "rgba(255,255,255,0.015)",
                 border: `2px solid ${node.isOnline ? (isNodeFocused ? "#00ff96" : "rgba(0,255,150,0.3)") : (isNodeFocused ? "#ff4444" : "rgba(255,68,68,0.3)")}`,
@@ -1250,6 +893,12 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
                 {/* Node header — name, status, fuel/EP bars, power toggle, action chips */}
                 <NodeHeader
                   node={node}
+                  displayLabel={baseTitle(node)}
+                  details={<>
+                    {node.hasCustomName && node.gameItemId && <span>Item {node.gameItemId}</span>}
+                    <span>{node.solarSystemId === undefined ? "Location unknown" : `System ${node.solarSystemId}`}</span>
+                    <span>{baseContents(children)}</span>
+                  </>}
                   childCount={children.length}
                   childOnline={childOnline}
                   childOffline={children.length - childOnline}
@@ -1383,18 +1032,14 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
           })}
 
           {/* Orphan structures */}
-          {hasOrphans && (
+          {visibleOthers.length > 0 && (
             <div style={{
               padding: "16px",
               background: "rgba(255,255,255,0.01)",
               border: "1px solid rgba(255,255,255,0.04)",
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.55)" }}>⊘ Unlinked Structures</span>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{sys.orphans.length} structures with no parent node</span>
-              </div>
-              <div style={{ fontSize: 10, color: "rgba(255,200,0,0.7)", marginBottom: 12, lineHeight: 1.5 }}>
-                ⚠ These structures' parent NetworkNode isn't visible to the dApp. Stance toggles aren't available here — the EP budget can't be computed without seeing the node. Use per-row toggles below for individual on/off; the chain will reject if power is genuinely unavailable.
+              <div className="base-directory-summary">
+                <strong>Other structures</strong><span>{visibleOthers.length}</span><span>No visible network node</span>
               </div>
               {/* Orphan structures: render the same StructureRow table that
                   node-attached children use, so users can rename / online /
@@ -1412,7 +1057,7 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
                   even when the node isn't in our local view. */}
               <StructureRowList>
                 <StructureRowHeader />
-                {sortByFamily(sys.orphans).map((s, i) => (
+                {sortByFamily(visibleOthers).map((s, i) => (
                   <StructureRow
                     key={s.objectId}
                     structure={s}
@@ -1475,47 +1120,6 @@ function TopologyGraph({ groups, characterId, onRefresh }: { groups: LocationGro
       </div>
     );
 
-  }
-
-  // ── LEVEL 2: Structures on node ──
-  if (level === "structures" && selectedSystem && selectedNode) {
-    const sys = systems.find(s => s.key === selectedSystem);
-    if (!sys) { setLevel("systems"); return null; }
-
-    const node = sys.nodes.find(n => n.objectId === selectedNode);
-    const structures = selectedNode === "orphans"
-      ? sys.orphans
-      : (node ? (sys.nodeChildren.get(node.objectId) ?? []) : []);
-
-    const nodeName = selectedNode === "orphans" ? "Unlinked Structures" : (node?.displayName ?? "Node");
-
-    const items: BubbleItem[] = structures.map(s => ({
-      id: s.objectId,
-      label: s.displayName,
-      sublabel: s.typeName ?? s.label,
-      color: kindColor(s),
-      icon: kindIcon(s),
-      isOnline: s.isOnline,
-      fuelPct: s.fuelLevelPct,
-      fuelHours: s.runtimeHoursRemaining,
-      onClick: () => openDApp(s),
-      onDApp: () => openDApp(s),
-    }));
-
-    return (
-      <>
-        <BubbleGrid
-          items={items}
-          title={nodeName}
-          breadcrumb={["Systems", sys.tabLabel]}
-          onBack={() => { setLevel("nodes"); setSelectedNode(null); }}
-        />
-        {renameModal}
-      </>
-    );
-  }
-
-  return renameModal;
 }
 // 2026-05-01: onNavigate prop dropped — was only used by the per-node
 // DEFENSE / GATES shortcuts in NodeHeader, which were removed in favor
@@ -1628,13 +1232,7 @@ export function DashboardPanel() {
         <div style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.55)" }}>No structures found for this wallet</div>
       )}
 
-      {/* Dashboard intro — quick guide to what the topology view does, what the */}
-      {/* BULK ASSIGN strip and STANCE strip are for, and how energy budgets work. */}
-      {dashTab === "structures" && !loading && groups.length > 0 && (
-        <DashboardIntro />
-      )}
-
-      {/* Topology drill-down view */}
+      {/* Base-first structure directory */}
       {dashTab === "structures" && !loading && groups.length > 0 && (
         <TopologyGraph key={walletAddress} groups={groups} characterId={characterId} onRefresh={handleRefresh} />
       )}
@@ -1927,96 +1525,3 @@ const stanceBtnInline = (fg: string, disabled: boolean): React.CSSProperties => 
   cursor: disabled ? "default" : "pointer",
   fontFamily: "inherit",
 });
-
-// ── DashboardIntro ─ collapsible quick guide for new users ────────────────────
-//
-// Renders once at the top of the topology view. Persists collapsed state in
-// localStorage so users who've read it don't see the wall of text every time.
-//
-// Goal: cover the three things that aren't obvious at a glance:
-//   1. The view is grouped by solar system → network node → connected children
-//   2. Each NetworkNode has an EP (Energy Production) budget shared by its children
-//   3. The STANCE strip flips industry vs defense in one signed PTB, energy-aware
-
-const DASH_INTRO_KEY = "cradleos:dashboard:intro:collapsed";
-
-function DashboardIntro() {
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    try { return localStorage.getItem(DASH_INTRO_KEY) === "1"; } catch { return false; }
-  });
-
-  function toggle() {
-    setCollapsed(prev => {
-      const next = !prev;
-      try { localStorage.setItem(DASH_INTRO_KEY, next ? "1" : "0"); } catch { /* */ }
-      return next;
-    });
-  }
-
-  return (
-    <div style={{
-      background: "rgba(255,71,0,0.04)",
-      border: "1px solid rgba(255,71,0,0.18)",
-      borderRadius: 0,
-      padding: "10px 14px",
-      marginBottom: 14,
-    }}>
-      <div
-        onClick={toggle}
-        style={{
-          display: "flex", alignItems: "center", gap: 8,
-          cursor: "pointer", userSelect: "none",
-        }}
-      >
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#FF4700", letterSpacing: "0.06em" }}>
-          📖 DASHBOARD GUIDE
-        </span>
-        <span style={{ fontSize: 10, color: "rgba(175,175,155,0.55)", marginLeft: "auto" }}>
-          {collapsed ? "(click to expand)" : "(click to collapse)"}
-        </span>
-      </div>
-
-      {!collapsed && (
-        <div style={{ marginTop: 10, fontSize: 11, color: "rgba(220,220,200,0.85)", lineHeight: 1.6 }}>
-          <p style={{ margin: "0 0 8px 0" }}>
-            Your structures grouped by <strong>solar system → network node → connected children</strong>.
-            Each Network Node powers its children from a shared EP (Energy Production) budget;
-            online structures consume EP, offline ones don't. The bar in the node header shows
-            current consumption against the cap.
-          </p>
-          <p style={{ margin: "0 0 8px 0" }}>
-            <strong style={{ color: "#ff6432" }}>Per-row controls</strong> on each structure: power toggle,
-            rename ✎, delegate to tribe policy ⚑, transfer ownership, link/unlink (gates).
-            The power toggle is auto-disabled when bringing the structure online would exceed
-            the parent node's available EP — the chain would reject it anyway.
-          </p>
-          <p style={{ margin: "0 0 8px 0" }}>
-            <strong style={{ color: "#FF4700" }}>STANCE</strong> strip on each node:
-            three buttons that flip the node's posture in a single sequenced PTB
-            (offline phase first to free up EP, online phase second).
-            <br />
-            <strong style={{ color: "#ff6432" }}>⛨ DEFENSE</strong> — offline industry,
-            online turrets (energy-aware: only turrets that fit the post-offline budget come up).
-            <br />
-            <strong style={{ color: "#64b4ff" }}>⚙ PEACETIME</strong> — offline turrets,
-            online industry up to the budget.
-            <br />
-            <strong style={{ color: "#ff4444" }}>▼ ALL OFF</strong> — offline everything
-            connected to this node.
-          </p>
-          <p style={{ margin: "0 0 8px 0" }}>
-            <strong style={{ color: "rgba(255,255,255,0.7)" }}>⊘ Unlinked Structures</strong>:
-            when a structure's parent Network Node isn't visible to the dApp (the node may belong
-            to a different player or not be in your view yet), it appears here with per-row
-            controls only — STANCE buttons can't render without seeing the node's EP budget.
-          </p>
-          <p style={{ margin: "0 0 0 0", color: "rgba(175,175,155,0.6)", fontSize: 10 }}>
-            ℹ Tabs at the top: <strong>Structures</strong> (this view) ·
-            <strong> Links</strong> (gate-linking) ·
-            <strong> Transfer</strong> (move OwnerCap to another character).
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}

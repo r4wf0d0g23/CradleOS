@@ -29,6 +29,8 @@ const ON   = "#5DFF9A";
 
 export interface NodeHeaderProps {
   node: PlayerStructure;
+  displayLabel?: string;
+  details?: React.ReactNode;
   childCount: number;
   childOnline: number;
   childOffline: number;
@@ -82,6 +84,8 @@ function ghostBtn(color: string): React.CSSProperties {
 
 export function NodeHeader({
   node,
+  displayLabel = node.displayName,
+  details,
   childCount,
   childOnline,
   childOffline,
@@ -120,6 +124,7 @@ export function NodeHeader({
   return (
     <div
       role="banner"
+      className="base-node-header"
       onMouseEnter={() => onFocus?.(node)}
       onMouseLeave={() => onFocus?.(null)}
       onClick={onOpenDApp}
@@ -148,7 +153,7 @@ export function NodeHeader({
             e.stopPropagation();
             onToggleCollapsed();
           }}
-          aria-label={collapsed ? `Expand ${node.displayName}` : `Collapse ${node.displayName}`}
+          aria-label={collapsed ? `Expand ${displayLabel}` : `Collapse ${displayLabel}`}
           aria-expanded={!collapsed}
           title={collapsed ? "Expand" : "Collapse"}
           style={{
@@ -203,19 +208,18 @@ export function NodeHeader({
           fontSize: 16,
           letterSpacing: "0.06em",
           textTransform: "uppercase",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          flex: 1,
+          overflowWrap: "anywhere",
+          flex: "1 1 220px",
           minWidth: 0,
           paddingLeft: 6,
         }}>
-          {node.displayName}
+          {displayLabel}
           <span style={{
             color: N40,
             fontWeight: 400,
             fontSize: 11,
-            marginLeft: 12,
+            display: "block",
+            marginTop: 4,
             letterSpacing: "0.10em",
           }}>
             {childCount} STRUCT · {childOnline}↑ {childOffline > 0 ? `${childOffline}↓` : ""}
@@ -236,11 +240,11 @@ export function NodeHeader({
           }}
           onClick={e => e.stopPropagation()}
         >
-          <StatusLight on={node.isOnline} size={14} ariaLabel={`${node.displayName} status`} />
+          <StatusLight on={node.isOnline} size={14} ariaLabel={`${displayLabel} status`} />
           <CcpToggle
             on={node.isOnline}
             onChange={() => { if (!busy) onTogglePower(); }}
-            ariaLabel={`${node.displayName} power`}
+            ariaLabel={`${displayLabel} power`}
             disabled={busy}
           />
           <button type="button" onClick={onEdit} title="Rename" style={ghostBtn(M)}>
@@ -287,9 +291,11 @@ export function NodeHeader({
         </span>
       </div>
 
+      {details && <div className="base-node-details">{details}</div>}
+
       {/* ── Row 2: FUEL + EP bars ──
           Indented under the name to align with the typography rhythm. */}
-      <div style={{
+      <div className="base-node-meters" style={{
         display: "flex",
         alignItems: "center",
         gap: 18,

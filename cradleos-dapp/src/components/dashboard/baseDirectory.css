@@ -1,0 +1,24 @@
+.base-directory { min-width: 0; }
+.base-directory-summary, .base-directory-tools, .base-node-details {
+ display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px;
+}
+.base-directory-summary { margin-bottom: 12px; color: #aaa99a; font-size: 12px; }
+.base-directory-summary strong { color: #ff9c67; }
+.base-directory-tools { margin-bottom: 14px; gap: 8px; }
+.base-directory-tools input, .base-directory-tools button {
+ font: inherit; font-size: 12px; color: #e0dece; background: #13110d;
+ border: 1px solid #6d5337; padding: 9px; min-height: 36px;
+}
+.base-directory-tools input { flex: 1 1 220px; min-width: 0; }
+.base-directory-tools button { cursor: pointer; }
+.base-directory-tools :focus-visible { outline: 2px solid #ffad77; outline-offset: 2px; }
+.base-directory-results, .base-directory-empty { margin-bottom: 12px; color: #aaa99a; font-size: 12px; }
+.base-node-details { color: #b6b6a5; font-size: 11px; padding-left: 40px; gap: 6px 14px; }
+.base-directory-card { min-width: 0; }
+@media (max-width: 650px) {
+ .base-directory-card { padding: 8px !important; }
+ .base-node-header { padding: 10px 8px !important; }
+ .base-node-details, .base-node-meters { padding-left: 0 !important; }
+ .base-node-meters > div { min-width: 0 !important; }
+ .base-directory-tools input { flex-basis: 100%; }
+}
