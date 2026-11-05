@@ -9,6 +9,11 @@ for(const path of ['/','/partners/metrics/']){
  const r=await fetch(origin+path,{signal:AbortSignal.timeout(20000)});assert.equal(r.status,200);const html=await r.text();
  assert.deepEqual(refs(html),refs(readFileSync(new URL(path.slice(1)+'index.html',dist),'utf8')));
  if(path.includes('partners')){assert.match(r.headers.get('x-robots-tag'),/noindex/);assert.match(html,/<title>CradleOS · Partner metrics<\/title>/);assert.equal(r.headers.get('set-cookie'),null);}
+ if(path==='/') {
+   const local=readFileSync(new URL('index.html',dist),'utf8');
+   for(const pattern of [/<title>.*?<\/title>/,/<meta name="description"[^>]+>/,/<link rel="canonical"[^>]+>/,/<script type="application\/ld\+json">.*?<\/script>/]) assert.equal(html.match(pattern)?.[0],local.match(pattern)?.[0]);
+   assert.ok(!html.includes('Casino awaiting a new bankroll'));assert.ok(!/noindex/i.test(r.headers.get('x-robots-tag')||''));
+ }
  routes.push({path,status:r.status,htmlReferencesMatch:true,robots:r.headers.get('x-robots-tag')});
 }
 const redirect=await fetch(origin+'/partners/metrics',{redirect:'manual',signal:AbortSignal.timeout(20000)});
@@ -23,6 +28,8 @@ for(const path of ['guide/index.html','guide/features/index.html','guide/getting
  const urlPath=path.replace(/index\.html$/,'');
  const r=await fetch(origin+'/'+urlPath,{signal:AbortSignal.timeout(20000)});assert.equal(r.status,200);const bytes=Buffer.from(await r.arrayBuffer());
  assert.equal(hash(bytes),hash(readFileSync(new URL(path,dist))));
+ if(path==='sitemap.xml') assert.match(r.headers.get('content-type'),/application\/xml|text\/xml/);
+ if(path.endsWith('index.html')) assert.ok(!/noindex/i.test(r.headers.get('x-robots-tag')||''));
  staticPages.push({path:urlPath,status:r.status,sha256:hash(bytes),matches:true,type:r.headers.get('content-type')});
 }
 const robotsResponse=await fetch(origin+'/robots.txt');const robots=await robotsResponse.text();assert.equal(robotsResponse.status,200);assert.match(robotsResponse.headers.get('content-type'),/text\/plain/);assert.ok(!robots.includes('<html'));assert.ok(robots.includes(readFileSync(new URL('robots.txt',dist),'utf8')));assert.match(robots,/User-agent: GPTBot\s+Disallow: \//);
