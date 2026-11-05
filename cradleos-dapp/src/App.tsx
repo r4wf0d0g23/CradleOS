@@ -999,6 +999,9 @@ function AppInner() {
           {activeTab === "flappy"        && isDev && <div style={{ background: "transparent" }} className="content-panel"><FlappyFrontierPanel /></div>}
         </div>
       )}
+      {!kioskMode && <footer style={{ padding: "20px 0", fontSize: 12 }}>
+        <a href="/guide/" style={{ color: "#ffac85" }}>Guide</a>
+      </footer>}
       {/* Hidden upgrade panel — access via #upgrade */}
       {window.location.hash === "#upgrade" && <UpgradePanel />}
       {/* DEV-only role toggle bar — fixed bottom bar, production builds strip this */}

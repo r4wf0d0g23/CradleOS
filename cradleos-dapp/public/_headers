@@ -15,3 +15,11 @@
 
 /partners/metrics/*
   X-Robots-Tag: noindex, nofollow
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  X-Content-Type-Options: nosniff
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  X-Content-Type-Options: nosniff

@@ -1,0 +1,6 @@
+# Public documentation and the application may be indexed.
+# Cloudflare-managed crawler preferences are applied separately at the edge.
+User-agent: *
+Allow: /
+
+Sitemap: https://cradleos.io/sitemap.xml
