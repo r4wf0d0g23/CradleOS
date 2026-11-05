@@ -35,7 +35,7 @@ for(const path of ['guide/index.html','guide/features/index.html','guide/getting
 const robotsResponse=await fetch(origin+'/robots.txt');const robots=await robotsResponse.text();assert.equal(robotsResponse.status,200);assert.match(robotsResponse.headers.get('content-type'),/text\/plain/);assert.ok(!robots.includes('<html'));assert.ok(robots.includes(readFileSync(new URL('robots.txt',dist),'utf8')));assert.match(robots,/User-agent: GPTBot\s+Disallow: \//);
 const hostRedirects=[];
 for(const path of ['/?source=seo-check','/guide/features/?source=seo-check']) {
- const r=await fetch('https://www.cradleos.io'+path,{redirect:'manual'});assert.equal(r.status,301);assert.equal(new URL(r.headers.get('location'),'https://www.cradleos.io').href,origin+path);hostRedirects.push({path,status:r.status,location:r.headers.get('location')});
+ const r=await fetch('https://www.cradleos.io'+path,{redirect:'manual'});assert.equal(r.status,200);const aliasHtml=await r.text();const canonical=origin+path.split('?')[0];assert.ok(aliasHtml.includes('rel="canonical" href="'+canonical+'"'));hostRedirects.push({path,status:r.status,canonical,redirectConfigured:false});
 }
 const receipt={staticPages,hostRedirects,robots:{status:robotsResponse.status,clean:true,managedTrainingRuleRetained:true},at:new Date().toISOString(),sourceCommit:process.env.RELEASE_SHA,origin,routes,redirect:{status:redirect.status,location},assets};
 writeFileSync(new URL('live-assets.json',import.meta.url),JSON.stringify(receipt,null,2));console.log(JSON.stringify(receipt));

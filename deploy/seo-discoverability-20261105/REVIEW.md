@@ -4,7 +4,7 @@ Raw authorized fixing cradleos.io as appropriate, message 1568034802077016105. N
 
 ## Scope
 
-Real XML sitemap (root + four static guide pages), clean origin robots, www-to-apex redirect preserving paths/queries, current search/social metadata, WebSite/SoftwareApplication and breadcrumb structured data. Accessible no-JavaScript root fallback is replaced by the existing app on mount; ordinary visitors and bots receive identical content. The app remains the homepage. App code changes only by a Guide link outside kiosk mode. Static documentation contains feature/setup/FAQ content, not new explanatory application chrome. No dependencies, tracker, contracts, balances, wallet flows, services or DNS changes.
+Real XML sitemap (root + four static guide pages), clean origin robots, explicit apex canonicals, current search/social metadata, WebSite/SoftwareApplication and breadcrumb structured data. Accessible no-JavaScript root fallback is replaced by the existing app on mount; ordinary visitors and bots receive identical content. The app remains the homepage. App code changes only by a Guide link outside kiosk mode. Static documentation contains feature/setup/FAQ content, not new explanatory application chrome. No dependencies, tracker, contracts, balances, wallet flows, services or DNS changes.
 
 Existing partner metrics noindex/redirect remain. Robots allows crawling so noindex can be observed. Cloudflare-managed training-crawler preferences remain untouched. Guide pages use local CSS, no JavaScript or webfonts.
 
@@ -24,3 +24,9 @@ Follow PRIMARY_DEPLOY.md. Prior production: a4d21375-fb7c-41dd-9490-b993e2a465fd
 ## Boundaries
 
 No Search Console ownership/indexing claim; no Google crawl/index/ranking or AI citation guarantee. Current app telemetry unchanged. Existing signed-wallet flows were not exercised by this documentation-only release.
+
+## Production correction: www alias
+
+The first upload edcbcca6 passed the guide/browser checks but the expected www redirect returned200. Current official Pages docs state domain-level redirects are unsupported in _redirects; successful upload was not proof. Removed the ineffective line. Existing explicit apex canonicals remain correct. Cloudflare Rulesets read with existing token returned403, so no zone rules were changed. Do not add global middleware (and invoke functions on all static traffic) solely for this optional consistency improvement. A prepared single-redirect rule is retained for an owner with zone Rules permission. Production verifier checks correct canonicals on both hosts and explicitly records redirectConfigured:false.
+
+Source: https://developers.cloudflare.com/pages/configuration/redirects/

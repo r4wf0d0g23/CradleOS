@@ -26,7 +26,7 @@ for u in urls:
  assert 'Casino awaiting a new bankroll' not in s
 robots=(dist/'robots.txt').read_text();assert '<html' not in robots and 'Sitemap: https://cradleos.io/sitemap.xml' in robots
 assert '/partners/' not in robots
-assert 'https://www.cradleos.io/* https://cradleos.io/:splat 301' in (dist/'_redirects').read_text()
+assert '/partners/metrics /partners/metrics/ 301' in (dist/'_redirects').read_text()
 assert 'X-Robots-Tag: noindex, nofollow' in (dist/'_headers').read_text()
 for f in (root/'public/guide').rglob('*'):
  if f.is_file():assert f.read_bytes()==(dist/f.relative_to(root/'public')).read_bytes()
