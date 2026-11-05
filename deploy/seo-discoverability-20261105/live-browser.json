@@ -1,0 +1,246 @@
+{
+  "at": "2026-11-05T22:59:43.648Z",
+  "base": "https://cradleos.io",
+  "checks": [
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": false,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": false,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": false,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": false,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": false,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": false,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": false,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": false,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": false,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": false,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": false,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": false,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": false,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": false,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": false,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": false,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "javaScriptEnabled": false,
+      "guideNavigation": true,
+      "appReturn": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": true,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": true,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": true,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/",
+      "javaScriptEnabled": true,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": true,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": true,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": true,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/features/",
+      "javaScriptEnabled": true,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": true,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": true,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": true,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/getting-started/",
+      "javaScriptEnabled": true,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": true,
+      "width": 1440,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": true,
+      "width": 650,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": true,
+      "width": 390,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/guide/faq/",
+      "javaScriptEnabled": true,
+      "width": 320,
+      "status": 200,
+      "noOverflow": true
+    },
+    {
+      "route": "/#/known-space",
+      "appStarted": true
+    },
+    {
+      "javaScriptEnabled": true,
+      "guideNavigation": true,
+      "appReturn": true
+    }
+  ],
+  "errors": [],
+  "networkFailures": []
+}

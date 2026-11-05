@@ -1,0 +1,118 @@
+{
+  "staticPages": [
+    {
+      "path": "guide/",
+      "status": 200,
+      "sha256": "064412f838fb5b14da19ba3ecf78bf93c7e735cead07dd054da236666136e250",
+      "matches": true,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "guide/features/",
+      "status": 200,
+      "sha256": "f0afdd13a15642eb004cfb196347489f70008860d493a3a8c48d3de2243abb41",
+      "matches": true,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "guide/getting-started/",
+      "status": 200,
+      "sha256": "c531a8104cd5d967cae0bde7f7c390e246a83b8443def903b779ef3865539bca",
+      "matches": true,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "guide/faq/",
+      "status": 200,
+      "sha256": "068711369fc52cf057ae85fa73a7eab3613a9891e74feaa9c8413a3e0356b67a",
+      "matches": true,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "guide/guide.css",
+      "status": 200,
+      "sha256": "7f99a5073ec2afc1f97b1ceba0deb8ecbbf125a5cf7a10bcf6af703b9eb1b0f5",
+      "matches": true,
+      "type": "text/css; charset=utf-8"
+    },
+    {
+      "path": "sitemap.xml",
+      "status": 200,
+      "sha256": "30f67c5ea98513144fab41b4b862d71feec71bc5b07ca614f81e0d46099386d8",
+      "matches": true,
+      "type": "application/xml; charset=utf-8"
+    }
+  ],
+  "hostRedirects": [
+    {
+      "path": "/?source=seo-check",
+      "status": 200,
+      "canonical": "https://cradleos.io/",
+      "redirectConfigured": false
+    },
+    {
+      "path": "/guide/features/?source=seo-check",
+      "status": 200,
+      "canonical": "https://cradleos.io/guide/features/",
+      "redirectConfigured": false
+    }
+  ],
+  "robots": {
+    "status": 200,
+    "clean": true,
+    "managedTrainingRuleRetained": true
+  },
+  "at": "2026-11-05T22:59:29.781Z",
+  "sourceCommit": "aff8d52bede504becd79fe8fc9737e19a66f6ab4",
+  "origin": "https://cradleos.io",
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "htmlReferencesMatch": true,
+      "robots": null
+    },
+    {
+      "path": "/partners/metrics/",
+      "status": 200,
+      "htmlReferencesMatch": true,
+      "robots": "noindex, nofollow"
+    }
+  ],
+  "redirect": {
+    "status": 301,
+    "location": "/partners/metrics/"
+  },
+  "assets": [
+    {
+      "path": "assets/activityTelemetry-D3-Jnl0P.js",
+      "bytes": 1767,
+      "sha256": "07e114df5afd66ee49f66d26172bdce249bea1fc602d80bf1798577b34147746",
+      "matches": true
+    },
+    {
+      "path": "assets/app-Cg0T3Fh0.js",
+      "bytes": 2459361,
+      "sha256": "e0501853bac59a2e238fe9dc100c155917c2f119f5abd03ac21556f8210ca217",
+      "matches": true
+    },
+    {
+      "path": "assets/app-CmhxKQK3.css",
+      "bytes": 928398,
+      "sha256": "39f261abd8df69166fe575c35fbcd96511e29b026852f5d0e0668b73f80e838c",
+      "matches": true
+    },
+    {
+      "path": "assets/partnerMetrics-ByKjvoO4.js",
+      "bytes": 15272,
+      "sha256": "9416c0f8c88304810d99cfc64543a445b2424752eafdbc550b42417380b95427",
+      "matches": true
+    },
+    {
+      "path": "assets/partnerMetrics-DNU_A6Go.css",
+      "bytes": 4647,
+      "sha256": "b9e9c30caf7e18112dde3ed373b6a2c4f8b78fb31080e58e181c4f82b772b523",
+      "matches": true
+    }
+  ]
+}

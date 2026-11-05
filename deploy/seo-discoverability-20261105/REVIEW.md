@@ -19,7 +19,7 @@ Existing partner metrics noindex/redirect remain. Robots allows crawling so noin
 
 ## Deployment
 
-Follow PRIMARY_DEPLOY.md. Prior production: a4d21375-fb7c-41dd-9490-b993e2a465fd (source656eb34). Final source SHA/deployment and postpublish evidence will be recorded in RELEASE.md. Live checks must prove edge robots composition, XML bytes, all five app/partner assets, static guide bytes, host redirects, partner noindex and browser flows.
+Follow PRIMARY_DEPLOY.md. Prior production: a4d21375-fb7c-41dd-9490-b993e2a465fd (source656eb34). Final source SHA/deployment and postpublish evidence will be recorded in RELEASE.md. Live checks must prove edge robots composition, XML bytes, all five app/partner assets, static guide bytes, alias canonical checks, partner noindex and browser flows.
 
 ## Boundaries
 

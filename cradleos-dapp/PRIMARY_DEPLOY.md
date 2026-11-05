@@ -48,3 +48,24 @@ a static HTML redirect is not a server-side HTTP301.
 Redirect source and maintenance instructions: `../deploy/github-pages-redirect`.
 Keep Pages enabled with source `gh-pages:/`; no custom domain or DNS change is
 needed. Do not let old deployment scripts repopulate the app on that branch.
+
+## Public guide and search surfaces (2026-11-05)
+
+The app remains `/`; static no-JavaScript documentation lives in `public/guide/`.
+Keep real `public/robots.txt` and `public/sitemap.xml` in each build: SPA fallback
+can return HTTP200 HTML for either missing path, so verify content and MIME, not
+status alone. Cloudflare may prepend managed crawler rules to robots; retain
+those policies and verify no app HTML is appended. Public documentation must
+keep per-page canonicals, useful content, actual HTML links and current metadata.
+Partner metrics retains its existing noindex response; do not block robots from
+reading that noindex.
+
+Cloudflare Pages `_redirects` does **not** support domain-level redirects. The www
+alias currently returns200 with apex canonicals. A true301 needs zone-level
+Redirect Rules permission; the existing deploy token returned403 for Rulesets.
+Do not claim a host redirect from a successful upload or add global Functions
+middleware solely to work around this optional configuration gap.
+
+Regression tools and the prepared optional zone rule:
+`../deploy/seo-discoverability-20261105/`. Verify metadata, XML MIME, canonical
+aliases, static bytes and live browser navigation before recording a release.
