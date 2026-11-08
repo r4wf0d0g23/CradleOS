@@ -18,6 +18,7 @@ import { EFMapPanel } from "./components/EFMapPanel";
 import { CommunityDappsPanel } from "./components/CommunityDappsPanel";
 import { BountyPanel } from "./components/BountyPanel";
 import { CargoContractPanel } from "./components/CargoContractPanel";
+import { ArcadePanel } from "./components/ArcadePanel";
 import { KnownSpaceMap } from "./components/KnownSpaceMap";
 import { GateControlPanel } from "./components/GateControlPanel";
 import { InheritancePanel } from "./components/InheritancePanel";
@@ -273,7 +274,7 @@ function haNodes(status: PrivateNodeStatusValue): HaNode[] {
   }];
 }
 
-type Tab = "knownspace" | "events" | "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "origins";
+type Tab = "arcade" | "knownspace" | "events" | "structures" | "inventory" | "tribe" | "defense" | "registry" | "map" | "efmap" | "dapps" | "bounties" | "srp" | "cargo" | "gates" | "succession" | "intel" | "announcements" | "recruiting" | "hierarchy" | "assets" | "calendar" | "wiki" | "fitting" | "query" | "dashboard" | "industry" | "flappy" | "voting" | "gamedata" | "casino" | "origins";
 
 // ── Hash routing ───────────────────────────────────────────────────────────────
 // Defined at module level so they are stable references (no re-creation per render).
@@ -283,6 +284,7 @@ type Tab = "knownspace" | "events" | "structures" | "inventory" | "tribe" | "def
 // removed so old hash deep-links fall back to dashboard via getHashTab() null.
 const ROUTE_MAP: Record<string, Tab> = {
   // Cycle 7: keep service and exploration-status deep-links reachable.
+  "arcade": "arcade",
   "casino-station": "casino", "casino": "casino", "map": "map", "efmap": "efmap", "fitting": "fitting",
   "defense":       "defense",
   "turrets":       "defense",
@@ -423,7 +425,7 @@ function AppInner() {
   // 2026-06-08 panel slimming: removed map/efmap/wiki/fitting from public set
   // (panels hidden from nav). Remaining public tabs: dapps, query, intel, industry.
   // "origins" is public: reading requires no wallet and no chain state.
-  const PUBLIC_TABS = new Set<Tab>(["knownspace", "events", "defense", "dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting", "gamedata"]);
+  const PUBLIC_TABS = new Set<Tab>(["arcade", "knownspace", "events", "defense", "dapps", "query", "intel", "industry", "origins", "casino", "map", "efmap", "fitting", "gamedata"]);
   // Default landing tab:
   //   - hash override always wins (e.g. linked-from kiosk URL with #/intel)
   //   - otherwise: dashboard for the user-facing landing page (wallet gate prompts to connect)
@@ -451,7 +453,7 @@ function AppInner() {
       map: "map", efmap: "efmap", dapps: "dapps", query: "query", announcements: "announcements",
       recruiting: "recruiting", hierarchy: "hierarchy", assets: "assets",
       calendar: "calendar", industry: "industry", flappy: "flappy", gamedata: "gamedata", casino: "casino",
-      voting: "voting", origins: "origins", events: "events", knownspace: "known-space",
+      arcade: "arcade", voting: "voting", origins: "origins", events: "events", knownspace: "known-space",
     };
     const slug = reverseMap[activeTab] ?? activeTab;
     const directPathTab = !window.location.hash ? getHashTab() : null;
@@ -579,13 +581,13 @@ function AppInner() {
               // ORDER (and KIOSK_PUBLIC if it should work without a wallet).
               // Current-world personal turret settings are available.
               const ORDER: Tab[] = [
-                "casino",
+                "casino", "arcade",
                 "dashboard", "inventory", "tribe",
                 "gates", "defense", "intel", "events", "knownspace", "calendar", "voting",
                 "origins", "query", "industry", "gamedata", "dapps",
               ];
               const KIOSK_PUBLIC = new Set<Tab>([
-                "knownspace", "events", "defense", "dapps", "query", "intel", "industry", "gamedata", "origins", "casino",
+                "arcade", "knownspace", "events", "defense", "dapps", "query", "intel", "industry", "gamedata", "origins", "casino",
               ]);
               return ORDER.filter(t => account || KIOSK_PUBLIC.has(t));
             })().map(tab => {
@@ -617,6 +619,7 @@ function AppInner() {
                 : tab === "industry"   ? "RCP"
                 : tab === "gamedata"   ? "GAMEDATA"
                 : tab === "voting"     ? "VOTE"
+                : tab === "arcade"     ? "ARCADE"
                 : tab === "casino"     ? "CASINO"
                 : tab === "origins"    ? "ORIGINS"
                 : tab.toUpperCase();
@@ -835,9 +838,9 @@ function AppInner() {
             this list (and PUBLIC_TABS if public-without-wallet). */}
         {/* Personal turret controls restored for the current-world callback. */}
         {/* Industry tab hidden 2026-06-27 — see comment above ORDER array */}
-        {(["dashboard", "inventory", "tribe", "gates", "defense", "intel", "events", "knownspace", "calendar", "voting", "casino", "origins", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
+        {(["dashboard", "inventory", "tribe", "gates", "defense", "intel", "events", "knownspace", "calendar", "voting", "casino", "arcade", "origins", "query", "industry", "gamedata", "dapps"] as Tab[]).filter(tab => {
           // Public tabs visible without a wallet
-          const PUBLIC_TABS = new Set(["knownspace", "events", "defense", "dapps", "query", "intel", "industry", "gamedata", "origins", "casino"]);
+          const PUBLIC_TABS = new Set(["arcade", "knownspace", "events", "defense", "dapps", "query", "intel", "industry", "gamedata", "origins", "casino"]);
           return account || PUBLIC_TABS.has(tab);
         }).map(tab => {
           const active = activeTab === tab;
@@ -897,6 +900,7 @@ function AppInner() {
                   : tab === "industry"  ? "Recipes"
                   : tab === "gamedata"  ? "Game Data"
                   : tab === "voting"    ? "Vote"
+                  : tab === "arcade"    ? "Arcade"
                   : tab === "casino"    ? "◆ CASINO"
                   : tab === "origins"   ? "◈ Origins"
                   : tab === "flappy"    ? "🚀"
@@ -927,6 +931,7 @@ function AppInner() {
                   : tab === "dashboard"     ? "Dashboard"
                   : tab === "industry"      ? "⚙ Recipes"
                   : tab === "voting"        ? "◣ Elections"
+                  : tab === "arcade"        ? "Arcade"
                   : tab === "casino"        ? "◆ Casino"
                   : tab === "origins"       ? "◈ Origins"
                   : tab === "flappy"        ? "🚀 Flappy Frontier"
@@ -979,6 +984,7 @@ function AppInner() {
           {activeTab === "gates"      && <div style={{ background: "transparent" }} className="content-panel"><GateControlPanel onEvents={gateId => { eventFeed.focus(gateId); setActiveTab("events"); }} /></div>}
           {activeTab === "succession"    && <div style={{ background: "transparent" }} className="content-panel"><InheritancePanel /></div>}
           {activeTab === "events" && <div className="content-panel"><ChainEventLog /></div>}
+          {activeTab === "arcade" && <div className="content-panel"><ArcadePanel /></div>}
           {activeTab === "knownspace" && <div className="content-panel"><KnownSpaceMap /></div>}
           {activeTab === "intel"         && <div style={{ background: "transparent" }} className="content-panel"><IntelDashboardPanel /></div>}
           {activeTab === "announcements" && <div style={{ background: "transparent" }} className="content-panel"><AnnouncementPanel /></div>}

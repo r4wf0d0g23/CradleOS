@@ -1,0 +1,143 @@
+{
+  "at": "2026-11-08T20:12:05.588Z",
+  "base": "http://127.0.0.1:5369",
+  "checks": [
+    {
+      "width": 1440,
+      "height": 960,
+      "path": "/",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 1440,
+      "height": 960,
+      "path": "/#/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 1440,
+      "height": 960,
+      "path": "/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 1440,
+      "height": 960,
+      "naturalBottomHit": true,
+      "actualPopup": true,
+      "openerNull": true
+    },
+    {
+      "width": 650,
+      "height": 850,
+      "path": "/",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 650,
+      "height": 850,
+      "path": "/#/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 650,
+      "height": 850,
+      "path": "/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 650,
+      "height": 850,
+      "naturalBottomHit": true,
+      "actualPopup": true,
+      "openerNull": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "path": "/",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "path": "/#/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "path": "/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "naturalBottomHit": true,
+      "actualPopup": true,
+      "openerNull": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "path": "/",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "path": "/#/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "path": "/arcade",
+      "images": true,
+      "bounds": true,
+      "public": true,
+      "links": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "naturalBottomHit": true,
+      "actualPopup": true,
+      "openerNull": true
+    }
+  ],
+  "errors": []
+}

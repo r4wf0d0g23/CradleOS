@@ -1,0 +1,20 @@
+.arcade-panel { max-width: 1120px; margin: 0 auto; padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); color: #fafae5; }
+.arcade-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.arcade-header h2 { margin: 0; font-size: 24px; font-weight: 600; }
+.arcade-header > span, .arcade-controls { color: #b5b5a8; font-size: 12px; }
+.arcade-games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.arcade-card { min-width: 0; overflow: hidden; border: 1px solid rgba(255, 71, 0, .25); background: #0c0c0b; }
+.arcade-preview { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: #050505; }
+.arcade-card-body { padding: 20px; }
+.arcade-genre { color: #ff986e; font-size: 10px; letter-spacing: .12em; }
+.arcade-card h3 { margin: 8px 0 10px; font-size: 25px; font-weight: 600; }
+.arcade-features { margin: 0; color: #cecec0; font-size: 13px; line-height: 1.6; }
+.arcade-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+.arcade-play { display: inline-flex; align-items: center; justify-content: center; gap: 22px; min-height: 44px; padding: 0 22px; background: #ff4700; color: #050505; font: inherit; font-size: 14px; font-weight: 700; text-decoration: none; }
+.arcade-play:hover { background: #ff7844; }
+.arcade-play:focus-visible { outline: 2px solid #fafae5; outline-offset: 4px; }
+@media (max-width: 650px) {
+  .arcade-games { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .arcade-card-body { padding: 16px; }
+  .arcade-card h3 { font-size: 23px; }
+}

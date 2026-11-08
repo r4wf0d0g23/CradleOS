@@ -1,0 +1,116 @@
+{
+  "base": "http://127.0.0.1:5369",
+  "at": "2026-11-08T20:11:54.502Z",
+  "checks": [
+    {
+      "width": 1440,
+      "height": 960,
+      "title": "Frontier Drift",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 1440,
+      "height": 960,
+      "title": "Rift Run",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 1440,
+      "height": 960,
+      "normalAndKioskNavigation": true,
+      "directHashAndPath": true,
+      "reload": true,
+      "noOverflow": true,
+      "imagesLoaded": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "title": "Frontier Drift",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "title": "Rift Run",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "normalAndKioskNavigation": true,
+      "directHashAndPath": true,
+      "reload": true,
+      "noOverflow": true,
+      "imagesLoaded": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "title": "Frontier Drift",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "title": "Rift Run",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "normalAndKioskNavigation": true,
+      "directHashAndPath": true,
+      "reload": true,
+      "noOverflow": true,
+      "imagesLoaded": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "title": "Frontier Drift",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "title": "Rift Run",
+      "launch": true,
+      "play": true,
+      "originalOrigin": true,
+      "openerIsNull": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "normalAndKioskNavigation": true,
+      "directHashAndPath": true,
+      "reload": true,
+      "noOverflow": true,
+      "imagesLoaded": true
+    }
+  ],
+  "errors": [],
+  "failed": []
+}
