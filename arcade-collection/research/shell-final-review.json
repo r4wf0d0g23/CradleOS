@@ -1,0 +1,20 @@
+{
+  "checks": [
+    {
+      "id": "wreck-runner",
+      "multitouchOwnership": true,
+      "release": true,
+      "brake": false,
+      "fullscreenEnterExitPauseResume": true
+    },
+    {
+      "id": "feral-circuit",
+      "multitouchOwnership": true,
+      "release": true,
+      "brake": true,
+      "fullscreenEnterExitPauseResume": true
+    }
+  ],
+  "errors": [],
+  "lobbyEightCardsNoOverflow": true
+}

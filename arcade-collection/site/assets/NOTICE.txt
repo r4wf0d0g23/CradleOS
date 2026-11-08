@@ -1,0 +1,7 @@
+EVE Frontier client artwork © Fenris Creations. All rights reserved.
+Current Stillness / Cycle 7 / client build 3573151. Original extracted PNGs and locally rendered derivatives are identified in provenance.json.
+Game artwork is not covered by the prototype code license. No game endorsement is implied.
+
+Scavenger, Needler, Bulwark, Guardian, Harvester, Prism Warden, Siege Conductor, Rift Sovereign and wing-drone SVGs are original arcade illustrations, identified separately in provenance.json; not extracted or canonical EVE models.
+
+The four rock-*.svg asteroid illustrations are original arcade artwork, not native EVE ore models.

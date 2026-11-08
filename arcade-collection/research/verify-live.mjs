@@ -1,0 +1,6 @@
+import {readFileSync,readdirSync,writeFileSync} from 'node:fs';import {createHash} from 'node:crypto';import assert from 'node:assert/strict';
+const site=new URL('../site/',import.meta.url),origins=['https://frontier-arcade.pages.dev',process.argv[2]].filter(Boolean),hash=b=>createHash('sha256').update(b).digest('hex');
+function files(root,prefix=''){return readdirSync(new URL(prefix,root),{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(root,prefix+e.name+'/'):[prefix+e.name])}
+const all=files(site).filter(p=>!p.startsWith('_')),results=[];
+for(const origin of origins){for(let index=0;index<all.length;index+=6){await Promise.all(all.slice(index,index+6).map(async path=>{const r=await fetch(origin+'/'+path.replace(/index\.html$/,''),{signal:AbortSignal.timeout(25000)});assert.equal(r.status,200,path);const actual=Buffer.from(await r.arrayBuffer()),expected=readFileSync(new URL(path,site));assert.equal(hash(actual),hash(expected),path);if(path.endsWith('index.html'))assert.match(r.headers.get('content-security-policy')||'',/frame-ancestors 'none'/);results.push({origin,path,bytes:actual.length,sha256:hash(actual)})}))}console.log('MATCH',origin,all.length)}
+writeFileSync(new URL('live-assets.json',import.meta.url),JSON.stringify({at:new Date().toISOString(),countPerOrigin:all.length,results},null,2));

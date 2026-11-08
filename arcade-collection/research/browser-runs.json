@@ -1,0 +1,20 @@
+[
+  {
+    "id": "voidhook",
+    "state": "won",
+    "time": 84.28333333332984,
+    "score": 5278,
+    "hp": 5,
+    "frames": 843,
+    "errors": []
+  },
+  {
+    "id": "gatebreaker",
+    "state": "lost",
+    "time": 101.34999999999553,
+    "score": 3600,
+    "hp": 0,
+    "frames": 1014,
+    "errors": []
+  }
+]

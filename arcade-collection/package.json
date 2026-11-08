@@ -1,0 +1,1 @@
+{"name":"frontier-arcade","private":true,"type":"module","scripts":{"test":"node --test research/*.test.mjs","serve":"python3 -m http.server 5370 --directory site --bind 127.0.0.1"}}

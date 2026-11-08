@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "build": 3573151,
+  "cycle": 7,
+  "name": "Vestiges",
+  "sourceManifestSha256": "d418a3bc579e4e72f809c94d5844af593f6616f8b08e271a6d3b066396bc9dc7",
+  "assets": {
+    "hermetite": {
+      "file": "assets/hermetite.png",
+      "name": "Fluid Core Hermetite",
+      "typeId": 78450,
+      "source": "res:/ui/texture/icons/frontier/frontier_ore7.png",
+      "sourceSection": "types",
+      "sourceKey": "78450",
+      "method": "type-iconID",
+      "sha256": "4a59cbca62d46de26d6e1af072381debe7e4e4dd7a9f7379509597e9333b89cb",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        4,
+        3,
+        60,
+        62
+      ],
+      "derivative": false
+    },
+    "ice": {
+      "file": "assets/ice.png",
+      "name": "Water Ice",
+      "typeId": 78423,
+      "source": "res:/ui/texture/icons/frontier/frontier_res1.png",
+      "sourceSection": "types",
+      "sourceKey": "78423",
+      "method": "type-iconID",
+      "sha256": "c4ae031549391714da52e13eb80beff738e710efabe7d4c680acfc8df130cd44",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        7,
+        6,
+        58,
+        58
+      ],
+      "derivative": false
+    },
+    "fuel": {
+      "file": "assets/fuel.png",
+      "name": "D1 Fuel",
+      "typeId": 88335,
+      "source": "res:/ui/texture/icons/frontier/keeppixel64/d1.png",
+      "sourceSection": "types",
+      "sourceKey": "88335",
+      "method": "type-iconID",
+      "sha256": "6ab518751aba21ce71a48abadcdbc2147760da342c6fef7dd9baf308e3441643",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        12,
+        11,
+        53,
+        54
+      ],
+      "derivative": false
+    },
+    "hull": {
+      "file": "assets/hull.png",
+      "name": "hud/hud_hull_32px",
+      "typeId": null,
+      "source": "res:/ui/texture/eveicon/hud/hud_hull_32px.png",
+      "sourceSection": "ui",
+      "sourceKey": "hud/hud_hull_32px",
+      "method": "native texture",
+      "sha256": "b693345721110c68e8f723b26b7ecd423c8d80f1ff60b92fba7c960ddf5e7e15",
+      "width": 32,
+      "height": 32,
+      "bounds": [
+        4,
+        4,
+        28,
+        28
+      ],
+      "derivative": false
+    },
+    "scan": {
+      "file": "assets/scan.png",
+      "name": "scanning/scanners_32px",
+      "typeId": null,
+      "source": "res:/ui/texture/eveicon/scanning/scanners_32px.png",
+      "sourceSection": "ui",
+      "sourceKey": "scanning/scanners_32px",
+      "method": "native texture",
+      "sha256": "f238b9f08285ff24f723eb65b5fce26c6f51256884dd80d2719927e12e377e6b",
+      "width": 32,
+      "height": 32,
+      "bounds": [
+        5,
+        5,
+        27,
+        27
+      ],
+      "derivative": false
+    },
+    "cannon": {
+      "file": "assets/cannon.png",
+      "name": "keeppixel64/autocannon1",
+      "typeId": null,
+      "source": "res:/ui/texture/icons/frontier/keeppixel64/autocannon1.png",
+      "sourceSection": "library",
+      "sourceKey": "keeppixel64/autocannon1",
+      "method": "native texture",
+      "sha256": "decb15cbd705ca145203978a8e12b895acb73707fdc325e3860137811d71a4d7",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        2,
+        5,
+        62,
+        60
+      ],
+      "derivative": false
+    },
+    "chumaq": {
+      "file": "assets/chumaq.png",
+      "name": "Chumaq",
+      "typeId": 81611,
+      "graphicId": 27370,
+      "source": "SOF:trad_bcr_haul_01:trad_ship_trader:traditionalist",
+      "sourceSection": "native-render",
+      "method": "native geometry \u2192 perspective top view",
+      "sha256": "fe234f2e9b43d5cddc556f37287a87313b6d64c2390ab3baacdf4058aa3a0df2",
+      "width": 520,
+      "height": 259,
+      "bounds": [
+        4,
+        4,
+        516,
+        255
+      ],
+      "derivative": true,
+      "renderCaptureSha256": "76215f916e7a23c518d4aa1544c6b55628359ad5125b4716f0ee1f170649c578",
+      "resourceAuditSha256": "9e56f0ce7571ef66db7626eb66ac51d4ede2a7ca90a22d548259343ac600d901",
+      "nativeInputsCount": 126,
+      "processing": "Empty-scene matte; remove isolated lights <120 pixels; crop; brightness 1.45; 90\u00b0 CCW bow-right rotation; Lanczos downsample; transparent gutter",
+      "limits": "Current geometry, approximate native-render materials; no full effects fidelity claim"
+    },
+    "storage": {
+      "file": "assets/storage.png",
+      "name": "Storage",
+      "typeId": 88083,
+      "graphicId": 28063,
+      "source": "SOF:dep_warehouse_m_01v01:deployable_generic_01:generic",
+      "sourceSection": "native-render",
+      "method": "native geometry \u2192 perspective top view",
+      "sha256": "b9769f075e202c7aee1e922263b74b1c25db0e76554d716a555b5b7149e9c5c7",
+      "width": 428,
+      "height": 408,
+      "bounds": [
+        4,
+        4,
+        424,
+        404
+      ],
+      "derivative": true,
+      "renderCaptureSha256": "543091ac6d64f3e6dc783e1eee91183af612715baefa97e196be81075800e0fa",
+      "resourceAuditSha256": "9e56f0ce7571ef66db7626eb66ac51d4ede2a7ca90a22d548259343ac600d901",
+      "nativeInputsCount": 126,
+      "processing": "Empty-scene matte; remove isolated lights <120 pixels; crop; brightness 1.1; Lanczos downsample; transparent gutter",
+      "limits": "Current geometry, approximate native-render materials; no full effects fidelity claim"
+    },
+    "gate": {
+      "file": "assets/gate.png",
+      "name": "Gate",
+      "typeId": 88086,
+      "graphicId": 28064,
+      "source": "SOF:dep_stargate_s_01v01:deployable_generic_01:generic",
+      "sourceSection": "native-render",
+      "method": "native geometry \u2192 oblique view",
+      "sha256": "693fadb7973c0f664a09595daf2e313c3037e033544503b73a04c154f8fd40bd",
+      "width": 520,
+      "height": 410,
+      "bounds": [
+        4,
+        4,
+        516,
+        406
+      ],
+      "derivative": true,
+      "renderCaptureSha256": "048b22499647a24508e91ab8a338430feb5ca30e74e4a33cbd792905ad5de8e8",
+      "resourceAuditSha256": "9e56f0ce7571ef66db7626eb66ac51d4ede2a7ca90a22d548259343ac600d901",
+      "nativeInputsCount": 126,
+      "processing": "Empty-scene matte; remove isolated lights <120 pixels; trim remote light islands outside main geometry bbox plus 8px; crop; brightness 1.1; Lanczos downsample; transparent gutter",
+      "limits": "Current geometry, approximate native-render materials; no full effects fidelity claim"
+    },
+    "circuits": {
+      "file": "assets/circuits.png",
+      "name": "Printed Circuits",
+      "typeId": 84180,
+      "source": "res:/ui/texture/icons/frontier/materials/printed_circuits.png",
+      "sourceSection": "types",
+      "sourceKey": "84180",
+      "method": "type-iconID",
+      "sha256": "143815e626de163763ce6afc9890d94dff793ebd7a929c76480e905f4e92960b",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        0,
+        6,
+        64,
+        57
+      ],
+      "derivative": false
+    },
+    "platinum": {
+      "file": "assets/platinum.png",
+      "name": "Platinum-Group Veins ",
+      "typeId": 77805,
+      "source": "res:/ui/texture/icons/frontier/frontier_res6.png",
+      "sourceSection": "types",
+      "sourceKey": "77805",
+      "method": "type-iconID",
+      "sha256": "e47503f8b2c2f012f346fd2b969312c4cd5b35a5830b117ede56f3e98bb53a63",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        13,
+        6,
+        51,
+        58
+      ],
+      "derivative": false
+    },
+    "lai": {
+      "file": "assets/lai.png",
+      "name": "Lai",
+      "typeId": 95276,
+      "graphicId": 34663,
+      "source": "SOF:data_lai_01_modular:dataist_ship_01:dataist:layout?strl_data_lai_01_modular_layout_01",
+      "sourceSection": "native-render",
+      "method": "native geometry \u2192 perspective top view",
+      "sha256": "7986c6f5a03dfa0d8c1e8c18f351adc738dd1c2f76b5ea06eda2e7f9fe298704",
+      "width": 256,
+      "height": 520,
+      "bounds": [
+        4,
+        4,
+        252,
+        516
+      ],
+      "derivative": true,
+      "renderCaptureSha256": "ae492664e7ce5bfd49f0c198cc7ab580c1aa1a2e28f19b4f8e9a660ed2f8fbb3",
+      "resourceAuditSha256": "53e74f97e43abd81761170b78d1bf556c4310d3751affa4689e6a2eee22145bc",
+      "nativeInputsCount": 99,
+      "processing": "Empty-scene matte; remove isolated lights <120 pixels; crop; brightness 1.45; 90\u00b0 CCW bow-right rotation; Lanczos downsample; transparent gutter",
+      "limits": "Current geometry, approximate native-render materials; no full effects fidelity claim"
+    },
+    "xeroti": {
+      "file": "assets/xeroti.webp",
+      "name": "Xeroti Tidofiza",
+      "graphicId": 29124,
+      "source": "Carbon/Trinity native render of exact graphics 29124 DNA moontumor_04v02:asteroids_generic_07:moontumor",
+      "method": "Empty-scene difference alpha, 1px coverage fringe, 0.45px feather, brightness 1.15, proportional resize, WebP91. No invented mesh or texture.",
+      "sha256": "2242f07b1abdbc5497d37029dfb1259e76ead585cb5dcca7a5699075046c6330",
+      "width": 727,
+      "height": 566,
+      "derivative": true,
+      "receipt": "research/xeroti-tidofiza-20261012/hero-derivative.json"
+    }
+  },
+  "originalArcadeArtwork": {
+    "scavenger": {
+      "file": "assets/scavenger.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "83e05d8a03b4840756beb7c705548a7d03b35ce72d84718e7d0f5df0498b4b09"
+    },
+    "needler": {
+      "file": "assets/needler.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "08ab262df3f8c8bfffc4f0ec1133e11887e4feb04588bfacc99ce7e2966330fb"
+    },
+    "bulwark": {
+      "file": "assets/bulwark.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "8504b6b8bbd7fa20c29cf35cf723307bddd0e4179215eb0909b16855b1e93f1b"
+    },
+    "guardian": {
+      "file": "assets/guardian.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "436081b9b67a7dc154fbcb6e12887d414b6d3b803c2ba987ef7a7568ea33e4c9"
+    },
+    "harvester": {
+      "file": "assets/harvester.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "ac1698103162f667773f89cfe781ebdb2d815ea376775bbbb78999f4be175e50"
+    },
+    "wingdrone": {
+      "file": "assets/wingdrone.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "d688c83181e54ed833d924f55c2c6eba5908b0f653d56252802339854c3e0231"
+    },
+    "warden": {
+      "file": "assets/warden.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "bdbfc654047eae41bd36b16e03f0fbebb3cd7207b16e91622adc9b62fc80aae1"
+    },
+    "conductor": {
+      "file": "assets/conductor.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "d514fe2097e9e309c97acf1ab8d23277c40d15e5815b5ca3311cf330c113911b"
+    },
+    "sovereign": {
+      "file": "assets/sovereign.svg",
+      "method": "Original layered mechanical arcade illustration: distinct chassis, beveled armor, reactor optics, weapon housings, engine heat vents, articulated joints and inset fasteners. Not canonical EVE geometry.",
+      "generator": "research/build-drone-art.py",
+      "sha256": "c0f57b5b70128e0d165777b16e698f087bc9bd56ae8c9a3e233441bef3481dad"
+    },
+    "rock-ore": {
+      "file": "assets/rock-ore.svg",
+      "method": "Original deterministic faceted asteroid illustration with type-specific silhouette, materials and mineral veins; not a native EVE ore model.",
+      "generator": "research/build-asteroid-art.py",
+      "sha256": "3aadb0b1e3b91f9e0ab8c926bae2bf4432b335687edee2ac78ea9b97d0e85d7e"
+    },
+    "rock-dense": {
+      "file": "assets/rock-dense.svg",
+      "method": "Original deterministic faceted asteroid illustration with type-specific silhouette, materials and mineral veins; not a native EVE ore model.",
+      "generator": "research/build-asteroid-art.py",
+      "sha256": "3481c4b1b868fcd155e316f9914542d9cbe1e962f49d3c0e49df41a399bfcf71"
+    },
+    "rock-ice": {
+      "file": "assets/rock-ice.svg",
+      "method": "Original deterministic faceted asteroid illustration with type-specific silhouette, materials and mineral veins; not a native EVE ore model.",
+      "generator": "research/build-asteroid-art.py",
+      "sha256": "09b05bb9e778a6e9e5d0b94d9d649a48b01ee183a85bdfc74c6c8245194ba780"
+    },
+    "rock-volatile": {
+      "file": "assets/rock-volatile.svg",
+      "method": "Original deterministic faceted asteroid illustration with type-specific silhouette, materials and mineral veins; not a native EVE ore model.",
+      "generator": "research/build-asteroid-art.py",
+      "sha256": "3f3e140c160645e143bc0710bf95bf69cdcd40ffa8746f1cc8bd2508771cd4da"
+    }
+  }
+}

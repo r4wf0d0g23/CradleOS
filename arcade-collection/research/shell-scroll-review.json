@@ -1,0 +1,13 @@
+{
+  "beforeCash": 180,
+  "afterCash": 180,
+  "generator": 0,
+  "scroll": 34,
+  "start": {
+    "x": 469,
+    "y": 268,
+    "bottom": 312,
+    "hit": true
+  },
+  "actualStartWave": 1
+}

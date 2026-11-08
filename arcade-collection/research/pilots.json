@@ -1,0 +1,103 @@
+[
+  {
+    "id": "voidhook",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 77.25,
+    "score": 5313,
+    "hp": 5,
+    "stage": 3,
+    "steps": 4635,
+    "extra": {
+      "delivered": 3
+    }
+  },
+  {
+    "id": "gatebreaker",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 249.93,
+    "score": 10575,
+    "hp": 4,
+    "stage": 3,
+    "steps": 14996,
+    "extra": {
+      "blocks": 0
+    }
+  },
+  {
+    "id": "signal-diver",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 48.65,
+    "score": 17050,
+    "hp": 3,
+    "stage": 3,
+    "steps": 2919,
+    "extra": {}
+  },
+  {
+    "id": "wreck-runner",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 30.32,
+    "score": 4095,
+    "hp": 4,
+    "stage": 3,
+    "steps": 1819,
+    "extra": {}
+  },
+  {
+    "id": "feral-circuit",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 22.85,
+    "score": 13335,
+    "hp": 3,
+    "stage": 1,
+    "steps": 1371,
+    "extra": {
+      "passed": 36
+    }
+  },
+  {
+    "id": "dockyard-panic",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 95.85,
+    "score": 14064,
+    "hp": 3,
+    "stage": 3,
+    "steps": 5751,
+    "extra": {
+      "served": 24,
+      "missed": 0
+    }
+  },
+  {
+    "id": "salvage-swarm",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 80.25,
+    "score": 10180,
+    "hp": 5,
+    "stage": 3,
+    "steps": 4815,
+    "extra": {
+      "collected": 0
+    }
+  },
+  {
+    "id": "scrapline-defense",
+    "seed": 12345,
+    "state": "won",
+    "seconds": 169.15,
+    "score": 9864,
+    "hp": 12,
+    "stage": 1,
+    "steps": 10149,
+    "extra": {
+      "wave": 6
+    }
+  }
+]

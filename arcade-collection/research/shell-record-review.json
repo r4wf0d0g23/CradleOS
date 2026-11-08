@@ -1,0 +1,19 @@
+{
+  "checks": [
+    {
+      "deniedStorage": false,
+      "terminalDisplayed": true,
+      "awardOnce": true,
+      "retry": true
+    },
+    {
+      "deniedStorage": true,
+      "terminalDisplayed": true,
+      "awardOnce": true,
+      "retry": true
+    }
+  ],
+  "errors": [],
+  "crossGameIsolation": true,
+  "corruptRecordFallback": true
+}

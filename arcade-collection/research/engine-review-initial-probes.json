@@ -1,0 +1,147 @@
+{
+  "at": "2026-11-08T20:36:10.206Z",
+  "results": [
+    {
+      "name": "legal: Wreck hold right only",
+      "state": "lost",
+      "time": 5.266666666666653,
+      "hp": 0,
+      "score": 0,
+      "stage": 1
+    },
+    {
+      "name": "legal: Signal blind triple tap 2Hz",
+      "state": "lost",
+      "time": 48.64999999999852,
+      "hp": 3,
+      "score": 6810,
+      "stage": 3,
+      "hit": 54,
+      "miss": 18,
+      "maxCombo": 1
+    },
+    {
+      "name": "legal: Signal blind triple tap 3Hz",
+      "state": "lost",
+      "time": 48.64999999999852,
+      "hp": 3,
+      "score": 9180,
+      "stage": 3,
+      "hit": 72,
+      "miss": 0,
+      "maxCombo": 1
+    },
+    {
+      "name": "legal: Signal blind triple tap 5Hz",
+      "state": "lost",
+      "time": 48.64999999999852,
+      "hp": 3,
+      "score": 9240,
+      "stage": 3,
+      "hit": 72,
+      "miss": 0,
+      "maxCombo": 1
+    },
+    {
+      "name": "legal: Gate angled paddle follower",
+      "state": "won",
+      "time": 161.35000000002054,
+      "hp": 4,
+      "score": 10550,
+      "stage": 3
+    },
+    {
+      "name": "legal: Circuit waypoint pilot",
+      "state": "won",
+      "time": 23.09999999999997,
+      "hp": 3,
+      "score": 13310,
+      "stage": 1,
+      "rank": 1,
+      "passed": 36
+    },
+    {
+      "name": "legal: Dock matching scheduler",
+      "state": "won",
+      "time": 95.84999999999584,
+      "hp": 3,
+      "score": 14064,
+      "stage": 3,
+      "served": 24,
+      "missed": 0
+    },
+    {
+      "name": "legal: Scrapline cutter build pilot",
+      "state": "won",
+      "time": 153.90000000001461,
+      "hp": 12,
+      "score": 10044,
+      "stage": 1,
+      "wave": 6,
+      "cash": 444,
+      "power": 18,
+      "capacity": 18
+    },
+    {
+      "name": "legal: Swarm circle/chain/Nova seed123",
+      "state": "won",
+      "time": 78.53333333333016,
+      "hp": 3,
+      "score": 12015,
+      "stage": 3,
+      "bossKilled": true
+    },
+    {
+      "name": "legal: Swarm circle/chain/Nova seed414",
+      "state": "won",
+      "time": 78.53333333333016,
+      "hp": 5,
+      "score": 12095,
+      "stage": 3,
+      "bossKilled": true
+    },
+    {
+      "name": "legal: Swarm circle/chain/Nova seed917",
+      "state": "won",
+      "time": 78.53333333333016,
+      "hp": 4,
+      "score": 12130,
+      "stage": 3,
+      "bossKilled": true
+    },
+    {
+      "name": "legal: Hook route without tether",
+      "state": "won",
+      "time": 75.0166666666637,
+      "hp": 5,
+      "score": 5324,
+      "stage": 3,
+      "delivered": 3
+    },
+    {
+      "name": "fixture: Hook lethal contact plus delivery",
+      "state": "lost",
+      "time": 0.016666666666666666,
+      "hp": 0,
+      "score": 0,
+      "stage": 1
+    },
+    {
+      "name": "fixture: Wreck lethal contact plus exit",
+      "state": "lost",
+      "time": 0.016666666666666666,
+      "hp": 0,
+      "score": 0,
+      "stage": 1
+    },
+    {
+      "name": "fixture: Swarm lethal contact plus pickup",
+      "state": "lost",
+      "time": 0.016666666666666666,
+      "hp": 0,
+      "score": 0,
+      "stage": 1,
+      "collected": 0
+    }
+  ]
+}

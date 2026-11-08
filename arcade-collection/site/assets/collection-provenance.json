@@ -1,0 +1,37 @@
+{
+  "source": "artifacts/frontier-drift-arcade-20261106/site/assets",
+  "method": "byte-identical reuse; source provenance.json and NOTICE.txt retained",
+  "originalArt": [
+    "scavenger.svg",
+    "needler.svg",
+    "bulwark.svg",
+    "guardian.svg",
+    "wingdrone.svg",
+    "rock-ore.svg",
+    "rock-dense.svg",
+    "rock-volatile.svg",
+    "rock-ice.svg"
+  ],
+  "sha256": {
+    "needler.svg": "08ab262df3f8c8bfffc4f0ec1133e11887e4feb04588bfacc99ce7e2966330fb",
+    "rock-volatile.svg": "3f3e140c160645e143bc0710bf95bf69cdcd40ffa8746f1cc8bd2508771cd4da",
+    "hull.png": "b693345721110c68e8f723b26b7ecd423c8d80f1ff60b92fba7c960ddf5e7e15",
+    "scavenger.svg": "83e05d8a03b4840756beb7c705548a7d03b35ce72d84718e7d0f5df0498b4b09",
+    "cannon.png": "decb15cbd705ca145203978a8e12b895acb73707fdc325e3860137811d71a4d7",
+    "storage.png": "b9769f075e202c7aee1e922263b74b1c25db0e76554d716a555b5b7149e9c5c7",
+    "fuel.png": "6ab518751aba21ce71a48abadcdbc2147760da342c6fef7dd9baf308e3441643",
+    "ice.png": "c4ae031549391714da52e13eb80beff738e710efabe7d4c680acfc8df130cd44",
+    "lai.png": "7986c6f5a03dfa0d8c1e8c18f351adc738dd1c2f76b5ea06eda2e7f9fe298704",
+    "guardian.svg": "436081b9b67a7dc154fbcb6e12887d414b6d3b803c2ba987ef7a7568ea33e4c9",
+    "rock-ice.svg": "09b05bb9e778a6e9e5d0b94d9d649a48b01ee183a85bdfc74c6c8245194ba780",
+    "scan.png": "f238b9f08285ff24f723eb65b5fce26c6f51256884dd80d2719927e12e377e6b",
+    "rock-ore.svg": "3aadb0b1e3b91f9e0ab8c926bae2bf4432b335687edee2ac78ea9b97d0e85d7e",
+    "rock-dense.svg": "3481c4b1b868fcd155e316f9914542d9cbe1e962f49d3c0e49df41a399bfcf71",
+    "wingdrone.svg": "d688c83181e54ed833d924f55c2c6eba5908b0f653d56252802339854c3e0231",
+    "bulwark.svg": "8504b6b8bbd7fa20c29cf35cf723307bddd0e4179215eb0909b16855b1e93f1b",
+    "gate.png": "693fadb7973c0f664a09595daf2e313c3037e033544503b73a04c154f8fd40bd",
+    "hermetite.png": "4a59cbca62d46de26d6e1af072381debe7e4e4dd7a9f7379509597e9333b89cb",
+    "chumaq.png": "fe234f2e9b43d5cddc556f37287a87313b6d64c2390ab3baacdf4058aa3a0df2",
+    "circuits.png": "143815e626de163763ce6afc9890d94dff793ebd7a929c76480e905f4e92960b"
+  }
+}

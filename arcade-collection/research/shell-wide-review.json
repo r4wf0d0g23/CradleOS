@@ -1,0 +1,1102 @@
+{
+  "at": "2026-11-08T20:39:42.035Z",
+  "results": [
+    {
+      "id": "voidhook",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 581.0625,
+            "right": 715,
+            "bottom": 627.0625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 581.0625,
+            "right": 953,
+            "bottom": 627.0625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "TETHER",
+          "x": 610,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 830,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "gatebreaker",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 592.6875,
+            "right": 715,
+            "bottom": 638.6875,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 592.6875,
+            "right": 953,
+            "bottom": 638.6875,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "LAUNCH",
+          "x": 610,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 830,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "signal-diver",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 581.0625,
+            "right": 715,
+            "bottom": 627.0625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 581.0625,
+            "right": 953,
+            "bottom": 627.0625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "A · CYAN",
+          "x": 380,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 600,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "S · VIOLET",
+          "x": 610,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 830,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "D · GOLD",
+          "x": 840,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 1060,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "wreck-runner",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 581.0625,
+            "right": 715,
+            "bottom": 627.0625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 581.0625,
+            "right": 953,
+            "bottom": 627.0625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "FIRE · 8",
+          "x": 610,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 830,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "feral-circuit",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 591.265625,
+            "right": 715,
+            "bottom": 637.265625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 591.265625,
+            "right": 953,
+            "bottom": 637.265625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "BRAKE",
+          "x": 495,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 715,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "BOOST",
+          "x": 725,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 945,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "dockyard-panic",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 581.0625,
+            "right": 715,
+            "bottom": 627.0625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 581.0625,
+            "right": 953,
+            "bottom": 627.0625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "Q · REPAIR",
+          "x": 380,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 600,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "W · FUEL",
+          "x": 610,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 830,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "E · RELOAD",
+          "x": 840,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 1060,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "salvage-swarm",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 581.0625,
+            "right": 715,
+            "bottom": 627.0625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 581.0625,
+            "right": 953,
+            "bottom": 627.0625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "NOVA READY",
+          "x": 610,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 830,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "scrapline-defense",
+      "width": 1440,
+      "height": 960,
+      "before": {
+        "scroll": 1440,
+        "width": 1440,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 487,
+            "y": 555.0625,
+            "right": 715,
+            "bottom": 601.0625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 725,
+            "y": 555.0625,
+            "right": 953,
+            "bottom": 601.0625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "CUTTER · 60",
+          "x": 12,
+          "y": 854,
+          "width": 220,
+          "height": 46,
+          "right": 232,
+          "bottom": 900,
+          "hit": true
+        },
+        {
+          "text": "ARC · 90",
+          "x": 486,
+          "y": 854,
+          "width": 220,
+          "height": 46,
+          "right": 706,
+          "bottom": 900,
+          "hit": true
+        },
+        {
+          "text": "TRACTOR · 45",
+          "x": 960,
+          "y": 854,
+          "width": 220,
+          "height": 46,
+          "right": 1180,
+          "bottom": 900,
+          "hit": true
+        },
+        {
+          "text": "UPGRADE · 50",
+          "x": 12,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 232,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "POWER",
+          "x": 486,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 706,
+          "bottom": 952,
+          "hit": true
+        },
+        {
+          "text": "START WAVE",
+          "x": 960,
+          "y": 906,
+          "width": 220,
+          "height": 46,
+          "right": 1180,
+          "bottom": 952,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 1440,
+        "width": 1440,
+        "canvas": {
+          "x": 0,
+          "y": 61,
+          "width": 1440,
+          "height": 882,
+          "top": 61,
+          "right": 1440,
+          "bottom": 943,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "voidhook",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 533.390625,
+            "right": 190,
+            "bottom": 579.390625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 533.390625,
+            "right": 353,
+            "bottom": 579.390625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "TETHER",
+          "x": 85,
+          "y": 790,
+          "width": 220,
+          "height": 46,
+          "right": 305,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "gatebreaker",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 534.8125,
+            "right": 190,
+            "bottom": 580.8125,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 534.8125,
+            "right": 353,
+            "bottom": 580.8125,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "LAUNCH",
+          "x": 85,
+          "y": 790,
+          "width": 220,
+          "height": 46,
+          "right": 305,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "signal-diver",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 523.1875,
+            "right": 190,
+            "bottom": 569.1875,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 523.1875,
+            "right": 353,
+            "bottom": 569.1875,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "A · CYAN",
+          "x": 8,
+          "y": 790,
+          "width": 120.65625,
+          "height": 46,
+          "right": 128.65625,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "S · VIOLET",
+          "x": 134.65625,
+          "y": 790,
+          "width": 120.671875,
+          "height": 46,
+          "right": 255.328125,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "D · GOLD",
+          "x": 261.328125,
+          "y": 790,
+          "width": 120.671875,
+          "height": 46,
+          "right": 382,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "wreck-runner",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 534.8125,
+            "right": 190,
+            "bottom": 580.8125,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 534.8125,
+            "right": 353,
+            "bottom": 580.8125,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "FIRE · 8",
+          "x": 85,
+          "y": 790,
+          "width": 220,
+          "height": 46,
+          "right": 305,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "feral-circuit",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 533.390625,
+            "right": 190,
+            "bottom": 579.390625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 533.390625,
+            "right": 353,
+            "bottom": 579.390625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "BRAKE",
+          "x": 8,
+          "y": 790,
+          "width": 184,
+          "height": 46,
+          "right": 192,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "BOOST",
+          "x": 198,
+          "y": 790,
+          "width": 184,
+          "height": 46,
+          "right": 382,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "dockyard-panic",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 533.390625,
+            "right": 190,
+            "bottom": 579.390625,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 533.390625,
+            "right": 353,
+            "bottom": 579.390625,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "Q · REPAIR",
+          "x": 8,
+          "y": 790,
+          "width": 120.65625,
+          "height": 46,
+          "right": 128.65625,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "W · FUEL",
+          "x": 134.65625,
+          "y": 790,
+          "width": 120.671875,
+          "height": 46,
+          "right": 255.328125,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "E · RELOAD",
+          "x": 261.328125,
+          "y": 790,
+          "width": 120.671875,
+          "height": 46,
+          "right": 382,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "salvage-swarm",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 523.1875,
+            "right": 190,
+            "bottom": 569.1875,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 523.1875,
+            "right": 353,
+            "bottom": 569.1875,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "NOVA READY",
+          "x": 85,
+          "y": 790,
+          "width": 220,
+          "height": 46,
+          "right": 305,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    },
+    {
+      "id": "scrapline-defense",
+      "width": 390,
+      "height": 844,
+      "before": {
+        "scroll": 390,
+        "width": 390,
+        "actions": [
+          {
+            "text": "PLAY",
+            "x": 37,
+            "y": 497.1875,
+            "right": 190,
+            "bottom": 543.1875,
+            "hit": true
+          },
+          {
+            "text": "ARCADE",
+            "x": 200,
+            "y": 497.1875,
+            "right": 353,
+            "bottom": 543.1875,
+            "hit": true
+          }
+        ]
+      },
+      "controls": [
+        {
+          "text": "CUTTER · 60",
+          "x": 8,
+          "y": 738,
+          "width": 120.65625,
+          "height": 46,
+          "right": 128.65625,
+          "bottom": 784,
+          "hit": true
+        },
+        {
+          "text": "ARC · 90",
+          "x": 134.65625,
+          "y": 738,
+          "width": 120.671875,
+          "height": 46,
+          "right": 255.328125,
+          "bottom": 784,
+          "hit": true
+        },
+        {
+          "text": "TRACTOR · 45",
+          "x": 261.328125,
+          "y": 738,
+          "width": 120.65625,
+          "height": 46,
+          "right": 381.984375,
+          "bottom": 784,
+          "hit": true
+        },
+        {
+          "text": "UPGRADE · 50",
+          "x": 8,
+          "y": 790,
+          "width": 120.65625,
+          "height": 46,
+          "right": 128.65625,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "POWER",
+          "x": 134.65625,
+          "y": 790,
+          "width": 120.671875,
+          "height": 46,
+          "right": 255.328125,
+          "bottom": 836,
+          "hit": true
+        },
+        {
+          "text": "START WAVE",
+          "x": 261.328125,
+          "y": 790,
+          "width": 120.65625,
+          "height": 46,
+          "right": 381.984375,
+          "bottom": 836,
+          "hit": true
+        }
+      ],
+      "size": {
+        "scroll": 390,
+        "width": 390,
+        "canvas": {
+          "x": 0,
+          "y": 58,
+          "width": 390,
+          "height": 769,
+          "top": 58,
+          "right": 390,
+          "bottom": 827,
+          "left": 0
+        }
+      },
+      "started": true,
+      "pauseStable": true,
+      "resumed": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,43 @@
+{
+  "checks": [
+    {
+      "id": "wreck-runner",
+      "before": {
+        "ammo": 8
+      },
+      "focusedButton": {
+        "ammo": 5,
+        "action": false
+      },
+      "focusedCanvas": {
+        "ammo": 3
+      }
+    },
+    {
+      "id": "wreck-runner",
+      "rotatePaused": true,
+      "timeFrozen": true,
+      "ammoRetained": true
+    },
+    {
+      "id": "feral-circuit",
+      "before": {
+        "heat": 0
+      },
+      "focusedButton": {
+        "heat": 14.699999999999994,
+        "action": false
+      },
+      "focusedCanvas": {
+        "heat": 28.983333333333313
+      }
+    },
+    {
+      "id": "feral-circuit",
+      "rotatePaused": true,
+      "timeFrozen": true,
+      "ammoRetained": true
+    }
+  ],
+  "errors": []
+}
