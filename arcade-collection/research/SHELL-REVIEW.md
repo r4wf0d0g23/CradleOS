@@ -59,3 +59,17 @@ Reviewed shared source SHA256:
 - style.css:cf33d3261bb99c7d0e10913624785465516b769a57da28d7eeec6e44ff1acabc
 - profile.js:0910275311ce0139530e16af4a60b8481e78b09c4072aeefb4f6f51cb97e7c14
 - catalog.js:1e7653d276bf6f609546b7864c769c79269ffb1485d6c3272979fa9da95ccbf8
+
+## Independent production review — PASS, 2026-11-08T20:48Z
+
+Live collection: https://frontier-arcade.pages.dev ; immutable release a94c61d6. Maintained source is now canonical `arcade-collection/` (release source68c7192), with formatted source bytes; historical unformatted candidate hashes above are not current production hashes.
+
+- Independently fetched public app.js, style.css and profile.js: all three SHA256 hashes exactly match canonical site files. Current hashes and sizes are in `shell-live-review.json`.
+- Public320px lobby displays all8 actual game cards without horizontal overflow.
+- Actual Signal Diver touch inputs successfully hit the first8 chart notes, reach combo8/score1380, then pause freezes the chart during2.5seconds of browser-clock advance and deliberate Resume works. No state injection; read-only snapshots guided ordinary touchscreen actions. This is a representative timing-input check, not a second full-campaign proof.
+- Actual568×320 native swipe on Scrapline's POWER control scrolls without purchasing. Start Wave becomes reachable and starts wave1; a separate ordinary Cutter tap builds exactly once and deducts60 salvage. Header Pause remains reachable.
+- Public CSP retains self-only scripts and frame-ancestors none. Zero script errors and failed requests across the checked surfaces. Browser used the established TLS-validating public-response relay; responses were live public bytes, not gameplay fixtures.
+
+Receipt: `shell-live-review.json`; reproducible script:`shell-live-review.mjs`; screenshots:`shell-live-lobby-320.png`, `shell-live-signal-320.png`, `shell-live-scrapline-568.png`.
+
+No remaining shell publication blockers. Native inherited-model review, not Opus; no physical-device/human-balance claim. Parent's all-runtime public/immutable hash audit, full campaign tests and CradleOS launcher checks remain separate evidence.

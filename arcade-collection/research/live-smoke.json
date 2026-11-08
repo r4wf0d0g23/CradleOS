@@ -1,0 +1,151 @@
+{
+  "base": "https://frontier-arcade.pages.dev",
+  "results": [
+    {
+      "id": "voidhook",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "gatebreaker",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "signal-diver",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "wreck-runner",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "feral-circuit",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "dockyard-panic",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "salvage-swarm",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "scrapline-defense",
+      "width": 390,
+      "height": 844,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "voidhook",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "gatebreaker",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "signal-diver",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "wreck-runner",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "feral-circuit",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "dockyard-panic",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "salvage-swarm",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    },
+    {
+      "id": "scrapline-defense",
+      "width": 568,
+      "height": 320,
+      "launch": true,
+      "input": true,
+      "pauseResume": true,
+      "noOverflow": true
+    }
+  ],
+  "errors": [],
+  "failed": []
+}

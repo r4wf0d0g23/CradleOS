@@ -1,0 +1,40 @@
+{
+  "at": "2026-11-08T20:50:08.907Z",
+  "origin": "https://cradleos.io",
+  "assets": [
+    {
+      "path": "/assets/activityTelemetry-D3-Jnl0P.js",
+      "bytes": 1767,
+      "sha256": "07e114df5afd66ee49f66d26172bdce249bea1fc602d80bf1798577b34147746",
+      "matches": true
+    },
+    {
+      "path": "/assets/app-BeSv22MA.css",
+      "bytes": 929871,
+      "sha256": "57b39e1437068f3db7309b2493aeee324e397bc0666440adc177f147a0e4d6d2",
+      "matches": true
+    },
+    {
+      "path": "/assets/app-CXSP3xvf.js",
+      "bytes": 2462687,
+      "sha256": "01c6345b92ee4fd618523e9ab1c3ea77e74e1d0ab7278cb10285415c5f0f8e19",
+      "matches": true
+    }
+  ],
+  "cards": 10,
+  "oldDestinationsUnchanged": true,
+  "walletFree": true,
+  "allImagesDecoded": true,
+  "lastAction": {
+    "x": 184.0625,
+    "y": 427.15625,
+    "width": 110.9375,
+    "height": 44,
+    "unobstructed": true
+  },
+  "actualPopup": "https://frontier-arcade.pages.dev/games/scrapline-defense/",
+  "openerNull": true,
+  "actualBuildWavePause": true,
+  "errors": [],
+  "failed": []
+}

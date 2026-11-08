@@ -21,3 +21,11 @@ Independent native inherited-model review; requested Opus unavailable. Scope: ca
 `integration-source-proof.json`: ten URLs, asset dimensions/hashes, original-byte equality, exact transforms and unchanged renderer. `integration-covers-contact.png`: inspected eight-image sheet.
 
 Before CradleOS publication, complete actual live route/title/Play checks for all8 collection games, verify collection byte identity, then run CradleOS ten-card desktop/mobile browser and hash checks, including natural-bottom last-card hit testing. Existing historical two-card browser receipts are not proof of ten-card behavior.
+
+## Final production milestone — PASS
+
+Independently checked https://cradleos.io/#/arcade after web deployment0e772ead/source68c7192. Public HTML references the current reviewed dist; all3 referenced JS/CSS files match exact SHA256 bytes. Actual320×568 touch browser shows10 wallet-free cards; both original game destinations remain unchanged and all10 images decode. At natural document bottom, Scrapline's final Play center belongs to the link (x184.06/y427.16,width110.94,height44), clear of the fixed Activity pill; no horizontal overflow. Screenshot inspected.
+
+Actually tapped final Play, loaded https://frontier-arcade.pages.dev/games/scrapline-defense/ in a new tab with null opener, tapped PLAY, built a Cutter, started wave1, observed actual spawned enemies and paused. Closing the game leaves the Arcade gallery available. Zero script errors and failed requests. Browser used the established TLS-validating public-response relay, isolated sandboxed Chromium, no game-state fixture or wallet signing.
+
+Proof: `integration-live-review.mjs`, `integration-live-review.json`, `integration-live-review-320.png`. This scoped independent check complements the parent's broader all20 launch and both-origin asset verification; it does not claim independently repeating that broader suite. No remaining integration publication blockers identified.

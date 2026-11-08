@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-08T20:48:15.209Z",
+  "origin": "https://frontier-arcade.pages.dev",
+  "assets": [
+    {
+      "name": "app.js",
+      "sha256": "68164b2ba17cd0e591e4b1949f2b9218d06f70b486926df95d16362df5517e8d",
+      "bytes": 14757,
+      "match": true
+    },
+    {
+      "name": "style.css",
+      "sha256": "f81b49589d8a31d70f84f18390c01fbdfe45e915e04d111aec6c135aea1579e3",
+      "bytes": 8952,
+      "match": true
+    },
+    {
+      "name": "profile.js",
+      "sha256": "3f35859df84919b1f5ce11e1ed26e9945fc3f951f25859c93ddd73ad165294fd",
+      "bytes": 1489,
+      "match": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "lobby320",
+      "games": 8,
+      "noOverflow": true
+    },
+    {
+      "name": "signal320",
+      "actualTouchHits": 8,
+      "combo": 8,
+      "pauseFrozen": true,
+      "resume": true,
+      "score": 1380
+    },
+    {
+      "name": "scrapline568",
+      "nativeScrollNoPurchase": true,
+      "startWave": 1,
+      "cutterBuiltOnce": true,
+      "headerPauseReachable": true
+    }
+  ],
+  "errors": [],
+  "failed": [],
+  "headers": [
+    {
+      "path": "/",
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+    }
+  ]
+}
