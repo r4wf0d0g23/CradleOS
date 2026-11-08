@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-08T20:13:25.684Z",
+  "base": "https://cradleos.io",
+  "assets": [
+    {
+      "path": "/assets/activityTelemetry-D3-Jnl0P.js",
+      "sha256": "07e114df5afd66ee49f66d26172bdce249bea1fc602d80bf1798577b34147746",
+      "bytes": 1767,
+      "match": true
+    },
+    {
+      "path": "/assets/app-BeSv22MA.css",
+      "sha256": "57b39e1437068f3db7309b2493aeee324e397bc0666440adc177f147a0e4d6d2",
+      "bytes": 929871,
+      "match": true
+    },
+    {
+      "path": "/assets/app-BhLmINgS.js",
+      "sha256": "2025de8611c11fc9331934ea82340b6dce76e28c784ee2ab20c7969f1d48b7bd",
+      "bytes": 2461093,
+      "match": true
+    },
+    {
+      "path": "/arcade/frontier-drift.webp",
+      "sha256": "fbdc09d5aa72d693c4de0eff105254dc1028fbc633dc8eb3d39bbf2d79e199de",
+      "bytes": 19988,
+      "match": true
+    },
+    {
+      "path": "/arcade/rift-run.webp",
+      "sha256": "3a3452af328ab5cd8f7494b9ec24856ddc67bf4de031a46f965aa42129237bd1",
+      "bytes": 17876,
+      "match": true
+    }
+  ],
+  "hit": {
+    "clear": true,
+    "width": 320,
+    "scroll": 320,
+    "bounds": {
+      "x": 184.0625,
+      "y": 426.78125,
+      "width": 110.9375,
+      "height": 44
+    }
+  },
+  "actualPopup": true,
+  "actualLaunchAndPause": true,
+  "openerNull": true,
+  "errors": [],
+  "failed": []
+}
