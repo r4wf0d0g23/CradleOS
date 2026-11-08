@@ -1,0 +1,43 @@
+{
+  "base": "http://127.0.0.1:5371",
+  "checks": [
+    {
+      "width": 1440,
+      "cards": 10,
+      "images": 10,
+      "public": true,
+      "bounds": true,
+      "lastActionHit": true,
+      "reload": true
+    },
+    {
+      "width": 390,
+      "cards": 10,
+      "images": 10,
+      "public": true,
+      "bounds": true,
+      "lastActionHit": true,
+      "reload": true
+    },
+    {
+      "width": 320,
+      "cards": 10,
+      "images": 10,
+      "public": true,
+      "bounds": true,
+      "lastActionHit": true,
+      "reload": true
+    },
+    {
+      "width": 568,
+      "cards": 10,
+      "images": 10,
+      "public": true,
+      "bounds": true,
+      "lastActionHit": true,
+      "reload": true
+    }
+  ],
+  "errors": [],
+  "failed": []
+}
