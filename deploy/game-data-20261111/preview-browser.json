@@ -1,0 +1,63 @@
+{
+  "base": "http://127.0.0.1:5380",
+  "checks": [
+    {
+      "width": 1440,
+      "items": true,
+      "schemas": true,
+      "traits": true,
+      "properties": true,
+      "events": 63,
+      "changes": true,
+      "iconsHistorical": true,
+      "plannerHistorical": true,
+      "lazyData": true,
+      "bounds": true
+    },
+    {
+      "width": 390,
+      "items": true,
+      "schemas": true,
+      "traits": true,
+      "properties": true,
+      "events": 63,
+      "changes": true,
+      "iconsHistorical": true,
+      "plannerHistorical": true,
+      "lazyData": true,
+      "bounds": true
+    },
+    {
+      "width": 320,
+      "items": true,
+      "schemas": true,
+      "traits": true,
+      "properties": true,
+      "events": 63,
+      "changes": true,
+      "iconsHistorical": true,
+      "plannerHistorical": true,
+      "lazyData": true,
+      "bounds": true
+    },
+    {
+      "failureRetry": "meta"
+    },
+    {
+      "failureRetry": "chemistry"
+    },
+    {
+      "failureRetry": "attributes"
+    },
+    {
+      "failureRetry": "catalog"
+    },
+    {
+      "failureRetry": "strings"
+    },
+    {
+      "wrongBuildRejected": true
+    }
+  ],
+  "errors": []
+}

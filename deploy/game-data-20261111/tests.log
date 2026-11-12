@@ -1,0 +1,9 @@
+
+ RUN  v4.1.5 /home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002/cradleos-dapp
+
+
+ Test Files  4 passed (4)
+      Tests  49 passed (49)
+   Start at  19:50:49
+   Duration  1.45s (transform 219ms, setup 41ms, import 253ms, tests 1.36s, environment 0ms)
+

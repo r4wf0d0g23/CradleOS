@@ -67,7 +67,7 @@ function Planner({ data }: { data: NativeSnapshot }) {
   }
   return <div className="recipe-planner">
     <header className="recipe-header">
-      <div><div className="recipe-eyebrow">CYCLE 7 · VESTIGES · CLIENT {data.build}</div><h2><ClientUIIcon name="gameplay/manufacturing_32px" size={24} /> Recipes &amp; Materials</h2>
+      <div><div className="recipe-eyebrow">HISTORICAL · CYCLE 7 · CLIENT {data.build}</div><h2><ClientUIIcon name="gameplay/manufacturing_32px" size={24} /> Recipes &amp; Materials</h2>
         </div>
       <div className="recipe-count"><strong>{data.counts.recipes}</strong> recipes <span>·</span> <strong>{products.length}</strong> products</div>
     </header>

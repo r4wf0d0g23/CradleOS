@@ -1,231 +1,760 @@
-/** Current Stillness snapshot: official item IDs; client localization IDs stay distinct. */
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  GAME_DATA_BASE, validateGameDataMeta, itemLabel, validateNativeSnapshot, filterNativeRecipes,
-  type GameDataMeta, type GameItem, type GameDataChanges, type NativeSnapshot,
-} from "../lib/gameData";
-
-import { ItemIcon } from "./GameIcon";
+  CURRENT_DATA_BASE,
+  CURRENT_DATA_BUILD,
+  validateCurrentData,
+  validateChemistryLinks,
+  rangeLabel,
+  filterSchemas,
+  filterItems,
+  rawUnitLabel,
+  type DataFiles,
+  type CurrentItem,
+  type Chemistry,
+  type Catalog,
+  type PropertyRange,
+} from "../lib/currentGameData";
 import { IconGallery } from "./IconGallery";
+import "./GameDataPanel.css";
 
-const ACCENT = "#FF4700";
-const MUTED = "rgba(190,190,175,0.68)";
-const TEXT = "#e0e0d0";
-const control: CSSProperties = { background: "#14120f", border: "1px solid #5d493e", color: TEXT, padding: "7px 10px", fontFamily: "inherit", fontSize: 12, minWidth: 0 };
-const card: CSSProperties = { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.12)", borderLeft: `2px solid ${ACCENT}`, padding: 12, minWidth: 0, overflowWrap: "anywhere" };
-const note: CSSProperties = { fontSize: 11, lineHeight: 1.6, color: MUTED };
-const grid: CSSProperties = { display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 270px), 1fr))" };
-
-type Tab = "icons" | "items" | "recipes" | "strings" | "events" | "changes" | "sources";
-const TABS: Array<[Tab, string]> = [["items", "ITEMS"], ["icons", "ICONS"], ["recipes", "CLIENT RECIPES"], ["strings", "CLIENT TEXT"], ["events", "EVENT TYPES"], ["changes", "CYCLE 7 CHANGES"], ["sources", "SOURCES"]];
-
-function useSnapshot<T>(file: string, validate?: (data: T) => T) {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
+type Tab =
+  | "items"
+  | "schemas"
+  | "traits"
+  | "properties"
+  | "strings"
+  | "events"
+  | "changes"
+  | "icons"
+  | "sources";
+const tabs: [Tab, string][] = [
+  ["items", "Items"],
+  ["schemas", "Schemas"],
+  ["traits", "Traits"],
+  ["properties", "Properties"],
+  ["strings", "Client text"],
+  ["events", "Events"],
+  ["changes", "Changes"],
+  ["icons", "Icons"],
+  ["sources", "Sources"],
+];
+function useData<K extends keyof DataFiles>(file: K, enabled = true) {
+  const [state, setState] = useState<{
+    file: K;
+    data: DataFiles[K] | null;
+    error: boolean;
+  }>({ file, data: null, error: false });
   const [attempt, setAttempt] = useState(0);
+  const cache = useRef(new Map<K, DataFiles[K]>());
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
-    setData(null); setError(null);
-    fetch(`${GAME_DATA_BASE}/${file}.json`, { signal: controller.signal })
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() as Promise<T>; })
-      .then(value => { if (!controller.signal.aborted) setData(validate ? validate(value) : value); })
-      .catch(e => { if (!controller.signal.aborted) setError(String(e.message ?? e)); });
-    return () => controller.abort();
-  }, [file, attempt, validate]);
-  return { data, error, retry: () => setAttempt(n => n + 1) };
-}
-
-function Status({ error, retry }: { error: string | null; retry: () => void }) {
-  return <div role="status" style={note}>
-    {error ? <>Could not load this snapshot: {error} <button style={control} onClick={retry}>Retry</button></> : "Loading current-cycle snapshot…"}
-  </div>;
-}
-
-function SourceLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return <a href={href} target="_blank" rel="noreferrer" style={{ color: "#86bfff", overflowWrap: "anywhere" }}>{children}</a>;
-}
-
-type NativeState = ReturnType<typeof useSnapshot<NativeSnapshot>>;
-
-function NativeItemDetails({ id, state }: { id: number; state: NativeState }) {
-  const [open, setOpen] = useState(false);
-  const data = state.data;
-  const item = data?.types[id];
-  const graphic = item?.graphicID ? data?.graphics[item.graphicID] : null;
-  const differences = data?.apiDifferences.filter(x => x.typeID === id) ?? [];
-  return <details style={{ ...note, marginTop: 10 }} onToggle={e => setOpen(e.currentTarget.open)}>
-    <summary style={{ cursor: "pointer", color: "#ffb58b" }}>Client attributes &amp; source comparison</summary>
-    {open && (!data ? <Status error={state.error} retry={state.retry} /> : <>
-      {!item?.clientRecord ? <p>Client attributes unavailable.</p> : <>
-        <p><strong>Raw base attributes</strong> · Build {data.build}</p>
-        {item.clientName && item.clientName !== item.name && <p>Client name: {item.clientName}</p>}
-        <div style={{ display: "grid", gap: 6 }}>{item.attributes.map(a => {
-          const def = data.attributes[a.id];
-          const unit = def.unitID !== null ? data.units[def.unitID] : null;
-          return <div key={a.id} style={{ borderTop: "1px solid #ffffff18", paddingTop: 5 }}>
-            <strong style={{ color: TEXT }}>{def.label || def.name}</strong> · raw value <strong style={{ color: "#ffb58b" }}>{String(a.value)}</strong>
-            <div style={{ fontSize: 10 }}>{def.name} · attribute {a.id}{unit && <> · unit label: {unit.label || "not localized"} (internal: {unit.name})</>}</div>
-          </div>;
-        })}</div>
-        {!item.attributes.length && <p>Base attributes unavailable.</p>}
-        {item.graphicID && <p>Graphics reference #{item.graphicID}{graphic?.sofHullName && <> · hull <code>{graphic.sofHullName}</code></>}{graphic?.sofLayout?.length ? <> · layout {graphic.sofLayout.join(", ")}</> : null}</p>}
-      </>}
-      {differences.length > 0 && <div><strong>API / client differences</strong>{differences.map(d => <p key={d.field}>{d.field}: API <code>{JSON.stringify(d.api)}</code> · client <code>{JSON.stringify(d.client)}</code></p>)}</div>}
-    </>)}
-  </details>;
-}
-
-function RecipesView({ state }: { state: NativeState }) {
-  const { data, error, retry } = state;
-  const [query, setQuery] = useState("");
-  const [limit, setLimit] = useState(30);
-  const recipes = useMemo(() => data ? filterNativeRecipes(data, query) : [], [data, query]);
-  if (!data) return <Status error={error} retry={retry} />;
-  return <section>
-    <p style={note}><strong>{data.counts.recipes} recipes</strong> · Build {data.build}</p>
-    <input aria-label="Search client recipes" placeholder="Search input, output, type ID, or recipe ID…" value={query} onChange={e => { setQuery(e.target.value); setLimit(30); }} style={{ ...control, width: "100%", boxSizing: "border-box" }} />
-    <p style={note}>{recipes.length} matching recipes · showing {Math.min(limit, recipes.length)}</p>
-    <div style={grid}>{recipes.slice(0, limit).map(r => <article key={r.id} style={card}>
-      <h3 style={{ color: TEXT, fontSize: 13, marginTop: 0 }}>{r.outputs.map(x => data.types[x.typeID].name).join(" + ")}</h3>
-      <div style={{ ...note, color: "#ffb58b" }}>Recipe #{r.id}</div>
-      {(["inputs", "outputs"] as const).map(side => <div key={side} style={{ marginTop: 8 }}>
-        <strong style={{ fontSize: 11 }}>{side === "inputs" ? "INPUTS" : "OUTPUTS"}</strong>
-        <ul style={{ ...note, paddingLeft: 18, margin: "4px 0" }}>{r[side].map(line => <li key={line.typeID}>
-          <strong className="icon-label" style={{ color: TEXT }}><ItemIcon typeId={line.typeID} size={28} /><span>{line.quantity.toLocaleString()} × {data.types[line.typeID].name}</span></strong>
-          <div>Type {line.typeID}{!data.types[line.typeID].apiPublished && " · Client-only"}</div>
-        </li>)}</ul>
-      </div>)}
-      <details style={{ ...note, marginTop: 8 }}><summary style={{ cursor: "pointer" }}>Source details</summary>
-        <p>Raw runtime: {r.runTime} · Unit unverified · Type {r.primaryTypeID}</p>
-        {data.patchChecks.filter(c => c.recipeID === r.id).map(c => <p key={c.recipeID}><SourceLink href={c.url}>Official patch cross-check</SourceLink>: {c.fields}.</p>)}
-      </details>
-    </article>)}</div>
-    {!recipes.length && <p style={note}>No matching client recipe definitions.</p>}
-    {limit < recipes.length && <button style={{ ...control, marginTop: 12 }} onClick={() => setLimit(n => n + 30)}>Show more recipes</button>}
-  </section>;
-}
-
-function ItemsView({ meta, native }: { meta: GameDataMeta; native: NativeState }) {
-  const { data, error, retry } = useSnapshot<GameItem[]>("items");
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
-  const [limit, setLimit] = useState(48);
-  const categories = useMemo(() => Array.from(new Set(data?.map(x => x.categoryName) ?? [])).sort(), [data]);
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return (data ?? []).filter(x => (category === "All" || x.categoryName === category) &&
-      (!q || String(x.id) === q || `${x.name} ${x.groupName} ${x.description}`.toLowerCase().includes(q)));
-  }, [data, query, category]);
-  if (!data) return <Status error={error} retry={retry} />;
-  return <section>
-    <p style={note}>{data.length} official item types · Updated {meta.officialApi.fetchedAt.slice(0, 10)}</p>
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
-      <input aria-label="Search items" placeholder="Search item name, type ID, or description…" value={query} onChange={e => { setQuery(e.target.value); setLimit(48); }} style={{ ...control, flex: "1 1 200px" }} />
-      <select aria-label="Item category" value={category} onChange={e => { setCategory(e.target.value); setLimit(48); }} style={control}>
-        <option value="All">All categories</option>{categories.map(c => <option key={c}>{c}</option>)}
-      </select>
-    </div>
-    <p style={note}>{matches.length} matching items · showing {Math.min(limit, matches.length)}</p>
-    <div style={grid}>{matches.slice(0, limit).map(item => <article key={item.id} style={card}>
-      <div className="icon-label" style={{ color: TEXT, fontWeight: 700, fontSize: 13 }}><ItemIcon typeId={item.id} size={48} /><span>{itemLabel(item)}</span></div>
-      <div style={{ ...note, color: "#ffb58b" }}>Type ID {item.id} · {item.categoryName} / {item.groupName}</div>
-      <div style={{ ...note, marginTop: 5 }}>{item.volume.toLocaleString(undefined, { maximumFractionDigits: 4 })} m³ · {item.mass.toLocaleString(undefined, { maximumFractionDigits: 4 })} kg</div>
-      {item.description && <p style={{ ...note, whiteSpace: "pre-wrap", marginBottom: 0 }}>{item.description.replace(/<br\s*\/?\s*>/gi, "\n").replace(/<[^>]*>/g, "")}</p>}
-      <NativeItemDetails id={item.id} state={native} />
-    </article>)}</div>
-    {matches.length === 0 && <p style={note}>No matching published item types.</p>}
-    {limit < matches.length && <button style={{ ...control, marginTop: 12 }} onClick={() => setLimit(n => n + 48)}>Show more items</button>}
-  </section>;
-}
-
-function StringsView({ meta }: { meta: GameDataMeta }) {
-  const { data, error, retry } = useSnapshot<Record<string, string>>("strings");
-  const [query, setQuery] = useState("");
-  const [limit, setLimit] = useState(50);
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!data || q.length === 1) return [];
-    const found: Array<[string, string]> = [];
-    for (const [id, text] of Object.entries(data)) {
-      if (!q || id === q || text.toLowerCase().includes(q)) found.push([id, text]);
-      if (found.length >= limit) break;
+    const cached = cache.current.get(file);
+    if (cached) {
+      setState({ file, data: cached, error: false });
+      return;
     }
-    return found;
-  }, [data, query, limit]);
-  return <section>
-    <p style={note}>{meta.counts.strings.toLocaleString()} localization strings · Build {meta.build}</p>
-    {!data ? <Status error={error} retry={retry} /> : <>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        <input aria-label="Search client text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search text or localization message ID…" style={{ ...control, flex: "1 1 200px" }} />
-        <select aria-label="Text result limit" value={limit} onChange={e => setLimit(Number(e.target.value))} style={control}>{[50,100,250].map(n => <option key={n} value={n}>{n} results</option>)}</select>
+    setState({ file, data: null, error: false });
+    fetch(`${CURRENT_DATA_BASE}/${file}.json`, { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw Error("Unavailable");
+        return r.json();
+      })
+      .then((v) => {
+        const data = validateCurrentData(file, v);
+        if (!controller.signal.aborted) {
+          cache.current.set(file, data);
+          setState({ file, data, error: false });
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setState({ file, data: null, error: true });
+      });
+    return () => controller.abort();
+  }, [file, enabled, attempt]);
+  return {
+    data: state.file === file ? state.data : null,
+    error: state.file === file && state.error,
+    retry: () => {
+      cache.current.delete(file);
+      setAttempt((x) => x + 1);
+    },
+  };
+}
+type LoadState = { error: boolean; retry: () => void };
+function Status({ error, retry }: LoadState) {
+  return (
+    <p role="status" className="gd-muted">
+      {error ? (
+        <>
+          Unavailable <button onClick={retry}>Retry</button>
+        </>
+      ) : (
+        "Loading…"
+      )}
+    </p>
+  );
+}
+const num = (x: number) =>
+  x.toLocaleString(undefined, { maximumFractionDigits: 12 });
+const unit = (id: number | undefined, data: Chemistry) =>
+  rawUnitLabel(id, data.units);
+function Ranges({ rows, data }: { rows: PropertyRange[]; data: Chemistry }) {
+  return (
+    <dl className="gd-values">
+      {rows.map((p, i) => (
+        <div key={`${p.propertyID}-${i}`}>
+          <dt>
+            {data.properties[p.propertyID]?.label || `Property ${p.propertyID}`}
+          </dt>
+          <dd>
+            {rangeLabel(p)} {unit(data.properties[p.propertyID]?.unitID, data)}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+function ItemDetails({
+  item,
+  chemistry,
+  state,
+  request,
+}: {
+  item: CurrentItem;
+  state: ReturnType<typeof useData<"attributes">>;
+  request: () => void;
+  chemistry: Chemistry | null;
+}) {
+  const rows = state.data?.types[item.id] ?? [];
+  return (
+    <details
+      onToggle={(e) => {
+        if (e.currentTarget.open && item.clientRecord) request();
+      }}
+    >
+      <summary>Details</summary>
+      {item.description && <p className="gd-description">{item.description}</p>}
+      {item.api && (
+        <details>
+          <summary>API values · November 11</summary>
+          <dl className="gd-values">
+            <div>
+              <dt>Name</dt>
+              <dd>{item.api.name || "Unnamed"}</dd>
+            </div>
+            <div>
+              <dt>Base mass</dt>
+              <dd>{num(item.api.mass)} kg</dd>
+            </div>
+            <div>
+              <dt>Base volume</dt>
+              <dd>{num(item.api.volume)} m³</dd>
+            </div>
+          </dl>
+        </details>
+      )}
+      {chemistry?.neotypes[item.id] && (
+        <details>
+          <summary>Base properties</summary>
+          <Ranges
+            rows={chemistry.neotypes[item.id].properties}
+            data={chemistry}
+          />
+        </details>
+      )}
+      {item.clientRecord ? (
+        <details>
+          <summary>Raw base attributes</summary>
+          {!state.data ? (
+            <Status {...state} />
+          ) : rows.length ? (
+            <dl className="gd-values">
+              {rows.map((a) => {
+                const d = state.data!.definitions[a.id],
+                  u = d.unitID == null ? null : state.data!.units[d.unitID];
+                return (
+                  <div key={a.id}>
+                    <dt>
+                      {d.label || d.name}
+                      <small>#{a.id}</small>
+                    </dt>
+                    <dd>
+                      {num(a.value)}{" "}
+                      {u ? rawUnitLabel(d.unitID, state.data!.units) : ""}
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          ) : (
+            <p className="gd-muted">Unavailable</p>
+          )}
+        </details>
+      ) : (
+        <p className="gd-muted">Client attributes unavailable</p>
+      )}
+    </details>
+  );
+}
+function Items({
+  catalog,
+  all,
+  setAll,
+  chemistry,
+}: {
+  catalog: ReturnType<typeof useData<"catalog" | "catalog-all">>;
+  all: boolean;
+  setAll: (v: boolean) => void;
+  chemistry: Chemistry | null;
+}) {
+  const [wantAttributes, setWantAttributes] = useState(false);
+  const attributes = useData("attributes", wantAttributes);
+  const [query, setQuery] = useState(""),
+    [category, setCategory] = useState("All"),
+    [limit, setLimit] = useState(40);
+  const categories = useMemo(
+    () =>
+      [
+        ...new Set(
+          catalog.data?.items.map((x) => x.category || "Unknown") ?? [],
+        ),
+      ].sort(),
+    [catalog.data],
+  );
+  const rows = useMemo(
+    () => filterItems(catalog.data?.items ?? [], query, category),
+    [catalog.data, query, category],
+  );
+  return (
+    <section aria-label="Item catalog">
+      <div className="gd-controls">
+        <input
+          aria-label="Search items"
+          placeholder="Name or type ID"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setLimit(40);
+          }}
+        />
+        <select
+          aria-label="Catalog scope"
+          value={all ? "all" : "reference"}
+          onChange={(e) => {
+            setAll(e.target.value === "all");
+            setCategory("All");
+            setLimit(40);
+          }}
+        >
+          <option value="reference">Reference items</option>
+          <option value="all">All client types</option>
+        </select>
+        <select
+          aria-label="Item category"
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setLimit(40);
+          }}
+        >
+          <option>All</option>
+          {categories.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
       </div>
-      <p style={note}>{query.trim().length === 1 ? "Enter at least two characters." : `Showing ${matches.length} results${matches.length === limit ? " (limit reached; narrow your search)" : ""}.`}</p>
-      <div style={{ display: "grid", gap: 5 }}>{matches.map(([id,text]) => <details key={id} style={card}>
-        <summary style={{ cursor: "pointer", fontSize: 11, color: TEXT }}><span style={{ color: "#ffb58b" }}>Message ID {id}</span> · {text.slice(0,160)}{text.length > 160 ? "…" : ""}</summary>
-        <div style={{ ...note, whiteSpace: "pre-wrap", marginTop: 8 }}>{text}</div>
-      </details>)}</div>
-    </>}
-  </section>;
+      {!catalog.data ? (
+        <Status {...catalog} />
+      ) : (
+        <>
+          <p className="gd-muted">
+            {rows.length.toLocaleString()} matches · Client catalog · Live
+            availability unverified
+          </p>
+          <div className="gd-grid">
+            {rows.slice(0, limit).map((x) => (
+              <article className="gd-card" key={x.id}>
+                <h3>{x.name}</h3>
+                <p className="gd-id">
+                  Type {x.id} · {x.clientRecord ? "Client" : "API only"}
+                </p>
+                <p className="gd-muted">
+                  {x.category || "Unknown"} · {x.group || "Unknown"}
+                </p>
+                <dl className="gd-values">
+                  <div>
+                    <dt>Quantity</dt>
+                    <dd>
+                      {x.quantityKind === "continuous"
+                        ? "Mass"
+                        : x.quantityKind === "discrete"
+                          ? "Units"
+                          : "Unknown"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Base mass</dt>
+                    <dd>
+                      {x.quantityKind === "continuous"
+                        ? "Variant"
+                        : x.mass === null
+                          ? "Unknown"
+                          : `${num(x.mass)} kg`}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Base volume</dt>
+                    <dd>
+                      {x.quantityKind === "continuous"
+                        ? "Variant"
+                        : x.volume === null
+                          ? "Unknown"
+                          : `${num(x.volume)} m³`}
+                    </dd>
+                  </div>
+                </dl>
+                <ItemDetails
+                  item={x}
+                  chemistry={chemistry}
+                  state={attributes}
+                  request={() => setWantAttributes(true)}
+                />
+              </article>
+            ))}
+          </div>
+          {!rows.length && <p>No matches</p>}
+          {limit < rows.length && (
+            <button onClick={() => setLimit((x) => x + 40)}>
+              Show more items
+            </button>
+          )}
+        </>
+      )}
+    </section>
+  );
 }
-
-function EventsView({ meta }: { meta: GameDataMeta }) {
-  const { data, error, retry } = useSnapshot<Record<string, { eventTypeName: string }>>("events");
-  if (!data) return <Status error={error} retry={retry} />;
-  return <section>
-    <p style={note}>{Object.keys(data).length} client event definitions · Build {meta.build} </p>
-    <div style={grid}>{Object.entries(data).map(([id, event]) => <div key={id} style={{ ...card, fontSize: 12 }}><span style={{ color: "#ffb58b" }}>Event {id}</span> · {event.eventTypeName}</div>)}</div>
-  </section>;
+function ChemistryView({
+  data,
+  catalog,
+  tab,
+  retry,
+}: {
+  retry: () => void;
+  data: Chemistry;
+  catalog: Catalog;
+  tab: "schemas" | "traits" | "properties";
+}) {
+  const [query, setQuery] = useState(""),
+    [kind, setKind] = useState("All"),
+    [limit, setLimit] = useState(30);
+  const items = useMemo(
+    () => new Map(catalog.items.map((x) => [x.id, x])),
+    [catalog],
+  );
+  const linkError = useMemo(() => {
+    try {
+      validateChemistryLinks(data, catalog);
+      return false;
+    } catch {
+      return true;
+    }
+  }, [data, catalog]);
+  const schema = useMemo(
+    () =>
+      filterSchemas(data, items, query).filter(
+        (r) => kind === "All" || r.kind === kind,
+      ),
+    [data, items, query, kind],
+  );
+  if (linkError) return <Status error={true} retry={retry} />;
+  const label = (id: number) => items.get(id)?.name || `Type ${id}`;
+  const quantity = (q: number, id: number | null) =>
+    `${num(q)}${id === null ? "" : items.get(id)?.quantityKind === "continuous" ? " kg" : items.get(id)?.quantityKind === "discrete" ? " ×" : ""}`;
+  const rows =
+    tab === "traits"
+      ? Object.entries(data.traits).filter(
+          ([id, x]) =>
+            !query ||
+            id === query ||
+            `${x.name} ${x.internalName}`
+              .toLowerCase()
+              .includes(query.toLowerCase()),
+        )
+      : Object.entries(data.properties).filter(
+          ([id, x]) =>
+            !query ||
+            id === query ||
+            `${x.name} ${x.label}`.toLowerCase().includes(query.toLowerCase()),
+        );
+  return (
+    <section aria-label={tab}>
+      <div className="gd-controls">
+        <input
+          aria-label={`Search ${tab}`}
+          placeholder={
+            tab === "schemas" ? "Schema, material, trait or ID" : "Name or ID"
+          }
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setLimit(30);
+          }}
+        />
+        {tab === "schemas" && (
+          <select
+            aria-label="Schema kind"
+            value={kind}
+            onChange={(e) => {
+              setKind(e.target.value);
+              setLimit(30);
+            }}
+          >
+            <option>All</option>
+            <option value="manufacturing">Manufacturing</option>
+            <option value="reprocessing">Reprocessing</option>
+          </select>
+        )}
+      </div>
+      <p className="gd-muted">
+        {tab === "schemas"
+          ? `${schema.length} schemas · Base quantities · Duration: raw`
+          : `${rows.length} ${tab}`}
+      </p>
+      <div className="gd-grid">
+        {tab === "schemas"
+          ? schema.slice(0, limit).map((r) => (
+              <article className="gd-card" key={r.id}>
+                <h3>{r.name}</h3>
+                <p className="gd-id">
+                  Schema {r.id} · {r.kind} · Duration {r.duration} raw
+                </p>
+                <h4>Inputs</h4>
+                <ul className="gd-lines">
+                  {r.inputs.map((x) => (
+                    <li key={x.index}>
+                      <strong>
+                        {quantity(x.quantity, x.typeID)}{" "}
+                        {x.typeID === null
+                          ? "Qualifying material"
+                          : label(x.typeID)}
+                      </strong>
+                      <small>
+                        Slot {x.index}
+                        {x.typeID !== null
+                          ? ` · Type ${x.typeID}`
+                          : " · Unit: material-dependent"}
+                      </small>
+                      {x.traits.map((t) => (
+                        <details key={t}>
+                          <summary>
+                            {data.traits[t].name} · Trait {t}
+                          </summary>
+                          <Ranges
+                            rows={data.traits[t].properties}
+                            data={data}
+                          />
+                        </details>
+                      ))}
+                    </li>
+                  ))}
+                </ul>
+                <h4>Base outputs</h4>
+                <ul className="gd-lines">
+                  {r.outputs.map((x) => (
+                    <li key={x.index}>
+                      <strong>
+                        {quantity(x.quantity, x.typeID)} {label(x.typeID)}
+                      </strong>
+                      <small>Type {x.typeID}</small>
+                    </li>
+                  ))}
+                </ul>
+                <details>
+                  <summary>Facilities · {r.facilities.length}</summary>
+                  <ul className="gd-lines">
+                    {r.facilities.map((f) => (
+                      <li key={f.typeID}>
+                        {label(f.typeID)}
+                        <small>
+                          Type {f.typeID} · Max multiplier {f.maxMultiplier}
+                        </small>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </article>
+            ))
+          : rows.slice(0, limit).map(([id]) =>
+              tab === "traits" ? (
+                <article className="gd-card" key={id}>
+                  <h3>{data.traits[id].name}</h3>
+                  <p className="gd-id">Trait {id}</p>
+                  <Ranges rows={data.traits[id].properties} data={data} />
+                </article>
+              ) : (
+                <article className="gd-card" key={id}>
+                  <h3>{data.properties[id].label}</h3>
+                  <p className="gd-id">
+                    Property {id} · {data.properties[id].kind}
+                  </p>
+                  <dl className="gd-values">
+                    <div>
+                      <dt>Unit</dt>
+                      <dd>
+                        {unit(data.properties[id].unitID, data) ||
+                          "Unspecified"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Minimum</dt>
+                      <dd>{data.properties[id].naturalMin ?? "Unspecified"}</dd>
+                    </div>
+                    <div>
+                      <dt>Maximum</dt>
+                      <dd>{data.properties[id].naturalMax ?? "Unspecified"}</dd>
+                    </div>
+                    <div>
+                      <dt>Blend</dt>
+                      <dd>
+                        {data.properties[id].mergeMethod || "Unspecified"}
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              ),
+            )}
+      </div>
+      {(tab === "schemas" ? schema.length : rows.length) === 0 && (
+        <p>No matches</p>
+      )}
+      {limit < (tab === "schemas" ? schema.length : rows.length) && (
+        <button onClick={() => setLimit((x) => x + 30)}>Show more {tab}</button>
+      )}
+    </section>
+  );
 }
-
+function TextView() {
+  const state = useData("strings");
+  const [query, setQuery] = useState("");
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q.length < 2
+      ? []
+      : Object.entries(state.data?.strings ?? {})
+          .filter(([id, s]) => id === q || s.toLowerCase().includes(q))
+          .slice(0, 100);
+  }, [state.data, query]);
+  return (
+    <section>
+      <input
+        aria-label="Search client text"
+        placeholder="Text or message ID"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      {!state.data ? (
+        <Status {...state} />
+      ) : (
+        <>
+          <p className="gd-muted">
+            {query.trim().length < 2
+              ? "Enter two characters"
+              : `${matches.length} results · Limit 100`}
+          </p>
+          {matches.map(([id, s]) => (
+            <details className="gd-card" key={id}>
+              <summary>
+                Message {id} · {s.slice(0, 140)}
+              </summary>
+              <p className="gd-description">{s}</p>
+            </details>
+          ))}
+        </>
+      )}
+    </section>
+  );
+}
+function EventsView() {
+  const state = useData("events");
+  return !state.data ? (
+    <Status {...state} />
+  ) : (
+    <div className="gd-grid">
+      {Object.entries(state.data.events).map(([id, x]) => (
+        <article className="gd-card" key={id}>
+          <h3>{x.eventTypeName}</h3>
+          <small>Client event {id}</small>
+        </article>
+      ))}
+    </div>
+  );
+}
 function ChangesView() {
-  const { data, error, retry } = useSnapshot<GameDataChanges>("changes");
-  if (!data) return <Status error={error} retry={retry} />;
-  return <section>
-    <p style={note}>Verified official changes through {data.latestPatch}, checked {data.checkedAt}.</p>
-    <div style={{ display: "grid", gap: 12 }}>{data.patches.map(p => <article key={p.version} style={card}>
-      <h3 style={{ color: TEXT, fontSize: 14, margin: "0 0 5px" }}>{p.title}</h3>
-      <SourceLink href={p.url}>Official patch {p.version} · {p.date}</SourceLink>
-      <ul style={{ ...note, paddingLeft: 18, marginBottom: 0 }}>{p.changes.map(line => <li key={line} style={{ marginTop: 8 }}>{line}</li>)}</ul>
-    </article>)}</div>
-  </section>;
+  const state = useData("changes");
+  return !state.data ? (
+    <Status {...state} />
+  ) : (
+    <section>
+      <p className="gd-muted">
+        Client types vs {state.data.baselineBuild} · +
+        {state.data.typeDelta.added} / −{state.data.typeDelta.removed} /{" "}
+        {state.data.typeDelta.changed} changed
+      </p>
+      {state.data.patches.map((p) => (
+        <article className="gd-card" key={p.version}>
+          <h3>
+            <a href={p.url} target="_blank" rel="noreferrer">
+              Patch {p.version}
+            </a>{" "}
+            · {p.date}
+          </h3>
+          <ul>
+            {p.changes.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </section>
+  );
 }
-
-function SourcesView({ meta }: { meta: GameDataMeta }) {
-  const { data: changes, error, retry } = useSnapshot<GameDataChanges>("changes");
-  return <section style={{display:"grid",gap:12}}>
-    <article style={card}><h3 style={{color:TEXT,marginTop:0}}>Sources</h3>
-      <p style={note}>Stillness · Cycle {meta.cycle} · Build {meta.build}</p>
-      <p style={note}>Snapshot {meta.extractedAt.slice(0,10)}</p>
-      <p style={note}><SourceLink href={meta.officialApi.url}>Official item API ↗</SourceLink></p>
-      {meta.native && <p style={note}><SourceLink href={`${GAME_DATA_BASE}/${meta.native.file}`}>Recipes &amp; attributes ↓</SourceLink></p>}
-      <p style={note}><SourceLink href={`${GAME_DATA_BASE}/meta.json`}>Source records ↓</SourceLink></p>
-      <p style={note}>Artwork © Fenris Creations</p>
-    </article>
-    <article style={card}><h3 style={{color:TEXT,marginTop:0}}>Official repositories</h3>
-      {!changes ? <Status error={error} retry={retry} /> : changes.github.map(repo => <p key={repo.repo} style={note}><SourceLink href={repo.url}>{repo.repo} · {repo.sha.slice(0,8)}</SourceLink></p>)}
-    </article>
-  </section>;
-}
-
 export function GameDataPanel() {
-  const [tab, setTab] = useState<Tab>("items");
-  const { data: meta, error, retry } = useSnapshot<GameDataMeta>("meta", validateGameDataMeta);
-  const native = useSnapshot<NativeSnapshot>("native-v1", validateNativeSnapshot);
-  return <div style={{ padding: "16px", maxWidth: 1100, margin: "0 auto", color: TEXT }}>
-    <header style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 10 }}>
-      <h2 style={{ color: ACCENT, fontSize: 17, margin: "0 0 6px", letterSpacing: "0.08em" }}>◇ GAME DATA</h2>
-      {meta && <span style={{ ...note, color: "#ffb58b" }}>CYCLE {meta.cycle} · {meta.name.toUpperCase()} · CLIENT {meta.build}</span>}
-    </header>
-    {!meta ? <Status error={error} retry={retry} /> : <>
-      <p style={note}>Stillness reference data · {meta.counts.items} official item types · {meta.counts.eventTypes} client event definitions · snapshot {meta.extractedAt.slice(0,10)}</p>
-      <nav aria-label="Game Data sections" style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 14 }}>{TABS.map(([id,label]) => <button key={id} type="button" onClick={() => setTab(id)} aria-pressed={tab === id} style={{ ...control, cursor: "pointer", borderBottom: `2px solid ${tab === id ? ACCENT : "transparent"}`, color: tab === id ? "#ffb58b" : TEXT }}>{label}</button>)}</nav>
-      {tab === "icons" && <IconGallery />}
-      {tab === "items" && <ItemsView meta={meta} native={native} />}
-      {tab === "recipes" && <RecipesView state={native} />}
-      {tab === "strings" && <StringsView meta={meta} />}
-      {tab === "events" && <EventsView meta={meta} />}
-      {tab === "changes" && <ChangesView />}
-      {tab === "sources" && <SourcesView meta={meta} />}
-    </>}
-  </div>;
+  const [tab, setTab] = useState<Tab>("items"),
+    [all, setAll] = useState(false);
+  const meta = useData("meta");
+  const needsCatalog =
+    tab === "items" ||
+    tab === "schemas" ||
+    tab === "traits" ||
+    tab === "properties";
+  const catalog = useData(
+    tab === "items" && all ? "catalog-all" : "catalog",
+    !!meta.data && needsCatalog,
+  );
+  const chemistry = useData("chemistry", !!meta.data && needsCatalog);
+  return (
+    <div className="game-data-current">
+      <header>
+        <h2>Game Data</h2>
+        {meta.data && (
+          <span>
+            Stillness · Cycle 7 · Build {CURRENT_DATA_BUILD} ·{" "}
+            {meta.data.snapshotDate}
+          </span>
+        )}
+      </header>
+      {!meta.data ? (
+        <Status {...meta} />
+      ) : (
+        <>
+          <p className="gd-muted">
+            {meta.data.counts.schemas} schemas · {meta.data.counts.traits}{" "}
+            traits · {meta.data.counts.properties} properties · Patch{" "}
+            {meta.data.latestPatch}
+          </p>
+          <nav aria-label="Game Data sections">
+            {tabs.map(([id, title]) => (
+              <button
+                key={id}
+                aria-pressed={tab === id}
+                onClick={() => setTab(id)}
+              >
+                {title}
+              </button>
+            ))}
+          </nav>
+          {tab === "items" && (
+            <Items
+              catalog={catalog}
+              all={all}
+              setAll={setAll}
+              chemistry={chemistry.data}
+            />
+          )}
+          {(["schemas", "traits", "properties"] as Tab[]).includes(tab) &&
+            (!catalog.data ? (
+              <Status {...catalog} />
+            ) : !chemistry.data ? (
+              <Status {...chemistry} />
+            ) : (
+              <ChemistryView
+                key={tab}
+                data={chemistry.data}
+                retry={() => {
+                  chemistry.retry();
+                  catalog.retry();
+                }}
+                catalog={catalog.data}
+                tab={tab as "schemas" | "traits" | "properties"}
+              />
+            ))}
+          {tab === "strings" && <TextView />}
+          {tab === "events" && <EventsView />}
+          {tab === "changes" && <ChangesView />}
+          {tab === "icons" && <IconGallery />}
+          {tab === "sources" && (
+            <section className="gd-grid">
+              <article className="gd-card">
+                <h3>Client data · {CURRENT_DATA_BUILD}</h3>
+                <p>Snapshot {meta.data.snapshotDate}</p>
+                {[
+                  "meta",
+                  "catalog",
+                  "catalog-all",
+                  "chemistry",
+                  "chemistry-rules",
+                  "attributes",
+                  "strings",
+                  "events",
+                  "changes",
+                ].map((file) => (
+                  <p key={file}>
+                    <a
+                      href={`${CURRENT_DATA_BASE}/${file}.json`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {file} JSON ↓
+                    </a>
+                  </p>
+                ))}
+              </article>
+              <article className="gd-card">
+                <h3>Official sources</h3>
+                <p>
+                  <a
+                    href="https://evefrontier.com/en/news/patch-notes-founder-access-0-7-6-3-vestiges"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Patch notes · 0.7.6.3
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="https://evefrontier.com/en/news/an-introduction-to-digital-chemistry"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Digital Chemistry
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="https://world-api-stillness.live.pub.evefrontier.com/v2/types?limit=1000"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Official API · {meta.data.counts.apiItems} types
+                  </a>
+                </p>
+              </article>
+            </section>
+          )}
+        </>
+      )}
+    </div>
+  );
 }

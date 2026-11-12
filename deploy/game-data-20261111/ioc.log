@@ -1,0 +1,19 @@
+[1m🔍 npm/bun supply-chain IOC scan — /home/rawdata/.openclaw-captain/workspace/worktrees/cradleos-cycle7-20261002/cradleos-dapp[0m
+
+[1m[1/5] Payload artifact files[0m
+[32m  none[0m
+
+[1m[2/5] Dependency markers in package.json files[0m
+[32m  none[0m
+
+[1m[3/5] Known-malicious package versions in lockfiles[0m
+[32m  none[0m
+
+[1m[4/5] IOC namespaces installed in node_modules[0m
+[32m  none (no IOC namespaces present)[0m
+
+[1m[5/5] Suspicious lifecycle scripts in @tanstack/* (preinstall/prepare/postinstall)[0m
+[32m  none[0m
+
+─────────────────────────────────────────────────────────────
+[32m✓ CLEAN — no supply-chain IOCs detected[0m

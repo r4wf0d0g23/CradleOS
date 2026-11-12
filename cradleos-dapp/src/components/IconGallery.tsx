@@ -15,11 +15,11 @@ export function IconGallery() {
     const q = query.trim().toLowerCase();
     return rows.filter(x => !q || `${x.key} ${x.name} ${x.source ?? ""}`.toLowerCase().includes(q));
   }, [data, group, query]);
-  if (!data) return <section className="icon-gallery"><p role="status">{error ? `Icon pack unavailable: ${error}` : "Loading current-client icons…"}</p>{error && <button onClick={retry}>Retry icon pack</button>}</section>;
-  return <section className="icon-gallery" aria-label="Current-client icon pack">
-    <h3>Current-client icon pack</h3>
+  if (!data) return <section className="icon-gallery"><p role="status">{error ? `Icon pack unavailable: ${error}` : "Loading icons…"}</p>{error && <button onClick={retry}>Retry icon pack</button>}</section>;
+  return <section className="icon-gallery" aria-label="Historical icon pack">
+    <h3>Historical icon pack</h3>
     <p>{data.counts.resolved} of {data.counts.types} item references · {data.counts.ui} UI symbols · {data.counts.library} Frontier source-art entries · {data.counts.assets} unique PNGs.</p>
-    <p>Stillness · Build {data.build}</p>
+    <p>Historical · Stillness · Build {data.build}</p>
     <p><a href={`${GAME_ICON_BASE}/cradleos-icons-cycle7-3573151.zip`} download>Download icon pack</a> · <a href={`${GAME_ICON_BASE}/manifest.json`} target="_blank" rel="noreferrer">ID index</a> · <a href={`${GAME_ICON_BASE}/provenance.json`} target="_blank" rel="noreferrer">Source hashes</a> · <a href={`${GAME_ICON_BASE}/NOTICE.txt`} target="_blank" rel="noreferrer">Artwork attribution</a></p>
     <p> <a href="https://cradleos.io/api/icons?name=D1%20Fuel" target="_blank" rel="noreferrer">Name-search API</a> · <a href="https://cradleos.io/data/icon-api.md" target="_blank" rel="noreferrer">API documentation</a> · <a href="https://cradleos.io/data/icon-api-v1.json" target="_blank" rel="noreferrer">OpenAPI schema</a></p>
     <div className="icon-gallery-controls">
