@@ -1,0 +1,45 @@
+{
+  "base": "https://cradleos.io",
+  "checks": [
+    {
+      "width": 1440,
+      "items": true,
+      "schemas": true,
+      "traits": true,
+      "properties": true,
+      "events": 63,
+      "changes": true,
+      "iconsHistorical": true,
+      "plannerHistorical": true,
+      "lazyData": true,
+      "bounds": true
+    },
+    {
+      "width": 390,
+      "items": true,
+      "schemas": true,
+      "traits": true,
+      "properties": true,
+      "events": 63,
+      "changes": true,
+      "iconsHistorical": true,
+      "plannerHistorical": true,
+      "lazyData": true,
+      "bounds": true
+    },
+    {
+      "width": 320,
+      "items": true,
+      "schemas": true,
+      "traits": true,
+      "properties": true,
+      "events": 63,
+      "changes": true,
+      "iconsHistorical": true,
+      "plannerHistorical": true,
+      "lazyData": true,
+      "bounds": true
+    }
+  ],
+  "errors": []
+}

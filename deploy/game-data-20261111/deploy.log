@@ -1,0 +1,24 @@
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProxy environment variables detected. We'll use your proxy for fetch requests.[0m
+
+
+
+ ⛅️ wrangler 4.127.0
+────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mWarning: Your working directory is a git repo and has uncommitted changes[0m
+
+  To silence this warning, pass in --commit-dirty=true
+
+
+✨ Compiled Worker successfully
+Uploading... (1077/1089)
+Uploading... (1081/1089)
+Uploading... (1085/1089)
+Uploading... (1089/1089)
+✨ Success! Uploaded 12 files (1077 already uploaded) (38.21 sec)
+
+✨ Uploading _headers
+✨ Uploading _redirects
+✨ Uploading Functions bundle
+✨ Uploading _routes.json
+🌎 Deploying...
+✨ Deployment complete! Take a peek over at https://5ac85279.cradleos-d75.pages.dev

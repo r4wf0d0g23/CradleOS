@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "source": "59999aa687d2f9a1bc4bc6ccbde978df5ee5b095",
+  "reviewType": "independent native; not Opus",
+  "gates": {
+    "focusedTests": 49,
+    "originsTests": 7,
+    "canonChecks": 8,
+    "ioc": "clean",
+    "build": "pass",
+    "previewWidths": [
+      1440,
+      390,
+      320
+    ],
+    "failureRetryPaths": 5,
+    "wrongBuildRejected": true,
+    "pageErrors": 0
+  },
+  "corrections": [
+    "raw internal unit names/IDs",
+    "Base mass/volume",
+    "shared attribute cache",
+    "rendered-field guards",
+    "cross-file retry",
+    "exact-name ranking and numeric IDs"
+  ],
+  "productionVerification": {
+    "status": "pass",
+    "deployment": "https://5ac85279.cradleos-d75.pages.dev",
+    "apexFiles": 15,
+    "immutableFiles": 15,
+    "liveWidths": [
+      1440,
+      390,
+      320
+    ],
+    "livePageErrors": 0,
+    "independentProductionReview": "PASS; postdeploy-review.md",
+    "deploymentId": "5ac85279-7fc7-4e7c-99bd-d4763a9e5db7"
+  }
+}
